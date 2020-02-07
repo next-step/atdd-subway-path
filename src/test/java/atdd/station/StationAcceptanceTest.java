@@ -20,7 +20,7 @@ public class StationAcceptanceTest {
 
     @Test
     public void test() {
-        String stationName = "강남역";
+        String stationName = "사당역";
         String inputJson = "{\"name\":\""+stationName+"\"}";
 
 
