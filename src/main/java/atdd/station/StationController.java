@@ -2,8 +2,10 @@ package atdd.station;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,8 +18,13 @@ public class StationController {
 
     @PostMapping(value = "/stations")
     @ResponseBody
-    public ResponseEntity<String> createStation(Map<String, String> param) {
+    public ResponseEntity<String> createStation(@RequestBody Map<String, String> param) {
+
         String stationName = param.get("name");
-        return ResponseEntity.ok().body("{\"name\":\""+stationName+"\"}");
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set("Location", stationName);
+
+        return ResponseEntity.ok().headers(httpHeaders).body("{\"name\":\""+stationName+"\"}");
     }
 }
