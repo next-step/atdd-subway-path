@@ -24,7 +24,7 @@ public class StationAcceptanceTest {
 
     @Test
     public void createStation() {
-        String stationName = "강남역(2)";
+        String stationName = "강남역(3)";
         String inputJson = "{\"name\":\""+stationName+"\"}";
 
 
