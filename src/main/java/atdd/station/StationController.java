@@ -2,11 +2,13 @@ package atdd.station;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 public class StationController {
@@ -25,5 +27,10 @@ public class StationController {
 		return ResponseEntity.created(URI.create("/stations/" + id))
 			.contentType(MediaType.APPLICATION_JSON)
 			.body(request);
+	}
+
+	@GetMapping("/stations")
+	public ResponseEntity<List<Station>> getAll() {
+		return ResponseEntity.ok(stationRepository.findAll());
 	}
 }
