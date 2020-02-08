@@ -36,11 +36,13 @@ public class StationAcceptanceTest {
         String stationName = "강남역";
         String inputJson = "{\"name\":\"" + stationName + "\"}";
         webTestClient.post().uri("/station")
-                .body(Mono.just(inputJson), String.class);
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(inputJson), String.class)
+                .exchange();
 
         webTestClient.get().uri("/stations")
                 .exchange()
-                .expectStatus().isCreated()
+                .expectStatus().is2xxSuccessful()
                 .expectBody()
                 .json("[{\"name\":\"" + stationName + "\"}]");
     }
@@ -50,11 +52,13 @@ public class StationAcceptanceTest {
         String stationName = "강남역";
         String inputJson = "{\"name\":\"" + stationName + "\"}";
         webTestClient.post().uri("/station")
-                .body(Mono.just(inputJson), String.class);
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(inputJson), String.class)
+                .exchange();
 
         webTestClient.get().uri("/station?name={stationName}", stationName)
                 .exchange()
-                .expectStatus().isCreated()
+                .expectStatus().is2xxSuccessful()
                 .expectBody()
                 .json("{\"name\":\"" + stationName + "\"}");
     }
@@ -64,7 +68,9 @@ public class StationAcceptanceTest {
         String stationName = "강남역";
         String inputJson = "{\"name\":\"" + stationName + "\"}";
         webTestClient.post().uri("/station")
-                .body(Mono.just(inputJson), String.class);
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(inputJson), String.class)
+                .exchange();
 
         webTestClient.delete().uri("/station?name={stationName}", stationName)
                 .exchange()
