@@ -46,7 +46,7 @@ public class StationAcceptanceTest {
     }
 
     @Test
-    void getAllStations() {
+    void findAllStations() {
         // given
         CreateStationRequest request = CreateStationRequest.builder()
             .name("강남역")
@@ -72,7 +72,6 @@ public class StationAcceptanceTest {
     }
 
     @Test
-    // 지하철역 정보 조회
     void findStationByName() {
         // given
         CreateStationRequest request = CreateStationRequest.builder()
