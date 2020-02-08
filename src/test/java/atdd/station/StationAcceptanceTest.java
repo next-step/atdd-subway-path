@@ -1,6 +1,5 @@
 package atdd.station;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,42 +38,5 @@ public class StationAcceptanceTest {
             .expectHeader().exists("Location")
             .expectBody()
             .jsonPath("$.name").isEqualTo(request.getName());
-    }
-
-    @Test
-    @Disabled
-    void TODO_getAllStations() {
-        // given
-
-        // when & then
-        webTestClient.get().uri("/stations")
-            .accept(MediaType.APPLICATION_JSON)
-            .exchange()
-            .expectStatus().isOk()
-            .expectHeader().contentType(MediaType.APPLICATION_JSON)
-            .expectHeader().exists("Accept")
-            .expectBody().jsonPath("$.");
-
-        // then
-    }
-
-    @Test
-    @Disabled
-    void TODO_findStationInformation() {
-        // given
-
-        // when
-
-        // then
-    }
-
-    @Test
-    @Disabled
-    void TODO_deleteStation() {
-        // given
-
-        // when
-
-        // then
     }
 }
