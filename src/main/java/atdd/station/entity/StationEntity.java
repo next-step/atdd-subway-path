@@ -11,20 +11,19 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Entity
 @Table(name = "STATION")
-@NoArgsConstructor
-@AllArgsConstructor
-public class StationEntity implements Serializable {
+@Data @NoArgsConstructor
+public class StationEntity{
   @Id
-  @Getter
   @Column(name="ID")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Column(name = "NAME")
-  public String Name;
+  private String Name;
 
   public StationEntity(String name) {
     this.Name = name;

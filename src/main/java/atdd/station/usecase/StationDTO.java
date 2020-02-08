@@ -1,4 +1,4 @@
-package atdd.station.service;
+package atdd.station.usecase;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StationDTO implements Serializable {
+  Long id;
   String name;
 }
