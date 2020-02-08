@@ -30,7 +30,7 @@ public class StationAcceptanceTest {
 
     @Test
     public void createStation() {
-        String stationName = "강남역";
+        String stationName = "강남역(2)";
         String inputJson = "{\"name\":\""+stationName+"\"}";
 
         webTestClient.post().uri("/stations")
