@@ -33,4 +33,9 @@ public class StationController {
         return ResponseEntity.ok(stationRepository.findAll());
     }
 
+    @GetMapping("/station")
+    public ResponseEntity findStationByName(String name) {
+        return ResponseEntity.ok(stationRepository.findByName(name));
+    }
+
 }
