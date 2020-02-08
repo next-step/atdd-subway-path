@@ -70,4 +70,31 @@ public class StationAcceptanceTest {
         assertThat(result.getResponseBody()).flatExtracting(Station::getName)
             .contains("강남역");
     }
+
+    @Test
+    // 지하철역 정보 조회
+    void findStationByName() {
+        // given
+        CreateStationRequest request = CreateStationRequest.builder()
+            .name("강남역")
+            .build();
+        webTestClient.post().uri("/stations")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .body(Mono.just(request), CreateStationRequest.class)
+            .exchange();
+
+        // when & then
+        webTestClient.get().uri(uriBuilder -> uriBuilder
+            .path("/station/")
+            .queryParam("name", "강남역")
+            .build())
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isOk()
+            .expectHeader().contentType(MediaType.APPLICATION_JSON)
+            .expectBody()
+                .jsonPath("$.id").isNotEmpty()
+                .jsonPath("$.name").isEqualTo(request.getName());
+    }
 }
