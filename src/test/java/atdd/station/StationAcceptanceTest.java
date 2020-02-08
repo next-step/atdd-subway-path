@@ -18,13 +18,53 @@ public class StationAcceptanceTest {
     private WebTestClient webTestClient;
 
     @Test
-    public void createStation() {
+    public void 지하철역_등록() {
         String stationName = "강남역";
-        String inputJson = "{\"name\":\""+stationName+"\"}";
+        String inputJson = "{\"name\":\"" + stationName + "\"}";
 
-        webTestClient.post().uri("/stations")
+        webTestClient.post().uri("/station")
                 .body(Mono.just(inputJson), String.class)
                 .exchange()
                 .expectStatus().isCreated();
+    }
+
+    @Test
+    public void 지하철역_목록_조회() {
+        String stationName = "강남역";
+        String inputJson = "{\"name\":\"" + stationName + "\"}";
+        webTestClient.post().uri("/station")
+                .body(Mono.just(inputJson), String.class);
+
+        webTestClient.get().uri("/stations")
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody()
+                .json("[{\"name\":\"" + stationName + "\"}]");
+    }
+
+    @Test
+    public void 지하철역_정보_조회() {
+        String stationName = "강남역";
+        String inputJson = "{\"name\":\"" + stationName + "\"}";
+        webTestClient.post().uri("/station")
+                .body(Mono.just(inputJson), String.class);
+
+        webTestClient.get().uri("/station?name={stationName}", stationName)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody()
+                .json("{\"name\":\"" + stationName + "\"}");
+    }
+
+    @Test
+    public void 지하철역_삭제() {
+        String stationName = "강남역";
+        String inputJson = "{\"name\":\"" + stationName + "\"}";
+        webTestClient.post().uri("/station")
+                .body(Mono.just(inputJson), String.class);
+
+        webTestClient.delete().uri("/station?name={stationName}", stationName)
+                .exchange()
+                .expectStatus().is2xxSuccessful();
     }
 }
