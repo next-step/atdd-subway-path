@@ -1,7 +1,7 @@
 package atdd.station.usecase;
 
 import java.io.Serializable;
-import javax.persistence.Entity;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StationDTO implements Serializable {
-  private Long id;
-  private String name;
+public class StationListDTO implements Serializable {
+  int totalStationCount;
+  List<StationDTO> stations;
 }
