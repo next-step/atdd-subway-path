@@ -21,6 +21,7 @@
  * */
 package atdd.station;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,5 +54,20 @@ public class StationAcceptanceTest {
                      .exchange()
                      .expectStatus()
                      .isCreated();
+    }
+
+    @Test
+    public void testReadStation() {
+        webTestClient.get()
+                     .uri("/stations/1")
+                     .accept(MediaType.APPLICATION_JSON)
+                     .exchange()
+                     .expectStatus()
+                     .isOk()
+                     .expectBody(Station.class)
+                     .consumeWith(result -> {
+                         Assertions.assertThat(result)
+                                   .isEqualTo("강남역");
+                     });
     }
 }
