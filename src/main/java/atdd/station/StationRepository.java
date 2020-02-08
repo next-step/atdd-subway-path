@@ -1,6 +1,6 @@
 /*
  *
- * Station
+ * StationRepository
  *
  * 0.0.1
  *
@@ -21,29 +21,7 @@
  * */
 package atdd.station;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.springframework.data.repository.CrudRepository;
 
-@Entity
-public class Station {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    private String name;
-
-    protected Station() {}
-
-    public Station(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Long getId() {
-        return id;
-    }
+public interface StationRepository extends CrudRepository<Station, Long> {
 }

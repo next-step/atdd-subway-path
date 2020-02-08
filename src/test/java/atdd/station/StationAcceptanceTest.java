@@ -43,8 +43,8 @@ public class StationAcceptanceTest {
     private WebTestClient webTestClient;
 
     @Test
-    public void test() {
-        String inputJson = String.format("{name: %s}", targetStation.getName());
+    public void testCreateStation() {
+        String inputJson = String.format("{\"name\": \"%s\"}", targetStation.getName());
 
         webTestClient.post()
                      .uri("/stations")

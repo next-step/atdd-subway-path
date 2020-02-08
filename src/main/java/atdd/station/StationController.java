@@ -21,17 +21,24 @@
  * */
 package atdd.station;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 
 @RestController
 public class StationController {
+    @Autowired
+    private StationRepository stationRepository;
 
     @PostMapping("/stations")
-    public ResponseEntity createStation() {
-        return ResponseEntity.created(URI.create("/stations/1")).build();
+    public ResponseEntity createStation(@RequestBody Station station) {
+        Station savedStation = stationRepository.save(station);
+        String resultUri = String.format("/station/$d", savedStation.getId());
+
+        return ResponseEntity.created(URI.create(resultUri)).build();
     }
 }
