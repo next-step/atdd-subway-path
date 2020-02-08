@@ -35,7 +35,8 @@ public class Station {
 
     protected Station() {}
 
-    public Station(String name) {
+    public Station(Long id, String name) {
+        this.id = id;
         this.name = name;
     }
 

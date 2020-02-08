@@ -22,10 +22,9 @@
 package atdd.station;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -40,5 +39,13 @@ public class StationController {
         String resultUri = String.format("/station/$d", savedStation.getId());
 
         return ResponseEntity.created(URI.create(resultUri)).build();
+    }
+
+    @GetMapping("/stations/{id}")
+    public ResponseEntity readStation(@PathVariable String id) {
+        long castingId = Long.parseLong(id);
+        Station station = stationRepository.findById(castingId);
+
+        return new ResponseEntity(station, HttpStatus.OK);
     }
 }
