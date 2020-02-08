@@ -21,7 +21,6 @@
  * */
 package atdd.station;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +37,8 @@ import reactor.core.publisher.Mono;
 @AutoConfigureWebTestClient
 public class StationAcceptanceTest {
     private static final Logger logger = LoggerFactory.getLogger(StationAcceptanceTest.class);
-    private final Station targetStation = new Station("강남역");
+    private final Long id = new Long(1);
+    private final Station targetStation = new Station(id, "강남역");
 
     @Autowired
     private WebTestClient webTestClient;
@@ -58,16 +58,18 @@ public class StationAcceptanceTest {
 
     @Test
     public void testReadStation() {
+        testCreateStation();
+
+        String reqUri = "/stations/" + targetStation.getId();
+
         webTestClient.get()
-                     .uri("/stations/1")
+                     .uri(reqUri)
                      .accept(MediaType.APPLICATION_JSON)
                      .exchange()
                      .expectStatus()
                      .isOk()
-                     .expectBody(Station.class)
-                     .consumeWith(result -> {
-                         Assertions.assertThat(result)
-                                   .isEqualTo("강남역");
-                     });
+                     .expectBody()
+                     .jsonPath("$.name")
+                     .isEqualTo("강남역");
     }
 }
