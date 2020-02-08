@@ -1,5 +1,6 @@
 package atdd.station;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,14 +22,59 @@ public class StationAcceptanceTest {
     private WebTestClient webTestClient;
 
     @Test
-    void createStations() {
-        String stationName = "강남역";
-        String inputJson = "{\"name\":\""+stationName+"\"}";
+    void createStation() {
+        // given
+        CreateStationRequest request = CreateStationRequest.builder()
+            .name("강남역")
+            .build();
 
+        // when & then
         webTestClient.post().uri("/stations")
             .contentType(MediaType.APPLICATION_JSON)
-            .body(Mono.just(inputJson), String.class)
+            .accept(MediaType.APPLICATION_JSON)
+            .body(Mono.just(request), CreateStationRequest.class)
             .exchange()
-            .expectStatus().isCreated();
+            .expectStatus().isCreated()
+            .expectHeader().contentType(MediaType.APPLICATION_JSON)
+            .expectHeader().exists("Location")
+            .expectBody()
+            .jsonPath("$.name").isEqualTo(request.getName());
+    }
+
+    @Test
+    @Disabled
+    void TODO_getAllStations() {
+        // given
+
+        // when & then
+        webTestClient.get().uri("/stations")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isOk()
+            .expectHeader().contentType(MediaType.APPLICATION_JSON)
+            .expectHeader().exists("Accept")
+            .expectBody().jsonPath("$.");
+
+        // then
+    }
+
+    @Test
+    @Disabled
+    void TODO_findStationInformation() {
+        // given
+
+        // when
+
+        // then
+    }
+
+    @Test
+    @Disabled
+    void TODO_deleteStation() {
+        // given
+
+        // when
+
+        // then
     }
 }
