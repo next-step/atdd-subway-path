@@ -25,6 +25,7 @@ public class StationAcceptanceTest {
         String stationName = "강남역";
         String inputJson = "{\"name\":\""+stationName+"\"}";
 
+
         webTestClient.post().uri("/stations")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(inputJson), String.class)
@@ -33,5 +34,6 @@ public class StationAcceptanceTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectHeader().exists("Location")
                 .expectBody().jsonPath("$.name").isEqualTo(stationName);
+
     }
 }
