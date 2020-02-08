@@ -30,6 +30,7 @@ public class StationAcceptanceTest {
 
     @Test
     public void createStation() {
+        //커밋을 위한 주석 추가
         String stationName = "강남역(2)";
         String inputJson = "{\"name\":\""+stationName+"\"}";
 
