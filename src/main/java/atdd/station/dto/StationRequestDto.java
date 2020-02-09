@@ -4,7 +4,7 @@ import javax.validation.constraints.NotBlank;
 
 public class StationRequestDto {
 
-    @NotBlank
+    @NotBlank(message = "name 값은 필수 입니다.")
     private String name;
 
     public String getName() {

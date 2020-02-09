@@ -3,8 +3,10 @@ package atdd.station.controller;
 import atdd.station.dto.StationRequestDto;
 import atdd.station.dto.StationResponseDto;
 import atdd.station.service.StationService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -36,4 +38,17 @@ public class StationController {
     public List<StationResponseDto> findAll() {
         return stationService.findAll();
     }
+
+    @GetMapping("/by-name")
+    public StationResponseDto getStation(@RequestParam String name) {
+        Assert.hasText(name, "name 값은 필수입니다.");
+        return stationService.getStation(name);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public String handleException(IllegalArgumentException e) {
+        return e.getMessage();
+    }
+
 }

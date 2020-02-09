@@ -5,7 +5,9 @@ import atdd.station.dto.StationResponseDto;
 import atdd.station.repository.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +22,7 @@ public class StationService {
 
     @Transactional
     public StationResponseDto create(String name) {
+        Assert.hasText(name, "name 은 필수 입니다.");
         final Station savedStation = stationRepository.save(new Station(name));
         return StationResponseDto.from(savedStation);
     }
@@ -27,6 +30,13 @@ public class StationService {
     @Transactional(readOnly = true)
     public List<StationResponseDto> findAll() {
         return stationRepository.findAll().stream().map(StationResponseDto::from).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public StationResponseDto getStation(String name) {
+        Assert.hasText(name, "name 은 필수 입니다.");
+        final Station station = stationRepository.findByName(name).orElseThrow(EntityNotFoundException::new);
+        return StationResponseDto.from(station);
     }
 
 }
