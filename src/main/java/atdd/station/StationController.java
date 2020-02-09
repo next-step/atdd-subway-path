@@ -27,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 public class StationController {
@@ -36,9 +37,16 @@ public class StationController {
     @PostMapping("/stations")
     public ResponseEntity createStation(@RequestBody Station station) {
         Station savedStation = stationRepository.save(station);
-        String resultUri = String.format("/station/$d", savedStation.getId());
+        String resultUri = String.format("/stations/%d", savedStation.getId());
 
         return ResponseEntity.created(URI.create(resultUri)).build();
+    }
+
+    @GetMapping("/stations")
+    public ResponseEntity readStation() {
+        List<Station> stations = stationRepository.findAll();
+
+        return new ResponseEntity(stations, HttpStatus.OK);
     }
 
     @GetMapping("/stations/{id}")
