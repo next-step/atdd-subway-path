@@ -9,13 +9,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Entity
 @Table(name = "STATION")
-@Data @NoArgsConstructor
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class StationEntity{
   @Id
   @Column(name="ID")

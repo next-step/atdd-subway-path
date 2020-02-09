@@ -10,7 +10,7 @@ public class StationModelMapper {
     );
   }
 
-  public StationDTO EntityToDTO(StationEntity stationEntity){
+  public StationDTO EntityToDTO(StationEntity stationEntity) {
     return new StationDTO(
         stationEntity.getId(),
         stationEntity.getName()

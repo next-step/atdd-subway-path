@@ -12,4 +12,8 @@ import lombok.NoArgsConstructor;
 public class StationDTO implements Serializable {
   private Long id;
   private String name;
+
+  public StationDTO(String Name) {
+    this.name = Name;
+  }
 }
