@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class StationController {
@@ -38,8 +39,11 @@ public class StationController {
     }
 
     @GetMapping("/stations")
-    public ResponseEntity<List<Station>> getStations() {
-        List<Station> stations = stationQueryService.getStations();
+    public ResponseEntity<List<StationResponseDto>> getStations() {
+        List<StationResponseDto> stations = stationQueryService.getStations()
+                .stream()
+                .map(station -> StationResponseDto.of(station.getName()))
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok().body(stations);
     }
