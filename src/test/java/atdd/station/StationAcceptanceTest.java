@@ -94,6 +94,21 @@ public class StationAcceptanceTest {
                 .isEqualTo(StationResponseDto.of(stationName));
     }
 
+    @DisplayName("지하철역 삭제한다")
+    @Test
+    public void deleteFromStationName() {
+        // given
+        String stationName = "강남역";
+        EntityExchangeResult<Void> createdResult = createStation(stationName);
+
+        // when, then
+        webTestClient.delete()
+                .uri(createdResult.getResponseHeaders().getLocation().getPath())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk();
+    }
+
     @AfterEach
     public void tearDown() {
         stationRepository.deleteAll();
