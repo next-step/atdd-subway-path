@@ -7,6 +7,7 @@ import atdd.station.web.dto.StationCreateRequestDto;
 import atdd.station.web.dto.StationResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,6 +51,17 @@ public class StationController {
         Station savedStation = stationQueryService.getStation(id);
 
         return ResponseEntity.ok().body(StationResponseDto.of(savedStation.getName()));
+    }
+
+    @DeleteMapping("/stations/{id}")
+    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
+        logger.info("[StationController.deleteStation] id={}", id);
+
+        stationCommandService.deleteStation(id);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.LOCATION, "/stations")
+                .build();
     }
 
 }

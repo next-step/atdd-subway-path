@@ -8,9 +8,13 @@ import javax.transaction.Transactional;
 
 @Service
 public class StationCommandService {
+    private StationQueryService stationQueryService;
     private StationRepository stationRepository;
 
-    public StationCommandService(StationRepository stationRepository) {
+    public StationCommandService(StationQueryService stationQueryService,
+                                 StationRepository stationRepository) {
+
+        this.stationQueryService = stationQueryService;
         this.stationRepository = stationRepository;
     }
 
@@ -19,4 +23,8 @@ public class StationCommandService {
         return stationRepository.save(Station.of(stationName));
     }
 
+    @Transactional
+    public void deleteStation(Long id) {
+        stationRepository.delete(stationQueryService.getStation(id));
+    }
 }
