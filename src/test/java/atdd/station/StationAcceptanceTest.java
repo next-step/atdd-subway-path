@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
@@ -40,18 +39,19 @@ public class StationAcceptanceTest {
     @Test
     public void 지하철역_목록_조회() {
         String stationName = "강남역";
-        this.createStationTest(stationName);
+        StationDto stationDto = this.createStationTest(stationName);
 
         webTestClient.get().uri("/stations")
                 .exchange()
                 .expectStatus().is2xxSuccessful()
-                .expectBody().jsonPath("$.[0].name").isEqualTo(stationName);
+                .expectBodyList(StationDto.class)
+                .hasSize(1);
     }
 
     @Test
     public void 지하철역_정보_조회() {
         String stationName = "강남역";
-        Long stationId = this.createStationTest(stationName).getResponseBody().getId();
+        Long stationId = this.createStationTest(stationName).getId();
 
         webTestClient.get().uri("/stations/{stationId}", stationId)
                 .exchange()
@@ -62,14 +62,14 @@ public class StationAcceptanceTest {
     @Test
     public void 지하철역_삭제() {
         String stationName = "강남역";
-        Long stationId = this.createStationTest(stationName).getResponseBody().getId();
+        Long stationId = this.createStationTest(stationName).getId();
 
         webTestClient.delete().uri("/stations/{stationId}", stationId)
                 .exchange()
                 .expectStatus().isNoContent();
     }
 
-    private EntityExchangeResult<StationDto> createStationTest(String stationName) {
+    private StationDto createStationTest(String stationName) {
         String inputJson = "{\"name\":\"" + stationName + "\"}";
 
         return webTestClient.post().uri("/stations")
@@ -77,6 +77,7 @@ public class StationAcceptanceTest {
                 .body(Mono.just(inputJson), String.class)
                 .exchange()
                 .expectBody(StationDto.class)
-                .returnResult();
+                .returnResult()
+                .getResponseBody();
     }
 }
