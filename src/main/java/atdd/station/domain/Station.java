@@ -15,19 +15,19 @@ public class Station {
     public Station() {
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public Station(String name) {
         this.name = name;
     }
 
     public static Station of(String stationName) {
         return new Station(stationName);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 }
