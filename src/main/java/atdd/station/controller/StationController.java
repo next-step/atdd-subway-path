@@ -30,7 +30,7 @@ public class StationController {
         return new ResponseEntity<>(createdStation, headers, HttpStatus.CREATED);
     }
 
-    @GetMapping("/list")
+    @GetMapping("/")
     public ResponseEntity<StationListResponseDto> list() {
         StationListResponseDto stations = stationService.list();
         return new ResponseEntity<>(stations, HttpStatus.OK);
