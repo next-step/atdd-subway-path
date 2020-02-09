@@ -4,6 +4,8 @@ import atdd.station.domain.SubwayLine;
 import atdd.station.web.dto.SubwayLineResponseDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -60,6 +62,30 @@ public class SubwayLineAcceptanceTest {
                 .expectBodyList(SubwayLineResponseDto.class)
                 .hasSize(2)
                 .isEqualTo(Arrays.asList(SubwayLineResponseDto.of(SubwayLine.of("2호선")), SubwayLineResponseDto.of(SubwayLine.of("8호선"))));
+    }
+
+    @DisplayName("지하철역 노선 정보를 조회한다")
+    @ParameterizedTest
+    @ValueSource(strings = {"2호선", "8호선", "5호선"})
+    public void retrieveFromSubwayLineName(String subwayLineName) {
+        // given
+        EntityExchangeResult<Void> createdResult = createSubwayLine(subwayLineName);
+
+        // when, then
+        getFromSubwayLineName(subwayLineName, createdResult);
+    }
+
+    private void getFromSubwayLineName(String subwayLineName,
+                                       EntityExchangeResult<Void> createdResult) {
+
+        webTestClient.get()
+                .uri(createdResult.getResponseHeaders().getLocation().getPath())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(SubwayLineResponseDto.class)
+                .isEqualTo(SubwayLineResponseDto.of(SubwayLine.of(subwayLineName)));
     }
 
 }
