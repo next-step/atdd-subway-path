@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
-@Service("subwayLinesService")
+@Service("subwayLineService")
 public class SubwayLineService {
     @Resource(name = "subwayLineRepository")
     private SubwayLineRepository subwayLineRepository;
