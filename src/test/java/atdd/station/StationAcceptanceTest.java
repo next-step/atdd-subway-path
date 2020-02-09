@@ -102,12 +102,19 @@ public class StationAcceptanceTest {
         String stationName = "강남역";
         EntityExchangeResult<Void> createdResult = createStation(stationName);
 
-        // when, then
+        // when
         webTestClient.delete()
                 .uri(createdResult.getResponseHeaders().getLocation().getPath())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk();
+
+        // then
+        webTestClient.get()
+                .uri(createdResult.getResponseHeaders().getLocation().getPath())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isBadRequest();
     }
 
     @AfterEach
