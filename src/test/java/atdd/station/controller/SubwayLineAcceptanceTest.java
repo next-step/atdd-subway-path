@@ -82,6 +82,19 @@ public class SubwayLineAcceptanceTest {
                 .jsonPath(getStationNameJsonParseExpressionByIndex("0")).isEqualTo("교대역");
     }
 
+    @DisplayName("지하철노선_삭제가_성공하는지")
+    @Test
+    void deleteSubwayLineSuccessTest() {
+        String location = creatSubwayLine("2호선");
+
+        //when
+        //then
+        webTestClient.delete().uri(location)
+                .exchange()
+                .expectStatus().isOk();
+    }
+
+
     private String creatSubwayLine(String subwayLineName) {
         return Objects.requireNonNull(webTestClient.post().uri(SUBWAY_LINE_API_BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
