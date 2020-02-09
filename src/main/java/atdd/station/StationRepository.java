@@ -29,4 +29,6 @@ public interface StationRepository extends CrudRepository<Station, Long> {
     Station findById(long id);
 
     List<Station> findAll();
+
+    void deleteById(long id);
 }

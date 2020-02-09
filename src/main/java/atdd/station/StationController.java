@@ -56,4 +56,12 @@ public class StationController {
 
         return new ResponseEntity(station, HttpStatus.OK);
     }
+
+    @DeleteMapping("/stations/{id}")
+    public ResponseEntity deleteStation(@PathVariable String id) {
+        long castingId = Long.parseLong(id);
+        stationRepository.deleteById(castingId);
+
+        return ResponseEntity.ok().build();
+    }
 }
