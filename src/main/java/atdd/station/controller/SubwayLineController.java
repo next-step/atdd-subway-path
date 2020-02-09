@@ -86,4 +86,8 @@ public class SubwayLineController {
                         " }");
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable int id) {
+        return ResponseEntity.ok().build();
+    }
 }
