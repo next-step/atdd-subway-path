@@ -1,12 +1,19 @@
 package atdd.station.domain;
 
 import lombok.Builder;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class SubwayLine {
+    private static final String DEFAULT_START_TIME = "05:00";
+    private static final String DEFAULT_END_TIME = "23:50";
+    private static final String DEFAULT_INTERVAL = "10";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -21,10 +28,12 @@ public class SubwayLine {
     private String endTime;
 
     @Size(min = 2, max = 20)
-    private String interval;
+    private String intervalTime;
 
-    @Embedded
-    private Station station = new Station();
+    @ManyToMany(mappedBy = "subwayLines", fetch = FetchType.EAGER)
+    @Where(clause = "deleted = false")
+    @OrderBy("id ASC")
+    private List<Station> stations = new ArrayList<>();
 
     private boolean deleted = false;
 
@@ -32,17 +41,21 @@ public class SubwayLine {
     }
 
     @Builder
-    public SubwayLine(String name, String startTime, String endTime, String interval, Station station) {
+    public SubwayLine(String name, String startTime, String endTime, String intervalTime, List<Station> stations) {
         this.name = name;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.intervalTime = intervalTime;
+        this.startTime = startTime;
+        this.stations = stations;
     }
 
-    @Builder
     public SubwayLine(String name) {
         this.name = name;
-        this.startTime = "05:00";
-        this.endTime = "23:50";
-        this.interval = "10";
-        this.station = new Station();
+        this.startTime = DEFAULT_START_TIME;
+        this.endTime = DEFAULT_END_TIME;
+        this.intervalTime = DEFAULT_INTERVAL;
+        this.stations = new ArrayList<>();
     }
 
     public long getId() {
@@ -51,6 +64,22 @@ public class SubwayLine {
 
     public String getName() {
         return this.name;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public String getIntervalTime() {
+        return intervalTime;
+    }
+
+    public List<Station> getStations() {
+        return stations;
     }
 
     public void deleteSubwayLine() {
@@ -68,8 +97,8 @@ public class SubwayLine {
                 ", name='" + name + '\'' +
                 ", startTime='" + startTime + '\'' +
                 ", endTime='" + endTime + '\'' +
-                ", interval='" + interval + '\'' +
-                ", station=" + station +
+                ", interval='" + intervalTime + '\'' +
+                ", station=" + stations +
                 ", deleted=" + deleted +
                 '}';
     }
