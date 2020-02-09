@@ -56,5 +56,19 @@ Then "강남역" 지하철역이 삭제되었다.
 //                .expectHeader().exists("Location")
                 .expectBody().jsonPath("$.name").isEqualTo(stationName);
 
+        /*
+
+        Scenario: 지하철역 목록 조회
+        Given "강남역" 지하철역이 등록되어 있다.
+        When 사용자는 지하철역 목록조회를 요청한다.
+        Then 사용자는 "강남역" 지하철역의 정보를 응답받는다.
+         */
+        webTestClient.get().uri("/stations")
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+//                .expectHeader().exists("Location")
+                .expectBody().jsonPath("$.name").isEqualTo(stationName);
+
     }
 }
