@@ -35,7 +35,7 @@ public class StationAcceptanceTest {
     @DisplayName("강남역_지하철_등록을_요청이_성공하는지")
     @ParameterizedTest
     @ValueSource(strings = {KANGNAM_STATION_NAME, SINSA_STATION_NAME})
-    void createStationTest(String stationName) {
+    void createStationSuccessTest(String stationName) {
         //when
         //then
         webTestClient.post().uri(STATION_API_BASE_URL)
@@ -51,14 +51,14 @@ public class StationAcceptanceTest {
 
     @DisplayName("강남역_지하철이_조회가_성공하는지")
     @Test
-    void listStationTest() {
+    void listStationSuccessTest() {
         //given
         creatStation(KANGNAM_STATION_NAME);
         creatStation(SINSA_STATION_NAME);
 
         //when
         //then
-        webTestClient.get().uri(STATION_API_BASE_URL + "list")
+        webTestClient.get().uri(STATION_API_BASE_URL)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -69,7 +69,7 @@ public class StationAcceptanceTest {
 
     @DisplayName("강남역_지하철_역_정보_상세조회_요청이_성공하는지")
     @Test
-    void stationDetailTest() {
+    void stationDetailSuccessTest() {
         //given
         long id = 1;
         creatStation(KANGNAM_STATION_NAME);
@@ -87,7 +87,7 @@ public class StationAcceptanceTest {
 
     @DisplayName("강남역_지하철_역_정보_삭제_요청이_성공하는지")
     @Test
-    void stationDeleteTest() {
+    void stationDeleteSuccessTest() {
         creatStation(KANGNAM_STATION_NAME);
 
         //when
