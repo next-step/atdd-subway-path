@@ -59,6 +59,21 @@ public class StationAcceptanceTest {
     }
 
     @Test
+    public void testReadStations() {
+        String reqUri = prefixUri;
+
+        webTestClient.get()
+                     .uri(reqUri)
+                     .accept(MediaType.APPLICATION_JSON)
+                     .exchange()
+                     .expectStatus()
+                     .isOk()
+                     .expectBodyList(Station.class)
+                     .hasSize(1)
+                     .contains(targetStation);
+    }
+
+    @Test
     public void testReadStation() {
         testCreateStation();
 
