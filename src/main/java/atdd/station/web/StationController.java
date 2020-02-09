@@ -4,13 +4,11 @@ import atdd.station.application.StationCommandService;
 import atdd.station.application.StationQueryService;
 import atdd.station.domain.Station;
 import atdd.station.web.dto.StationCreateRequestDto;
+import atdd.station.web.dto.StationResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
@@ -43,6 +41,15 @@ public class StationController {
         List<Station> stations = stationQueryService.getStations();
 
         return ResponseEntity.ok().body(stations);
+    }
+
+    @GetMapping("/stations/{id}")
+    public ResponseEntity<StationResponseDto> getStation(@PathVariable Long id) {
+        logger.info("[StationController.getStation] id={}", id);
+
+        Station savedStation = stationQueryService.getStation(id);
+
+        return ResponseEntity.ok().body(StationResponseDto.of(savedStation.getName()));
     }
 
 }
