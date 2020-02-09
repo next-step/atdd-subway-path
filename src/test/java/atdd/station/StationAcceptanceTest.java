@@ -23,14 +23,20 @@ public class StationAcceptanceTest {
     @Test
     public void createStation(){
         String STATION_NAME = "강남역";
-        String inputJson = "{\"name\":\"" + STATION_NAME + "\"}";
+
+        Station station = Station.builder()
+                .name(STATION_NAME)
+                .build();
 
         webTestClient.post().uri("/stations")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class) //webflux 환경?에서 webhandler가 요청 할 수 있는 걸만들어준다 ?
+                .body(Mono.just(station), Station.class)
+                //.body(Mono.just(inputJson), String.class) //webflux 환경?에서 webhandler가 요청 할 수 있는 걸만들어준다 ?
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectHeader().exists("Location");
+                .expectHeader().exists("Location")
+                .expectBody().jsonPath("$.name").isEqualTo(STATION_NAME)
+        ;
     }
 }
