@@ -39,6 +39,7 @@ public class StationAcceptanceTest {
     private static final Logger logger = LoggerFactory.getLogger(StationAcceptanceTest.class);
     private final Long id = new Long(1);
     private final Station targetStation = new Station(id, "강남역");
+    private final String prefixUri = "/stations";
 
     @Autowired
     private WebTestClient webTestClient;
@@ -46,9 +47,10 @@ public class StationAcceptanceTest {
     @Test
     public void testCreateStation() {
         String inputJson = String.format("{\"name\": \"%s\"}", targetStation.getName());
+        String reqUri = prefixUri;
 
         webTestClient.post()
-                     .uri("/stations")
+                     .uri(reqUri)
                      .contentType(MediaType.APPLICATION_JSON)
                      .body(Mono.just(inputJson), String.class)
                      .exchange()
@@ -60,7 +62,7 @@ public class StationAcceptanceTest {
     public void testReadStation() {
         testCreateStation();
 
-        String reqUri = "/stations/" + targetStation.getId();
+        String reqUri = String.format("%s/%d", prefixUri, targetStation.getId());
 
         webTestClient.get()
                      .uri(reqUri)
