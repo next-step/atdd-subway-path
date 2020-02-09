@@ -1,5 +1,6 @@
-package atdd.station;
+package atdd;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,25 +18,27 @@ import reactor.core.publisher.Mono;
 @AutoConfigureWebTestClient
 public class StationAcceptanceTest {
     private static final Logger logger = LoggerFactory.getLogger(StationAcceptanceTest.class);
+    private static final String BASE_URI = "/stations";
+    private static final String TARGET_STATION="강남역";
 
     @Autowired
     private WebTestClient webTestClient;
 
+    @DisplayName("station 등록이 제대로 되는가")
     @Test
     public void createStation() {
-        //커밋을 위한 주석 추가
-        String stationName = "강남역(2)";
-        String inputJson = "{\"name\":\""+stationName+"\"}";
+        //given
+        String inputJson = "{\"name\":\""+TARGET_STATION+"\"}";
 
-        webTestClient.post().uri("/stations")
+        //when, then
+        webTestClient.post().uri(BASE_URI+"/create")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(inputJson), String.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectHeader().exists("Location")
-                .expectBody().jsonPath("$.name").isEqualTo(stationName);
-
+                .expectBody().jsonPath("$.name").isEqualTo(TARGET_STATION);
     }
 
 }
