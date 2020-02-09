@@ -28,11 +28,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.util.List;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -58,7 +60,20 @@ public class StationAcceptanceTest {
                      .body(Mono.just(inputJson), String.class)
                      .exchange()
                      .expectStatus()
-                     .isCreated();
+                     .isCreated()
+                     .expectHeader()
+                     .exists("Location")
+                     .expectHeader()
+                     .contentType(MediaType.APPLICATION_JSON)
+                     .expectBody(Station.class)
+                     .consumeWith(result -> {
+                         Station station = result.getResponseBody();
+                         HttpHeaders responseHeaders = result.getResponseHeaders();
+                         URI location = responseHeaders.getLocation();
+                         String stringifyLocation = location.toString();
+                         Assertions.assertThat(stringifyLocation)
+                                   .isEqualTo(String.format("%s/%d", reqUri, station.getId()));
+                     });
     }
 
     @Test
@@ -110,7 +125,8 @@ public class StationAcceptanceTest {
                      .expectStatus()
                      .isOk();
 
-        readRequestWebTestClient(reqUri).expectBody().isEmpty();
+        readRequestWebTestClient(reqUri).expectBody()
+                                        .isEmpty();
     }
 
     private WebTestClient.ResponseSpec readRequestWebTestClient(String uri) {
