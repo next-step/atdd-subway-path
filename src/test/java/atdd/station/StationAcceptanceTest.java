@@ -54,7 +54,6 @@ public class StationAcceptanceTest {
         webTestClient.post().uri("/stations")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(station), Station.class)
-                //.body(Mono.just(inputJson), String.class) //webflux 환경?에서 webhandler가 요청 할 수 있는 걸만들어준다 ?
                 .exchange();
 
         List<Station> stations = webTestClient.get().uri("/stations")
