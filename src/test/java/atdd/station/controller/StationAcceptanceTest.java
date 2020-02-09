@@ -1,6 +1,7 @@
 package atdd.station.controller;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import static atdd.station.fixture.StationFixture.KANGNAM_STATION_NAME;
-import static atdd.station.fixture.StationFixture.SINSA;
+import static atdd.station.fixture.StationFixture.SINSA_STATION_NAME;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -29,26 +30,28 @@ public class StationAcceptanceTest {
     @Autowired
     private WebTestClient webTestClient;
 
-    @Test
-    public void 강남역_지하철_등록을_요청이_성공하는지() {
+    @ParameterizedTest
+    @ValueSource(strings = {KANGNAM_STATION_NAME, SINSA_STATION_NAME})
+    void 강남역_지하철_등록을_요청이_성공하는지(String stationName) {
         //when
         //then
         webTestClient.post().uri(STATION_API_BASE_URL + "/create")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(KANGNAM_STATION_JSON), String.class)
+                .body(Mono.just("{\"name\": \"" + stationName + "\"}"), String.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectHeader().exists(LOCATION_HEADER)
-                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(KANGNAM_STATION_NAME)
+                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(stationName)
                 .jsonPath(ID_JSON_PARSE_EXPRESSION).isEqualTo("1");
     }
 
-    @Test
-    public void 강남역_지하철이_조회가_성공하는지() {
+    @ParameterizedTest
+    @ValueSource(strings = {KANGNAM_STATION_NAME, SINSA_STATION_NAME})
+    void 강남역_지하철이_조회가_성공하는지(String stationName) {
         //given
         creatStation(KANGNAM_STATION_NAME);
-        creatStation(SINSA);
+        creatStation(SINSA_STATION_NAME);
 
         //when
         //then
@@ -56,15 +59,16 @@ public class StationAcceptanceTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody().jsonPath(getStationNameJsonParseExpressionByIndex("0")).isEqualTo(KANGNAM_STATION_NAME)
-                .jsonPath(getStationNameJsonParseExpressionByIndex("1")).isEqualTo(SINSA);
+                .expectBody().jsonPath(getStationNameJsonParseExpressionByIndex("0")).isEqualTo(stationName)
+                .jsonPath(getStationNameJsonParseExpressionByIndex("1")).isEqualTo(stationName);
     }
 
-    @Test
-    public void 강남역_지하철_역_정보_상세조회_요청이_성공하는지() {
+    @ParameterizedTest
+    @ValueSource(strings = {KANGNAM_STATION_NAME, SINSA_STATION_NAME})
+    void 강남역_지하철_역_정보_상세조회_요청이_성공하는지(String stationName) {
         //given
         long id = 1;
-        creatStation(KANGNAM_STATION_NAME);
+        creatStation(stationName);
 
         //when
         //then
@@ -72,16 +76,17 @@ public class StationAcceptanceTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(KANGNAM_STATION_NAME);
+                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(stationName);
 
     }
 
-    @Test
-    public void 강남역_지하철_역_정보_삭제_요청이_성공하는지() {
-        creatStation(KANGNAM_STATION_NAME);
+    @ParameterizedTest
+    @ValueSource(strings = {KANGNAM_STATION_NAME, SINSA_STATION_NAME})
+    void 강남역_지하철_역_정보_삭제_요청이_성공하는지(String stationName) {
+        creatStation(stationName);
 
         //when
-        webTestClient.delete().uri(STATION_API_BASE_URL + "/1")
+        webTestClient.delete().uri("/1")
                 .exchange()
                 .expectStatus().isOk();
     }
@@ -99,6 +104,5 @@ public class StationAcceptanceTest {
 
     private String getStationNameJsonParseExpressionByIndex(String index) {
         return "$.stations[" + index + "].name";
-
     }
 }
