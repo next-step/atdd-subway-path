@@ -39,7 +39,7 @@ public class StationController {
         Station savedStation = stationRepository.save(station);
         String resultUri = String.format("/stations/%d", savedStation.getId());
 
-        return ResponseEntity.created(URI.create(resultUri)).build();
+        return ResponseEntity.created(URI.create(resultUri)).body(savedStation);
     }
 
     @GetMapping("/stations")
