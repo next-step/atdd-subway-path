@@ -28,4 +28,10 @@ public class StationDto {
                         .name(it.getName()).build())
                 .collect(Collectors.toList());
     }
+
+    public Station toStation() {
+        return Station.createBuilder()
+                .name(this.name)
+                .build();
+    }
 }

@@ -1,7 +1,5 @@
 package atdd.station.domain;
 
-import atdd.station.domain.dto.StationDto;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +21,7 @@ public class Station {
     private String name;
 
     @Builder(builderMethodName = "createBuilder", builderClassName = "createBuilder")
-    public Station(StationDto station) {
-        this.name = station.getName();
+    public Station(String name) {
+        this.name = name;
     }
 }
