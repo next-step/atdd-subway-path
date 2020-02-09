@@ -1,14 +1,17 @@
 package atdd.station;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import sun.jvm.hotspot.gc.shared.Generation;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Builder
+@Builder @Getter @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class Station {
 
