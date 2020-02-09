@@ -31,7 +31,7 @@ public class SubwayLineController {
 
     @PostMapping
     public ResponseEntity<Void> createSubwayLine(@RequestBody SubwayLineCreateRequest subwayLineCreateRequest) {
-        logger.info("[subwayLineCommandService.createSubwayLine] subwayLineCreateRequest={}", subwayLineCreateRequest);
+        logger.info("[SubwayLineController.createSubwayLine] subwayLineCreateRequest={}", subwayLineCreateRequest);
 
         SubwayLine savedSubwayLine = subwayLineCommandService.create(subwayLineCreateRequest.getName());
 
@@ -46,6 +46,15 @@ public class SubwayLineController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok().body(subwayLines);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<SubwayLineResponseDto> getSubwayLine(@PathVariable Long id) {
+        logger.info("[SubwayLineController.getSubwayLine] id={}", id);
+
+        SubwayLine savedSubwayLine = subwayLineQueryService.getSubwayLine(id);
+
+        return ResponseEntity.ok().body(SubwayLineResponseDto.of(savedSubwayLine));
     }
 
 }
