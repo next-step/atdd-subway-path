@@ -21,7 +21,7 @@ public class StationController {
     @Resource(name = "stationService")
     private StationService stationService;
 
-    @PostMapping("/create")
+    @PostMapping("/")
     public ResponseEntity<Station> create(@RequestBody StationCreateRequestDto station) {
         Station createdStation = stationService.create(station);
 
@@ -36,11 +36,10 @@ public class StationController {
         return new ResponseEntity<>(stations, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<StationDetailResponseDto> detail(@PathVariable long id) {
         StationDetailResponseDto station = stationService.findById(id);
         return new ResponseEntity<>(station, HttpStatus.OK);
-
     }
 
     @DeleteMapping("/{id}")
