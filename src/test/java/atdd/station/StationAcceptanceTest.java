@@ -15,6 +15,8 @@ import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -50,5 +52,33 @@ public class StationAcceptanceTest {
         assertThat(location).isEqualTo(uri + "/" + responseView.getId());
         assertThat(responseView.getName()).isEqualTo(stationName);
     }
+
+    @DisplayName("지하철역 목록 조회")
+    @Test
+    void findAll() throws Exception {
+        final String uri = StationController.ROOT_URI;
+        final String stationName = "강남역";
+        final String inputJson = "{\"name\":\"" + stationName + "\"}";
+
+        webTestClient.post()
+                .uri(StationController.ROOT_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(inputJson), String.class)
+                .exchange();
+
+
+        final List<StationResponseDto> results = webTestClient.get()
+                .uri(uri)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(StationResponseDto.class)
+                .returnResult()
+                .getResponseBody();
+
+
+        final boolean contains = results.stream().anyMatch(response -> stationName.equals(response.getName()));
+        assertThat(contains).isTrue();
+    }
+
 
 }
