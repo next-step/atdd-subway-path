@@ -93,8 +93,24 @@ public class StationAcceptanceTest {
                 .expectBody(Station.class)
                 .consumeWith(result -> {
                     Station station = result.getResponseBody();
-                    Assertions.assertThat(station.getName()).isEqualTo("강남역");
+                    Assertions.assertThat(station.getName())
+                              .isEqualTo("강남역");
                 });
+    }
+
+    @Test
+    public void testDeleteStation() {
+        testCreateStation();
+
+        String reqUri = String.format("%s/%d", prefixUri, targetStation.getId());
+
+        webTestClient.delete()
+                     .uri(reqUri)
+                     .exchange()
+                     .expectStatus()
+                     .isOk();
+
+        readRequestWebTestClient(reqUri).expectBody().isEmpty();
     }
 
     private WebTestClient.ResponseSpec readRequestWebTestClient(String uri) {
