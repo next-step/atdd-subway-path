@@ -92,4 +92,23 @@ public class StationAcceptanceTest {
                 .expectBody().jsonPath("$.name").isEqualTo(STATION_NAME)
         ;
     }
+
+    @Test
+    public void deleteById(){
+        String STATION_NAME = "강남역";
+
+        Station station = Station.builder()
+                .name(STATION_NAME)
+                .build();
+
+        webTestClient.post().uri("/stations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(station), Station.class)
+                .exchange();
+
+        webTestClient.delete().uri("/station/"+1)
+                .exchange()
+                .expectStatus().isNoContent();
+
+    }
 }
