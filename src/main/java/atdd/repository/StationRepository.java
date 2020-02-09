@@ -1,11 +1,7 @@
 package atdd.repository;
 
-import atdd.vo.Station;
-import org.springframework.stereotype.Repository;
+import atdd.domain.Station;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Repository
-public class StationRepository {
-    public Station save(Station station) {
-        return null;
-    }
+public interface StationRepository extends JpaRepository<Station, Long> {
 }
