@@ -1,7 +1,9 @@
 package atdd.station;
 
 import atdd.station.domain.SubwayLine;
+import atdd.station.domain.SubwayLineRepository;
 import atdd.station.web.dto.SubwayLineResponseDto;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,6 +24,9 @@ import java.util.Arrays;
 public class SubwayLineAcceptanceTest {
     @Autowired
     private WebTestClient webTestClient;
+
+    @Autowired
+    private SubwayLineRepository subwayLineRepository;
 
     @DisplayName("지하철역 노선을 등록한다")
     @Test
@@ -108,6 +113,11 @@ public class SubwayLineAcceptanceTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isBadRequest();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        subwayLineRepository.deleteAll();
     }
 
 }
