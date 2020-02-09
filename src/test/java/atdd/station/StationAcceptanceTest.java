@@ -1,35 +1,54 @@
 package atdd.station;
 
-import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import atdd.station.domain.StationRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
-    private static final Logger logger = LoggerFactory.getLogger(StationAcceptanceTest.class);
-
     @Autowired
     private WebTestClient webTestClient;
 
-    @Test
-    public void test() {
-        String stationName = "강남역";
+    @Autowired
+    StationRepository stationRepository;
+
+    @DisplayName("지하철역을 등록한다")
+    @ParameterizedTest
+    @ValueSource(strings = {"강남역", "잠실역", "장한평역"})
+    public void create(String stationName) {
+        // expect
+        createStation(stationName);
+    }
+
+    private EntityExchangeResult<Void> createStation(String stationName) {
+        // given
         String inputJson = "{\"name\":\"" + stationName + "\"}";
 
-        webTestClient.post().uri("/stations")
+        // when, then
+        return webTestClient.post()
+                .uri("/stations")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(inputJson), String.class)
                 .exchange()
-                .expectStatus().isCreated();
-//                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-//                .expectHeader().exists("Location")
-//                .expectBody().jsonPath("$.name").isEqualTo(stationName);
+                .expectStatus().isCreated()
+                .expectHeader().exists(HttpHeaders.LOCATION)
+                .expectBody(Void.class)
+                .returnResult();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        stationRepository.deleteAll();
     }
 }
