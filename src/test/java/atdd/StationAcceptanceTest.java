@@ -6,6 +6,8 @@ import atdd.domain.stations.StationsRepository;
 import org.junit.jupiter.api.DisplayName;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +29,11 @@ public class StationAcceptanceTest {
     private static final Logger logger = LoggerFactory.getLogger(StationAcceptanceTest.class);
     private static final String BASE_URI = "/stations";
     private static final String TARGET_STATION="강남역";
+    private static final String TARGET_STATION_2="신사역";
     private static final String inputJson = "{\"name\":\""+TARGET_STATION+"\"}";
 
     @Autowired
     private WebTestClient webTestClient;
-
-    @Autowired
-    private StationsRepository stationsRepository;
 
     @DisplayName("station 등록이 제대로 되는가")
     @Test
@@ -51,6 +51,7 @@ public class StationAcceptanceTest {
                 .expectBody().jsonPath("$.name").isEqualTo(TARGET_STATION);
     }
 
+    @DisplayName("station 삭제가 제대로 되는가")
     @Test
     public void deleteStation(){
         //given
@@ -63,4 +64,19 @@ public class StationAcceptanceTest {
 
     }
 
+    @DisplayName("지하철 목록 조회가 제대로 되는가?")
+    @Test
+    public void getListStation(){
+        //given
+        createStation();
+        createStation();
+
+        //when, then
+        webTestClient.get().uri(BASE_URI+"/list")
+                .exchange()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectStatus().isOk()
+                .expectBody().jsonPath("$.[0].name").isEqualTo(TARGET_STATION)
+                .jsonPath("$.[1].name").isEqualTo(TARGET_STATION);
+    }
 }

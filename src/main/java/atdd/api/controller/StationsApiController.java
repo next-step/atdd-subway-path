@@ -2,6 +2,8 @@ package atdd.api.controller;
 
 import atdd.domain.stations.Stations;
 import atdd.serivce.stations.StationsService;
+import atdd.web.dto.StationsListResponseDto;
+import atdd.web.dto.StationsResponseDto;
 import atdd.web.dto.StationsSaveRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -33,4 +36,11 @@ public class StationsApiController {
         stationsService.delete(id);
         return id;
     }
+
+    @GetMapping("/list")
+    public List<StationsListResponseDto> list(){
+        return stationsService.getList();
+    }
+
+
 }
