@@ -2,11 +2,10 @@ package atdd.station.domain;
 
 import lombok.Builder;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Station {
@@ -17,6 +16,10 @@ public class Station {
     @Size(min = 2, max = 20)
     private String name;
 
+    @ManyToMany
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_station_to_subwayLine"))
+    private List<SubwayLine> subwayLines = new ArrayList<>();
+
     private boolean deleted = false;
 
     public Station() {
@@ -25,6 +28,11 @@ public class Station {
     @Builder
     public Station(String name) {
         this.name = name;
+    }
+
+    public Station(String name, List<SubwayLine> subwayLines) {
+        this.name = name;
+        this.subwayLines = subwayLines;
     }
 
     public long getId() {
