@@ -14,6 +14,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.util.Objects;
+
 import static atdd.station.fixture.StationFixture.KANGNAM_STATION_NAME;
 import static atdd.station.fixture.StationFixture.SINSA_STATION_NAME;
 
@@ -71,12 +73,11 @@ public class StationAcceptanceTest {
     @Test
     void stationDetailSuccessTest() {
         //given
-        long id = 1;
-        creatStation(KANGNAM_STATION_NAME);
+        String location = creatStation(KANGNAM_STATION_NAME);
 
         //when
         //then
-        webTestClient.get().uri(STATION_API_BASE_URL + id)
+        webTestClient.get().uri(location)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -88,23 +89,26 @@ public class StationAcceptanceTest {
     @DisplayName("강남역_지하철_역_정보_삭제_요청이_성공하는지")
     @Test
     void stationDeleteSuccessTest() {
-        creatStation(KANGNAM_STATION_NAME);
+        String location = creatStation(KANGNAM_STATION_NAME);
 
         //when
-        webTestClient.delete().uri(STATION_API_BASE_URL + "1")
+        webTestClient.delete().uri(location)
                 .exchange()
                 .expectStatus().isOk();
     }
 
-    private void creatStation(String name) {
-        webTestClient.post().uri(STATION_API_BASE_URL)
+    private String creatStation(String name) {
+        return Objects.requireNonNull(webTestClient.post().uri(STATION_API_BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just("{\"name\": \"" + name + "\"}"), String.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectHeader().exists("Location")
-                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(name);
+                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(name)
+                .returnResult()
+                .getResponseHeaders()
+                .getLocation()).getPath();
     }
 
     private String getStationNameJsonParseExpressionByIndex(String index) {
