@@ -1,9 +1,8 @@
 package atdd.station.controller;
 
+import atdd.station.domain.SubwayLine;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,10 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
+
+import static atdd.station.fixture.StationFixture.KANGNAM_STATION_NAME;
+import static atdd.station.fixture.SubwayLineFixture.SECOND_SUBWAY_LINE;
+import static atdd.station.fixture.SubwayLineFixture.getSubwayLine;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -30,14 +33,16 @@ public class SubwayLineAcceptanceTest {
     private WebTestClient webTestClient;
 
     @DisplayName("2호선_지하철노선_생성이_성공하는지")
-    @ParameterizedTest
-    @ValueSource(strings = {"2호선"})
-    void createSubwayLineSuccessTest(String subwayLineName) {
+    @Test
+    void createSubwayLineSuccessTest() {
+        //given
+        SubwayLine subwayLine = getSubwayLine(SECOND_SUBWAY_LINE);
+
         //when
         //then
         webTestClient.post().uri(SUBWAY_LINE_API_BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just("{\"name\": \"" + subwayLineName + "\"}"), String.class)
+                .body(Mono.just(subwayLine), SubwayLine.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -45,8 +50,8 @@ public class SubwayLineAcceptanceTest {
                 .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo("2호선")
                 .jsonPath("$.startTime").isEqualTo("05:00")
                 .jsonPath("$.endTime").isEqualTo("23:50")
-                .jsonPath("$.interval").isEqualTo("10")
-                .jsonPath(getStationNameJsonParseExpressionByIndex("0")).isEqualTo("교대역");
+                .jsonPath("$.intervalTime").isEqualTo("10")
+                .jsonPath(getStationNameJsonParseExpressionByIndex("0")).isEqualTo(KANGNAM_STATION_NAME);
     }
 
     @DisplayName("지하철노선_조회가_성공하는지")
