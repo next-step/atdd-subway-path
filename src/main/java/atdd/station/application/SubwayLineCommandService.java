@@ -18,4 +18,9 @@ public class SubwayLineCommandService {
     public SubwayLine create(String subwayLineName) {
         return subwayLineRepository.save(SubwayLine.of(subwayLineName));
     }
+
+    @Transactional
+    public void deleteSubwayLine(Long id) {
+        subwayLineRepository.deleteById(id);
+    }
 }

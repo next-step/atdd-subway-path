@@ -7,6 +7,7 @@ import atdd.station.web.dto.SubwayLineCreateRequest;
 import atdd.station.web.dto.SubwayLineResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,6 +56,17 @@ public class SubwayLineController {
         SubwayLine savedSubwayLine = subwayLineQueryService.getSubwayLine(id);
 
         return ResponseEntity.ok().body(SubwayLineResponseDto.of(savedSubwayLine));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSubwayLine(@PathVariable Long id) {
+        logger.info("[SubwayLineController.deleteSubwayLine] id={}", id);
+
+        subwayLineCommandService.deleteSubwayLine(id);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.LOCATION, "/subway-lines")
+                .build();
     }
 
 }
