@@ -70,8 +70,33 @@ public class StationAcceptanceTest {
                 .isEqualTo(Arrays.asList(StationResponseDto.of("강남역"), StationResponseDto.of("잠실역")));
     }
 
+    @DisplayName("지하철역 조회한다")
+    @ParameterizedTest
+    @ValueSource(strings = {"강남역", "잠실역", "장한평역"})
+    public void retrieveFromStationName(String stationName) {
+        // given
+        EntityExchangeResult<Void> createdResult = createStation(stationName);
+
+        // when, then
+        getFromStationName(stationName, createdResult);
+    }
+
+    private void getFromStationName(String stationName,
+                                    EntityExchangeResult<Void> createdResult) {
+
+        webTestClient.get()
+                .uri(createdResult.getResponseHeaders().getLocation().getPath())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(StationResponseDto.class)
+                .isEqualTo(StationResponseDto.of(stationName));
+    }
+
     @AfterEach
     public void tearDown() {
         stationRepository.deleteAll();
     }
+
 }
