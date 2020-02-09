@@ -88,9 +88,13 @@ public class StationAcceptanceTest {
         String reqUri = String.format("%s/%d", prefixUri, targetStation.getId());
 
         readRequestWebTestClient(reqUri)
-                .expectBody()
-                .jsonPath("$.name")
-                .isEqualTo("강남역");
+                .expectHeader()
+                .contentType(MediaType.APPLICATION_JSON)
+                .expectBody(Station.class)
+                .consumeWith(result -> {
+                    Station station = result.getResponseBody();
+                    Assertions.assertThat(station.getName()).isEqualTo("강남역");
+                });
     }
 
     private WebTestClient.ResponseSpec readRequestWebTestClient(String uri) {
