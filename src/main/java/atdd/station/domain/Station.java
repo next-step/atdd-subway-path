@@ -1,5 +1,6 @@
-package atdd.station;
+package atdd.station.domain;
 
+import atdd.station.domain.dto.StationDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,11 +11,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity
 @Getter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
+@Entity
 public class Station {
 
     @Id
@@ -23,7 +22,8 @@ public class Station {
 
     private String name;
 
-    public static Station of(StationDto stationDto) {
-        return Station.builder().name(stationDto.getName()).build();
+    @Builder(builderMethodName = "createBuilder", builderClassName = "createBuilder")
+    public Station(StationDto station) {
+        this.name = station.getName();
     }
 }

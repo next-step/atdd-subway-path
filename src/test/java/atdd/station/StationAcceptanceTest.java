@@ -59,7 +59,7 @@ public class StationAcceptanceTest {
                 .body(Mono.just(inputJson), String.class)
                 .exchange();
 
-        webTestClient.get().uri("/stations/{stationName}", stationName)
+        webTestClient.get().uri("/stations/1")
                 .exchange()
                 .expectStatus().is2xxSuccessful()
                 .expectBody().jsonPath("$.name").isEqualTo(stationName);
@@ -74,8 +74,8 @@ public class StationAcceptanceTest {
                 .body(Mono.just(inputJson), String.class)
                 .exchange();
 
-        webTestClient.delete().uri("/stations?name={stationName}", stationName)
+        webTestClient.delete().uri("/stations/1")
                 .exchange()
-                .expectStatus().is2xxSuccessful();
+                .expectStatus().isNoContent();
     }
 }
