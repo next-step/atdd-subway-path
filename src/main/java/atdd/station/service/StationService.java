@@ -22,9 +22,13 @@ public class StationService {
 
     @Transactional
     public StationResponseDto create(String name) {
-        Assert.hasText(name, "name 은 필수 입니다.");
+        checkName(name);
         final Station savedStation = stationRepository.save(new Station(name));
         return StationResponseDto.from(savedStation);
+    }
+
+    private void checkName(String name) {
+        Assert.hasText(name, "name 은 필수 입니다.");
     }
 
     @Transactional(readOnly = true)
@@ -32,11 +36,24 @@ public class StationService {
         return stationRepository.findAll().stream().map(StationResponseDto::from).collect(Collectors.toList());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public StationResponseDto getStation(String name) {
-        Assert.hasText(name, "name 은 필수 입니다.");
+        checkName(name);
         final Station station = stationRepository.findByName(name).orElseThrow(EntityNotFoundException::new);
         return StationResponseDto.from(station);
+    }
+
+    @Transactional
+    public void delete(String name) {
+        checkName(name);
+        final int count = stationRepository.deleteByName(name);
+        if (isNotDelete(count)) {
+            throw new IllegalArgumentException("존재하지 않는 name 입니다. name = [" + name + "]");
+        }
+    }
+
+    private boolean isNotDelete(int count) {
+        return count <= 0;
     }
 
 }

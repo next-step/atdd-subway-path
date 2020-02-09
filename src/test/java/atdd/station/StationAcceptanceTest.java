@@ -88,6 +88,20 @@ public class StationAcceptanceTest {
         assertThat(stationResponseDto.getName()).isEqualTo(stationName);
     }
 
+    @DisplayName("지하철역 지하철역 삭제")
+    @Test
+    void delete() {
+        final String stationName = "강남역";
+        create(stationName);
+
+        webTestClient.delete()
+                .uri(uriBuilder -> uriBuilder.path(StationController.ROOT_URI + "/by-name")
+                        .queryParam("name", stationName)
+                        .build())
+                .exchange()
+                .expectStatus().isNoContent();
+    }
+
     private StationResponseDto create(String stationName) {
         final String inputJson = "{\"name\":\"" + stationName + "\"}";
 

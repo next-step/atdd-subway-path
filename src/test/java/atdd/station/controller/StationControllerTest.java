@@ -21,8 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.eq;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -84,6 +83,17 @@ class StationControllerTest {
     @NullAndEmptySource
     void get_station_blank_name(String name) throws Exception {
         mockMvc.perform(get(StationController.ROOT_URI + "/by-name")
+                .characterEncoding(StandardCharsets.UTF_8.name())
+                .queryParam("name", name))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("지하철역 삭 - name 은 공백이나 null 일 수 없다.")
+    @ParameterizedTest(name = "[{index}] name : [{0}]")
+    @NullAndEmptySource
+    void delete_blank_name(String name) throws Exception {
+        mockMvc.perform(delete(StationController.ROOT_URI + "/by-name")
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .queryParam("name", name))
                 .andDo(print())

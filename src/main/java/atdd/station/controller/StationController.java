@@ -45,6 +45,13 @@ public class StationController {
         return stationService.getStation(name);
     }
 
+    @DeleteMapping("/by-name")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@RequestParam String name) {
+        Assert.hasText(name, "name 값은 필수입니다.");
+        stationService.delete(name);
+    }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
     public String handleException(IllegalArgumentException e) {

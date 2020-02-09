@@ -54,4 +54,26 @@ class StationServiceTest {
                 .hasMessage("name 은 필수 입니다.");
     }
 
+    @DisplayName("delete - name 이 null 이거나 비어있으면 에러")
+    @ParameterizedTest
+    @NullAndEmptySource
+    void delete_empty_name(String name) {
+        assertThatThrownBy(() -> stationService.delete(name))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("name 은 필수 입니다.");
+    }
+
+    @DisplayName("delete - 삭제된 내용이 없으면 에러")
+    @Test
+    void delete_no_result() {
+        final String name = "name!!";
+
+        when(stationRepository.deleteByName(name)).thenReturn(0);
+
+
+        assertThatThrownBy(() -> stationService.delete(name))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("존재하지 않는 name 입니다. name = [name!!]");
+    }
+
 }
