@@ -1,8 +1,10 @@
 package atdd.station;
 
 import atdd.station.domain.StationRepository;
+import atdd.station.web.dto.StationResponseDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,8 @@ import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
+
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
@@ -21,7 +25,7 @@ public class StationAcceptanceTest {
     private WebTestClient webTestClient;
 
     @Autowired
-    StationRepository stationRepository;
+    private StationRepository stationRepository;
 
     @DisplayName("지하철역을 등록한다")
     @ParameterizedTest
@@ -45,6 +49,25 @@ public class StationAcceptanceTest {
                 .expectHeader().exists(HttpHeaders.LOCATION)
                 .expectBody(Void.class)
                 .returnResult();
+    }
+
+    @DisplayName("지하철역 목록을 조회한다")
+    @Test
+    public void retrieveStations() {
+        // given
+        createStation("강남역");
+        createStation("잠실역");
+
+        // when, then
+        webTestClient.get()
+                .uri("/stations")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBodyList(StationResponseDto.class)
+                .hasSize(2)
+                .isEqualTo(Arrays.asList(StationResponseDto.of("강남역"), StationResponseDto.of("잠실역")));
     }
 
     @AfterEach
