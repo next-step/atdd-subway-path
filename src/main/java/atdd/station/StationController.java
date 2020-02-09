@@ -1,14 +1,14 @@
 package atdd.station;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
 @RestController
+@RequestMapping("stations")
 public class StationController {
 
     private final StationRepository stationRepository;
@@ -17,7 +17,7 @@ public class StationController {
         this.stationRepository = stationRepository;
     }
 
-    @PostMapping("/station")
+    @PostMapping("")
     public ResponseEntity createStation(@RequestBody StationDto stationDto) {
         Station station = Station.of(stationDto);
         Station savedStation = stationRepository.save(station);
@@ -28,14 +28,23 @@ public class StationController {
                         .build());
     }
 
-    @GetMapping("/stations")
+    @GetMapping("")
     public ResponseEntity findAllStations() {
         return ResponseEntity.ok(stationRepository.findAll());
     }
 
-    @GetMapping("/station")
-    public ResponseEntity findStationByName(String name) {
+    @GetMapping("/{name}")
+    public ResponseEntity findStationByName(@PathVariable String name) {
         return ResponseEntity.ok(stationRepository.findByName(name));
     }
 
+    @DeleteMapping("")
+    public ResponseEntity deleteStation(@RequestParam String name) {
+        Station targetStation = stationRepository.findByName(name);
+        Assert.notNull(targetStation, "Not found delete target name station. station name: " + name);
+
+        stationRepository.delete(targetStation);
+
+        return ResponseEntity.ok().build();
+    }
 }
