@@ -5,6 +5,8 @@ import atdd.station.domain.StationRepository;
 import atdd.station.dto.StationCreateRequestDto;
 import atdd.station.dto.StationDetailResponseDto;
 import atdd.station.dto.StationListResponseDto;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,11 +18,11 @@ import java.util.List;
 
 import static atdd.station.controller.StationAcceptanceTest.KANGNAM_STATION_JSON;
 import static atdd.station.fixture.StationFixture.*;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@ExtendWith(SoftAssertionsExtension.class)
 public class StationServiceTest {
 
     private static final long KANGNAM_STATION_ID = 0L;
@@ -32,7 +34,7 @@ public class StationServiceTest {
     StationService stationService;
 
     @Test
-    public void 지하철역_생성시_성공하는지() {
+    public void 지하철역_생성시_성공하는지(SoftAssertions softly) {
         //given
         Station station = Station.builder()
                 .name(KANGNAM_STATION_JSON)
@@ -44,12 +46,12 @@ public class StationServiceTest {
         Station createStation = stationService.create(StationCreateRequestDto.toDtoEntity(station.getName()));
 
         //then
-        assertThat(createStation.getId()).isEqualTo(KANGNAM_STATION_ID);
-        assertThat(createStation.getName()).isEqualTo(KANGNAM_STATION_JSON);
+        softly.assertThat(createStation.getId()).isEqualTo(KANGNAM_STATION_ID);
+        softly.assertThat(createStation.getName()).isEqualTo(KANGNAM_STATION_JSON);
     }
 
     @Test
-    public void 지하철역_list_조회가_성공하는지() {
+    public void 지하철역_list_조회가_성공하는지(SoftAssertions softly) {
         //given
         List<Station> stations = Arrays.asList(KANNAM_STATON, SINSA_STATION);
 
@@ -59,25 +61,25 @@ public class StationServiceTest {
         StationListResponseDto createStations = stationService.list();
 
         //then
-        assertThat(createStations).isNotNull();
-        assertThat(createStations.getListDtoSize()).isGreaterThan(1);
-        assertThat(createStations.toString()).contains(KANGNAM_STATION_NAME);
+        softly.assertThat(createStations).isNotNull();
+        softly.assertThat(createStations.getListDtoSize()).isGreaterThan(1);
+        softly.assertThat(createStations.toString()).contains(KANGNAM_STATION_NAME);
     }
 
     @Test
-    public void 지하철역_상세_조회가_성공하는지() {
+    public void 지하철역_상세_조회가_성공하는지(SoftAssertions softly) {
         //when
         when(stationRepository.findById(KANGNAM_STATION_ID)).thenReturn(java.util.Optional.of(KANNAM_STATON));
 
         StationDetailResponseDto station = stationService.findById(KANGNAM_STATION_ID);
 
         //then
-        assertThat(station).isNotNull();
-        assertThat(station.getName()).contains(KANGNAM_STATION_NAME);
+        softly.assertThat(station).isNotNull();
+        softly.assertThat(station.getName()).contains(KANGNAM_STATION_NAME);
     }
 
     @Test
-    public void 지하철역_삭제가_성공하는지() {
+    public void 지하철역_삭제가_성공하는지(SoftAssertions softly) {
         //given
         Station station = KANNAM_STATON;
 
@@ -86,6 +88,6 @@ public class StationServiceTest {
         stationService.delete(KANGNAM_STATION_ID);
 
         //then
-        assertThat(station.isDeleted()).isTrue();
+        softly.assertThat(station.isDeleted()).isTrue();
     }
 }
