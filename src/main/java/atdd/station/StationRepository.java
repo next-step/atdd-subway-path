@@ -1,6 +1,6 @@
 /*
  *
- * AtddApplication
+ * StationRepository
  *
  * 0.0.1
  *
@@ -19,16 +19,16 @@
  * limitations under the License.
  *
  * */
-package atdd;
+package atdd.station;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.repository.CrudRepository;
 
-@SpringBootApplication
-public class AtddApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(AtddApplication.class, args);
+import java.util.List;
 
-    }
+public interface StationRepository extends CrudRepository<Station, Long> {
+    Station findById(long id);
 
+    List<Station> findAll();
+
+    void deleteById(long id);
 }
