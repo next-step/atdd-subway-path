@@ -21,6 +21,7 @@
  * */
 package atdd.station;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -60,12 +63,22 @@ public class StationAcceptanceTest {
 
     @Test
     public void testReadStations() {
+        testCreateStation();
+
         String reqUri = prefixUri;
 
         readRequestWebTestClient(reqUri)
+                .expectHeader()
+                .contentType(MediaType.APPLICATION_JSON)
                 .expectBodyList(Station.class)
                 .hasSize(1)
-                .contains(targetStation);
+                .consumeWith(result -> {
+                    List<Station> stations = result.getResponseBody();
+                    Station station = stations.get(0);
+
+                    Assertions.assertThat(station.getName())
+                              .isEqualTo("강남역");
+                });
     }
 
     @Test
