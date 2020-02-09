@@ -62,15 +62,10 @@ public class StationAcceptanceTest {
     public void testReadStations() {
         String reqUri = prefixUri;
 
-        webTestClient.get()
-                     .uri(reqUri)
-                     .accept(MediaType.APPLICATION_JSON)
-                     .exchange()
-                     .expectStatus()
-                     .isOk()
-                     .expectBodyList(Station.class)
-                     .hasSize(1)
-                     .contains(targetStation);
+        readRequestWebTestClient(reqUri)
+                .expectBodyList(Station.class)
+                .hasSize(1)
+                .contains(targetStation);
     }
 
     @Test
@@ -79,14 +74,18 @@ public class StationAcceptanceTest {
 
         String reqUri = String.format("%s/%d", prefixUri, targetStation.getId());
 
-        webTestClient.get()
-                     .uri(reqUri)
-                     .accept(MediaType.APPLICATION_JSON)
-                     .exchange()
-                     .expectStatus()
-                     .isOk()
-                     .expectBody()
-                     .jsonPath("$.name")
-                     .isEqualTo("강남역");
+        readRequestWebTestClient(reqUri)
+                .expectBody()
+                .jsonPath("$.name")
+                .isEqualTo("강남역");
+    }
+
+    private WebTestClient.ResponseSpec readRequestWebTestClient(String uri) {
+        return webTestClient.get()
+                            .uri(uri)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .exchange()
+                            .expectStatus()
+                            .isOk();
     }
 }
