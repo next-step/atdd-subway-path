@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/stations")
 public class StationController {
     private static final Logger logger = LoggerFactory.getLogger(StationController.class);
 
@@ -29,7 +30,7 @@ public class StationController {
         this.stationQueryService = stationQueryService;
     }
 
-    @PostMapping("/stations")
+    @PostMapping
     public ResponseEntity<Void> createStation(@RequestBody StationCreateRequestDto stationCreateRequest) {
         logger.info("[StationController.createStation] stationCreateRequest={}", stationCreateRequest);
 
@@ -38,7 +39,7 @@ public class StationController {
         return ResponseEntity.created(URI.create("/stations/" + savedStation.getId())).build();
     }
 
-    @GetMapping("/stations")
+    @GetMapping
     public ResponseEntity<List<StationResponseDto>> getStations() {
         List<StationResponseDto> stations = stationQueryService.getStations()
                 .stream()
@@ -48,7 +49,7 @@ public class StationController {
         return ResponseEntity.ok().body(stations);
     }
 
-    @GetMapping("/stations/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<StationResponseDto> getStation(@PathVariable Long id) {
         logger.info("[StationController.getStation] id={}", id);
 
@@ -57,7 +58,7 @@ public class StationController {
         return ResponseEntity.ok().body(StationResponseDto.of(savedStation));
     }
 
-    @DeleteMapping("/stations/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         logger.info("[StationController.deleteStation] id={}", id);
 
