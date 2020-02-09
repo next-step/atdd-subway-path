@@ -1,5 +1,7 @@
 package atdd.station.controller;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
@@ -30,9 +32,10 @@ public class StationAcceptanceTest {
     @Autowired
     private WebTestClient webTestClient;
 
+    @DisplayName("강남역_지하철_등록을_요청이_성공하는지")
     @ParameterizedTest
     @ValueSource(strings = {KANGNAM_STATION_NAME, SINSA_STATION_NAME})
-    void 강남역_지하철_등록을_요청이_성공하는지(String stationName) {
+    void createStationTest(String stationName) {
         //when
         //then
         webTestClient.post().uri(STATION_API_BASE_URL + "/create")
@@ -46,9 +49,9 @@ public class StationAcceptanceTest {
                 .jsonPath(ID_JSON_PARSE_EXPRESSION).isEqualTo("1");
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {KANGNAM_STATION_NAME, SINSA_STATION_NAME})
-    void 강남역_지하철이_조회가_성공하는지(String stationName) {
+    @DisplayName("강남역_지하철이_조회가_성공하는지")
+    @Test
+    void listStationTest() {
         //given
         creatStation(KANGNAM_STATION_NAME);
         creatStation(SINSA_STATION_NAME);
@@ -59,34 +62,36 @@ public class StationAcceptanceTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody().jsonPath(getStationNameJsonParseExpressionByIndex("0")).isEqualTo(stationName)
-                .jsonPath(getStationNameJsonParseExpressionByIndex("1")).isEqualTo(stationName);
+                .expectBody().jsonPath(getStationNameJsonParseExpressionByIndex("0")).isEqualTo(KANGNAM_STATION_NAME)
+                .jsonPath(getStationNameJsonParseExpressionByIndex("1")).isEqualTo(SINSA_STATION_NAME);
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {KANGNAM_STATION_NAME, SINSA_STATION_NAME})
-    void 강남역_지하철_역_정보_상세조회_요청이_성공하는지(String stationName) {
+
+    @DisplayName("강남역_지하철_역_정보_상세조회_요청이_성공하는지")
+    @Test
+    void stationDetailTest() {
         //given
         long id = 1;
-        creatStation(stationName);
+        creatStation(KANGNAM_STATION_NAME);
 
         //when
         //then
-        webTestClient.get().uri(STATION_API_BASE_URL + "/detail/" + id)
+        webTestClient.get().uri(STATION_API_BASE_URL + "/" + id)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(stationName);
+                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(KANGNAM_STATION_NAME);
 
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {KANGNAM_STATION_NAME, SINSA_STATION_NAME})
-    void 강남역_지하철_역_정보_삭제_요청이_성공하는지(String stationName) {
-        creatStation(stationName);
+
+    @DisplayName("강남역_지하철_역_정보_삭제_요청이_성공하는지")
+    @Test
+    void stationDeleteTest() {
+        creatStation(KANGNAM_STATION_NAME);
 
         //when
-        webTestClient.delete().uri("/1")
+        webTestClient.delete().uri(STATION_API_BASE_URL + "/1")
                 .exchange()
                 .expectStatus().isOk();
     }
