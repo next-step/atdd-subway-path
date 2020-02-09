@@ -2,11 +2,10 @@ package atdd.station;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 public class StationController {
@@ -23,5 +22,14 @@ public class StationController {
         return ResponseEntity
                 .created(URI.create("/stations/"+save.getId()))
                 .body(save);
+    }
+
+    @GetMapping("/stations")
+    public ResponseEntity getStations(){
+        List<Station> stations = stationRepository.findAll();
+        return ResponseEntity
+                .ok()
+                .body(stations);
+
     }
 }
