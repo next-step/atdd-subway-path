@@ -26,7 +26,7 @@ public class StationController {
         Station createdStation = stationService.create(station);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("/stations/list/" + createdStation.getId()));
+        headers.setLocation(URI.create("/stations/" + createdStation.getId()));
         return new ResponseEntity<>(createdStation, headers, HttpStatus.CREATED);
     }
 
