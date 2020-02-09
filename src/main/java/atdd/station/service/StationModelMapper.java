@@ -6,6 +6,7 @@ import atdd.station.usecase.StationDTO;
 import atdd.station.usecase.StationListDTO;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
@@ -25,22 +26,24 @@ public class StationModelMapper {
   }
 
   public StationListEntity ListDTOToEntity(StationListDTO stationListDTO) {
-    List<StationEntity> entities = new ArrayList<>();
-    for(StationDTO stationDTO : stationListDTO.getStations()) {
-      entities.add(
-          this.DTOToEntity(stationDTO)
-      );
-    }
+    List<StationEntity> entities = stationListDTO.getStations()
+        .stream()
+        .map(
+            stationDTO -> this.DTOToEntity(stationDTO)
+        ).collect(
+            Collectors.toList()
+        );
     return new StationListEntity(entities.size(), entities);
   }
 
   public StationListDTO ListEntityToDTO(StationListEntity stationListEntity) {
-    List<StationDTO> stationDTOS = new ArrayList<>();
-    for(StationEntity stationEntity : stationListEntity.getStations()) {
-      stationDTOS.add(
-          this.EntityToDTO(stationEntity)
-      );
-    }
+    List<StationDTO> stationDTOS = stationListEntity.getStations()
+        .stream()
+        .map(
+            stationEntity -> this.EntityToDTO(stationEntity)
+        ).collect(
+            Collectors.toList()
+        );
     return new StationListDTO(stationDTOS.size(), stationDTOS);
   }
 }
