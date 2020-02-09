@@ -1,5 +1,6 @@
 package atdd.station;
 
+import atdd.domain.Station;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,13 +63,14 @@ Then "강남역" 지하철역이 삭제되었다.
         Given "강남역" 지하철역이 등록되어 있다.
         When 사용자는 지하철역 목록조회를 요청한다.
         Then 사용자는 "강남역" 지하철역의 정보를 응답받는다.
+
          */
         webTestClient.get().uri("/stations")
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-//                .expectHeader().exists("Location")
-                .expectBody().jsonPath("$.name").isEqualTo(stationName);
+                .expectBody().json("[{\"name\":\"강남역\"}]\n");
+
 
     }
 }

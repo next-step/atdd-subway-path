@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class StationController {
     private static final Logger logger = LoggerFactory.getLogger(StationController.class);
@@ -22,5 +24,12 @@ public class StationController {
     public ResponseEntity createStation(@RequestBody CreateStationRequestView view) {
         Station persistStation = stationRepository.save(view.toStation());
         return new ResponseEntity<>(persistStation, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/stations")
+    public ResponseEntity findStations() {
+        List<Station> stationList = stationRepository.findAll();
+        logger.info("stationList.toString() : " + stationList.toString());
+        return new ResponseEntity<>(stationList, HttpStatus.OK);
     }
 }
