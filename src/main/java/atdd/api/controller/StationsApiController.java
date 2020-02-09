@@ -28,4 +28,9 @@ public class StationsApiController {
         return new ResponseEntity<>(stations, headers, HttpStatus.CREATED);
     }
 
+    @DeleteMapping("/{id}")
+    public Long delete(@PathVariable Long id) {
+        stationsService.delete(id);
+        return id;
+    }
 }

@@ -10,5 +10,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        h2dddl:
+          auto: none
+
+
 
 
