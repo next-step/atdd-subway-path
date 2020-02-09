@@ -96,4 +96,38 @@ public class StationAcceptanceTest {
                 .jsonPath("$.id").isNotEmpty()
                 .jsonPath("$.name").isEqualTo(request.getName());
     }
+
+    @Test
+    void deleteStationByName() {
+        // given
+        CreateStationRequest request = CreateStationRequest.builder()
+            .name("강남역")
+            .build();
+        webTestClient.post().uri("/stations")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .body(Mono.just(request), CreateStationRequest.class)
+            .exchange();
+
+        // when
+        webTestClient.delete().uri(uriBuilder -> uriBuilder
+            .path("/station")
+            .queryParam("name", "강남역")
+            .build())
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isOk()
+            .expectHeader().contentType(MediaType.APPLICATION_JSON)
+            .expectBody()
+                .jsonPath("$.id").isNotEmpty()
+                .jsonPath("$.name").isEqualTo(request.getName());
+
+        // then
+        webTestClient.get().uri(uriBuilder -> uriBuilder
+            .path("/station")
+            .queryParam("name", "강남역")
+            .build())
+            .exchange()
+            .expectStatus().isNotFound();
+    }
 }

@@ -17,13 +17,13 @@ public class StationController {
 	}
 
 	@PostMapping("/stations")
-	public ResponseEntity<CreateStationRequest> createStation(@RequestBody CreateStationRequest request) {
+	public ResponseEntity<Station> createStation(@RequestBody CreateStationRequest request) {
 		Station savedStation = stationRepository.save(request.toEntity());
 		Long id = savedStation.getId();
 
 		return ResponseEntity.created(URI.create("/stations/" + id))
 			.contentType(MediaType.APPLICATION_JSON)
-			.body(request);
+			.body(savedStation);
 	}
 
 	@GetMapping("/stations")
@@ -33,6 +33,19 @@ public class StationController {
 
 	@GetMapping("/station")
 	public ResponseEntity<Station> findByName(@RequestParam("name") String name) {
-		return ResponseEntity.ok(stationRepository.findByName(name));
+		return ResponseEntity.ok(stationRepository.findByName(name)
+			.orElseThrow(() -> new IllegalArgumentException("해당 지하철역이 없습니다."))
+		);
+	}
+
+	@DeleteMapping("/station")
+	public ResponseEntity<Station> deleteByName(@RequestParam("name") String name) {
+		Station station = stationRepository.findByName(name)
+			.orElseThrow(() -> new IllegalArgumentException("해당 지하철역이 없습니다."));
+		stationRepository.delete(station);
+
+		return ResponseEntity.ok()
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(station);
 	}
 }
