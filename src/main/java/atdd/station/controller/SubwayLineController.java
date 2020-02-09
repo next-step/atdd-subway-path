@@ -65,4 +65,25 @@ public class SubwayLineController {
                         " }" +
                         "]");
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<String> detail(@PathVariable int id) {
+        return ResponseEntity
+                .ok()
+                .body("{" +
+                        "    \"id\": 1," +
+                        "    \"name\": \"2호선\"," +
+                        "    \"startTime\": \"05:00\"," +
+                        "    \"endTime\": \"23:50\"," +
+                        "    \"interval\": \"10\"," +
+                        "    \"stations\": [" +
+                        "        {\"id\":4,\"name\":\"교대역\"}," +
+                        "        {\"id\":5,\"name\":\"강남역\"}," +
+                        "        {\"id\":2,\"name\":\"역삼역\"}," +
+                        "        {\"id\":3,\"name\":\"선릉역\"}," +
+                        "        {\"id\":1,\"name\":\"삼성역\"}" +
+                        "    ]" +
+                        " }");
+    }
+
 }
