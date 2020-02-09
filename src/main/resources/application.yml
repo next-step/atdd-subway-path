@@ -4,3 +4,15 @@ spring:
     url: jdbc:h2:mem:testdb
     username: sa
     password: password
+
+  jpa:
+    show_sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        h2dddl:
+          auto: none
+
+
+
+
