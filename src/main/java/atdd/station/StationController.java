@@ -29,7 +29,12 @@ public class StationController {
     @GetMapping("/stations")
     public ResponseEntity findStations() {
         List<Station> stationList = stationRepository.findAll();
-        logger.info("stationList.toString() : " + stationList.toString());
         return new ResponseEntity<>(stationList, HttpStatus.OK);
+    }
+
+    @GetMapping("/station/{stationName}")
+    public ResponseEntity findStations(@PathVariable("stationName") String stationName) {
+        Station persistStation = stationRepository.findByStationName(stationName);
+        return new ResponseEntity<>(persistStation, HttpStatus.OK);
     }
 }
