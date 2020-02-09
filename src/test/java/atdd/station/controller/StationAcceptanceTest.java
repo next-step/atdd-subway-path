@@ -26,7 +26,7 @@ public class StationAcceptanceTest {
     public static final String KANGNAM_STATION_JSON = "{\"name\": \"" + KANGNAM_STATION_NAME + "\"}";
     private static final String NAME_JSON_PARSE_EXPRESSION = "$.name";
     private static final String ID_JSON_PARSE_EXPRESSION = "$.id";
-    private static final String STATION_API_BASE_URL = "/stations";
+    private static final String STATION_API_BASE_URL = "/stations/";
     private static final String LOCATION_HEADER = "Location";
 
     @Autowired
@@ -38,7 +38,7 @@ public class StationAcceptanceTest {
     void createStationTest(String stationName) {
         //when
         //then
-        webTestClient.post().uri(STATION_API_BASE_URL + "/create")
+        webTestClient.post().uri(STATION_API_BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just("{\"name\": \"" + stationName + "\"}"), String.class)
                 .exchange()
@@ -58,7 +58,7 @@ public class StationAcceptanceTest {
 
         //when
         //then
-        webTestClient.get().uri(STATION_API_BASE_URL + "/list")
+        webTestClient.get().uri(STATION_API_BASE_URL + "list")
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -76,7 +76,7 @@ public class StationAcceptanceTest {
 
         //when
         //then
-        webTestClient.get().uri(STATION_API_BASE_URL + "/" + id)
+        webTestClient.get().uri(STATION_API_BASE_URL + id)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -91,13 +91,13 @@ public class StationAcceptanceTest {
         creatStation(KANGNAM_STATION_NAME);
 
         //when
-        webTestClient.delete().uri(STATION_API_BASE_URL + "/1")
+        webTestClient.delete().uri(STATION_API_BASE_URL + "1")
                 .exchange()
                 .expectStatus().isOk();
     }
 
     private void creatStation(String name) {
-        webTestClient.post().uri(STATION_API_BASE_URL + "/create")
+        webTestClient.post().uri(STATION_API_BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just("{\"name\": \"" + name + "\"}"), String.class)
                 .exchange()
