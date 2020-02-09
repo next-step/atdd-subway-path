@@ -4,7 +4,6 @@ package atdd;
 import atdd.domain.stations.Stations;
 import atdd.domain.stations.StationsRepository;
 import org.junit.jupiter.api.DisplayName;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -29,7 +29,6 @@ public class StationAcceptanceTest {
     private static final Logger logger = LoggerFactory.getLogger(StationAcceptanceTest.class);
     private static final String BASE_URI = "/stations";
     private static final String TARGET_STATION="강남역";
-    private static final String TARGET_STATION_2="신사역";
     private static final String inputJson = "{\"name\":\""+TARGET_STATION+"\"}";
 
     @Autowired
@@ -61,10 +60,9 @@ public class StationAcceptanceTest {
         webTestClient.delete().uri(BASE_URI+"/1")
                 .exchange()
                 .expectStatus().isOk();
-
     }
 
-    @DisplayName("지하철 목록 조회가 제대로 되는가?")
+    @DisplayName("station 목록 조회가 제대로 되는가?")
     @Test
     public void getListStation(){
         //given
@@ -78,5 +76,19 @@ public class StationAcceptanceTest {
                 .expectStatus().isOk()
                 .expectBody().jsonPath("$.[0].name").isEqualTo(TARGET_STATION)
                 .jsonPath("$.[1].name").isEqualTo(TARGET_STATION);
+    }
+
+    @DisplayName("station 조회가 제대로 되는가?")
+    @Test
+    public void detailStation(){
+        //given
+        createStation();
+
+        //when, then
+        webTestClient.get().uri(BASE_URI+"/detail/1")
+                .exchange()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectStatus().isOk()
+                .expectBody().jsonPath("$.name").isEqualTo(TARGET_STATION);
     }
 }

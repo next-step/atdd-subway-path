@@ -42,5 +42,9 @@ public class StationsApiController {
         return stationsService.getList();
     }
 
+    @GetMapping("/detail/{id}")
+    public StationsResponseDto detail(@PathVariable Long id){
+        return stationsService.findById(id);
+    }
 
 }
