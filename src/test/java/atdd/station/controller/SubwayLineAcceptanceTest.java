@@ -64,6 +64,23 @@ public class SubwayLineAcceptanceTest {
                 .expectBodyList(String.class).hasSize(2);
     }
 
+    @DisplayName("지하철노선_상세조회가_성공하는지")
+    @Test
+    void detailSubwayLineSuccessTest() {
+        String location = creatSubwayLine("2호선");
+
+        //when
+        //then
+        webTestClient.get().uri(location)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo("2호선")
+                .jsonPath("$.startTime").isEqualTo("05:00")
+                .jsonPath("$.endTime").isEqualTo("23:50")
+                .jsonPath("$.interval").isEqualTo("10")
+                .jsonPath(getStationNameJsonParseExpressionByIndex("0")).isEqualTo("교대역");
+    }
 
     private String creatSubwayLine(String subwayLineName) {
         return Objects.requireNonNull(webTestClient.post().uri(SUBWAY_LINE_API_BASE_URL)
