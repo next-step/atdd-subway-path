@@ -88,4 +88,26 @@ public class SubwayLineAcceptanceTest {
                 .isEqualTo(SubwayLineResponseDto.of(SubwayLine.of(subwayLineName)));
     }
 
+    @DisplayName("지하철 노선을 삭제한다")
+    @Test
+    public void deleteFromSubwayLineName() {
+        // given
+        String subwayLineName = "2호선";
+        EntityExchangeResult<Void> createdResult = createSubwayLine(subwayLineName);
+
+        // when
+        webTestClient.delete()
+                .uri(createdResult.getResponseHeaders().getLocation().getPath())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk();
+
+        // then
+        webTestClient.get()
+                .uri(createdResult.getResponseHeaders().getLocation().getPath())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
 }
