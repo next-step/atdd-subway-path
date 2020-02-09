@@ -42,7 +42,7 @@ public class StationController {
     public ResponseEntity<List<StationResponseDto>> getStations() {
         List<StationResponseDto> stations = stationQueryService.getStations()
                 .stream()
-                .map(station -> StationResponseDto.of(station.getName()))
+                .map(station -> StationResponseDto.of(station))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok().body(stations);
@@ -54,7 +54,7 @@ public class StationController {
 
         Station savedStation = stationQueryService.getStation(id);
 
-        return ResponseEntity.ok().body(StationResponseDto.of(savedStation.getName()));
+        return ResponseEntity.ok().body(StationResponseDto.of(savedStation));
     }
 
     @DeleteMapping("/stations/{id}")

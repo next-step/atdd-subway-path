@@ -1,5 +1,6 @@
 package atdd.station;
 
+import atdd.station.domain.Station;
 import atdd.station.domain.StationRepository;
 import atdd.station.web.dto.StationResponseDto;
 import org.junit.jupiter.api.AfterEach;
@@ -67,7 +68,7 @@ public class StationAcceptanceTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBodyList(StationResponseDto.class)
                 .hasSize(2)
-                .isEqualTo(Arrays.asList(StationResponseDto.of("강남역"), StationResponseDto.of("잠실역")));
+                .isEqualTo(Arrays.asList(StationResponseDto.of(Station.of("강남역")), StationResponseDto.of(Station.of("잠실역"))));
     }
 
     @DisplayName("지하철역 조회한다")
@@ -91,7 +92,7 @@ public class StationAcceptanceTest {
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody(StationResponseDto.class)
-                .isEqualTo(StationResponseDto.of(stationName));
+                .isEqualTo(StationResponseDto.of(Station.of(stationName)));
     }
 
     @DisplayName("지하철역 삭제한다")

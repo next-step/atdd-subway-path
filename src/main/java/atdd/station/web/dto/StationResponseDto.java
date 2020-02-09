@@ -1,5 +1,7 @@
 package atdd.station.web.dto;
 
+import atdd.station.domain.Station;
+
 import java.util.Objects;
 
 public class StationResponseDto {
@@ -16,8 +18,8 @@ public class StationResponseDto {
         return name;
     }
 
-    public static StationResponseDto of(String name) {
-        return new StationResponseDto(name);
+    public static StationResponseDto of(Station station) {
+        return new StationResponseDto(station.getName());
     }
 
     @Override
