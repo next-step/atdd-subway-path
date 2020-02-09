@@ -5,37 +5,45 @@ import atdd.station.repository.StationRepository;
 import atdd.station.usecase.StationDTO;
 import atdd.station.usecase.StationListDTO;
 import atdd.station.usecase.StationUseCase;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class StationService implements StationUseCase {
+
   @Autowired
   StationRepository stationRepository;
 
+  private final StationModelMapper stationModelMapper = new StationModelMapper();
+
   @Override
   public StationDTO addStation(StationDTO stationDTO) {
-    StationModelMapper modelMapper = new StationModelMapper();
     StationEntity stationEntity = stationRepository.save(
-        modelMapper.DTOToEntity(stationDTO)
+        stationModelMapper.DTOToEntity(stationDTO)
     );
-    return modelMapper.EntityToDTO(stationEntity);
+    return stationModelMapper.EntityToDTO(stationEntity);
   }
 
   @Override
   public StationListDTO getAllStation() {
-    List<StationDTO> stations = new ArrayList<StationDTO>();
-    return new StationListDTO(0, stations);
+    return stationModelMapper.ListEntityToDTO(
+        stationRepository.getAllStation()
+    );
   }
 
   @Override
   public StationDTO getStation(StationDTO stationDTO) {
-    return stationDTO;
+    return stationModelMapper.EntityToDTO(
+        stationRepository.getByName(
+            stationDTO.getName()
+        )
+    );
   }
 
   @Override
   public void removeStation(StationDTO stationDTO) {
+    stationRepository.removeByName(
+        stationDTO.getName()
+    );
   }
 }
