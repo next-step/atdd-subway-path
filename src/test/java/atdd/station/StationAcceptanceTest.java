@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -64,10 +65,31 @@ public class StationAcceptanceTest {
                 .returnResult()
                 .getResponseBody()
 
-
         ;
 
         Assertions.assertThat(stations.get(0).getName()).isEqualTo(STATION_NAME);
 
+    }
+
+    @Test
+    public void getStationById(){
+        String STATION_NAME = "강남역";
+
+        Station station = Station.builder()
+                .name(STATION_NAME)
+                .build();
+
+        webTestClient.post().uri("/stations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(station), Station.class)
+                .exchange();
+
+
+        webTestClient.get().uri("/station/" + 1)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody().jsonPath("$.name").isEqualTo(STATION_NAME)
+        ;
     }
 }

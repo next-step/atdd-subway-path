@@ -1,11 +1,11 @@
 package atdd.station;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class StationController {
@@ -19,6 +19,7 @@ public class StationController {
     @PostMapping("/stations")
     public ResponseEntity createStation(@RequestBody Station station){
         Station save = stationRepository.save(station);
+        System.out.println("TEST");
         return ResponseEntity
                 .created(URI.create("/stations/"+save.getId()))
                 .body(save);
@@ -32,4 +33,15 @@ public class StationController {
                 .body(stations);
 
     }
+
+    @GetMapping("/station/{id}")
+    public ResponseEntity getStationById(@PathVariable Integer id){
+        Optional<Station> station = stationRepository.findById(id);
+        System.out.println("TEST");
+        return ResponseEntity
+                .ok()
+                .body(station);
+    }
+
+
 }
