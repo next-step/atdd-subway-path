@@ -43,7 +43,8 @@ public class SubwayLineController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable int id) {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> delete(@PathVariable int id) {
+        subwayLineService.delete(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
