@@ -1,4 +1,4 @@
-package atdd.station.dto;
+package atdd.station.dto.station;
 
 import atdd.station.domain.Station;
 import lombok.Builder;
