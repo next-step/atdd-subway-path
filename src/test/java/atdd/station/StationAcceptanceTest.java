@@ -1,5 +1,6 @@
 package atdd.station;
 
+import atdd.dto.Station;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,9 @@ public class StationAcceptanceTest {
     @Test
     public void testCreateStation() {
 
-        createStation("강남역");
+        Station station = new Station();
+        station.setName("강남역");
+        createStation(station);
 
     }
 
@@ -50,7 +53,9 @@ public class StationAcceptanceTest {
     @Test
     public void testGetStation() {
 
-        createStation("강남역");
+        Station station = new Station();
+        station.setName("강남역");
+        createStation(station);
 
         webTestClient.get().uri("/stations/강남역")
                 .exchange()
@@ -69,9 +74,11 @@ public class StationAcceptanceTest {
     @Test
     public void testGetStationInfo() {
 
-        createStation("강남역");
+        Station station = new Station();
+        station.setName("강남역");
+        createStation(station);
 
-        webTestClient.get().uri("/stations/info/강남역")
+        webTestClient.get().uri("/stations/details/강남역")
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -87,7 +94,9 @@ public class StationAcceptanceTest {
     @Test
     public void testDeleteStaion() {
 
-        createStation("강남역");
+        Station station = new Station();
+        station.setName("강남역");
+        createStation(station);
 
         webTestClient.delete().uri("/stations/강남역")
                 .exchange()
@@ -97,9 +106,9 @@ public class StationAcceptanceTest {
     /**
      * 공통) 지하철역 등록
      */
-    public void createStation(String stationName) {
+    public void createStation(Station station) {
 
-        String inputJson = "{\"name\":\""+stationName+"\"}";
+        String inputJson = "{\"name\":\""+station.getName()+"\"}";
 
         webTestClient.post().uri("/stations")
                 .contentType(MediaType.APPLICATION_JSON)
