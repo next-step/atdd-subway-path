@@ -50,4 +50,14 @@ public class StationController {
                 .headers(httpHeaders)
                 .body(stations);
     }
+
+    @GetMapping(value = "/stations/{id}")
+    @ResponseBody
+    public ResponseEntity<Station> findStation(@PathVariable long id) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+        return ResponseEntity.ok(stationRepository.findById(id));
+    }
 }
