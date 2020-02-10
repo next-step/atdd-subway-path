@@ -22,8 +22,6 @@ public class StationController {
     @Autowired
     private StationRepository stationRepository;
 
-
-    // TODO 지하철역 조회
     // TODO 지하철역 삭제
     @PostMapping(value = "/stations")
     @ResponseBody
@@ -42,8 +40,14 @@ public class StationController {
     @GetMapping(value = "/stations")
     @ResponseBody
     public ResponseEntity<List<Station>> findAllStations() {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
         List stations = stationRepository.findAll();
 
-        return ResponseEntity.ok(stations);
+        return ResponseEntity.ok()
+                .headers(httpHeaders)
+                .body(stations);
     }
 }
