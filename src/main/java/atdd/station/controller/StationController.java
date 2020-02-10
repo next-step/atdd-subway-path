@@ -1,0 +1,52 @@
+package atdd.station.controller;
+
+import static java.util.stream.Collectors.toList;
+
+import atdd.station.domain.Station;
+import atdd.station.dto.CreateStationRequest;
+import atdd.station.dto.StationResponse;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import javax.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/stations")
+public class StationController {
+
+    @PostMapping
+    public ResponseEntity<StationResponse> create(@Valid @RequestBody CreateStationRequest request) {
+        Station station = Station.of(1,"강남역");
+        return ResponseEntity.created(URI.create("stations/"+ station.getId()))
+            .body(StationResponse.of(station));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<StationResponse> get(@PathVariable long id) {
+        Station station = Station.of(1,"강남역");
+        return ResponseEntity.ok(StationResponse.of(station));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<StationResponse>> getAll() {
+        List<StationResponse> result = List.of(Station.of(1,"강남역")).stream()
+            .map(StationResponse::of)
+            .collect(toList());
+        return ResponseEntity.ok(result);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity delete(@PathVariable long id) {
+        return ResponseEntity.noContent().build();
+    }
+
+}
