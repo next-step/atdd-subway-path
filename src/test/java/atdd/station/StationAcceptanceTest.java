@@ -68,4 +68,16 @@ public class StationAcceptanceTest {
 
         logger.info("findStation = {}", result.getResponseBody().toString());
     }
+
+    @Test
+    public void deleteStation(){
+        long stationId = 1;
+
+        EntityExchangeResult result = webTestClient.delete().uri("/stations/" + stationId)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody().returnResult();
+    }
 }
