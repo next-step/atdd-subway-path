@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 
+import static atdd.station.fixture.SubwayLineFixture.getSubwayLines;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -47,18 +48,7 @@ public class SubwayLineServiceTest {
     @Test
     public void 지하철노선_list_조회가_성공하는지(SoftAssertions softly) {
         //given
-        List<SubwayLine> subwayLines = new ArrayList<>();
-
-        SubwayLine secondSubwayLine = SubwayLine.builder()
-                .name("2호선")
-                .build();
-
-        SubwayLine firstSubwayLine = SubwayLine.builder()
-                .name("1호선")
-                .build();
-
-        subwayLines.add(secondSubwayLine);
-        subwayLines.add(firstSubwayLine);
+        List<SubwayLine> subwayLines = getSubwayLines();
 
         //when
         when(subwayLineRepository.findAll()).thenReturn(subwayLines);
