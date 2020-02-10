@@ -24,6 +24,9 @@ dependencies {
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+	compile('org.projectlombok:lombok')
+	compile('org.springframework.boot:spring-boot-starter-data-jpa')
+	implementation 'junit:junit:4.12'
 }
 
 test {
