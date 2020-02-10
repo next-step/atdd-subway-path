@@ -1,5 +1,8 @@
-package atdd.station;
+package atdd.station.controller;
 
+import atdd.station.domain.Station;
+import atdd.station.domain.StationRepository;
+import atdd.station.dto.CreateStationRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

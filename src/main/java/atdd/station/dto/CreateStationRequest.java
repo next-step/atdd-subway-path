@@ -1,5 +1,6 @@
-package atdd.station;
+package atdd.station.dto;
 
+import atdd.station.domain.Station;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

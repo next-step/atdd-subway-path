@@ -1,4 +1,4 @@
-package atdd.station;
+package atdd.station.domain;
 
 import lombok.Builder;
 import lombok.Getter;
