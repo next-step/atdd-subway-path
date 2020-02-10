@@ -54,4 +54,18 @@ public class StationAcceptanceTest {
 
         logger.info("findAllStations = {}", result.getResponseBody().toString());
     }
+
+    @Test
+    public void findStation(){
+        long stationId = 1;
+
+        EntityExchangeResult result = webTestClient.get().uri("/stations/" + stationId)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(Station.class).returnResult();
+
+        logger.info("findStation = {}", result.getResponseBody().toString());
+    }
 }
