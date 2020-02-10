@@ -22,7 +22,6 @@ public class StationController {
     @Autowired
     private StationRepository stationRepository;
 
-    // TODO 지하철역 삭제
     @PostMapping(value = "/stations")
     @ResponseBody
     public ResponseEntity<Station> createStation(@RequestBody CreateStationRequestView view) {
@@ -58,6 +57,9 @@ public class StationController {
         httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-        return ResponseEntity.ok(stationRepository.findById(id));
+        return ResponseEntity
+                .ok()
+                .headers(httpHeaders)
+                .body(stationRepository.findById(id));
     }
 }
