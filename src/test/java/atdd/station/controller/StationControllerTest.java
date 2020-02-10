@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 class StationControllerTest {
 
     private String STATION_NAME_GANGNAM = "강남역";
+    private String STATION_NAME_YEOKSAM = "역삼역";
 
     @Autowired
     private WebTestClient client;
@@ -44,12 +45,18 @@ class StationControllerTest {
     }
 
     @Test
+    @DisplayName("지하철역 목록 조회")
     void getAll() {
+        //given
+        create(STATION_NAME_GANGNAM);
+        create(STATION_NAME_YEOKSAM);
+        //when & than
         client.get().uri("/stations")
             .exchange()
             .expectStatus().isOk()
             .expectHeader().contentType(MediaType.APPLICATION_JSON)
-            .expectBody().jsonPath("$.[0].name").isEqualTo("강남역");
+            .expectBody().jsonPath("$.[0].name").isEqualTo(STATION_NAME_GANGNAM)
+            .jsonPath("$.[1].name").isEqualTo(STATION_NAME_YEOKSAM);
     }
 
     @Test

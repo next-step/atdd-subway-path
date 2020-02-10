@@ -42,7 +42,7 @@ public class StationController {
 
     @GetMapping
     public ResponseEntity<List<StationResponse>> getAll() {
-        List<StationResponse> result = List.of(Station.of(1, "강남역")).stream()
+        List<StationResponse> result = stationService.getAll().stream()
             .map(StationResponse::of)
             .collect(toList());
         return ResponseEntity.ok(result);
