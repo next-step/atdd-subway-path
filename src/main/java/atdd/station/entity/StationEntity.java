@@ -1,6 +1,5 @@
 package atdd.station.entity;
 
-import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,9 +22,9 @@ public class StationEntity{
   private Long id;
 
   @Column(name = "NAME")
-  private String Name;
+  private String name;
 
   public StationEntity(String name) {
-    this.Name = name;
+    this.name = name;
   }
 }

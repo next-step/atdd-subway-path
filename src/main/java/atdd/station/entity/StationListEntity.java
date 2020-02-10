@@ -11,4 +11,8 @@ import lombok.NoArgsConstructor;
 public class StationListEntity {
   private int stationCount;
   private List<StationEntity> stations;
+  public StationListEntity(List<StationEntity> stations) {
+    this.stationCount = stations.size();
+    this.stations = stations;
+  }
 }
