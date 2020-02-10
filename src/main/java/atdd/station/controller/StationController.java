@@ -62,4 +62,19 @@ public class StationController {
                 .headers(httpHeaders)
                 .body(stationRepository.findById(id));
     }
+
+    @DeleteMapping(value = "/stations/{id}")
+    @ResponseBody
+    public ResponseEntity deleteStation(@PathVariable long id) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+        stationRepository.deleteById(id);
+
+        return ResponseEntity
+                .ok()
+                .headers(httpHeaders)
+                .build();
+    }
 }
