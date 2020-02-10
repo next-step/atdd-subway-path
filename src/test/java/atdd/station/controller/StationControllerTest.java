@@ -60,7 +60,9 @@ class StationControllerTest {
     }
 
     @Test
+    @DisplayName("지하철역 삭제")
     void delete() {
+        create(STATION_NAME_GANGNAM);
         client.delete().uri("/stations/1")
             .exchange()
             .expectStatus().isNoContent();

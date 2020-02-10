@@ -26,4 +26,9 @@ public class StationService {
     public List<Station> getAll() {
         return stationRepository.findAll();
     }
+
+    public void deleteById(long id) {
+        stationRepository.findById(id)
+        .ifPresent(stationRepository::delete);
+    }
 }
