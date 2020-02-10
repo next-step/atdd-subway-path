@@ -1,5 +1,7 @@
 package atdd.station;
 
+import atdd.station.web.dto.StationRequestDto;
+import atdd.station.web.dto.StationResponseDto;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -36,7 +38,27 @@ public class StationAcceptanceTest {
                 .expectBody().jsonPath("$.name").isEqualTo(stationName);
     }
 
+    @Test
+    public void createStationTest() {
+        //when
+        String name = "강남역";
+        StationRequestDto stationRequestDto = StationRequestDto.builder().name(name).build();
 
+        //then
+        StationResponseDto stationResponseDto = webTestClient.post().uri("createStation")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(stationRequestDto),StationRequestDto.class)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectHeader().exists("Location")
+                .expectBody(StationResponseDto.class)
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(stationResponseDto.getName()).isEqualTo(name);
+
+    }
 
 
 }
