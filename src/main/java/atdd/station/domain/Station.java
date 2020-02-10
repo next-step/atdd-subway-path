@@ -4,8 +4,6 @@ import lombok.Builder;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class Station {
@@ -16,9 +14,8 @@ public class Station {
     @Size(min = 2, max = 20)
     private String name;
 
-    @ManyToMany
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_station_to_subwayLine"))
-    private List<SubwayLine> subwayLines = new ArrayList<>();
+    @Embedded
+    private SubwayLines subwayLines;
 
     private boolean deleted = false;
 
@@ -30,7 +27,7 @@ public class Station {
         this.name = name;
     }
 
-    public Station(String name, List<SubwayLine> subwayLines) {
+    public Station(String name, SubwayLines subwayLines) {
         this.name = name;
         this.subwayLines = subwayLines;
     }
@@ -46,8 +43,9 @@ public class Station {
     @Override
     public String toString() {
         return "Station{" +
-                "id=" + this.id +
-                ", name='" + this.name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", subwayLines=" + subwayLines +
                 '}';
     }
 
