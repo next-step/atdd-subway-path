@@ -29,4 +29,8 @@ public class SubwayLineService {
     public SubwayLineDetailResponseDto detail(long id) {
         return SubwayLineDetailResponseDto.toDtoEntity(findById(id));
     }
+
+    public void delete(long defaultId) {
+        findById(defaultId).deleteSubwayLine();
+    }
 }
