@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequestMapping(value = "/stations")
 public class StationController {
 
     private final StationRepository stationRepository;
@@ -16,7 +17,7 @@ public class StationController {
         this.stationRepository = stationRepository;
     }
 
-    @PostMapping("/stations")
+    @PostMapping("")
     public ResponseEntity createStation(@RequestBody Station station){
         Station save = stationRepository.save(station);
         System.out.println("TEST");
@@ -25,7 +26,7 @@ public class StationController {
                 .body(save);
     }
 
-    @GetMapping("/stations")
+    @GetMapping("")
     public ResponseEntity getStations(){
         List<Station> stations = stationRepository.findAll();
         return ResponseEntity
@@ -34,7 +35,7 @@ public class StationController {
 
     }
 
-    @GetMapping("/station/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity getStationById(@PathVariable Integer id){
         Optional<Station> station = stationRepository.findById(id);
         System.out.println("TEST");
@@ -43,7 +44,7 @@ public class StationController {
                 .body(station);
     }
 
-    @DeleteMapping("/station/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteStationById(@PathVariable Integer id){
         stationRepository.deleteById(id);
         return ResponseEntity.noContent().build();
