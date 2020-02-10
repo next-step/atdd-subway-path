@@ -37,8 +37,7 @@ public class StationController {
 
     @GetMapping("/{id}")
     public ResponseEntity<StationResponse> get(@PathVariable long id) {
-        Station station = Station.of(1, "강남역");
-        return ResponseEntity.ok(StationResponse.of(station));
+        return ResponseEntity.ok(StationResponse.of(stationService.getById(id)));
     }
 
     @GetMapping

@@ -16,4 +16,9 @@ public class StationService {
     public Station create(final Station station) {
         return stationRepository.save(station);
     }
+
+    public Station getById(long id) {
+        return stationRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException());
+    }
 }
