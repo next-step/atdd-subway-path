@@ -1,12 +1,9 @@
 package atdd.station.domain;
 
 import lombok.Builder;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class SubwayLine {
@@ -30,10 +27,8 @@ public class SubwayLine {
     @Size(min = 2, max = 20)
     private String intervalTime;
 
-    @ManyToMany(mappedBy = "subwayLines", fetch = FetchType.EAGER)
-    @Where(clause = "deleted = false")
-    @OrderBy("id ASC")
-    private List<Station> stations = new ArrayList<>();
+    @Embedded
+    private Stations stations;
 
     private boolean deleted = false;
 
@@ -41,7 +36,7 @@ public class SubwayLine {
     }
 
     @Builder
-    public SubwayLine(String name, String startTime, String endTime, String intervalTime, List<Station> stations) {
+    public SubwayLine(String name, String startTime, String endTime, String intervalTime, Stations stations) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -55,7 +50,7 @@ public class SubwayLine {
         this.startTime = DEFAULT_START_TIME;
         this.endTime = DEFAULT_END_TIME;
         this.intervalTime = DEFAULT_INTERVAL;
-        this.stations = new ArrayList<>();
+        this.stations = getStations();
     }
 
     public long getId() {
@@ -78,7 +73,7 @@ public class SubwayLine {
         return intervalTime;
     }
 
-    public List<Station> getStations() {
+    public Stations getStations() {
         return stations;
     }
 
