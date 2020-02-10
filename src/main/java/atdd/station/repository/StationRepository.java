@@ -53,6 +53,6 @@ public class StationRepository {
     }
 
     public void deleteById(long id) {
-        jdbcTemplate.update("delete form STATION where id = ?", id);
+        jdbcTemplate.update("delete from STATION where id = ?", id);
     }
 }
