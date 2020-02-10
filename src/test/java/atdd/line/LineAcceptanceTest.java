@@ -44,4 +44,42 @@ public class LineAcceptanceTest {
                         .intervalTime(10)
                         .build());
     }
+
+    @Test
+    public void 지하철_노선_목록_조회() {
+        // when
+        LineDto lineDto = this.createLineTest();
+
+        webTestClient.get().uri("/line")
+                .exchange()
+                .expectBodyList(LineDto.class)
+                .hasSize(1)
+                .contains(lineDto);
+    }
+
+    private LineDto createLineTest() {
+        String line = "2호선";
+        String input = "{" +
+                "\"name\": \"" + line + "\"," +
+                "\"startTime\": \"05:00\"," +
+                "\"endTime\": \"23:50\"," +
+                "\"intervalTime\": \"10\"" +
+                "}";
+
+        return webTestClient.post().uri("/line")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(input), String.class)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectHeader().exists("Location")
+                .expectBody(LineDto.class)
+                .isEqualTo(LineDto.builder()
+                        .name("2호선")
+                        .startTime(LocalTime.of(5, 0))
+                        .endTime(LocalTime.of(23, 50))
+                        .intervalTime(10)
+                        .build())
+                .returnResult().getResponseBody();
+    }
 }

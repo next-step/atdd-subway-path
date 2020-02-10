@@ -5,6 +5,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -22,6 +24,17 @@ public class LineDto {
                 .endTime(line.getEndTime())
                 .intervalTime(line.getIntervalTime())
                 .build();
+    }
+
+    public static List<LineDto> listOf(List<Line> lines) {
+        return lines.stream()
+                .map(it -> LineDto.builder()
+                        .name(it.getName())
+                        .startTime(it.getStartTime())
+                        .endTime(it.getEndTime())
+                        .intervalTime(it.getIntervalTime())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     public Line toLine() {
