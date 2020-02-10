@@ -18,32 +18,26 @@ public class StationController {
     }
 
     @PostMapping("")
-    public ResponseEntity createStation(@RequestBody Station station){
+    public ResponseEntity createStation(@RequestBody Station station) {
         Station save = stationRepository.save(station);
-        return ResponseEntity
-                .created(URI.create("/stations/"+save.getId()))
-                .body(save);
+        return ResponseEntity.created(URI.create("/stations/" + save.getId())).body(save);
     }
 
     @GetMapping("")
-    public ResponseEntity getStations(){
+    public ResponseEntity getStations() {
         List<Station> stations = stationRepository.findAll();
-        return ResponseEntity
-                .ok()
-                .body(stations);
+        return ResponseEntity.ok().body(stations);
 
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getStationById(@PathVariable Integer id){
+    public ResponseEntity getStationById(@PathVariable Integer id) {
         Optional<Station> station = stationRepository.findById(id);
-        return ResponseEntity
-                .ok()
-                .body(station);
+        return ResponseEntity.ok().body(station);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteStationById(@PathVariable Integer id){
+    public ResponseEntity deleteStationById(@PathVariable Integer id) {
         stationRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
