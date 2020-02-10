@@ -1,5 +1,6 @@
 package atdd.station;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("지하철역 관리")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
@@ -25,6 +27,7 @@ public class StationAcceptanceTest {
     @Autowired
     private WebTestClient webTestClient;
 
+    @DisplayName("1개의 지하철역을 등록")
     @Test
     void createStation() {
         // given
@@ -45,6 +48,7 @@ public class StationAcceptanceTest {
             .jsonPath("$.name").isEqualTo(request.getName());
     }
 
+    @DisplayName("모든 지하철역 목록을 조회")
     @Test
     void findAllStations() {
         // given
@@ -71,6 +75,7 @@ public class StationAcceptanceTest {
             .contains("강남역");
     }
 
+    @DisplayName("특정 지하철역의 정보를 조회")
     @Test
     void findStationByName() {
         // given
@@ -97,6 +102,7 @@ public class StationAcceptanceTest {
                 .jsonPath("$.name").isEqualTo(request.getName());
     }
 
+    @DisplayName("특정 지하철역을 삭제")
     @Test
     void deleteStationByName() {
         // given
