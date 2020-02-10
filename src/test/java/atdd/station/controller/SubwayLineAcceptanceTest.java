@@ -58,7 +58,7 @@ public class SubwayLineAcceptanceTest {
     @Test
     void listSubwayLineSuccessTest() {
         creatSubwayLine("2호선");
-        creatSubwayLine("2호선");
+        creatSubwayLine("1호선");
 
         //when
         //then
@@ -66,7 +66,7 @@ public class SubwayLineAcceptanceTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBodyList(String.class).hasSize(2);
+                .expectBodyList(SubwayLine.class).hasSize(2);
     }
 
     @DisplayName("지하철노선_상세조회가_성공하는지")
