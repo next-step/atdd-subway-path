@@ -1,0 +1,1 @@
+INSERT INTO STATION(name) VALUES('강남역');
