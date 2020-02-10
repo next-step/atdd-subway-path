@@ -16,8 +16,8 @@ import reactor.core.publisher.Mono;
 @AutoConfigureWebTestClient
 class StationControllerTest {
 
-    private String STATION_NAME_GANGNAM = "강남역";
-    private String STATION_NAME_YEOKSAM = "역삼역";
+    private static final String STATION_NAME_GANGNAM = "강남역";
+    private static final String STATION_NAME_YEOKSAM = "역삼역";
 
     @Autowired
     private WebTestClient client;
