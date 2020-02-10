@@ -11,10 +11,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static atdd.station.fixture.SubwayLineFixture.getSubwayLines;
+import static atdd.station.fixture.SubwayLineFixture.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -60,6 +59,22 @@ public class SubwayLineServiceTest {
         softly.assertThat(listedSubwayLines.size()).isGreaterThan(1);
         softly.assertThat(listedSubwayLines.toString()).contains("2호선");
         softly.assertThat(listedSubwayLines.toString()).contains("1호선");
+    }
+
+    @Test
+    public void 지하철노선_상세_조회가_성공하는지(SoftAssertions softly) {
+        //given
+        long id = 0L;
+        SubwayLine subwayLine = getSecondSubwayLine();
+
+        //when
+        when(subwayLineRepository.findById(id)).thenReturn(java.util.Optional.ofNullable(subwayLine));
+
+        SubwayLine detailSubwayLine = subwayLineService.detail(id);
+
+        //then
+        softly.assertThat(detailSubwayLine).isNotNull();
+        softly.assertThat(detailSubwayLine.getName()).contains(SECOND_SUBWAY_LINE);
     }
 
 }
