@@ -20,7 +20,6 @@ public class StationController {
     @PostMapping("")
     public ResponseEntity createStation(@RequestBody Station station){
         Station save = stationRepository.save(station);
-        System.out.println("TEST");
         return ResponseEntity
                 .created(URI.create("/stations/"+save.getId()))
                 .body(save);
@@ -38,7 +37,6 @@ public class StationController {
     @GetMapping("/{id}")
     public ResponseEntity getStationById(@PathVariable Integer id){
         Optional<Station> station = stationRepository.findById(id);
-        System.out.println("TEST");
         return ResponseEntity
                 .ok()
                 .body(station);
