@@ -30,7 +30,7 @@ public class StationController {
 
     @PostMapping
     public ResponseEntity<StationResponse> create(@Valid @RequestBody CreateStationRequest request) {
-        Station station = stationService.create(request.toEntry());
+        Station station = stationService.create(request.toEntity());
         return ResponseEntity.created(URI.create("stations/" + station.getId()))
             .body(StationResponse.of(station));
     }

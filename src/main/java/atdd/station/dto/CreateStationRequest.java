@@ -12,7 +12,7 @@ public class CreateStationRequest {
     @NotNull
     private String name;
 
-    public Station toEntry() {
+    public Station toEntity() {
         return Station.of(this.name);
     }
 
