@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/subway-lines",
@@ -29,39 +30,9 @@ public class SubwayLineController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<String> list() {
-        return ResponseEntity
-                .ok()
-                .body("[" +
-                        "{" +
-                        "    \"id\": 1," +
-                        "    \"name\": \"5호선\"," +
-                        "    \"startTime\": \"05:00\"," +
-                        "    \"endTime\": \"23:50\"," +
-                        "    \"interval\": \"10\"," +
-                        "    \"stations\": [" +
-                        "        {\"id\":4,\"name\":\"교대역\"}," +
-                        "        {\"id\":5,\"name\":\"강남역\"}," +
-                        "        {\"id\":2,\"name\":\"역삼역\"}," +
-                        "        {\"id\":3,\"name\":\"선릉역\"}," +
-                        "        {\"id\":1,\"name\":\"삼성역\"}" +
-                        "    ]" +
-                        " }" +
-                        "{" +
-                        "    \"id\": 2," +
-                        "    \"name\": \"2호선\"," +
-                        "    \"startTime\": \"05:00\"," +
-                        "    \"endTime\": \"23:50\"," +
-                        "    \"interval\": \"10\"," +
-                        "    \"stations\": [" +
-                        "        {\"id\":4,\"name\":\"교대역\"}," +
-                        "        {\"id\":5,\"name\":\"강남역\"}," +
-                        "        {\"id\":2,\"name\":\"역삼역\"}," +
-                        "        {\"id\":3,\"name\":\"선릉역\"}," +
-                        "        {\"id\":1,\"name\":\"삼성역\"}" +
-                        "    ]" +
-                        " }" +
-                        "]");
+    public ResponseEntity<List<SubwayLine>> list() {
+        List<SubwayLine> subwayLines = subwayLineService.list();
+        return new ResponseEntity<>(subwayLines, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
