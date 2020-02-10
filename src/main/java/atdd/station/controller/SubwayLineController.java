@@ -1,7 +1,7 @@
 package atdd.station.controller;
 
 import atdd.station.domain.SubwayLine;
-import atdd.station.service.StationService;
+import atdd.station.dto.subwayLine.SubwayLineCreateRequestDto;
 import atdd.station.service.SubwayLineService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ public class SubwayLineController {
     private SubwayLineService subwayLineService;
 
     @PostMapping("/")
-    public ResponseEntity<SubwayLine> create(@RequestBody SubwayLine subwayLine) {
+    public ResponseEntity<SubwayLine> create(@RequestBody SubwayLineCreateRequestDto subwayLine) {
         SubwayLine createdSubwayLine = subwayLineService.create(subwayLine);
 
         HttpHeaders headers = new HttpHeaders();
