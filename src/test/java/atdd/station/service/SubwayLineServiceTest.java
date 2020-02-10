@@ -2,6 +2,7 @@ package atdd.station.service;
 
 import atdd.station.domain.SubwayLine;
 import atdd.station.domain.SubwayLineRepository;
+import atdd.station.dto.subwayLine.SubwayLineCreateRequestDto;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,7 @@ public class SubwayLineServiceTest {
         //when
         when(subwayLineRepository.save(any())).thenReturn(subwayLine);
 
-        SubwayLine createSubwayLine = subwayLineService.create(subwayLine);
+        SubwayLine createSubwayLine = subwayLineService.create(SubwayLineCreateRequestDto.toDtoEntity(subwayLine));
 
         //then
         softly.assertThat(createSubwayLine.getId()).isEqualTo(0L);

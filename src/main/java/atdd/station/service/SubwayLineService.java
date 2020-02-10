@@ -2,6 +2,7 @@ package atdd.station.service;
 
 import atdd.station.domain.SubwayLine;
 import atdd.station.domain.SubwayLineRepository;
+import atdd.station.dto.subwayLine.SubwayLineCreateRequestDto;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -11,7 +12,7 @@ public class SubwayLineService {
     @Resource(name = "subwayLineRepository")
     private SubwayLineRepository subwayLineRepository;
 
-    public SubwayLine create(SubwayLine subwayLine) {
-        return subwayLineRepository.save(subwayLine);
+    public SubwayLine create(SubwayLineCreateRequestDto subwayLine) {
+        return subwayLineRepository.save(subwayLine.toEntity());
     }
 }
