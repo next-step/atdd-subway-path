@@ -20,4 +20,8 @@ public class SubwayLineService {
     public List<SubwayLine> list() {
         return subwayLineRepository.findAll();
     }
+
+    public SubwayLine detail(long id) {
+        return subwayLineRepository.findById(id).orElseThrow(IllegalAccessError::new);
+    }
 }
