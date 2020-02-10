@@ -29,6 +29,6 @@ public class StationService {
 
     public void deleteById(long id) {
         stationRepository.findById(id)
-        .ifPresent(stationRepository::delete);
+            .ifPresent(stationRepository::delete);
     }
 }
