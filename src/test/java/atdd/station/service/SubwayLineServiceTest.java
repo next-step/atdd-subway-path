@@ -29,12 +29,12 @@ public class SubwayLineServiceTest {
     @InjectMocks
     SubwayLineService subwayLineService;
 
+    private static final long DEFAULT_ID = 0L;
+
     @Test
     public void 지하철노선_생성시_성공하는지(SoftAssertions softly) {
         //given
-        SubwayLine subwayLine = SubwayLine.builder()
-                .name("2호선")
-                .build();
+        SubwayLine subwayLine = getSecondSubwayLine();
 
         //when
         when(subwayLineRepository.save(any())).thenReturn(subwayLine);
@@ -42,8 +42,8 @@ public class SubwayLineServiceTest {
         SubwayLine createSubwayLine = subwayLineService.create(SubwayLineCreateRequestDto.toDtoEntity(subwayLine));
 
         //then
-        softly.assertThat(createSubwayLine.getId()).isEqualTo(0L);
-        softly.assertThat(createSubwayLine.getName()).isEqualTo("2호선");
+        softly.assertThat(createSubwayLine.getId()).isEqualTo(DEFAULT_ID);
+        softly.assertThat(createSubwayLine.getName()).isEqualTo(SECOND_SUBWAY_LINE);
     }
 
     @Test
@@ -58,24 +58,34 @@ public class SubwayLineServiceTest {
 
         //then
         softly.assertThat(listedSubwayLines).isNotNull();
-        softly.assertThat(listedSubwayLines.toString()).contains("2호선");
-        softly.assertThat(listedSubwayLines.toString()).contains("1호선");
+        softly.assertThat(listedSubwayLines.toString()).contains(SECOND_SUBWAY_LINE);
+        softly.assertThat(listedSubwayLines.toString()).contains(FIRST_SUBWAY_LINE);
     }
 
     @Test
     public void 지하철노선_상세_조회가_성공하는지(SoftAssertions softly) {
         //given
-        long id = 0L;
         SubwayLine subwayLine = getSecondSubwayLine();
 
         //when
-        when(subwayLineRepository.findById(id)).thenReturn(java.util.Optional.ofNullable(subwayLine));
+        when(subwayLineRepository.findById(DEFAULT_ID)).thenReturn(java.util.Optional.ofNullable(subwayLine));
 
-        SubwayLineDetailResponseDto detailSubwayLine = subwayLineService.detail(id);
+        SubwayLineDetailResponseDto detailSubwayLine = subwayLineService.detail(DEFAULT_ID);
 
         //then
         softly.assertThat(detailSubwayLine).isNotNull();
         softly.assertThat(detailSubwayLine.getName()).contains(SECOND_SUBWAY_LINE);
     }
 
+    @Test
+    public void 지하철노선_삭제가_성공하는지(SoftAssertions softly) {
+        //given
+        SubwayLine subwayLine = getSecondSubwayLine();
+
+        when(subwayLineRepository.findById(DEFAULT_ID)).thenReturn(java.util.Optional.of(subwayLine));
+        subwayLineService.delete(DEFAULT_ID);
+
+        //then
+        softly.assertThat(subwayLine.isDeleted()).isTrue();
+    }
 }
