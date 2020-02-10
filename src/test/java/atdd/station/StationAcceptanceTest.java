@@ -73,12 +73,10 @@ public class StationAcceptanceTest {
     @Test
     void getStation() {
         final String stationName = "강남역";
-        create(stationName);
+        final StationResponseDto responseDto = create(stationName);
 
         final StationResponseDto stationResponseDto = webTestClient.get()
-                .uri(uriBuilder -> uriBuilder.path(StationController.ROOT_URI + "/by-name")
-                        .queryParam("name", stationName)
-                        .build())
+                .uri(StationController.ROOT_URI + "/" + responseDto.getId())
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(StationResponseDto.class)
@@ -92,12 +90,10 @@ public class StationAcceptanceTest {
     @Test
     void delete() {
         final String stationName = "강남역";
-        create(stationName);
+        final StationResponseDto responseDto = create(stationName);
 
         webTestClient.delete()
-                .uri(uriBuilder -> uriBuilder.path(StationController.ROOT_URI + "/by-name")
-                        .queryParam("name", stationName)
-                        .build())
+                .uri(StationController.ROOT_URI + "/" + responseDto.getId())
                 .exchange()
                 .expectStatus().isNoContent();
     }

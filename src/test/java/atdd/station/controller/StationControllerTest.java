@@ -8,7 +8,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -21,10 +20,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest
 class StationControllerTest {
@@ -42,8 +41,7 @@ class StationControllerTest {
         final String stationName = "강남역";
         final String requestJson = "{\"name\": \"" + stationName + "\"}";
 
-        Mockito.when(stationService.create(eq(stationName))).thenReturn(new StationResponseDto(id,
-                stationName));
+        when(stationService.create(eq(stationName))).thenReturn(new StationResponseDto(id, stationName));
 
         mockMvc.perform(post(StationController.ROOT_URI)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -78,18 +76,24 @@ class StationControllerTest {
         );
     }
 
-    @DisplayName("지하철역 정보 조회 - name 은 공백이나 null 일 수 없다.")
-    @ParameterizedTest(name = "[{index}] name : [{0}]")
-    @NullAndEmptySource
-    void get_station_blank_name(String name) throws Exception {
-        mockMvc.perform(get(StationController.ROOT_URI + "/by-name")
-                .characterEncoding(StandardCharsets.UTF_8.name())
-                .queryParam("name", name))
+    @DisplayName("지하철역 정보 조회")
+    @Test
+    void getStation() throws Exception {
+        final Long id = 41546L;
+        final String name = "stationName!!";
+
+        when(stationService.getStation(id)).thenReturn(new StationResponseDto(id, name));
+
+        mockMvc.perform(get(StationController.ROOT_URI + "/" + id)
+                .characterEncoding(StandardCharsets.UTF_8.name()))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.name").value(name));
+
     }
 
-    @DisplayName("지하철역 삭 - name 은 공백이나 null 일 수 없다.")
+    @DisplayName("지하철역 삭제 - name 은 공백이나 null 일 수 없다.")
     @ParameterizedTest(name = "[{index}] name : [{0}]")
     @NullAndEmptySource
     void delete_blank_name(String name) throws Exception {

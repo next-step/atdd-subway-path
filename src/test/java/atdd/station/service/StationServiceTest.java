@@ -6,23 +6,26 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import javax.persistence.EntityNotFoundException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class StationServiceTest {
 
     private StationService stationService;
+
+    private StationAssembler stationAssembler;
     private StationRepository stationRepository;
 
     @BeforeEach
     void setup() {
+        stationAssembler = new StationAssembler();
         stationRepository = mock(StationRepository.class);
-        stationService = new StationService(stationRepository);
+        stationService = new StationService(stationAssembler, stationRepository);
     }
 
     @DisplayName("create - name 이 null 이거나 비어있으면 에러")
@@ -37,43 +40,23 @@ class StationServiceTest {
     @DisplayName("조회 결과가 없으면 에러")
     @Test
     void getStation() {
-        final String name = "역삼역";
+        final Long id = 5145L;
 
-        when(stationRepository.findByName(eq(name))).thenThrow(new EntityNotFoundException());
+        when(stationRepository.findById(eq(id))).thenThrow(new EntityNotFoundException());
 
-        assertThatThrownBy(() -> stationService.getStation(name))
+        assertThatThrownBy(() -> stationService.getStation(id))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
-    @DisplayName("getStation - name 이 null 이거나 비어있으면 에러")
-    @ParameterizedTest
-    @NullAndEmptySource
-    void getStation_empty_name(String name) {
-        assertThatThrownBy(() -> stationService.create(name))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("name 은 필수 입니다.");
-    }
-
-    @DisplayName("delete - name 이 null 이거나 비어있으면 에러")
-    @ParameterizedTest
-    @NullAndEmptySource
-    void delete_empty_name(String name) {
-        assertThatThrownBy(() -> stationService.delete(name))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("name 은 필수 입니다.");
-    }
-
-    @DisplayName("delete - 삭제된 내용이 없으면 에러")
+    @DisplayName("delete - 삭제대상이 없으면 에러")
     @Test
     void delete_no_result() {
-        final String name = "name!!";
+        final Long id = 13247L;
 
-        when(stationRepository.deleteByName(name)).thenReturn(0);
+        doThrow(EmptyResultDataAccessException.class).when(stationRepository).deleteById(id);
 
-
-        assertThatThrownBy(() -> stationService.delete(name))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 name 입니다. name = [name!!]");
+        assertThatThrownBy(() -> stationService.delete(id))
+                .isInstanceOf(EmptyResultDataAccessException.class);
     }
 
 }
