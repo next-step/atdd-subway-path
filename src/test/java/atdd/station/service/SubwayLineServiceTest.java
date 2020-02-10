@@ -3,6 +3,8 @@ package atdd.station.service;
 import atdd.station.domain.SubwayLine;
 import atdd.station.domain.SubwayLineRepository;
 import atdd.station.dto.subwayLine.SubwayLineCreateRequestDto;
+import atdd.station.dto.subwayLine.SubwayLineDetailResponseDto;
+import atdd.station.dto.subwayLine.SubwayLineListResponseDto;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
@@ -52,11 +54,10 @@ public class SubwayLineServiceTest {
         //when
         when(subwayLineRepository.findAll()).thenReturn(subwayLines);
 
-        List<SubwayLine> listedSubwayLines = subwayLineService.list();
+        SubwayLineListResponseDto listedSubwayLines = subwayLineService.list();
 
         //then
         softly.assertThat(listedSubwayLines).isNotNull();
-        softly.assertThat(listedSubwayLines.size()).isGreaterThan(1);
         softly.assertThat(listedSubwayLines.toString()).contains("2호선");
         softly.assertThat(listedSubwayLines.toString()).contains("1호선");
     }
@@ -70,7 +71,7 @@ public class SubwayLineServiceTest {
         //when
         when(subwayLineRepository.findById(id)).thenReturn(java.util.Optional.ofNullable(subwayLine));
 
-        SubwayLine detailSubwayLine = subwayLineService.detail(id);
+        SubwayLineDetailResponseDto detailSubwayLine = subwayLineService.detail(id);
 
         //then
         softly.assertThat(detailSubwayLine).isNotNull();
