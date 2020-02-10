@@ -13,6 +13,8 @@ import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
@@ -38,6 +40,18 @@ public class StationAcceptanceTest {
 
         String location = result.getResponseHeaders().getLocation().getPath();
 
-        logger.info("location = {}", location);
+        logger.info("createStation location = {}", location);
+    }
+
+    @Test
+    public void findAllStations(){
+        EntityExchangeResult result = webTestClient.get().uri("/stations")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(List.class).returnResult();
+
+        logger.info("findAllStations = {}", result.getResponseBody().toString());
     }
 }
