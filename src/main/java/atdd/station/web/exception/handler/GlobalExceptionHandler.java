@@ -16,4 +16,10 @@ public class GlobalExceptionHandler {
         logger.error("api exception occurred. message=[{}]. className=[{}]", e.getMessage(), e.getClass().getName(), e);
         return ResponseEntity.noContent().build();
     }
+
+    @ExceptionHandler({IllegalArgumentException.class})
+    public ResponseEntity handleIllegalArgumentException(IllegalArgumentException e) {
+        logger.error("illegalargument exception occurred. message=[{}]. className=[{}]", e.getMessage(), e.getClass().getName(), e);
+        return ResponseEntity.badRequest().build();
+    }
 }

@@ -77,7 +77,7 @@ public class StationAcceptanceTest extends SubwayAcceptanceTestSupport {
                 .uri(createdResult.getResponseHeaders().getLocation().getPath())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
-                .expectStatus().isNoContent();
+                .expectStatus().isBadRequest();
     }
 
 }
