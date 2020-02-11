@@ -10,19 +10,19 @@ import static lombok.AccessLevel.PROTECTED;
 
 @NoArgsConstructor(access = PROTECTED)
 @Getter
-public class StationResponse {
+public class StationResponseView {
 
     private Long id;
     private String name;
 
-    public StationResponse(Station station) {
+    public StationResponseView(Station station) {
         this.id = station.getId();
         this.name = station.getName();
     }
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", StationResponse.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", StationResponseView.class.getSimpleName() + "[", "]")
                 .add("id=" + id)
                 .add("name='" + name + "'")
                 .toString();

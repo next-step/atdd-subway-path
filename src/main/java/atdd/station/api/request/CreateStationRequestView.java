@@ -10,7 +10,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 @NoArgsConstructor(access = PROTECTED)
 @Getter
-public class CreateStationRequest {
+public class CreateStationRequestView {
 
     private String name;
 
@@ -20,7 +20,7 @@ public class CreateStationRequest {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", CreateStationRequest.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", CreateStationRequestView.class.getSimpleName() + "[", "]")
                 .add("name='" + name + "'")
                 .toString();
     }

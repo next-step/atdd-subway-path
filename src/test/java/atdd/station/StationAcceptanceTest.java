@@ -1,6 +1,6 @@
 package atdd.station;
 
-import atdd.station.api.response.StationResponse;
+import atdd.station.api.response.StationResponseView;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -35,8 +35,8 @@ public class StationAcceptanceTest {
     void beAbleCreateStation() {
         String stationName = "강남역";
 
-        EntityExchangeResult<StationResponse> result = createStation(stationName);
-        StationResponse station = result.getResponseBody();
+        EntityExchangeResult<StationResponseView> result = createStation(stationName);
+        StationResponseView station = result.getResponseBody();
 
         assertThat(station).isNotNull();
         assertThat(station.getName()).isEqualTo(stationName);
@@ -62,7 +62,7 @@ public class StationAcceptanceTest {
     void beAbleFindStationsById() {
         String stationName = "강남역";
 
-        EntityExchangeResult<StationResponse> result = createStation(stationName);
+        EntityExchangeResult<StationResponseView> result = createStation(stationName);
         String path = getLocationPath(result.getResponseHeaders());
 
         webTestClient.get().uri(path)
@@ -78,7 +78,7 @@ public class StationAcceptanceTest {
     void beAbleDeleteStation() {
         String stationName = "강남역";
 
-        EntityExchangeResult<StationResponse> result = createStation(stationName);
+        EntityExchangeResult<StationResponseView> result = createStation(stationName);
         String path = getLocationPath(result.getResponseHeaders());
 
         webTestClient.delete().uri(path)
@@ -86,7 +86,7 @@ public class StationAcceptanceTest {
                 .expectStatus().isNoContent();
     }
 
-    private EntityExchangeResult<StationResponse> createStation(String stationName) {
+    private EntityExchangeResult<StationResponseView> createStation(String stationName) {
         String inputJson = "{\"name\":\""+ stationName +"\"}";
 
         return webTestClient.post().uri("/stations")
@@ -96,7 +96,7 @@ public class StationAcceptanceTest {
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectHeader().exists("Location")
-                .expectBody(StationResponse.class)
+                .expectBody(StationResponseView.class)
                 .returnResult();
     }
 
