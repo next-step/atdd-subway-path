@@ -4,7 +4,7 @@ import atdd.station.domain.SubwayLine;
 import atdd.station.domain.SubwayLineRepository;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SubwayLineCommandService {
@@ -23,4 +23,5 @@ public class SubwayLineCommandService {
     public void deleteSubwayLine(Long id) {
         subwayLineRepository.deleteById(id);
     }
+
 }

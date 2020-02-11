@@ -2,9 +2,9 @@ package atdd.station.web;
 
 import atdd.station.application.SubwayLineCommandService;
 import atdd.station.application.SubwayLineQueryService;
+import atdd.station.application.dto.SubwayLineResponseDto;
 import atdd.station.domain.SubwayLine;
 import atdd.station.web.dto.SubwayLineCreateRequest;
-import atdd.station.web.dto.SubwayLineResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -13,12 +13,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/subway-lines")
+@RequestMapping(SubwayLineController.ROOT_URI)
 public class SubwayLineController {
     private static final Logger logger = LoggerFactory.getLogger(SubwayLineController.class);
+
+    public static final String ROOT_URI = "/subway-lines";
 
     private SubwayLineCommandService subwayLineCommandService;
     private SubwayLineQueryService subwayLineQueryService;
@@ -36,26 +37,23 @@ public class SubwayLineController {
 
         SubwayLine savedSubwayLine = subwayLineCommandService.create(subwayLineCreateRequest.getName());
 
-        return ResponseEntity.created(URI.create("/subway-lines/" + savedSubwayLine.getId())).build();
+        return ResponseEntity.created(URI.create(SubwayLineController.ROOT_URI + savedSubwayLine.getId())).build();
     }
 
     @GetMapping
     public ResponseEntity<List<SubwayLineResponseDto>> getSubwayLines() {
-        List<SubwayLineResponseDto> subwayLines = subwayLineQueryService.getSubwayLines()
-                .stream()
-                .map(subwayLine -> SubwayLineResponseDto.of(subwayLine))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok().body(subwayLines);
+        return ResponseEntity.ok().body(subwayLineQueryService.getSubwayLines());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<SubwayLineResponseDto> getSubwayLine(@PathVariable Long id) {
         logger.info("[SubwayLineController.getSubwayLine] id={}", id);
 
-        SubwayLine savedSubwayLine = subwayLineQueryService.getSubwayLine(id);
+        SubwayLineResponseDto result = subwayLineQueryService.getSubwayLine(id);
 
-        return ResponseEntity.ok().body(SubwayLineResponseDto.of(savedSubwayLine));
+        logger.info("[SubwayLineController.getSubwayLine] result={}", result);
+
+        return ResponseEntity.ok().body(result);
     }
 
     @DeleteMapping("/{id}")
@@ -65,7 +63,7 @@ public class SubwayLineController {
         subwayLineCommandService.deleteSubwayLine(id);
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.LOCATION, "/subway-lines")
+                .header(HttpHeaders.LOCATION, SubwayLineController.ROOT_URI)
                 .build();
     }
 

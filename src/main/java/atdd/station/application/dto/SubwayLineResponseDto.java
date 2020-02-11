@@ -1,25 +1,31 @@
-package atdd.station.web.dto;
+package atdd.station.application.dto;
 
 import atdd.station.domain.SubwayLine;
 
 import java.util.Objects;
 
 public class SubwayLineResponseDto {
+    private Long id;
     private String name;
 
     public SubwayLineResponseDto() {
     }
 
-    public SubwayLineResponseDto(String name) {
+    public SubwayLineResponseDto(Long id, String name) {
+        this.id = id;
         this.name = name;
+    }
+
+    public static SubwayLineResponseDto of(SubwayLine subwayLine) {
+        return new SubwayLineResponseDto(subwayLine.getId(), subwayLine.getName());
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
         return name;
-    }
-
-    public static SubwayLineResponseDto of(SubwayLine subwayLine) {
-        return new SubwayLineResponseDto(subwayLine.getName());
     }
 
     @Override
@@ -33,5 +39,13 @@ public class SubwayLineResponseDto {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    @Override
+    public String toString() {
+        return "SubwayLineResponseDto{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
