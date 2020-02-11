@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,7 +38,8 @@ public class SubwayLineAcceptanceTest extends SubwayAcceptanceTestSupport {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBodyList(SubwayLineResponseDto.class)
                 .hasSize(2)
-                .isEqualTo(Arrays.asList(SubwayLineResponseDto.of(SubwayLine.of("2호선")), SubwayLineResponseDto.of(SubwayLine.of("8호선"))));
+                .isEqualTo(Arrays.asList(SubwayLineResponseDto.of(SubwayLine.of("2호선"), Collections.emptyList())
+                        , SubwayLineResponseDto.of(SubwayLine.of("8호선"), Collections.emptyList())));
     }
 
     @DisplayName("지하철 노선 정보를 조회한다.")
@@ -54,7 +56,6 @@ public class SubwayLineAcceptanceTest extends SubwayAcceptanceTestSupport {
         // then
         assertThat(result.getResponseBody().getName()).isEqualTo(subwayLineName);
     }
-
 
     @DisplayName("지하철 노선을 삭제한다")
     @Test
