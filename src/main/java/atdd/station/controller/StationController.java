@@ -1,7 +1,7 @@
 package atdd.station.controller;
 
-import atdd.station.domain.Station;
 import atdd.station.dto.station.StationCreateRequestDto;
+import atdd.station.dto.station.StationCreateResponseDto;
 import atdd.station.dto.station.StationDetailResponseDto;
 import atdd.station.dto.station.StationListResponseDto;
 import atdd.station.service.StationService;
@@ -22,8 +22,8 @@ public class StationController {
     private StationService stationService;
 
     @PostMapping("/")
-    public ResponseEntity<Station> create(@RequestBody StationCreateRequestDto station) {
-        Station createdStation = stationService.create(station);
+    public ResponseEntity<StationCreateResponseDto> create(@RequestBody StationCreateRequestDto station) {
+        StationCreateResponseDto createdStation = stationService.create(station);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("/stations/" + createdStation.getId()));
