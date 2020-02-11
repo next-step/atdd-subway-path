@@ -32,6 +32,10 @@ public class Subway {
     public SubwayLine getSubwayLine() {
         return this.subwayLine;
     }
+
+    public Station getStation() {
+        return this.station;
+    }
 }
 
 
