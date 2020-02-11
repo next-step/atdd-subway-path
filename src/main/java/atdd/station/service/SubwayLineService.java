@@ -3,6 +3,7 @@ package atdd.station.service;
 import atdd.station.domain.SubwayLine;
 import atdd.station.domain.SubwayLineRepository;
 import atdd.station.dto.subwayLine.SubwayLineCreateRequestDto;
+import atdd.station.dto.subwayLine.SubwayLineCreateResponseDto;
 import atdd.station.dto.subwayLine.SubwayLineDetailResponseDto;
 import atdd.station.dto.subwayLine.SubwayLineListResponseDto;
 import org.springframework.stereotype.Service;
@@ -14,8 +15,8 @@ public class SubwayLineService {
     @Resource(name = "subwayLineRepository")
     private SubwayLineRepository subwayLineRepository;
 
-    public SubwayLine create(SubwayLineCreateRequestDto subwayLine) {
-        return subwayLineRepository.save(subwayLine.toEntity());
+    public SubwayLineCreateResponseDto create(SubwayLineCreateRequestDto subwayLine) {
+        return SubwayLineCreateResponseDto.toDtoEntity(subwayLineRepository.save(subwayLine.toEntity()));
     }
 
     public SubwayLineListResponseDto list() {
