@@ -1,7 +1,7 @@
-package atdd.station.Service;
+package atdd.station.service;
 
 import atdd.station.domain.Station;
-import atdd.station.domain.dto.StationDto;
+import atdd.station.dto.StationDto;
 import atdd.station.repository.StationRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +20,10 @@ public class StationService
         return stationRepository.save(stationDto.toEntity());
     }
 
-    public List<Station> list()
+    public List<Station> findStations()
     {
-        List<Station> returnList = stationRepository.findAll();
-        return returnList;
+        List<Station> stations = stationRepository.findAll();
+        return stations;
     }
 
     public Optional<Station> findById(long id)
