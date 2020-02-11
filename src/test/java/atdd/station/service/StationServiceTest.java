@@ -75,7 +75,7 @@ public class StationServiceTest {
         //when
         when(stationRepository.findById(KANGNAM_STATION_ID)).thenReturn(java.util.Optional.of(KANNAM_STATON));
 
-        StationDetailResponseDto station = stationService.findById(KANGNAM_STATION_ID);
+        StationDetailResponseDto station = stationService.detail(KANGNAM_STATION_ID);
 
         //then
         softly.assertThat(station).isNotNull();

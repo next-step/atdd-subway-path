@@ -24,7 +24,7 @@ public class StationService {
         return StationListResponseDto.toDtoEntity(stationRepository.findAll());
     }
 
-    public StationDetailResponseDto findById(long id) {
+    public StationDetailResponseDto detail(long id) {
         Station station = stationRepository.findById(id).orElseThrow(IllegalAccessError::new);
         return StationDetailResponseDto.toDtoEntity(station);
     }
