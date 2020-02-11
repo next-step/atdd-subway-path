@@ -21,7 +21,8 @@ import java.util.stream.Collectors;
 public class StationController {
     @Autowired
     StationRepository stationRepository;
-
+    @Autowired
+    StationService stationService;
     @PostMapping("/stations")
     public @ResponseBody ResponseEntity stations(@RequestBody String inputJson) {
         Logger logger = Logger.getLogger("station");
@@ -44,12 +45,21 @@ public class StationController {
         responseHeaders.set("Content-Type", "application/json");
         URI location = URI.create("/createStation");
 
-        StationService stationService = new StationService(stationRepository);
-        Long id = stationService.create(stationRequestDto);
+         Long id =stationService.create(stationRequestDto);
 
         return ResponseEntity.created(location)
                 .header(String.valueOf(responseHeaders))
                 .body(id);
     }
 
+    @GetMapping("selectStationList")
+    public ResponseEntity selectStationList(){
+
+        stationService.create(StationRequestDto.builder().name("강남역").build());
+        stationService.create(StationRequestDto.builder().name("수서역").build());
+
+        List<Station> stationList = stationService.select();
+
+        return ResponseEntity.ok().body(stationList);
+    }
 }

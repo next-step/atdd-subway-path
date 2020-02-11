@@ -62,4 +62,17 @@ public class StationAcceptanceTest {
 
     }
 
+    @DisplayName("지하철역목록조회")
+    @Test
+    public void selectStationList() {
+
+        webTestClient.get().uri("selectStationList")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.[0].name").isEqualTo("강남역")
+                .jsonPath("$.[1].name").isEqualTo("수서역");
+    }
 }
