@@ -4,7 +4,7 @@ import atdd.station.application.SubwayLineCommandService;
 import atdd.station.application.SubwayLineQueryService;
 import atdd.station.application.dto.SubwayLineResponseDto;
 import atdd.station.domain.SubwayLine;
-import atdd.station.web.dto.SubwayLineCreateRequest;
+import atdd.station.web.dto.SubwayLineCreateRequestDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -32,10 +32,10 @@ public class SubwayLineController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createSubwayLine(@RequestBody SubwayLineCreateRequest subwayLineCreateRequest) {
-        logger.info("[SubwayLineController.createSubwayLine] subwayLineCreateRequest={}", subwayLineCreateRequest);
+    public ResponseEntity<Void> createSubwayLine(@RequestBody SubwayLineCreateRequestDto subwayLineCreateRequestDto) {
+        logger.info("[SubwayLineController.createSubwayLine] SubwayLineCreateRequestDto={}", subwayLineCreateRequestDto);
 
-        SubwayLine savedSubwayLine = subwayLineCommandService.create(subwayLineCreateRequest.getName());
+        SubwayLine savedSubwayLine = subwayLineCommandService.create(subwayLineCreateRequestDto.getName());
 
         return ResponseEntity.created(URI.create(SubwayLineController.ROOT_URI + "/" + savedSubwayLine.getId())).build();
     }

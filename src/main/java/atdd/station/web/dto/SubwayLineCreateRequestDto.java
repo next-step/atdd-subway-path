@@ -1,9 +1,9 @@
 package atdd.station.web.dto;
 
-public class SubwayLineCreateRequest {
+public class SubwayLineCreateRequestDto {
     private String name;
 
-    public SubwayLineCreateRequest() {
+    public SubwayLineCreateRequestDto() {
     }
 
     public void setName(String name) {

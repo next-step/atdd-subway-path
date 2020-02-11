@@ -10,7 +10,7 @@ import atdd.station.domain.SubwaySection;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -37,7 +37,7 @@ public class SubwayLineQueryService {
     }
 
     private List<SubwayCommonResponseDto> getStationsFromSubwayLine(SubwayLine subwayLine) {
-        List<SubwaySection> savedSubwaySections = subwaySectionQueryService.findAllBySubwayLineId(subwayLine.getId());
+        List<SubwaySection> savedSubwaySections = subwaySectionQueryService.findAllBySubwayLine(subwayLine);
         List<Station> savedStations = getStationsFromSubwaySection(savedSubwaySections);
 
         return savedStations.stream()
@@ -46,19 +46,22 @@ public class SubwayLineQueryService {
     }
 
     private List<Station> getStationsFromSubwaySection(List<SubwaySection> savedSubwaySections) {
-        List<Station> stations = Collections.emptyList();
+        List<Station> stations = new ArrayList<>();
         savedSubwaySections.forEach(subwaySection -> {
             Station sourceStation = subwaySection.getSourceStation();
+
             stations.add(sourceStation);
 
             Station targetStation = subwaySection.getTargetStation();
 
             SubwaySection nextSubwaySection = savedSubwaySections.stream()
-                    .filter(section -> section.getSourceStation().equals(targetStation)
-                    ).findFirst().orElse(null);
+                    .filter(section -> section.getSourceStation().equals(targetStation))
+                    .findFirst().orElse(null);
 
             if (Objects.nonNull(nextSubwaySection)) {
                 stations.add(nextSubwaySection.getSourceStation());
+            } else {
+                stations.add(targetStation);
             }
         });
 
