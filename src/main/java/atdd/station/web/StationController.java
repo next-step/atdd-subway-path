@@ -2,9 +2,9 @@ package atdd.station.web;
 
 import atdd.station.application.StationCommandService;
 import atdd.station.application.StationQueryService;
+import atdd.station.application.dto.StationResponseDto;
 import atdd.station.domain.Station;
 import atdd.station.web.dto.StationCreateRequestDto;
-import atdd.station.web.dto.StationResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -13,12 +13,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/stations")
+@RequestMapping(StationController.ROOT_URI)
 public class StationController {
     private static final Logger logger = LoggerFactory.getLogger(StationController.class);
+
+    public static final String ROOT_URI = "/stations";
 
     private StationCommandService stationCommandService;
     private StationQueryService stationQueryService;
@@ -36,26 +37,22 @@ public class StationController {
 
         Station savedStation = stationCommandService.create(stationCreateRequest.getName());
 
-        return ResponseEntity.created(URI.create("/stations/" + savedStation.getId())).build();
+        return ResponseEntity.created(URI.create(StationController.ROOT_URI + "/" + savedStation.getId())).build();
     }
 
     @GetMapping
     public ResponseEntity<List<StationResponseDto>> getStations() {
-        List<StationResponseDto> stations = stationQueryService.getStations()
-                .stream()
-                .map(station -> StationResponseDto.of(station))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok().body(stations);
+        return ResponseEntity.ok().body(stationQueryService.getStations());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<StationResponseDto> getStation(@PathVariable Long id) {
         logger.info("[StationController.getStation] id={}", id);
 
-        Station savedStation = stationQueryService.getStation(id);
+        StationResponseDto result = stationQueryService.getStation(id);
 
-        return ResponseEntity.ok().body(StationResponseDto.of(savedStation));
+        logger.info("[StationController.getStation] result={}", result);
+        return ResponseEntity.ok().body(result);
     }
 
     @DeleteMapping("/{id}")
@@ -65,7 +62,7 @@ public class StationController {
         stationCommandService.deleteStation(id);
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.LOCATION, "/stations")
+                .header(HttpHeaders.LOCATION, StationController.ROOT_URI)
                 .build();
     }
 

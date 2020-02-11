@@ -4,7 +4,7 @@ import atdd.station.domain.Station;
 import atdd.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StationCommandService {
