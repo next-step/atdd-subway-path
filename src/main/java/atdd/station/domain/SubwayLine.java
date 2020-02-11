@@ -5,6 +5,7 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,7 @@ public class SubwayLine {
     @OneToMany(mappedBy = "station", fetch = FetchType.EAGER)
     @Where(clause = "deleted = false")
     @OrderBy("id ASC")
-    private List<Subway> subways;
+    private List<Subway> subways = new ArrayList<>();
 
     private boolean deleted = false;
 
@@ -85,8 +86,14 @@ public class SubwayLine {
         return this.deleted;
     }
 
-    public List<Subway> getStations() {
+    public List<Subway> getSubways() {
         return subways;
+    }
+
+    public List<Station> getStations() {
+        return this.subways.stream()
+                .map(Subway::getStation)
+                .collect(Collectors.toList());
     }
 
     @Override
