@@ -1,6 +1,7 @@
 package atdd.station;
 
 import atdd.dto.Station;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -57,11 +60,15 @@ public class StationAcceptanceTest {
         station.setName("강남역");
         createStation(station);
 
-        webTestClient.get().uri("/stations/강남역")
+        List<Station> result = webTestClient.get().uri("/stations")
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody().jsonPath("$.name").isEqualTo("강남역");
+                .expectBodyList(Station.class)
+                .returnResult()
+                .getResponseBody();
+
+        Assertions.assertThat(result.get(0).getName()).isEqualTo(station.getName());
     }
 
     /**
@@ -82,7 +89,9 @@ public class StationAcceptanceTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody().jsonPath("$.name").isEqualTo("강남역");
+                .expectBody()
+                .jsonPath("$.id").isNotEmpty()
+                .jsonPath("$.name").isEqualTo(station.getName());
     }
 
     /**
@@ -108,14 +117,15 @@ public class StationAcceptanceTest {
      */
     public void createStation(Station station) {
 
-        String inputJson = "{\"name\":\""+station.getName()+"\"}";
-
         webTestClient.post().uri("/stations")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
+                .body(Mono.just(station), Station.class)
                 .exchange()
                 .expectStatus().isCreated()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON);
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectHeader().exists("Location")
+                .expectBody()
+                .jsonPath("$.name").isEqualTo(station.getName());
     }
 }
 

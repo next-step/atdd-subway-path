@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,47 +24,37 @@ public class StationController {
     private StationService stationService;
 
     @PostMapping("")
-    public ResponseEntity<String> createStation(@RequestBody Station station) {
+    public ResponseEntity<Station> createStation(@RequestBody Station station) {
 
         stationService.createStation(station);
-        String stationName = "강남역";
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("Location", stationName);
+        httpHeaders.set("Location", station.getName());
 
-        return ResponseEntity.created(URI.create("/stations/" + stationName)).headers(httpHeaders).body("{\"name\":\""+stationName+"\"}");
+        return ResponseEntity.created(URI.create("/stations/" + station.getName())).headers(httpHeaders).body(station);
     }
 
-    @GetMapping("/{stationName}")
-    public ResponseEntity<String> getStation(@PathVariable String stationName) {
+    @GetMapping("")
+    public ResponseEntity<List<Station>> getStation() {
 
-        try {
-            return ResponseEntity.ok().body("{\"name\":\""+stationName+"\"}");
-        } catch (EmptyResultDataAccessException e) {
-            return ResponseEntity.notFound().build();
-        }
+        stationService.getStation();
 
+        return ResponseEntity.ok(stationService.getStation());
     }
 
     @GetMapping("/details/{stationName}")
-    public ResponseEntity<String> detailStation(@PathVariable String stationName) {
+    public ResponseEntity<Station> detailStation(@PathVariable String stationName) {
 
-        try {
-            return ResponseEntity.ok().body("{\"name\":\""+stationName+"\"}");
-        } catch (EmptyResultDataAccessException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(stationService.detailStation(stationName));
 
     }
 
     @DeleteMapping("/{stationName}")
     public ResponseEntity<String> deleteStation(@PathVariable String stationName) {
 
-        try {
-            return ResponseEntity.ok().body("{\"name\":\""+stationName+"\"}");
-        } catch (EmptyResultDataAccessException e) {
-            return ResponseEntity.notFound().build();
-        }
+        stationService.deleteStation(stationName);
+
+        return ResponseEntity.ok().build();
 
     }
 }
