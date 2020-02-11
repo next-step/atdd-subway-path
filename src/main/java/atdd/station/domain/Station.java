@@ -1,11 +1,17 @@
-package atdd.station.repository;
+package atdd.station.domain;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 import java.util.StringJoiner;
 
 import static javax.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
+@NoArgsConstructor(access = PROTECTED)
+@Getter
 @Entity
 public class Station {
 
@@ -16,18 +22,8 @@ public class Station {
     @Column(nullable = false)
     private String name;
 
-    protected Station() {}
-
     public Station(String name) {
         this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     @Override

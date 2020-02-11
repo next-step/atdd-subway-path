@@ -33,14 +33,11 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역 등록을 할 수 있다")
     @Test
     void beAbleCreateStation() {
-        // give
         String stationName = "강남역";
 
-        // when
         EntityExchangeResult<StationResponse> result = createStation(stationName);
         StationResponse station = result.getResponseBody();
 
-        // then
         assertThat(station).isNotNull();
         assertThat(station.getName()).isEqualTo(stationName);
     }
@@ -48,11 +45,9 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역 목록을 조회 할 수 있다")
     @Test
     void beAbleFindStations() {
-        // given
         String stationName = "강남역";
         createStation(stationName);
 
-        // when & then
         webTestClient.get().uri("/stations")
                 .exchange()
                 .expectStatus().isOk()
@@ -65,13 +60,11 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역 정보를 조회 할 수 있다")
     @Test
     void beAbleFindStationsById() {
-        // given
         String stationName = "강남역";
 
         EntityExchangeResult<StationResponse> result = createStation(stationName);
         String path = getLocationPath(result.getResponseHeaders());
 
-        // when & then
         webTestClient.get().uri(path)
                 .exchange()
                 .expectStatus().isOk()
@@ -83,23 +76,19 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역 정보를 삭제 할 수 있다")
     @Test
     void beAbleDeleteStation() {
-        // given
         String stationName = "강남역";
 
         EntityExchangeResult<StationResponse> result = createStation(stationName);
         String path = getLocationPath(result.getResponseHeaders());
 
-        // when & then
         webTestClient.delete().uri(path)
                 .exchange()
                 .expectStatus().isNoContent();
     }
 
     private EntityExchangeResult<StationResponse> createStation(String stationName) {
-        // given
         String inputJson = "{\"name\":\""+ stationName +"\"}";
 
-        // when
         return webTestClient.post().uri("/stations")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(inputJson), String.class)

@@ -1,26 +1,25 @@
-package atdd.station;
+package atdd.station.controller;
 
 import atdd.station.api.request.CreateStationRequest;
-import atdd.station.api.response.FindStationResponse;
+import atdd.station.api.response.FindStationsResponse;
 import atdd.station.api.response.StationResponse;
-import atdd.station.repository.Station;
-import atdd.station.repository.StationRepository;
+import atdd.station.domain.Station;
+import atdd.station.domain.StationRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
 
+@RequiredArgsConstructor
+@RequestMapping("/stations")
 @RestController
 public class StationController {
 
     private final StationRepository stationRepository;
 
-    public StationController(StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
-    }
-
-    @PostMapping("/stations")
+    @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody CreateStationRequest request) {
         final Station station = request.toStation();
         final Station persistStation = stationRepository.save(station);
@@ -30,20 +29,20 @@ public class StationController {
                 .body(new StationResponse(persistStation));
     }
 
-    @GetMapping("/stations")
-    public ResponseEntity<FindStationResponse> findStations() {
+    @GetMapping
+    public ResponseEntity<FindStationsResponse> findStations() {
         final List<Station> stations = stationRepository.findAll();
-        return ResponseEntity.ok(new FindStationResponse(stations.size(), stations));
+        return ResponseEntity.ok(new FindStationsResponse(stations.size(), stations));
     }
 
-    @GetMapping("/stations/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<StationResponse> findStationById(@PathVariable("id") Long id) {
         return stationRepository.findById(id)
                 .map(station -> ResponseEntity.ok(new StationResponse(station)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/stations/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteStation(@PathVariable("id") Long id) {
         return stationRepository.findById(id)
                 .map(

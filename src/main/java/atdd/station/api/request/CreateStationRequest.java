@@ -1,18 +1,18 @@
 package atdd.station.api.request;
 
-import atdd.station.repository.Station;
+import atdd.station.domain.Station;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.StringJoiner;
 
+import static lombok.AccessLevel.PROTECTED;
+
+@NoArgsConstructor(access = PROTECTED)
+@Getter
 public class CreateStationRequest {
 
     private String name;
-
-    protected CreateStationRequest() {}
-
-    public String getName() {
-        return name;
-    }
 
     public Station toStation() {
         return new Station(name);
