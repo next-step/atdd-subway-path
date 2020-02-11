@@ -1,9 +1,11 @@
 package atdd.station.domain;
 
 import lombok.Builder;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Entity
 public class SubwayLine {
@@ -27,8 +29,10 @@ public class SubwayLine {
     @Size(min = 2, max = 20)
     private String intervalTime;
 
-    @Embedded
-    private Stations stations;
+    @OneToMany(mappedBy = "station", fetch = FetchType.EAGER)
+    @Where(clause = "deleted = false")
+    @OrderBy("id ASC")
+    private List<Subway> stations;
 
     private boolean deleted = false;
 
@@ -36,13 +40,12 @@ public class SubwayLine {
     }
 
     @Builder
-    public SubwayLine(String name, String startTime, String endTime, String intervalTime, Stations stations) {
+    public SubwayLine(String name, String startTime, String endTime, String intervalTime) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.startTime = startTime;
-        this.stations = stations;
     }
 
     public SubwayLine(String name) {
@@ -50,7 +53,6 @@ public class SubwayLine {
         this.startTime = DEFAULT_START_TIME;
         this.endTime = DEFAULT_END_TIME;
         this.intervalTime = DEFAULT_INTERVAL;
-        this.stations = getStations();
     }
 
     public long getId() {
@@ -73,9 +75,6 @@ public class SubwayLine {
         return intervalTime;
     }
 
-    public Stations getStations() {
-        return stations;
-    }
 
     public void deleteSubwayLine() {
         this.deleted = true;
@@ -83,6 +82,10 @@ public class SubwayLine {
 
     public boolean isDeleted() {
         return this.deleted;
+    }
+
+    public List<Subway> getStations() {
+        return stations;
     }
 
     @Override
