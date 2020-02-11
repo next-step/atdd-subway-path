@@ -19,7 +19,7 @@ import java.util.List;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
-@DisplayName("Station Controller 를 테스트한다")
+@DisplayName(value = "Station Controller 를 테스트한다")
 public class StationAcceptanceTest {
 
     @Autowired
@@ -27,22 +27,20 @@ public class StationAcceptanceTest {
 
     private static final Logger logger = LoggerFactory.getLogger(StationAcceptanceTest.class);
 
-
     @Nested
-    @DisplayName("역을 생성하는 API")
-    class CreateStation{
+    @DisplayName(value = "역을 생성하는 API")
+    class CreateStation {
 
         @Nested
-        @DisplayName("역 이름이 주어진다면")
-        class GivenStationName{
-
+        @DisplayName(value = "역 이름이 주어진다면")
+        class GivenStationName {
 
             final String stationName = "강남역";
             final String inputJson = "{\"name\":\"" + stationName + "\"}";
 
             @Test
-            @DisplayName("생성된 역을 리턴한다")
-            void expectCreateStation(){
+            @DisplayName(value = "생성된 역을 리턴한다")
+            void expectCreateStation() {
                 webTestClient.post().uri("/stations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(Mono.just(inputJson), String.class)
@@ -50,7 +48,7 @@ public class StationAcceptanceTest {
                         .expectStatus().isCreated()
                         .expectHeader().contentType(MediaType.APPLICATION_JSON)
                         .expectHeader().exists("Location")
-                        .expectBody().jsonPath("$.name").isEqualTo(stationName);
+                        .expectBody(Station.class);
             }
 
         }
