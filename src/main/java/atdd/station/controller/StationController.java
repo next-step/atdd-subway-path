@@ -73,7 +73,7 @@ public class StationController {
         stationRepository.deleteById(id);
 
         return ResponseEntity
-                .ok()
+                .noContent()
                 .headers(httpHeaders)
                 .build();
     }
