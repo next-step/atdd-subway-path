@@ -2,6 +2,7 @@ package atdd.station.repository;
 
 import atdd.station.model.Station;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -37,11 +38,16 @@ public class StationRepository {
     }
 
     public Station findById(long id) {
-        return jdbcTemplate.queryForObject("select * from STATION where id = ?",
-                new Object[]{id},
-                ((rs, rowNum) -> new Station(
-                        rs.getLong("id"),
-                        rs.getString("name"))));
+        try {
+            return jdbcTemplate.queryForObject("select * from STATION where id = ?",
+                    new Object[]{id},
+                    ((rs, rowNum) -> new Station(
+                            rs.getLong("id"),
+                            rs.getString("name"))));
+
+        }catch (EmptyResultDataAccessException e){
+            return null;
+        }
     }
 
     public List findAll() {
