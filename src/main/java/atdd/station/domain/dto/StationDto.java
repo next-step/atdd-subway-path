@@ -30,7 +30,7 @@ public class StationDto {
     }
 
     public Station toStation() {
-        return Station.createBuilder()
+        return Station.builder()
                 .name(this.name)
                 .build();
     }

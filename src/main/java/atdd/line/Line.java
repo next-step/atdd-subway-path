@@ -1,11 +1,14 @@
 package atdd.line;
 
+import atdd.edge.Edge;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -22,6 +25,9 @@ public class Line {
     private LocalTime endTime;
 
     private int intervalTime;
+
+    @OneToMany(mappedBy = "line")
+    private List<Edge> edges = new ArrayList();
 
     @Builder
     public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {

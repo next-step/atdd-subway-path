@@ -1,13 +1,13 @@
 package atdd.station.domain;
 
+import atdd.edge.Edge;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -20,8 +20,12 @@ public class Station {
 
     private String name;
 
-    @Builder(builderMethodName = "createBuilder", builderClassName = "createBuilder")
-    public Station(String name) {
+    @OneToMany(mappedBy = "line")
+    private List<Edge> edges = new ArrayList();
+
+    @Builder
+    public Station(Long id, String name) {
+        this.id = id;
         this.name = name;
     }
 }

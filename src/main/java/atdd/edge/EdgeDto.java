@@ -12,9 +12,9 @@ public class EdgeDto {
 
     public static EdgeDto of(Edge savedEdge) {
         return EdgeDto.builder()
-                .lineId(savedEdge.getLineId())
-                .sourceStationId(savedEdge.getSourceStationId())
-                .targetStationId(savedEdge.getTargetStationId())
+                .lineId(savedEdge.getLine().getId())
+                .sourceStationId(savedEdge.getSourceStation().getId())
+                .targetStationId(savedEdge.getTargetStation().getId())
                 .build();
     }
 

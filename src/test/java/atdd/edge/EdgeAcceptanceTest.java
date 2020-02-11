@@ -95,5 +95,9 @@ public class EdgeAcceptanceTest {
                         .sourceStationId(gangnamStation.getId())
                         .targetStationId(yeoksamStation.getId())
                         .build());
+
+        webTestClient.get().uri("/stations/" + this.secondLine.getId())
+                .exchange()
+                .expectStatus().is2xxSuccessful();
     }
 }

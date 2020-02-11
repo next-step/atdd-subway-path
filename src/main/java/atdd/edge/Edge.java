@@ -1,13 +1,12 @@
 package atdd.edge;
 
+import atdd.line.Line;
+import atdd.station.domain.Station;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Getter
 @Entity
@@ -17,16 +16,22 @@ public class Edge {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long lineId;
+    @ManyToOne
+    @JoinColumn(name = "line_id")
+    private Line line;
 
-    private Long sourceStationId;
+    @ManyToOne
+    @JoinColumn(name = "source_station_id")
+    private Station sourceStation;
 
-    private Long targetStationId;
+    @ManyToOne
+    @JoinColumn(name = "target_station_id")
+    private Station targetStation;
 
     @Builder
     public Edge(Long lineId, Long sourceStationId, Long targetStationId) {
-        this.lineId = lineId;
-        this.sourceStationId = sourceStationId;
-        this.targetStationId = targetStationId;
+        this.line = Line.builder().id(lineId).build();
+        this.sourceStation = Station.builder().id(sourceStationId).build();
+        this.targetStation = Station.builder().id(targetStationId).build();
     }
 }
