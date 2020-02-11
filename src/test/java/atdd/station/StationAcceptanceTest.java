@@ -130,7 +130,7 @@ public class StationAcceptanceTest {
         StationLine stationLine = new StationLine(id, "강남역", "05:00", "23:00", 10);
         String inputJson = String.format("{\"name\": \"%s\", \"startTime\": \"%s\", \"endTime\": \"%s\", " +
                 "\"interval\": \"%d\"}", stationLine.getName(), stationLine.getStartTime(), stationLine.getEndTime(),
-                stationLine.getInterval());
+                stationLine.getStationInterval());
 
         webTestClient.post()
                      .uri(createStationLineUri)
