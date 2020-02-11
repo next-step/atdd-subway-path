@@ -20,4 +20,12 @@ public class GlobalExceptionHandler {
         return Map.of("error", message);
     }
 
+    @ExceptionHandler({IllegalArgumentException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, Object> handleBadRequest(Exception e) {
+        final String message = e.getMessage();
+        log.error("{}", message, e);
+        return Map.of("error", message);
+    }
+
 }
