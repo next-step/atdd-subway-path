@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
@@ -58,16 +59,17 @@ public class StationAcceptanceTest {
         class GivenStationId {
 
             final String stationName = "강남역";
-            final String path = createStationBy(stationName).getRequestHeaders().getLocation().getPath();
+            final EntityExchangeResult<Station> stationResult = createStationBy(stationName);
+            final String path = stationResult.getResponseHeaders().getLocation().getPath();
 
             @Test
             @DisplayName("조회가 제대로 되는지 확인한다")
+
             void expectGetStation() {
                 assertThat(webTestClient.get().uri(path)
                         .exchange()
-                        .expectStatus().isCreated()
+                        .expectStatus().isOk()
                         .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                        .expectHeader().exists("Location")
                         .expectBody(Station.class)
                         .returnResult()
                         .getResponseBody()
@@ -88,7 +90,7 @@ public class StationAcceptanceTest {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectHeader().exists("Location")
+                .expectHeader().exists(HttpHeaders.LOCATION)
                 .expectBody(Station.class)
                 .returnResult();
     }
