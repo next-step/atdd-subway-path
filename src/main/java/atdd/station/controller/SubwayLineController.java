@@ -1,7 +1,7 @@
 package atdd.station.controller;
 
-import atdd.station.domain.SubwayLine;
 import atdd.station.dto.subwayLine.SubwayLineCreateRequestDto;
+import atdd.station.dto.subwayLine.SubwayLineCreateResponseDto;
 import atdd.station.dto.subwayLine.SubwayLineDetailResponseDto;
 import atdd.station.dto.subwayLine.SubwayLineListResponseDto;
 import atdd.station.service.SubwayLineService;
@@ -22,8 +22,8 @@ public class SubwayLineController {
     private SubwayLineService subwayLineService;
 
     @PostMapping("/")
-    public ResponseEntity<SubwayLine> create(@RequestBody SubwayLineCreateRequestDto subwayLine) {
-        SubwayLine createdSubwayLine = subwayLineService.create(subwayLine);
+    public ResponseEntity<SubwayLineCreateResponseDto> create(@RequestBody SubwayLineCreateRequestDto subwayLine) {
+        SubwayLineCreateResponseDto createdSubwayLine = subwayLineService.create(subwayLine);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("/subway-lines/" + createdSubwayLine.getId()));
