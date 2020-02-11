@@ -6,6 +6,7 @@ import org.hibernate.annotations.Where;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class SubwayLine {
@@ -32,7 +33,7 @@ public class SubwayLine {
     @OneToMany(mappedBy = "station", fetch = FetchType.EAGER)
     @Where(clause = "deleted = false")
     @OrderBy("id ASC")
-    private List<Subway> stations;
+    private List<Subway> subways;
 
     private boolean deleted = false;
 
@@ -40,12 +41,13 @@ public class SubwayLine {
     }
 
     @Builder
-    public SubwayLine(String name, String startTime, String endTime, String intervalTime) {
+    public SubwayLine(String name, String startTime, String endTime, String intervalTime, List<Subway> subways) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.startTime = startTime;
+        this.subways = subways;
     }
 
     public SubwayLine(String name) {
@@ -75,7 +77,6 @@ public class SubwayLine {
         return intervalTime;
     }
 
-
     public void deleteSubwayLine() {
         this.deleted = true;
     }
@@ -85,7 +86,7 @@ public class SubwayLine {
     }
 
     public List<Subway> getStations() {
-        return stations;
+        return subways;
     }
 
     @Override
@@ -96,7 +97,7 @@ public class SubwayLine {
                 ", startTime='" + startTime + '\'' +
                 ", endTime='" + endTime + '\'' +
                 ", interval='" + intervalTime + '\'' +
-                ", station=" + stations +
+                ", station=" + subways +
                 ", deleted=" + deleted +
                 '}';
     }
