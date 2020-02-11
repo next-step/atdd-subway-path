@@ -10,11 +10,14 @@ import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebCl
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -25,6 +28,7 @@ public class StationAcceptanceTest {
     @Autowired
     private WebTestClient webTestClient;
 
+
     @DisplayName("지하철역을 등록한다")
     @Test
     public void createStation(){
@@ -34,30 +38,50 @@ public class StationAcceptanceTest {
                 .name(STATION_NAME)
                 .build();
 
-        webTestClient.post().uri("/stations")
+        EntityExchangeResult<Station> result = webTestClient.post().uri("/stations")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(station), Station.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectHeader().exists("Location")
-                .expectBody().jsonPath("$.name").isEqualTo(STATION_NAME)
-        ;
+                .expectBody(Station.class)
+                .returnResult()
+                ;
+
+        String location = result.getResponseHeaders().getLocation().getPath();
+        Station resultStation = result.getResponseBody();
+
+        assertThat(location).isEqualTo("/stations/"+resultStation.getId());
+        assertThat(resultStation.getName()).isEqualTo(STATION_NAME);
+    }
+
+    @DisplayName("중복되는 create 테스트 코드")
+    private Station createStation(String stationName){
+
+        Station station = Station.builder()
+                .name(stationName)
+                .build();
+
+        Station result = webTestClient.post().uri("/stations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(station), Station.class)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectHeader().exists("Location")
+                .expectBody(Station.class)
+                .returnResult()
+                .getResponseBody()
+                ;
+        return result;
     }
 
     @DisplayName("지하철역 목록을 조회한다")
     @Test
     public void getStations(){
         String STATION_NAME = "강남역";
-
-        Station station = Station.builder()
-                .name(STATION_NAME)
-                .build();
-
-        webTestClient.post().uri("/stations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(station), Station.class)
-                .exchange();
+        Station result =  createStation(STATION_NAME);
 
         List<Station> stations = webTestClient.get().uri("/stations")
                 .exchange()
@@ -69,7 +93,7 @@ public class StationAcceptanceTest {
 
         ;
 
-        Assertions.assertThat(stations.get(0).getName()).isEqualTo(STATION_NAME);
+        assertThat(stations.get(0).getName()).isEqualTo(STATION_NAME);
 
     }
 
@@ -77,18 +101,9 @@ public class StationAcceptanceTest {
     @Test
     public void getStationById(){
         String STATION_NAME = "강남역";
+        Station result = createStation(STATION_NAME);
 
-        Station station = Station.builder()
-                .name(STATION_NAME)
-                .build();
-
-        webTestClient.post().uri("/stations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(station), Station.class)
-                .exchange();
-
-
-        webTestClient.get().uri("/stations/" + 1)
+         webTestClient.get().uri("/stations/" + result.getId())
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -100,17 +115,9 @@ public class StationAcceptanceTest {
     @Test
     public void deleteById(){
         String STATION_NAME = "강남역";
+        Station result = createStation(STATION_NAME);
 
-        Station station = Station.builder()
-                .name(STATION_NAME)
-                .build();
-
-        webTestClient.post().uri("/stations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(station), Station.class)
-                .exchange();
-
-        webTestClient.delete().uri("/stations/"+1)
+        webTestClient.delete().uri("/stations/"+result.getId())
                 .exchange()
                 .expectStatus().isNoContent();
 
