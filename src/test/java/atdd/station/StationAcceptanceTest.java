@@ -1,5 +1,6 @@
 package atdd.station;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
+
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,6 +56,32 @@ public class StationAcceptanceTest {
     @Nested
     @DisplayName(value = "역을 찾아오는 API")
     class FindStation {
+
+        @Nested
+        @DisplayName(value = "역이 세 개가 주어진다면")
+        class GivenAll {
+
+            @BeforeEach
+            void setUp() {
+                createStationBy("강남역");
+                createStationBy("역삼역");
+            }
+
+            @Test
+            @DisplayName("조회가 제대로 되는지 확인한다")
+            void expectGetStations() {
+                webTestClient.get().uri(StationUri.ROOT)
+                        .exchange()
+                        .expectStatus().isOk()
+                        .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                        .expectBodyList(Station.class)
+                        .hasSize(2)
+                        .isEqualTo(Arrays.asList(
+                                Station.builder().name(StationName.builder().name("강남역").build()).build(),
+                                Station.builder().name(StationName.builder().name("역삼역").build()).build())
+                        );
+            }
+        }
 
         @Nested
         @DisplayName(value = "패스가 주어진다면")
@@ -100,7 +129,6 @@ public class StationAcceptanceTest {
                 webTestClient.delete().uri(path)
                         .exchange()
                         .expectStatus().isNotFound();
-
             }
         }
     }
