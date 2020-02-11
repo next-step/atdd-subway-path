@@ -96,9 +96,9 @@ public class StationAcceptanceTest {
 
 
         // read station test
-        String readStationUri = String.format("%s/%d", prefixUri, targetStation.getId());
+        String readOrDeleteStationUri = getRequestUri(targetStation.getId());
 
-        readRequestWebTestClient(readStationUri)
+        readRequestWebTestClient(readOrDeleteStationUri)
                 .isOk()
                 .expectHeader()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -109,7 +109,7 @@ public class StationAcceptanceTest {
                             .isEqualTo("강남역");
                 });
 
-        String incorrectReadStationUri = String.format("%s/%d", prefixUri, 93);
+        String incorrectReadStationUri = getRequestUri(93);
 
         readRequestWebTestClient(incorrectReadStationUri)
                 .isNoContent()
@@ -117,16 +117,14 @@ public class StationAcceptanceTest {
 
 
         // delete station test
-        String deleteStationUri = String.format("%s/%d", prefixUri, targetStation.getId());
-
         webTestClient.delete()
-                     .uri(deleteStationUri)
+                     .uri(readOrDeleteStationUri)
                      .exchange()
                      .expectStatus()
                      .isOk();
 
-        readRequestWebTestClient(readStationUri).isNoContent()
-                                                .expectBody(Void.class);
+        readRequestWebTestClient(readOrDeleteStationUri).isNoContent()
+                                                        .expectBody(Void.class);
 
     }
 
@@ -136,5 +134,9 @@ public class StationAcceptanceTest {
                             .accept(MediaType.APPLICATION_JSON)
                             .exchange()
                             .expectStatus();
+    }
+
+    private String getRequestUri(long entityId) {
+        return String.format("%s/%d", prefixUri, entityId);
     }
 }
