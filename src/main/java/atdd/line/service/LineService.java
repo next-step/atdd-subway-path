@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -22,6 +23,10 @@ public class LineService {
 
     public List<Line> findAll() {
         return lineRepository.findAll();
+    }
+
+    public Optional<Line> findLineById(Long id) {
+        return lineRepository.findById(id);
     }
 
 }
