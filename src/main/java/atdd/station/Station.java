@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -14,4 +15,7 @@ public class Station extends AbstractEntity {
 
     private StationName name;
 
+    public String getName() {
+        return name.getName();
+    }
 }
