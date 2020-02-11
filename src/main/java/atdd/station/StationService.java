@@ -4,4 +4,5 @@ public interface StationService {
 
     Station create(Station station);
 
+    void delete(Station station);
 }

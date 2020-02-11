@@ -3,6 +3,7 @@ package atdd.station;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +29,14 @@ public class StationController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity get(@PathVariable("id") Station station) {
-
         return ResponseEntity.ok().body(station);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity delete(@PathVariable("id") Station station) {
+        if (station == null)
+            return ResponseEntity.notFound().build();
+        stationService.delete(station);
+        return ResponseEntity.ok().build();
     }
 }
