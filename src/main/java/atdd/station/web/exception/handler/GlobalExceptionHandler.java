@@ -14,6 +14,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({ResourceNotFoundException.class})
     public ResponseEntity handleApiException(ResourceNotFoundException e) {
         logger.error("api exception occurred. message=[{}]. className=[{}]", e.getMessage(), e.getClass().getName(), e);
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.noContent().build();
     }
 }
