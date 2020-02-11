@@ -15,4 +15,7 @@ public interface SubwaySectionRepository extends JpaRepository<SubwaySection, Lo
                                                                            Station targetStation);
 
     List<SubwaySection> findBySubwayLine(SubwayLine subwayLine);
+
+    void deleteAllBySourceStationOrTargetStation(Station sourceStation,
+                                                 Station targetStation);
 }

@@ -7,9 +7,9 @@ import atdd.station.domain.SubwaySectionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class SubwaySectionCommandService {
@@ -48,13 +48,14 @@ public class SubwaySectionCommandService {
         List<SubwaySection> savedSubwaySections = subwaySectionRepository.findAllBySubwayLineAndSourceStationOrTargetStation(savedSubwayLine, savedStation, savedStation);
 
         List<Station> stations = savedSubwaySections.stream()
-                .flatMap(subwaySection -> Arrays.asList(subwaySection.getSourceStation(), subwaySection.getTargetStation()).stream())
-                .collect(Collectors.toSet())
-                .stream()
-                .filter(station -> !station.equals(savedStation))
+                .flatMap(subwaySection -> Stream.of(subwaySection.getSourceStation(), subwaySection.getTargetStation()))
+                .filter(station -> station.isNotMatchBy(savedStation))
                 .collect(Collectors.toList());
 
-        savedSubwaySections.forEach(subwaySection -> subwaySectionRepository.delete(subwaySection));
-        subwaySectionRepository.save(SubwaySection.of(savedSubwayLine, stations.get(0), stations.get(1)));
+        subwaySectionRepository.deleteAllBySourceStationOrTargetStation(savedStation, savedStation);
+
+        if (stations.size() > 1) {
+            subwaySectionRepository.save(SubwaySection.of(savedSubwayLine, stations.get(0), stations.get(1)));
+        }
     }
 }

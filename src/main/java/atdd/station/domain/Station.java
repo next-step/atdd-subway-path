@@ -25,6 +25,10 @@ public class Station {
         return new Station(stationName);
     }
 
+    public boolean isNotMatchBy(Station savedStation) {
+        return !this.name.equals(savedStation.getName());
+    }
+
     public Long getId() {
         return id;
     }
