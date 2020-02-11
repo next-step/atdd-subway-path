@@ -70,6 +70,20 @@ public class LineAcceptanceTest {
                 .consumeWith(it -> it.equals(lineDto));
     }
 
+    @Test
+    public void 지하철_노선_삭제() {
+        // given
+        LineDto lineDto = this.createLineTest();
+
+        webTestClient.delete().uri("/line/" + lineDto.getId())
+                .exchange()
+                .expectStatus().isNoContent();
+
+        webTestClient.get().uri("/line/" + lineDto.getId())
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
     private LineDto createLineTest() {
         String line = "2호선";
         String input = "{" +

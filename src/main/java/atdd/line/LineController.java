@@ -26,6 +26,7 @@ public class LineController {
     @GetMapping("")
     public ResponseEntity findLine() {
         List<Line> lineList = lineRepository.findAll();
+
         return ResponseEntity.ok(LineDto.listOf(lineList));
     }
 
@@ -34,5 +35,12 @@ public class LineController {
         return lineRepository.findById(id)
                 .map(it -> ResponseEntity.ok(LineDto.of(it)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity deleteLineById(@PathVariable Long id) {
+        lineRepository.deleteById(id);
+
+        return ResponseEntity.noContent().build();
     }
 }
