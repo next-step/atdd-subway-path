@@ -1,5 +1,6 @@
 package atdd.station.controller;
 
+import atdd.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,8 +17,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 
-import static atdd.station.fixture.StationFixture.KANGNAM_STATION_NAME;
-import static atdd.station.fixture.StationFixture.SINSA_STATION_NAME;
+import static atdd.station.fixture.StationFixture.*;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -36,19 +36,20 @@ public class StationAcceptanceTest {
 
     @DisplayName("강남역_지하철_등록을_요청이_성공하는지")
     @ParameterizedTest
-    @ValueSource(strings = {KANGNAM_STATION_NAME, SINSA_STATION_NAME})
+    @ValueSource(strings = {KANGNAM_STATION_NAME, PANGYO_STATION_NAME})
     void createStationSuccessTest(String stationName) {
         //when
         //then
         webTestClient.post().uri(STATION_API_BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just("{\"name\": \"" + stationName + "\"}"), String.class)
+                .body(Mono.just(getStation(stationName)), Station.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectHeader().exists(LOCATION_HEADER)
                 .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(stationName)
-                .jsonPath(ID_JSON_PARSE_EXPRESSION).isEqualTo("1");
+                .jsonPath(ID_JSON_PARSE_EXPRESSION).isEqualTo("1")
+                .jsonPath("$.subwayLines[0].name").isEqualTo("2호선");
     }
 
     @DisplayName("강남역_지하철이_조회가_성공하는지")
@@ -56,7 +57,7 @@ public class StationAcceptanceTest {
     void listStationSuccessTest() {
         //given
         creatStation(KANGNAM_STATION_NAME);
-        creatStation(SINSA_STATION_NAME);
+        creatStation(PANGYO_STATION_NAME);
 
         //when
         //then
@@ -65,7 +66,7 @@ public class StationAcceptanceTest {
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody().jsonPath(getStationNameJsonParseExpressionByIndex("0")).isEqualTo(KANGNAM_STATION_NAME)
-                .jsonPath(getStationNameJsonParseExpressionByIndex("1")).isEqualTo(SINSA_STATION_NAME);
+                .jsonPath(getStationNameJsonParseExpressionByIndex("1")).isEqualTo(PANGYO_STATION_NAME);
     }
 
 
@@ -82,7 +83,6 @@ public class StationAcceptanceTest {
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(KANGNAM_STATION_NAME);
-
     }
 
 
@@ -100,12 +100,13 @@ public class StationAcceptanceTest {
     private String creatStation(String name) {
         return Objects.requireNonNull(webTestClient.post().uri(STATION_API_BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just("{\"name\": \"" + name + "\"}"), String.class)
+                .body(Mono.just(getStation(name)), Station.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectHeader().exists("Location")
+                .expectHeader().exists(LOCATION_HEADER)
                 .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(name)
+                .jsonPath(ID_JSON_PARSE_EXPRESSION).isEqualTo("1")
                 .returnResult()
                 .getResponseHeaders()
                 .getLocation()).getPath();
