@@ -106,7 +106,6 @@ public class StationAcceptanceTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectHeader().exists(LOCATION_HEADER)
                 .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(name)
-                .jsonPath(ID_JSON_PARSE_EXPRESSION).isEqualTo("1")
                 .returnResult()
                 .getResponseHeaders()
                 .getLocation()).getPath();

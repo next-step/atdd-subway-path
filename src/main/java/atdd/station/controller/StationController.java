@@ -38,7 +38,7 @@ public class StationController {
 
     @GetMapping("/{id}")
     public ResponseEntity<StationDetailResponseDto> detail(@PathVariable long id) {
-        StationDetailResponseDto station = stationService.findById(id);
+        StationDetailResponseDto station = stationService.detail(id);
         return new ResponseEntity<>(station, HttpStatus.OK);
     }
 
