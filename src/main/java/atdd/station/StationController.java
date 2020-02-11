@@ -3,6 +3,7 @@ package atdd.station;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -18,22 +19,23 @@ public class StationController {
     }
 
     @PostMapping("")
-    public ResponseEntity createStation(@RequestBody Station station) {
-        Station save = stationRepository.save(station);
-        return ResponseEntity.created(URI.create("/stations/" + save.getId())).body(save);
+    public ResponseEntity createStation(@RequestBody StationCreateRequest station) {
+        Station save = stationRepository.save(station.toEntity());
+
+        return ResponseEntity.created(URI.create("/stations/" + save.getId())).body(StationResponse.of(save));
     }
 
     @GetMapping("")
     public ResponseEntity getStations() {
         List<Station> stations = stationRepository.findAll();
-        return ResponseEntity.ok().body(stations);
+        return ResponseEntity.ok().body(StationListResponse.of(stations));
 
     }
 
     @GetMapping("/{id}")
     public ResponseEntity getStationById(@PathVariable Long id) {
-        Optional<Station> station = stationRepository.findById(id);
-        return ResponseEntity.ok().body(station);
+        Station station = stationRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 역입니다 {" + id + "}"));
+        return ResponseEntity.ok().body(StationResponse.of(station));
     }
 
     @DeleteMapping("/{id}")

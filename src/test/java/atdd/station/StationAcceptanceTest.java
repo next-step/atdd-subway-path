@@ -38,39 +38,39 @@ public class StationAcceptanceTest {
                 .name(STATION_NAME)
                 .build();
 
-        EntityExchangeResult<Station> result = webTestClient.post().uri("/stations")
+        EntityExchangeResult<StationResponse> result = webTestClient.post().uri("/stations")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(station), Station.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectHeader().exists("Location")
-                .expectBody(Station.class)
+                .expectBody(StationResponse.class)
                 .returnResult()
                 ;
 
         String location = result.getResponseHeaders().getLocation().getPath();
-        Station resultStation = result.getResponseBody();
+        StationResponse resultStation = result.getResponseBody();
 
         assertThat(location).isEqualTo("/stations/"+resultStation.getId());
         assertThat(resultStation.getName()).isEqualTo(STATION_NAME);
     }
 
     @DisplayName("중복되는 create 테스트 코드")
-    private Station createStation(String stationName){
+    private StationResponse createStation(String stationName){
 
         Station station = Station.builder()
                 .name(stationName)
                 .build();
 
-        Station result = webTestClient.post().uri("/stations")
+        StationResponse result = webTestClient.post().uri("/stations")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(station), Station.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectHeader().exists("Location")
-                .expectBody(Station.class)
+                .expectBody(StationResponse.class)
                 .returnResult()
                 .getResponseBody()
                 ;
@@ -81,19 +81,18 @@ public class StationAcceptanceTest {
     @Test
     public void getStations(){
         String STATION_NAME = "강남역";
-        Station result =  createStation(STATION_NAME);
+        createStation(STATION_NAME);
 
-        List<Station> stations = webTestClient.get().uri("/stations")
+        StationListResponse stations = webTestClient.get().uri("/stations")
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBodyList(Station.class)
+                .expectBody(StationListResponse.class)
                 .returnResult()
                 .getResponseBody()
+                ;
 
-        ;
-
-        assertThat(stations.get(0).getName()).isEqualTo(STATION_NAME);
+        assertThat(stations.getStations().get(0).getName()).isEqualTo(STATION_NAME);
 
     }
 
@@ -101,7 +100,7 @@ public class StationAcceptanceTest {
     @Test
     public void getStationById(){
         String STATION_NAME = "강남역";
-        Station result = createStation(STATION_NAME);
+        StationResponse result = createStation(STATION_NAME);
 
          webTestClient.get().uri("/stations/" + result.getId())
                 .exchange()
@@ -115,7 +114,7 @@ public class StationAcceptanceTest {
     @Test
     public void deleteById(){
         String STATION_NAME = "강남역";
-        Station result = createStation(STATION_NAME);
+        StationResponse result = createStation(STATION_NAME);
 
         webTestClient.delete().uri("/stations/"+result.getId())
                 .exchange()
