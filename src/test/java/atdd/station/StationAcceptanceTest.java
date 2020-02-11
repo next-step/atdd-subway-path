@@ -56,7 +56,7 @@ public class StationAcceptanceTest {
 
         @Nested
         @DisplayName(value = "패스가 주어진다면")
-        class GivenStationId {
+        class GivenStation {
 
             final String stationName = "강남역";
             final EntityExchangeResult<Station> stationResult = createStationBy(stationName);
@@ -64,7 +64,6 @@ public class StationAcceptanceTest {
 
             @Test
             @DisplayName("조회가 제대로 되는지 확인한다")
-
             void expectGetStation() {
                 assertThat(webTestClient.get().uri(path)
                         .exchange()
@@ -75,6 +74,33 @@ public class StationAcceptanceTest {
                         .getResponseBody()
                         .getName())
                         .isEqualTo(stationName);
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName(value = "역을 삭제하는 API")
+    class DeleteStation {
+
+        @Nested
+        @DisplayName(value = "패스가 주어진다면")
+        class GivenStation {
+            final String stationName = "강남역";
+            final String path = createStationBy(stationName).getResponseHeaders().getLocation().getPath();
+
+            @Test
+            @DisplayName("삭제가 잘 되는지 확인한다")
+            void expectDeleteStation() {
+                //when
+                webTestClient.delete().uri(path)
+                        .exchange()
+                        .expectStatus().isOk();
+
+                //then
+                webTestClient.delete().uri(path)
+                        .exchange()
+                        .expectStatus().isNotFound();
+
             }
         }
     }
