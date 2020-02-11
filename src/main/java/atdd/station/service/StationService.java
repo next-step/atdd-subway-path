@@ -29,5 +29,10 @@ public class StationService {
         Station entity = stationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
         return new StationResponseDto(entity);
     }
+    @Transactional
+    public void delete(Long id) {
+        Station station = stationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
+        stationRepository.delete(station);
+    }
 
 }

@@ -80,9 +80,9 @@ public class StationAcceptanceTest {
     @Test
     public void selectStation() {
         //given
-
+        Long id = 1L;
         //when
-        StationResponseDto stationResponseDto = webTestClient.get().uri("selectStation/1")
+        StationResponseDto stationResponseDto = webTestClient.get().uri("selectStation/"+id)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -92,5 +92,17 @@ public class StationAcceptanceTest {
         //then
         assertThat(stationResponseDto.getName()).isEqualTo("강남역");
         assertThat(stationResponseDto.getId()).isEqualTo(1L);
+    }
+
+    @DisplayName("지하철역 정보 삭제")
+    @Test
+    public void deleteStation() {
+        //given
+        Long id = 1L;
+        //when
+        webTestClient.post().uri("deleteStation/" + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk();
     }
 }

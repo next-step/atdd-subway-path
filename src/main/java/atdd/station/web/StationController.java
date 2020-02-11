@@ -72,4 +72,13 @@ public class StationController {
 
         return  ResponseEntity.ok().body(stationResponseDto);
     }
+
+    @PostMapping("deleteStation/{id}")
+    public void deleteStation(@PathVariable Long id) {
+
+        stationService.create(StationRequestDto.builder().name("강남역").build());
+
+        stationService.delete(id);
+
+    }
 }
