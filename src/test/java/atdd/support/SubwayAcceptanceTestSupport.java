@@ -98,7 +98,7 @@ public abstract class SubwayAcceptanceTestSupport {
         String inputJson = "{\"sourceStationId\":" + sourceStationId + ", \"targetStationId\":" + targetStationId + "}";
 
         return webTestClient.post()
-                .uri("/subway-sections/" + subwayLineId)
+                .uri("/subway-lines/" + subwayLineId + "/subway-section")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(inputJson), String.class)
                 .exchange()
