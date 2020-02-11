@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 import java.util.Objects;
 
 import static atdd.station.fixture.StationFixture.KANGNAM_STATION_NAME;
-import static atdd.station.fixture.SubwayLineFixture.SECOND_SUBWAY_LINE;
+import static atdd.station.fixture.SubwayLineFixture.SECOND_SUBWAY_LINE_NAME;
 import static atdd.station.fixture.SubwayLineFixture.getSubwayLine;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -36,7 +36,7 @@ public class SubwayLineAcceptanceTest {
     @Test
     void createSubwayLineSuccessTest() {
         //given
-        SubwayLine subwayLine = getSubwayLine(SECOND_SUBWAY_LINE);
+        SubwayLine subwayLine = getSubwayLine(SECOND_SUBWAY_LINE_NAME);
 
         //when
         //then
