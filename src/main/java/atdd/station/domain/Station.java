@@ -4,15 +4,29 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.Objects;
 
 @Entity
 public class Station {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
     private String name;
 
     public Station() {
+    }
+
+    public Station(String name) {
+        this.name = name;
+    }
+
+    public static Station of(String stationName) {
+        return new Station(stationName);
+    }
+
+    public boolean isNotMatchBy(Station savedStation) {
+        return !this.name.equals(savedStation.getName());
     }
 
     public Long getId() {
@@ -23,11 +37,24 @@ public class Station {
         return name;
     }
 
-    public Station(String name) {
-        this.name = name;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Station station = (Station) o;
+        return Objects.equals(name, station.name);
     }
 
-    public static Station of(String stationName) {
-        return new Station(stationName);
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

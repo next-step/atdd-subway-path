@@ -4,17 +4,13 @@ import atdd.station.domain.Station;
 import atdd.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StationCommandService {
-    private StationQueryService stationQueryService;
     private StationRepository stationRepository;
 
-    public StationCommandService(StationQueryService stationQueryService,
-                                 StationRepository stationRepository) {
-
-        this.stationQueryService = stationQueryService;
+    public StationCommandService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
     }
 
@@ -25,6 +21,6 @@ public class StationCommandService {
 
     @Transactional
     public void deleteStation(Long id) {
-        stationRepository.delete(stationQueryService.getStation(id));
+        stationRepository.deleteById(id);
     }
 }

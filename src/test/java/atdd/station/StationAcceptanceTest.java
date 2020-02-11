@@ -1,31 +1,21 @@
 package atdd.station;
 
-import atdd.station.domain.StationRepository;
-import atdd.station.web.dto.StationResponseDto;
-import org.junit.jupiter.api.AfterEach;
+import atdd.station.application.dto.StationResponseDto;
+import atdd.station.domain.Station;
+import atdd.support.SubwayAcceptanceTestSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
+import java.util.Collections;
 
-@AutoConfigureWebTestClient
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-    @Autowired
-    private WebTestClient webTestClient;
+import static org.assertj.core.api.Assertions.assertThat;
 
-    @Autowired
-    private StationRepository stationRepository;
+public class StationAcceptanceTest extends SubwayAcceptanceTestSupport {
 
     @DisplayName("지하철역을 등록한다")
     @ParameterizedTest
@@ -33,22 +23,6 @@ public class StationAcceptanceTest {
     public void create(String stationName) {
         // expect
         createStation(stationName);
-    }
-
-    private EntityExchangeResult<Void> createStation(String stationName) {
-        // given
-        String inputJson = "{\"name\":\"" + stationName + "\"}";
-
-        // when, then
-        return webTestClient.post()
-                .uri("/stations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectHeader().exists(HttpHeaders.LOCATION)
-                .expectBody(Void.class)
-                .returnResult();
     }
 
     @DisplayName("지하철역 목록을 조회한다")
@@ -67,31 +41,21 @@ public class StationAcceptanceTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBodyList(StationResponseDto.class)
                 .hasSize(2)
-                .isEqualTo(Arrays.asList(StationResponseDto.of("강남역"), StationResponseDto.of("잠실역")));
+                .isEqualTo(Arrays.asList(StationResponseDto.of(Station.of("강남역"), Collections.emptyList()), StationResponseDto.of(Station.of("잠실역"), Collections.emptyList())));
     }
 
-    @DisplayName("지하철역 조회한다")
-    @ParameterizedTest
-    @ValueSource(strings = {"강남역", "잠실역", "장한평역"})
-    public void retrieveFromStationName(String stationName) {
+    @DisplayName("지하철역을 조회한다")
+    @Test
+    public void retrieveStation() {
         // given
+        String stationName = "강남역";
         EntityExchangeResult<Void> createdResult = createStation(stationName);
 
+        String locationPath = createdResult.getResponseHeaders().getLocation().getPath();
+
         // when, then
-        getFromStationName(stationName, createdResult);
-    }
-
-    private void getFromStationName(String stationName,
-                                    EntityExchangeResult<Void> createdResult) {
-
-        webTestClient.get()
-                .uri(createdResult.getResponseHeaders().getLocation().getPath())
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(StationResponseDto.class)
-                .isEqualTo(StationResponseDto.of(stationName));
+        assertThat(getStationFromLocationPath(locationPath).getResponseBody().getName())
+                .isEqualTo(stationName);
     }
 
     @DisplayName("지하철역 삭제한다")
@@ -101,17 +65,19 @@ public class StationAcceptanceTest {
         String stationName = "강남역";
         EntityExchangeResult<Void> createdResult = createStation(stationName);
 
-        // when, then
+        // when
         webTestClient.delete()
                 .uri(createdResult.getResponseHeaders().getLocation().getPath())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk();
-    }
 
-    @AfterEach
-    public void tearDown() {
-        stationRepository.deleteAll();
+        // then
+        webTestClient.get()
+                .uri(createdResult.getResponseHeaders().getLocation().getPath())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isBadRequest();
     }
 
 }
