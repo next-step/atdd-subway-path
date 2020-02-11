@@ -31,13 +31,13 @@ public class StationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getStationById(@PathVariable Integer id) {
+    public ResponseEntity getStationById(@PathVariable Long id) {
         Optional<Station> station = stationRepository.findById(id);
         return ResponseEntity.ok().body(station);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteStationById(@PathVariable Integer id) {
+    public ResponseEntity deleteStationById(@PathVariable Long id) {
         stationRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
