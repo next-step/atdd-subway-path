@@ -45,6 +45,19 @@ public class LineAcceptanceTest {
                 .expectBody().jsonPath("$.name").isEqualTo(lineName);
     }
 
+    @DisplayName("지하철역 노선 목록 조회를 할 수 있다")
+    @Test
+    void beAbleFindLines() throws Exception {
+        String lineName = "2호선";
+
+        webTestClient.get().uri("/lines")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.count").isEqualTo(1)
+                .jsonPath("$.lines[0].name", lineName);
+    }
+
     private String getInputJson(String lineName) throws JsonProcessingException {
         final Map<String, Object> inputMap = Map.ofEntries(
                 Map.entry("name", lineName),
