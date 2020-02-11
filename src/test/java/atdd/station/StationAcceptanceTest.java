@@ -21,7 +21,8 @@
  * */
 package atdd.station;
 
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.web.reactive.server.StatusAssertions;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
@@ -50,12 +52,12 @@ public class StationAcceptanceTest {
     private WebTestClient webTestClient;
 
     @Test
-    public void testCreateStation() {
+    public void testCreateReadDeleteStation() {
         String inputJson = String.format("{\"name\": \"%s\"}", targetStation.getName());
-        String reqUri = prefixUri;
+        String createStationUri = prefixUri;
 
         webTestClient.post()
-                     .uri(reqUri)
+                     .uri(createStationUri)
                      .contentType(MediaType.APPLICATION_JSON)
                      .body(Mono.just(inputJson), String.class)
                      .exchange()
@@ -71,18 +73,15 @@ public class StationAcceptanceTest {
                          HttpHeaders responseHeaders = result.getResponseHeaders();
                          URI location = responseHeaders.getLocation();
                          String stringifyLocation = location.toString();
-                         Assertions.assertThat(stringifyLocation)
-                                   .isEqualTo(String.format("%s/%d", reqUri, station.getId()));
+                         assertThat(stringifyLocation)
+                                 .isEqualTo(String.format("%s/%d", createStationUri, station.getId()));
                      });
-    }
 
-    @Test
-    public void testReadStations() {
-        testCreateStation();
+        // read stations test
+        String readStationsUri = prefixUri;
 
-        String reqUri = prefixUri;
-
-        readRequestWebTestClient(reqUri)
+        readRequestWebTestClient(readStationsUri)
+                .isOk()
                 .expectHeader()
                 .contentType(MediaType.APPLICATION_JSON)
                 .expectBodyList(Station.class)
@@ -91,50 +90,51 @@ public class StationAcceptanceTest {
                     List<Station> stations = result.getResponseBody();
                     Station station = stations.get(0);
 
-                    Assertions.assertThat(station.getName())
-                              .isEqualTo("강남역");
+                    assertThat(station.getName())
+                            .isEqualTo("강남역");
                 });
-    }
 
-    @Test
-    public void testReadStation() {
-        testCreateStation();
 
-        String reqUri = String.format("%s/%d", prefixUri, targetStation.getId());
+        // read station test
+        String readStationUri = String.format("%s/%d", prefixUri, targetStation.getId());
 
-        readRequestWebTestClient(reqUri)
+        readRequestWebTestClient(readStationUri)
+                .isOk()
                 .expectHeader()
                 .contentType(MediaType.APPLICATION_JSON)
                 .expectBody(Station.class)
                 .consumeWith(result -> {
                     Station station = result.getResponseBody();
-                    Assertions.assertThat(station.getName())
-                              .isEqualTo("강남역");
+                    assertThat(station.getName())
+                            .isEqualTo("강남역");
                 });
-    }
 
-    @Test
-    public void testDeleteStation() {
-        testCreateStation();
+        String incorrectReadStationUri = String.format("%s/%d", prefixUri, 93);
 
-        String reqUri = String.format("%s/%d", prefixUri, targetStation.getId());
+        readRequestWebTestClient(incorrectReadStationUri)
+                .isNoContent()
+                .expectBody(Void.class);
+
+
+        // delete station test
+        String deleteStationUri = String.format("%s/%d", prefixUri, targetStation.getId());
 
         webTestClient.delete()
-                     .uri(reqUri)
+                     .uri(deleteStationUri)
                      .exchange()
                      .expectStatus()
                      .isOk();
 
-        readRequestWebTestClient(reqUri).expectBody()
-                                        .isEmpty();
+        readRequestWebTestClient(readStationUri).isNoContent()
+                                                .expectBody(Void.class);
+
     }
 
-    private WebTestClient.ResponseSpec readRequestWebTestClient(String uri) {
+    private StatusAssertions readRequestWebTestClient(String uri) {
         return webTestClient.get()
                             .uri(uri)
                             .accept(MediaType.APPLICATION_JSON)
                             .exchange()
-                            .expectStatus()
-                            .isOk();
+                            .expectStatus();
     }
 }
