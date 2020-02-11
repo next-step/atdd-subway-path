@@ -44,18 +44,19 @@ import java.util.List;
 @AutoConfigureWebTestClient
 public class StationAcceptanceTest {
     private static final Logger logger = LoggerFactory.getLogger(StationAcceptanceTest.class);
-    private final Long id = new Long(1);
-    private final Station targetStation = new Station(id, "강남역");
-    private final String prefixUri = "/stations";
+    Long id = new Long(1);
 
     @Autowired
     private WebTestClient webTestClient;
 
     @Test
     public void testCreateReadDeleteStation() {
+        Station targetStation = new Station(id, "강남역");
+        String prefixUri = "/stations";
         String inputJson = String.format("{\"name\": \"%s\"}", targetStation.getName());
-        String createStationUri = prefixUri;
 
+        // create station test
+        String createStationUri = prefixUri;
         webTestClient.post()
                      .uri(createStationUri)
                      .contentType(MediaType.APPLICATION_JSON)
@@ -73,47 +74,42 @@ public class StationAcceptanceTest {
                          HttpHeaders responseHeaders = result.getResponseHeaders();
                          URI location = responseHeaders.getLocation();
                          String stringifyLocation = location.toString();
-                         assertThat(stringifyLocation)
-                                 .isEqualTo(String.format("%s/%d", createStationUri, station.getId()));
+                         assertThat(stringifyLocation).isEqualTo(String.format("%s/%d", createStationUri,
+                                 station.getId()));
                      });
 
         // read stations test
         String readStationsUri = prefixUri;
 
-        readRequestWebTestClient(readStationsUri)
-                .isOk()
-                .expectHeader()
-                .contentType(MediaType.APPLICATION_JSON)
-                .expectBodyList(Station.class)
-                .hasSize(1)
-                .consumeWith(result -> {
-                    List<Station> stations = result.getResponseBody();
-                    Station station = stations.get(0);
+        readRequestWebTestClient(readStationsUri).isOk()
+                                                 .expectHeader()
+                                                 .contentType(MediaType.APPLICATION_JSON)
+                                                 .expectBodyList(Station.class)
+                                                 .hasSize(1)
+                                                 .consumeWith(result -> {
+                                                     List<Station> stations = result.getResponseBody();
+                                                     Station station = stations.get(0);
 
-                    assertThat(station.getName())
-                            .isEqualTo("강남역");
-                });
+                                                     assertThat(station.getName()).isEqualTo("강남역");
+                                                 });
 
 
         // read station test
-        String readOrDeleteStationUri = getRequestUri(targetStation.getId());
+        String readOrDeleteStationUri = getRequestUri(prefixUri, targetStation.getId());
 
-        readRequestWebTestClient(readOrDeleteStationUri)
-                .isOk()
-                .expectHeader()
-                .contentType(MediaType.APPLICATION_JSON)
-                .expectBody(Station.class)
-                .consumeWith(result -> {
-                    Station station = result.getResponseBody();
-                    assertThat(station.getName())
-                            .isEqualTo("강남역");
-                });
+        readRequestWebTestClient(readOrDeleteStationUri).isOk()
+                                                        .expectHeader()
+                                                        .contentType(MediaType.APPLICATION_JSON)
+                                                        .expectBody(Station.class)
+                                                        .consumeWith(result -> {
+                                                            Station station = result.getResponseBody();
+                                                            assertThat(station.getName()).isEqualTo("강남역");
+                                                        });
 
-        String incorrectReadStationUri = getRequestUri(93);
+        String incorrectReadStationUri = getRequestUri(prefixUri, 93);
 
-        readRequestWebTestClient(incorrectReadStationUri)
-                .isNoContent()
-                .expectBody(Void.class);
+        readRequestWebTestClient(incorrectReadStationUri).isNoContent()
+                                                         .expectBody(Void.class);
 
 
         // delete station test
@@ -129,12 +125,15 @@ public class StationAcceptanceTest {
     }
 
     @Test
-    public void testCreateSubwayLine() {
-        String createSubwayLineUri = "/lines";
-        String inputJson = String.format("{\"name\": \"%s\", \"startTime\": \"%s\", \"endTime\": \"%s\", \"interval\": \"%d\"}", "강남역", "05:00", "23:00", 10);
+    public void testStationLine() {
+        String createStationLineUri = "/lines";
+        StationLine stationLine = new StationLine(id, "강남역", "05:00", "23:00", 10);
+        String inputJson = String.format("{\"name\": \"%s\", \"startTime\": \"%s\", \"endTime\": \"%s\", " +
+                "\"interval\": \"%d\"}", stationLine.getName(), stationLine.getStartTime(), stationLine.getEndTime(),
+                stationLine.getInterval());
 
         webTestClient.post()
-                     .uri(createSubwayLineUri)
+                     .uri(createStationLineUri)
                      .contentType(MediaType.APPLICATION_JSON)
                      .body(Mono.just(inputJson), String.class)
                      .exchange()
@@ -144,13 +143,12 @@ public class StationAcceptanceTest {
                      .exists("Location")
                      .expectHeader()
                      .contentType(MediaType.APPLICATION_JSON)
-                     .expectBody(Station.class)
+                     .expectBody(StationLine.class)
                      .consumeWith(result -> {
                          HttpHeaders responseHeaders = result.getResponseHeaders();
                          URI location = responseHeaders.getLocation();
                          String stringifyLocation = location.toString();
-                         assertThat(stringifyLocation)
-                                 .isEqualTo(String.format("%s/%d", createSubwayLineUri, 1));
+                         assertThat(stringifyLocation).isEqualTo(String.format("%s/%d", createStationLineUri, 1));
                      });
     }
 
@@ -162,7 +160,7 @@ public class StationAcceptanceTest {
                             .expectStatus();
     }
 
-    private String getRequestUri(long entityId) {
+    private String getRequestUri(String prefixUri, long entityId) {
         return String.format("%s/%d", prefixUri, entityId);
     }
 }
