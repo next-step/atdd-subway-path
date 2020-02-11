@@ -28,6 +28,9 @@ public class SubwayLineAcceptanceTest {
     private static final String NAME_JSON_PARSE_EXPRESSION = "$.name";
     private static final String SUBWAY_LINE_API_BASE_URL = "/subway-lines/";
     private static final String LOCATION_HEADER = "Location";
+    private static final String STATION_JSON_PARSE_EXPRESSION = "$.startTime";
+    private static final String END_TIME_JSON_PARSE_EXPRESSION = "$.endTime";
+    private static final String INTERVAL_TIME_JSON_PARSE_EXPRESSION = "$.intervalTime";
 
     @Autowired
     private WebTestClient webTestClient;
@@ -45,9 +48,9 @@ public class SubwayLineAcceptanceTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectHeader().exists(LOCATION_HEADER)
                 .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo("2호선")
-                .jsonPath("$.startTime").isEqualTo("05:00")
-                .jsonPath("$.endTime").isEqualTo("23:50")
-                .jsonPath("$.intervalTime").isEqualTo("10")
+                .jsonPath(STATION_JSON_PARSE_EXPRESSION).isEqualTo("05:00")
+                .jsonPath(END_TIME_JSON_PARSE_EXPRESSION).isEqualTo("23:50")
+                .jsonPath(INTERVAL_TIME_JSON_PARSE_EXPRESSION).isEqualTo("10")
                 .jsonPath(getStationNameJsonParseExpressionByIndex("0")).isEqualTo(KANGNAM_STATION_NAME);
     }
 
@@ -78,9 +81,9 @@ public class SubwayLineAcceptanceTest {
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(SECOND_SUBWAY_LINE_NAME)
-                .jsonPath("$.startTime").isEqualTo("05:00")
-                .jsonPath("$.endTime").isEqualTo("23:50")
-                .jsonPath("$.intervalTime").isEqualTo("10");
+                .jsonPath(STATION_JSON_PARSE_EXPRESSION).isEqualTo("05:00")
+                .jsonPath(END_TIME_JSON_PARSE_EXPRESSION).isEqualTo("23:50")
+                .jsonPath(INTERVAL_TIME_JSON_PARSE_EXPRESSION).isEqualTo("10");
     }
 
     @DisplayName("지하철노선_삭제가_성공하는지")
@@ -105,9 +108,9 @@ public class SubwayLineAcceptanceTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectHeader().exists(LOCATION_HEADER)
                 .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(SECOND_SUBWAY_LINE_NAME)
-                .jsonPath("$.startTime").isEqualTo("05:00")
-                .jsonPath("$.endTime").isEqualTo("23:50")
-                .jsonPath("$.intervalTime").isEqualTo("10")
+                .jsonPath(STATION_JSON_PARSE_EXPRESSION).isEqualTo("05:00")
+                .jsonPath(END_TIME_JSON_PARSE_EXPRESSION).isEqualTo("23:50")
+                .jsonPath(INTERVAL_TIME_JSON_PARSE_EXPRESSION).isEqualTo("10")
                 .jsonPath(getStationNameJsonParseExpressionByIndex("0")).isEqualTo(KANGNAM_STATION_NAME)
                 .returnResult()
                 .getResponseHeaders()
