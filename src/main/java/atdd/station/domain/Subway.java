@@ -1,5 +1,6 @@
 package atdd.station.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,7 +24,10 @@ public class Subway {
 
     private boolean deleted = false;
 
-    public Subway() {
+    @Builder
+    public Subway(Station station, SubwayLine subwayLine) {
+        this.station = station;
+        this.subwayLine = subwayLine;
     }
 }
 
