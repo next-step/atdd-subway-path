@@ -24,7 +24,8 @@ public class Line {
     private int intervalTime;
 
     @Builder
-    public Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
+    public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
+        this.id = id;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;

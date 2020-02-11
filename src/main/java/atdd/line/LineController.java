@@ -28,4 +28,11 @@ public class LineController {
         List<Line> lineList = lineRepository.findAll();
         return ResponseEntity.ok(LineDto.listOf(lineList));
     }
+
+    @GetMapping("{id}")
+    public ResponseEntity findLineById(@PathVariable Long id) {
+        return lineRepository.findById(id)
+                .map(it -> ResponseEntity.ok(LineDto.of(it)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }

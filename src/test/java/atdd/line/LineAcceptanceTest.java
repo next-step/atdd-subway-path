@@ -47,14 +47,27 @@ public class LineAcceptanceTest {
 
     @Test
     public void 지하철_노선_목록_조회() {
-        // when
+        // given
         LineDto lineDto = this.createLineTest();
 
         webTestClient.get().uri("/line")
                 .exchange()
+                .expectStatus().is2xxSuccessful()
                 .expectBodyList(LineDto.class)
                 .hasSize(1)
                 .contains(lineDto);
+    }
+
+    @Test
+    public void 지하철_노선_정보_조회() {
+        // given
+        LineDto lineDto = this.createLineTest();
+
+        webTestClient.get().uri("/line/" + lineDto.getId())
+                .exchange()
+                .expectStatus().is2xxSuccessful()
+                .expectBody()
+                .consumeWith(it -> it.equals(lineDto));
     }
 
     private LineDto createLineTest() {
@@ -75,6 +88,7 @@ public class LineAcceptanceTest {
                 .expectHeader().exists("Location")
                 .expectBody(LineDto.class)
                 .isEqualTo(LineDto.builder()
+                        .id(1L)
                         .name("2호선")
                         .startTime(LocalTime.of(5, 0))
                         .endTime(LocalTime.of(23, 50))
