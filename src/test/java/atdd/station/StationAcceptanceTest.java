@@ -18,6 +18,7 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 import java.util.Objects;
 
+import static atdd.util.TestUtils.getLocationPath;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -98,11 +99,6 @@ public class StationAcceptanceTest {
                 .expectHeader().exists("Location")
                 .expectBody(StationResponseView.class)
                 .returnResult();
-    }
-
-    private String getLocationPath(HttpHeaders responseHeaders) {
-        URI location = responseHeaders.getLocation();
-        return Objects.nonNull(location) ? location.getPath() : "noLocation";
     }
 
 }
