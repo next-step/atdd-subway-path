@@ -1,6 +1,6 @@
 package atdd.station.dto.subwayLine;
 
-import atdd.station.domain.Station;
+import atdd.station.domain.Subway;
 import atdd.station.domain.SubwayLine;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,26 +17,15 @@ public class SubwayLineCreateRequestDto {
     private String startTime;
     private String endTime;
     private String intervalTime;
-    private List<Station> stations;
-
+    private List<Subway> subways;
 
     @Builder
-    public SubwayLineCreateRequestDto(String name, String startTime, String endTime, String intervalTime, List<Station> stations) {
+    public SubwayLineCreateRequestDto(String name, String startTime, String endTime, String intervalTime, List<Subway> subways) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
-        this.stations = stations;
-    }
-
-    public static SubwayLineCreateRequestDto toDtoEntity(SubwayLine subwayLine) {
-        return SubwayLineCreateRequestDto.builder()
-                .name(subwayLine.getName())
-                .startTime(subwayLine.getStartTime())
-                .endTime(subwayLine.getEndTime())
-                .intervalTime(subwayLine.getIntervalTime())
-                .stations(subwayLine.getStations())
-                .build();
+        this.subways = subways;
     }
 
     public SubwayLine toEntity() {
@@ -45,7 +34,17 @@ public class SubwayLineCreateRequestDto {
                 .startTime(this.startTime)
                 .endTime(this.endTime)
                 .intervalTime(this.intervalTime)
-                .stations(this.stations)
+                .subways(this.subways)
+                .build();
+    }
+
+    public static SubwayLineCreateRequestDto toDtoEntity(SubwayLine subwayLine, List<Subway> subways) {
+        return SubwayLineCreateRequestDto.builder()
+                .name(subwayLine.getName())
+                .startTime(subwayLine.getStartTime())
+                .endTime(subwayLine.getEndTime())
+                .intervalTime(subwayLine.getIntervalTime())
+                .subways(subways)
                 .build();
     }
 }
