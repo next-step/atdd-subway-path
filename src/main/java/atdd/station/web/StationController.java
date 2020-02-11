@@ -15,6 +15,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -44,14 +45,10 @@ public class StationController {
         responseHeaders.set("Content-Type", "application/json");
         URI location = URI.create("/createStation");
 
-        Long id = stationRepository.save(Station.builder().name(stationRequestDto.getName()).build()).getId();
+        stationRepository.save(Station.builder().name(stationRequestDto.getName()).build());
 
         Station entity = stationRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("해당역이존재하지않습니다."));
         StationResponseDto stationResponseDto = new StationResponseDto(entity);
-
-        logger.info("저장된 아이디 : " + id);
-        logger.info("저장해서 뽑아낸값 : " + stationResponseDto.getName());
-        logger.info("저장해서 뽑아낸값 : " + stationResponseDto.getId());
 
         return ResponseEntity.created(location)
                 .header(String.valueOf(responseHeaders))
@@ -61,25 +58,15 @@ public class StationController {
     @GetMapping("selectStationList")
     public ResponseEntity selectStation(){
         Logger logger = Logger.getLogger("selectStation");
-
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Content-Type", "application/json");
-        URI location = URI.create("/selectStationList");
-
-        //given
         stationRepository.save(Station.builder().name("강남역").build());
         stationRepository.save(Station.builder().name("수서역").build());
-        //when
-        List<Station> stationList = stationRepository.findAll();
-        logger.info("1 :" + stationList.get(0).getId() + "name :" + stationList.get(0).getName());
-        logger.info("2 : "+ stationList.get(1).getId() + "name :" + stationList.get(1).getName());
 
-        //StationResponseDto stationResponseDto = StationResponseDto.builder().name(stationList.get(0).getName()).build();
-
-        //then
-        return ResponseEntity.created(location)
-        .header(String.valueOf(responseHeaders))
-        .body(stationList);
+        List<StationResponseDto> stationList = stationRepository
+                .findAll()
+                .stream()
+                .map(StationResponseDto::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok().body(stationList);
     }
 
 }

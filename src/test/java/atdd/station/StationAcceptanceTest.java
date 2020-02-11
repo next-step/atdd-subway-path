@@ -4,6 +4,7 @@ import atdd.station.domain.station.Station;
 import atdd.station.web.dto.StationListResponseDto;
 import atdd.station.web.dto.StationRequestDto;
 import atdd.station.web.dto.StationResponseDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,9 +56,9 @@ public class StationAcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(stationRequestDto),StationRequestDto.class)
                 .exchange()
-                .expectStatus().isCreated()
+                .expectStatus().isCreated()//받고싶은 uri경로 생성확인
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectHeader().exists("Location")
+                .expectHeader().exists("Location")//받고싶은 uri경로값을 저장하고있는객체
                 .expectBody(StationResponseDto.class)
                 .returnResult()
                 .getResponseBody();
@@ -70,6 +71,14 @@ public class StationAcceptanceTest {
     @Test
     public void selectStationListTest() {
 
+        webTestClient.get().uri("selectStationList")
+                .accept(MediaType.APPLICATION_JSON) //응답으로 받고싶은데이터유형
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)//응답 데이터유형 확인
+                .expectBody()
+                .jsonPath("$.[0].name").isEqualTo("강남역")
+                .jsonPath("$.[1].name").isEqualTo("수서역");
     }
 
 }
