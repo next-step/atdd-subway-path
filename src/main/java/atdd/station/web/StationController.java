@@ -62,4 +62,14 @@ public class StationController {
 
         return ResponseEntity.ok().body(stationList);
     }
+
+    @GetMapping("selectStation/{id}")
+    public ResponseEntity selectStation(@PathVariable Long id) {
+
+        stationService.create(StationRequestDto.builder().name("강남역").build());
+
+        StationResponseDto stationResponseDto = stationService.findById(id);
+
+        return  ResponseEntity.ok().body(stationResponseDto);
+    }
 }

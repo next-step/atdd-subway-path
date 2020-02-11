@@ -62,7 +62,7 @@ public class StationAcceptanceTest {
 
     }
 
-    @DisplayName("지하철역목록조회")
+    @DisplayName("지하철역 목록 조회")
     @Test
     public void selectStationList() {
 
@@ -74,5 +74,23 @@ public class StationAcceptanceTest {
                 .expectBody()
                 .jsonPath("$.[0].name").isEqualTo("강남역")
                 .jsonPath("$.[1].name").isEqualTo("수서역");
+    }
+
+    @DisplayName("지하철역 정보 조회")
+    @Test
+    public void selectStation() {
+        //given
+
+        //when
+        StationResponseDto stationResponseDto = webTestClient.get().uri("selectStation/1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(StationResponseDto.class)
+                .returnResult()
+                .getResponseBody();
+        //then
+        assertThat(stationResponseDto.getName()).isEqualTo("강남역");
+        assertThat(stationResponseDto.getId()).isEqualTo(1L);
     }
 }
