@@ -1,10 +1,8 @@
 package atdd.station;
 
-import atdd.station.domain.station.Station;
-import atdd.station.web.dto.StationListResponseDto;
 import atdd.station.web.dto.StationRequestDto;
 import atdd.station.web.dto.StationResponseDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
-
-import java.util.Arrays;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,6 +40,7 @@ public class StationAcceptanceTest {
                 .expectBody().jsonPath("$.name").isEqualTo(stationName);
     }
 
+    @DisplayName("지하철역 등록 테스트")
     @Test
     public void createStationTest() {
         //given
@@ -52,33 +48,18 @@ public class StationAcceptanceTest {
         StationRequestDto stationRequestDto = StationRequestDto.builder().name(name).build();
 
         //when
-        StationResponseDto stationResponseDto = webTestClient.post().uri("createStation")
+        webTestClient.post().uri("createStation")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(stationRequestDto),StationRequestDto.class)
                 .exchange()
-                .expectStatus().isCreated()//받고싶은 uri경로 생성확인
+                .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectHeader().exists("Location")//받고싶은 uri경로값을 저장하고있는객체
-                .expectBody(StationResponseDto.class)
-                .returnResult()
-                .getResponseBody();
+                .expectHeader().exists("Location")
+                .expectBody(Long.class)
+                .isEqualTo(1L);
 
         //then
-        assertThat(stationResponseDto.getName()).isEqualTo(name);
 
-    }
-
-    @Test
-    public void selectStationListTest() {
-
-        webTestClient.get().uri("selectStationList")
-                .accept(MediaType.APPLICATION_JSON) //응답으로 받고싶은데이터유형
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)//응답 데이터유형 확인
-                .expectBody()
-                .jsonPath("$.[0].name").isEqualTo("강남역")
-                .jsonPath("$.[1].name").isEqualTo("수서역");
     }
 
 }

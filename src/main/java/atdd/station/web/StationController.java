@@ -2,7 +2,7 @@ package atdd.station.web;
 
 import atdd.station.domain.station.Station;
 import atdd.station.domain.station.StationRepository;
-import atdd.station.web.dto.StationListResponseDto;
+import atdd.station.service.StationService;
 import atdd.station.web.dto.StationRequestDto;
 import atdd.station.web.dto.StationResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -45,28 +44,12 @@ public class StationController {
         responseHeaders.set("Content-Type", "application/json");
         URI location = URI.create("/createStation");
 
-        stationRepository.save(Station.builder().name(stationRequestDto.getName()).build());
-
-        Station entity = stationRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("해당역이존재하지않습니다."));
-        StationResponseDto stationResponseDto = new StationResponseDto(entity);
+        StationService stationService = new StationService(stationRepository);
+        Long id = stationService.create(stationRequestDto);
 
         return ResponseEntity.created(location)
                 .header(String.valueOf(responseHeaders))
-                .body(stationResponseDto);
-    }
-
-    @GetMapping("selectStationList")
-    public ResponseEntity selectStation(){
-        Logger logger = Logger.getLogger("selectStation");
-        stationRepository.save(Station.builder().name("강남역").build());
-        stationRepository.save(Station.builder().name("수서역").build());
-
-        List<StationResponseDto> stationList = stationRepository
-                .findAll()
-                .stream()
-                .map(StationResponseDto::new)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok().body(stationList);
+                .body(id);
     }
 
 }
