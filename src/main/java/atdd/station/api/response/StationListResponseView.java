@@ -1,6 +1,5 @@
 package atdd.station.api.response;
 
-import atdd.station.domain.Station;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,9 +13,9 @@ import static lombok.AccessLevel.PROTECTED;
 public class StationListResponseView {
 
     private int count;
-    private List<Station> stations;
+    private List<StationResponseView> stations;
 
-    public StationListResponseView(int count, List<Station> stations) {
+    public StationListResponseView(int count, List<StationResponseView> stations) {
         this.count = count;
         this.stations = stations;
     }

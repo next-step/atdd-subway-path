@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+
 @RequiredArgsConstructor
 @RequestMapping("/stations")
 @RestController
@@ -33,7 +35,9 @@ public class StationController {
     @GetMapping
     public ResponseEntity<StationListResponseView> getStations() {
         final List<Station> stations = stationRepository.findAll();
-        return ResponseEntity.ok(new StationListResponseView(stations.size(), stations));
+        final List<StationResponseView> views = stations.stream().map(StationResponseView::new).collect(toList());
+
+        return ResponseEntity.ok(new StationListResponseView(stations.size(), views));
     }
 
     @GetMapping("/{id}")
