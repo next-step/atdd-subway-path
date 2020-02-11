@@ -80,8 +80,7 @@ public class SubwayLineAcceptanceTest {
                 .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(SECOND_SUBWAY_LINE_NAME)
                 .jsonPath("$.startTime").isEqualTo("05:00")
                 .jsonPath("$.endTime").isEqualTo("23:50")
-                .jsonPath("$.intervalTime").isEqualTo("10")
-                .jsonPath(getStationNameJsonParseExpressionByIndex("0")).isEqualTo(KANGNAM_STATION_NAME);
+                .jsonPath("$.intervalTime").isEqualTo("10");
     }
 
     @DisplayName("지하철노선_삭제가_성공하는지")
