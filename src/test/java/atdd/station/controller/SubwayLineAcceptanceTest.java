@@ -35,14 +35,11 @@ public class SubwayLineAcceptanceTest {
     @DisplayName("2호선_지하철노선_생성이_성공하는지")
     @Test
     void createSubwayLineSuccessTest() {
-        //given
-        SubwayLine subwayLine = getSubwayLine(SECOND_SUBWAY_LINE_NAME);
-
         //when
         //then
         webTestClient.post().uri(SUBWAY_LINE_API_BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(subwayLine), SubwayLine.class)
+                .body(Mono.just(getSubwayLine(SECOND_SUBWAY_LINE_NAME)), SubwayLine.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -66,13 +63,13 @@ public class SubwayLineAcceptanceTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBodyList(SubwayLine.class).hasSize(2);
+                .expectBodyList(SubwayLine.class).hasSize(1);
     }
 
     @DisplayName("지하철노선_상세조회가_성공하는지")
     @Test
     void detailSubwayLineSuccessTest() {
-        String location = creatSubwayLine("2호선");
+        String location = creatSubwayLine(SECOND_SUBWAY_LINE_NAME);
 
         //when
         //then
@@ -80,17 +77,17 @@ public class SubwayLineAcceptanceTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo("2호선")
+                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(SECOND_SUBWAY_LINE_NAME)
                 .jsonPath("$.startTime").isEqualTo("05:00")
                 .jsonPath("$.endTime").isEqualTo("23:50")
-                .jsonPath("$.interval").isEqualTo("10")
-                .jsonPath(getStationNameJsonParseExpressionByIndex("0")).isEqualTo("교대역");
+                .jsonPath("$.intervalTime").isEqualTo("10")
+                .jsonPath(getStationNameJsonParseExpressionByIndex("0")).isEqualTo(KANGNAM_STATION_NAME);
     }
 
     @DisplayName("지하철노선_삭제가_성공하는지")
     @Test
     void deleteSubwayLineSuccessTest() {
-        String location = creatSubwayLine("2호선");
+        String location = creatSubwayLine(SECOND_SUBWAY_LINE_NAME);
 
         //when
         //then
@@ -103,12 +100,16 @@ public class SubwayLineAcceptanceTest {
     private String creatSubwayLine(String subwayLineName) {
         return Objects.requireNonNull(webTestClient.post().uri(SUBWAY_LINE_API_BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just("{\"name\": \"" + subwayLineName + "\"}"), String.class)
+                .body(Mono.just(getSubwayLine(SECOND_SUBWAY_LINE_NAME)), SubwayLine.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectHeader().exists(LOCATION_HEADER)
-                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(subwayLineName)
+                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(SECOND_SUBWAY_LINE_NAME)
+                .jsonPath("$.startTime").isEqualTo("05:00")
+                .jsonPath("$.endTime").isEqualTo("23:50")
+                .jsonPath("$.intervalTime").isEqualTo("10")
+                .jsonPath(getStationNameJsonParseExpressionByIndex("0")).isEqualTo(KANGNAM_STATION_NAME)
                 .returnResult()
                 .getResponseHeaders()
                 .getLocation()).getPath();
