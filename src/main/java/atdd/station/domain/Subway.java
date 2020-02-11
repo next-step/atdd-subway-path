@@ -1,14 +1,10 @@
 package atdd.station.domain;
 
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
-@Getter
-@Setter
 public class Subway {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +27,10 @@ public class Subway {
     public Subway(Station station, SubwayLine subwayLine) {
         this.station = station;
         this.subwayLine = subwayLine;
+    }
+
+    public SubwayLine getSubwayLine() {
+        return this.subwayLine;
     }
 }
 
