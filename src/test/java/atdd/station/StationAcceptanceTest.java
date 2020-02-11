@@ -128,6 +128,32 @@ public class StationAcceptanceTest {
 
     }
 
+    @Test
+    public void testCreateSubwayLine() {
+        String createSubwayLineUri = "/lines";
+        String inputJson = String.format("{\"name\": \"%s\", \"startTime\": \"%s\", \"endTime\": \"%s\", \"interval\": \"%d\"}", "강남역", "05:00", "23:00", 10);
+
+        webTestClient.post()
+                     .uri(createSubwayLineUri)
+                     .contentType(MediaType.APPLICATION_JSON)
+                     .body(Mono.just(inputJson), String.class)
+                     .exchange()
+                     .expectStatus()
+                     .isCreated()
+                     .expectHeader()
+                     .exists("Location")
+                     .expectHeader()
+                     .contentType(MediaType.APPLICATION_JSON)
+                     .expectBody(Station.class)
+                     .consumeWith(result -> {
+                         HttpHeaders responseHeaders = result.getResponseHeaders();
+                         URI location = responseHeaders.getLocation();
+                         String stringifyLocation = location.toString();
+                         assertThat(stringifyLocation)
+                                 .isEqualTo(String.format("%s/%d", createSubwayLineUri, 1));
+                     });
+    }
+
     private StatusAssertions readRequestWebTestClient(String uri) {
         return webTestClient.get()
                             .uri(uri)
