@@ -1,19 +1,20 @@
 package atdd.line.controller;
 
 import atdd.line.api.request.CreateLineRequestView;
+import atdd.line.api.response.LineListResponseView;
 import atdd.line.api.response.LineResponseView;
 import atdd.line.domain.Line;
 import atdd.line.service.LineService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,6 +32,14 @@ public class LineController {
         return ResponseEntity
                 .created(URI.create(request.getServletPath() + "/" + persistLine.getId()))
                 .body(new LineResponseView(persistLine));
+    }
+
+    @GetMapping
+    public ResponseEntity<LineListResponseView> getLines() {
+        final List<Line> lines = lineService.findAll();
+        final List<LineResponseView> views = lines.stream().map(LineResponseView::new).collect(toList());
+
+        return ResponseEntity.ok(new LineListResponseView(lines.size(), views));
     }
 
 }
