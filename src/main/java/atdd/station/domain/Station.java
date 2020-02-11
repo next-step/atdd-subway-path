@@ -1,9 +1,11 @@
 package atdd.station.domain;
 
 import lombok.Builder;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Entity
 public class Station {
@@ -14,8 +16,10 @@ public class Station {
     @Size(min = 2, max = 20)
     private String name;
 
-    @Embedded
-    private SubwayLines subwayLines;
+    @OneToMany(mappedBy = "subwayLine", fetch = FetchType.EAGER)
+    @Where(clause = "deleted = false")
+    @OrderBy("id ASC")
+    private List<Subway> subwayLine;
 
     private boolean deleted = false;
 
@@ -25,11 +29,6 @@ public class Station {
     @Builder
     public Station(String name) {
         this.name = name;
-    }
-
-    public Station(String name, SubwayLines subwayLines) {
-        this.name = name;
-        this.subwayLines = subwayLines;
     }
 
     public long getId() {
@@ -45,7 +44,6 @@ public class Station {
         return "Station{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", subwayLines=" + subwayLines +
                 '}';
     }
 
