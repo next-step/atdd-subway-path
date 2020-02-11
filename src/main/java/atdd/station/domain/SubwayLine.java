@@ -1,7 +1,9 @@
 package atdd.station.domain;
 
-import javax.persistence.*;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 public class SubwayLine {
@@ -16,13 +18,11 @@ public class SubwayLine {
 
     private Integer dispatchInterval;
 
-    @OneToMany
-    private List<Station> stations;
-
     public SubwayLine() {
     }
 
-    public SubwayLine(String name) {
+    private SubwayLine(String name) {
+        this.name = name;
     }
 
     public static SubwayLine of(String name) {
@@ -36,4 +36,5 @@ public class SubwayLine {
     public String getName() {
         return name;
     }
+
 }

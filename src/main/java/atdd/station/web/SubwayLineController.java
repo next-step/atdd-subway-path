@@ -37,7 +37,7 @@ public class SubwayLineController {
 
         SubwayLine savedSubwayLine = subwayLineCommandService.create(subwayLineCreateRequest.getName());
 
-        return ResponseEntity.created(URI.create(SubwayLineController.ROOT_URI + savedSubwayLine.getId())).build();
+        return ResponseEntity.created(URI.create(SubwayLineController.ROOT_URI + "/" + savedSubwayLine.getId())).build();
     }
 
     @GetMapping
