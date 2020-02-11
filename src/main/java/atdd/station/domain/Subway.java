@@ -24,6 +24,9 @@ public class Subway {
 
     private boolean deleted = false;
 
+    public Subway() {
+    }
+
     @Builder
     public Subway(Station station, SubwayLine subwayLine) {
         this.station = station;
