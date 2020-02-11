@@ -76,6 +76,19 @@ public class LineAcceptanceTest {
                 .jsonPath("$.lines[0].name", lineName);
     }
 
+    @DisplayName("지하철역 노선을 삭제 할 수 있다")
+    @Test
+    void beAbleDeleteStation() throws Exception {
+        String lineName = "2호선";
+
+        EntityExchangeResult<LineResponseView> result = createLine(lineName);
+        String path = getLocationPath(result.getResponseHeaders());
+
+        webTestClient.delete().uri(path)
+                .exchange()
+                .expectStatus().isNoContent();
+    }
+
     private EntityExchangeResult<LineResponseView> createLine(String lineName) throws Exception {
         String inputJson = getInputJson(lineName);
 
