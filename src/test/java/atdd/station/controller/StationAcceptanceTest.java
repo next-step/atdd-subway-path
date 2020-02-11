@@ -1,5 +1,6 @@
 package atdd.station.controller;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,33 +20,27 @@ public class StationAcceptanceTest
     private static final Logger logger = LoggerFactory.getLogger(StationAcceptanceTest.class);
 
     private final String STATIOIN_NAME = "강남역";
-    private final String BASE_URL = "/stations";
+    private final String BASE_URL = "/stations/";
     private final int TEST_ID = 1;
+    private final String INPUT_JSON = "{\"name\":\""+ STATIOIN_NAME +"\"}";
 
     @Autowired
     private WebTestClient webTestClient;
 
     @Test
+    @DisplayName("지하철역 등록")
     public void createStation()
     {
-        String inputJson = "{\"name\":\""+ this.STATIOIN_NAME +"\"}";
-
-        webTestClient.post().uri(BASE_URL + "/create")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectHeader().exists("Location")
-                .expectBody().jsonPath("$.name").isEqualTo(this.STATIOIN_NAME);
+        createStation(STATIOIN_NAME);
     }
 
     @Test
-    public void list()
+    @DisplayName("지하철역 목록 조회")
+    public void findStations()
     {
-        testCreateStation(STATIOIN_NAME);
+        createStation(STATIOIN_NAME);
 
-        webTestClient.get().uri(BASE_URL + "/list")
+        webTestClient.get().uri(BASE_URL)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -53,36 +48,34 @@ public class StationAcceptanceTest
     }
 
     @Test
+    @DisplayName("지하철역 정보 조회")
     public void detailById()
     {
-        testCreateStation(STATIOIN_NAME);
+        createStation(STATIOIN_NAME);
 
-        webTestClient.get().uri(BASE_URL + "/detail/" + TEST_ID)
+        webTestClient.get().uri(BASE_URL + "/" + TEST_ID)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody().jsonPath("$.name").isEqualTo(STATIOIN_NAME);
-
     }
 
     @Test
+    @DisplayName("지하철역 삭제")
     public void deleteStation()
     {
-        testCreateStation(STATIOIN_NAME);
+        createStation(STATIOIN_NAME);
 
-        webTestClient.delete().uri(BASE_URL + "/delete/" + TEST_ID)
+        webTestClient.delete().uri(BASE_URL + "/" + TEST_ID)
                 .exchange()
                 .expectStatus().isOk();
     }
 
-
-    public void testCreateStation(String stationName)
+    public void createStation(String stationName)
     {
-        String inputJson = "{\"name\":\""+ this.STATIOIN_NAME +"\"}";
-
-        webTestClient.post().uri(BASE_URL + "/create")
+        webTestClient.post().uri(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
+                .body(Mono.just(INPUT_JSON), String.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
