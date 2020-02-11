@@ -1,5 +1,7 @@
 package atdd.station;
 
+import atdd.station.domain.station.Station;
+import atdd.station.web.dto.StationListResponseDto;
 import atdd.station.web.dto.StationRequestDto;
 import atdd.station.web.dto.StationResponseDto;
 import org.junit.jupiter.api.Test;
@@ -12,6 +14,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
+
+import java.util.Arrays;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -40,11 +46,11 @@ public class StationAcceptanceTest {
 
     @Test
     public void createStationTest() {
-        //when
+        //given
         String name = "강남역";
         StationRequestDto stationRequestDto = StationRequestDto.builder().name(name).build();
 
-        //then
+        //when
         StationResponseDto stationResponseDto = webTestClient.post().uri("createStation")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(stationRequestDto),StationRequestDto.class)
@@ -56,9 +62,14 @@ public class StationAcceptanceTest {
                 .returnResult()
                 .getResponseBody();
 
+        //then
         assertThat(stationResponseDto.getName()).isEqualTo(name);
 
     }
 
+    @Test
+    public void selectStationListTest() {
+
+    }
 
 }
