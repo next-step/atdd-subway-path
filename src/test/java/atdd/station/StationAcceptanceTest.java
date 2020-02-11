@@ -1,6 +1,7 @@
 package atdd.station;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ public class StationAcceptanceTest {
     @Autowired
     private WebTestClient webTestClient;
 
+    @DisplayName("지하철역을 등록한다")
     @Test
     public void createStation(){
         String STATION_NAME = "강남역";
@@ -43,6 +45,7 @@ public class StationAcceptanceTest {
         ;
     }
 
+    @DisplayName("지하철역 목록을 조회한다")
     @Test
     public void getStations(){
         String STATION_NAME = "강남역";
@@ -70,6 +73,7 @@ public class StationAcceptanceTest {
 
     }
 
+    @DisplayName("지하철역 정보 조회를 한다")
     @Test
     public void getStationById(){
         String STATION_NAME = "강남역";
@@ -84,7 +88,7 @@ public class StationAcceptanceTest {
                 .exchange();
 
 
-        webTestClient.get().uri("/station/" + 1)
+        webTestClient.get().uri("/stations/" + 1)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -92,6 +96,7 @@ public class StationAcceptanceTest {
         ;
     }
 
+    @DisplayName("지하철역을 삭제한다")
     @Test
     public void deleteById(){
         String STATION_NAME = "강남역";
@@ -105,7 +110,7 @@ public class StationAcceptanceTest {
                 .body(Mono.just(station), Station.class)
                 .exchange();
 
-        webTestClient.delete().uri("/station/"+1)
+        webTestClient.delete().uri("/stations/"+1)
                 .exchange()
                 .expectStatus().isNoContent();
 
