@@ -27,7 +27,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class StationController {
@@ -44,23 +46,30 @@ public class StationController {
 
     @GetMapping("/stations")
     public ResponseEntity readStation() {
-        List<Station> stations = stationRepository.findAll();
+        List<Station> stations = new ArrayList<Station>();
+        stationRepository.findAll().forEach(stations::add);
 
         return new ResponseEntity(stations, HttpStatus.OK);
     }
 
     @GetMapping("/stations/{id}")
-    public ResponseEntity readStation(@PathVariable String id) {
-        long castingId = Long.parseLong(id);
-        Station station = stationRepository.findById(castingId);
+    public ResponseEntity readStation(@PathVariable Long id) {
+        Optional<Station> optionalStation = stationRepository.findById(id);
 
-        return new ResponseEntity(station, HttpStatus.OK);
+        return getResponseEntityForNullableObject(optionalStation);
+    }
+
+    private ResponseEntity getResponseEntityForNullableObject(Optional<Station> optionalStation) {
+        if(optionalStation.isPresent()) {
+            Station station = optionalStation.get();
+            return new ResponseEntity(station, HttpStatus.OK);
+        }
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable String id) {
-        long castingId = Long.parseLong(id);
-        stationRepository.deleteById(castingId);
+    public ResponseEntity deleteStation(@PathVariable Long id) {
+        stationRepository.deleteById(id);
 
         return ResponseEntity.ok().build();
     }

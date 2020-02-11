@@ -23,12 +23,4 @@ package atdd.station;
 
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
-
-public interface StationRepository extends CrudRepository<Station, Long> {
-    Station findById(long id);
-
-    List<Station> findAll();
-
-    void deleteById(long id);
-}
+public interface StationRepository extends CrudRepository<Station, Long> {}
