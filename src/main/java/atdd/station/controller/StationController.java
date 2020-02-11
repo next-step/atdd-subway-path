@@ -1,10 +1,11 @@
 package atdd.station.controller;
 
-import atdd.station.Service.StationService;
+import atdd.station.service.StationService;
 import atdd.station.domain.Station;
-import atdd.station.domain.dto.StationDto;
+import atdd.station.dto.StationDto;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,44 +21,35 @@ import java.util.Optional;
 @RequestMapping(value = "/stations", produces = "application/json")
 public class StationController
 {
+    private final String BASE_STATION_URL = "/stations";
+
     @Resource(name = "stationService")
     private StationService stationService;
-    /*
-        1. 지하철역 등록
-     */
-    @PostMapping("/create")
+
+    @PostMapping("")
     public ResponseEntity<Station> createStations(@RequestBody StationDto stationDto)
     {
         Station createdStation = stationService.create(stationDto);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("/stations/list" + createdStation.getId()));
-        ResponseEntity<Station> returnEntity = new ResponseEntity<>(createdStation, headers, HttpStatus.CREATED);
-        return returnEntity;
+        return ResponseEntity.created(URI.create(BASE_STATION_URL + "/" + createdStation.getId()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(createdStation);
     }
-    /*
-        2. 지하철역 목록 조회
-     */
-    @GetMapping("/list")
-    public ResponseEntity list()
+
+    @GetMapping("")
+    public ResponseEntity findStations()
     {
-        List<Station> stationList = stationService.list();
-        ResponseEntity returnEntity = new ResponseEntity(stationList, HttpStatus.OK);
-        return returnEntity;
+        List<Station> stations = stationService.findStations();
+        return new ResponseEntity(stations, HttpStatus.OK);
     }
-    /*
-        3. 지하철역 조회
-     */
-    @GetMapping("/detail/{id}")
+
+    @GetMapping("/{id}")
     public ResponseEntity detailById(@PathVariable long id)
     {
         Optional<Station> detailStation = stationService.findById(id);
-        ResponseEntity returnEntity = new ResponseEntity(detailStation, HttpStatus.OK);
-        return returnEntity;
+        return new ResponseEntity(detailStation, HttpStatus.OK);
     }
-    /*
-        4. 지하철역 삭제
-     */
-    @DeleteMapping("/delete/{id}")
+
+    @DeleteMapping("/{id}")
     public void deleteStation(@PathVariable long id)
     {
         stationService.deleteStationById(id);
