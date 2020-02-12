@@ -78,11 +78,18 @@ public class StationController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity createStationLine(@RequestBody Line line) {
+    public ResponseEntity createLine(@RequestBody Line line) {
         Line savedLine = lineRepository.save(line);
         String resultUri = String.format("/lines/%d", savedLine.getId());
 
         return ResponseEntity.created(URI.create(resultUri)).body(savedLine);
     }
 
+    @GetMapping("/lines")
+    public ResponseEntity readLine() {
+        List<Line> lines = new ArrayList<Line>();
+        lineRepository.findAll().forEach(lines::add);
+
+        return new ResponseEntity(lines, HttpStatus.OK);
+    }
 }
