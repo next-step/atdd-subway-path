@@ -13,13 +13,14 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping("/stations")
 public class StationController {
     private static final Logger logger = LoggerFactory.getLogger(StationController.class);
 
     @Autowired
     private StationRepository stationRepository;
 
-    @PostMapping(value = "/stations")
+    @PostMapping
     @ResponseBody
     public ResponseEntity<Station> createStation(@RequestBody CreateStationRequestView view) {
         Station station = stationRepository.save(view.toStation());
@@ -28,7 +29,7 @@ public class StationController {
                 .body(station);
     }
 
-    @GetMapping(value = "/stations")
+    @GetMapping
     @ResponseBody
     public ResponseEntity<List<Station>> findAllStations() {
 
@@ -38,7 +39,7 @@ public class StationController {
                 .body(stations);
     }
 
-    @GetMapping(value = "/stations/{id}")
+    @GetMapping("/{id}")
     @ResponseBody
     public ResponseEntity<Station> findStation(@PathVariable long id) {
         return ResponseEntity
@@ -46,7 +47,7 @@ public class StationController {
                 .body(stationRepository.findById(id));
     }
 
-    @DeleteMapping(value = "/stations/{id}")
+    @DeleteMapping("/{id}")
     @ResponseBody
     public ResponseEntity deleteStation(@PathVariable long id) {
         stationRepository.deleteById(id);
