@@ -24,8 +24,8 @@ public class StationServiceImpl implements StationService {
         stationRepository.delete(station);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public List<Station> findAll() {
         return stationRepository.findAll();
     }

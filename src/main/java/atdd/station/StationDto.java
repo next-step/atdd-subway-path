@@ -5,13 +5,10 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 public class StationDto {
 
     @Getter
-    @Setter
     public static class Request {
 
         private String name;
@@ -21,18 +18,16 @@ public class StationDto {
         }
     }
 
-    @EqualsAndHashCode
-    @ToString
     @Builder
-    @Getter
     @AllArgsConstructor
-    @Setter
     @NoArgsConstructor
+    @EqualsAndHashCode
+    @Getter
     public static class Response {
 
         private String name;
 
-        static Response from(Station station) {
+        static Response from(Station station){
             return Response.builder().name(station.getName()).build();
         }
     }

@@ -7,10 +7,10 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 
-@Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Getter
 @Embeddable
 class StationName {
 

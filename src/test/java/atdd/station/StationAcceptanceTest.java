@@ -3,7 +3,6 @@ package atdd.station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -21,10 +20,10 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName(value = "Station Controller 를 테스트한다")
+@AutoConfigureWebTestClient
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWebTestClient
-@DisplayName(value = "Station Controller 를 테스트한다")
 public class StationAcceptanceTest {
 
     @Autowired
@@ -45,37 +44,36 @@ public class StationAcceptanceTest {
                 .returnResult();
     }
 
-    @Nested
     @DisplayName(value = "역을 생성하는 API")
+    @Nested
     class CreateStation {
 
-        @Nested
         @DisplayName(value = "역 이름이 주어진다면")
+        @Nested
         class GivenStationName {
 
+            @DisplayName(value = "생성된 역을 리턴한다")
             @ParameterizedTest
             @ValueSource(strings = {"강남역", "역삼역", "공덕역"})
-            @DisplayName(value = "생성된 역을 리턴한다")
             void expectCreateStation(String stationName) {
                 createStationBy(stationName);
             }
         }
     }
 
-    @Nested
     @DisplayName(value = "역을 찾아오는 API")
+    @Nested
     class FindStation {
 
-        @Nested
         @DisplayName(value = "패스가 주어진다면")
+        @Nested
         class GivenStation {
 
             final String stationName = "강남역";
             final String path = createStationBy(stationName).getResponseHeaders().getLocation().getPath();
 
-            @Test
             @DisplayName("조회가 제대로 되는지 확인한다")
-            @Order(2)
+            @Test
             void expectGetStation() {
                 assertThat(webTestClient.get().uri(path)
                         .exchange()
@@ -89,8 +87,8 @@ public class StationAcceptanceTest {
             }
         }
 
-        @Nested
         @DisplayName(value = "역이 세 개가 주어진다면")
+        @Nested
         class GivenAll {
 
             @BeforeEach
@@ -99,10 +97,9 @@ public class StationAcceptanceTest {
                 createStationBy("역삼역");
             }
 
-            @Test
             @DisplayName("조회가 제대로 되는지 확인한다")
+            @Test
             void expectGetStations() {
-
                 webTestClient.get().uri(StationUri.ROOT)
                         .exchange()
                         .expectStatus().isOk()
@@ -118,19 +115,19 @@ public class StationAcceptanceTest {
 
     }
 
-    @Nested
     @DisplayName(value = "역을 삭제하는 API")
+    @Nested
     class DeleteStation {
 
-        @Nested
         @DisplayName(value = "패스가 주어진다면")
+        @Nested
         class GivenStation {
 
             final String stationName = "강남역";
             final String path = createStationBy(stationName).getResponseHeaders().getLocation().getPath();
 
-            @Test
             @DisplayName("삭제가 잘 되는지 확인한다")
+            @Test
             void expectDeleteStation() {
                 //when
                 webTestClient.delete().uri(path)
