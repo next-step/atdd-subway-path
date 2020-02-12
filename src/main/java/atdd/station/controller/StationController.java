@@ -3,7 +3,6 @@ package atdd.station.controller;
 import atdd.station.service.StationService;
 import atdd.station.domain.Station;
 import atdd.station.dto.StationDto;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +13,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
-/*
-    step1 : 지하철역 관리 API 만들기
- */
 @RestController
 @RequestMapping(value = "/stations", produces = "application/json")
 public class StationController
