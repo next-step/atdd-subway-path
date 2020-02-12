@@ -104,6 +104,20 @@ public class SubwayLineServiceTest {
         subwayLineService.update(DEFAULT_ID, KANGNAM_AND_YUCKSAM_STATIONS);
 
         //then
-        softly.assertThat(updatedSubwayLine.getStations().size()).isEqualTo(6);
+        softly.assertThat(updatedSubwayLine.getName()).isEqualTo(SECOND_SUBWAY_LINE_NAME);
     }
+
+    @Test
+    public void 지하철_2호선에서_역삼역이_삭제되는지(SoftAssertions softly) {
+        //given
+        SubwayLine subwayLine = getSecondSubwayLineName();
+
+        when(subwayLineRepository.findById(DEFAULT_ID)).thenReturn(java.util.Optional.of(subwayLine));
+
+        subwayLineService.deleteStation(DEFAULT_ID, KANGNAM_AND_YUCKSAM_STATIONS);
+
+        //then
+        softly.assertThat(subwayLine.getStations().get(2).isDeleted()).isTrue();
+    }
+
 }
