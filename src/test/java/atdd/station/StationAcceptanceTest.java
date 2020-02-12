@@ -32,6 +32,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.StatusAssertions;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -49,138 +50,23 @@ public class StationAcceptanceTest {
     private WebTestClient webTestClient;
 
     @Test
-    public void testCreateReadDeleteStation() {
+    public void testStation() {
         Station targetStation = new Station(1L, "강남역");
         String prefixUri = "/stations";
         String inputJson = String.format("{\"name\": \"%s\"}", targetStation.getName());
 
-        // create station test
-        String createStationUri = prefixUri;
-
-
-        createRequestWebTestClient(createStationUri, inputJson).expectBody(Station.class)
-                                                               .consumeWith(result -> {
-                                                                   Station station = result.getResponseBody();
-                                                                   HttpHeaders responseHeaders =
-                                                                           result.getResponseHeaders();
-                                                                   URI location = responseHeaders.getLocation();
-                                                                   String stringifyLocation = location.toString();
-                                                                   assertThat(stringifyLocation).isEqualTo(String.format("%s/%d", createStationUri, station.getId()));
-                                                               });
-
-
-        // read stations test
-        String readStationsUri = prefixUri;
-
-        readRequestWebTestClient(readStationsUri).isOk()
-                                                 .expectHeader()
-                                                 .contentType(MediaType.APPLICATION_JSON)
-                                                 .expectBodyList(Station.class)
-                                                 .hasSize(1)
-                                                 .consumeWith(result -> {
-                                                     List<Station> stations = result.getResponseBody();
-                                                     Station station = stations.get(0);
-
-                                                     assertThat(station.getName()).isEqualTo("강남역");
-                                                 });
-
-
-        // read station test
-        String readOrDeleteStationUri = getRequestUri(prefixUri, targetStation.getId());
-
-        readRequestWebTestClient(readOrDeleteStationUri).isOk()
-                                                        .expectHeader()
-                                                        .contentType(MediaType.APPLICATION_JSON)
-                                                        .expectBody(Station.class)
-                                                        .consumeWith(result -> {
-                                                            Station station = result.getResponseBody();
-                                                            assertThat(station.getName()).isEqualTo("강남역");
-                                                        });
-
-        String incorrectReadStationUri = getRequestUri(prefixUri, 93);
-
-        readRequestWebTestClient(incorrectReadStationUri).isNoContent()
-                                                         .expectBody(Void.class);
-
-
-        // delete station test
-        webTestClient.delete()
-                     .uri(readOrDeleteStationUri)
-                     .exchange()
-                     .expectStatus()
-                     .isOk();
-
-        readRequestWebTestClient(readOrDeleteStationUri).isNoContent()
-                                                        .expectBody(Void.class);
-
+        testCreateReadDelete(prefixUri, inputJson, targetStation, Station.class, targetStation.getId());
     }
 
     @Test
-    public void testCreateReadDeleteLine() {
+    public void testLine() {
         Line targetLine = new Line(1L, "2호선", "05:00", "23:00", 10);
         String prefixUri = "/lines";
         String inputJson = String.format("{\"name\": \"%s\", \"startTime\": \"%s\", \"endTime\": \"%s\", " +
                 "\"stationInterval\": \"%d\"}", targetLine.getName(), targetLine.getStartTime(),
                 targetLine.getEndTime(), targetLine.getStationInterval());
 
-
-        String createAndReadLinesUri = "/lines";
-
-        // create line test
-        createRequestWebTestClient(createAndReadLinesUri, inputJson).expectBody(Line.class)
-                                                                    .consumeWith(result -> {
-                                                                        HttpHeaders responseHeaders =
-                                                                                result.getResponseHeaders();
-                                                                        URI location = responseHeaders.getLocation();
-                                                                        String stringifyLocation = location.toString();
-                                                                        assertThat(stringifyLocation).isEqualTo(String.format("%s/%d", createAndReadLinesUri, 1));
-                                                                    });
-
-        // read lines test
-        readRequestWebTestClient(createAndReadLinesUri).isOk()
-                                                       .expectHeader()
-                                                       .contentType(MediaType.APPLICATION_JSON)
-                                                       .expectBodyList(Line.class)
-                                                       .hasSize(1)
-                                                       .consumeWith(result -> {
-                                                           List<Line> lines = result.getResponseBody();
-                                                           Line line = lines.get(0);
-
-                                                           assertThat(line.getName()).isEqualTo("2호선");
-                                                           assertThat(line.getStartTime()).isEqualTo("05:00");
-                                                           assertThat(line.getStationInterval()).isEqualTo(10);
-                                                       });
-
-
-        String readOrDeleteLineUri = getRequestUri(prefixUri, targetLine.getId());
-
-        readRequestWebTestClient(readOrDeleteLineUri).isOk()
-                                                     .expectHeader()
-                                                     .contentType(MediaType.APPLICATION_JSON)
-                                                     .expectBody(Line.class)
-                                                     .consumeWith(result -> {
-                                                         Line line = result.getResponseBody();
-
-                                                         assertThat(line.getName()).isEqualTo("2호선");
-                                                         assertThat(line.getStartTime()).isEqualTo("05:00");
-                                                         assertThat(line.getStationInterval()).isEqualTo(10);
-                                                     });
-
-        String incorrectReadStationUri = getRequestUri(prefixUri, 93);
-
-        readRequestWebTestClient(incorrectReadStationUri).isNoContent()
-                                                         .expectBody(Void.class);
-
-        webTestClient.delete()
-                     .uri(readOrDeleteLineUri)
-                     .exchange()
-                     .expectStatus()
-                     .isOk();
-
-        readRequestWebTestClient(readOrDeleteLineUri).isNoContent()
-                                                     .expectBody(Void.class);
-
-
+        testCreateReadDelete(prefixUri, inputJson, targetLine, Line.class, targetLine.getId());
     }
 
     private StatusAssertions readRequestWebTestClient(String uri) {
@@ -203,11 +89,74 @@ public class StationAcceptanceTest {
                             .exists("Location")
                             .expectHeader()
                             .contentType(MediaType.APPLICATION_JSON);
-
-
     }
 
     private String getRequestUri(String prefixUri, long entityId) {
         return String.format("%s/%d", prefixUri, entityId);
+    }
+
+    private void assertResponse(EntityExchangeResult<?> entityExchangeResult, Object targetObject) {
+        Object responseBody = entityExchangeResult.getResponseBody();
+        if (responseBody instanceof List) {
+            List responseList = (List) responseBody;
+            assertThat(responseList.get(0)).usingRecursiveComparison()
+                                           .isEqualTo(targetObject);
+            return;
+        }
+        assertThat(responseBody).usingRecursiveComparison()
+                                .isEqualTo(targetObject);
+    }
+
+    private void testCreateReadDelete(String prefixUri, String inputJson, Object targetObject, Class<?> targetClass,
+                                      Long targetId) {
+        String createObjectUri = prefixUri;
+
+        // create test
+        createRequestWebTestClient(createObjectUri, inputJson).expectBody(targetClass)
+                                                              .consumeWith(result -> {
+                                                                  HttpHeaders responseHeaders =
+                                                                          result.getResponseHeaders();
+                                                                  URI location = responseHeaders.getLocation();
+                                                                  String stringifyLocation = location.toString();
+                                                                  assertThat(stringifyLocation).isEqualTo(String.format("%s/%d", createObjectUri, targetId));
+                                                              });
+
+
+        // read objects test
+        String readObjectsUri = prefixUri;
+
+        readRequestWebTestClient(readObjectsUri).isOk()
+                                                .expectHeader()
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .expectBodyList(targetClass)
+                                                .hasSize(1)
+                                                .consumeWith(result -> assertResponse(result, targetObject));
+
+
+        // read single object test
+        String readOrDeleteObjectUri = getRequestUri(prefixUri, targetId);
+
+        readRequestWebTestClient(readOrDeleteObjectUri).isOk()
+                                                       .expectHeader()
+                                                       .contentType(MediaType.APPLICATION_JSON)
+                                                       .expectBody(targetClass)
+                                                       .consumeWith(result -> assertResponse(result, targetObject));
+
+        String incorrectReadStationUri = getRequestUri(prefixUri, -1);
+
+        readRequestWebTestClient(incorrectReadStationUri).isNoContent()
+                                                         .expectBody(Void.class);
+
+
+        // delete test
+        webTestClient.delete()
+                     .uri(readOrDeleteObjectUri)
+                     .exchange()
+                     .expectStatus()
+                     .isOk();
+
+        readRequestWebTestClient(readOrDeleteObjectUri).isNoContent()
+                                                       .expectBody(Void.class);
+
     }
 }
