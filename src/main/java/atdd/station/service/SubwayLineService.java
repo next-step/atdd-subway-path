@@ -10,6 +10,7 @@ import atdd.station.dto.subwayLine.SubwayLineListResponseDto;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service("subwayLineService")
@@ -17,6 +18,7 @@ public class SubwayLineService {
     @Resource(name = "subwayLineRepository")
     private SubwayLineRepository subwayLineRepository;
 
+    @Transactional
     public SubwayLineCreateResponseDto create(SubwayLineCreateRequestDto subwayLine) {
         return SubwayLineCreateResponseDto.toDtoEntity(subwayLineRepository.save(subwayLine.toEntity()));
     }
@@ -33,12 +35,15 @@ public class SubwayLineService {
         return SubwayLineDetailResponseDto.toDtoEntity(findById(id));
     }
 
+    @Transactional
     public void delete(long defaultId) {
         findById(defaultId).deleteSubwayLine();
     }
 
+    @Transactional
     public SubwayLine update(long id, List<Station> stations) {
         SubwayLine subwayLine = findById(id);
-        return subwayLine.updateStationsInSubwayLine(stations);
+        SubwayLine updatedSubwayLine = subwayLine.updateSubwayByStations(stations);
+        return subwayLineRepository.save(updatedSubwayLine);
     }
 }
