@@ -57,26 +57,18 @@ public class StationAcceptanceTest {
 
         // create station test
         String createStationUri = prefixUri;
-        webTestClient.post()
-                     .uri(createStationUri)
-                     .contentType(MediaType.APPLICATION_JSON)
-                     .body(Mono.just(inputJson), String.class)
-                     .exchange()
-                     .expectStatus()
-                     .isCreated()
-                     .expectHeader()
-                     .exists("Location")
-                     .expectHeader()
-                     .contentType(MediaType.APPLICATION_JSON)
-                     .expectBody(Station.class)
-                     .consumeWith(result -> {
-                         Station station = result.getResponseBody();
-                         HttpHeaders responseHeaders = result.getResponseHeaders();
-                         URI location = responseHeaders.getLocation();
-                         String stringifyLocation = location.toString();
-                         assertThat(stringifyLocation).isEqualTo(String.format("%s/%d", createStationUri,
-                                 station.getId()));
-                     });
+
+
+        createRequestWebTestClient(createStationUri, inputJson).expectBody(Station.class)
+                                                               .consumeWith(result -> {
+                                                                   Station station = result.getResponseBody();
+                                                                   HttpHeaders responseHeaders =
+                                                                           result.getResponseHeaders();
+                                                                   URI location = responseHeaders.getLocation();
+                                                                   String stringifyLocation = location.toString();
+                                                                   assertThat(stringifyLocation).isEqualTo(String.format("%s/%d", createStationUri, station.getId()));
+                                                               });
+
 
         // read stations test
         String readStationsUri = prefixUri;
@@ -132,24 +124,15 @@ public class StationAcceptanceTest {
                 "\"interval\": \"%d\"}", stationLine.getName(), stationLine.getStartTime(), stationLine.getEndTime(),
                 stationLine.getStationInterval());
 
-        webTestClient.post()
-                     .uri(createStationLineUri)
-                     .contentType(MediaType.APPLICATION_JSON)
-                     .body(Mono.just(inputJson), String.class)
-                     .exchange()
-                     .expectStatus()
-                     .isCreated()
-                     .expectHeader()
-                     .exists("Location")
-                     .expectHeader()
-                     .contentType(MediaType.APPLICATION_JSON)
-                     .expectBody(StationLine.class)
-                     .consumeWith(result -> {
-                         HttpHeaders responseHeaders = result.getResponseHeaders();
-                         URI location = responseHeaders.getLocation();
-                         String stringifyLocation = location.toString();
-                         assertThat(stringifyLocation).isEqualTo(String.format("%s/%d", createStationLineUri, 1));
-                     });
+        createRequestWebTestClient(createStationLineUri, inputJson).expectBody(StationLine.class)
+                                                                   .consumeWith(result -> {
+                                                                       HttpHeaders responseHeaders =
+                                                                               result.getResponseHeaders();
+                                                                       URI location = responseHeaders.getLocation();
+                                                                       String stringifyLocation = location.toString();
+                                                                       assertThat(stringifyLocation).isEqualTo(String.format("%s/%d", createStationLineUri, 1));
+                                                                   });
+
     }
 
     private StatusAssertions readRequestWebTestClient(String uri) {
@@ -158,6 +141,22 @@ public class StationAcceptanceTest {
                             .accept(MediaType.APPLICATION_JSON)
                             .exchange()
                             .expectStatus();
+    }
+
+    private WebTestClient.ResponseSpec createRequestWebTestClient(String requestUri, String inputJson) {
+        return webTestClient.post()
+                            .uri(requestUri)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .body(Mono.just(inputJson), String.class)
+                            .exchange()
+                            .expectStatus()
+                            .isCreated()
+                            .expectHeader()
+                            .exists("Location")
+                            .expectHeader()
+                            .contentType(MediaType.APPLICATION_JSON);
+
+
     }
 
     private String getRequestUri(String prefixUri, long entityId) {
