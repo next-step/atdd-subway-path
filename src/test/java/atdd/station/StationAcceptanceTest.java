@@ -116,21 +116,34 @@ public class StationAcceptanceTest {
     }
 
     @Test
-    public void testStationLine() {
-        String createStationLineUri = "/lines";
-        Line line = new Line(1L, "강남역", "05:00", "23:00", 10);
+    public void testCreateReadStationLine() {
+        String createAndReadLinesUri = "/lines";
+        Line targetLine = new Line(1L, "2호선", "05:00", "23:00", 10);
         String inputJson = String.format("{\"name\": \"%s\", \"startTime\": \"%s\", \"endTime\": \"%s\", " +
-                "\"interval\": \"%d\"}", line.getName(), line.getStartTime(), line.getEndTime(),
-                line.getStationInterval());
+                "\"interval\": \"%d\"}", targetLine.getName(), targetLine.getStartTime(), targetLine.getEndTime(),
+                targetLine.getStationInterval());
 
-        createRequestWebTestClient(createStationLineUri, inputJson).expectBody(Line.class)
+        createRequestWebTestClient(createAndReadLinesUri, inputJson).expectBody(Line.class)
                                                                    .consumeWith(result -> {
                                                                        HttpHeaders responseHeaders =
                                                                                result.getResponseHeaders();
                                                                        URI location = responseHeaders.getLocation();
                                                                        String stringifyLocation = location.toString();
-                                                                       assertThat(stringifyLocation).isEqualTo(String.format("%s/%d", createStationLineUri, 1));
+                                                                       assertThat(stringifyLocation).isEqualTo(String.format("%s/%d", createAndReadLinesUri, 1));
                                                                    });
+
+        readRequestWebTestClient(createAndReadLinesUri).isOk()
+                                                 .expectHeader()
+                                                 .contentType(MediaType.APPLICATION_JSON)
+                                                 .expectBodyList(Line.class)
+                                                 .hasSize(1)
+                                                 .consumeWith(result -> {
+                                                     List<Line> lines  = result.getResponseBody();
+                                                     Line line = lines.get(0);
+
+                                                     assertThat(line.getName()).isEqualTo("2호선");
+                                                 });
+
 
     }
 
