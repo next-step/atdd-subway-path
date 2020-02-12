@@ -1,8 +1,8 @@
 package atdd.station;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -21,7 +21,6 @@ import reactor.core.publisher.Mono;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -42,8 +41,6 @@ public class StationAcceptanceTest {
         @DisplayName(value = "역 이름이 주어진다면")
         class GivenStationName {
 
-            final String stationName = "강남역";
-
             @ParameterizedTest
             @ValueSource(strings = {"강남역", "역삼역", "공덕역"})
             @DisplayName(value = "생성된 역을 리턴한다")
@@ -58,53 +55,52 @@ public class StationAcceptanceTest {
     class FindStation {
 
         @Nested
-        @DisplayName(value = "역이 세 개가 주어진다면")
-        class GivenAll {
-
-            @BeforeEach
-            void setUp() {
-                createStationBy("강남역");
-                createStationBy("역삼역");
-            }
-
-            @Test
-            @DisplayName("조회가 제대로 되는지 확인한다")
-            void expectGetStations() {
-                webTestClient.get().uri(StationUri.ROOT)
-                        .exchange()
-                        .expectStatus().isOk()
-                        .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                        .expectBodyList(Station.class)
-                        .hasSize(2)
-                        .isEqualTo(Arrays.asList(
-                                Station.builder().name(StationName.builder().name("강남역").build()).build(),
-                                Station.builder().name(StationName.builder().name("역삼역").build()).build())
-                        );
-            }
-        }
-
-        @Nested
         @DisplayName(value = "패스가 주어진다면")
         class GivenStation {
 
             final String stationName = "강남역";
-            final EntityExchangeResult<Station> stationResult = createStationBy(stationName);
-            final String path = stationResult.getResponseHeaders().getLocation().getPath();
+            final String path = createStationBy(stationName).getResponseHeaders().getLocation().getPath();
 
             @Test
             @DisplayName("조회가 제대로 되는지 확인한다")
+            @Order(2)
             void expectGetStation() {
                 assertThat(webTestClient.get().uri(path)
                         .exchange()
                         .expectStatus().isOk()
                         .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                        .expectBody(Station.class)
+                        .expectBody(StationDto.Response.class)
                         .returnResult()
                         .getResponseBody()
                         .getName())
                         .isEqualTo(stationName);
             }
         }
+
+        @Nested
+        @DisplayName(value = "역이 세 개가 주어진다면")
+        class GivenAll {
+
+            @Test
+            @DisplayName("조회가 제대로 되는지 확인한다")
+            void expectGetStations() {
+
+                createStationBy("강남역");
+                createStationBy("역삼역");
+
+                webTestClient.get().uri(StationUri.ROOT)
+                        .exchange()
+                        .expectStatus().isOk()
+                        .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                        .expectBodyList(StationDto.Response.class)
+                        .hasSize(2)
+                        .isEqualTo(Arrays.asList(
+                                StationDto.Response.from(Station.of("강남역")),
+                                StationDto.Response.from(Station.of("역삼역")))
+                        );
+            }
+        }
+
     }
 
     @Nested
@@ -114,6 +110,7 @@ public class StationAcceptanceTest {
         @Nested
         @DisplayName(value = "패스가 주어진다면")
         class GivenStation {
+
             final String stationName = "강남역";
             final String path = createStationBy(stationName).getResponseHeaders().getLocation().getPath();
 

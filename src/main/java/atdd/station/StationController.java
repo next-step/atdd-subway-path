@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
 @RequestMapping(value = StationUri.ROOT)
 @RestController
@@ -27,9 +29,14 @@ public class StationController {
 
     }
 
+    @GetMapping
+    public ResponseEntity getAll() {
+        return ResponseEntity.ok().body(stationService.findAll().stream().map(StationDto.Response::from).collect(Collectors.toList()));
+    }
+
     @GetMapping(value = "/{id}")
     public ResponseEntity get(@PathVariable("id") Station station) {
-        return ResponseEntity.ok().body(station);
+        return ResponseEntity.ok().body(StationDto.Response.from(station));
     }
 
     @DeleteMapping(value = "/{id}")

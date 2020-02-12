@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class StationServiceImpl implements StationService {
@@ -20,5 +22,11 @@ public class StationServiceImpl implements StationService {
     @Transactional
     public void delete(Station station) {
         stationRepository.delete(station);
+    }
+
+    @Transactional
+    @Override
+    public List<Station> findAll() {
+        return stationRepository.findAll();
     }
 }
