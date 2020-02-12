@@ -1,5 +1,6 @@
 package atdd.station.service;
 
+import atdd.station.domain.Station;
 import atdd.station.domain.SubwayLine;
 import atdd.station.domain.SubwayLineRepository;
 import atdd.station.dto.subwayLine.SubwayLineCreateRequestDto;
@@ -16,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
+import static atdd.station.fixture.StationFixture.KANGNAM_AND_YUCKSAM_STATIONS;
 import static atdd.station.fixture.SubwayLineFixture.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -89,4 +91,19 @@ public class SubwayLineServiceTest {
         //then
         softly.assertThat(subwayLine.isDeleted()).isTrue();
     }
+
+
+    @Test
+    public void 지하철_2호선에_강남역_추가가_성공하는지(SoftAssertions softly) {
+        //given
+        SubwayLine subwayLine = getSubwayLine(SECOND_SUBWAY_LINE_NAME);
+        List<Station> stations = KANGNAM_AND_YUCKSAM_STATIONS;
+
+        when(subwayLineRepository.findById(DEFAULT_ID)).thenReturn(java.util.Optional.of(subwayLine));
+        SubwayLine updatedSubwayLine = subwayLineService.update(stations);
+
+        //then
+        softly.assertThat(subwayLine.isDeleted()).isTrue();
+    }
+
 }
