@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,16 +26,14 @@ public class StationsService {
     }
 
     public void delete(Long id){
-        Stations stations=stationsRepository.findById(id)
-                .orElseThrow(()-> new IllegalArgumentException("해당 역이 없습니다. id="+id));
+        Stations stations=checkId(id);
         stationsRepository.delete(stations);
 
     }
 
     public StationsResponseDto findById(Long id){
-        Stations entity=stationsRepository.findById(id)
-                .orElseThrow(()->new IllegalArgumentException("해당 역이 없습니다. id="+id));
-        return new StationsResponseDto(entity);
+        Stations stations=checkId(id);
+        return new StationsResponseDto(stations);
     }
 
     public List<StationsListResponseDto> getList() {
@@ -42,5 +41,10 @@ public class StationsService {
                 .stream()
                 .map(StationsListResponseDto::new)
                 .collect(Collectors.toList());
+    }
+
+    public Stations checkId(Long id){
+        return stationsRepository.findById(id)
+                .orElseThrow(()->new EntityNotFoundException("해당 역이 존재하지 않습니다."));
     }
 }

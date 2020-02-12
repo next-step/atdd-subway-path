@@ -6,43 +6,43 @@ import atdd.web.dto.StationsListResponseDto;
 import atdd.web.dto.StationsResponseDto;
 import atdd.web.dto.StationsSaveRequestDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.apache.http.client.HttpResponseException;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import java.net.URI;
 import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/stations")
+@RequestMapping(value = "/stations/")
 public class StationsApiController {
 
     private final StationsService stationsService;
 
-    @PostMapping("/create")
+    @PostMapping("")
     public ResponseEntity create(@RequestBody StationsSaveRequestDto requestDto){
 
         Stations stations=stationsService.create(requestDto);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("/stations/" + stations.getId()));
-
-        return new ResponseEntity<>(stations, headers, HttpStatus.CREATED);
+        return ResponseEntity
+                .created(URI.create("/stations/" + stations.getId()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(stations);
     }
 
-    @DeleteMapping("/{id}")
-    public Long delete(@PathVariable Long id) {
+    @DeleteMapping("{id}")
+    public HttpStatus delete(@PathVariable Long id) {
         stationsService.delete(id);
-        return id;
+        return HttpStatus.NO_CONTENT;
     }
 
-    @GetMapping("/list")
+    @GetMapping("")
     public List<StationsListResponseDto> list(){
         return stationsService.getList();
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("{id}")
     public StationsResponseDto detail(@PathVariable Long id){
         return stationsService.findById(id);
     }
