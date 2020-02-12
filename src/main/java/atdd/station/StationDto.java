@@ -24,8 +24,10 @@ public class StationDto {
     @EqualsAndHashCode
     @ToString
     @Builder
-    @Getter @AllArgsConstructor
-    @Setter @NoArgsConstructor
+    @Getter
+    @AllArgsConstructor
+    @Setter
+    @NoArgsConstructor
     public static class Response {
 
         private String name;

@@ -7,8 +7,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,7 +30,20 @@ public class StationAcceptanceTest {
     @Autowired
     private WebTestClient webTestClient;
 
-    private static final Logger logger = LoggerFactory.getLogger(StationAcceptanceTest.class);
+    public EntityExchangeResult<Station> createStationBy(String name) {
+
+        final String inputJson = "{\"name\":\"" + name + "\"}";
+
+        return webTestClient.post().uri("/stations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(inputJson), String.class)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectHeader().exists(HttpHeaders.LOCATION)
+                .expectBody(Station.class)
+                .returnResult();
+    }
 
     @Nested
     @DisplayName(value = "역을 생성하는 API")
@@ -132,21 +143,5 @@ public class StationAcceptanceTest {
                         .expectStatus().isNotFound();
             }
         }
-    }
-
-
-    public EntityExchangeResult<Station> createStationBy(String name) {
-
-        final String inputJson = "{\"name\":\"" + name + "\"}";
-
-        return webTestClient.post().uri("/stations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectHeader().exists(HttpHeaders.LOCATION)
-                .expectBody(Station.class)
-                .returnResult();
     }
 }
