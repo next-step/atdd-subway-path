@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static atdd.station.fixture.StationFixture.KANGNAM_AND_YUCKSAM_STATIONS;
+import static atdd.station.fixture.StationFixture.YUCKSAM_STATION_NAME;
 import static atdd.station.fixture.SubwayLineFixture.SECOND_SUBWAY_LINE_NAME;
+import static atdd.station.fixture.SubwayLineFixture.getSecondSubwayLineName;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SubwayLineTest {
@@ -33,7 +35,7 @@ public class SubwayLineTest {
         SubwayLine subwayLine = new SubwayLine(SECOND_SUBWAY_LINE_NAME);
 
         //when
-        SubwayLine updatedSubwayLine = subwayLine.updateStationsInSubwayLine(KANGNAM_AND_YUCKSAM_STATIONS);
+        SubwayLine updatedSubwayLine = subwayLine.updateSubwayByStations(KANGNAM_AND_YUCKSAM_STATIONS);
 
         //then
         assertThat(updatedSubwayLine.getStations().size()).isEqualTo(2);
@@ -52,4 +54,33 @@ public class SubwayLineTest {
         //then
         assertThat(madeSubways.size()).isEqualTo(2);
     }
+
+    @DisplayName("역삼역_의_이름으로_삭제가_가능한지")
+    @Test
+    public void deleteStationByNameTest() {
+        //given
+
+        SubwayLine subwayLine = getSecondSubwayLineName();
+
+        //when
+        subwayLine.deleteStationByName(YUCKSAM_STATION_NAME);
+
+        //then
+        assertThat(madeSubways.size()).isEqualTo(2);
+    }
+
+    @DisplayName("subwayLine_내의_stations_에서_이름으로_해당_역으로_가져오는지")
+    @Test
+    public void deleteStationByNameTest() {
+        //given
+
+        SubwayLine subwayLine = getSecondSubwayLineName();
+
+        //when
+        Station station = subwayLine.getStationByName(YUCKSAM_STATION_NAME);
+
+        //then
+        assertThat(station.getName()).isEqualTo(YUCKSAM_STATION_NAME);
+    }
+
 }
