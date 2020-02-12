@@ -96,6 +96,17 @@ public class SubwayLine {
                 .collect(Collectors.toList());
     }
 
+    public SubwayLine updateStationsInSubwayLine(List<Station> stations) {
+        this.subways.addAll(makeSubwaysByStations(stations));
+        return this;
+    }
+
+    List<Subway> makeSubwaysByStations(List<Station> stations) {
+        return stations.stream()
+                .map(station -> new Subway(station, this))
+                .collect(Collectors.toList());
+    }
+
     @Override
     public String toString() {
         return "SubwayLine{" +
