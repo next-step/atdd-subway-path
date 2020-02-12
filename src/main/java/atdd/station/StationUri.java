@@ -2,7 +2,7 @@ package atdd.station;
 
 import java.net.URI;
 
-public class StationUri {
+public abstract class StationUri {
 
     public static final String ROOT = "/stations";
 

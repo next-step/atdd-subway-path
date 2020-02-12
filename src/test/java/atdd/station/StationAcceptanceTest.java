@@ -87,7 +87,7 @@ public class StationAcceptanceTest {
             }
         }
 
-        @DisplayName(value = "역이 세 개가 주어진다면")
+        @DisplayName(value = "역이 두 개가 주어진다면")
         @Nested
         class GivenAll {
 
