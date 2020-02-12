@@ -21,10 +21,8 @@
  * */
 package atdd.station;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 public class Line {
@@ -36,6 +34,10 @@ public class Line {
     private String startTime;
     private String endTime;
     private int stationInterval;
+
+    @OneToMany(mappedBy = "line")
+    Set<Station> stations;
+
 
     protected Line() {
     }
