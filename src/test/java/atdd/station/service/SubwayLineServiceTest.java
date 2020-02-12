@@ -97,13 +97,11 @@ public class SubwayLineServiceTest {
     public void 지하철_2호선에_강남역_추가가_성공하는지(SoftAssertions softly) {
         //given
         SubwayLine subwayLine = getSubwayLine(SECOND_SUBWAY_LINE_NAME);
-        List<Station> stations = KANGNAM_AND_YUCKSAM_STATIONS;
 
         when(subwayLineRepository.findById(DEFAULT_ID)).thenReturn(java.util.Optional.of(subwayLine));
-        SubwayLine updatedSubwayLine = subwayLineService.update(stations);
+        SubwayLine updatedSubwayLine = subwayLineService.update(DEFAULT_ID, KANGNAM_AND_YUCKSAM_STATIONS);
 
         //then
-        softly.assertThat(subwayLine.isDeleted()).isTrue();
+        softly.assertThat(updatedSubwayLine.getStations().size()).isEqualTo(4);
     }
-
 }
