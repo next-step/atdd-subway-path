@@ -59,21 +59,19 @@ public class SubwayLineTest {
     @Test
     public void deleteStationByNameTest() {
         //given
-
         SubwayLine subwayLine = getSecondSubwayLineName();
 
         //when
         subwayLine.deleteStationByName(YUCKSAM_STATION_NAME);
 
         //then
-        assertThat(madeSubways.size()).isEqualTo(2);
+        assertThat(subwayLine.getStations().size()).isEqualTo(3);
     }
 
     @DisplayName("subwayLine_내의_stations_에서_이름으로_해당_역으로_가져오는지")
     @Test
-    public void deleteStationByNameTest() {
+    public void getStationByNameSuccessTest() {
         //given
-
         SubwayLine subwayLine = getSecondSubwayLineName();
 
         //when
