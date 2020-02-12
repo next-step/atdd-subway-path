@@ -44,13 +44,15 @@ public class StationController {
         Station savedStation = stationRepository.save(station);
         String resultUri = String.format("/stations/%d", savedStation.getId());
 
-        return ResponseEntity.created(URI.create(resultUri)).body(savedStation);
+        return ResponseEntity.created(URI.create(resultUri))
+                             .body(savedStation);
     }
 
     @GetMapping("/stations")
     public ResponseEntity readStation() {
         List<Station> stations = new ArrayList<Station>();
-        stationRepository.findAll().forEach(stations::add);
+        stationRepository.findAll()
+                         .forEach(stations::add);
 
         return new ResponseEntity(stations, HttpStatus.OK);
     }
@@ -62,19 +64,12 @@ public class StationController {
         return getResponseEntityForNullableObject(optionalStation);
     }
 
-    private ResponseEntity getResponseEntityForNullableObject(Optional<Station> optionalStation) {
-        if(optionalStation.isPresent()) {
-            Station station = optionalStation.get();
-            return new ResponseEntity(station, HttpStatus.OK);
-        }
-        return ResponseEntity.noContent().build();
-    }
-
     @DeleteMapping("/stations/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationRepository.deleteById(id);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+                             .build();
     }
 
     @PostMapping("/lines")
@@ -82,14 +77,29 @@ public class StationController {
         Line savedLine = lineRepository.save(line);
         String resultUri = String.format("/lines/%d", savedLine.getId());
 
-        return ResponseEntity.created(URI.create(resultUri)).body(savedLine);
+        return ResponseEntity.created(URI.create(resultUri))
+                             .body(savedLine);
     }
 
     @GetMapping("/lines")
-    public ResponseEntity readLine() {
+    public ResponseEntity readLines() {
         List<Line> lines = new ArrayList<Line>();
-        lineRepository.findAll().forEach(lines::add);
+        lineRepository.findAll()
+                      .forEach(lines::add);
 
         return new ResponseEntity(lines, HttpStatus.OK);
+    }
+
+    @GetMapping("/lines/{id}")
+    public ResponseEntity readLine(@PathVariable Long id) {
+        Optional<Line> optionalLine = lineRepository.findById(id);
+
+        return getResponseEntityForNullableObject(optionalLine);
+    }
+
+    private ResponseEntity getResponseEntityForNullableObject(Optional<?> optionalObject) {
+        return optionalObject.map(object -> new ResponseEntity(object, HttpStatus.OK))
+                             .orElseGet(() -> ResponseEntity.noContent()
+                                                            .build());
     }
 }
