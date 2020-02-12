@@ -1,33 +1,131 @@
 package atdd.station;
 
+import atdd.dto.Station;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWebClient
+@AutoConfigureWebTestClient
 public class StationAcceptanceTest {
     private static final Logger logger = LoggerFactory.getLogger(StationAcceptanceTest.class);
 
     @Autowired
     private WebTestClient webTestClient;
 
+    /**
+     * 지하철 정보
+     * {
+     *     "id":1,
+     *     "name":"강남역"
+     * }
+     */
+
+    /**
+     * Scenario: 지하철역 등록
+     * When 관리자는 "강남역" 지하철역 등록을 요청한다.
+     * Then "강남역" 지하철역이 등록된다.
+     */
     @Test
-    public void test() {
-        String stationName = "강남역";
-        String inputJson = "{\"name\":\""+stationName+"\"}";
+    public void testCreateStation() {
+
+        Station station = new Station();
+        station.setName("강남역");
+        createStation(station);
+
+    }
+
+    /**
+     * Scenario: 지하철역 목록 조회
+     * Given "강남역" 지하철역이 등록되어 있다.
+     * When 사용자는 지하철역 목록조회를 요청한다.
+     * Then 사용자는 "강남역" 지하철역의 정보를 응답받는다.
+     */
+    @Test
+    public void testGetStation() {
+
+        Station station = new Station();
+        station.setName("강남역");
+        createStation(station);
+
+        List<Station> result = webTestClient.get().uri("/stations")
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBodyList(Station.class)
+                .returnResult()
+                .getResponseBody();
+
+        Assertions.assertThat(result.get(0).getName()).isEqualTo(station.getName());
+    }
+
+    /**
+     * Scenario: 지하철역 정보 조회
+     * Given "강남역" 지하철역이 등록되어 있다.
+     * When 사용자는 "강남역" 지하철역의 정보 조회를 요청한다.
+     * Then 사용자는 "강남역" 지하철역의 정보를 응답받는다.
+     */
+
+    @Test
+    public void testGetStationInfo() {
+
+        Station station = new Station();
+        station.setName("강남역");
+        createStation(station);
+
+        webTestClient.get().uri("/stations/details/강남역")
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.id").isNotEmpty()
+                .jsonPath("$.name").isEqualTo(station.getName());
+    }
+
+    /**
+     * Scenario: 지하철역 삭제
+     * Given "강남역" 지하철역이 등록되어 있다.
+     * When 관리자는 "강남역" 지하철역 삭제를 요청한다.
+     * Then "강남역" 지하철역이 삭제되었다.
+     */
+    @Test
+    public void testDeleteStaion() {
+
+        Station station = new Station();
+        station.setName("강남역");
+        createStation(station);
+
+        webTestClient.delete().uri("/stations/강남역")
+                .exchange()
+                .expectStatus().isOk();
+    }
+
+    /**
+     * 공통) 지하철역 등록
+     */
+    public void createStation(Station station) {
 
         webTestClient.post().uri("/stations")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
+                .body(Mono.just(station), Station.class)
                 .exchange()
-                .expectStatus().isCreated();
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectHeader().exists("Location")
+                .expectBody()
+                .jsonPath("$.name").isEqualTo(station.getName());
     }
-
 }
+
