@@ -1,40 +1,34 @@
 package atdd.station;
 
+import atdd.AcceptanceTestSupport;
 import atdd.station.controller.StationController;
 import atdd.station.dto.StationResponseDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-
-    @Autowired
-    private WebTestClient webTestClient;
+public class StationAcceptanceTest extends AcceptanceTestSupport {
 
     @DisplayName("지하철역 등록")
     @Test
     void create() {
         final String uri = StationController.ROOT_URI;
         final String stationName = "강남역";
-        final String inputJson = "{\"name\":\"" + stationName + "\"}";
+        final Map<String, String> request = Collections.singletonMap("name", stationName);
 
         final EntityExchangeResult<StationResponseDto> result = webTestClient.post()
                 .uri(uri)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
+                .body(Mono.just(request), Map.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -53,7 +47,8 @@ public class StationAcceptanceTest {
     @Test
     void findAll() {
         final String stationName = "강남역";
-        create(stationName);
+        final Map<String, String> request = Collections.singletonMap("name", stationName);
+        create(StationController.ROOT_URI, request, StationResponseDto.class);
 
 
         final List<StationResponseDto> results = webTestClient.get()
@@ -73,7 +68,8 @@ public class StationAcceptanceTest {
     @Test
     void getStation() {
         final String stationName = "강남역";
-        final StationResponseDto responseDto = create(stationName);
+        final Map<String, String> request = Collections.singletonMap("name", stationName);
+        final StationResponseDto responseDto = create(StationController.ROOT_URI, request, StationResponseDto.class);
 
         final StationResponseDto stationResponseDto = webTestClient.get()
                 .uri(StationController.ROOT_URI + "/" + responseDto.getId())
@@ -90,25 +86,13 @@ public class StationAcceptanceTest {
     @Test
     void delete() {
         final String stationName = "강남역";
-        final StationResponseDto responseDto = create(stationName);
+        final Map<String, String> request = Collections.singletonMap("name", stationName);
+        final StationResponseDto responseDto = create(StationController.ROOT_URI, request, StationResponseDto.class);
 
         webTestClient.delete()
                 .uri(StationController.ROOT_URI + "/" + responseDto.getId())
                 .exchange()
                 .expectStatus().isNoContent();
     }
-
-    private StationResponseDto create(String stationName) {
-        final String inputJson = "{\"name\":\"" + stationName + "\"}";
-
-        return webTestClient.post()
-                .uri(StationController.ROOT_URI)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
-                .exchange()
-                .expectBody(StationResponseDto.class)
-                .returnResult().getResponseBody();
-    }
-
 
 }
