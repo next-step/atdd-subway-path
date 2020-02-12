@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 import java.util.Objects;
 
 import static atdd.station.fixture.StationFixture.KANGNAM_STATION_NAME;
+import static atdd.station.fixture.StationFixture.getStation;
 import static atdd.station.fixture.SubwayLineFixture.SECOND_SUBWAY_LINE_NAME;
 import static atdd.station.fixture.SubwayLineFixture.getSubwayLine;
 
@@ -96,6 +97,33 @@ public class SubwayLineAcceptanceTest {
         webTestClient.delete().uri(location)
                 .exchange()
                 .expectStatus().isOk();
+    }
+
+    @DisplayName("2호선_지하철노선에_강남역과_역삼역을_추가가_성공하는지")
+    @Test
+    void updateSecondSubwayToAddKanNamStationSuccessTest() {
+        //whens
+        //then
+        webTestClient.put().uri(SUBWAY_LINE_API_BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(getStation(KANGNAM_STATION_NAME)), SubwayLine.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(KANGNAM_STATION_NAME);
+    }
+
+    @DisplayName("2호선_지하철노선에_내에_존재하는_강남역을_삭제가_성공하는지")
+    @Test
+    void deleteKanNamStationInSecondSubwaySuccessTest() {
+        String location = creatSubwayLine(SECOND_SUBWAY_LINE_NAME);
+
+        //whens
+        //then
+        webTestClient.delete().uri(location + "/" + KANGNAM_STATION_NAME)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON);
     }
 
 
