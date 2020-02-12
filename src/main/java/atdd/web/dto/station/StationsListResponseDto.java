@@ -1,9 +1,8 @@
-package atdd.web.dto;
+package atdd.web.dto.station;
 
 import atdd.domain.stations.Stations;
 import lombok.Builder;
 import lombok.Getter;
-
 import java.util.List;
 
 @Getter

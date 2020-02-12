@@ -32,4 +32,8 @@ public class StationLine {
     public Line getLine(){
         return this.line;
     }
+
+    public Stations getStations(){
+        return this.stations;
+    }
 }

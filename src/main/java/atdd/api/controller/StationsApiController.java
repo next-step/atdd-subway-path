@@ -1,11 +1,9 @@
 package atdd.api.controller;
 
-import atdd.domain.stations.Stations;
 import atdd.serivce.stations.StationsService;
-import atdd.web.dto.StationsListResponseDto;
-import atdd.web.dto.StationsReadResponseDto;
-import atdd.web.dto.StationsResponseDto;
-import atdd.web.dto.StationsSaveRequestDto;
+import atdd.web.dto.station.StationsListResponseDto;
+import atdd.web.dto.station.StationsResponseDto;
+import atdd.web.dto.station.StationsSaveRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +14,6 @@ import java.net.URI;
 @RestController
 @RequestMapping(value = "/stations/")
 public class StationsApiController {
-
     private final StationsService stationsService;
 
     @PostMapping

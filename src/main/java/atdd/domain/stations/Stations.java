@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Entity(name = "station")
 public class Stations {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "station_id")
