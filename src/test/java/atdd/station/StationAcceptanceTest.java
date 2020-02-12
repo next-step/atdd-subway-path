@@ -147,24 +147,34 @@ public class StationAcceptanceTest {
                                                        });
 
 
-        String readLineUri = "/lines/1";
+        String readOrDeleteLineUri = "/lines/1";
 
-        readRequestWebTestClient(readLineUri).isOk()
-                                             .expectHeader()
-                                             .contentType(MediaType.APPLICATION_JSON)
-                                             .expectBody(Line.class)
-                                             .consumeWith(result -> {
-                                                 Line line = result.getResponseBody();
+        readRequestWebTestClient(readOrDeleteLineUri).isOk()
+                                                     .expectHeader()
+                                                     .contentType(MediaType.APPLICATION_JSON)
+                                                     .expectBody(Line.class)
+                                                     .consumeWith(result -> {
+                                                         Line line = result.getResponseBody();
 
-                                                 assertThat(line.getName()).isEqualTo("2호선");
-                                                 assertThat(line.getStartTime()).isEqualTo("05:00");
-                                                 assertThat(line.getStationInterval()).isEqualTo(10);
-                                             });
+                                                         assertThat(line.getName()).isEqualTo("2호선");
+                                                         assertThat(line.getStartTime()).isEqualTo("05:00");
+                                                         assertThat(line.getStationInterval()).isEqualTo(10);
+                                                     });
 
         String incorrectReadStationUri = "/lines/93";
 
         readRequestWebTestClient(incorrectReadStationUri).isNoContent()
                                                          .expectBody(Void.class);
+
+        webTestClient.delete()
+                     .uri(readOrDeleteLineUri)
+                     .exchange()
+                     .expectStatus()
+                     .isOk();
+
+        readRequestWebTestClient(readOrDeleteLineUri).isNoContent()
+                                                     .expectBody(Void.class);
+
 
     }
 
