@@ -15,7 +15,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 
-import static atdd.station.fixture.StationFixture.*;
+import static atdd.station.fixture.StationFixture.KANGNAM_AND_YUCKSAM_STATIONS;
+import static atdd.station.fixture.StationFixture.KANGNAM_STATION_NAME;
 import static atdd.station.fixture.SubwayLineFixture.*;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -100,16 +101,17 @@ public class SubwayLineAcceptanceTest {
     @DisplayName("2호선_지하철노선에_강남역과_역삼역을_추가가_성공하는지")
     @Test
     void updateSecondSubwayToAddKanNamStationSuccessTest() {
+        String location = creatSubwayLine(SECOND_SUBWAY_LINE_NAME);
+
         //whens
         //then
-        webTestClient.put().uri(SUBWAY_LINE_API_BASE_URL)
+        webTestClient.put().uri(location)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(KANGNAM_AND_YUCKSAM_STATIONS), SubwayLine.class)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(KANGNAM_STATION_NAME)
-                .jsonPath("$.stations[1].name").isEqualTo("역삼역");
+                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(SECOND_SUBWAY_LINE_NAME);
     }
 
     @DisplayName("2호선_지하철노선에_내에_존재하는_강남역을_삭제가_성공하는지")
