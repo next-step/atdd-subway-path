@@ -46,4 +46,9 @@ public class SubwayLineService {
         SubwayLine updatedSubwayLine = subwayLine.updateSubwayByStations(stations);
         return subwayLineRepository.save(updatedSubwayLine);
     }
+
+    public void deleteStation(long defaultId, String name) {
+        SubwayLine subwayLine = findById(defaultId);
+        subwayLine.deleteStationByName(name);
+    }
 }
