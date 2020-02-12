@@ -1,5 +1,6 @@
 package atdd.station;
 
+import atdd.station.model.CreateStationRequestView;
 import atdd.station.model.Station;
 import atdd.station.repository.StationRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -36,7 +37,7 @@ public class StationAcceptanceTest {
     private StationRepository repository;
 
     @Test
-    public void createStation(){
+    public void createStation() {
         //when
         String stationName = "강남역";
         String inputJson = "{\"name\":\"" + stationName + "\"}";
@@ -64,7 +65,7 @@ public class StationAcceptanceTest {
     }
 
     @Test
-    public void findAllStations(){
+    public void findAllStations() {
         // given
         createStations();
 
@@ -86,7 +87,7 @@ public class StationAcceptanceTest {
     }
 
     @Test
-    public void findStation(){
+    public void findStation() {
         // given
         createStations();
 
@@ -110,7 +111,7 @@ public class StationAcceptanceTest {
     }
 
     @Test
-    public void deleteStation(){
+    public void deleteStation() {
         // given
         createStations();
 
@@ -138,8 +139,11 @@ public class StationAcceptanceTest {
     }
 
     private void createStation(String name) {
+        CreateStationRequestView createStationRequestView = CreateStationRequestView.builder()
+                .name(name)
+                .build();
 
-        String inputJson = "{\"name\":\"" + name + "\"}";
+        String inputJson = writeValueAsString(createStationRequestView.toStation());
 
         webTestClient.post().uri("/stations")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -151,7 +155,7 @@ public class StationAcceptanceTest {
         String result = null;
         try {
             result = mapper.writeValueAsString(object);
-        }catch (JsonProcessingException e){
+        } catch (JsonProcessingException e) {
             logger.error("JsonProcessingException", e);
         }
 
