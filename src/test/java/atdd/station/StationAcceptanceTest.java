@@ -44,14 +44,13 @@ import java.util.List;
 @AutoConfigureWebTestClient
 public class StationAcceptanceTest {
     private static final Logger logger = LoggerFactory.getLogger(StationAcceptanceTest.class);
-    Long id = new Long(1);
 
     @Autowired
     private WebTestClient webTestClient;
 
     @Test
     public void testCreateReadDeleteStation() {
-        Station targetStation = new Station(id, "강남역");
+        Station targetStation = new Station(1L, "강남역");
         String prefixUri = "/stations";
         String inputJson = String.format("{\"name\": \"%s\"}", targetStation.getName());
 
@@ -119,12 +118,12 @@ public class StationAcceptanceTest {
     @Test
     public void testStationLine() {
         String createStationLineUri = "/lines";
-        StationLine stationLine = new StationLine(id, "강남역", "05:00", "23:00", 10);
+        Line line = new Line(1L, "강남역", "05:00", "23:00", 10);
         String inputJson = String.format("{\"name\": \"%s\", \"startTime\": \"%s\", \"endTime\": \"%s\", " +
-                "\"interval\": \"%d\"}", stationLine.getName(), stationLine.getStartTime(), stationLine.getEndTime(),
-                stationLine.getStationInterval());
+                "\"interval\": \"%d\"}", line.getName(), line.getStartTime(), line.getEndTime(),
+                line.getStationInterval());
 
-        createRequestWebTestClient(createStationLineUri, inputJson).expectBody(StationLine.class)
+        createRequestWebTestClient(createStationLineUri, inputJson).expectBody(Line.class)
                                                                    .consumeWith(result -> {
                                                                        HttpHeaders responseHeaders =
                                                                                result.getResponseHeaders();

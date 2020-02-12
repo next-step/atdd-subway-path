@@ -23,5 +23,5 @@ package atdd.station;
 
 import org.springframework.data.repository.CrudRepository;
 
-public interface StationLineRepository extends CrudRepository<StationLine, Long> {}
+public interface LineRepository extends CrudRepository<Line, Long> {}
 

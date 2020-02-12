@@ -37,7 +37,7 @@ public class StationController {
     private StationRepository stationRepository;
 
     @Autowired
-    private StationLineRepository stationLineRepository;
+    private LineRepository lineRepository;
 
     @PostMapping("/stations")
     public ResponseEntity createStation(@RequestBody Station station) {
@@ -78,11 +78,11 @@ public class StationController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity createStationLine(@RequestBody StationLine stationLine) {
-        StationLine savedStationLine = stationLineRepository.save(stationLine);
-        String resultUri = String.format("/lines/%d", savedStationLine.getId());
+    public ResponseEntity createStationLine(@RequestBody Line line) {
+        Line savedLine = lineRepository.save(line);
+        String resultUri = String.format("/lines/%d", savedLine.getId());
 
-        return ResponseEntity.created(URI.create(resultUri)).body(savedStationLine);
+        return ResponseEntity.created(URI.create(resultUri)).body(savedLine);
     }
 
 }

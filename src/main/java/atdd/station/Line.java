@@ -27,7 +27,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class StationLine {
+public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -37,10 +37,10 @@ public class StationLine {
     private String endTime;
     private int stationInterval;
 
-    protected StationLine() {
+    protected Line() {
     }
 
-    public StationLine(Long id, String name, String startTime, String endTime, int stationInterval) {
+    public Line(Long id, String name, String startTime, String endTime, int stationInterval) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
