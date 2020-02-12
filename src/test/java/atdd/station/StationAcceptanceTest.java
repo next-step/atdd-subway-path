@@ -119,7 +119,6 @@ public class StationAcceptanceTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNoContent()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody().returnResult();
 
         // then
