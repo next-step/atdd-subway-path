@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static atdd.station.fixture.StationFixture.KANGNAM_AND_YUCKSAM_STATIONS;
+import static atdd.station.fixture.StationFixture.YUCKSAM_STATION_NAME;
 import static atdd.station.fixture.SubwayLineFixture.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -114,10 +115,10 @@ public class SubwayLineServiceTest {
 
         when(subwayLineRepository.findById(DEFAULT_ID)).thenReturn(java.util.Optional.of(subwayLine));
 
-        subwayLineService.deleteStation(DEFAULT_ID, KANGNAM_AND_YUCKSAM_STATIONS);
+        subwayLineService.deleteStation(DEFAULT_ID, YUCKSAM_STATION_NAME);
 
         //then
-        softly.assertThat(subwayLine.getStations().get(2).isDeleted()).isTrue();
+        softly.assertThat(subwayLine.getStationByName(YUCKSAM_STATION_NAME).isDeleted()).isTrue();
     }
 
 }
