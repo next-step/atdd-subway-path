@@ -17,7 +17,7 @@ import java.util.Optional;
 @RequestMapping(value = "/stations", produces = "application/json")
 public class StationController
 {
-    private final String BASE_STATION_URL = "/stations";
+    private static final String BASE_STATION_URL = "/stations";
 
     @Resource(name = "stationService")
     private StationService stationService;
