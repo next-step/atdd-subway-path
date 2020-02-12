@@ -29,10 +29,10 @@ public class StationRepository {
     }
 
     public Station save(Station station) {
-        Map parameters = new HashMap<>();
+        final Map parameters = new HashMap<>();
         parameters.put("NAME", station.getName());
 
-        Long stationId = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        final Long stationId = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
 
         return findById(stationId);
     }

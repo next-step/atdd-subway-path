@@ -23,7 +23,7 @@ public class StationController {
     @PostMapping
     @ResponseBody
     public ResponseEntity<Station> createStation(@RequestBody CreateStationRequestView view) {
-        Station station = stationRepository.save(view.toStation());
+        final Station station = stationRepository.save(view.toStation());
 
         return ResponseEntity.created(URI.create("/stations/" + station.getId()))
                 .body(station);
@@ -32,8 +32,7 @@ public class StationController {
     @GetMapping
     @ResponseBody
     public ResponseEntity<List<Station>> findAllStations() {
-
-        List stations = stationRepository.findAll();
+        final List stations = stationRepository.findAll();
 
         return ResponseEntity.ok()
                 .body(stations);
