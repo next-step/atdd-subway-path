@@ -7,12 +7,11 @@ import atdd.station.domain.Station;
 import atdd.station.domain.SubwayLine;
 import atdd.station.domain.SubwayLineRepository;
 import atdd.station.domain.SubwaySection;
+import atdd.station.utils.SubwaySectionQueueUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,33 +44,40 @@ public class SubwayLineQueryService {
                 .collect(Collectors.toList());
     }
 
-    private List<Station> getStationsFromSubwaySection(List<SubwaySection> savedSubwaySections) {
-        List<Station> stations = new ArrayList<>();
-        savedSubwaySections.forEach(subwaySection -> {
-            Station sourceStation = subwaySection.getSourceStation();
+    private List<Station> getStationsFromSubwaySection(List<SubwaySection> subwaySections) {
+        Deque<SubwaySection> orderedSectionsQueue = new ArrayDeque<>();
+        Deque<SubwaySection> waitingQueue = new ArrayDeque<>(subwaySections);
 
-            stations.add(sourceStation);
+        if (waitingQueue.isEmpty()) {
+            return Collections.emptyList();
+        }
+        orderedSectionsQueue.push(waitingQueue.pollFirst());
 
-            Station targetStation = subwaySection.getTargetStation();
+        while (!waitingQueue.isEmpty()) {
+            SubwaySection waitingQueueSection = waitingQueue.pollFirst();
 
-            SubwaySection nextSubwaySection = savedSubwaySections.stream()
-                    .filter(section -> section.getSourceStation().equals(targetStation))
-                    .findFirst().orElse(null);
+            SubwaySectionQueueUtils.pushSectionIfConditionCorrect(orderedSectionsQueue
+                    , waitingQueue, waitingQueueSection, orderedSectionsQueue.getFirst());
 
-            if (Objects.nonNull(nextSubwaySection)) {
-                stations.add(nextSubwaySection.getSourceStation());
-            } else {
-                stations.add(targetStation);
-            }
+            waitingQueueSection = waitingQueue.pollFirst();
+
+            SubwaySectionQueueUtils.pushSectionIfConditionCorrect(orderedSectionsQueue
+                    , waitingQueue, waitingQueueSection, orderedSectionsQueue.getLast());
+        }
+
+        Set<Station> stations = new LinkedHashSet<>();
+        orderedSectionsQueue.forEach(section -> {
+            stations.add(section.getSourceStation());
+            stations.add(section.getTargetStation());
         });
 
-        return stations;
+        return new ArrayList<>(stations);
     }
 
     @Transactional
     public SubwayLineResponseDto getSubwayLine(Long id) {
         SubwayLine savedSubwayLine = findSubwayLineById(id);
-        return SubwayLineResponseDto.of(findSubwayLineById(id), getStationsFromSubwayLine(savedSubwayLine));
+        return SubwayLineResponseDto.of(savedSubwayLine, getStationsFromSubwayLine(savedSubwayLine));
     }
 
     @Transactional

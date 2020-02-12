@@ -6,7 +6,6 @@ import atdd.station.application.dto.SubwayLineResponseDto;
 import atdd.station.domain.Station;
 import atdd.station.domain.SubwayLine;
 import atdd.support.SubwayAcceptanceTestSupport;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -18,20 +17,6 @@ import java.util.Collections;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SubwayLineAcceptanceTest extends SubwayAcceptanceTestSupport {
-    private Long createdStationId1;
-    private Long createdStationId2;
-    private Long createdStationId3;
-    private Long createdSubwayLineId;
-
-    @BeforeEach
-    void setUp() {
-        createdStationId1 = extractId(createStation("강남역"));
-        createdStationId2 = extractId(createStation("역삼역"));
-        createdStationId3 = extractId(createStation("선릉역"));
-
-        createdSubwayLineId = extractId(createSubwayLine("2호선"));
-    }
-
     @DisplayName("지하철 노선을 등록한다")
     @Test
     public void createSubwayLine() {
@@ -98,14 +83,29 @@ public class SubwayLineAcceptanceTest extends SubwayAcceptanceTestSupport {
     @DisplayName("지하철 구간을 등록한다")
     @Test
     public void createSubwaySection() {
+        // given
+        Long createdSubwayLineId = extractId(createSubwayLine("2호선"));
+        Long createdStationId1 = extractId(createStation("강남역"));
+        Long createdStationId2 = extractId(createStation("역삼역"));
+        Long createdStationId3 = extractId(createStation("선릉역"));
+        Long createdStationId4 = extractId(createStation("삼성역"));
+        Long createdStationId5 = extractId(createStation("교대역"));
+
         // when
         createSubwaySection(createdSubwayLineId, createdStationId1, createdStationId2);
+        createSubwaySection(createdSubwayLineId, createdStationId3, createdStationId4);
+        createSubwaySection(createdSubwayLineId, createdStationId2, createdStationId3);
+        createSubwaySection(createdSubwayLineId, createdStationId5, createdStationId1);
 
         // then
         EntityExchangeResult<SubwayLineResponseDto> savedSubwayLine = getSubwayLineFromId(createdSubwayLineId);
         assertThat(savedSubwayLine.getResponseBody().getStations())
-                .isEqualTo(Arrays.asList(SubwayCommonResponseDto.of(Station.of("강남역")),
-                        SubwayCommonResponseDto.of(Station.of("역삼역"))));
+                .isEqualTo(Arrays.asList(SubwayCommonResponseDto.of(Station.of("교대역"))
+                        , SubwayCommonResponseDto.of(Station.of("강남역"))
+                        , SubwayCommonResponseDto.of(Station.of("역삼역"))
+                        , SubwayCommonResponseDto.of(Station.of("선릉역"))
+                        , SubwayCommonResponseDto.of(Station.of("삼성역"))
+                ));
 
         // and
         EntityExchangeResult<StationResponseDto> result = getStationFromId(createdStationId1);
@@ -116,6 +116,11 @@ public class SubwayLineAcceptanceTest extends SubwayAcceptanceTestSupport {
     @Test
     public void deleteSubwaySection() {
         // given
+        Long createdSubwayLineId = extractId(createSubwayLine("2호선"));
+        Long createdStationId1 = extractId(createStation("강남역"));
+        Long createdStationId2 = extractId(createStation("역삼역"));
+        Long createdStationId3 = extractId(createStation("선릉역"));
+
         createSubwaySection(createdSubwayLineId, createdStationId1, createdStationId2);
         createSubwaySection(createdSubwayLineId, createdStationId2, createdStationId3);
 

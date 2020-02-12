@@ -12,15 +12,12 @@ import java.util.stream.Collectors;
 public class SubwaySectionQueryService {
     private SubwaySectionRepository subwaySectionRepository;
     private StationRepository stationRepository;
-    private SubwayLineRepository subwayLineRepository;
 
     public SubwaySectionQueryService(SubwaySectionRepository subwaySectionRepository,
-                                     StationRepository stationRepository,
-                                     SubwayLineRepository subwayLineRepository) {
+                                     StationRepository stationRepository) {
 
         this.subwaySectionRepository = subwaySectionRepository;
         this.stationRepository = stationRepository;
-        this.subwayLineRepository = subwayLineRepository;
     }
 
     @Transactional

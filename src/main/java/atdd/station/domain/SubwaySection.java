@@ -52,4 +52,5 @@ public class SubwaySection {
     public Station getTargetStation() {
         return targetStation;
     }
+
 }
