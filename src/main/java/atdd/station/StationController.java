@@ -97,6 +97,15 @@ public class StationController {
         return getResponseEntityForNullableObject(optionalLine);
     }
 
+    @DeleteMapping("/lines/{id}")
+    public ResponseEntity deleteLine(@PathVariable Long id) {
+        lineRepository.deleteById(id);
+
+        return ResponseEntity.ok()
+                             .build();
+    }
+
+
     private ResponseEntity getResponseEntityForNullableObject(Optional<?> optionalObject) {
         return optionalObject.map(object -> new ResponseEntity(object, HttpStatus.OK))
                              .orElseGet(() -> ResponseEntity.noContent()
