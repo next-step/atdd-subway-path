@@ -116,7 +116,7 @@ public class StationAcceptanceTest {
     }
 
     @Test
-    public void testCreateReadStationLine() {
+    public void testCreateReadLine() {
         String createAndReadLinesUri = "/lines";
         Line targetLine = new Line(1L, "2호선", "05:00", "23:00", 10);
         String inputJson = String.format("{\"name\": \"%s\", \"startTime\": \"%s\", \"endTime\": \"%s\", " +
@@ -146,6 +146,25 @@ public class StationAcceptanceTest {
                                                            assertThat(line.getStationInterval()).isEqualTo(10);
                                                        });
 
+
+        String readLineUri = "/lines/1";
+
+        readRequestWebTestClient(readLineUri).isOk()
+                                             .expectHeader()
+                                             .contentType(MediaType.APPLICATION_JSON)
+                                             .expectBody(Line.class)
+                                             .consumeWith(result -> {
+                                                 Line line = result.getResponseBody();
+
+                                                 assertThat(line.getName()).isEqualTo("2호선");
+                                                 assertThat(line.getStartTime()).isEqualTo("05:00");
+                                                 assertThat(line.getStationInterval()).isEqualTo(10);
+                                             });
+
+        String incorrectReadStationUri = "/lines/93";
+
+        readRequestWebTestClient(incorrectReadStationUri).isNoContent()
+                                                         .expectBody(Void.class);
 
     }
 
