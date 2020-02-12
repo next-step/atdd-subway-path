@@ -116,13 +116,17 @@ public class StationAcceptanceTest {
     }
 
     @Test
-    public void testCreateReadLine() {
-        String createAndReadLinesUri = "/lines";
+    public void testCreateReadDeleteLine() {
         Line targetLine = new Line(1L, "2호선", "05:00", "23:00", 10);
+        String prefixUri = "/lines";
         String inputJson = String.format("{\"name\": \"%s\", \"startTime\": \"%s\", \"endTime\": \"%s\", " +
                 "\"stationInterval\": \"%d\"}", targetLine.getName(), targetLine.getStartTime(),
                 targetLine.getEndTime(), targetLine.getStationInterval());
 
+
+        String createAndReadLinesUri = "/lines";
+
+        // create line test
         createRequestWebTestClient(createAndReadLinesUri, inputJson).expectBody(Line.class)
                                                                     .consumeWith(result -> {
                                                                         HttpHeaders responseHeaders =
@@ -132,6 +136,7 @@ public class StationAcceptanceTest {
                                                                         assertThat(stringifyLocation).isEqualTo(String.format("%s/%d", createAndReadLinesUri, 1));
                                                                     });
 
+        // read lines test
         readRequestWebTestClient(createAndReadLinesUri).isOk()
                                                        .expectHeader()
                                                        .contentType(MediaType.APPLICATION_JSON)
@@ -147,7 +152,7 @@ public class StationAcceptanceTest {
                                                        });
 
 
-        String readOrDeleteLineUri = "/lines/1";
+        String readOrDeleteLineUri = getRequestUri(prefixUri, targetLine.getId());
 
         readRequestWebTestClient(readOrDeleteLineUri).isOk()
                                                      .expectHeader()
@@ -161,7 +166,7 @@ public class StationAcceptanceTest {
                                                          assertThat(line.getStationInterval()).isEqualTo(10);
                                                      });
 
-        String incorrectReadStationUri = "/lines/93";
+        String incorrectReadStationUri = getRequestUri(prefixUri, 93);
 
         readRequestWebTestClient(incorrectReadStationUri).isNoContent()
                                                          .expectBody(Void.class);
