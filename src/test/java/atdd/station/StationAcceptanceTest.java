@@ -18,6 +18,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Optional;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -54,7 +55,7 @@ public class StationAcceptanceTest {
         Station station = (Station) result.getResponseBody();
 
         String expected = writeValueAsString(station);
-        String actual = writeValueAsString(repository.findById(station.getId()));
+        String actual = writeValueAsString(repository.findById(station.getId()).get());
 
         Assert.assertEquals(expected, actual);
 
@@ -100,7 +101,7 @@ public class StationAcceptanceTest {
 
         // then
         String expected = writeValueAsString(result.getResponseBody());
-        String actual = writeValueAsString(repository.findById(stationId));
+        String actual = writeValueAsString(repository.findById(stationId).get());
 
         Assert.assertEquals(expected, actual);
 
@@ -122,7 +123,8 @@ public class StationAcceptanceTest {
                 .expectBody().returnResult();
 
         // then
-        Station station = repository.findById(stationId);
+        Optional<Station> optionalStation = repository.findById(stationId);
+        Station station = optionalStation.isPresent() ? optionalStation.get() : null;
 
         Assert.assertEquals(null, station);
 

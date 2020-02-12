@@ -31,7 +31,7 @@ public class StationRepository {
                     new Object[]{id},
                     rowMapper));
         } catch (EmptyResultDataAccessException e) {
-            return Optional.of(null);
+            return Optional.ofNullable(null);
         }
     }
 

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/stations")
@@ -23,7 +24,7 @@ public class StationController {
     @PostMapping
     @ResponseBody
     public ResponseEntity<Station> createStation(@RequestBody CreateStationRequestView view) {
-        final Station station = stationRepository.save(view.toStation());
+        final Station station = stationRepository.save(view.toStation()).get();
 
         return ResponseEntity.created(URI.create("/stations/" + station.getId()))
                 .body(station);
@@ -41,9 +42,11 @@ public class StationController {
     @GetMapping("/{id}")
     @ResponseBody
     public ResponseEntity<Station> findStation(@PathVariable long id) {
+        final Optional<Station> optionalStation = stationRepository.findById(id);
+
         return ResponseEntity
                 .ok()
-                .body(stationRepository.findById(id));
+                .body(optionalStation.isPresent() ? optionalStation.get() : null);
     }
 
     @DeleteMapping("/{id}")
