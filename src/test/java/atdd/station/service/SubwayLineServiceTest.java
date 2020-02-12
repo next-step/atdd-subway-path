@@ -1,6 +1,5 @@
 package atdd.station.service;
 
-import atdd.station.domain.Station;
 import atdd.station.domain.SubwayLine;
 import atdd.station.domain.SubwayLineRepository;
 import atdd.station.dto.subwayLine.SubwayLineCreateRequestDto;
@@ -97,11 +96,14 @@ public class SubwayLineServiceTest {
     public void 지하철_2호선에_강남역_추가가_성공하는지(SoftAssertions softly) {
         //given
         SubwayLine subwayLine = getSubwayLine(SECOND_SUBWAY_LINE_NAME);
+        SubwayLine updatedSubwayLine = subwayLine.updateSubwayByStations(KANGNAM_AND_YUCKSAM_STATIONS);
 
         when(subwayLineRepository.findById(DEFAULT_ID)).thenReturn(java.util.Optional.of(subwayLine));
-        SubwayLine updatedSubwayLine = subwayLineService.update(DEFAULT_ID, KANGNAM_AND_YUCKSAM_STATIONS);
+        when(subwayLineRepository.save(updatedSubwayLine)).thenReturn(updatedSubwayLine);
+
+        subwayLineService.update(DEFAULT_ID, KANGNAM_AND_YUCKSAM_STATIONS);
 
         //then
-        softly.assertThat(updatedSubwayLine.getStations().size()).isEqualTo(4);
+        softly.assertThat(updatedSubwayLine.getStations().size()).isEqualTo(6);
     }
 }
