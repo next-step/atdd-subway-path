@@ -4,7 +4,6 @@ import atdd.station.model.Station;
 import atdd.station.repository.StationRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +18,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -57,7 +58,7 @@ public class StationAcceptanceTest {
         String expected = writeValueAsString(station);
         String actual = writeValueAsString(repository.findById(station.getId()).get());
 
-        Assert.assertEquals(expected, actual);
+        assertThat(expected).isEqualTo(actual);
 
         logger.info("createStation location = {}", location);
     }
@@ -79,7 +80,7 @@ public class StationAcceptanceTest {
         String expected = writeValueAsString(result.getResponseBody());
         String actual = writeValueAsString(repository.findAll());
 
-        Assert.assertEquals(expected, actual);
+        assertThat(expected).isEqualTo(actual);
 
         logger.info("findAllStations = {}", expected);
     }
@@ -103,7 +104,7 @@ public class StationAcceptanceTest {
         String expected = writeValueAsString(result.getResponseBody());
         String actual = writeValueAsString(repository.findById(stationId).get());
 
-        Assert.assertEquals(expected, actual);
+        assertThat(expected).isEqualTo(actual);
 
         logger.info("findStation = {}", expected);
     }
@@ -126,7 +127,7 @@ public class StationAcceptanceTest {
         Optional<Station> optionalStation = repository.findById(stationId);
         Station station = optionalStation.isPresent() ? optionalStation.get() : null;
 
-        Assert.assertEquals(null, station);
+        assertThat(station).isNull();
 
         logger.info("deleteStation = {}", station);
     }
