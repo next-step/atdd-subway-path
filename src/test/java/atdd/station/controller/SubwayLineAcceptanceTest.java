@@ -15,10 +15,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 
-import static atdd.station.fixture.StationFixture.KANGNAM_STATION_NAME;
-import static atdd.station.fixture.StationFixture.getStation;
-import static atdd.station.fixture.SubwayLineFixture.SECOND_SUBWAY_LINE_NAME;
-import static atdd.station.fixture.SubwayLineFixture.getSubwayLine;
+import static atdd.station.fixture.StationFixture.*;
+import static atdd.station.fixture.SubwayLineFixture.*;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -106,17 +104,18 @@ public class SubwayLineAcceptanceTest {
         //then
         webTestClient.put().uri(SUBWAY_LINE_API_BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(getStation(KANGNAM_STATION_NAME)), SubwayLine.class)
+                .body(Mono.just(KANGNAM_AND_YUCKSAM_STATIONS), SubwayLine.class)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(KANGNAM_STATION_NAME);
+                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(KANGNAM_STATION_NAME)
+                .jsonPath("$.stations[1].name").isEqualTo("역삼역");
     }
 
     @DisplayName("2호선_지하철노선에_내에_존재하는_강남역을_삭제가_성공하는지")
     @Test
     void deleteKanNamStationInSecondSubwaySuccessTest() {
-        String location = creatSubwayLine(SECOND_SUBWAY_LINE_NAME);
+        String location = creatSecondSubwayLine();
 
         //whens
         //then
@@ -130,20 +129,31 @@ public class SubwayLineAcceptanceTest {
     private String creatSubwayLine(String subwayLineName) {
         return Objects.requireNonNull(webTestClient.post().uri(SUBWAY_LINE_API_BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(getSubwayLine(SECOND_SUBWAY_LINE_NAME)), SubwayLine.class)
+                .body(Mono.just(getSubwayLine(subwayLineName)), SubwayLine.class)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectHeader().exists(LOCATION_HEADER)
+                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(subwayLineName)
+                .returnResult()
+                .getResponseHeaders()
+                .getLocation()).getPath();
+    }
+
+    private String creatSecondSubwayLine() {
+        return Objects.requireNonNull(webTestClient.post().uri(SUBWAY_LINE_API_BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(getSecondSubwayLineName()), SubwayLine.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectHeader().exists(LOCATION_HEADER)
                 .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(SECOND_SUBWAY_LINE_NAME)
-                .jsonPath(STATION_JSON_PARSE_EXPRESSION).isEqualTo("05:00")
-                .jsonPath(END_TIME_JSON_PARSE_EXPRESSION).isEqualTo("23:50")
-                .jsonPath(INTERVAL_TIME_JSON_PARSE_EXPRESSION).isEqualTo("10")
-                .jsonPath(getStationNameJsonParseExpressionByIndex("0")).isEqualTo(KANGNAM_STATION_NAME)
                 .returnResult()
                 .getResponseHeaders()
                 .getLocation()).getPath();
     }
+
 
 
     private String getStationNameJsonParseExpressionByIndex(String index) {
