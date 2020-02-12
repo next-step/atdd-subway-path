@@ -42,9 +42,22 @@ public class SubwayLineController {
         return new ResponseEntity<>(subwayLine, HttpStatus.OK);
     }
 
+    @PutMapping("/")
+    public ResponseEntity<SubwayLineCreateResponseDto> update(@PathVariable int id, @RequestBody SubwayLineCreateRequestDto subwayLine) {
+        SubwayLineCreateResponseDto createdSubwayLine = subwayLineService.create(subwayLine);
+        return new ResponseEntity<>(createdSubwayLine, HttpStatus.OK);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
         subwayLineService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @DeleteMapping("/{id}/{name}")
+    public ResponseEntity<Void> deleteStation(@PathVariable int id, @PathVariable String name) {
+        subwayLineService.delete(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }
