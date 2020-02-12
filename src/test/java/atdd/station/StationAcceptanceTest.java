@@ -1,5 +1,6 @@
 package atdd.station;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
@@ -81,12 +82,15 @@ public class StationAcceptanceTest {
         @DisplayName(value = "역이 세 개가 주어진다면")
         class GivenAll {
 
+            @BeforeEach
+            void setUp() {
+                createStationBy("강남역");
+                createStationBy("역삼역");
+            }
+
             @Test
             @DisplayName("조회가 제대로 되는지 확인한다")
             void expectGetStations() {
-
-                createStationBy("강남역");
-                createStationBy("역삼역");
 
                 webTestClient.get().uri(StationUri.ROOT)
                         .exchange()
