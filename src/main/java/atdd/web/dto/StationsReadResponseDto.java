@@ -9,24 +9,24 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Getter
 @NoArgsConstructor
-public class StationsResponseDto {
+@Getter
+public class StationsReadResponseDto {
     private Long id;
     private String name;
     private List<Line> lines;
 
     @Builder
-    public StationsResponseDto(Long id, String name, List<Line> lines){
+    public StationsReadResponseDto(Long id, String name, List<Line> lines){
         this.id=id;
         this.name=name;
         this.lines=lines;
     }
 
-    public StationsResponseDto toRealDto(Stations stations){
-        return StationsResponseDto.builder()
-                .id(stations.getId())
-                .name(stations.getName())
+    public StationsReadResponseDto toRealDto(Stations stations){
+        return StationsReadResponseDto.builder()
+                .id(id)
+                .name(name)
                 .lines(stations.getLines())
                 .build();
     }

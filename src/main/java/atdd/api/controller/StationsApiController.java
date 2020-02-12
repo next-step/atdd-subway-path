@@ -3,16 +3,14 @@ package atdd.api.controller;
 import atdd.domain.stations.Stations;
 import atdd.serivce.stations.StationsService;
 import atdd.web.dto.StationsListResponseDto;
+import atdd.web.dto.StationsReadResponseDto;
 import atdd.web.dto.StationsResponseDto;
 import atdd.web.dto.StationsSaveRequestDto;
 import lombok.RequiredArgsConstructor;
-import org.apache.http.client.HttpResponseException;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpStatusCodeException;
 
 import java.net.URI;
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -21,14 +19,14 @@ public class StationsApiController {
 
     private final StationsService stationsService;
 
-    @PostMapping("")
-    public ResponseEntity create(@RequestBody StationsSaveRequestDto requestDto){
+    @PostMapping
+    public ResponseEntity<StationsResponseDto> create(@RequestBody StationsSaveRequestDto requestDto){
 
-        Stations stations=stationsService.create(requestDto);
+        StationsResponseDto dto=stationsService.create(requestDto);
         return ResponseEntity
-                .created(URI.create("/stations/" + stations.getId()))
+                .created(URI.create("/stations/" + dto.getId()))
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(stations);
+                .body(dto);
     }
 
     @DeleteMapping("{id}")
@@ -37,14 +35,15 @@ public class StationsApiController {
         return HttpStatus.NO_CONTENT;
     }
 
-    @GetMapping("")
-    public List<StationsListResponseDto> list(){
-        return stationsService.getList();
+    @GetMapping
+    public StationsListResponseDto readList(){
+        return stationsService.readList();
     }
 
     @GetMapping("{id}")
-    public StationsResponseDto detail(@PathVariable Long id){
-        return stationsService.findById(id);
+    public ResponseEntity<StationsResponseDto> read(@PathVariable Long id){
+        StationsResponseDto dto=stationsService.read(id);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
 }

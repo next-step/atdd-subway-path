@@ -1,16 +1,27 @@
 package atdd.web.dto;
 
 import atdd.domain.stations.Stations;
+import lombok.Builder;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 public class StationsListResponseDto {
-    private Long id;
-    private String name;
+    public List<Stations> stations;
 
-    public StationsListResponseDto(Stations entity){
-        this.id=entity.getId();
-        this.name=entity.getName();
+    @Builder
+    public StationsListResponseDto(List<Stations> stationsList){
+        this.stations=stationsList;
+    }
+
+    public StationsListResponseDto() {
+    }
+
+    public StationsListResponseDto toDtoEntity(List<Stations> stations) {
+        return StationsListResponseDto.builder()
+                .stationsList(stations)
+                .build();
     }
 
 }
