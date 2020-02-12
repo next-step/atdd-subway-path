@@ -38,6 +38,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -67,6 +68,41 @@ public class StationAcceptanceTest {
                 targetLine.getEndTime(), targetLine.getStationInterval());
 
         testCreateReadDelete(prefixUri, inputJson, targetLine, Line.class, targetLine.getId());
+    }
+
+    @Test
+    public void testEdge() {
+        List<Station> stationList = new ArrayList<Station>();
+        stationList.add(new Station(1L, "강남역"));
+        stationList.add(new Station(2L, "역삼역"));
+        stationList.add(new Station(3L, "선릉역"));
+        stationList.forEach(station -> {
+            String inputJson = String.format("{\"name\": \"%s\"}", station.getName());
+
+            createRequestWebTestClient("/stations", inputJson).expectBody(Station.class)
+                                                              .consumeWith(result -> {
+                                                                  Station responseStation = result.getResponseBody();
+                                                                  HttpHeaders responseHeaders =
+                                                                          result.getResponseHeaders();
+                                                                  URI location = responseHeaders.getLocation();
+                                                                  String stringifyLocation = location.toString();
+                                                                  assertThat(stringifyLocation).isEqualTo(String.format("%s/%d", "/stations", responseStation.getId()));
+                                                              });
+        });
+
+        Line greenLine = new Line(1L, "2호선", "05:00", "23:00", 10);
+        String inputJson = String.format("{\"name\": \"%s\", \"startTime\": \"%s\", \"endTime\": \"%s\", " +
+                "\"stationInterval\": \"%d\"}", greenLine.getName(), greenLine.getStartTime(), greenLine.getEndTime()
+                , greenLine.getStationInterval());
+
+        createRequestWebTestClient("/lines", inputJson).expectBody(Line.class)
+                                                       .consumeWith(result -> {
+                                                           Line responseLine = result.getResponseBody();
+                                                           HttpHeaders responseHeaders = result.getResponseHeaders();
+                                                           URI location = responseHeaders.getLocation();
+                                                           String stringifyLocation = location.toString();
+                                                           assertThat(stringifyLocation).isEqualTo(String.format("%s" + "/%d", "/lines", responseLine.getId()));
+                                                       });
     }
 
     private StatusAssertions readRequestWebTestClient(String uri) {
