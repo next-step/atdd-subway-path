@@ -1,10 +1,8 @@
 package atdd.station.service;
 
 import atdd.station.domain.Line;
-import atdd.station.domain.Subway;
 import atdd.station.dto.LineDto;
 import atdd.station.repository.LineRepository;
-import atdd.station.repository.StationRepository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -19,8 +17,7 @@ public class LineService
 
     public Line create(LineDto lineDto)
     {
-        List<Subway> subways = lineDto.getSubways();
-        return lineRepository.save(lineDto.toEntity(lineDto.getName(), subways));
+        return lineRepository.save(lineDto.toEntity());
     }
 
     public List<Line> findLines()

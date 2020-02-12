@@ -23,15 +23,7 @@ public class LineDto
     {
         return Line.builder()
                 .name(name)
-                .subways(subways)
-                .build();
-    }
-
-    public Line toEntity(String name, List<Subway> subways)
-    {
-        return Line.builder()
-                .name(name)
-                .subways(subways)
+                .station(subways)
                 .build();
     }
 }

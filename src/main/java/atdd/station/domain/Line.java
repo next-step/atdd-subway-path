@@ -35,16 +35,16 @@ public class Line
 
     @OneToMany(mappedBy = "station")
     @OrderBy("id ASC")
-    private List<Subway> subways = new ArrayList<>();
+    private List<Subway> station = new ArrayList<>();
 
     @Builder
-    public Line(String name, List<Subway> subways)
+    public Line(String name, List<Subway> station)
     {
         this.name = name;
         this.startTime = START_TIME;
         this.endTime = END_TIME;
         this.intervalTime = INTERVAL_TIME;
-        this.subways = subways;
+        this.station = station;
     }
 
 }
