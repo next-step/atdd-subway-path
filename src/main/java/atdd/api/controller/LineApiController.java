@@ -2,13 +2,9 @@ package atdd.api.controller;
 
 import atdd.domain.stations.Line;
 import atdd.serivce.stations.LineService;
-import atdd.serivce.stations.StationsService;
 import atdd.web.dto.line.LineCreateRequestDto;
 import atdd.web.dto.line.LineListResponseDto;
 import atdd.web.dto.line.LineResponseDto;
-import atdd.web.dto.station.StationsListResponseDto;
-import atdd.web.dto.station.StationsResponseDto;
-import atdd.web.dto.station.StationsSaveRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -49,6 +45,4 @@ public class LineApiController {
         LineResponseDto dto = lineService.read(id);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
-
-
 }
