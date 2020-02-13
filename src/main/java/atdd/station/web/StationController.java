@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class StationController {
 
     @Autowired
-    StationService stationService;
+    private StationService stationService;
     @PostMapping("/stations")
     public @ResponseBody ResponseEntity stations(@RequestBody String inputJson) {
         Logger logger = Logger.getLogger("station");
