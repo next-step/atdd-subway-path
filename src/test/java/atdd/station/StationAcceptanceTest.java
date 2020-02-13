@@ -86,7 +86,6 @@ public class StationAcceptanceTest {
                 .expectBodyList(StationResponseDto.class)
                 .returnResult()
                 .getResponseBody();
-
         //then
         stationResponseDtoList.forEach(System.out::println);
     }
