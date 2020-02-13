@@ -45,11 +45,12 @@ public class StationController {
         responseHeaders.set("Content-Type", "application/json");
         URI location = URI.create("/createStation");
 
-         Long id =stationService.create(stationRequestDto);
+       Station station = stationService.create(stationRequestDto);
+       StationResponseDto stationResponseDto = new StationResponseDto(station);
 
         return ResponseEntity.created(location)
                 .header(String.valueOf(responseHeaders))
-                .body(id);
+                .body(stationResponseDto);
     }
 
     @GetMapping("selectStationList")

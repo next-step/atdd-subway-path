@@ -48,17 +48,18 @@ public class StationAcceptanceTest {
         StationRequestDto stationRequestDto = StationRequestDto.builder().name(name).build();
 
         //when
-        webTestClient.post().uri("createStation")
+        StationResponseDto stationResponseDto = webTestClient.post().uri("createStation")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(stationRequestDto),StationRequestDto.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectHeader().exists("Location")
-                .expectBody(Long.class)
-                .isEqualTo(1L);
-
+                .expectBody(StationResponseDto.class)
+                .returnResult()
+                .getResponseBody();
         //then
+        assertThat(stationResponseDto.getName()).isEqualTo(stationRequestDto.getName());
 
     }
 

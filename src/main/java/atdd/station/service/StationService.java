@@ -16,8 +16,8 @@ import java.util.List;
 public class StationService {
     private final StationRepository stationRepository;
 
-    public Long create(StationRequestDto stationRequestDto){
-        return stationRepository.save(stationRequestDto.toEntity()).getId();
+    public Station create(StationRequestDto stationRequestDto){
+        return stationRepository.save(stationRequestDto.toEntity());
     }
 
     public List<Station> select(){
@@ -25,12 +25,12 @@ public class StationService {
     }
 
     public StationResponseDto findById(Long id){
-        Station entity = stationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
+        Station entity = stationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 지하철역이 없습니다."));
         return new StationResponseDto(entity);
     }
 
     public void delete(Long id) {
-        Station station = stationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다."));
+        Station station = stationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 지하철역이 없습니다."));
         stationRepository.delete(station);
     }
 
