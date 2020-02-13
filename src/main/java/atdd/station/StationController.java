@@ -1,5 +1,6 @@
 package atdd.station;
 
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,15 +9,15 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping(value = "/stations")
 public class StationController {
 
     private final StationRepository stationRepository;
+    private final StationService stationService;
 
-    public StationController(StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
-    }
+
 
     @PostMapping("")
     public ResponseEntity createStation(@RequestBody StationCreateRequest station) {
@@ -34,8 +35,8 @@ public class StationController {
 
     @GetMapping("/{id}")
     public ResponseEntity getStationById(@PathVariable Long id) {
-        Station station = stationRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 역입니다 {" + id + "}"));
-        return ResponseEntity.ok().body(StationResponse.of(station));
+        StationDetailResponse station = stationService.findByIdWithLineList(id);
+        return ResponseEntity.ok().body(station);
     }
 
     @DeleteMapping("/{id}")

@@ -102,12 +102,14 @@ public class StationAcceptanceTest {
         String STATION_NAME = "강남역";
         StationResponse result = createStation(STATION_NAME);
 
-         webTestClient.get().uri("/stations/" + result.getId())
+        StationDetailResponse stationDetailResponse = webTestClient.get().uri("/stations/" + result.getId())
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody().jsonPath("$.name").isEqualTo(STATION_NAME)
-        ;
+                .expectBody(StationDetailResponse.class)
+                .returnResult()
+                .getResponseBody();
+        assertThat(stationDetailResponse.getStation().getName()).isEqualTo(STATION_NAME);
     }
 
     @DisplayName("지하철역을 삭제한다")
