@@ -1,11 +1,16 @@
 package atdd.station.model;
 
 import lombok.Builder;
+import lombok.Getter;
 import lombok.Setter;
 
+@Getter
 @Setter
 public class CreateStationRequestView {
     private String name;
+
+    public CreateStationRequestView() {
+    }
 
     @Builder
     private CreateStationRequestView(String name) {

@@ -11,8 +11,11 @@ public class Station {
     private long id;
     private String name;
 
+    public Station() {
+    }
+
     @Builder
-    public Station(long id, String name){
+    public Station(long id, String name) {
         this.id = id;
         this.name = name;
     }
