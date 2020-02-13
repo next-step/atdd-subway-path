@@ -16,4 +16,10 @@ public interface EdgeRepository extends JpaRepository<Edge, Long> {
             "where e.sourceStation.id = :stationId or e.targetStation.id = :stationId")
     List<Edge> findEdgesByStationId(@Param("stationId") Long stationId);
 
+    @Query("select e from Edge e where e.line.id = :lineId and " +
+            "(e.sourceStation.id = :stationId or e.targetStation.id = :stationId) order by e.id desc")
+    List<Edge> findEdges(@Param("lineId") Long lineId, @Param("stationId") Long stationId);
+
+    void deleteEdgeById(Long id);
+
 }

@@ -50,6 +50,10 @@ public class Edge {
         this.targetStation = targetStation;
     }
 
+    public void changeTargetStation(Station targetStation) {
+        this.targetStation = targetStation;
+    }
+
     @Override
     public String toString() {
         return new StringJoiner(", ", Edge.class.getSimpleName() + "[", "]")

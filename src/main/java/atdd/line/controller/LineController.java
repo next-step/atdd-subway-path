@@ -80,6 +80,14 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/{lineId}/stations/{stationId}")
+    public ResponseEntity<Object> deleteLineStation(@PathVariable("lineId") Long lineId,
+                                                    @PathVariable("stationId") Long stationId) {
+
+        lineService.deleteEdge(lineId, stationId);
+        return ResponseEntity.noContent().build();
+    }
+
     private Edge viewToEdge(Long lineId, CreateEdgeRequestView view) {
         final Line findLine = lineService.findLineById(lineId);
         final Station sourceStation = stationService.findStationById(view.getSourceStationId());
