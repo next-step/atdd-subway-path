@@ -1,9 +1,7 @@
 package atdd.station.controller;
 
-import atdd.station.dto.subwayLine.SubwayLineCreateRequestDto;
-import atdd.station.dto.subwayLine.SubwayLineCreateResponseDto;
-import atdd.station.dto.subwayLine.SubwayLineDetailResponseDto;
-import atdd.station.dto.subwayLine.SubwayLineListResponseDto;
+import atdd.station.domain.SubwayLine;
+import atdd.station.dto.subwayLine.*;
 import atdd.station.service.SubwayLineService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -42,10 +40,10 @@ public class SubwayLineController {
         return new ResponseEntity<>(subwayLine, HttpStatus.OK);
     }
 
-    @PutMapping("/")
-    public ResponseEntity<SubwayLineCreateResponseDto> update(@PathVariable int id, @RequestBody SubwayLineCreateRequestDto subwayLine) {
-        SubwayLineCreateResponseDto createdSubwayLine = subwayLineService.create(subwayLine);
-        return new ResponseEntity<>(createdSubwayLine, HttpStatus.OK);
+    @PutMapping("/{id}")
+    public ResponseEntity<SubwayLine> update(@PathVariable int id, @RequestBody SubwayLineUpdateRequestDto stations) {
+        SubwayLine updatedSubwayLine = subwayLineService.update(id, stations);
+        return new ResponseEntity<>(updatedSubwayLine, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -56,7 +54,7 @@ public class SubwayLineController {
 
     @DeleteMapping("/{id}/{name}")
     public ResponseEntity<Void> deleteStation(@PathVariable int id, @PathVariable String name) {
-        subwayLineService.delete(id);
+        subwayLineService.deleteStation(id, name);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
