@@ -9,12 +9,13 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Entity
-@Table(name = "station")
 public class Station
 {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    @Column(name = "station_id")
+    //@EmbeddedId
+    private Integer id;
 
     @Column(length = 20, nullable = false)
     private String name;
@@ -23,6 +24,12 @@ public class Station
     @OrderBy("id ASC")
     private List<Subway> lines = new ArrayList<>();
 
+    @OneToOne(mappedBy = "source")
+    private Edge source;
+
+    @OneToOne(mappedBy = "target")
+    private Edge target;
+
     @Builder
     public Station(String name, List<Subway> lines)
     {
@@ -30,4 +37,8 @@ public class Station
         this.lines = lines;
     }
 
+    public Station(String name)
+    {
+        this.name = name;
+    }
 }
