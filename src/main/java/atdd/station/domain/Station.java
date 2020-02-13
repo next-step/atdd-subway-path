@@ -18,6 +18,12 @@ public class Station {
     @Size(min = 2, max = 20)
     private String name;
 
+    @Size(min = 2, max = 20)
+    private String beforeStation;
+
+    @Size(min = 2, max = 20)
+    private String afterStation;
+
     @OneToMany(mappedBy = "subwayLine", fetch = FetchType.EAGER)
     @Where(clause = "deleted = false")
     @OrderBy("id ASC")
@@ -47,7 +53,7 @@ public class Station {
     }
 
     public List<Subway> getSubways() {
-        return subways;
+        return this.subways;
     }
 
     public List<SubwayLine> getSubwayLines() {
