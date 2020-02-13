@@ -13,4 +13,8 @@ public class EdgeService {
     public EdgeListResponse findByLineId(Long lineId){
         return EdgeListResponse.of(edgeRepository.findByLineId(lineId));
     }
+
+    public EdgeListResponse findEdgeByStationId(Long stationId){
+        return EdgeListResponse.of(edgeRepository.findByStationId(stationId));
+    }
 }
