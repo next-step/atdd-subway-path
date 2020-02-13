@@ -19,8 +19,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RestController
 public class StationController {
-    @Autowired
-    StationRepository stationRepository;
+
     @Autowired
     StationService stationService;
     @PostMapping("/stations")
