@@ -185,4 +185,14 @@ public class LineAcceptanceTest {
         assertThat(lines.getLines().get(0).getName()).isEqualTo(createdLine.getName());
     }
 
+    @DisplayName("노선을 삭제한다")
+    @Test
+    public void deleteById(){
+        String LINE_NAME="2호선";
+        LineResponse createdLine = createLine(LINE_NAME);
+
+        webTestClient.delete().uri("/lines/"+createdLine.getId())
+                .exchange()
+                .expectStatus().isNoContent();
+    }
 }
