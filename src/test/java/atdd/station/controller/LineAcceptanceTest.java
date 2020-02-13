@@ -1,6 +1,10 @@
 package atdd.station.controller;
 
+import atdd.station.domain.Line;
+import atdd.station.domain.Station;
+import atdd.station.domain.Subway;
 import atdd.station.dto.LineDto;
+import atdd.station.dto.StationDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +16,9 @@ import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import reactor.core.publisher.Mono;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -54,6 +61,14 @@ public class LineAcceptanceTest
     public void findLines()
     {
         createLine(LINE_NAME);
+        List<Subway> subways = new ArrayList<>();
+        List<Subway> lines = new ArrayList<>();
+
+        Station station = Station.builder().name("강남역").lines(lines).build();
+        Line line = Line.builder().name("2호선").station(subways).build();
+
+        lines.add(new Subway(station, line));
+        List<Subway> stations = new ArrayList<>();
 
         webTestClient.get().uri(BASE_URL)
                 .exchange()

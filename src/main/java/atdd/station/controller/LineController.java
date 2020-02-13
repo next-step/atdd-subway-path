@@ -17,7 +17,7 @@ import java.util.Optional;
 @RequestMapping(value = "/lines", produces = "application/json")
 public class LineController
 {
-    private final String BASE_LINE_URL = "/lines";
+    private static final String BASE_LINE_URL = "/lines";
 
     @Resource(name = "lineService")
     private LineService lineService;

@@ -23,7 +23,6 @@ public class LineDto
     {
         return Line.builder()
                 .name(name)
-                .station(subways)
                 .build();
     }
 }

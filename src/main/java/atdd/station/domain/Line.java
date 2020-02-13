@@ -37,6 +37,9 @@ public class Line
     @OrderBy("id ASC")
     private List<Subway> station = new ArrayList<>();
 
+    @OneToMany(mappedBy = "line")
+    private List<Edge> edges = new ArrayList<>();
+
     @Builder
     public Line(String name, List<Subway> station)
     {
@@ -47,4 +50,8 @@ public class Line
         this.station = station;
     }
 
+    public Line(String name)
+    {
+        this.name = name;
+    }
 }
