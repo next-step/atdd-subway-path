@@ -41,15 +41,12 @@ public class StationController {
     @PostMapping("createStation")
     public ResponseEntity createStation(@RequestBody StationRequestDto stationRequestDto) {
         Logger logger = Logger.getLogger("createStation");
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Content-Type", "application/json");
         URI location = URI.create("/createStation");
 
        Station station = stationService.create(stationRequestDto);
        StationResponseDto stationResponseDto = new StationResponseDto(station);
 
         return ResponseEntity.created(location)
-                .header(String.valueOf(responseHeaders))
                 .body(stationResponseDto);
     }
 
