@@ -87,7 +87,7 @@ public class SubwayLine {
     }
 
     public List<Subway> getSubways() {
-        return subways;
+        return this.subways;
     }
 
     public List<Station> getStations() {
@@ -96,7 +96,7 @@ public class SubwayLine {
                 .collect(Collectors.toList());
     }
 
-    public SubwayLine updateStationsInSubwayLine(List<Station> stations) {
+    public SubwayLine updateSubwayByStations(List<Station> stations) {
         this.subways.addAll(makeSubwaysByStations(stations));
         return this;
     }
@@ -105,6 +105,19 @@ public class SubwayLine {
         return stations.stream()
                 .map(station -> new Subway(station, this))
                 .collect(Collectors.toList());
+    }
+
+    public void deleteStationByName(String stationName) {
+        Station station = getStationByName(stationName);
+        station.deleteStation();
+    }
+
+    public Station getStationByName(String stationName) {
+        return this.subways.stream()
+                .filter(subway -> subway.isThisNameTheStation(stationName))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new)
+                .getStation();
     }
 
     @Override
@@ -119,7 +132,6 @@ public class SubwayLine {
                 ", deleted=" + deleted +
                 '}';
     }
-
 }
 
 
