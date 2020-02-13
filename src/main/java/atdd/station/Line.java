@@ -21,12 +21,12 @@
  * */
 package atdd.station;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 
 @Entity
 public class Line {
@@ -39,8 +39,12 @@ public class Line {
     private String endTime;
     private int stationInterval;
 
-    protected Line() {
-    }
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "station_line", joinColumns = @JoinColumn(name = "line_id"), inverseJoinColumns =
+    @JoinColumn(name = "station_id"))
+    private Set<Station> stations = new HashSet<>();
+
+    protected Line() {}
 
     public Line(Long id, String name, String startTime, String endTime, int stationInterval) {
         this.id = id;
@@ -71,12 +75,7 @@ public class Line {
     }
 
     @JsonIgnoreProperties("lines")
-    public List<Station> getStations() {
-        List<Station> stations = new ArrayList<Station>();
-        Station gangnamStation = new Station(1L, "강남역");
-        Station yuksamStation = new Station(2L, "역삼역");
-        stations.add(gangnamStation);
-        stations.add(yuksamStation);
+    public Set<Station> getStations() {
         return stations;
     }
 }

@@ -22,6 +22,7 @@
 package atdd.station;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
 
 import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
@@ -39,9 +40,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -132,8 +131,10 @@ public class StationAcceptanceTest {
 
 
         Line responseLine = responseLineList.stream()
-                                            .filter(line -> line.getName()
-                                                                .equals("2호선"))
+                                            .filter(line -> {
+                                                String lineName = line.getName();
+                                                return lineName.equals("2호선");
+                                            })
                                             .findFirst()
                                             .get();
 
@@ -171,15 +172,29 @@ public class StationAcceptanceTest {
                                              .expectBody(Line.class)
                                              .consumeWith(result -> {
                                                  Line lineAfterCreatedEdge = result.getResponseBody();
-                                                 List<Station> registeredStations = lineAfterCreatedEdge.getStations();
-                                                 Station gangnamStation = registeredStations.stream()
-                                                                                            .filter(station -> station.getName()
-                                                                                                                      .equals("강남역"))
-                                                                                            .findFirst()
-                                                                                            .get();
-                                                 assertThat(gangnamStation.getName()).isEqualTo("강남역");
-                                             });
+                                                 Set<Station> registeredStationsSet =
+                                                         lineAfterCreatedEdge.getStations();
 
+                                                 List<Station> registeredStationsList =
+                                                         new ArrayList<Station>(registeredStationsSet);
+
+                                                 Boolean hasYeoksamStation = registeredStationsList.stream()
+                                                                                                   .map(Station::getName)
+                                                                                                   .collect(Collectors.toList())
+                                                                                                   .contains("역삼역");
+                                                 Boolean hasGangnamStation = registeredStationsList.stream()
+                                                                                                   .map(Station::getName)
+                                                                                                   .collect(Collectors.toList())
+                                                                                                   .contains("강남역");
+                                                 Boolean hasSeonreungStation = registeredStationsList.stream()
+                                                                                                     .map(Station::getName)
+                                                                                                     .collect(Collectors.toList())
+                                                                                                     .contains("선릉역");
+
+                                                 assertThat(hasYeoksamStation).isTrue();
+                                                 assertThat(hasGangnamStation).isTrue();
+                                                 assertThat(hasSeonreungStation).isFalse();
+                                             });
 
         Station stationForAssertion = targetStationList.stream()
                                                        .filter(station -> station.getName()
@@ -195,12 +210,9 @@ public class StationAcceptanceTest {
                                                 .expectBody(Station.class)
                                                 .consumeWith(result -> {
                                                     Station stationAfterCreatedEdge = result.getResponseBody();
-                                                    List<Line> registeredLines = stationAfterCreatedEdge.getLines();
-                                                    Line lineAfterCreatedEdge = registeredLines.stream()
-                                                                                               .filter(line -> line.getName()
-                                                                                                                   .equals("2호선"))
-                                                                                               .findFirst()
-                                                                                               .get();
+                                                    Set<Line> registeredLines = stationAfterCreatedEdge.getLines();
+                                                    Iterator<Line> lineIterator = registeredLines.iterator();
+                                                    Line lineAfterCreatedEdge = lineIterator.next();
                                                     assertThat(lineAfterCreatedEdge.getName()).isEqualTo("2호선");
                                                 });
 

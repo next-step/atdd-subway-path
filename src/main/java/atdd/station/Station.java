@@ -24,8 +24,8 @@ package atdd.station;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Station {
@@ -34,7 +34,11 @@ public class Station {
     private Long id;
     private String name;
 
-    protected Station() {}
+    @ManyToMany(mappedBy = "stations")
+    private Set<Line> lines = new HashSet<>();
+
+    protected Station() {
+    }
 
     public Station(Long id, String name) {
         this.id = id;
@@ -50,10 +54,7 @@ public class Station {
     }
 
     @JsonIgnoreProperties("stations")
-    public List<Line> getLines() {
-        List<Line> lines = new ArrayList<Line>();
-        Line greenLine = new Line(1L, "2호선", "05:00", "23:00", 10);
-        lines.add(greenLine);
+    public Set<Line> getLines() {
         return lines;
     }
 }

@@ -110,13 +110,31 @@ public class StationController {
 
         String uri = String.format("/lines/%d/edge/%d", lineId, 1);
 
-        Line targetLine = lineRepository.findById(lineId).orElse(null);
+        Line targetLine = lineRepository.findById(lineId)
+                                        .orElse(null);
 
         Long sourceStationId = edge.getSourceStationId();
         Long targetStationId = edge.getTargetStationId();
 
-        Station sourceStation = stationRepository.findById(sourceStationId).orElse(null);
-        Station targetStation = stationRepository.findById(targetStationId).orElse(null);
+        Station sourceStation = stationRepository.findById(sourceStationId)
+                                                 .orElse(null);
+        Station targetStation = stationRepository.findById(targetStationId)
+                                                 .orElse(null);
+
+        targetLine.getStations()
+                  .add(sourceStation);
+        targetLine.getStations()
+                  .add(targetStation);
+
+        lineRepository.save(targetLine);
+
+        sourceStation.getLines()
+                     .add(targetLine);
+        targetStation.getLines()
+                     .add(targetLine);
+
+        stationRepository.save(sourceStation);
+        stationRepository.save(targetStation);
 
         return ResponseEntity.created(URI.create(uri))
                              .body(edge);
