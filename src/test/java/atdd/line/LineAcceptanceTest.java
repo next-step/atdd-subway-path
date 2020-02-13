@@ -168,4 +168,21 @@ public class LineAcceptanceTest {
 
     }
 
+    @DisplayName("지하철 노선 목록을 조회한다")
+    @Test
+    public void getLines(){
+        String LINE_NAME="2호선";
+        LineResponse createdLine = createLine(LINE_NAME);
+
+        LineListResponse lines = webTestClient.get().uri("/lines")
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(LineListResponse.class)
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(lines.getLines().get(0).getName()).isEqualTo(createdLine.getName());
+    }
+
 }

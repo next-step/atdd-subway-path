@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @AllArgsConstructor
 @RestController
@@ -24,6 +25,13 @@ public class LineController {
     public ResponseEntity getLineById(@PathVariable Long id){
         LineDetailResponse lineDetailResponse = lineService.findLineById(id);
         return ResponseEntity.ok().body(lineDetailResponse);
+
+    }
+
+    @GetMapping("")
+    public ResponseEntity getLines(){
+        List<Line> lines = lineRepository.findAll();
+        return ResponseEntity.ok().body(LineListResponse.of(lines));
 
     }
 }
