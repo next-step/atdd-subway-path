@@ -18,9 +18,9 @@ public class StationRepository {
     }
 
     public Optional<Station> save(Station station) {
-        int stationId = jdbcTemplate.update("insert into STATION (name) values (?)", station.getName());
+        jdbcTemplate.update("insert into STATION (name) values (?)", station.getName());
 
-        return findById(stationId);
+        return findByName(station.getName());
     }
 
     public Optional<Station> findById(long id) {
@@ -29,6 +29,18 @@ public class StationRepository {
         try {
             return Optional.of(jdbcTemplate.queryForObject("select * from STATION where id = ?",
                     new Object[]{id},
+                    rowMapper));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.ofNullable(null);
+        }
+    }
+
+    public Optional<Station> findByName(String name) {
+        RowMapper<Station> rowMapper = ((rs, rowNum) -> new Station(rs.getLong("id"), rs.getString("name")));
+
+        try {
+            return Optional.of(jdbcTemplate.queryForObject("select * from STATION where name = ?",
+                    new Object[]{name},
                     rowMapper));
         } catch (EmptyResultDataAccessException e) {
             return Optional.ofNullable(null);
