@@ -26,8 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 public class StationAcceptanceTest {
-    private static final Logger logger = LoggerFactory.getLogger(StationAcceptanceTest.class);
-
     private static final ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
@@ -83,8 +81,6 @@ public class StationAcceptanceTest {
         String expected = writeValueAsString(result.getResponseBody());
         String actual = writeValueAsString(stations);
 
-        logger.info("findAllStations = {}", actual);
-
         assertThat(expected).isEqualTo(actual);
     }
 
@@ -108,8 +104,6 @@ public class StationAcceptanceTest {
         String actual = writeValueAsString(stations.stream().filter(data -> data.getId() == stationId).findAny().get());
 
         assertThat(expected).isEqualTo(actual);
-
-        logger.info("findStation = {}", expected);
     }
 
     @Test
@@ -130,8 +124,6 @@ public class StationAcceptanceTest {
         Station station = optionalStation.isPresent() ? optionalStation.get() : null;
 
         assertThat(station).isNull();
-
-        logger.info("deleteStation = {}", station);
     }
 
     private List<Station> createStations() {
@@ -173,7 +165,7 @@ public class StationAcceptanceTest {
         try {
             result = mapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            logger.error("JsonProcessingException", e);
+            e.printStackTrace();
         }
 
         return result;
