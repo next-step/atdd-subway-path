@@ -24,9 +24,9 @@ package atdd.station;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 public class Line {
@@ -42,7 +42,7 @@ public class Line {
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "station_line", joinColumns = @JoinColumn(name = "line_id"), inverseJoinColumns =
     @JoinColumn(name = "station_id"))
-    private Set<Station> stations = new HashSet<>();
+    private List<Station> stations = new ArrayList<>();
 
     protected Line() {}
 
@@ -75,7 +75,7 @@ public class Line {
     }
 
     @JsonIgnoreProperties("lines")
-    public Set<Station> getStations() {
+    public List<Station> getStations() {
         return stations;
     }
 }

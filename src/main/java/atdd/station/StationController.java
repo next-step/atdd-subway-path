@@ -27,9 +27,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class StationController {
@@ -108,7 +107,7 @@ public class StationController {
     @PostMapping("/lines/{lineId}/edge")
     public ResponseEntity createEdge(@PathVariable Long lineId, @RequestBody Edge edge) {
 
-        String uri = String.format("/lines/%d/edge/%d", lineId, 1);
+        String uri = String.format("/lines/%d/edge/%d", lineId, edge.getId());
 
         Line targetLine = lineRepository.findById(lineId)
                                         .orElse(null);
@@ -121,23 +120,95 @@ public class StationController {
         Station targetStation = stationRepository.findById(targetStationId)
                                                  .orElse(null);
 
-        targetLine.getStations()
-                  .add(sourceStation);
-        targetLine.getStations()
-                  .add(targetStation);
+        List<Station> stations = targetLine.getStations();
+
+        addStation(stations, sourceStation, targetStation);
 
         lineRepository.save(targetLine);
 
-        sourceStation.getLines()
-                     .add(targetLine);
-        targetStation.getLines()
-                     .add(targetLine);
+        Set<Line> sourceStationLines = sourceStation.getLines();
+        sourceStationLines.add(targetLine);
+        Set<Line> targetStationLines = targetStation.getLines();
+        targetStationLines.add(targetLine);
 
         stationRepository.save(sourceStation);
         stationRepository.save(targetStation);
 
         return ResponseEntity.created(URI.create(uri))
                              .body(edge);
+    }
+
+    @DeleteMapping("/lines/{lineId}/stations/{stationId}")
+    public ResponseEntity deleteStationFromLine(@PathVariable Long lineId, @PathVariable Long stationId) {
+        Line targetLine = lineRepository.findById(lineId)
+                                        .orElse(null);
+
+        List<Station> stations = targetLine.getStations();
+        stations.removeIf(station -> station.getId()
+                                            .equals(stationId));
+
+        lineRepository.save(targetLine);
+
+        return ResponseEntity.ok()
+                             .build();
+    }
+
+
+    private List<Station> addStation(List<Station> stations, Station sourceStation, Station targetStation) {
+        Long sourceStationId = sourceStation.getId();
+        Long targetStationId = targetStation.getId();
+
+        boolean isUnsupportedRequest = sourceStationId.equals(targetStationId);
+        if (isUnsupportedRequest) {
+            return stations;
+        }
+
+        int stationSize = stations.size();
+        boolean isEmpty = stationSize == 0;
+        if (isEmpty) {
+            stations.add(sourceStation);
+            stations.add(targetStation);
+            return stations;
+        }
+
+        List<Long> filteredStationIdList = stations.stream()
+                                                   .map(Station::getId)
+                                                   .filter(stationId -> {
+                                                       return stationId.equals(sourceStation.getId()) || stationId.equals(targetStation.getId());
+                                                   })
+                                                   .collect(Collectors.toList());
+
+        boolean isAlreadyRegistered = filteredStationIdList.size() == 2;
+
+        if (isAlreadyRegistered) {
+            return stations;
+        }
+
+        Station firstStation = stations.get(0);
+        Station lastStation = stations.get(stationSize - 1);
+
+        Long firstStationId = firstStation.getId();
+        Long lastStationId = lastStation.getId();
+
+        if (firstStationId.equals(sourceStationId)) {
+            stations.add(0, targetStation);
+            return stations;
+        }
+
+        if (firstStationId.equals(targetStationId)) {
+            stations.add(0, sourceStation);
+        }
+
+        if (lastStationId.equals(sourceStationId)) {
+            stations.add(targetStation);
+            return stations;
+        }
+
+        if (lastStationId.equals(targetStationId)) {
+            stations.add(sourceStation);
+        }
+
+        return stations;
     }
 
 
