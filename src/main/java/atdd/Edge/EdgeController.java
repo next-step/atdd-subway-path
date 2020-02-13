@@ -1,23 +1,27 @@
 package atdd.Edge;
 
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping(value="/edge")
 public class EdgeController {
     private final EdgeRepository edgeRepository;
-
-    public EdgeController(EdgeRepository edgeRepository){this.edgeRepository = edgeRepository;}
+    private final EdgeService edgeService;
 
     @PostMapping("")
     public ResponseEntity createEdge(@RequestBody EdgeCreateRequest edge){
-        Edge savedEdge = edgeRepository.save(edge.toEntity());
-        return ResponseEntity.created(URI.create("/edge/"+savedEdge.getId())).body(EdgeResponse.of(savedEdge));
+        EdgeResponse savedEdge = edgeService.createEdge(edge);
+        return ResponseEntity.created(URI.create("/edge/"+savedEdge.getId())).body(savedEdge);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteEdge(@PathVariable Long id){
+        edgeService.deleteEdge(id);
+        return ResponseEntity.noContent().build();
     }
 }

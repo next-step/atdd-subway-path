@@ -52,4 +52,8 @@ public class StationService {
         return lines;
     }
 
+    public void deleteStation(Long id){
+        stationRepository.deleteById(id);
+    }
+
 }

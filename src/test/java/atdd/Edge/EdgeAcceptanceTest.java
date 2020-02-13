@@ -23,6 +23,7 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,6 +36,9 @@ class EdgeAcceptanceTest {
 
     @Autowired
     private WebTestClient webTestClient;
+    @Autowired
+    private EdgeRepository edgeRepository;
+
     StationResponse resultStationA;
     StationResponse resultStationB;
     StationResponse resultStationC;
@@ -118,11 +122,8 @@ class EdgeAcceptanceTest {
     @DisplayName("구간을 등록한다")
     @Test
     void createEdge() {
-        Long LINE_ID = 1L;
         int ELAPSED_TIME = 5;
         BigDecimal DISTANCE = new BigDecimal("1.1");
-        Long SOURCE_STATION_ID = 1L;
-        Long TARGET_SATION_ID = 2L;
 
         Edge edge = Edge.builder()
                 .lineId(resultLine.getId())
@@ -164,6 +165,33 @@ class EdgeAcceptanceTest {
                 .getResponseBody();
 
         assertThat(resultStation.getLines().get(0).getName()).isEqualTo("2호선");
+    }
+
+    @DisplayName("구간을 제거한다")
+    @Test
+    public void removeEdge(){
+        //Given
+        createEdge(resultLine.getId(), resultStationA.getId(), resultStationB.getId());
+        //And
+        createEdge(resultLine.getId(), resultStationB.getId(), resultStationC.getId());
+        //When
+        webTestClient.delete().uri("/edge/"+resultStationB.getId())
+                .exchange()
+                .expectStatus().isNoContent();
+        //Then
+        LineDetailResponse lineDetailResponse = webTestClient.get().uri("/lines/"+resultLine.getId())
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(LineDetailResponse.class)
+                .returnResult()
+                .getResponseBody();
+        assertThat(lineDetailResponse.getStations()).doesNotContain(resultStationB);
+        //And
+        List<Edge> edges = edgeRepository.findByLineId(resultLine.getId());
+        assertThat(edges.get(0).getSourceStationId()).isEqualTo(resultStationA.getId());
+        assertThat(edges.get(0).getTargetStationId()).isEqualTo(resultStationC.getId());
+
 
 
     }
