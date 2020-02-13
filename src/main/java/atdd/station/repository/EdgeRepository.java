@@ -1,4 +1,9 @@
 package atdd.station.repository;
 
-public class EdgeRepository {
-}
+import atdd.station.domain.Edge;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface EdgeRepository extends JpaRepository<Edge, Long> {}
+
