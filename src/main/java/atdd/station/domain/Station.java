@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -15,8 +16,10 @@ public class Station {
 
 	@Id
 	@GeneratedValue
+	@Column(name = "STATION_ID")
 	private Long id;
 
+	@Column(name = "NAME")
 	private String name;
 
 	@Builder

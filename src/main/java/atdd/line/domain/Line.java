@@ -1,5 +1,6 @@
 package atdd.line.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,4 +30,12 @@ public class Line {
 
 	@Column(name = "INTERVAL_TIME")
 	private String intervalTime;
+
+	@Builder
+	public Line(final String name, final String startTime, final String endTime, final String intervalTime) {
+		this.name = name;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.intervalTime = intervalTime;
+	}
 }
