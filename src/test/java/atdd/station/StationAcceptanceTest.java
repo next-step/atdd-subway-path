@@ -114,12 +114,13 @@ public class StationAcceptanceTest {
                                                                                  .returnResult()
                                                                                  .getResponseBody();
 
-        List<Station> targetStationList = responseStationList.stream()
-                                                             .filter(station -> {
-                                                                 String stationName = station.getName();
-                                                                 return stationName.equals("강남역") || stationName.equals("역삼역");
-                                                             })
-                                                             .collect(Collectors.toList());
+        List<Station> targetStationListAtoB = responseStationList.stream()
+                                                                 .filter(station -> {
+                                                                     String stationName = station.getName();
+                                                                     return stationName.equals("강남역") || stationName.equals("역삼역");
+                                                                 })
+                                                                 .collect(Collectors.toList());
+
 
         List<Line> responseLineList = readRequestWebTestClient("/lines").isOk()
                                                                         .expectHeader()
@@ -142,28 +143,41 @@ public class StationAcceptanceTest {
                                 .isEqualTo(greenLine);
 
         Long lineId = responseLine.getId();
-        Station sourceStation = targetStationList.get(0);
+        Station sourceStation = targetStationListAtoB.get(0);
         Long sourceStationId = sourceStation.getId();
-        Station targetStation = targetStationList.get(1);
+        Station targetStation = targetStationListAtoB.get(1);
         Long targetStationId = targetStation.getId();
 
-        Edge edge = new Edge(1L, sourceStationId, targetStationId, lineId, 0.8, 2);
+        Edge edgeAtoB = new Edge(1L, sourceStationId, targetStationId, lineId, 0.8, 2);
+        Edge edgeBtoA = new Edge(2L, targetStationId, sourceStationId, lineId, 0.8, 2);
 
         Gson gson = new Gson();
-        String edgeJson = gson.toJson(edge);
+
+        String edgeJsonAtoB = gson.toJson(edgeAtoB);
+        String edgeJsonBtoA = gson.toJson(edgeBtoA);
 
         String requestUri = String.format("/lines/%d/edge", lineId);
 
-        createRequestWebTestClient(requestUri, edgeJson).expectBody(Edge.class)
-                                                        .consumeWith(result -> {
-                                                            Edge responseEdge = result.getResponseBody();
-                                                            HttpHeaders responseHeaders = result.getResponseHeaders();
-                                                            URI location = responseHeaders.getLocation();
-                                                            String stringifyLocation = location.toString();
-                                                            assertThat(stringifyLocation).isEqualTo(String.format("%s"
-                                                                    + "/%d/edge/%d", "/lines", lineId,
-                                                                    responseEdge.getId()));
-                                                        });
+        createRequestWebTestClient(requestUri, edgeJsonAtoB).expectBody(Edge.class)
+                                                            .consumeWith(result -> {
+                                                                Edge responseEdge = result.getResponseBody();
+                                                                HttpHeaders responseHeaders =
+                                                                        result.getResponseHeaders();
+                                                                URI location = responseHeaders.getLocation();
+                                                                String stringifyLocation = location.toString();
+                                                                assertThat(stringifyLocation).isEqualTo(String.format("%s" + "/%d/edge/%d", "/lines", lineId, responseEdge.getId()));
+                                                            });
+
+        createRequestWebTestClient(requestUri, edgeJsonBtoA).expectBody(Edge.class)
+                                                            .consumeWith(result -> {
+                                                                Edge responseEdge = result.getResponseBody();
+                                                                HttpHeaders responseHeaders =
+                                                                        result.getResponseHeaders();
+                                                                URI location = responseHeaders.getLocation();
+                                                                String stringifyLocation = location.toString();
+                                                                assertThat(stringifyLocation).isEqualTo(String.format("%s" + "/%d/edge/%d", "/lines", lineId, responseEdge.getId()));
+                                                            });
+
 
         String readLineUri = String.format("/lines/%d", lineId);
         readRequestWebTestClient(readLineUri).isOk()
@@ -172,11 +186,9 @@ public class StationAcceptanceTest {
                                              .expectBody(Line.class)
                                              .consumeWith(result -> {
                                                  Line lineAfterCreatedEdge = result.getResponseBody();
-                                                 Set<Station> registeredStationsSet =
-                                                         lineAfterCreatedEdge.getStations();
 
                                                  List<Station> registeredStationsList =
-                                                         new ArrayList<Station>(registeredStationsSet);
+                                                         lineAfterCreatedEdge.getStations();
 
                                                  Boolean hasYeoksamStation = registeredStationsList.stream()
                                                                                                    .map(Station::getName)
@@ -191,16 +203,18 @@ public class StationAcceptanceTest {
                                                                                                      .collect(Collectors.toList())
                                                                                                      .contains("선릉역");
 
+                                                 assertThat(registeredStationsList.size()).isEqualTo(2);
                                                  assertThat(hasYeoksamStation).isTrue();
                                                  assertThat(hasGangnamStation).isTrue();
                                                  assertThat(hasSeonreungStation).isFalse();
                                              });
 
-        Station stationForAssertion = targetStationList.stream()
-                                                       .filter(station -> station.getName()
-                                                                                 .equals("강남역"))
-                                                       .findFirst()
-                                                       .get();
+        Station stationForAssertion = targetStationListAtoB.stream()
+                                                           .filter(station -> station.getName()
+                                                                                     .equals("강남역"))
+                                                           .findFirst()
+                                                           .get();
+
         Long stationIdForAssertion = stationForAssertion.getId();
 
         String readStationUri = String.format("/stations/%d", stationIdForAssertion);
@@ -216,6 +230,103 @@ public class StationAcceptanceTest {
                                                     assertThat(lineAfterCreatedEdge.getName()).isEqualTo("2호선");
                                                 });
 
+
+        List<Station> targetStationListBtoC = responseStationList.stream()
+                                                                 .filter(station -> {
+                                                                     String stationName = station.getName();
+                                                                     return stationName.equals("선릉역") || stationName.equals("역삼역");
+                                                                 })
+                                                                 .collect(Collectors.toList());
+
+        Station sourceStationB = targetStationListBtoC.get(0);
+        Long sourceStationBId = sourceStationB.getId();
+        Station targetStationC = targetStationListBtoC.get(1);
+        Long targetStationCId = targetStationC.getId();
+
+        Edge edgeBtoC = new Edge(3L, sourceStationBId, targetStationCId, lineId, 1.3, 3);
+        String edgeJsonBtoC = gson.toJson(edgeBtoC);
+
+
+        createRequestWebTestClient(requestUri, edgeJsonBtoC).expectBody(Edge.class)
+                                                            .consumeWith(result -> {
+                                                                Edge responseEdge = result.getResponseBody();
+                                                                HttpHeaders responseHeaders =
+                                                                        result.getResponseHeaders();
+                                                                URI location = responseHeaders.getLocation();
+                                                                String stringifyLocation = location.toString();
+                                                                assertThat(stringifyLocation).isEqualTo(String.format("%s" + "/%d/edge/%d", "/lines", lineId, responseEdge.getId()));
+                                                            });
+
+        readRequestWebTestClient(readLineUri).isOk()
+                                             .expectHeader()
+                                             .contentType(MediaType.APPLICATION_JSON)
+                                             .expectBody(Line.class)
+                                             .consumeWith(result -> {
+                                                 Line lineAfterCreatedEdge = result.getResponseBody();
+
+                                                 List<Station> registeredStationsList =
+                                                         lineAfterCreatedEdge.getStations();
+
+                                                 // Test for in order of registration with station
+                                                 Boolean isSourceStation = registeredStationsList.get(0)
+                                                                                                 .getName()
+                                                                                                 .equals(sourceStation.getName());
+                                                 Boolean isTargetStation = registeredStationsList.get(1)
+                                                                                                 .getName()
+                                                                                                 .equals(targetStation.getName());
+                                                 Boolean isSeonreungStation = registeredStationsList.get(2)
+                                                                                                    .getName()
+                                                                                                    .equals("선릉역");
+
+                                                 assertThat(registeredStationsList.size()).isEqualTo(3);
+                                                 assertThat(isSourceStation).isTrue();
+                                                 assertThat(isTargetStation).isTrue();
+                                                 assertThat(isSeonreungStation).isTrue();
+                                             });
+
+
+        Station stationToDeleteFromLine = targetStationListBtoC.stream()
+                                                               .filter(station -> station.getName()
+                                                                                         .equals("역삼역"))
+                                                               .findFirst()
+                                                               .get();
+
+        Long stationIdToDeleteFromLine = stationToDeleteFromLine.getId();
+
+        String deleteStationFromLineUri = String.format("/lines/%d/stations/%d", lineId, stationIdToDeleteFromLine);
+
+        webTestClient.delete()
+                     .uri(deleteStationFromLineUri)
+                     .exchange()
+                     .expectStatus()
+                     .isOk();
+
+        readRequestWebTestClient(readLineUri).isOk()
+                                             .expectHeader()
+                                             .contentType(MediaType.APPLICATION_JSON)
+                                             .expectBody(Line.class)
+                                             .consumeWith(result -> {
+                                                 Line lineAfterCreatedEdge = result.getResponseBody();
+
+                                                 List<Station> registeredStationsList =
+                                                         lineAfterCreatedEdge.getStations();
+
+                                                 Boolean hasYeoksamStation = registeredStationsList.stream()
+                                                                                                   .map(Station::getName)
+                                                                                                   .collect(Collectors.toList())
+                                                                                                   .contains("역삼역");
+                                                 Boolean isGangnamStation = registeredStationsList.get(0)
+                                                                                                  .getName()
+                                                                                                  .equals("강남역");
+                                                 Boolean isSeonreungStation = registeredStationsList.get(1)
+                                                                                                    .getName()
+                                                                                                    .equals("선릉역");
+
+                                                 assertThat(registeredStationsList.size()).isEqualTo(2);
+                                                 assertThat(hasYeoksamStation).isFalse();
+                                                 assertThat(isGangnamStation).isTrue();
+                                                 assertThat(isSeonreungStation).isTrue();
+                                             });
     }
 
     private StatusAssertions readRequestWebTestClient(String uri) {
