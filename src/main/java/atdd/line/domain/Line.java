@@ -1,15 +1,15 @@
 package atdd.line.domain;
 
+import atdd.station.domain.Station;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringJoiner;
 
 import static javax.persistence.GenerationType.IDENTITY;
@@ -35,12 +35,20 @@ public class Line {
 
     private int intervalTime;
 
+    @Transient
+    private List<Station> stations = new ArrayList<>();
+
     @Builder
     protected Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
+    }
+
+    public Line withStation(List<Station> stations) {
+        this.stations = stations;
+        return this;
     }
 
     @Override
