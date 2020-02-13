@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
-import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -82,7 +81,6 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
                 .expectStatus().isNoContent();
     }
 
-    @TestInstance(PER_CLASS)
     @DisplayName("지하철 노선 구간 테스트")
     @Nested
     class EdgeTest {
@@ -90,7 +88,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         private Map<String, Long> stationData;
         private LineResponseView lineData;
 
-        @BeforeAll
+        @BeforeEach
         void setUp() {
             deleteAll();
 
@@ -103,31 +101,56 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         @DisplayName("지하철 노선에 지하철 구간을 등록 할 수 있다")
         @Test
         void beAbleCreateEdge() {
-            Long sourceStationId = stationData.get("강남역");
-            Long targetStationId = stationData.get("역삼역");
+            Long stationId_Gangnam = stationData.get("강남역");
+            Long stationId_Yeoksam = stationData.get("역삼역");
 
-            Map<String, Object> edgeData = getEdgeData(sourceStationId, targetStationId);
-            String inputJson = jsonOf(edgeData);
+            String inputJson = getInputJson(stationId_Gangnam, stationId_Yeoksam);
 
-            webTestClient.post().uri("/lines/" + lineData.getId() + "/edges")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(Mono.just(inputJson), String.class)
-                    .exchange()
-                    .expectStatus().isCreated()
-                    .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                    .expectHeader().exists("Location")
-                    .expectBody()
-                    .jsonPath("$.stations.length()").isEqualTo(2)
-                    .jsonPath("$.stations[0].id").isEqualTo(targetStationId)
-                    .jsonPath("$.stations[1].id").isEqualTo(sourceStationId);
+            EntityExchangeResult<LineResponseView> result = createEdge(lineData.getId(), inputJson);
+            LineResponseView view = result.getResponseBody();
 
-            webTestClient.get().uri("/stations/" + sourceStationId)
+            assertThat(view).isNotNull();
+            assertThat(view.getStations()).isNotNull();
+            assertThat(view.getStations().size()).isEqualTo(2);
+            assertThat(view.getStations()).extracting("id")
+                    .contains(stationId_Gangnam, stationId_Yeoksam);
+
+            webTestClient.get().uri("/stations/"+ stationId_Gangnam)
                     .exchange()
                     .expectStatus().isOk()
                     .expectHeader().contentType(MediaType.APPLICATION_JSON)
                     .expectBody()
                     .jsonPath("$.lines.length()").isEqualTo(1)
                     .jsonPath("$.lines[0].name").isEqualTo(lineData.getName());
+        }
+
+        @DisplayName("지하철 노선에 지하철 구간을 삭제 할 수 있다")
+        @Test
+        void beAbleDeleteEdge() {
+            Long stationId_Gangnam = stationData.get("강남역");
+            Long stationId_Yeoksam = stationData.get("역삼역");
+            Long stationId_Seolleung = stationData.get("선릉역");
+
+            createEdge(lineData.getId(), getInputJson(stationId_Gangnam, stationId_Yeoksam));
+            createEdge(lineData.getId(), getInputJson(stationId_Yeoksam, stationId_Seolleung));
+
+            webTestClient.delete().uri("/lines/" + lineData.getId() + "/stations/"+ stationId_Yeoksam)
+                    .exchange()
+                    .expectStatus().isNoContent();
+
+            webTestClient.get().uri("/lines/"+ lineData.getId())
+                    .exchange()
+                    .expectStatus().isOk()
+                    .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                    .expectBody()
+                    .jsonPath("$.stations.length()").isEqualTo(2)
+                    .jsonPath("$.stations[0].id").isEqualTo(stationId_Seolleung)
+                    .jsonPath("$.stations[1].id").isEqualTo(stationId_Gangnam);
+        }
+
+        private String getInputJson(Long sourceStationId, Long targetStationId) {
+            Map<String, Object> edgeData = getEdgeData(sourceStationId, targetStationId);
+            return jsonOf(edgeData);
         }
     }
 

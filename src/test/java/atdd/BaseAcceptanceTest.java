@@ -1,6 +1,7 @@
 package atdd;
 
 import atdd.line.api.response.LineResponseView;
+import atdd.line.domain.EdgeRepository;
 import atdd.line.domain.LineRepository;
 import atdd.station.api.response.StationResponseView;
 import atdd.station.domain.StationRepository;
@@ -27,6 +28,9 @@ public abstract class BaseAcceptanceTest {
     @Autowired
     private LineRepository lineRepository;
 
+    @Autowired
+    private EdgeRepository edgeRepository;
+
     protected EntityExchangeResult<StationResponseView> createStation(String inputJson) {
         return requestCreatePost(StationResponseView.class, "/stations", inputJson);
     }
@@ -35,9 +39,14 @@ public abstract class BaseAcceptanceTest {
         return requestCreatePost(LineResponseView.class, "/lines", inputJson);
     }
 
+    protected EntityExchangeResult<LineResponseView> createEdge(Long lineId, String inputJson) {
+        return requestCreatePost(LineResponseView.class, "/lines/" + lineId + "/edges", inputJson);
+    }
+
     protected void deleteAll() {
-        stationRepository.deleteAll();
+        edgeRepository.deleteAll();
         lineRepository.deleteAll();
+        stationRepository.deleteAll();
     }
 
     private <T> EntityExchangeResult<T> requestCreatePost(Class<T> body, String uri, String inputJson) {
