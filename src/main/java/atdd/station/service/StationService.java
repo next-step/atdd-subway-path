@@ -1,14 +1,17 @@
 package atdd.station.service;
 
+import antlr.debug.TraceEvent;
 import atdd.station.domain.station.Station;
 import atdd.station.domain.station.StationRepository;
 import atdd.station.web.dto.StationRequestDto;
 import atdd.station.web.dto.StationResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.omg.CORBA.TRANSACTION_MODE;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Transactional
 @RequiredArgsConstructor
@@ -20,8 +23,12 @@ public class StationService {
         return stationRepository.save(stationRequestDto.toEntity());
     }
 
-    public List<Station> select(){
-        return stationRepository.findAll();
+    public List<StationResponseDto> select(){
+        List<StationResponseDto> stationResponseDtoList = stationRepository.findAll()
+                .stream()
+                .map(StationResponseDto::new)
+                .collect(Collectors.toList());
+        return stationResponseDtoList;
     }
 
     public StationResponseDto findById(Long id){

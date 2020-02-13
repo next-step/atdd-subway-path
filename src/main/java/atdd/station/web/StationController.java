@@ -59,9 +59,9 @@ public class StationController {
         stationService.create(StationRequestDto.builder().name("강남역").build());
         stationService.create(StationRequestDto.builder().name("수서역").build());
 
-        List<Station> stationList = stationService.select();
+        List<StationResponseDto> stationResponseDtoList = stationService.select();
 
-        return ResponseEntity.ok().body(stationList);
+        return ResponseEntity.ok().body(stationResponseDtoList);
     }
 
     @GetMapping("selectStation/{id}")
