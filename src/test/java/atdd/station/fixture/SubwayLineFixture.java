@@ -5,6 +5,7 @@ import atdd.station.domain.SubwayLine;
 import java.util.ArrayList;
 import java.util.List;
 
+import static atdd.station.fixture.SubwaysFixture.SECOND_SUBWAYS;
 import static atdd.station.fixture.SubwaysFixture.SUBWAYS;
 
 
@@ -35,7 +36,7 @@ public class SubwayLineFixture {
                 .startTime(DEFAULT_START_TIME)
                 .endTime(DEFAULT_END_TIME)
                 .intervalTime(DEFAULT_INTERVAL)
-                .subways(SUBWAYS)
+                .subways(SECOND_SUBWAYS)
                 .build();
     }
 

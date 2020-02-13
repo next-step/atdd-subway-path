@@ -2,10 +2,7 @@ package atdd.station.service;
 
 import atdd.station.domain.SubwayLine;
 import atdd.station.domain.SubwayLineRepository;
-import atdd.station.dto.subwayLine.SubwayLineCreateRequestDto;
-import atdd.station.dto.subwayLine.SubwayLineCreateResponseDto;
-import atdd.station.dto.subwayLine.SubwayLineDetailResponseDto;
-import atdd.station.dto.subwayLine.SubwayLineListResponseDto;
+import atdd.station.dto.subwayLine.*;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
@@ -102,7 +99,7 @@ public class SubwayLineServiceTest {
         when(subwayLineRepository.findById(DEFAULT_ID)).thenReturn(java.util.Optional.of(subwayLine));
         when(subwayLineRepository.save(updatedSubwayLine)).thenReturn(updatedSubwayLine);
 
-        subwayLineService.update(DEFAULT_ID, KANGNAM_AND_YUCKSAM_STATIONS);
+        subwayLineService.update(DEFAULT_ID, SubwayLineUpdateRequestDto.toDtoEntity(KANGNAM_AND_YUCKSAM_STATIONS));
 
         //then
         softly.assertThat(updatedSubwayLine.getName()).isEqualTo(SECOND_SUBWAY_LINE_NAME);

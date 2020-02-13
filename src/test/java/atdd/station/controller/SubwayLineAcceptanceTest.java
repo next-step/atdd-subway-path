@@ -15,8 +15,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 
-import static atdd.station.fixture.StationFixture.KANGNAM_AND_YUCKSAM_STATIONS;
-import static atdd.station.fixture.StationFixture.KANGNAM_STATION_NAME;
+import static atdd.station.fixture.StationFixture.*;
 import static atdd.station.fixture.SubwayLineFixture.*;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -121,7 +120,7 @@ public class SubwayLineAcceptanceTest {
 
         //whens
         //then
-        webTestClient.delete().uri(location + "/" + KANGNAM_STATION_NAME)
+        webTestClient.delete().uri(location + "/" + YUCKSAM_STATION_NAME)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON);
