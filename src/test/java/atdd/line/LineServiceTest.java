@@ -95,7 +95,7 @@ class LineServiceTest {
         edgeRepository.save(edgeA);
         edgeRepository.save(edgeB);
 
-        LineDetailResponse lineDetailResponse = lineService.findLineById(createResult.getId());
+        LineDetailResponse lineDetailResponse = lineService.findLineByIdWithStationList(createResult.getId());
 
         assertThat(lineDetailResponse.getLine().getName()).isEqualTo(LINE_NAME);
         assertThat(lineDetailResponse.getStations().size()).isEqualTo(3);
