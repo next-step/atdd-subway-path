@@ -21,8 +21,11 @@
  * */
 package atdd.station;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Station {
@@ -30,9 +33,6 @@ public class Station {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
-
-    @OneToMany(mappedBy = "station")
-    Set<Line> lines;
 
     protected Station() {}
 
@@ -47,5 +47,13 @@ public class Station {
 
     public Long getId() {
         return id;
+    }
+
+    @JsonIgnoreProperties("stations")
+    public List<Line> getLines() {
+        List<Line> lines = new ArrayList<Line>();
+        Line greenLine = new Line(1L, "2호선", "05:00", "23:00", 10);
+        lines.add(greenLine);
+        return lines;
     }
 }

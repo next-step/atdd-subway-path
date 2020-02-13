@@ -4,37 +4,50 @@ import javax.persistence.*;
 
 @Entity
 public class Edge {
-    @EmbeddedId
-    EdgeKey id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
-    @ManyToOne
-    @MapsId("line_id")
-    @JoinColumn(name = "station_id")
-    Station sourceStation;
+    private Long sourceStationId;
+    private Long targetStationId;
+    private Long lineId;
 
-    @ManyToOne
-    @MapsId("line_id")
-    @JoinColumn(name = "station_id")
-    Station targetStation;
+    private double distance;
+    private int elapseTime;
 
-    @ManyToOne
-    @MapsId("station_id")
-    @JoinColumn(name = "line_id")
-    Line line;
+    protected Edge() {
+    }
 
-    int distance;
-    int elapseTime;
+    public Edge(Long id, Long sourceStationId, Long targetStationId, Long lineId, double distance, int elapseTime) {
+        this.id = id;
+        this.sourceStationId = sourceStationId;
+        this.targetStationId = targetStationId;
+        this.lineId = lineId;
+        this.distance = distance;
+        this.elapseTime = elapseTime;
+    }
 
+    public Long getSourceStationId() {
+        return sourceStationId;
+    }
 
-    public Station getSourceStation() {
-        return sourceStation;
-    };
+    public Long getId() {
+        return id;
+    }
 
-    public Station getTargetStation() {
-        return targetStation;
-    };
+    public Long getTargetStationId() {
+        return targetStationId;
+    }
 
-    public Line getLine() {
-        return line;
+    public Long getLineId() {
+        return lineId;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public int getElapseTime() {
+        return elapseTime;
     }
 }

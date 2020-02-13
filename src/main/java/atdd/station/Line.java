@@ -21,8 +21,12 @@
  * */
 package atdd.station;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Line {
@@ -34,10 +38,6 @@ public class Line {
     private String startTime;
     private String endTime;
     private int stationInterval;
-
-    @OneToMany(mappedBy = "line")
-    Set<Station> stations;
-
 
     protected Line() {
     }
@@ -68,5 +68,15 @@ public class Line {
 
     public int getStationInterval() {
         return stationInterval;
+    }
+
+    @JsonIgnoreProperties("lines")
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<Station>();
+        Station gangnamStation = new Station(1L, "강남역");
+        Station yuksamStation = new Station(2L, "역삼역");
+        stations.add(gangnamStation);
+        stations.add(yuksamStation);
+        return stations;
     }
 }

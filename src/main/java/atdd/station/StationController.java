@@ -105,6 +105,23 @@ public class StationController {
                              .build();
     }
 
+    @PostMapping("/lines/{lineId}/edge")
+    public ResponseEntity createEdge(@PathVariable Long lineId, @RequestBody Edge edge) {
+
+        String uri = String.format("/lines/%d/edge/%d", lineId, 1);
+
+        Line targetLine = lineRepository.findById(lineId).orElse(null);
+
+        Long sourceStationId = edge.getSourceStationId();
+        Long targetStationId = edge.getTargetStationId();
+
+        Station sourceStation = stationRepository.findById(sourceStationId).orElse(null);
+        Station targetStation = stationRepository.findById(targetStationId).orElse(null);
+
+        return ResponseEntity.created(URI.create(uri))
+                             .body(edge);
+    }
+
 
     private ResponseEntity getResponseEntityForNullableObject(Optional<?> optionalObject) {
         return optionalObject.map(object -> new ResponseEntity(object, HttpStatus.OK))
