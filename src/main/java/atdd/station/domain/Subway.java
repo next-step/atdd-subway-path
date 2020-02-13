@@ -15,7 +15,7 @@ public class Subway {
     private Station station;
 
     @ManyToOne
-    @JoinColumn(name = "subway_line_id")
+    @JoinColumn(name = "subwayLine_id")
     private SubwayLine subwayLine;
 
     private boolean deleted = false;
@@ -23,18 +23,26 @@ public class Subway {
     public Subway() {
     }
 
-    @Builder
-    public Subway(Station station, SubwayLine subwayLine) {
-        this.station = station;
-        this.subwayLine = subwayLine;
+    boolean isThisNameTheStation(String name) {
+        if (name == null || name.isEmpty()) {
+            return false;
+        }
+
+        return name.equals(this.station.getName());
+    }
+
+    public Station getStation() {
+        return this.station;
     }
 
     public SubwayLine getSubwayLine() {
         return this.subwayLine;
     }
 
-    public Station getStation() {
-        return this.station;
+    @Builder
+    public Subway(Station station, SubwayLine subwayLine) {
+        this.station = station;
+        this.subwayLine = subwayLine;
     }
 }
 
