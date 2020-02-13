@@ -2,6 +2,7 @@ package atdd.station;
 
 import atdd.station.web.dto.StationRequestDto;
 import atdd.station.web.dto.StationResponseDto;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -14,7 +15,12 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasProperty;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -44,8 +50,10 @@ public class StationAcceptanceTest {
     @Test
     public void createStationTest() {
         //given
-        String name = "강남역";
-        StationRequestDto stationRequestDto = StationRequestDto.builder().name(name).build();
+        String stationName1 = "강남역";
+        String stationName2 = "수서역";
+        StationRequestDto stationRequestDto = StationRequestDto.builder().name(stationName1).build();
+        StationRequestDto.builder().name(stationName2).build();
 
         //when
         StationResponseDto stationResponseDto = webTestClient.post().uri("/stations/create")
@@ -66,15 +74,21 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역 목록 조회")
     @Test
     public void selectStationList() {
+        //given
+        createStationTest();
 
-        webTestClient.get().uri("/stations/list")
+        //when
+        List<StationResponseDto> stationResponseDtoList = webTestClient.get().uri("/stations/list")
                 .exchange()
                 .expectStatus()
                 .isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody()
-                .jsonPath("$.[0].name").isEqualTo("강남역")
-                .jsonPath("$.[1].name").isEqualTo("수서역");
+                .expectBodyList(StationResponseDto.class)
+                .returnResult()
+                .getResponseBody();
+
+        //then
+        stationResponseDtoList.forEach(System.out::println);
     }
 
     @DisplayName("지하철역 정보 조회")
@@ -106,5 +120,5 @@ public class StationAcceptanceTest {
                 .exchange()
                 .expectStatus().isOk();
     }
-    
+
 }

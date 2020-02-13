@@ -27,20 +27,15 @@ public class StationController {
         Logger logger = Logger.getLogger("station");
         logger.info(inputJson);
 
-        HttpHeaders responseHeaders = new HttpHeaders();
-
-        responseHeaders.set("Content-Type", "application/json");
-
         URI location = URI.create("/stations");
         return ResponseEntity.created(location)
-                .headers(responseHeaders)
                 .body(inputJson);
     }
 
     @PostMapping("/stations/create")
     public ResponseEntity createStation(@RequestBody StationRequestDto stationRequestDto) {
         Logger logger = Logger.getLogger("createStation");
-        URI location = URI.create("/createStation");
+        URI location = URI.create("/stations/create");
 
        Station station = stationService.create(stationRequestDto);
        StationResponseDto stationResponseDto = new StationResponseDto(station);
@@ -51,9 +46,6 @@ public class StationController {
 
     @GetMapping("/stations/list")
     public ResponseEntity selectStationList(){
-
-        stationService.create(StationRequestDto.builder().name("강남역").build());
-        stationService.create(StationRequestDto.builder().name("수서역").build());
 
         List<StationResponseDto> stationResponseDtoList = stationService.select();
 
