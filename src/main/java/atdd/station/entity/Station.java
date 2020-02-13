@@ -8,14 +8,15 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "STATION")
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class StationEntity{
+public class Station {
   @Id
   @Column(name="ID")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +25,7 @@ public class StationEntity{
   @Column(name = "NAME")
   private String name;
 
-  public StationEntity(String name) {
+  public Station(String name) {
     this.name = name;
   }
 }

@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StationListEntity {
+public class StationList {
   private int stationCount;
-  private List<StationEntity> stations;
-  public StationListEntity(List<StationEntity> stations) {
+  private List<Station> stations;
+  public StationList(List<Station> stations) {
     this.stationCount = stations.size();
     this.stations = stations;
   }

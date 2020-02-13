@@ -1,7 +1,7 @@
 package atdd.station.service;
 
-import atdd.station.entity.StationEntity;
-import atdd.station.entity.StationListEntity;
+import atdd.station.entity.Station;
+import atdd.station.entity.StationList;
 import atdd.station.usecase.StationDTO;
 import atdd.station.usecase.StationListDTO;
 import java.util.List;
@@ -11,32 +11,32 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StationModelMapper {
 
-  public StationEntity DTOToEntity(StationDTO stationDTO) {
-    return new StationEntity(
+  public Station DTOToEntity(StationDTO stationDTO) {
+    return new Station(
         stationDTO.getName()
     );
   }
 
-  public StationDTO EntityToDTO(StationEntity stationEntity) {
+  public StationDTO EntityToDTO(Station station) {
     return new StationDTO(
-        stationEntity.getId(),
-        stationEntity.getName()
+        station.getId(),
+        station.getName()
     );
   }
 
-  public StationListEntity ListDTOToEntity(StationListDTO stationListDTO) {
-    List<StationEntity> entities = stationListDTO.getStations()
+  public StationList ListDTOToEntity(StationListDTO stationListDTO) {
+    List<Station> entities = stationListDTO.getStations()
         .stream()
         .map(
             stationDTO -> this.DTOToEntity(stationDTO)
         ).collect(
             Collectors.toList()
         );
-    return new StationListEntity(entities.size(), entities);
+    return new StationList(entities.size(), entities);
   }
 
-  public StationListDTO ListEntityToDTO(StationListEntity stationListEntity) {
-    List<StationDTO> stationDTOS = stationListEntity.getStations()
+  public StationListDTO ListEntityToDTO(StationList stationList) {
+    List<StationDTO> stationDTOS = stationList.getStations()
         .stream()
         .map(
             stationEntity -> this.EntityToDTO(stationEntity)

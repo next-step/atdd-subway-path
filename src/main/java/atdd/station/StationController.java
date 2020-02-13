@@ -41,13 +41,11 @@ public class StationController {
 
   @GetMapping("/stations")
   public ResponseEntity<StationListDTO> getAllStation() {
-    List<StationDTO> stations = new ArrayList<>();
-    stations.add(new StationDTO((long) 1, "강남역"));
-    StationListDTO mockStationListDTO = new StationListDTO(stations.size(), stations);
+    StationListDTO stationListDTO = stationService.getAllStation();
 
     return ResponseEntity.ok()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(mockStationListDTO);
+        .body(stationListDTO);
   }
 
   @GetMapping("/stations/{stationName}")

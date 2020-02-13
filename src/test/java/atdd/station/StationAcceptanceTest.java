@@ -1,6 +1,6 @@
 package atdd.station;
 
-import atdd.station.entity.StationEntity;
+import atdd.station.entity.Station;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -52,7 +51,7 @@ public class StationAcceptanceTest {
   public void getStationList() {
     //Given
     String stationName = "강남역";
-    StationEntity mockStation = new StationEntity(stationName);
+    Station mockStation = new Station(stationName);
 
     //When
     ResponseSpec responseSpec = webTestClient

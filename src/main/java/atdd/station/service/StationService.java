@@ -1,7 +1,7 @@
 package atdd.station.service;
 
-import atdd.station.entity.StationEntity;
-import atdd.station.entity.StationListEntity;
+import atdd.station.entity.Station;
+import atdd.station.entity.StationList;
 import atdd.station.repository.StationRepository;
 import atdd.station.usecase.StationDTO;
 import atdd.station.usecase.StationListDTO;
@@ -19,16 +19,16 @@ public class StationService implements StationUseCase {
 
   @Override
   public StationDTO addStation(StationDTO stationDTO) {
-    StationEntity stationEntity = stationRepository.save(
+    Station station = stationRepository.save(
         stationModelMapper.DTOToEntity(stationDTO)
     ).get();
-    return stationModelMapper.EntityToDTO(stationEntity);
+    return stationModelMapper.EntityToDTO(station);
   }
 
   @Override
   public StationListDTO getAllStation() {
     return stationModelMapper.ListEntityToDTO(
-        new StationListEntity(stationRepository.findAll())
+        new StationList(stationRepository.findAll())
     );
   }
 
@@ -43,7 +43,7 @@ public class StationService implements StationUseCase {
 
   @Override
   public void removeStation(StationDTO stationDTO) {
-    StationEntity target = stationRepository.getByname(stationDTO.getName()).get();
+    Station target = stationRepository.getByname(stationDTO.getName()).get();
     stationRepository.removeByid(
         target.getId()
     );
