@@ -37,7 +37,7 @@ public class StationController {
                 .body(inputJson);
     }
 
-    @PostMapping("createStation")
+    @PostMapping("/stations/create")
     public ResponseEntity createStation(@RequestBody StationRequestDto stationRequestDto) {
         Logger logger = Logger.getLogger("createStation");
         URI location = URI.create("/createStation");
@@ -49,7 +49,7 @@ public class StationController {
                 .body(stationResponseDto);
     }
 
-    @GetMapping("selectStationList")
+    @GetMapping("/stations/list")
     public ResponseEntity selectStationList(){
 
         stationService.create(StationRequestDto.builder().name("강남역").build());
@@ -60,7 +60,7 @@ public class StationController {
         return ResponseEntity.ok().body(stationResponseDtoList);
     }
 
-    @GetMapping("selectStation/{id}")
+    @GetMapping("/stations/list/{id}")
     public ResponseEntity selectStation(@PathVariable Long id) {
 
         stationService.create(StationRequestDto.builder().name("강남역").build());
@@ -70,7 +70,7 @@ public class StationController {
         return  ResponseEntity.ok().body(stationResponseDto);
     }
 
-    @PostMapping("deleteStation/{id}")
+    @PostMapping("/stations/delete/{id}")
     public void deleteStation(@PathVariable Long id) {
 
         stationService.create(StationRequestDto.builder().name("강남역").build());

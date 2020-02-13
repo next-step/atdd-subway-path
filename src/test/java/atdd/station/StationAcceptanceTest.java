@@ -48,7 +48,7 @@ public class StationAcceptanceTest {
         StationRequestDto stationRequestDto = StationRequestDto.builder().name(name).build();
 
         //when
-        StationResponseDto stationResponseDto = webTestClient.post().uri("createStation")
+        StationResponseDto stationResponseDto = webTestClient.post().uri("/stations/create")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(stationRequestDto),StationRequestDto.class)
                 .exchange()
@@ -67,7 +67,7 @@ public class StationAcceptanceTest {
     @Test
     public void selectStationList() {
 
-        webTestClient.get().uri("selectStationList")
+        webTestClient.get().uri("/stations/list")
                 .exchange()
                 .expectStatus()
                 .isOk()
@@ -83,7 +83,7 @@ public class StationAcceptanceTest {
         //given
         Long id = 1L;
         //when
-        StationResponseDto stationResponseDto = webTestClient.get().uri("selectStation/"+id)
+        StationResponseDto stationResponseDto = webTestClient.get().uri("/stations/list/"+id)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -101,9 +101,10 @@ public class StationAcceptanceTest {
         //given
         Long id = 1L;
         //when
-        webTestClient.post().uri("deleteStation/" + id)
+        webTestClient.post().uri("stations/delete/" + id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk();
     }
+    
 }
