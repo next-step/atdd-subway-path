@@ -1,17 +1,12 @@
 package atdd.station.service;
 
-import atdd.station.domain.Station;
 import atdd.station.domain.SubwayLine;
 import atdd.station.domain.SubwayLineRepository;
-import atdd.station.dto.subwayLine.SubwayLineCreateRequestDto;
-import atdd.station.dto.subwayLine.SubwayLineCreateResponseDto;
-import atdd.station.dto.subwayLine.SubwayLineDetailResponseDto;
-import atdd.station.dto.subwayLine.SubwayLineListResponseDto;
+import atdd.station.dto.subwayLine.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
-import java.util.List;
 
 @Service("subwayLineService")
 public class SubwayLineService {
@@ -41,14 +36,14 @@ public class SubwayLineService {
     }
 
     @Transactional
-    public SubwayLine update(long id, List<Station> stations) {
+    public SubwayLine update(long id, SubwayLineUpdateRequestDto stations) {
         SubwayLine subwayLine = findById(id);
-        SubwayLine updatedSubwayLine = subwayLine.updateSubwayByStations(stations);
+        SubwayLine updatedSubwayLine = subwayLine.updateSubwayByStations(stations.toEntity());
         return subwayLineRepository.save(updatedSubwayLine);
     }
 
-    public void deleteStation(long defaultId, String name) {
-        SubwayLine subwayLine = findById(defaultId);
+    public void deleteStation(long id, String name) {
+        SubwayLine subwayLine = findById(id);
         subwayLine.deleteStationByName(name);
     }
 }
