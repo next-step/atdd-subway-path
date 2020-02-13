@@ -30,13 +30,13 @@ public class LineAcceptanceTest {
 
     //When
     String lineName = "2호선";
-    String startTime = "5:00";
+    String startTime = "05:00";
     String endTime = "23:50";
     String intervalTime = "10";
     String inputJSON = "{\"name\":\"" + lineName
         + "\",\"startTime\":\"" + startTime
-        + "\",\"endTime\":\"" + endTime
-        + "\",\"intervalTime\":\"" + intervalTime + "\"}";
+        + "\",\"lastTime\":\"" + endTime
+        + "\",\"timeInterval\":\"" + intervalTime + "\"}";
 
     ResponseSpec responseSpec = webTestClient.post().uri("/lines")
         .contentType(MediaType.APPLICATION_JSON)
@@ -50,8 +50,8 @@ public class LineAcceptanceTest {
         .expectHeader().valueMatches("Location", ".*/lines/[0-9]*$")
         .expectBody().jsonPath("$.name").isEqualTo(lineName)
         .jsonPath("$.startTime").isEqualTo(startTime)
-        .jsonPath("$.endTime").isEqualTo(endTime)
-        .jsonPath("$.intervalTime").isEqualTo(intervalTime);
+        .jsonPath("$.lastTime").isEqualTo(endTime)
+        .jsonPath("$.timeInterval").isEqualTo(intervalTime);
 
   }
 }
