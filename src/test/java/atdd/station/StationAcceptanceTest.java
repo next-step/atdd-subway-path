@@ -23,6 +23,7 @@ package atdd.station;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,8 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -103,6 +106,104 @@ public class StationAcceptanceTest {
                                                            String stringifyLocation = location.toString();
                                                            assertThat(stringifyLocation).isEqualTo(String.format("%s" + "/%d", "/lines", responseLine.getId()));
                                                        });
+
+        List<Station> responseStationList = readRequestWebTestClient("/stations").isOk()
+                                                                                 .expectHeader()
+                                                                                 .contentType(MediaType.APPLICATION_JSON)
+                                                                                 .expectBodyList(Station.class)
+                                                                                 .hasSize(3)
+                                                                                 .returnResult()
+                                                                                 .getResponseBody();
+
+        List<Station> targetStationList = responseStationList.stream()
+                                                             .filter(station -> {
+                                                                 String stationName = station.getName();
+                                                                 return stationName.equals("강남역") || stationName.equals("역삼역");
+                                                             })
+                                                             .collect(Collectors.toList());
+
+        List<Line> responseLineList = readRequestWebTestClient("/lines").isOk()
+                                                                        .expectHeader()
+                                                                        .contentType(MediaType.APPLICATION_JSON)
+                                                                        .expectBodyList(Line.class)
+                                                                        .hasSize(1)
+                                                                        .returnResult()
+                                                                        .getResponseBody();
+
+
+        Line responseLine = responseLineList.stream()
+                                            .filter(line -> line.getName()
+                                                                .equals("2호선"))
+                                            .findFirst()
+                                            .get();
+
+        assertThat(responseLine).usingRecursiveComparison()
+                                .isEqualTo(greenLine);
+
+        Long lineId = responseLine.getId();
+        Station sourceStation = targetStationList.get(0);
+        Long sourceStationId = sourceStation.getId();
+        Station targetStation = targetStationList.get(1);
+        Long targetStationId = targetStation.getId();
+
+        Edge edge = new Edge(1L, sourceStationId, targetStationId, lineId, 0.8, 2);
+
+        Gson gson = new Gson();
+        String edgeJson = gson.toJson(edge);
+
+        String requestUri = String.format("/lines/%d/edge", lineId);
+
+        createRequestWebTestClient(requestUri, edgeJson).expectBody(Edge.class)
+                                                        .consumeWith(result -> {
+                                                            Edge responseEdge = result.getResponseBody();
+                                                            HttpHeaders responseHeaders = result.getResponseHeaders();
+                                                            URI location = responseHeaders.getLocation();
+                                                            String stringifyLocation = location.toString();
+                                                            assertThat(stringifyLocation).isEqualTo(String.format("%s"
+                                                                    + "/%d/edge/%d", "/lines", lineId,
+                                                                    responseEdge.getId()));
+                                                        });
+
+        String readLineUri = String.format("/lines/%d", lineId);
+        readRequestWebTestClient(readLineUri).isOk()
+                                             .expectHeader()
+                                             .contentType(MediaType.APPLICATION_JSON)
+                                             .expectBody(Line.class)
+                                             .consumeWith(result -> {
+                                                 Line lineAfterCreatedEdge = result.getResponseBody();
+                                                 List<Station> registeredStations = lineAfterCreatedEdge.getStations();
+                                                 Station gangnamStation = registeredStations.stream()
+                                                                                            .filter(station -> station.getName()
+                                                                                                                      .equals("강남역"))
+                                                                                            .findFirst()
+                                                                                            .get();
+                                                 assertThat(gangnamStation.getName()).isEqualTo("강남역");
+                                             });
+
+
+        Station stationForAssertion = targetStationList.stream()
+                                                       .filter(station -> station.getName()
+                                                                                 .equals("강남역"))
+                                                       .findFirst()
+                                                       .get();
+        Long stationIdForAssertion = stationForAssertion.getId();
+
+        String readStationUri = String.format("/stations/%d", stationIdForAssertion);
+        readRequestWebTestClient(readStationUri).isOk()
+                                                .expectHeader()
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .expectBody(Station.class)
+                                                .consumeWith(result -> {
+                                                    Station stationAfterCreatedEdge = result.getResponseBody();
+                                                    List<Line> registeredLines = stationAfterCreatedEdge.getLines();
+                                                    Line lineAfterCreatedEdge = registeredLines.stream()
+                                                                                               .filter(line -> line.getName()
+                                                                                                                   .equals("2호선"))
+                                                                                               .findFirst()
+                                                                                               .get();
+                                                    assertThat(lineAfterCreatedEdge.getName()).isEqualTo("2호선");
+                                                });
+
     }
 
     private StatusAssertions readRequestWebTestClient(String uri) {
@@ -117,6 +218,7 @@ public class StationAcceptanceTest {
         return webTestClient.post()
                             .uri(requestUri)
                             .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
                             .body(Mono.just(inputJson), String.class)
                             .exchange()
                             .expectStatus()
