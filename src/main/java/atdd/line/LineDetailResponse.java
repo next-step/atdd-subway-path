@@ -13,18 +13,18 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 public class LineDetailResponse {
-    private Line line;
+    private LineResponse line;
     private List<StationResponse> stations;
 
     @Builder
-    public LineDetailResponse(Line entity, List<StationResponse> stations){
-        this.line = entity;
+    public LineDetailResponse(LineResponse line, List<StationResponse> stations){
+        this.line = line;
         this.stations = stations;
     }
 
-    public static LineDetailResponse of(Line entity, List<StationResponse> stations){
+    public static LineDetailResponse of(LineResponse line, List<StationResponse> stations){
         return LineDetailResponse.builder()
-                .entity(entity)
+                .line(line)
                 .stations(stations)
                 .build();
     }
