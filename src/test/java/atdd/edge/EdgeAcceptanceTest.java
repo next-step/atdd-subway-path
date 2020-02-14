@@ -98,10 +98,63 @@ public class EdgeAcceptanceTest {
                         .build());
 
         // then
-        webTestClient.get().uri("/stations/" + this.secondLine.getId())
+        webTestClient.get().uri("/stations/{lineId}", this.secondLine.getId())
                 .exchange()
                 .expectStatus().is2xxSuccessful()
                 .expectBody(StationDto.class)
-        .returnResult().getResponseBody();
+                .returnResult().getResponseBody();
+    }
+
+
+    @Test
+    public void 지하철노선에_지하철_구간을_제외() {
+        // Given
+        // "2호선" 지하철 노선에 "강남역"과 "역삼역" 지하철 구간 등록되어 있다.
+        String input = "{" +
+                "\"lineId\": " + this.secondLine.getId() + "," +
+                "\"sourceStationId\": " + this.gangnamStation.getId() + "," +
+                "\"targetStationId\": " + this.yeoksamStation.getId() +
+                "}";
+        webTestClient.post().uri("/edges")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(input), String.class)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectHeader().exists("Location")
+                .expectBody(EdgeDto.class);
+
+        // And "2호선" 지하철 노선에 "역삼역"과 "선릉역" 지하철 구간 등록되어 있다.
+        String input2 = "{" +
+                "\"lineId\": " + this.secondLine.getId() + "," +
+                "\"sourceStationId\": " + this.yeoksamStation.getId() + "," +
+                "\"targetStationId\": " + this.seonneungStation.getId() +
+                "}";
+        webTestClient.post().uri("/edges")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(input2), String.class)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectHeader().exists("Location")
+                .expectBody(EdgeDto.class);
+
+        // when
+        webTestClient.delete().uri("/edges/{lineId}/{stationId}", this.secondLine.getId(), this.yeoksamStation.getId())
+                .exchange()
+                .expectStatus().isNoContent();
+
+        // then
+        webTestClient.get().uri("/stations/{stationId}", this.yeoksamStation.getId())
+                .exchange()
+                .expectStatus().is2xxSuccessful()
+                .expectBody(StationDto.class)
+                .returnResult().getResponseBody();
+
+        webTestClient.get().uri("/lines/{lineId}", this.secondLine.getId())
+                .exchange()
+                .expectStatus().is2xxSuccessful()
+                .expectBody(LineDto.class)
+                .returnResult().getResponseBody();
     }
 }
