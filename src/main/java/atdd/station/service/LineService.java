@@ -4,6 +4,10 @@ import atdd.station.entity.Line;
 import atdd.station.repository.LineRepository;
 import atdd.station.usecase.LineDTO;
 import atdd.station.usecase.LineUsecase;
+import atdd.station.usecase.ListWrapper;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,5 +26,16 @@ public class LineService implements LineUsecase {
             lineModelMapper.DTOToEntity(line)
         )
     );
+  }
+
+  @Override
+  public ListWrapper<LineDTO> getLines() {
+    Iterable<Line> lines = lineRepository.findAll();
+    List<LineDTO> lineDTOS = StreamSupport
+        .stream(lines.spliterator(), false)
+        .map(
+            line -> this.lineModelMapper.EntityToDTO(line)
+        ).collect(Collectors.toList());
+    return new ListWrapper<LineDTO>(lineDTOS);
   }
 }

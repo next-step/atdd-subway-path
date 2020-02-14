@@ -1,6 +1,8 @@
 package atdd.station;
 
 import atdd.station.entity.Station;
+import atdd.station.usecase.LineDTO;
+import atdd.station.usecase.LineUsecase;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +24,9 @@ public class LineAcceptanceTest {
   private static final Logger logger = LoggerFactory.getLogger(StationAcceptanceTest.class);
 
   @Autowired
+  private LineUsecase lineService;
+
+  @Autowired
   private WebTestClient webTestClient;
 
   @Test
@@ -33,10 +38,13 @@ public class LineAcceptanceTest {
     String startTime = "05:00";
     String endTime = "23:50";
     String intervalTime = "10";
+    String extraFare = "0";
     String inputJSON = "{\"name\":\"" + lineName
         + "\",\"startTime\":\"" + startTime
         + "\",\"lastTime\":\"" + endTime
-        + "\",\"timeInterval\":\"" + intervalTime + "\"}";
+        + "\",\"timeInterval\":" + intervalTime
+        + ",\"extra_fare\":" + extraFare
+        + "}";
 
     ResponseSpec responseSpec = webTestClient.post().uri("/lines")
         .contentType(MediaType.APPLICATION_JSON)
@@ -53,5 +61,39 @@ public class LineAcceptanceTest {
         .jsonPath("$.lastTime").isEqualTo(endTime)
         .jsonPath("$.timeInterval").isEqualTo(intervalTime);
 
+  }
+
+  @Test
+  public void getLine() {
+    //Given
+    String lineName = "2호선";
+    String startTime = "05:00";
+    String endTime = "23:50";
+    int intervalTime = 10;
+    int extraFare = 0;
+
+    LineDTO lineDTO = LineDTO.builder()
+        .name(lineName)
+        .startTime(startTime)
+        .lastTime(endTime)
+        .timeInterval(intervalTime)
+        .extra_fare(extraFare)
+        .build();
+
+    LineDTO lineInsertResult = lineService.addLine(lineDTO);
+
+
+    //When
+    String inputJSON = "{\"name\":\"" + lineName + "\"}";
+
+    ResponseSpec responseSpec = webTestClient.get().uri("/lines")
+        .exchange();
+
+    //Then
+    responseSpec
+        .expectStatus().isOk()
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
+        .expectBody().jsonPath("$.totalResults").isEqualTo(1)
+        .jsonPath("$.results[0].name").isEqualTo(lineInsertResult.getName());
   }
 }

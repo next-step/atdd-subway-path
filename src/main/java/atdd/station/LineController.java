@@ -3,8 +3,10 @@ package atdd.station;
 import atdd.station.entity.Line;
 import atdd.station.usecase.LineDTO;
 import atdd.station.usecase.LineUsecase;
+import atdd.station.usecase.ListWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,4 +29,12 @@ public class LineController {
         .toUri()
     ).body(resultLine);
   }
+
+  @GetMapping("/lines")
+  public ResponseEntity<ListWrapper<LineDTO>> getLines() {
+    return ResponseEntity.ok(
+        lineService.getLines()
+    );
+  }
+
 }
