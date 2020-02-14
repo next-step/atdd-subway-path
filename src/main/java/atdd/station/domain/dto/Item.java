@@ -1,10 +1,12 @@
 package atdd.station.domain.dto;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Builder
 @Getter
+@EqualsAndHashCode(of = {"id", "name"})
 public class Item {
     private Long id;
     private String name;

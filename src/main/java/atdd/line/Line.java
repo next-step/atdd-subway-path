@@ -46,8 +46,9 @@ public class Line {
 
     public List<Station> getStations() {
         // 무방향 그래프 구현
+
         return this.edges.stream()
-                .map(Edge::getSourceStation)
+                .flatMap(it -> Stream.of(it.getSourceStation(), it.getTargetStation()))
                 .collect(Collectors.toList());
     }
 }

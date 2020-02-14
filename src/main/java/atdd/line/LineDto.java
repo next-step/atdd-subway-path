@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
@@ -18,7 +19,7 @@ public class LineDto {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private List<Item> stations;
+    private Set<Item> stations;
 
     public static LineDto of(Line line) {
         return LineDto.builder()
@@ -29,7 +30,7 @@ public class LineDto {
                 .intervalTime(line.getIntervalTime())
                 .stations(line.getStations().stream()
                         .map(it -> Item.of(it.getId(), it.getName()))
-                        .collect(Collectors.toList()))
+                        .collect(Collectors.toSet()))
                 .build();
     }
 
@@ -43,7 +44,7 @@ public class LineDto {
                         .intervalTime(it.getIntervalTime())
                         .stations(it.getStations().stream()
                                 .map(it2 -> Item.of(it2.getId(), it2.getName()))
-                                .collect(Collectors.toList()))
+                                .collect(Collectors.toSet()))
                         .build())
                 .collect(Collectors.toList());
     }
