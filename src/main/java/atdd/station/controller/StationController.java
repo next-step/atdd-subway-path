@@ -1,9 +1,9 @@
 package atdd.station.controller;
 
-import atdd.station.domain.Station;
-import atdd.station.dto.StationCreateRequestDto;
-import atdd.station.dto.StationDetailResponseDto;
-import atdd.station.dto.StationListResponseDto;
+import atdd.station.dto.station.StationCreateRequestDto;
+import atdd.station.dto.station.StationCreateResponseDto;
+import atdd.station.dto.station.StationDetailResponseDto;
+import atdd.station.dto.station.StationListResponseDto;
 import atdd.station.service.StationService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,26 +21,25 @@ public class StationController {
     @Resource(name = "stationService")
     private StationService stationService;
 
-    @PostMapping("/create")
-    public ResponseEntity<Station> create(@RequestBody StationCreateRequestDto station) {
-        Station createdStation = stationService.create(station);
+    @PostMapping("/")
+    public ResponseEntity<StationCreateResponseDto> create(@RequestBody StationCreateRequestDto station) {
+        StationCreateResponseDto createdStation = stationService.create(station);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("/stations/list/" + createdStation.getId()));
+        headers.setLocation(URI.create("/stations/" + createdStation.getId()));
         return new ResponseEntity<>(createdStation, headers, HttpStatus.CREATED);
     }
 
-    @GetMapping("/list")
+    @GetMapping("/")
     public ResponseEntity<StationListResponseDto> list() {
         StationListResponseDto stations = stationService.list();
         return new ResponseEntity<>(stations, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<StationDetailResponseDto> detail(@PathVariable long id) {
-        StationDetailResponseDto station = stationService.findById(id);
+        StationDetailResponseDto station = stationService.detail(id);
         return new ResponseEntity<>(station, HttpStatus.OK);
-
     }
 
     @DeleteMapping("/{id}")

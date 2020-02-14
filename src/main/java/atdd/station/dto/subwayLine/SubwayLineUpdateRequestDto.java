@@ -1,4 +1,4 @@
-package atdd.station.dto;
+package atdd.station.dto.subwayLine;
 
 import atdd.station.domain.Station;
 import lombok.Builder;
@@ -11,16 +11,16 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class StationListResponseDto {
+public class SubwayLineUpdateRequestDto {
     public List<Station> stations;
 
     @Builder
-    public StationListResponseDto(List<Station> stations) {
+    public SubwayLineUpdateRequestDto(List<Station> stations) {
         this.stations = stations;
     }
 
-    public static StationListResponseDto toDtoEntity(List<Station> stations) {
-        return StationListResponseDto.builder()
+    public static SubwayLineUpdateRequestDto toDtoEntity(List<Station> stations) {
+        return SubwayLineUpdateRequestDto.builder()
                 .stations(stations)
                 .build();
     }
@@ -29,10 +29,7 @@ public class StationListResponseDto {
         return this.stations.size();
     }
 
-    @Override
-    public String toString() {
-        return "StationListResponseDto{" +
-                "stations=" + stations.get(0).getName() +
-                '}';
+    public List<Station> toEntity() {
+        return this.stations;
     }
 }
