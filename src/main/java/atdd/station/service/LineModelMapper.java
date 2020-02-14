@@ -1,5 +1,6 @@
 package atdd.station.service;
 
+import atdd.station.entity.Edge;
 import atdd.station.entity.Line;
 import atdd.station.usecase.LineDTO;
 import java.time.LocalTime;
@@ -25,5 +26,4 @@ public class LineModelMapper {
         .extra_fare(line.getExtra_fare())
         .build();
   }
-
 }

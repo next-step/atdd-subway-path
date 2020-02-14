@@ -19,10 +19,11 @@ create table if not exists LINE
 create table if not exists EDGE
 (
     id bigint auto_increment not null,
-    name varchar(255) not null unique,
-    start_time time not null,
-    end_time time not null,
-    interval_time int not null,
-    extra_fare int,
+    line_id bigint not null,
+    elapsed_time int not null,
+    distance decimal(4,2) not null,
+    source_station_id bitint not null,
+    target_station_id bitint not null,
     primary key(id)
 );
+
