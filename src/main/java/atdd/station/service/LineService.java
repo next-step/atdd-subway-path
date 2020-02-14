@@ -38,4 +38,11 @@ public class LineService implements LineUsecase {
         ).collect(Collectors.toList());
     return new ListWrapper<LineDTO>(lineDTOS);
   }
+
+  @Override
+  public LineDTO getLine(Long lineID) {
+    return lineModelMapper.EntityToDTO(
+        lineRepository.findById(lineID).get()
+    );
+  }
 }

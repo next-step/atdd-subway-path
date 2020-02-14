@@ -21,6 +21,7 @@ import reactor.core.publisher.Mono;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 public class LineAcceptanceTest {
+
   private static final Logger logger = LoggerFactory.getLogger(StationAcceptanceTest.class);
 
   @Autowired
@@ -64,6 +65,40 @@ public class LineAcceptanceTest {
   }
 
   @Test
+  public void getLines() {
+    //Given
+    String lineName = "2호선";
+    String startTime = "05:00";
+    String endTime = "23:50";
+    int intervalTime = 10;
+    int extraFare = 0;
+
+    LineDTO lineDTO = LineDTO.builder()
+        .name(lineName)
+        .startTime(startTime)
+        .lastTime(endTime)
+        .timeInterval(intervalTime)
+        .extra_fare(extraFare)
+        .build();
+
+    LineDTO lineInsertResult = lineService.addLine(lineDTO);
+
+    //When
+    String inputJSON = "{\"name\":\"" + lineName + "\"}";
+
+    ResponseSpec responseSpec = webTestClient.get().uri("/lines")
+        .exchange();
+
+    //Then
+    responseSpec
+        .expectStatus().isOk()
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
+        .expectBody().jsonPath("$.totalResults").isEqualTo(1)
+        .jsonPath("$.results[0].name").isEqualTo(lineInsertResult.getName());
+  }
+
+
+  @Test
   public void getLine() {
     //Given
     String lineName = "2호선";
@@ -82,18 +117,16 @@ public class LineAcceptanceTest {
 
     LineDTO lineInsertResult = lineService.addLine(lineDTO);
 
-
     //When
-    String inputJSON = "{\"name\":\"" + lineName + "\"}";
+    ResponseSpec responseSpec = webTestClient.
+        get().uri(
+        "/lines/" + lineInsertResult.getId().toString()
+    ).exchange();
 
-    ResponseSpec responseSpec = webTestClient.get().uri("/lines")
-        .exchange();
-
-    //Then
     responseSpec
         .expectStatus().isOk()
         .expectHeader().contentType(MediaType.APPLICATION_JSON)
-        .expectBody().jsonPath("$.totalResults").isEqualTo(1)
-        .jsonPath("$.results[0].name").isEqualTo(lineInsertResult.getName());
+        .expectBody().jsonPath("$.id").isEqualTo(lineInsertResult.getId())
+        .jsonPath("$.name").isEqualTo(lineInsertResult.getName());
   }
 }
