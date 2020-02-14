@@ -21,10 +21,11 @@
  * */
 package atdd.station;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Station {
@@ -33,7 +34,11 @@ public class Station {
     private Long id;
     private String name;
 
-    protected Station() {}
+    @ManyToMany(mappedBy = "stations")
+    private Set<Line> lines = new HashSet<>();
+
+    protected Station() {
+    }
 
     public Station(Long id, String name) {
         this.id = id;
@@ -46,5 +51,10 @@ public class Station {
 
     public Long getId() {
         return id;
+    }
+
+    @JsonIgnoreProperties("stations")
+    public Set<Line> getLines() {
+        return lines;
     }
 }

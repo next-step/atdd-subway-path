@@ -27,7 +27,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class StationController {
@@ -39,29 +40,37 @@ public class StationController {
         Station savedStation = stationRepository.save(station);
         String resultUri = String.format("/stations/%d", savedStation.getId());
 
-        return ResponseEntity.created(URI.create(resultUri)).body(savedStation);
+        return ResponseEntity.created(URI.create(resultUri))
+                             .body(savedStation);
     }
 
     @GetMapping("/stations")
     public ResponseEntity readStation() {
-        List<Station> stations = stationRepository.findAll();
+        List<Station> stations = new ArrayList<Station>();
+        stationRepository.findAll()
+                         .forEach(stations::add);
 
         return new ResponseEntity(stations, HttpStatus.OK);
     }
 
     @GetMapping("/stations/{id}")
-    public ResponseEntity readStation(@PathVariable String id) {
-        long castingId = Long.parseLong(id);
-        Station station = stationRepository.findById(castingId);
+    public ResponseEntity readStation(@PathVariable Long id) {
+        Optional<Station> optionalStation = stationRepository.findById(id);
 
-        return new ResponseEntity(station, HttpStatus.OK);
+        return getResponseEntityForNullableObject(optionalStation);
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable String id) {
-        long castingId = Long.parseLong(id);
-        stationRepository.deleteById(castingId);
+    public ResponseEntity deleteStation(@PathVariable Long id) {
+        stationRepository.deleteById(id);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+                             .build();
+    }
+
+    private ResponseEntity getResponseEntityForNullableObject(Optional<?> optionalObject) {
+        return optionalObject.map(object -> new ResponseEntity(object, HttpStatus.OK))
+                             .orElseGet(() -> ResponseEntity.noContent()
+                                                            .build());
     }
 }

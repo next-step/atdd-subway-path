@@ -1,6 +1,6 @@
 /*
  *
- * StationRepository
+ * StationLineRepository
  *
  * 0.0.1
  *
@@ -23,4 +23,5 @@ package atdd.station;
 
 import org.springframework.data.repository.CrudRepository;
 
-public interface StationRepository extends CrudRepository<Station, Long> {}
+public interface LineRepository extends CrudRepository<Line, Long> {}
+

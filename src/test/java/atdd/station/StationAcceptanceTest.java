@@ -21,7 +21,10 @@
  * */
 package atdd.station;
 
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
+
+import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,110 +34,122 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
+import org.springframework.test.web.reactive.server.StatusAssertions;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 public class StationAcceptanceTest {
     private static final Logger logger = LoggerFactory.getLogger(StationAcceptanceTest.class);
-    private final Long id = new Long(1);
-    private final Station targetStation = new Station(id, "강남역");
-    private final String prefixUri = "/stations";
 
     @Autowired
     private WebTestClient webTestClient;
 
     @Test
-    public void testCreateStation() {
+    public void testStation() {
+        Station targetStation = new Station(1L, "강남역");
+        String prefixUri = "/stations";
         String inputJson = String.format("{\"name\": \"%s\"}", targetStation.getName());
-        String reqUri = prefixUri;
 
-        webTestClient.post()
-                     .uri(reqUri)
-                     .contentType(MediaType.APPLICATION_JSON)
-                     .body(Mono.just(inputJson), String.class)
-                     .exchange()
-                     .expectStatus()
-                     .isCreated()
-                     .expectHeader()
-                     .exists("Location")
-                     .expectHeader()
-                     .contentType(MediaType.APPLICATION_JSON)
-                     .expectBody(Station.class)
-                     .consumeWith(result -> {
-                         Station station = result.getResponseBody();
-                         HttpHeaders responseHeaders = result.getResponseHeaders();
-                         URI location = responseHeaders.getLocation();
-                         String stringifyLocation = location.toString();
-                         Assertions.assertThat(stringifyLocation)
-                                   .isEqualTo(String.format("%s/%d", reqUri, station.getId()));
-                     });
+        testCreateReadDelete(prefixUri, inputJson, targetStation, Station.class, targetStation.getId());
     }
 
-    @Test
-    public void testReadStations() {
-        testCreateStation();
-
-        String reqUri = prefixUri;
-
-        readRequestWebTestClient(reqUri)
-                .expectHeader()
-                .contentType(MediaType.APPLICATION_JSON)
-                .expectBodyList(Station.class)
-                .hasSize(1)
-                .consumeWith(result -> {
-                    List<Station> stations = result.getResponseBody();
-                    Station station = stations.get(0);
-
-                    Assertions.assertThat(station.getName())
-                              .isEqualTo("강남역");
-                });
-    }
-
-    @Test
-    public void testReadStation() {
-        testCreateStation();
-
-        String reqUri = String.format("%s/%d", prefixUri, targetStation.getId());
-
-        readRequestWebTestClient(reqUri)
-                .expectHeader()
-                .contentType(MediaType.APPLICATION_JSON)
-                .expectBody(Station.class)
-                .consumeWith(result -> {
-                    Station station = result.getResponseBody();
-                    Assertions.assertThat(station.getName())
-                              .isEqualTo("강남역");
-                });
-    }
-
-    @Test
-    public void testDeleteStation() {
-        testCreateStation();
-
-        String reqUri = String.format("%s/%d", prefixUri, targetStation.getId());
-
-        webTestClient.delete()
-                     .uri(reqUri)
-                     .exchange()
-                     .expectStatus()
-                     .isOk();
-
-        readRequestWebTestClient(reqUri).expectBody()
-                                        .isEmpty();
-    }
-
-    private WebTestClient.ResponseSpec readRequestWebTestClient(String uri) {
+    private StatusAssertions readRequestWebTestClient(String uri) {
         return webTestClient.get()
                             .uri(uri)
                             .accept(MediaType.APPLICATION_JSON)
                             .exchange()
+                            .expectStatus();
+    }
+
+    private WebTestClient.ResponseSpec createRequestWebTestClient(String requestUri, String inputJson) {
+        return webTestClient.post()
+                            .uri(requestUri)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .body(Mono.just(inputJson), String.class)
+                            .exchange()
                             .expectStatus()
-                            .isOk();
+                            .isCreated()
+                            .expectHeader()
+                            .exists("Location")
+                            .expectHeader()
+                            .contentType(MediaType.APPLICATION_JSON);
+    }
+
+    private String getRequestUri(String prefixUri, long entityId) {
+        return String.format("%s/%d", prefixUri, entityId);
+    }
+
+    private void assertResponse(EntityExchangeResult<?> entityExchangeResult, Object targetObject) {
+        Object responseBody = entityExchangeResult.getResponseBody();
+        if (responseBody instanceof List) {
+            List responseList = (List) responseBody;
+            assertThat(responseList.get(0)).usingRecursiveComparison()
+                                           .isEqualTo(targetObject);
+            return;
+        }
+        assertThat(responseBody).usingRecursiveComparison()
+                                .isEqualTo(targetObject);
+    }
+
+    private void testCreateReadDelete(String prefixUri, String inputJson, Object targetObject, Class<?> targetClass,
+                                      Long targetId) {
+        String createObjectUri = prefixUri;
+
+        // create test
+        createRequestWebTestClient(createObjectUri, inputJson).expectBody(targetClass)
+                                                              .consumeWith(result -> {
+                                                                  HttpHeaders responseHeaders =
+                                                                          result.getResponseHeaders();
+                                                                  URI location = responseHeaders.getLocation();
+                                                                  String stringifyLocation = location.toString();
+                                                                  assertThat(stringifyLocation).isEqualTo(String.format("%s/%d", createObjectUri, targetId));
+                                                              });
+
+
+        // read objects test
+        String readObjectsUri = prefixUri;
+
+        readRequestWebTestClient(readObjectsUri).isOk()
+                                                .expectHeader()
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .expectBodyList(targetClass)
+                                                .hasSize(1)
+                                                .consumeWith(result -> assertResponse(result, targetObject));
+
+
+        // read single object test
+        String readOrDeleteObjectUri = getRequestUri(prefixUri, targetId);
+
+        readRequestWebTestClient(readOrDeleteObjectUri).isOk()
+                                                       .expectHeader()
+                                                       .contentType(MediaType.APPLICATION_JSON)
+                                                       .expectBody(targetClass)
+                                                       .consumeWith(result -> assertResponse(result, targetObject));
+
+        String incorrectReadStationUri = getRequestUri(prefixUri, -1);
+
+        readRequestWebTestClient(incorrectReadStationUri).isNoContent()
+                                                         .expectBody(Void.class);
+
+
+        // delete test
+        webTestClient.delete()
+                     .uri(readOrDeleteObjectUri)
+                     .exchange()
+                     .expectStatus()
+                     .isOk();
+
+        readRequestWebTestClient(readOrDeleteObjectUri).isNoContent()
+                                                       .expectBody(Void.class);
+
     }
 }
