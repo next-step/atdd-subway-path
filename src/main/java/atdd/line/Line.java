@@ -1,14 +1,19 @@
 package atdd.line;
 
 import atdd.edge.Edge;
+import atdd.station.domain.Station;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Getter
 @Entity
@@ -26,6 +31,7 @@ public class Line {
 
     private int intervalTime;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "line")
     private List<Edge> edges = new ArrayList();
 
@@ -36,5 +42,12 @@ public class Line {
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
+    }
+
+    public List<Station> getStations() {
+        // 무방향 그래프 구현
+        return this.edges.stream()
+                .map(Edge::getSourceStation)
+                .collect(Collectors.toList());
     }
 }

@@ -13,11 +13,15 @@ import java.util.stream.Collectors;
 public class StationDto {
     private Long id;
     private String name;
+    private List<Item> lines;
 
     public static StationDto of(Station station) {
         return StationDto.builder()
                 .id(station.getId())
                 .name(station.getName())
+                .lines(station.getLines().stream()
+                        .map(it -> Item.of(it.getId(), it.getName()))
+                        .collect(Collectors.toList()))
                 .build();
     }
 
@@ -25,7 +29,11 @@ public class StationDto {
         return station.stream()
                 .map(it -> StationDto.builder()
                         .id(it.getId())
-                        .name(it.getName()).build())
+                        .name(it.getName())
+                        .lines(it.getLines().stream()
+                                .map(it2 -> Item.of(it2.getId(), it2.getName()))
+                                .collect(Collectors.toList()))
+                        .build())
                 .collect(Collectors.toList());
     }
 

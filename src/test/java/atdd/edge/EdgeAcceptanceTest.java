@@ -76,6 +76,7 @@ public class EdgeAcceptanceTest {
 
     @Test
     public void 지하철노선에_지하철_구간을_등록() {
+        // when
         String input = "{" +
                 "\"lineId\": " + this.secondLine.getId() + "," +
                 "\"sourceStationId\": " + this.gangnamStation.getId() + "," +
@@ -96,8 +97,11 @@ public class EdgeAcceptanceTest {
                         .targetStationId(yeoksamStation.getId())
                         .build());
 
+        // then
         webTestClient.get().uri("/stations/" + this.secondLine.getId())
                 .exchange()
-                .expectStatus().is2xxSuccessful();
+                .expectStatus().is2xxSuccessful()
+                .expectBody(StationDto.class)
+        .returnResult().getResponseBody();
     }
 }

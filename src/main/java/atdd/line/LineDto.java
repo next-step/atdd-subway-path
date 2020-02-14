@@ -1,5 +1,6 @@
 package atdd.line;
 
+import atdd.station.domain.dto.Item;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,6 +18,7 @@ public class LineDto {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
+    private List<Item> stations;
 
     public static LineDto of(Line line) {
         return LineDto.builder()
@@ -25,6 +27,9 @@ public class LineDto {
                 .startTime(line.getStartTime())
                 .endTime(line.getEndTime())
                 .intervalTime(line.getIntervalTime())
+                .stations(line.getStations().stream()
+                        .map(it -> Item.of(it.getId(), it.getName()))
+                        .collect(Collectors.toList()))
                 .build();
     }
 
@@ -36,6 +41,9 @@ public class LineDto {
                         .startTime(it.getStartTime())
                         .endTime(it.getEndTime())
                         .intervalTime(it.getIntervalTime())
+                        .stations(it.getStations().stream()
+                                .map(it2 -> Item.of(it2.getId(), it2.getName()))
+                                .collect(Collectors.toList()))
                         .build())
                 .collect(Collectors.toList());
     }
