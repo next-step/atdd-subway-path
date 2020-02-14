@@ -48,16 +48,17 @@ public class StationController {
         .body(stationListDTO);
   }
 
-  @GetMapping("/stations/{stationName}")
-  public ResponseEntity<StationDTO> getStationInfo(@PathVariable String stationName) {
-    StationDTO mockStationDTO = new StationDTO((long) 1, "강남역");
+  @GetMapping("/stations/{stationID}")
+  public ResponseEntity<StationDTO> getStationInfo(@PathVariable("stationID") Long stationID) {
+    StationDTO station = stationService.getStation(stationID);
     return ResponseEntity.ok()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(mockStationDTO);
+        .body(station);
   }
 
-  @DeleteMapping("/stations/{stationName}")
-  public ResponseEntity removeStation(@PathVariable String stationName) {
+  @DeleteMapping("/stations/{stationID}")
+  public ResponseEntity removeStation(@PathVariable("stationID") Long stationID) {
+    stationService.removeStation(stationID);
     return ResponseEntity.noContent()
         .build();
   }

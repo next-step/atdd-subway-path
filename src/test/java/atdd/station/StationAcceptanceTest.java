@@ -1,6 +1,8 @@
 package atdd.station;
 
 import atdd.station.entity.Station;
+import atdd.station.service.StationService;
+import atdd.station.usecase.StationDTO;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +26,9 @@ public class StationAcceptanceTest {
 
   @Autowired
   private WebTestClient webTestClient;
+
+  @Autowired
+  private StationService stationService;
 
   @Test
   public void createStation() {
@@ -68,15 +73,16 @@ public class StationAcceptanceTest {
   }
 
   @Test
-  @Sql("/sql/test-one-station-data.sql")
   public void getStationInfo() {
     //Given
     String stationName = "강남역";
+    StationDTO expectStation = stationService.addStation(new StationDTO(stationName));
+
 
     //When
     ResponseSpec responseSpec = webTestClient
         .get()
-        .uri("/stations/" + stationName)
+        .uri("/stations/" + expectStation.getId().toString())
         .exchange();
 
     //Then
@@ -88,15 +94,15 @@ public class StationAcceptanceTest {
 
   @Test
   @Rollback
-  @Sql("/sql/test-one-station-data.sql")
   public void deleteStation() {
     //Given
     String stationName = "강남역";
+    StationDTO expectStation = stationService.addStation(new StationDTO(stationName));
 
     //When
     ResponseSpec responseSpec = webTestClient
         .delete()
-        .uri("/stations/" + stationName)
+        .uri("/stations/" + expectStation.getId().toString())
         .exchange();
 
     //Then

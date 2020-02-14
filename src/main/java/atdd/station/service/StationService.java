@@ -6,6 +6,9 @@ import atdd.station.repository.StationRepository;
 import atdd.station.usecase.StationDTO;
 import atdd.station.usecase.StationListDTO;
 import atdd.station.usecase.StationUseCase;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,31 +24,30 @@ public class StationService implements StationUseCase {
   public StationDTO addStation(StationDTO stationDTO) {
     Station station = stationRepository.save(
         stationModelMapper.DTOToEntity(stationDTO)
-    ).get();
+    );
     return stationModelMapper.EntityToDTO(station);
   }
 
   @Override
   public StationListDTO getAllStation() {
-    return stationModelMapper.ListEntityToDTO(
-        new StationList(stationRepository.findAll())
-    );
+    Iterable<Station> stations = stationRepository.findAll();
+    List<StationDTO> stationDTOS = StreamSupport
+        .stream(stations.spliterator(), false)
+        .map(
+            station -> stationModelMapper.EntityToDTO(station)
+        ).collect(Collectors.toList());
+    return new StationListDTO(stationDTOS.size(), stationDTOS);
   }
 
   @Override
-  public StationDTO getStation(StationDTO stationDTO) {
+  public StationDTO getStation(Long stationID) {
     return stationModelMapper.EntityToDTO(
-        stationRepository.getByname(
-            stationDTO.getName()
-        ).get()
+        stationRepository.findById(stationID).get()
     );
   }
 
   @Override
-  public void removeStation(StationDTO stationDTO) {
-    Station target = stationRepository.getByname(stationDTO.getName()).get();
-    stationRepository.removeByid(
-        target.getId()
-    );
+  public void removeStation(Long stationID) {
+    stationRepository.deleteById(stationID);
   }
 }
