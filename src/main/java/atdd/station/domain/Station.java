@@ -1,15 +1,18 @@
 package atdd.station.domain;
 
-import atdd.station.domain.dto.StationDto;
-import lombok.AllArgsConstructor;
+import atdd.edge.Edge;
+import atdd.line.Line;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Getter
 @NoArgsConstructor
@@ -22,8 +25,24 @@ public class Station {
 
     private String name;
 
-    @Builder(builderMethodName = "createBuilder", builderClassName = "createBuilder")
-    public Station(StationDto station) {
-        this.name = station.getName();
+    @JsonIgnore
+    @OneToMany(mappedBy = "sourceStation")
+    private List<Edge> sourceEdges = new ArrayList();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "targetStation")
+    private List<Edge> targetEdge = new ArrayList();
+
+    @Builder
+    public Station(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public List<Line> getLines() {
+        return Stream.concat(sourceEdges.stream(), targetEdge.stream())
+                .map(it -> it.getLine())
+                .collect(Collectors.toList());
     }
 }
+
