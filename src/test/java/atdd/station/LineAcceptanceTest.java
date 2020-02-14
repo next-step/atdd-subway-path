@@ -129,4 +129,33 @@ public class LineAcceptanceTest {
         .expectBody().jsonPath("$.id").isEqualTo(lineInsertResult.getId())
         .jsonPath("$.name").isEqualTo(lineInsertResult.getName());
   }
+
+  @Test
+  public void removeLine() {
+    //Given
+    String lineName = "2호선";
+    String startTime = "05:00";
+    String endTime = "23:50";
+    int intervalTime = 10;
+    int extraFare = 0;
+
+    LineDTO lineDTO = LineDTO.builder()
+        .name(lineName)
+        .startTime(startTime)
+        .lastTime(endTime)
+        .timeInterval(intervalTime)
+        .extra_fare(extraFare)
+        .build();
+
+    LineDTO lineInsertResult = lineService.addLine(lineDTO);
+
+    ResponseSpec responseSpec = webTestClient.
+        delete().uri(
+        "/lines/" + lineInsertResult.getId().toString()
+    ).exchange();
+
+    //Then
+    responseSpec
+        .expectStatus().isNoContent();
+  }
 }

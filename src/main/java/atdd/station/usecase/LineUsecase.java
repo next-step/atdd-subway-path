@@ -7,4 +7,5 @@ public interface LineUsecase {
   LineDTO addLine(LineDTO line);
   ListWrapper<LineDTO> getLines();
   LineDTO getLine(Long lineID);
+  void removeLine(Long lineID);
 }

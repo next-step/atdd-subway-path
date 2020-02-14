@@ -45,4 +45,9 @@ public class LineService implements LineUsecase {
         lineRepository.findById(lineID).get()
     );
   }
+
+  @Override
+  public void removeLine(Long lineID) {
+    lineRepository.deleteById(lineID);
+  }
 }
