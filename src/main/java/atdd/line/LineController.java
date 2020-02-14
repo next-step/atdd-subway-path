@@ -7,7 +7,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("line")
+@RequestMapping("lines")
 public class LineController {
 
     private final LineRepository lineRepository;
@@ -19,7 +19,7 @@ public class LineController {
     @PostMapping("")
     public ResponseEntity createLine(@RequestBody LineDto requestLine) {
         Line savedLine = lineRepository.save(requestLine.toLine());
-        return ResponseEntity.created(URI.create("/line/" + savedLine.getId()))
+        return ResponseEntity.created(URI.create("/lines/" + savedLine.getId()))
                 .body(LineDto.of(savedLine));
     }
 

@@ -29,7 +29,7 @@ public class LineAcceptanceTest {
                 "\"intervalTime\": \"10\"" +
                 "}";
 
-        webTestClient.post().uri("/line")
+        webTestClient.post().uri("/lines")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(input), String.class)
                 .exchange()
@@ -50,7 +50,7 @@ public class LineAcceptanceTest {
         // given
         LineDto lineDto = this.createLineTest();
 
-        webTestClient.get().uri("/line")
+        webTestClient.get().uri("/lines")
                 .exchange()
                 .expectStatus().is2xxSuccessful()
                 .expectBodyList(LineDto.class)
@@ -63,7 +63,7 @@ public class LineAcceptanceTest {
         // given
         LineDto lineDto = this.createLineTest();
 
-        webTestClient.get().uri("/line/" + lineDto.getId())
+        webTestClient.get().uri("/lines/" + lineDto.getId())
                 .exchange()
                 .expectStatus().is2xxSuccessful()
                 .expectBody()
@@ -75,7 +75,7 @@ public class LineAcceptanceTest {
         // given
         LineDto lineDto = this.createLineTest();
 
-        webTestClient.delete().uri("/line/" + lineDto.getId())
+        webTestClient.delete().uri("/lines/" + lineDto.getId())
                 .exchange()
                 .expectStatus().isNoContent();
 
@@ -93,7 +93,7 @@ public class LineAcceptanceTest {
                 "\"intervalTime\": \"10\"" +
                 "}";
 
-        return webTestClient.post().uri("/line")
+        return webTestClient.post().uri("/lines")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(input), String.class)
                 .exchange()

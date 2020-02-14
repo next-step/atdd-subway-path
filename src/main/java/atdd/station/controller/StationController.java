@@ -38,14 +38,9 @@ public class StationController {
 
     @GetMapping("/{id}")
     public ResponseEntity findStationById(@PathVariable Long id) {
-        Station station = stationRepository.findById(id).orElse(null);
-
-        if (Objects.isNull(station)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok()
-                .body(StationDto.of(station));
+        return stationRepository.findById(id)
+                .map(it -> ResponseEntity.ok().body(StationDto.of(it)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")

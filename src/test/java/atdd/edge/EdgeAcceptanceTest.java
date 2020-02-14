@@ -66,7 +66,7 @@ public class EdgeAcceptanceTest {
                 "\"intervalTime\": \"10\"" +
                 "}";
 
-        this.secondLine = webTestClient.post().uri("/line")
+        this.secondLine = webTestClient.post().uri("/lines")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(input), String.class)
                 .exchange().expectBody(LineDto.class)

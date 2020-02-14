@@ -1,10 +1,7 @@
 package atdd.edge;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -23,5 +20,13 @@ public class EdgeController {
         Edge savedEdge = edgeRepository.save(requestEdge.toEdge());
         return ResponseEntity.created(URI.create("/edges/" + savedEdge.getId()))
                 .body(EdgeDto.of(savedEdge));
+    }
+
+    @DeleteMapping("{lineId}/{stationId}")
+    public ResponseEntity deleteEdge(@PathVariable Long lineId, @PathVariable Long stationId) {
+
+        // TODO
+
+        return ResponseEntity.noContent().build();
     }
 }
