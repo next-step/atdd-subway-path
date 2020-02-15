@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.AttributeConverter;
+import java.util.Objects;
 
 public class StationConverter implements AttributeConverter<Station, String> {
     private static final Logger logger = LoggerFactory.getLogger(StationConverter.class);
@@ -26,7 +27,7 @@ public class StationConverter implements AttributeConverter<Station, String> {
     @Override
     public Station convertToEntityAttribute(String json) {
         try {
-            return mapper.readValue(json, Station.class);
+            return Objects.isNull(json) ? null :mapper.readValue(json, Station.class);
         } catch (JsonProcessingException e) {
             logger.error("Station to Json JsonProcessingException", e);
         }
