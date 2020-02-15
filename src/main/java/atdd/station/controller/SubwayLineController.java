@@ -36,7 +36,7 @@ public class SubwayLineController {
         return new ResponseEntity<>(subwayLine, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
+    @PostMapping("/{id}/subways")
     public ResponseEntity<SubwayLine> update(@PathVariable int id, @RequestBody SubwayLineUpdateRequestDto stations) {
         SubwayLine updatedSubwayLine = subwayLineService.update(id, stations);
         return new ResponseEntity<>(updatedSubwayLine, HttpStatus.OK);
@@ -48,9 +48,9 @@ public class SubwayLineController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}/{name}")
-    public ResponseEntity<Void> deleteStation(@PathVariable int id, @PathVariable String name) {
-        subwayLineService.deleteStation(id, name);
+    @DeleteMapping("/{subwayLineId}/stations/{stationName}")
+    public ResponseEntity<Void> deleteStation(@PathVariable int subwayLineId, @PathVariable String stationName) {
+        subwayLineService.deleteStation(subwayLineId, stationName);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
