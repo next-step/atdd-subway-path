@@ -1,13 +1,25 @@
 package atdd.station.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import atdd.station.model.CreateLineRequestView;
+import atdd.station.model.entity.Line;
+import atdd.station.repository.LineRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/lines")
 public class LineController {
-    // TODO 지하철 노선 등록 기능
-    // TODO 지하철 노선 삭제 기능
-    // TODO 지하철 노선에 지하철 구간 추가 기능
-    // TODO 지하철 노선에 지하철 구간 제외 기능
+    @Autowired
+    private LineRepository lineRepository;
+
+    @PostMapping
+    public ResponseEntity<Line> createLine(@RequestBody CreateLineRequestView view) {
+        final Line line = lineRepository.save(view.toLine());
+
+        return ResponseEntity.created(URI.create("/lines/" + line.getId()))
+                .body(line);
+    }
 }
