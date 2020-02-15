@@ -1,88 +1,91 @@
 package atdd.station.controller;
 
+import atdd.station.AbstractAcceptanceTest;
 import atdd.station.domain.SubwayLine;
+import atdd.station.dto.subwayLine.SubwayLineDetailResponseDto;
+import atdd.station.dto.subwayLine.SubwayLineListResponseDto;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.core.publisher.Mono;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
 
+import java.util.List;
 import java.util.Objects;
 
-import static atdd.station.fixture.StationFixture.*;
+import static atdd.station.fixture.StationFixture.KANGNAM_AND_YUCKSAM_STATIONS;
+import static atdd.station.fixture.StationFixture.YUCKSAM_STATION_NAME;
 import static atdd.station.fixture.SubwayLineFixture.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWebTestClient
-public class SubwayLineAcceptanceTest {
-    private static final Logger logger = LoggerFactory.getLogger(SubwayLineAcceptanceTest.class);
-
-    private static final String NAME_JSON_PARSE_EXPRESSION = "$.name";
+public class SubwayLineAcceptanceTest extends AbstractAcceptanceTest {
     private static final String SUBWAY_LINE_API_BASE_URL = "/subway-lines/";
-    private static final String LOCATION_HEADER = "Location";
-    private static final String STATION_JSON_PARSE_EXPRESSION = "$.startTime";
-    private static final String END_TIME_JSON_PARSE_EXPRESSION = "$.endTime";
-    private static final String INTERVAL_TIME_JSON_PARSE_EXPRESSION = "$.intervalTime";
 
-    @Autowired
-    private WebTestClient webTestClient;
+    private RestWebClientTest restWebClientTest;
+
+    @BeforeEach
+    void setUp() {
+        this.restWebClientTest = new RestWebClientTest(this.webTestClient);
+    }
 
     @DisplayName("2호선_지하철노선_생성이_성공하는지")
-    @Test
-    void createSubwayLineSuccessTest() {
+    @ParameterizedTest
+    @ValueSource(strings = {SECOND_SUBWAY_LINE_NAME, FIRST_SUBWAY_LINE_NAME})
+    void createSubwayLineSuccessTest(String subwayLineName) {
         //when
+        EntityExchangeResult<SubwayLine> expectResponse
+                = restWebClientTest.postMethodAcceptance(SUBWAY_LINE_API_BASE_URL, getSubwayLine(subwayLineName), SubwayLine.class);
+
         //then
-        webTestClient.post().uri(SUBWAY_LINE_API_BASE_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(getSubwayLine(SECOND_SUBWAY_LINE_NAME)), SubwayLine.class)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectHeader().exists(LOCATION_HEADER)
-                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo("2호선")
-                .jsonPath(STATION_JSON_PARSE_EXPRESSION).isEqualTo("05:00")
-                .jsonPath(END_TIME_JSON_PARSE_EXPRESSION).isEqualTo("23:50")
-                .jsonPath(INTERVAL_TIME_JSON_PARSE_EXPRESSION).isEqualTo("10")
-                .jsonPath(getStationNameJsonParseExpressionByIndex("0")).isEqualTo(KANGNAM_STATION_NAME);
+        HttpHeaders responseHeaders = expectResponse.getResponseHeaders();
+        SubwayLine subwayLine = expectResponse.getResponseBody();
+
+        assertThat(responseHeaders.getLocation()).isNotNull();
+        assertThat(subwayLine.getName()).isEqualTo(subwayLineName);
+        assertThat(subwayLine.getStartTime()).isEqualTo("05:00");
+        assertThat(subwayLine.getEndTime()).isEqualTo("23:50");
+        assertThat(subwayLine.getIntervalTime()).isEqualTo("10");
     }
 
     @DisplayName("지하철노선_조회가_성공하는지")
     @Test
     void listSubwayLineSuccessTest() {
-        creatSubwayLine("2호선");
-        creatSubwayLine("1호선");
+        creatSubwayLine(SECOND_SUBWAY_LINE_NAME);
+        creatSubwayLine(FIRST_SUBWAY_LINE_NAME);
 
         //when
+        EntityExchangeResult<SubwayLineListResponseDto> expectResponse
+                = restWebClientTest.getMethodAcceptance(SUBWAY_LINE_API_BASE_URL, SubwayLineListResponseDto.class);
+
+        SubwayLineListResponseDto responseBody = expectResponse.getResponseBody();
+        List<SubwayLine> subwayLines = Objects.requireNonNull(responseBody).getSubwayLines();
+
         //then
-        webTestClient.get().uri(SUBWAY_LINE_API_BASE_URL)
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBodyList(SubwayLine.class).hasSize(1);
+        assertThat(expectResponse.getStatus()).isEqualTo(HttpStatus.OK);
+        assertThat(subwayLines.size()).isEqualTo(2);
     }
 
     @DisplayName("지하철노선_상세조회가_성공하는지")
     @Test
     void detailSubwayLineSuccessTest() {
+        //given
         String location = creatSubwayLine(SECOND_SUBWAY_LINE_NAME);
 
         //when
+        EntityExchangeResult<SubwayLineDetailResponseDto> expectResponse
+                = restWebClientTest.getMethodAcceptance(location, SubwayLineDetailResponseDto.class);
+
+        SubwayLineDetailResponseDto subwayLine = expectResponse.getResponseBody();
+
         //then
-        webTestClient.get().uri(location)
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(SECOND_SUBWAY_LINE_NAME)
-                .jsonPath(STATION_JSON_PARSE_EXPRESSION).isEqualTo("05:00")
-                .jsonPath(END_TIME_JSON_PARSE_EXPRESSION).isEqualTo("23:50")
-                .jsonPath(INTERVAL_TIME_JSON_PARSE_EXPRESSION).isEqualTo("10");
+        assertThat(expectResponse.getStatus()).isEqualTo(HttpStatus.OK);
+        assertThat(expectResponse.getResponseBody().getName()).isEqualTo(SECOND_SUBWAY_LINE_NAME);
+        assertThat(subwayLine.getStartTime()).isEqualTo("05:00");
+        assertThat(subwayLine.getEndTime()).isEqualTo("23:50");
+        assertThat(subwayLine.getIntervalTime()).isEqualTo("10");
     }
 
     @DisplayName("지하철노선_삭제가_성공하는지")
@@ -91,10 +94,10 @@ public class SubwayLineAcceptanceTest {
         String location = creatSubwayLine(SECOND_SUBWAY_LINE_NAME);
 
         //when
+        EntityExchangeResult expectResponse = restWebClientTest.deleteMethodAcceptance(location);
+
         //then
-        webTestClient.delete().uri(location)
-                .exchange()
-                .expectStatus().isOk();
+        assertThat(expectResponse.getStatus()).isEqualTo(HttpStatus.OK);
     }
 
     @DisplayName("2호선_지하철노선에_강남역과_역삼역을_추가가_성공하는지")
@@ -103,14 +106,13 @@ public class SubwayLineAcceptanceTest {
         String location = creatSubwayLine(SECOND_SUBWAY_LINE_NAME);
 
         //whens
+
+        EntityExchangeResult<SubwayLine> expectResponse
+                = restWebClientTest.postMethodAcceptance(location + "/subways/", KANGNAM_AND_YUCKSAM_STATIONS, SubwayLine.class);
+
         //then
-        webTestClient.put().uri(location)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(KANGNAM_AND_YUCKSAM_STATIONS), SubwayLine.class)
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(SECOND_SUBWAY_LINE_NAME);
+        assertThat(expectResponse.getStatus()).isEqualTo(HttpStatus.OK);
+        assertThat(expectResponse.getResponseBody().getName()).isEqualTo(SECOND_SUBWAY_LINE_NAME);
     }
 
     @DisplayName("2호선_지하철노선에_내에_존재하는_강남역을_삭제가_성공하는지")
@@ -119,45 +121,27 @@ public class SubwayLineAcceptanceTest {
         String location = creatSecondSubwayLine();
 
         //whens
+        EntityExchangeResult expectResponse = restWebClientTest.deleteMethodAcceptance(location + "/stations/" + YUCKSAM_STATION_NAME);
+
         //then
-        webTestClient.delete().uri(location + "/" + YUCKSAM_STATION_NAME)
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON);
+        assertThat(expectResponse.getStatus()).isEqualTo(HttpStatus.OK);
     }
 
 
     private String creatSubwayLine(String subwayLineName) {
-        return Objects.requireNonNull(webTestClient.post().uri(SUBWAY_LINE_API_BASE_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(getSubwayLine(subwayLineName)), SubwayLine.class)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectHeader().exists(LOCATION_HEADER)
-                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(subwayLineName)
-                .returnResult()
+        return Objects.requireNonNull(
+                restWebClientTest
+                .postMethodAcceptance(SUBWAY_LINE_API_BASE_URL, getSubwayLine(subwayLineName), SubwayLine.class)
                 .getResponseHeaders()
-                .getLocation()).getPath();
+                .getLocation())
+                .getPath();
     }
 
     private String creatSecondSubwayLine() {
-        return Objects.requireNonNull(webTestClient.post().uri(SUBWAY_LINE_API_BASE_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(getSecondSubwayLineName()), SubwayLine.class)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectHeader().exists(LOCATION_HEADER)
-                .expectBody().jsonPath(NAME_JSON_PARSE_EXPRESSION).isEqualTo(SECOND_SUBWAY_LINE_NAME)
-                .returnResult()
+        return Objects.requireNonNull(restWebClientTest
+                .postMethodAcceptance(SUBWAY_LINE_API_BASE_URL, getSecondSubwayLineName(), SubwayLine.class)
                 .getResponseHeaders()
-                .getLocation()).getPath();
-    }
-
-
-
-    private String getStationNameJsonParseExpressionByIndex(String index) {
-        return "$.stations[" + index + "].name";
+                .getLocation())
+                .getPath();
     }
 }

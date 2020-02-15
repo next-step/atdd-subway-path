@@ -57,7 +57,7 @@ public class StationServiceTest {
     @Test
     public void 지하철역_list_조회가_성공하는지(SoftAssertions softly) {
         //given
-        List<Station> stations = Arrays.asList(KANNAM_STATON, PANGYO);
+        List<Station> stations = Arrays.asList(KANGNAM_STATON, PANGYO);
 
         //whens
         when(stationRepository.findAll()).thenReturn(stations);
@@ -73,7 +73,7 @@ public class StationServiceTest {
     @Test
     public void 지하철역_상세_조회가_성공하는지(SoftAssertions softly) {
         //when
-        when(stationRepository.findById(KANGNAM_STATION_ID)).thenReturn(java.util.Optional.of(KANNAM_STATON));
+        when(stationRepository.findById(KANGNAM_STATION_ID)).thenReturn(java.util.Optional.of(KANGNAM_STATON));
 
         StationDetailResponseDto station = stationService.detail(KANGNAM_STATION_ID);
 
@@ -85,7 +85,7 @@ public class StationServiceTest {
     @Test
     public void 지하철역_삭제가_성공하는지(SoftAssertions softly) {
         //given
-        Station station = KANNAM_STATON;
+        Station station = KANGNAM_STATON;
 
         //when
         when(stationRepository.findById(KANGNAM_STATION_ID)).thenReturn(java.util.Optional.of(station));
