@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/lines")
@@ -21,5 +22,25 @@ public class LineController {
 
         return ResponseEntity.created(URI.create("/lines/" + line.getId()))
                 .body(line);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Line> findLine(@PathVariable long id) {
+        final Optional<Line> optionalLine = lineRepository.findById(id);
+
+
+        if(optionalLine.isPresent())
+            return ResponseEntity
+                    .ok(optionalLine.get());
+
+        return ResponseEntity
+                .notFound().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Line> deleteLine(@PathVariable long id) {
+        lineRepository.deleteById(id);
+
+        return ResponseEntity.noContent().build();
     }
 }
