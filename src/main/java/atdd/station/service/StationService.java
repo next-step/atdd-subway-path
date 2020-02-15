@@ -25,7 +25,7 @@ public class StationService {
     @Transactional
     public StationResponseDto create(String name) {
         checkName(name);
-        final Station savedStation = stationRepository.save(new Station(name));
+        final Station savedStation = stationRepository.save(Station.create(name));
         return stationAssembler.convertToDto(savedStation);
     }
 
