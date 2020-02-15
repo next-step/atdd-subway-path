@@ -31,10 +31,10 @@ public class RestWebClientTest {
                 .returnResult();
     }
 
-    <T> EntityExchangeResult<T> deleteMethodAcceptance(String uri, Class<T> bodyClass) {
+    <T> EntityExchangeResult<Void> deleteMethodAcceptance(String uri) {
         return this.webTestClient.delete().uri(uri)
                 .exchange()
-                .expectBody(bodyClass)
+                .expectBody(Void.class)
                 .returnResult();
     }
 
