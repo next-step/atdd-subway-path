@@ -7,16 +7,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import java.net.URI;
 
 @RestController
 @RequestMapping(value = "/subway-lines",
         produces = "application/json")
 public class SubwayLineController {
-
-    @Resource(name = "subwayLineService")
     private SubwayLineService subwayLineService;
+
+    public SubwayLineController(SubwayLineService subwayLineService) {
+        this.subwayLineService = subwayLineService;
+    }
+
 
     @PostMapping("/")
     public ResponseEntity<SubwayLineCreateResponseDto> create(@RequestBody SubwayLineCreateRequestDto subwayLine) {

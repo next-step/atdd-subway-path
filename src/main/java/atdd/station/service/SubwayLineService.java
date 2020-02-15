@@ -5,13 +5,15 @@ import atdd.station.domain.SubwayLineRepository;
 import atdd.station.dto.subwayLine.*;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import javax.transaction.Transactional;
 
 @Service("subwayLineService")
 public class SubwayLineService {
-    @Resource(name = "subwayLineRepository")
     private SubwayLineRepository subwayLineRepository;
+
+    public SubwayLineService(SubwayLineRepository subwayLineRepository) {
+        this.subwayLineRepository = subwayLineRepository;
+    }
 
     @Transactional
     public SubwayLineCreateResponseDto create(SubwayLineCreateRequestDto subwayLine) {
