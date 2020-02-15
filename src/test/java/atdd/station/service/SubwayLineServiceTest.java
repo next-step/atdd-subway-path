@@ -59,7 +59,7 @@ public class SubwayLineServiceTest {
 
         //then
         softly.assertThat(listedSubwayLines).isNotNull();
-        softly.assertThat(listedSubwayLines.toString()).contains(FIRST_SUBWAY_LINE);
+        softly.assertThat(listedSubwayLines.toString()).contains(FIRST_SUBWAY_LINE_NAME);
     }
 
     @Test

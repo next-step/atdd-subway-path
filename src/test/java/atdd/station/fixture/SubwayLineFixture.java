@@ -11,7 +11,7 @@ import static atdd.station.fixture.SubwaysFixture.SUBWAYS;
 
 public class SubwayLineFixture {
     public static final String SECOND_SUBWAY_LINE_NAME = "2호선";
-    public static final String FIRST_SUBWAY_LINE = "1호선";
+    public static final String FIRST_SUBWAY_LINE_NAME = "1호선";
     public static final String NEW_BUNDANG_LINE_NAME = "신분당선";
     private static final String DEFAULT_START_TIME = "05:00";
     private static final String DEFAULT_END_TIME = "23:50";
@@ -40,9 +40,9 @@ public class SubwayLineFixture {
                 .build();
     }
 
-    public static SubwayLine getFirstSubwayLine() {
+    public static SubwayLine getFirstSubwayLineName() {
         return SubwayLine.builder()
-                .name(FIRST_SUBWAY_LINE)
+                .name(FIRST_SUBWAY_LINE_NAME)
                 .startTime(DEFAULT_START_TIME)
                 .endTime(DEFAULT_END_TIME)
                 .intervalTime(DEFAULT_INTERVAL)
@@ -53,7 +53,7 @@ public class SubwayLineFixture {
     public static List<SubwayLine> getSubwayLines() {
         List<SubwayLine> subwayLines = new ArrayList<>();
 
-        subwayLines.add(getFirstSubwayLine());
+        subwayLines.add(getFirstSubwayLineName());
         subwayLines.add(getSecondSubwayLineName());
 
         return subwayLines;

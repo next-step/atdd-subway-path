@@ -11,7 +11,7 @@ import static atdd.station.fixture.SubwayLineFixture.NEW_BUNDANG_SUBWAY_LINE;
 import static atdd.station.fixture.SubwayLineFixture.SECOND_SUBWAY_LINE;
 
 public class SubwaysFixture {
-    public static final Subway SECOND_SUBWAY = new Subway(KANNAM_STATON, SECOND_SUBWAY_LINE);
+    public static final Subway SECOND_SUBWAY = new Subway(KANGNAM_STATON, SECOND_SUBWAY_LINE);
     public static final Subway YUCKSAM_SUBWAY = new Subway(YUCKSAM_STATON, SECOND_SUBWAY_LINE);
     public static final Subway SUNLENG_SUBWAY = new Subway(SUNLENG_STATON, SECOND_SUBWAY_LINE);
 
