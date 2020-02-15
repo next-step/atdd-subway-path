@@ -16,6 +16,8 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,6 +50,29 @@ public class LineAcceptanceTest {
 
         String expected = writeValueAsString(line);
         String actual = writeValueAsString(actualLine);
+
+        assertThat(expected).isEqualTo(actual);
+    }
+
+    @Test
+    public void findAllLines() {
+        // given
+        Line line = given("2호선",
+                LocalTime.of(5, 0),
+                LocalTime.of(5, 0),
+                10);
+
+        // when
+        EntityExchangeResult result = webTestClient.get().uri("/lines")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(List.class).returnResult();
+
+        //then
+        String expected = writeValueAsString(result.getResponseBody());
+        String actual = writeLineListAsString(Arrays.asList(line));
 
         assertThat(expected).isEqualTo(actual);
     }
@@ -139,6 +164,31 @@ public class LineAcceptanceTest {
                 "\",\"startTime\":\"" + createLineRequestView.getStartTime().format(formatter) +
                 "\",\"endTime\":\"" + createLineRequestView.getEndTime().format(formatter) +
                 "\",\"intervalTime\":" + createLineRequestView.getIntervalTime() + "}";
+    }
+
+    private String writeLineListAsString(final List<Line> lines){
+        final StringBuilder stringBuilder = new StringBuilder();
+        final String lineValue = "{\"id\":%d" +
+                ",\"name\":\"%s" +
+                "\",\"startTime\":\"%s" +
+                "\",\"endTime\":\"%s" +
+                "\",\"intervalTime\":%d" +
+                ",\"stations\":%s}";
+
+        for (Line line : lines) {
+            if(stringBuilder.length() > 0)
+                stringBuilder.append(",");
+
+            stringBuilder.append(String.format(lineValue,
+                    line.getId(),
+                    line.getName(),
+                    line.getStartTime().format(formatter),
+                    line.getEndTime().format(formatter),
+                    line.getIntervalTime(),
+                    writeValueAsString(line.getStations())));
+        }
+
+        return "[" + stringBuilder.toString() + "]";
     }
 
     private String writeValueAsString(Object object) {
