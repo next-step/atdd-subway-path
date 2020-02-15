@@ -9,16 +9,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import java.net.URI;
 
 @RestController
 @RequestMapping(value = "/stations",
         produces = "application/json")
 public class StationController {
-
-    @Resource(name = "stationService")
     private StationService stationService;
+
+    public StationController(StationService stationService) {
+        this.stationService = stationService;
+    }
 
     @PostMapping("/")
     public ResponseEntity<StationCreateResponseDto> create(@RequestBody StationCreateRequestDto station) {
