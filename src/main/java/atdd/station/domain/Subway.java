@@ -15,7 +15,7 @@ public class Subway {
     private Station station;
 
     @ManyToOne
-    @JoinColumn(name = "subwayLine_id")
+    @JoinColumn(name = "subway_line_id")
     private SubwayLine subwayLine;
 
     private boolean deleted = false;
