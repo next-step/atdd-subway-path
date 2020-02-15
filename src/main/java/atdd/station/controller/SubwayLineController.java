@@ -3,7 +3,6 @@ package atdd.station.controller;
 import atdd.station.domain.SubwayLine;
 import atdd.station.dto.subwayLine.*;
 import atdd.station.service.SubwayLineService;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +21,7 @@ public class SubwayLineController {
     @PostMapping("/")
     public ResponseEntity<SubwayLineCreateResponseDto> create(@RequestBody SubwayLineCreateRequestDto subwayLine) {
         SubwayLineCreateResponseDto createdSubwayLine = subwayLineService.create(subwayLine);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("/subway-lines/" + createdSubwayLine.getId()));
-        return new ResponseEntity<>(createdSubwayLine, headers, HttpStatus.CREATED);
+        return ResponseEntity.created(URI.create("/subway-lines/" + createdSubwayLine.getId())).body(createdSubwayLine);
     }
 
     @GetMapping("/")
