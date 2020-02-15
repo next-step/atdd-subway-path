@@ -1,6 +1,6 @@
 package atdd.station.model.entity;
 
-import atdd.station.converter.StationConverter;
+import atdd.station.converter.StationListConverter;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,6 +8,7 @@ import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Table
@@ -20,8 +21,8 @@ public class Line extends BaseEntity {
 
     private int intervalTime;
 
-    @Convert(converter = StationConverter.class)
-    private List<Station> stations;
+    @Convert(converter = StationListConverter.class)
+    private List<Station> stations = new ArrayList<>();
 
     public Line() {
     }

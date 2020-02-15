@@ -2,22 +2,25 @@ package atdd.station.converter;
 
 import atdd.station.model.entity.Station;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.AttributeConverter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
-public class StationConverter implements AttributeConverter<Station, String> {
-    private static final Logger logger = LoggerFactory.getLogger(StationConverter.class);
+public class StationListConverter implements AttributeConverter<List<Station>, String> {
+    private static final Logger logger = LoggerFactory.getLogger(StationListConverter.class);
 
     final static ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public String convertToDatabaseColumn(Station attribute) {
+    public String convertToDatabaseColumn(List<Station> stations) {
         try {
-            mapper.writeValueAsString(attribute);
+            mapper.writeValueAsString(stations);
         } catch (JsonProcessingException e) {
             logger.error("Station to Json JsonProcessingException", e);
         }
@@ -25,9 +28,9 @@ public class StationConverter implements AttributeConverter<Station, String> {
     }
 
     @Override
-    public Station convertToEntityAttribute(String json) {
+    public List<Station> convertToEntityAttribute(String json) {
         try {
-            return Objects.isNull(json) ? null :mapper.readValue(json, Station.class);
+            return Objects.isNull(json) ? new ArrayList<>() : mapper.readValue(json, new TypeReference<List<Station>>() {});
         } catch (JsonProcessingException e) {
             logger.error("Station to Json JsonProcessingException", e);
         }
