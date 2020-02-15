@@ -22,7 +22,6 @@ public class StationController {
     private StationRepository stationRepository;
 
     @PostMapping
-    @ResponseBody
     public ResponseEntity<Station> createStation(@RequestBody CreateStationRequestView view) {
         final Station station = stationRepository.save(view.toStation());
 
@@ -31,26 +30,21 @@ public class StationController {
     }
 
     @GetMapping
-    @ResponseBody
     public ResponseEntity<List<Station>> findAllStations() {
         final List stations = stationRepository.findAll();
 
-        return ResponseEntity.ok()
-                .body(stations);
+        return ResponseEntity.ok(stations);
     }
 
     @GetMapping("/{id}")
-    @ResponseBody
     public ResponseEntity<Station> findStation(@PathVariable long id) {
         final Optional<Station> optionalStation = stationRepository.findById(id);
 
         return ResponseEntity
-                .ok()
-                .body(optionalStation.isPresent() ? optionalStation.get() : null);
+                .ok(optionalStation.isPresent() ? optionalStation.get() : null);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseBody
     public ResponseEntity deleteStation(@PathVariable long id) {
         stationRepository.deleteById(id);
 
