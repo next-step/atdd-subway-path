@@ -8,6 +8,9 @@ import atdd.line.repository.LineRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class LineService {
 
@@ -27,6 +30,13 @@ public class LineService {
         final Line saved = lineRepository.save(line);
 
         return lineAssembler.convertToResponseDto(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public List<LineResponseDto> findAll() {
+        return lineRepository.findAll().stream()
+                .map(lineAssembler::convertToResponseDto)
+                .collect(Collectors.toList());
     }
 
 }
