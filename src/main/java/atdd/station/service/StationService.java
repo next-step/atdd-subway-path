@@ -8,13 +8,15 @@ import atdd.station.dto.station.StationDetailResponseDto;
 import atdd.station.dto.station.StationListResponseDto;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.Optional;
 
 @Service("stationService")
 public class StationService {
-    @Resource(name = "stationRepository")
     private StationRepository stationRepository;
+
+    public StationService(StationRepository stationRepository) {
+        this.stationRepository = stationRepository;
+    }
 
     public StationCreateResponseDto create(StationCreateRequestDto station) {
         return StationCreateResponseDto.toDtoEntity(stationRepository.save(station.toEntity()));
