@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -24,12 +25,20 @@ public class LineController {
                 .body(line);
     }
 
+    @GetMapping
+    public ResponseEntity<List<Line>> findAllLines() {
+        final List<Line> optionalLine = lineRepository.findAll();
+
+        return ResponseEntity
+                .ok(optionalLine);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Line> findLine(@PathVariable long id) {
         final Optional<Line> optionalLine = lineRepository.findById(id);
 
 
-        if(optionalLine.isPresent())
+        if (optionalLine.isPresent())
             return ResponseEntity
                     .ok(optionalLine.get());
 
