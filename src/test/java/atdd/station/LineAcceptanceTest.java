@@ -129,7 +129,6 @@ public class LineAcceptanceTest {
         EntityExchangeResult result = webTestClient.get().uri("/lines/" + id)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody(Line.class).returnResult();
 
         return Optional.ofNullable((Line) result.getResponseBody());
