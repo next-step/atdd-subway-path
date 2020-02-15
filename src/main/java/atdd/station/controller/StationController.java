@@ -5,7 +5,6 @@ import atdd.station.dto.station.StationCreateResponseDto;
 import atdd.station.dto.station.StationDetailResponseDto;
 import atdd.station.dto.station.StationListResponseDto;
 import atdd.station.service.StationService;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,10 +23,7 @@ public class StationController {
     @PostMapping("/")
     public ResponseEntity<StationCreateResponseDto> create(@RequestBody StationCreateRequestDto station) {
         StationCreateResponseDto createdStation = stationService.create(station);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("/stations/" + createdStation.getId()));
-        return new ResponseEntity<>(createdStation, headers, HttpStatus.CREATED);
+        return ResponseEntity.created(URI.create("/stations/" + createdStation.getId())).body(createdStation);
     }
 
     @GetMapping("/")
