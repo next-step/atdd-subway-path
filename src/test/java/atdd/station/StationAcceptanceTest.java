@@ -1,25 +1,23 @@
 package atdd.station;
 
+import atdd.AbstractAcceptanceTest;
 import atdd.station.domain.dto.StationDto;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
-@AutoConfigureWebTestClient
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
+public class StationAcceptanceTest extends AbstractAcceptanceTest {
     private static final Logger logger = LoggerFactory.getLogger(StationAcceptanceTest.class);
 
-    @Autowired
-    private WebTestClient webTestClient;
+    private StationHttpTest stationHttpTest;
+
+    @BeforeEach
+    void setUp() {
+        this.stationHttpTest = new StationHttpTest(webTestClient);
+    }
 
     @Test
     public void 지하철역_등록() {
@@ -39,7 +37,7 @@ public class StationAcceptanceTest {
     @Test
     public void 지하철역_목록_조회() {
         String stationName = "강남역";
-        StationDto stationDto = this.createStationTest(stationName);
+        stationHttpTest.createStationTest(stationName).getResponseBody();
 
         webTestClient.get().uri("/stations")
                 .exchange()
@@ -51,7 +49,7 @@ public class StationAcceptanceTest {
     @Test
     public void 지하철역_정보_조회() {
         String stationName = "강남역";
-        Long stationId = this.createStationTest(stationName).getId();
+        Long stationId = stationHttpTest.createStationTest(stationName).getResponseBody().getId();
 
         webTestClient.get().uri("/stations/{stationId}", stationId)
                 .exchange()
@@ -62,22 +60,10 @@ public class StationAcceptanceTest {
     @Test
     public void 지하철역_삭제() {
         String stationName = "강남역";
-        Long stationId = this.createStationTest(stationName).getId();
+        Long stationId = stationHttpTest.createStationTest(stationName).getResponseBody().getId();
 
         webTestClient.delete().uri("/stations/{stationId}", stationId)
                 .exchange()
                 .expectStatus().isNoContent();
-    }
-
-    private StationDto createStationTest(String stationName) {
-        String inputJson = "{\"name\":\"" + stationName + "\"}";
-
-        return webTestClient.post().uri("/stations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
-                .exchange()
-                .expectBody(StationDto.class)
-                .returnResult()
-                .getResponseBody();
     }
 }

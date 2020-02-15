@@ -19,6 +19,7 @@ public class Edge {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "line_id")
     private Line line;
