@@ -23,6 +23,9 @@ public class Line extends BaseEntity {
     @Convert(converter = StationConverter.class)
     private List<Station> stations;
 
+    public Line() {
+    }
+
     @Builder
     private Line(final String name,
                  final LocalTime startTime,
