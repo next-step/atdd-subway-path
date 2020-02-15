@@ -1,25 +1,29 @@
 package atdd.station.dto.path;
 
 import atdd.station.domain.Station;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@NoArgsConstructor
 public class PathFindResponseDto {
-    private String startStationId;
-    private String endStationId;
+    private long startStationId;
+    private long endStationId;
     private List<Station> stations;
 
-    public PathFindResponseDto(String startStationId, String endStationId, List<Station> stations) {
+    @Builder
+    public PathFindResponseDto(long startStationId, long endStationId, List<Station> stations) {
         this.startStationId = startStationId;
         this.endStationId = endStationId;
         this.stations = stations;
     }
 
-    public String getStartStationId() {
+    public long getStartStationId() {
         return startStationId;
     }
 
-    public String getEndStationId() {
+    public long getEndStationId() {
         return endStationId;
     }
 
