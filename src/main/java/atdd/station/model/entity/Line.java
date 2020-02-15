@@ -1,6 +1,7 @@
 package atdd.station.model.entity;
 
 import atdd.station.converter.StationListConverter;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,7 +17,9 @@ import java.util.List;
 @Getter
 public class Line extends BaseEntity {
     private String name;
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime startTime;
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime endTime;
 
     private int intervalTime;
