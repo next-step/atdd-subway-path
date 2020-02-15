@@ -1,5 +1,6 @@
 package atdd.station.model;
 
+import atdd.station.model.entity.Station;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

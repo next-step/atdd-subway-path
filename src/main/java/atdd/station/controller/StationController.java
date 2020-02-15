@@ -1,7 +1,7 @@
 package atdd.station.controller;
 
 import atdd.station.model.CreateStationRequestView;
-import atdd.station.model.Station;
+import atdd.station.model.entity.Station;
 import atdd.station.repository.StationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ public class StationController {
     @PostMapping
     @ResponseBody
     public ResponseEntity<Station> createStation(@RequestBody CreateStationRequestView view) {
-        final Station station = stationRepository.save(view.toStation()).get();
+        final Station station = stationRepository.save(view.toStation());
 
         return ResponseEntity.created(URI.create("/stations/" + station.getId()))
                 .body(station);

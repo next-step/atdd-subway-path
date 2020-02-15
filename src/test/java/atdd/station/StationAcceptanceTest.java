@@ -1,7 +1,7 @@
 package atdd.station;
 
 import atdd.station.model.CreateStationRequestView;
-import atdd.station.model.Station;
+import atdd.station.model.entity.Station;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -51,10 +51,7 @@ public class StationAcceptanceTest {
         String location = result.getResponseHeaders().getLocation().getPath();
 
         Station station = (Station) result.getResponseBody();
-        Station actualStation = Station.builder()
-                .id(station.getId())
-                .name(stationName)
-                .build();
+        Station actualStation = findById(station.getId()).get();
 
         String expected = writeValueAsString(station);
         String actual = writeValueAsString(actualStation);
@@ -88,7 +85,7 @@ public class StationAcceptanceTest {
         List<Station> stations = createStations();
 
         // when
-        long stationId = 1;
+        long stationId = stations.get(0).getId();
 
         EntityExchangeResult result = webTestClient.get().uri("/stations/" + stationId)
                 .accept(MediaType.APPLICATION_JSON)
