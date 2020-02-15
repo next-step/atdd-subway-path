@@ -10,13 +10,20 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Builder @Getter @AllArgsConstructor
+@Getter
 @NoArgsConstructor
 @Entity
 public class Station {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    int id;
-    String name;
+    private Long id;
+    private String name;
+
+    @Builder
+    public Station(String name){
+        this.name = name;
+    }
+
+
 }

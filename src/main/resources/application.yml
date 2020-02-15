@@ -1,6 +1,11 @@
 spring:
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:testdb
+    url: jdbc:h2:~/test;AUTO_SERVER=TRUE
     username: sa
-    password: password
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2
+
