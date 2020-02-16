@@ -1,6 +1,5 @@
 package atdd.station.service;
 
-import atdd.station.model.dto.LineDto;
 import atdd.station.model.entity.Edge;
 import atdd.station.model.entity.Line;
 import atdd.station.model.entity.Station;
@@ -23,44 +22,30 @@ public class LineService {
     @Autowired
     private EdgeRepository edgeRepository;
 
-    public Optional<Line> findLine(final long id) {
-        final Optional<Line> optionalLine = lineRepository.findById(id);
+    public void stationDtos(final Line line) {
+        List<Edge> edges = edgeRepository.findAllById(line.getEdgeIds());
 
-        if (optionalLine.isPresent()) {
-            Line line = optionalLine.get();
+        Set<Long> stationIds = new HashSet<>();
+        edges.forEach(data -> stationIds.addAll(data.stationIds()));
+        List<Station> stations = stationRepository.findAllById(stationIds);
 
-            List<Edge> edges = edgeRepository.findAllById(line.getEdgeIds());
-
-            Set<Long> stationIds = new HashSet<>();
-            edges.forEach(data -> stationIds.addAll(data.stationIds()));
-            List<Station> stations = stationRepository.findAllById(stationIds);
-
-            line.setStationDtos(edges, stations);
-
-            return Optional.of(line);
-        }
-
-        return optionalLine;
+        line.setStationDtos(edges, stations);
     }
 
-    public Optional<Line> addEdge(final long id, final long sourceStationId, final long targetStationId) {
+    public Optional<Line> addEdge(final long id, final Edge newEdge) {
         final Line line = lineRepository.findById(id).get();
-
         final List<Edge> legacyEdges = edgeRepository.findAllById(line.getEdgeIds());
 
         final List<Edge> newEdges = new ArrayList<>();
         final Set<Long> stationIds = new HashSet<>();
 
-        final Edge.EdgeBuilder edgeBuilder = Edge.builder()
-                .sourceStationId(sourceStationId)
-                .targetStationId(targetStationId);
-
-        boolean isConnect = legacyEdges.stream().anyMatch(data -> data.isConnect(edgeBuilder.build()));
+        boolean isConnect = legacyEdges.stream().anyMatch(data -> data.connectedEdge(newEdge));
 
         if (!legacyEdges.isEmpty() && !isConnect)
             return Optional.ofNullable(null);
 
-        final Edge newEdge = edgeRepository.save(edgeBuilder.build());
+        edgeRepository.save(newEdge);
+
         stationIds.add(newEdge.getTargetStationId());
         stationIds.add(newEdge.getSourceStationId());
 
@@ -71,12 +56,12 @@ public class LineService {
             stationIds.add(legacyEdge.getSourceStationId());
             stationIds.add(legacyEdge.getTargetStationId());
 
-            if (legacyEdge.isConnectWithTargetStation(newEdge)) {
+            if (legacyEdge.connectEdgeWithTargetStation(newEdge)) {
                 newEdges.add(legacyEdge);
                 newEdges.add(newEdge);
 
                 continue;
-            } else if (legacyEdge.isConnectWithSourceStation(newEdge)) {
+            } else if (legacyEdge.connectEdgeWithSourceStation(newEdge)) {
                 newEdges.add(newEdge);
                 newEdges.add(legacyEdge);
 
@@ -86,47 +71,16 @@ public class LineService {
             newEdges.add(legacyEdge);
         }
 
-        List<Station> stationList = stationRepository.findAllById(stationIds);
-        for (Station station : stationList) {
-            Set<Long> lineIds = new HashSet<>(station.getLineIds());
-            lineIds.add(line.getId());
-
-            station.setLineIds(new ArrayList<>(lineIds));
-        }
-
-        LineDto lineDto = LineDto.builder()
-                .id(line.getId())
-                .name(line.getName()).build();
-
-        // TODO controller 로 옮기자
-        stationList.forEach(data -> data.getLineDtos().add(lineDto));
+        List<Station> stationList = updateLineInStations(stationIds, line.getId());
 
         line.updateEdge(newEdges, stationList);
 
-        stationRepository.saveAll(stationList);
-        lineRepository.save(line);
-
-        return Optional.of(line);
+        return Optional.of(lineRepository.save(line));
     }
 
     public Optional<Line> deleteEdge(final long id, final long stationId) {
         final Line line = lineRepository.findById(id).get();
         final Station station = stationRepository.findById(stationId).get();
-
-        // 지하철역에서 라인 삭제
-        int index = 0;
-        int removeLineIndex = -1;
-        for (Long lineId : station.getLineIds()) {
-            if (lineId == line.getId())
-                removeLineIndex = index;
-
-            index++;
-        }
-
-        if (removeLineIndex > -1)
-            station.getLineIds().remove(removeLineIndex);
-
-        stationRepository.save(station);
 
         // 노선에서 구간 삭제
         final List<Edge> legacyEdges = edgeRepository.findAllById(line.getEdgeIds());
@@ -184,7 +138,40 @@ public class LineService {
         List<Station> stationList = stationRepository.findAllById(newStationIds);
 
         line.updateEdge(newEdges, stationList);
+        lineRepository.save(line);
 
-        return Optional.ofNullable(lineRepository.save(line));
+        // 지하철역에서 라인 삭제
+        deleteLineInStation(station, line.getId());
+
+        return Optional.ofNullable(line);
+    }
+
+    private List<Station> updateLineInStations(final Set<Long> stationIds, final long lineId) {
+        List<Station> stationList = stationRepository.findAllById(stationIds);
+
+        for (Station station : stationList) {
+            Set<Long> lineIds = new HashSet<>(station.getLineIds());
+            lineIds.add(lineId);
+
+            station.setLineIds(new ArrayList<>(lineIds));
+        }
+
+        return stationRepository.saveAll(stationList);
+    }
+
+    private Station deleteLineInStation(final Station station, final long deleteLineId) {
+        int index = 0;
+        int removeLineIndex = -1;
+        for (Long lineId : station.getLineIds()) {
+            if (lineId == deleteLineId)
+                removeLineIndex = index;
+
+            index++;
+        }
+
+        if (removeLineIndex > -1)
+            station.getLineIds().remove(removeLineIndex);
+
+        return stationRepository.save(station);
     }
 }

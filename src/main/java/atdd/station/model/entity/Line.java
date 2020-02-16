@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalTime;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
 @Table
 @Entity
 @Getter
-@Setter
 public class Line extends BaseEntity {
     @Column(nullable = false)
     private String name;
@@ -36,11 +34,10 @@ public class Line extends BaseEntity {
     private int intervalTime;
 
     @JsonIgnore
-    @Convert(converter = LongListConverter.class)
     @Column
+    @Convert(converter = LongListConverter.class)
     private List<Long> edgeIds = new ArrayList<>();
 
-    @Convert(converter = StationDtoConverter.class)
     @Transient
     @JsonProperty("stations")
     private List<StationDto> stationDtos = new ArrayList<>();

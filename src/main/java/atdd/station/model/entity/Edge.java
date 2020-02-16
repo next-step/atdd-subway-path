@@ -28,22 +28,22 @@ public class Edge extends BaseEntity {
         this.targetStationId = targetStationId;
     }
 
-    public boolean isConnectWithSourceStation(final Edge edge) {
+    public boolean connectEdgeWithSourceStation(final Edge edge) {
         if (this.sourceStationId == edge.getTargetStationId())
             return true;
 
         return false;
     }
 
-    public boolean isConnectWithTargetStation(final Edge edge) {
+    public boolean connectEdgeWithTargetStation(final Edge edge) {
         if (this.targetStationId == edge.getSourceStationId())
             return true;
 
         return false;
     }
 
-    public boolean isConnect(final Edge edge) {
-        if (isConnectWithSourceStation(edge) || isConnectWithTargetStation(edge))
+    public boolean connectedEdge(final Edge edge) {
+        if (connectEdgeWithSourceStation(edge) || connectEdgeWithTargetStation(edge))
             return true;
 
         return false;

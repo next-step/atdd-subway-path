@@ -2,6 +2,7 @@ package atdd.station.controller;
 
 import atdd.station.model.CreateEdgeRequestView;
 import atdd.station.model.CreateLineRequestView;
+import atdd.station.model.entity.Edge;
 import atdd.station.model.entity.Line;
 import atdd.station.repository.LineRepository;
 import atdd.station.service.LineService;
@@ -34,6 +35,8 @@ public class LineController {
     public ResponseEntity<List<Line>> findAllLines() {
         final List<Line> lines = lineRepository.findAll();
 
+        lines.forEach(data -> lineService.stationDtos(data));
+
         return ResponseEntity
                 .ok(lines);
     }
@@ -41,11 +44,14 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<Line> findLine(@PathVariable long id) {
 
-        final Optional<Line> optionalLine = lineService.findLine(id);
+        final Optional<Line> optionalLine = lineRepository.findById(id);
 
-        if (optionalLine.isPresent())
+        if (optionalLine.isPresent()) {
+            lineService.stationDtos(optionalLine.get());
+
             return ResponseEntity
                     .ok(optionalLine.get());
+        }
 
         return ResponseEntity
                 .notFound().build();
@@ -61,7 +67,11 @@ public class LineController {
     @PostMapping("/{id}/edge")
     public ResponseEntity<Line> addEdge(@PathVariable long id,
                                         @RequestBody CreateEdgeRequestView view) {
-        Optional<Line> line = lineService.addEdge(id, view.getSourceStationId(), view.getTargetStationId());
+        final Edge.EdgeBuilder edgeBuilder = Edge.builder()
+                .sourceStationId(view.getSourceStationId())
+                .targetStationId(view.getTargetStationId());
+
+        Optional<Line> line = lineService.addEdge(id, edgeBuilder.build());
 
         if (line.isPresent())
             return ResponseEntity.ok(line.get());
