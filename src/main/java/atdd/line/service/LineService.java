@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,6 +47,14 @@ public class LineService {
             return true;
         }
         return line.isSameName(name);
+    }
+
+    @Transactional
+    public void delete(Long lineId) {
+        final Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 lineId 입니다. lineId : [" + lineId + "]"));
+
+        lineRepository.delete(line);
     }
 
 }

@@ -128,6 +128,44 @@ public class LineAcceptanceTest extends AcceptanceTestSupport {
         assertThat(lineResponseDtos.get(0).getName()).isEqualTo(name1);
     }
 
+    @DisplayName("지하철 노선 삭제")
+    @Test
+    void delete() {
+        final LocalTime startTime = LocalTime.of(5, 0);
+        final LocalTime endTime = LocalTime.of(23, 50);
+        final int interval = 10;
+
+        final String name1 = "2호선";
+        final String name2 = "3호선";
+
+        final LineCreateRequestDto requestDto1 = new LineCreateRequestDto(name1, startTime, endTime, interval);
+        final LineCreateRequestDto requestDto2 = new LineCreateRequestDto(name2, startTime, endTime, interval);
+
+        final LineResponseDto createdResponse1 = lineHttpTestSupport.createLine(requestDto1);
+        lineHttpTestSupport.createLine(requestDto2);
+
+
+        final String requestURI = UriComponentsBuilder.fromUriString(LineController.ROOT_URI + "/{lineId}")
+                .build(createdResponse1.getId())
+                .toString();
+
+        final EntityExchangeResult<List<LineResponseDto>> result = webTestClient.delete()
+                .uri(requestURI)
+                .acceptCharset(StandardCharsets.UTF_8)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectBodyList(LineResponseDto.class)
+                .returnResult();
+
+
+        assertThat(result.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
+
+        final List<LineResponseDto> lineResponseDtos = lineHttpTestSupport.findAll();
+
+        assertThat(lineResponseDtos).hasSize(1);
+        assertThat(lineResponseDtos.get(0).getName()).isNotEqualTo(createdResponse1.getName());
+    }
+
     private void assertEqual(LineResponseDto responseDto, LineCreateRequestDto requestDto) {
         assertThat(responseDto.getName()).isEqualTo(requestDto.getName());
         assertThat(responseDto.getStartTime()).isEqualTo(requestDto.getStartTime());

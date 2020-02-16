@@ -1,6 +1,7 @@
 package atdd.line.repository;
 
 import atdd.line.domain.Line;
+import atdd.line.domain.LineStation;
 import atdd.line.domain.TimeTable;
 import atdd.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +24,9 @@ class LineRepositoryTest {
 
     @Autowired
     private LineRepository lineRepository;
+
+    @Autowired
+    private LineStationRepository lineStationRepository;
 
     @Test
     void save() throws Exception {
@@ -72,6 +76,20 @@ class LineRepositoryTest {
         final Station addedStation = stations.get(0);
         assertThat(addedStation.getId()).isNotNull();
         assertThat(addedStation.getName()).isEqualTo(station.getName());
+    }
+
+    @Test
+    void delete() throws Exception {
+        final Station station = Station.create("stationName!!");
+        Line line = getSavedLine();
+        line.addStation(station);
+        lineRepository.flush();
+
+        lineRepository.delete(line);
+        lineRepository.flush();
+
+        final List<LineStation> lineStations = lineStationRepository.findAll();
+        assertThat(lineStations).isEmpty();
     }
 
     private Line getSavedLine() {

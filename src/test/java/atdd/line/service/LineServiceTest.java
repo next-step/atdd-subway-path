@@ -7,6 +7,7 @@ import atdd.line.repository.LineRepository;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -15,11 +16,12 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 class LineServiceTest {
 
@@ -91,6 +93,15 @@ class LineServiceTest {
 
     private LineResponseDto convertDto(Line line) {
         return new LineResponseDto(line.getId(), line.getName(), line.getTimeTable(), line.getIntervalTime(), new ArrayList<>());
+    }
+
+    @Test
+    void delete() {
+        given(lineRepository.findById(LINE_1.getId())).willReturn(Optional.of(LINE_1));
+
+        lineService.delete(LINE_1.getId());
+
+        verify(lineRepository, times(1)).delete(LINE_1);
     }
 
 }

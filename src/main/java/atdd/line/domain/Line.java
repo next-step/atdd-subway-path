@@ -28,7 +28,7 @@ public class Line {
     @Column(name = "intervalTime")
     private int intervalTime;
 
-    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST }, orphanRemoval = true)
     private List<LineStation> lineStations = new ArrayList<>();
 
     protected Line() {

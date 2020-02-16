@@ -4,6 +4,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 
 public abstract class HttpTestSupport {
@@ -25,6 +27,16 @@ public abstract class HttpTestSupport {
                 .body(Mono.just(request), requestType)
                 .exchange()
                 .expectBody(returnType)
+                .returnResult().getResponseBody();
+    }
+
+    protected <T> List<T> findAll(String uri, Class<T> returnType) {
+        return webTestClient.get()
+                .uri(uri)
+                .acceptCharset(StandardCharsets.UTF_8)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectBodyList(returnType)
                 .returnResult().getResponseBody();
     }
 

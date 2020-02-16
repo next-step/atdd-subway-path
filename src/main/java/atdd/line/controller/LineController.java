@@ -3,6 +3,7 @@ package atdd.line.controller;
 import atdd.line.dto.LineCreateRequestDto;
 import atdd.line.dto.LineResponseDto;
 import atdd.line.service.LineService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +34,12 @@ public class LineController {
     @GetMapping
     public List<LineResponseDto> findAll(@RequestParam(required = false) String name) {
         return lineService.findAll(name);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{lineId}")
+    public void delete(@PathVariable Long lineId){
+        lineService.delete(lineId);
     }
 
 }

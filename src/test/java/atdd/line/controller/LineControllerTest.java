@@ -25,8 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(controllers = LineController.class)
@@ -95,6 +94,18 @@ class LineControllerTest {
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         verify(lineService, times(1)).findAll(name);
+    }
+
+    @Test
+    void deleteLine() throws Exception {
+        final Long lineId = 5434L;
+
+        final MockHttpServletResponse response = mockMvc.perform(delete(LineController.ROOT_URI + "/" + lineId))
+                .andReturn()
+                .getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        verify(lineService, times(1)).delete(lineId);
     }
 
 }
