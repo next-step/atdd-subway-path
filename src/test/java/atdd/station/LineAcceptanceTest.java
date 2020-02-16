@@ -47,13 +47,7 @@ public class LineAcceptanceTest {
         Line line = lineTestUtils.createLine(createLineRequestView);
 
         // then
-        Line actualLine = createLineRequestView.toLine();
-        actualLine.setId(line.getId());
-
-        String expected = lineTestUtils.writeValueAsString(line);
-        String actual = lineTestUtils.writeValueAsString(actualLine);
-
-        assertThat(expected).isEqualTo(actual);
+        assertThat(line.getName()).isEqualTo("2호선");
     }
 
     @Test
@@ -68,28 +62,23 @@ public class LineAcceptanceTest {
         List<Line> lines = lineTestUtils.findAll();
 
         //then
-        String expected = lineTestUtils.writeValueAsString(lines);
-        String actual = lineTestUtils.writeLineListAsString(Arrays.asList(line));
-
-        assertThat(expected).isEqualTo(actual);
+        assertThat(lines.size()).isEqualTo(1);
+        assertThat(lines.get(0).getName()).isEqualTo("2호선");
     }
 
     @Test
     public void findLine() {
         // given
-        Line line = lineTestUtils.createLine("2호선",
+        long lineId = lineTestUtils.createLine("2호선",
                 LocalTime.of(5, 0),
                 LocalTime.of(5, 0),
-                10);
+                10).getId();
 
         // when
-        Optional<Line> lineOptional = lineTestUtils.findById(line.getId());
+        Line line = lineTestUtils.findById(lineId);
 
         // then
-        String expected = lineTestUtils.writeValueAsString(lineOptional.get());
-        String actual = lineTestUtils.writeValueAsString(line);
-
-        assertThat(expected).isEqualTo(actual);
+        assertThat(line.getName()).isEqualTo("2호선");
     }
 
     @Test
@@ -104,10 +93,9 @@ public class LineAcceptanceTest {
         lineTestUtils.deleteLine(lineId);
 
         // then
-        Optional<Line> optionalLine = lineTestUtils.findById(lineId);
-        Line line = optionalLine.isPresent() ? optionalLine.get() : null;
+        List<Line> lines = lineTestUtils.findAll();
 
-        assertThat(line).isNull();
+        assertThat(lines.size()).isEqualTo(0);
     }
 
     @Test
@@ -150,7 +138,7 @@ public class LineAcceptanceTest {
         lineTestUtils.deleteEdge(line.getId(), station2.getId());
 
         // then
-        Line resultLine = lineTestUtils.findById(line.getId()).get();
+        Line resultLine = lineTestUtils.findById(line.getId());
 
         assertThat(resultLine.getStationDtos().size()).isEqualTo(2);
         assertThat(resultLine.getStationDtos().get(0).getName()).isEqualTo("강남역");

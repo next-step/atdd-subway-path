@@ -3,8 +3,10 @@ package atdd.station;
 import atdd.station.model.CreateEdgeRequestView;
 import atdd.station.model.CreateLineRequestView;
 import atdd.station.model.entity.Line;
+import atdd.station.model.entity.Station;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -13,7 +15,6 @@ import reactor.core.publisher.Mono;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
 public class LineTestUtils {
     private final String LINES_PATH = "/lines";
@@ -47,7 +48,7 @@ public class LineTestUtils {
 
         String inputJson = createLineRequestViewToJson(createLineRequestView);
 
-        EntityExchangeResult result = webTestClient.post().uri("/lines")
+        EntityExchangeResult result = webTestClient.post().uri(LINES_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(inputJson), String.class)
                 .exchange()
@@ -65,12 +66,13 @@ public class LineTestUtils {
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(List.class).returnResult();
+                .expectBody(new ParameterizedTypeReference<List<Line>>() {
+                }).returnResult();
 
         return (List<Line>) result.getResponseBody();
     }
 
-    public Optional<Line> findById(final long id) {
+    public Line findById(final long id) {
         EntityExchangeResult result = webTestClient.get().uri(LINES_PATH + "/" + id)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -78,8 +80,7 @@ public class LineTestUtils {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody(Line.class).returnResult();
 
-
-        return Optional.ofNullable((Line) result.getResponseBody());
+        return (Line) result.getResponseBody();
     }
 
     public void deleteLine(final long id) {
@@ -94,7 +95,7 @@ public class LineTestUtils {
         createEdgeRequestView.setSourceStationId(sourceStationId);
         createEdgeRequestView.setTargetStationId(targetStationId);
 
-        EntityExchangeResult result = webTestClient.post().uri("/lines/" + lineId + "/edge")
+        EntityExchangeResult result = webTestClient.post().uri(LINES_PATH + "/" + lineId + EDGES_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(writeValueAsString(createEdgeRequestView)), String.class)
                 .exchange()
@@ -108,32 +109,6 @@ public class LineTestUtils {
                 .exchange()
                 .expectStatus().isNoContent()
                 .expectBody().returnResult();
-    }
-
-
-    public String writeLineListAsString(final List<Line> lines) {
-        final StringBuilder stringBuilder = new StringBuilder();
-        final String lineValue = "{\"id\":%d" +
-                ",\"name\":\"%s" +
-                "\",\"startTime\":\"%s" +
-                "\",\"endTime\":\"%s" +
-                "\",\"intervalTime\":%d" +
-                ",\"stations\":%s}";
-
-        for (Line line : lines) {
-            if (stringBuilder.length() > 0)
-                stringBuilder.append(",");
-
-            stringBuilder.append(String.format(lineValue,
-                    line.getId(),
-                    line.getName(),
-                    line.getStartTime().format(formatter),
-                    line.getEndTime().format(formatter),
-                    line.getIntervalTime(),
-                    writeValueAsString(line.getStationDtos())));
-        }
-
-        return "[" + stringBuilder.toString() + "]";
     }
 
     public String writeValueAsString(Object object) {
