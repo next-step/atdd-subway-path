@@ -31,6 +31,7 @@ public class SubwaySectionQueryService {
         List<SubwaySection> subwaySections = subwaySectionRepository.findAllBySourceStationOrTargetStation(savedStation, savedStation);
         return subwaySections.stream()
                 .map(subwaySection -> SubwayCommonResponseDto.of(subwaySection.getSubwayLine()))
+                .distinct()
                 .collect(Collectors.toList());
     }
 
