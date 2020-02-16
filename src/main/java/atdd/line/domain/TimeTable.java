@@ -11,6 +11,8 @@ import java.util.Objects;
 @Embeddable
 public class TimeTable {
 
+    public static final TimeTable MAX_INTERVAL_TIME_TABLE = new TimeTable(LocalTime.MIN, LocalTime.MAX);
+
     private static final DateTimeFormatter TIME_TABLE_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
     @Column(name = "start_time", nullable = false)

@@ -25,8 +25,12 @@ public class Line {
     @Embedded
     private TimeTable timeTable;
 
-    @Column(name = "intervalTime")
+    @Column(name = "interval_time")
     private int intervalTime;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "start_line_station_id")
+    private LineStation startLineStation;
 
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST }, orphanRemoval = true)
     private List<LineStation> lineStations = new ArrayList<>();
@@ -58,8 +62,21 @@ public class Line {
         if (existStation(station)) {
             throw new IllegalArgumentException("이미 존재하는 역입니다. 역이름 : [" + station.getName() + "]");
         }
-        LineStation lineStation = new LineStation(this, station);
-        this.lineStations.add(lineStation);
+
+        this.lineStations.add(new LineStation(this, station));
+        changeStartStation(station);
+    }
+
+    public void changeStartStation(Station station) {
+        this.startLineStation = getLineStation(station);
+    }
+
+    private LineStation getLineStation(Station station) {
+        final String stationName = station.getName();
+        return this.lineStations.stream()
+                .filter(lineStation -> lineStation.isEqualStation(stationName))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다. name : [" + stationName + "]"));
     }
 
     private boolean existStation(Station station) {
@@ -80,6 +97,10 @@ public class Line {
 
     public int getIntervalTime() {
         return intervalTime;
+    }
+
+    public Station getStartStation() {
+        return startLineStation.getStation();
     }
 
     @Override

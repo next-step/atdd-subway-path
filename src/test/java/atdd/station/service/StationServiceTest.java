@@ -6,13 +6,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class StationServiceTest {
 
@@ -42,10 +43,11 @@ class StationServiceTest {
     void getStation() {
         final Long id = 5145L;
 
-        when(stationRepository.findById(eq(id))).thenThrow(new EntityNotFoundException());
+        when(stationRepository.findById(eq(id))).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> stationService.getStation(id))
-                .isInstanceOf(EntityNotFoundException.class);
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("존재하지 않는 stationId 입니다. stationId : [5145]");
     }
 
     @DisplayName("delete - 삭제대상이 없으면 에러")
@@ -53,10 +55,11 @@ class StationServiceTest {
     void delete_no_result() {
         final Long id = 13247L;
 
-        doThrow(EmptyResultDataAccessException.class).when(stationRepository).deleteById(id);
+        when(stationRepository.findById(eq(id))).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> stationService.delete(id))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("존재하지 않는 stationId 입니다. stationId : [13247]");
     }
 
 }

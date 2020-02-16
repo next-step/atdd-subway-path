@@ -14,6 +14,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
 
+    final Station station1 = Station.of(4341L, "stationName1!!");
+    final Station station2 = Station.of(4341L, "stationName2!!");
     private final String name = "name!!";
     private final TimeTable timeTable = new TimeTable(LocalTime.MIN, LocalTime.MAX);
     private final int intervalTime = 1;
@@ -56,6 +58,17 @@ class LineTest {
                 .hasMessage("intervalTime 은 음수일 수 없습니다.");
     }
 
+    @DisplayName("addStation - line 에 Station 최초로 추가한 station 이  startStation 이 된다.")
+    @Test
+    void addStation() throws Exception {
+        final Line line = Line.create(name, timeTable, intervalTime);
+
+        line.addStation(station1);
+        line.addStation(station2);
+
+        assertThat(line.getStartStation()).isEqualTo(station1);
+    }
+
     @DisplayName("addStation - 동일한 이름의 Station 추가시 에러")
     @Test
     void addSameNameStation() throws Exception {
@@ -71,9 +84,6 @@ class LineTest {
 
     @Test
     void getStations() {
-        final Station station1 = Station.of(4341L, "stationName1!!");
-        final Station station2 = Station.of(4341L, "stationName2!!");
-
         final Line line = Line.create(name, timeTable, intervalTime);
         line.addStation(station1);
         line.addStation(station2);
@@ -103,6 +113,29 @@ class LineTest {
         final Line line = Line.create(name, timeTable, intervalTime);
 
         assertThat(line.isSameName(nullAndEmptyName)).isFalse();
+    }
+
+    @DisplayName("changeStation - 등록되어 있지 않은 역으로 변경시 에러")
+    @Test
+    void changeStationNotExistStation() {
+        final Line line = Line.create(name, timeTable, intervalTime);
+
+        assertThatThrownBy(() -> line.changeStartStation(station1))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("존재하지 않는 역입니다. name : [stationName1!!]");
+    }
+
+    @Test
+    void changeStation() throws Exception {
+        final Line line = Line.create(name, timeTable, intervalTime);
+        line.addStation(station1);
+        line.addStation(station2);
+
+
+        line.changeStartStation(station2);
+
+
+        assertThat(line.getStartStation()).isEqualTo(station2);
     }
 
 }

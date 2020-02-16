@@ -14,7 +14,7 @@ class LineStationTest {
     private final Station station = Station.of(634L, "stationName!!");
 
     @Test
-    void create() throws Exception {
+    void create() {
         final LineStation lineStation = new LineStation(line, station);
 
         assertThat(lineStation.getLine().getName()).isEqualTo(line.getName());
@@ -31,7 +31,7 @@ class LineStationTest {
     }
 
     @Test
-    void createByNullStation() throws Exception {
+    void createByNullStation() {
         final Station nullStation = null;
 
         assertThatThrownBy(() -> new LineStation(line, nullStation))
@@ -40,10 +40,19 @@ class LineStationTest {
     }
 
     @Test
-    void isEqualStation() throws Exception {
+    void isEqualStation() {
         final LineStation lineStation = new LineStation(line, station);
 
         assertThat(lineStation.isEqualStation(station.getName())).isTrue();
+        assertThat(lineStation.isEqualStation(line.getName())).isFalse();
+    }
+
+    @Test
+    void isEqualLine() {
+        final LineStation lineStation = new LineStation(line, station);
+
+        assertThat(lineStation.isEqualLine(line.getName())).isTrue();
+        assertThat(lineStation.isEqualLine(station.getName())).isFalse();
     }
 
 }

@@ -42,4 +42,10 @@ public class LineController {
         lineService.delete(lineId);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/{lineId}/stations/{stationId}")
+    public void addStation(@PathVariable Long lineId, @PathVariable Long stationId) {
+        lineService.addStation(lineId, stationId);
+    }
+
 }

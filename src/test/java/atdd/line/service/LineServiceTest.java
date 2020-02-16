@@ -4,6 +4,8 @@ import atdd.line.domain.Line;
 import atdd.line.domain.TimeTable;
 import atdd.line.dto.LineResponseDto;
 import atdd.line.repository.LineRepository;
+import atdd.station.domain.Station;
+import atdd.station.service.StationService;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,31 +27,37 @@ import static org.mockito.Mockito.*;
 
 class LineServiceTest {
 
+    private static final String NAME_1 = "name111";
+    private static final String NAME_2 = "name222";
     private static final TimeTable TIME_TABLE = new TimeTable(LocalTime.MIN, LocalTime.MAX);;
-    private static final Line LINE_1 = Line.of(143L, "name111", TIME_TABLE, 0);
-    private static final Line LINE_2 = Line.of(144L, "name222", TIME_TABLE, 0);
+
+    private final Line line1 = Line.of(143L, NAME_1, TIME_TABLE, 0);
+    private final Line line2 = Line.of(144L, NAME_2, TIME_TABLE, 0);
 
     private LineService lineService;
 
     private LineAssembler lineAssembler;
     private LineRepository lineRepository;
+    private StationService stationService;
 
     @BeforeEach
     void setup() {
         this.lineAssembler = mock(LineAssembler.class);
         this.lineRepository = mock(LineRepository.class);
-        this.lineService = new LineService(lineAssembler, lineRepository);
+        this.stationService = mock(StationService.class);
+
+        this.lineService = new LineService(lineAssembler, lineRepository, stationService);
     }
 
     @DisplayName("findAll - name 이 null 이거나 빈 값이면 전체를 반환한다.")
     @ParameterizedTest
     @NullAndEmptySource
     void findAll(String name) throws Exception {
-        final List<Line> lines = Lists.list(LINE_1, LINE_2);
+        final List<Line> lines = Lists.list(line1, line2);
 
         given(lineRepository.findAll()).willReturn(lines);
-        given(lineAssembler.convertToResponseDto(LINE_1)).willReturn(convertDto(LINE_1));
-        given(lineAssembler.convertToResponseDto(LINE_2)).willReturn(convertDto(LINE_2));
+        given(lineAssembler.convertToResponseDto(line1)).willReturn(convertDto(line1));
+        given(lineAssembler.convertToResponseDto(line2)).willReturn(convertDto(line2));
 
 
         final List<LineResponseDto> responseDtos = lineService.findAll(name);
@@ -58,23 +66,23 @@ class LineServiceTest {
         assertThat(responseDtos).hasSize(lines.size());
 
         final LineResponseDto responseDto1 = responseDtos.get(0);
-        assertThat(responseDto1.getId()).isEqualTo(LINE_1.getId());
-        assertThat(responseDto1.getName()).isEqualTo(LINE_1.getName());
+        assertThat(responseDto1.getId()).isEqualTo(line1.getId());
+        assertThat(responseDto1.getName()).isEqualTo(line1.getName());
 
         final LineResponseDto responseDto2 = responseDtos.get(1);
-        assertThat(responseDto2.getId()).isEqualTo(LINE_2.getId());
-        assertThat(responseDto2.getName()).isEqualTo(LINE_2.getName());
+        assertThat(responseDto2.getId()).isEqualTo(line2.getId());
+        assertThat(responseDto2.getName()).isEqualTo(line2.getName());
     }
 
     @DisplayName("findAll - name 과 일치하는 값을 반환한다.")
     @ParameterizedTest
     @MethodSource("findAllByNameArguments")
     void findAllByName(String name) throws Exception {
-        final List<Line> lines = Lists.list(LINE_1, LINE_2);
+        final List<Line> lines = Lists.list(line1, line2);
 
         given(lineRepository.findAll()).willReturn(lines);
-        given(lineAssembler.convertToResponseDto(LINE_1)).willReturn(convertDto(LINE_1));
-        given(lineAssembler.convertToResponseDto(LINE_2)).willReturn(convertDto(LINE_2));
+        given(lineAssembler.convertToResponseDto(line1)).willReturn(convertDto(line1));
+        given(lineAssembler.convertToResponseDto(line2)).willReturn(convertDto(line2));
 
 
         final List<LineResponseDto> responseDtos = lineService.findAll(name);
@@ -86,8 +94,8 @@ class LineServiceTest {
 
     private static Stream<Arguments> findAllByNameArguments() {
         return Stream.of(
-                Arguments.of(LINE_1.getName()),
-                Arguments.of(LINE_2.getName())
+                Arguments.of(NAME_1),
+                Arguments.of(NAME_2)
         );
     }
 
@@ -97,11 +105,30 @@ class LineServiceTest {
 
     @Test
     void delete() {
-        given(lineRepository.findById(LINE_1.getId())).willReturn(Optional.of(LINE_1));
+        given(lineRepository.findById(line1.getId())).willReturn(Optional.of(line1));
 
-        lineService.delete(LINE_1.getId());
+        lineService.delete(line1.getId());
 
-        verify(lineRepository, times(1)).delete(LINE_1);
+        verify(lineRepository, times(1)).delete(line1);
+    }
+
+    @Test
+    void addStation() {
+        final Station station = Station.of(4156L, "stationName!!");
+
+        given(lineRepository.findById(line1.getId())).willReturn(Optional.of(line1));
+        given(stationService.findById(station.getId())).willReturn(station);
+
+
+        lineService.addStation(line1.getId(), station.getId());
+
+
+        final List<Station> stations = line1.getStations();
+        assertThat(stations).hasSize(1);
+
+        final Station addedStation = stations.get(0);
+        assertThat(addedStation.getId()).isEqualTo(station.getId());
+        assertThat(addedStation.getName()).isEqualTo(station.getName());
     }
 
 }

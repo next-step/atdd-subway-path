@@ -76,6 +76,8 @@ class LineRepositoryTest {
         final Station addedStation = stations.get(0);
         assertThat(addedStation.getId()).isNotNull();
         assertThat(addedStation.getName()).isEqualTo(station.getName());
+
+        assertThat(line.getStartStation()).isEqualTo(addedStation);
     }
 
     @Test

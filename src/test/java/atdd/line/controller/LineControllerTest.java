@@ -108,4 +108,19 @@ class LineControllerTest {
         verify(lineService, times(1)).delete(lineId);
     }
 
+    @Test
+    void addStation() throws Exception {
+        final Long lineId = 4452L;
+        final Long stationId = 623L;
+        final String uri = LineController.ROOT_URI + "/{lineId}/stations/{stationId}";
+
+        final MockHttpServletResponse response = mockMvc.perform(put(uri, lineId, stationId))
+                .andReturn()
+                .getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+
+        verify(lineService, times(1)).addStation(lineId, stationId);
+    }
+
 }

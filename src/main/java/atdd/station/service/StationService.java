@@ -41,14 +41,22 @@ public class StationService {
     }
 
     @Transactional(readOnly = true)
-    public StationResponseDto getStation(Long id) {
-        final Station station = stationRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    public StationResponseDto getStation(Long stationId) {
+        final Station station = findById(stationId);
+
         return stationAssembler.convertToDto(station);
     }
 
+    @Transactional(readOnly = true)
+    public Station findById(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 stationId 입니다. stationId : [" + stationId + "]"));
+    }
+
     @Transactional
-    public void delete(Long id) {
-        stationRepository.deleteById(id);
+    public void delete(Long stationId) {
+        Station station = findById(stationId);
+        stationRepository.delete(station);
     }
 
 }

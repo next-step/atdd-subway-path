@@ -5,6 +5,8 @@ import atdd.line.domain.TimeTable;
 import atdd.line.dto.LineCreateRequestDto;
 import atdd.line.dto.LineResponseDto;
 import atdd.line.repository.LineRepository;
+import atdd.station.domain.Station;
+import atdd.station.service.StationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -18,10 +20,15 @@ public class LineService {
 
     private final LineAssembler lineAssembler;
     private final LineRepository lineRepository;
+    private final StationService stationService;
 
-    public LineService(LineAssembler lineAssembler, LineRepository lineRepository) {
+    public LineService(LineAssembler lineAssembler,
+                       LineRepository lineRepository,
+                       StationService stationService) {
+
         this.lineAssembler = lineAssembler;
         this.lineRepository = lineRepository;
+        this.stationService = stationService;
     }
 
     @Transactional
@@ -51,10 +58,22 @@ public class LineService {
 
     @Transactional
     public void delete(Long lineId) {
-        final Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 lineId 입니다. lineId : [" + lineId + "]"));
+        final Line line = findById(lineId);
 
         lineRepository.delete(line);
+    }
+
+    private Line findById(Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 lineId 입니다. lineId : [" + lineId + "]"));
+    }
+
+    @Transactional
+    public void addStation(Long lineId, Long stationId) {
+        Line line = findById(lineId);
+        Station station = stationService.findById(stationId);
+
+        line.addStation(station);
     }
 
 }

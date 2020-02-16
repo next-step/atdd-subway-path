@@ -32,8 +32,8 @@ public class LineStation {
         this.station = station;
     }
 
-    public boolean isEqualStation(String name) {
-        return Objects.equals(name, station.getName());
+    public boolean isEqualStation(String stationName) {
+        return Objects.equals(stationName, station.getName());
     }
 
     public Long getId() {
@@ -46,6 +46,10 @@ public class LineStation {
 
     public Station getStation() {
         return station;
+    }
+
+    public boolean isEqualLine(String lineName) {
+        return Objects.equals(lineName, line.getName());
     }
 
 }
