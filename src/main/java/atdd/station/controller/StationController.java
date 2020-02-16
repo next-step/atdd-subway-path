@@ -1,6 +1,6 @@
 package atdd.station.controller;
 
-import atdd.station.dto.StationRequestDto;
+import atdd.station.dto.StationCreateRequestDto;
 import atdd.station.dto.StationResponseDto;
 import atdd.station.service.StationService;
 import org.springframework.http.HttpStatus;
@@ -25,7 +25,7 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity<StationResponseDto> create(@RequestBody @Valid StationRequestDto requestDto) {
+    public ResponseEntity<StationResponseDto> create(@RequestBody @Valid StationCreateRequestDto requestDto) {
         final StationResponseDto responseDto = stationService.create(requestDto.getName());
 
         return ResponseEntity.created(URI.create(ROOT_URI + "/" + responseDto.getId()))
