@@ -1,8 +1,10 @@
 package atdd.station.controller;
 
+import atdd.station.model.CreateEdgeRequestView;
 import atdd.station.model.CreateLineRequestView;
 import atdd.station.model.entity.Line;
 import atdd.station.repository.LineRepository;
+import atdd.station.service.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,9 @@ import java.util.Optional;
 public class LineController {
     @Autowired
     private LineRepository lineRepository;
+
+    @Autowired
+    private LineService lineService;
 
     @PostMapping
     public ResponseEntity<Line> createLine(@RequestBody CreateLineRequestView view) {
@@ -35,8 +40,8 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Line> findLine(@PathVariable long id) {
-        final Optional<Line> optionalLine = lineRepository.findById(id);
 
+        final Optional<Line> optionalLine = lineService.findLine(id);
 
         if (optionalLine.isPresent())
             return ResponseEntity
@@ -49,6 +54,25 @@ public class LineController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Line> deleteLine(@PathVariable long id) {
         lineRepository.deleteById(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/edge")
+    public ResponseEntity<Line> addEdge(@PathVariable long id,
+                                        @RequestBody CreateEdgeRequestView view) {
+        Optional<Line> line = lineService.addEdge(id, view.getSourceStationId(), view.getTargetStationId());
+
+        if (line.isPresent())
+            return ResponseEntity.ok(line.get());
+
+        return ResponseEntity.badRequest().build();
+    }
+
+    @DeleteMapping("/{id}/edge")
+    public ResponseEntity<Line> deleteLine(@PathVariable long id,
+                                           @RequestParam Long stationId) {
+        lineService.deleteEdge(id, stationId);
 
         return ResponseEntity.noContent().build();
     }
