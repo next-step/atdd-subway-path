@@ -7,6 +7,7 @@ import atdd.line.dto.LineResponseDto;
 import atdd.line.repository.LineRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,10 +34,18 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public List<LineResponseDto> findAll() {
+    public List<LineResponseDto> findAll(String name) {
         return lineRepository.findAll().stream()
+                .filter(line -> isSameName(line, name))
                 .map(lineAssembler::convertToResponseDto)
                 .collect(Collectors.toList());
+    }
+
+    private boolean isSameName(Line line, String name) {
+        if (!StringUtils.hasText(name)) {
+            return true;
+        }
+        return line.isSameName(name);
     }
 
 }

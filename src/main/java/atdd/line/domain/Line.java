@@ -2,6 +2,7 @@ package atdd.line.domain;
 
 import atdd.station.domain.Station;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -92,6 +93,13 @@ public class Line {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public boolean isSameName(String name) {
+        if (!StringUtils.hasText(name)) {
+            return false;
+        }
+        return this.name.equals(name);
     }
 
 }

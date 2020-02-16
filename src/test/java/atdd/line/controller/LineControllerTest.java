@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -80,8 +81,20 @@ class LineControllerTest {
                 .getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        verify(lineService, times(1)).findAll();
+        verify(lineService, times(1)).findAll(any());
     }
 
+    @Test
+    void findAllByName() throws Exception {
+        final String name = "name!!";
+
+        final MockHttpServletResponse response = mockMvc.perform(get(LineController.ROOT_URI)
+                .queryParam("name", name))
+                .andReturn()
+                .getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        verify(lineService, times(1)).findAll(name);
+    }
 
 }

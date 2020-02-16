@@ -11,8 +11,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -20,11 +22,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineAcceptanceTest extends AcceptanceTestSupport {
 
-    private LineHttpTestSupport lineHttpTest;
+    private LineHttpTestSupport lineHttpTestSupport;
 
     @BeforeEach
     void setup() {
-        lineHttpTest = new LineHttpTestSupport(webTestClient);
+        lineHttpTestSupport = new LineHttpTestSupport(webTestClient);
     }
 
     @DisplayName("지하철 노선 등록")
@@ -71,8 +73,8 @@ public class LineAcceptanceTest extends AcceptanceTestSupport {
 
         final LineCreateRequestDto requestDto1 = new LineCreateRequestDto(name1, startTime, endTime, interval);
         final LineCreateRequestDto requestDto2 = new LineCreateRequestDto(name2, startTime, endTime, interval);
-        lineHttpTest.createLine(requestDto1);
-        lineHttpTest.createLine(requestDto2);
+        lineHttpTestSupport.createLine(requestDto1);
+        lineHttpTestSupport.createLine(requestDto2);
 
         final EntityExchangeResult<List<LineResponseDto>> result = webTestClient.get().uri(
                 LineController.ROOT_URI)
@@ -87,6 +89,43 @@ public class LineAcceptanceTest extends AcceptanceTestSupport {
         assertThat(lineResponseDtos).hasSize(2);
         assertEqual(lineResponseDtos.get(0), requestDto1);
         assertEqual(lineResponseDtos.get(1), requestDto2);
+    }
+
+    @DisplayName("지하철 노선 정보 조회")
+    @Test
+    void findAllByName() {
+        final LocalTime startTime = LocalTime.of(5, 0);
+        final LocalTime endTime = LocalTime.of(23, 50);
+        final int interval = 10;
+
+        final String name1 = "2호선";
+        final String name2 = "3호선";
+
+        final LineCreateRequestDto requestDto1 = new LineCreateRequestDto(name1, startTime, endTime, interval);
+        final LineCreateRequestDto requestDto2 = new LineCreateRequestDto(name2, startTime, endTime, interval);
+        lineHttpTestSupport.createLine(requestDto1);
+        lineHttpTestSupport.createLine(requestDto2);
+
+
+        final String requestURI = UriComponentsBuilder.fromUriString(LineController.ROOT_URI)
+                .queryParam("name", name1)
+                .build()
+                .toUriString();
+
+        final EntityExchangeResult<List<LineResponseDto>> result = webTestClient.get()
+                .uri(requestURI)
+                .acceptCharset(StandardCharsets.UTF_8)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectBodyList(LineResponseDto.class)
+                .returnResult();
+
+
+        assertThat(result.getStatus()).isEqualTo(HttpStatus.OK);
+
+        final List<LineResponseDto> lineResponseDtos = result.getResponseBody();
+        assertThat(lineResponseDtos).hasSize(1);
+        assertThat(lineResponseDtos.get(0).getName()).isEqualTo(name1);
     }
 
     private void assertEqual(LineResponseDto responseDto, LineCreateRequestDto requestDto) {

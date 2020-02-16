@@ -87,4 +87,22 @@ class LineTest {
         assertThat(stations.get(1)).isEqualTo(station2);
     }
 
+    @DisplayName("isSameName - 입력받은 name 이 동일한 이름이면 true")
+    @Test
+    void isSameName() {
+        final Line line = Line.create(name, timeTable, intervalTime);
+
+        assertThat(line.isSameName(name)).isTrue();
+        assertThat(line.isSameName(name + "not")).isFalse();
+    }
+
+    @DisplayName("isSameName - 입력받은 name 이 비어있거나 null 이면 false")
+    @ParameterizedTest
+    @NullAndEmptySource
+    void isSameNameByNullAndEmptyName(String nullAndEmptyName) {
+        final Line line = Line.create(name, timeTable, intervalTime);
+
+        assertThat(line.isSameName(nullAndEmptyName)).isFalse();
+    }
+
 }

@@ -31,8 +31,8 @@ public class LineController {
     }
 
     @GetMapping
-    public List<LineResponseDto> findAll() {
-        return lineService.findAll();
+    public List<LineResponseDto> findAll(@RequestParam(required = false) String name) {
+        return lineService.findAll(name);
     }
 
 }
