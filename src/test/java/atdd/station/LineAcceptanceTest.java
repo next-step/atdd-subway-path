@@ -2,8 +2,8 @@ package atdd.station;
 
 import atdd.station.model.CreateLineRequestView;
 import atdd.station.model.entity.Line;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import atdd.station.model.entity.Station;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -12,10 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.core.publisher.Mono;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -26,8 +24,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 public class LineAcceptanceTest {
-    private static final ObjectMapper mapper = new ObjectMapper();
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+    private StationTestUtils stationTestUtils;
+    private LineTestUtils lineTestUtils;
+
+    @BeforeEach
+    void setUp() {
+        this.stationTestUtils = new StationTestUtils(webTestClient);
+        this.lineTestUtils = new LineTestUtils(webTestClient);
+    }
 
     @Autowired
     private WebTestClient webTestClient;
@@ -42,14 +46,14 @@ public class LineAcceptanceTest {
                 .intervalTime(10)
                 .build();
 
-        Line line = createLine(createLineRequestView);
+        Line line = lineTestUtils.createLine(createLineRequestView);
 
         // then
         Line actualLine = createLineRequestView.toLine();
         actualLine.setId(line.getId());
 
-        String expected = writeValueAsString(line);
-        String actual = writeValueAsString(actualLine);
+        String expected = lineTestUtils.writeValueAsString(line);
+        String actual = lineTestUtils.writeValueAsString(actualLine);
 
         assertThat(expected).isEqualTo(actual);
     }
@@ -57,7 +61,7 @@ public class LineAcceptanceTest {
     @Test
     public void findAllLines() {
         // given
-        Line line = given("2호선",
+        Line line = lineTestUtils.createLine("2호선",
                 LocalTime.of(5, 0),
                 LocalTime.of(5, 0),
                 10);
@@ -71,8 +75,8 @@ public class LineAcceptanceTest {
                 .expectBody(List.class).returnResult();
 
         //then
-        String expected = writeValueAsString(result.getResponseBody());
-        String actual = writeLineListAsString(Arrays.asList(line));
+        String expected = lineTestUtils.writeValueAsString(result.getResponseBody());
+        String actual = lineTestUtils.writeLineListAsString(Arrays.asList(line));
 
         assertThat(expected).isEqualTo(actual);
     }
@@ -80,7 +84,7 @@ public class LineAcceptanceTest {
     @Test
     public void findLine() {
         // given
-        Line line = given("2호선",
+        Line line = lineTestUtils.createLine("2호선",
                 LocalTime.of(5, 0),
                 LocalTime.of(5, 0),
                 10);
@@ -94,8 +98,8 @@ public class LineAcceptanceTest {
                 .expectBody(Line.class).returnResult();
 
         // then
-        String expected = writeValueAsString(result.getResponseBody());
-        String actual = writeValueAsString(line);
+        String expected = lineTestUtils.writeValueAsString(result.getResponseBody());
+        String actual = lineTestUtils.writeValueAsString(line);
 
         assertThat(expected).isEqualTo(actual);
     }
@@ -103,7 +107,7 @@ public class LineAcceptanceTest {
     @Test
     public void deleteLine() {
         // given
-        long lineId = given("2호선",
+        long lineId = lineTestUtils.createLine("2호선",
                 LocalTime.of(5, 0),
                 LocalTime.of(5, 0),
                 10).getId();
@@ -115,90 +119,59 @@ public class LineAcceptanceTest {
                 .expectBody().returnResult();
 
         // then
-        Optional<Line> optionalLine = findById(lineId);
+        Optional<Line> optionalLine = lineTestUtils.findById(lineId);
         Line line = optionalLine.isPresent() ? optionalLine.get() : null;
 
         assertThat(line).isNull();
     }
 
-    private Line given(final String name,
-                       final LocalTime startTime,
-                       final LocalTime endTime,
-                       final int intervalTime) {
-        CreateLineRequestView createLineRequestView = CreateLineRequestView.builder()
-                .name(name)
-                .startTime(startTime)
-                .endTime(endTime)
-                .intervalTime(intervalTime)
-                .build();
+    @Test
+    public void addEdge() {
+        // given
+        Station station1 = stationTestUtils.createStation("강남역");
+        Station station2 = stationTestUtils.createStation("역삼역");
+        Station station3 = stationTestUtils.createStation("선릉역");
 
-        return createLine(createLineRequestView);
+        Line line = lineTestUtils.createLine("2호선",
+                LocalTime.of(5, 0),
+                LocalTime.of(5, 0),
+                10);
+
+        // when
+        Line resultLine = lineTestUtils.addEdge(line.getId(), station1.getId(), station2.getId());
+
+        // then
+        assertThat(resultLine.getStationDtos().size()).isEqualTo(2);
+        assertThat(resultLine.getStationDtos().get(0).getName()).isEqualTo("강남역");
+        assertThat(resultLine.getStationDtos().get(1).getName()).isEqualTo("역삼역");
     }
 
-    private Line createLine(CreateLineRequestView createLineRequestView) {
+    @Test
+    public void deleteEdge() {
+        // given
+        Station station1 = stationTestUtils.createStation("강남역");
+        Station station2 = stationTestUtils.createStation("역삼역");
+        Station station3 = stationTestUtils.createStation("선릉역");
 
-        String inputJson = createLineRequestViewToJson(createLineRequestView);
+        Line line = lineTestUtils.createLine("2호선",
+                LocalTime.of(5, 0),
+                LocalTime.of(5, 0),
+                10);
 
-        EntityExchangeResult result = webTestClient.post().uri("/lines")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
+        lineTestUtils.addEdge(line.getId(), station1.getId(), station2.getId());
+        lineTestUtils.addEdge(line.getId(), station2.getId(), station3.getId());
+
+        // when
+        webTestClient.delete().uri("/lines/" + line.getId() + "/edge?stationId=" + station2.getId())
                 .exchange()
-                .expectBody(Line.class).returnResult();
+                .expectStatus().isNoContent()
+                .expectBody().returnResult();
 
-        Line line = (Line) result.getResponseBody();
+        Line resultLine = lineTestUtils.findById(line.getId()).get();
 
-        return line;
-    }
-
-    private Optional<Line> findById(final long id) {
-        EntityExchangeResult result = webTestClient.get().uri("/lines/" + id)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectBody(Line.class).returnResult();
-
-        return Optional.ofNullable((Line) result.getResponseBody());
-    }
-
-    private String createLineRequestViewToJson(CreateLineRequestView createLineRequestView) {
-        return "{\"name\":\"" + createLineRequestView.getName() +
-                "\",\"startTime\":\"" + createLineRequestView.getStartTime().format(formatter) +
-                "\",\"endTime\":\"" + createLineRequestView.getEndTime().format(formatter) +
-                "\",\"intervalTime\":" + createLineRequestView.getIntervalTime() + "}";
-    }
-
-    private String writeLineListAsString(final List<Line> lines){
-        final StringBuilder stringBuilder = new StringBuilder();
-        final String lineValue = "{\"id\":%d" +
-                ",\"name\":\"%s" +
-                "\",\"startTime\":\"%s" +
-                "\",\"endTime\":\"%s" +
-                "\",\"intervalTime\":%d" +
-                ",\"stations\":%s}";
-
-        for (Line line : lines) {
-            if(stringBuilder.length() > 0)
-                stringBuilder.append(",");
-
-            stringBuilder.append(String.format(lineValue,
-                    line.getId(),
-                    line.getName(),
-                    line.getStartTime().format(formatter),
-                    line.getEndTime().format(formatter),
-                    line.getIntervalTime(),
-                    writeValueAsString(line.getStations())));
-        }
-
-        return "[" + stringBuilder.toString() + "]";
-    }
-
-    private String writeValueAsString(Object object) {
-        String result = null;
-        try {
-            result = mapper.writeValueAsString(object);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        return result;
+        // then
+        assertThat(resultLine.getStationDtos().size()).isEqualTo(2);
+        assertThat(resultLine.getStationDtos().get(0).getName()).isEqualTo("강남역");
+        assertThat(resultLine.getStationDtos().get(1).getName()).isEqualTo("선릉역");
     }
 }

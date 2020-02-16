@@ -2,8 +2,7 @@ package atdd.station;
 
 import atdd.station.model.CreateStationRequestView;
 import atdd.station.model.entity.Station;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -14,7 +13,6 @@ import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,17 +22,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 public class StationAcceptanceTest {
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private StationTestUtils stationTestUtils;
 
     @Autowired
     private WebTestClient webTestClient;
+
+    @BeforeEach
+    void setUp() {
+        this.stationTestUtils = new StationTestUtils(webTestClient);
+    }
 
     @Test
     public void createStation() {
         //when
         final String stationName = "강남역";
 
-        String inputJson = writeValueAsString(CreateStationRequestView.builder()
+        String inputJson = stationTestUtils.writeValueAsString(CreateStationRequestView.builder()
                 .name(stationName)
                 .build());
 
@@ -51,10 +54,10 @@ public class StationAcceptanceTest {
         String location = result.getResponseHeaders().getLocation().getPath();
 
         Station station = (Station) result.getResponseBody();
-        Station actualStation = findById(station.getId()).get();
+        Station actualStation = stationTestUtils.findById(station.getId()).get();
 
-        String expected = writeValueAsString(station);
-        String actual = writeValueAsString(actualStation);
+        String expected = stationTestUtils.writeValueAsString(station);
+        String actual = stationTestUtils.writeValueAsString(actualStation);
 
         assertThat(expected).isEqualTo(actual);
     }
@@ -62,7 +65,7 @@ public class StationAcceptanceTest {
     @Test
     public void findAllStations() {
         // given
-        List<Station> stations = createStations();
+        List<Station> stations = stationTestUtils.createStations();
 
         // when
         EntityExchangeResult result = webTestClient.get().uri("/stations")
@@ -73,8 +76,8 @@ public class StationAcceptanceTest {
                 .expectBody(List.class).returnResult();
 
         //then
-        String expected = writeValueAsString(result.getResponseBody());
-        String actual = writeValueAsString(stations);
+        String expected = stationTestUtils.writeValueAsString(result.getResponseBody());
+        String actual = stationTestUtils.writeValueAsString(stations);
 
         assertThat(expected).isEqualTo(actual);
     }
@@ -82,7 +85,7 @@ public class StationAcceptanceTest {
     @Test
     public void findStation() {
         // given
-        List<Station> stations = createStations();
+        List<Station> stations = stationTestUtils.createStations();
 
         // when
         long stationId = stations.get(0).getId();
@@ -95,8 +98,8 @@ public class StationAcceptanceTest {
                 .expectBody(Station.class).returnResult();
 
         // then
-        String expected = writeValueAsString(result.getResponseBody());
-        String actual = writeValueAsString(stations.stream().filter(data -> data.getId() == stationId).findAny().get());
+        String expected = stationTestUtils.writeValueAsString(result.getResponseBody());
+        String actual = stationTestUtils.writeValueAsString(stations.stream().filter(data -> data.getId() == stationId).findAny().get());
 
         assertThat(expected).isEqualTo(actual);
     }
@@ -104,7 +107,7 @@ public class StationAcceptanceTest {
     @Test
     public void deleteStation() {
         // given
-        createStations();
+        stationTestUtils.createStations();
 
         // when
         long stationId = 1;
@@ -115,54 +118,55 @@ public class StationAcceptanceTest {
                 .expectBody().returnResult();
 
         // then
-        Optional<Station> optionalStation = findById(stationId);
+        Optional<Station> optionalStation = stationTestUtils.findById(stationId);
         Station station = optionalStation.isPresent() ? optionalStation.get() : null;
 
         assertThat(station).isNull();
     }
 
-    private List<Station> createStations() {
-        List<Station> stations = new ArrayList<>();
-        stations.add(createStation("강남역"));
-        stations.add(createStation("삼성역"));
-
-        return stations;
-    }
-
-    private Station createStation(String name) {
-        String inputJson = writeValueAsString(CreateStationRequestView.builder()
-                .name(name)
-                .build());
-
-        EntityExchangeResult result = webTestClient.post().uri("/stations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
-                .exchange()
-                .expectBody(Station.class).returnResult();
-
-        Station station = (Station) result.getResponseBody();
-
-        return station;
-    }
-
-    private Optional<Station> findById(final long stationId) {
-        return Optional.ofNullable(
-                webTestClient.get()
-                        .uri("/stations/" + stationId)
-                        .exchange()
-                        .expectBody(Station.class)
-                        .returnResult()
-                        .getResponseBody());
-    }
-
-    private String writeValueAsString(Object object) {
-        String result = null;
-        try {
-            result = mapper.writeValueAsString(object);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        return result;
-    }
+//    private List<Station> createStations() {
+//        List<Station> stations = new ArrayList<>();
+//        stations.add(createStation("강남역"));
+//        stations.add(createStation("역삼역"));
+//        stations.add(createStation("선릉역"));
+//
+//        return stations;
+//    }
+//
+//    private Station createStation(String name) {
+//        String inputJson = writeValueAsString(CreateStationRequestView.builder()
+//                .name(name)
+//                .build());
+//
+//        EntityExchangeResult result = webTestClient.post().uri("/stations")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .body(Mono.just(inputJson), String.class)
+//                .exchange()
+//                .expectBody(Station.class).returnResult();
+//
+//        Station station = (Station) result.getResponseBody();
+//
+//        return station;
+//    }
+//
+//    private Optional<Station> findById(final long stationId) {
+//        return Optional.ofNullable(
+//                webTestClient.get()
+//                        .uri("/stations/" + stationId)
+//                        .exchange()
+//                        .expectBody(Station.class)
+//                        .returnResult()
+//                        .getResponseBody());
+//    }
+//
+//    private String writeValueAsString(Object object) {
+//        String result = null;
+//        try {
+//            result = mapper.writeValueAsString(object);
+//        } catch (JsonProcessingException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return result;
+//    }
 }
