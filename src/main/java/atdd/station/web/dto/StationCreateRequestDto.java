@@ -6,6 +6,14 @@ public class StationCreateRequestDto {
     public StationCreateRequestDto() {
     }
 
+    public StationCreateRequestDto(String name) {
+        this.name = name;
+    }
+
+    public static StationCreateRequestDto of(String name) {
+        return new StationCreateRequestDto(name);
+    }
+
     public String getName() {
         return this.name;
     }

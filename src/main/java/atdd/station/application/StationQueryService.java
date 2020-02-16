@@ -2,7 +2,6 @@ package atdd.station.application;
 
 import atdd.station.application.dto.StationResponseDto;
 import atdd.station.application.dto.SubwayCommonResponseDto;
-import atdd.station.application.exception.ResourceNotFoundException;
 import atdd.station.domain.Station;
 import atdd.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
