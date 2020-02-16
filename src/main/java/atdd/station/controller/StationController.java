@@ -3,6 +3,7 @@ package atdd.station.controller;
 import atdd.station.model.CreateStationRequestView;
 import atdd.station.model.entity.Station;
 import atdd.station.repository.StationRepository;
+import atdd.station.service.StationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class StationController {
     @Autowired
     private StationRepository stationRepository;
 
+    @Autowired
+    private StationService stationService;
+
     @PostMapping
     public ResponseEntity<Station> createStation(@RequestBody CreateStationRequestView view) {
         final Station station = stationRepository.save(view.toStation());
@@ -31,7 +35,9 @@ public class StationController {
 
     @GetMapping
     public ResponseEntity<List<Station>> findAllStations() {
-        final List stations = stationRepository.findAll();
+        final List<Station> stations = stationRepository.findAll();
+
+        stations.forEach(data -> data.setLineDtos(stationService.lineDtos(data.getLineIds())));
 
         return ResponseEntity.ok(stations);
     }
@@ -40,8 +46,15 @@ public class StationController {
     public ResponseEntity<Station> findStation(@PathVariable long id) {
         final Optional<Station> optionalStation = stationRepository.findById(id);
 
+        if(optionalStation.isPresent()) {
+            Station station = optionalStation.get();
+            station.setLineDtos(stationService.lineDtos(station.getLineIds()));
+
+            return ResponseEntity.ok(station);
+        }
+
         return ResponseEntity
-                .ok(optionalStation.isPresent() ? optionalStation.get() : null);
+                .noContent().build();
     }
 
     @DeleteMapping("/{id}")

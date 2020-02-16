@@ -23,15 +23,14 @@ public class Station extends BaseEntity {
     private String name;
 
     @Setter
+    @Column
     @JsonIgnore
     @Convert(converter = LongListConverter.class)
-    @Column
     private List<Long> lineIds = new ArrayList<>();
 
     @Setter
-    @Convert(converter = LineDtoListConverter.class)
-    @JsonProperty("lines")
     @Transient
+    @JsonProperty("lines")
     private List<LineDto> lineDtos = new ArrayList<>();
 
     public Station() {
