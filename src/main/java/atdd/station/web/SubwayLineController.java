@@ -78,7 +78,9 @@ public class SubwayLineController {
                                                     @RequestBody SubwaySectionCreateRequestDto subwaySectionCreateRequestDto) {
         logger.info("[SubwayLineController.createSubwaySection] subwayLineId={}, SubwaySectionCreateRequestDto={}", id, subwaySectionCreateRequestDto);
 
-        SubwaySection savedSubwaySection = subwaySectionCommandService.createSubwaySection(id, subwaySectionCreateRequestDto.getSourceStationId(), subwaySectionCreateRequestDto.getTargetStationId());
+        SubwaySection savedSubwaySection = subwaySectionCommandService.createSubwaySection(id,
+                subwaySectionCreateRequestDto.getSourceStationId(),
+                subwaySectionCreateRequestDto.getTargetStationId());
 
         return ResponseEntity.created(URI.create(ROOT_URI + "/" + savedSubwaySection.getId())).build();
     }
