@@ -1,7 +1,10 @@
 package atdd.station.application;
 
 import atdd.station.application.dto.SubwayCommonResponseDto;
-import atdd.station.domain.*;
+import atdd.station.domain.Station;
+import atdd.station.domain.StationRepository;
+import atdd.station.domain.SubwaySection;
+import atdd.station.domain.SubwaySectionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,8 +34,4 @@ public class SubwaySectionQueryService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    public List<SubwaySection> findAllBySubwayLine(SubwayLine subwayLine) {
-        return subwaySectionRepository.findBySubwayLine(subwayLine);
-    }
 }

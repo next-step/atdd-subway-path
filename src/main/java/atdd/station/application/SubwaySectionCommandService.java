@@ -27,7 +27,9 @@ public class SubwaySectionCommandService {
     }
 
     @Transactional
-    public SubwaySection createSubwaySection(Long subwayLineId, Long sourceStationId, Long targetStationId) {
+    public SubwaySection createSubwaySection(Long subwayLineId,
+                                             Long sourceStationId,
+                                             Long targetStationId) {
 
         SubwayLine savedSubwayLine = subwayLineQueryService.findSubwayLineById(subwayLineId);
 
