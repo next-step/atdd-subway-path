@@ -3,7 +3,6 @@ package atdd.station;
 import atdd.station.model.CreateEdgeRequestView;
 import atdd.station.model.CreateLineRequestView;
 import atdd.station.model.entity.Line;
-import atdd.station.model.entity.Station;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
@@ -17,9 +16,13 @@ import java.util.List;
 import java.util.Optional;
 
 public class LineTestUtils {
+    private final String LINES_PATH = "/lines";
+    private final String EDGES_PATH = "/edge";
+
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
     private static final ObjectMapper mapper = new ObjectMapper();
+
     public WebTestClient webTestClient;
 
     public LineTestUtils(WebTestClient webTestClient) {
@@ -55,29 +58,35 @@ public class LineTestUtils {
         return line;
     }
 
-    public Optional<Line> findById(final long id) {
-        EntityExchangeResult result = webTestClient.get().uri("/lines/" + id)
+    public List<Line> findAll() {
+
+        EntityExchangeResult result = webTestClient.get().uri(LINES_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(List.class).returnResult();
+
+        return (List<Line>) result.getResponseBody();
+    }
+
+    public Optional<Line> findById(final long id) {
+        EntityExchangeResult result = webTestClient.get().uri(LINES_PATH + "/" + id)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody(Line.class).returnResult();
+
 
         return Optional.ofNullable((Line) result.getResponseBody());
     }
 
-    // TODO 삭제
-    public Line addEdge(final Line line, final List<Station> stations) {
-        long stationId = stations.stream().filter(data -> data.getName().equals("강남역")).findAny().get().getId();
-        CreateEdgeRequestView createEdgeRequestView = new CreateEdgeRequestView();
-        createEdgeRequestView.setSourceStationId(stationId);
-        createEdgeRequestView.setTargetStationId(stations.stream().filter(data -> data.getName().equals("역삼역")).findAny().get().getId());
-
-        EntityExchangeResult result = webTestClient.post().uri("/lines/" + line.getId() + "/edge")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(writeValueAsString(createEdgeRequestView)), String.class)
+    public void deleteLine(final long id) {
+        EntityExchangeResult result = webTestClient.delete().uri(LINES_PATH + "/" + id)
                 .exchange()
-                .expectBody(Line.class).returnResult();
-
-        return (Line) result.getResponseBody();
+                .expectStatus().isNoContent()
+                .expectBody().returnResult();
     }
 
     public Line addEdge(final long lineId, final long sourceStationId, final long targetStationId) {
@@ -92,6 +101,13 @@ public class LineTestUtils {
                 .expectBody(Line.class).returnResult();
 
         return (Line) result.getResponseBody();
+    }
+
+    public void deleteEdge(final long id, final long stationId) {
+        webTestClient.delete().uri(LINES_PATH + "/" + id + EDGES_PATH + "?stationId=" + stationId)
+                .exchange()
+                .expectStatus().isNoContent()
+                .expectBody().returnResult();
     }
 
 

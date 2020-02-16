@@ -8,9 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.LocalTime;
@@ -67,15 +65,10 @@ public class LineAcceptanceTest {
                 10);
 
         // when
-        EntityExchangeResult result = webTestClient.get().uri("/lines")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(List.class).returnResult();
+        List<Line> lines = lineTestUtils.findAll();
 
         //then
-        String expected = lineTestUtils.writeValueAsString(result.getResponseBody());
+        String expected = lineTestUtils.writeValueAsString(lines);
         String actual = lineTestUtils.writeLineListAsString(Arrays.asList(line));
 
         assertThat(expected).isEqualTo(actual);
@@ -90,15 +83,10 @@ public class LineAcceptanceTest {
                 10);
 
         // when
-        EntityExchangeResult result = webTestClient.get().uri("/lines/" + line.getId())
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(Line.class).returnResult();
+        Optional<Line> lineOptional = lineTestUtils.findById(line.getId());
 
         // then
-        String expected = lineTestUtils.writeValueAsString(result.getResponseBody());
+        String expected = lineTestUtils.writeValueAsString(lineOptional.get());
         String actual = lineTestUtils.writeValueAsString(line);
 
         assertThat(expected).isEqualTo(actual);
@@ -113,10 +101,7 @@ public class LineAcceptanceTest {
                 10).getId();
 
         // when
-        EntityExchangeResult result = webTestClient.delete().uri("/lines/" + lineId)
-                .exchange()
-                .expectStatus().isNoContent()
-                .expectBody().returnResult();
+        lineTestUtils.deleteLine(lineId);
 
         // then
         Optional<Line> optionalLine = lineTestUtils.findById(lineId);
@@ -162,14 +147,11 @@ public class LineAcceptanceTest {
         lineTestUtils.addEdge(line.getId(), station2.getId(), station3.getId());
 
         // when
-        webTestClient.delete().uri("/lines/" + line.getId() + "/edge?stationId=" + station2.getId())
-                .exchange()
-                .expectStatus().isNoContent()
-                .expectBody().returnResult();
-
-        Line resultLine = lineTestUtils.findById(line.getId()).get();
+        lineTestUtils.deleteEdge(line.getId(), station2.getId());
 
         // then
+        Line resultLine = lineTestUtils.findById(line.getId()).get();
+
         assertThat(resultLine.getStationDtos().size()).isEqualTo(2);
         assertThat(resultLine.getStationDtos().get(0).getName()).isEqualTo("강남역");
         assertThat(resultLine.getStationDtos().get(1).getName()).isEqualTo("선릉역");

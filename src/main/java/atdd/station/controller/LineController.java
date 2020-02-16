@@ -32,10 +32,10 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<Line>> findAllLines() {
-        final List<Line> optionalLine = lineRepository.findAll();
+        final List<Line> lines = lineRepository.findAll();
 
         return ResponseEntity
-                .ok(optionalLine);
+                .ok(lines);
     }
 
     @GetMapping("/{id}")
