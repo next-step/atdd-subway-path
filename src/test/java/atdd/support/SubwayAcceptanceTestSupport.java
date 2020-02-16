@@ -1,7 +1,5 @@
 package atdd.support;
 
-import atdd.station.application.dto.StationResponseDto;
-import atdd.station.application.dto.SubwayLineResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,58 +17,8 @@ public abstract class SubwayAcceptanceTestSupport {
     @Autowired
     protected WebTestClient webTestClient;
 
-    protected EntityExchangeResult<Void> createStation(String stationName) {
-        String inputJson = "{\"name\":\"" + stationName + "\"}";
-
-        return webTestClient.post()
-                .uri("/stations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectHeader().exists(HttpHeaders.LOCATION)
-                .expectBody(Void.class)
-                .returnResult();
-    }
-
-    protected EntityExchangeResult<StationResponseDto> getStationFromLocationPath(String locationPath) {
-        return webTestClient.get()
-                .uri(locationPath)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(StationResponseDto.class)
-                .returnResult();
-    }
-
-    protected EntityExchangeResult<StationResponseDto> getStationFromId(Long stationId) {
-
-        return webTestClient.get()
-                .uri("/stations/" + stationId)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(StationResponseDto.class)
-                .returnResult();
-    }
-
-    protected EntityExchangeResult<Void> createSubwayLine(String subwayLineName) {
-        String inputJson = "{\"name\":\"" + subwayLineName + "\"}";
-
-        return webTestClient.post()
-                .uri("/subway-lines")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectHeader().exists(HttpHeaders.LOCATION)
-                .expectBody(Void.class)
-                .returnResult();
-    }
-
-    protected EntityExchangeResult<SubwayLineResponseDto> getSubwayLineFromLocationPath(String locationPath) {
+    protected <T> EntityExchangeResult<T> getResource(String locationPath,
+                                                      Class<T> responseBody) {
 
         return webTestClient.get()
                 .uri(locationPath)
@@ -78,37 +26,27 @@ public abstract class SubwayAcceptanceTestSupport {
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(SubwayLineResponseDto.class)
+                .expectBody(responseBody)
                 .returnResult();
     }
 
-    protected EntityExchangeResult<SubwayLineResponseDto> getSubwayLineFromId(Long subwayLineId) {
+    protected String createResource(String requestPath,
+                                    Object requestDto) {
 
-        return webTestClient.get()
-                .uri("/subway-lines/" + subwayLineId)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(SubwayLineResponseDto.class)
-                .returnResult();
-    }
-
-    protected EntityExchangeResult<Void> createSubwaySection(Long subwayLineId, Long sourceStationId, Long targetStationId) {
-        String inputJson = "{\"sourceStationId\":" + sourceStationId + ", \"targetStationId\":" + targetStationId + "}";
-
-        return webTestClient.post()
-                .uri("/subway-lines/" + subwayLineId + "/subway-section")
+        EntityExchangeResult<Void> result = webTestClient.post()
+                .uri(requestPath)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
+                .body(Mono.just(requestDto), Object.class)
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().exists(HttpHeaders.LOCATION)
                 .expectBody(Void.class)
                 .returnResult();
+
+        return result.getResponseHeaders().getLocation().getPath();
     }
 
-    protected Long extractId(EntityExchangeResult<Void> result) {
-        return Long.parseLong(result.getResponseHeaders().getLocation().getPath().split("/")[2]);
+    protected Long extractId(String locationPath) {
+        return Long.parseLong(locationPath.split("/")[2]);
     }
 }
