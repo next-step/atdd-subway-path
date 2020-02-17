@@ -1,6 +1,8 @@
 package atdd.station.dto.path;
 
+import atdd.station.domain.Graph;
 import atdd.station.domain.Station;
+import atdd.station.domain.SubwayLine;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +20,15 @@ public class PathFindResponseDto {
         this.endStationId = endStationId;
         this.stations = stations;
     }
+
+    public static PathFindResponseDto toDtoEntity(long startId, long endId, List<SubwayLine> subwayLines) {
+        return PathFindResponseDto.builder()
+                .stations(new Graph(subwayLines).getShortestDistancePath(startId, endId))
+                .startStationId(startId)
+                .endStationId(startId)
+                .build();
+    }
+
 
     public long getStartStationId() {
         return startStationId;
