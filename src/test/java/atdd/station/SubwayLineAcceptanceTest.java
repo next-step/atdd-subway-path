@@ -5,8 +5,6 @@ import atdd.station.application.dto.SubwayCommonResponseDto;
 import atdd.station.application.dto.SubwayLineResponseDto;
 import atdd.station.domain.Station;
 import atdd.station.domain.SubwayLine;
-import atdd.station.web.dto.SubwayLineCreateRequestDto;
-import atdd.station.web.dto.SubwaySectionCreateRequestDto;
 import atdd.support.SubwayAcceptanceTestSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,15 +21,15 @@ public class SubwayLineAcceptanceTest extends SubwayAcceptanceTestSupport {
     @Test
     public void createSubwayLine() {
         // expect
-        createResource("/subway-lines", SubwayLineCreateRequestDto.of("2호선"));
+        createSubwayLineResource("2호선");
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     public void getSubwayLines() {
         // given
-        createResource("/subway-lines", SubwayLineCreateRequestDto.of("2호선"));
-        createResource("/subway-lines", SubwayLineCreateRequestDto.of("8호선"));
+        createSubwayLineResource("2호선");
+        createSubwayLineResource("8호선");
 
         // when, then
         webTestClient.get()
@@ -51,10 +49,10 @@ public class SubwayLineAcceptanceTest extends SubwayAcceptanceTestSupport {
     public void retrieveFromSubwayLineName() {
         // given
         String subwayLineName = "2호선";
-        String locationPath = createResource("/subway-lines", SubwayLineCreateRequestDto.of(subwayLineName));
+        Long createdSubwayLineId = createSubwayLineResource("2호선");
 
         // when
-        EntityExchangeResult<SubwayLineResponseDto> result = getResource(locationPath, SubwayLineResponseDto.class);
+        EntityExchangeResult<SubwayLineResponseDto> result = getSubwayLineResource(createdSubwayLineId);
 
         // then
         assertThat(result.getResponseBody().getName()).isEqualTo(subwayLineName);
@@ -64,17 +62,14 @@ public class SubwayLineAcceptanceTest extends SubwayAcceptanceTestSupport {
     @Test
     public void deleteSubwayLine() {
         // given
-        String locationPath = createResource("/subway-lines", SubwayLineCreateRequestDto.of("2호선"));
+        Long createdSubwayLineId = createSubwayLineResource("2호선");
 
         // when
-        webTestClient.delete()
-                .uri(locationPath)
-                .exchange()
-                .expectStatus().isOk();
+        deleteSubwayLineResource(createdSubwayLineId);
 
         // then
         webTestClient.get()
-                .uri(locationPath)
+                .uri("/subway-lines/" + createdSubwayLineId)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNoContent();
@@ -84,34 +79,32 @@ public class SubwayLineAcceptanceTest extends SubwayAcceptanceTestSupport {
     @Test
     public void createSubwaySection() {
         // given
-        String pathOfCreatedSubwayLine = createResource("/subway-lines", SubwayLineCreateRequestDto.of("2호선"));
-        String pathOfCreatedStation = createResource("/stations", SubwayLineCreateRequestDto.of("강남역"));
+        Long createdSubwayLineId = createSubwayLineResource("2호선");
 
-        Long createdSubwayLineId = extractId(pathOfCreatedSubwayLine);
-        Long createdStationId1 = extractId(pathOfCreatedStation);
-        Long createdStationId2 = extractId(createResource("/stations", SubwayLineCreateRequestDto.of("역삼역")));
-        Long createdStationId3 = extractId(createResource("/stations", SubwayLineCreateRequestDto.of("선릉역")));
-        Long createdStationId4 = extractId(createResource("/stations", SubwayLineCreateRequestDto.of("삼성역")));
-        Long createdStationId5 = extractId(createResource("/stations", SubwayLineCreateRequestDto.of("교대역")));
+        Long createdStationId1 = createStationResource("강남역");
+        Long createdStationId2 = createStationResource("역삼역");
+        Long createdStationId3 = createStationResource("선릉역");
+        Long createdStationId4 = createStationResource("삼성역");
+        Long createdStationId5 = createStationResource("교대역");
 
         // when
-        createResource("/subway-lines/" + createdSubwayLineId + "/subway-section", SubwaySectionCreateRequestDto.of(createdStationId1, createdStationId2));
-        createResource("/subway-lines/" + createdSubwayLineId + "/subway-section", SubwaySectionCreateRequestDto.of(createdStationId3, createdStationId4));
-        createResource("/subway-lines/" + createdSubwayLineId + "/subway-section", SubwaySectionCreateRequestDto.of(createdStationId2, createdStationId3));
-        createResource("/subway-lines/" + createdSubwayLineId + "/subway-section", SubwaySectionCreateRequestDto.of(createdStationId5, createdStationId1));
+        createSubwaySectionResource(createdSubwayLineId, createdStationId1, createdStationId2);
+        createSubwaySectionResource(createdSubwayLineId, createdStationId3, createdStationId4);
+        createSubwaySectionResource(createdSubwayLineId, createdStationId2, createdStationId3);
+        createSubwaySectionResource(createdSubwayLineId, createdStationId5, createdStationId1);
 
         // then
-        EntityExchangeResult<SubwayLineResponseDto> savedSubwayLine = getResource(pathOfCreatedSubwayLine, SubwayLineResponseDto.class);
+        EntityExchangeResult<SubwayLineResponseDto> savedSubwayLine = getSubwayLineResource(createdSubwayLineId);
         assertThat(savedSubwayLine.getResponseBody().getStations())
-                .isEqualTo(Arrays.asList(SubwayCommonResponseDto.of(Station.of("교대역"))
+                .containsExactly(SubwayCommonResponseDto.of(Station.of("교대역"))
                         , SubwayCommonResponseDto.of(Station.of("강남역"))
                         , SubwayCommonResponseDto.of(Station.of("역삼역"))
                         , SubwayCommonResponseDto.of(Station.of("선릉역"))
                         , SubwayCommonResponseDto.of(Station.of("삼성역"))
-                ));
+                );
 
         // and
-        EntityExchangeResult<StationResponseDto> result = getResource(pathOfCreatedStation, StationResponseDto.class);
+        EntityExchangeResult<StationResponseDto> result = getStationResource(createdStationId1);
         assertThat(result.getResponseBody().getLines()).contains(SubwayCommonResponseDto.of(SubwayLine.of("2호선")));
     }
 
@@ -119,30 +112,24 @@ public class SubwayLineAcceptanceTest extends SubwayAcceptanceTestSupport {
     @Test
     public void deleteSubwaySection() {
         // given
-        String pathOfCreatedSubwayLine = createResource("/subway-lines", SubwayLineCreateRequestDto.of("2호선"));
-        String pathOfCreatedStation = createResource("/stations", SubwayLineCreateRequestDto.of("역삼역"));
+        Long createdSubwayLineId = createSubwayLineResource("2호선");
 
-        Long createdSubwayLineId = extractId(pathOfCreatedSubwayLine);
-        Long createdStationId2 = extractId(pathOfCreatedStation);
-        Long createdStationId1 = extractId(createResource("/stations", SubwayLineCreateRequestDto.of("강남역")));
-        Long createdStationId3 = extractId(createResource("/stations", SubwayLineCreateRequestDto.of("선릉역")));
+        Long createdStationId1 = createStationResource("강남역");
+        Long createdStationId2 = createStationResource("역삼역");
+        Long createdStationId3 = createStationResource("선릉역");
 
-        createResource("/subway-lines/" + createdSubwayLineId + "/subway-section", SubwaySectionCreateRequestDto.of(createdStationId1, createdStationId2));
-        createResource("/subway-lines/" + createdSubwayLineId + "/subway-section", SubwaySectionCreateRequestDto.of(createdStationId2, createdStationId3));
+        createSubwaySectionResource(createdSubwayLineId, createdStationId1, createdStationId2);
+        createSubwaySectionResource(createdSubwayLineId, createdStationId2, createdStationId3);
 
         // when
-        webTestClient.delete()
-                .uri("/subway-lines/" + createdSubwayLineId + "/subway-section?" + "stationName=역삼역")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk();
+        deleteSubwaySectionResource(createdSubwayLineId, "역삼역");
 
         // then
-        EntityExchangeResult<StationResponseDto> savedStation = getResource(pathOfCreatedStation, StationResponseDto.class);
+        EntityExchangeResult<StationResponseDto> savedStation = getStationResource(createdStationId2);
         assertThat(savedStation.getResponseBody().getLines()).isEmpty();
 
         // and
-        EntityExchangeResult<SubwayLineResponseDto> savedSubwayLine = getResource(pathOfCreatedSubwayLine, SubwayLineResponseDto.class);
+        EntityExchangeResult<SubwayLineResponseDto> savedSubwayLine = getSubwayLineResource(createdSubwayLineId);
         assertThat(savedSubwayLine.getResponseBody().getStations())
                 .isEqualTo(Arrays.asList(
                         SubwayCommonResponseDto.of(Station.of("강남역")), SubwayCommonResponseDto.of(Station.of("선릉역"))));

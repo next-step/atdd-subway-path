@@ -5,7 +5,6 @@ import atdd.station.application.dto.StationResponseDto;
 import atdd.station.application.dto.SubwayCommonResponseDto;
 import atdd.station.domain.Station;
 import atdd.station.domain.SubwayLine;
-import atdd.station.web.dto.SubwaySectionCreateRequestDto;
 import atdd.support.SubwayAcceptanceTestSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,18 +22,18 @@ public class SubwayMapAcceptanceTest extends SubwayAcceptanceTestSupport {
     @Test
     void getShortestPath() {
         // given
-        Long createdStationId1 = extractId(createResource("/stations", "강남역"));
-        Long createdStationId2 = extractId(createResource("/stations", "역삼역"));
-        Long createdStationId3 = extractId(createResource("/stations", "선릉역"));
-        Long createdStationId4 = extractId(createResource("/stations", "삼성역"));
-        Long createdStationId5 = extractId(createResource("/stations", "교대역"));
+        Long createdStationId1 = createStationResource("강남역");
+        Long createdStationId2 = createStationResource("역삼역");
+        Long createdStationId3 = createStationResource("선릉역");
+        Long createdStationId4 = createStationResource("삼성역");
+        Long createdStationId5 = createStationResource("교대역");
 
-        Long createdSubwayLineId = extractId(createResource("/subway-lines", "2호선"));
+        Long createdSubwayLineId = createSubwayLineResource("2호선");
 
-        createResource("/subway-lines/" + createdSubwayLineId + "/subway-section", SubwaySectionCreateRequestDto.of(createdStationId1, createdStationId2));
-        createResource("/subway-lines/" + createdSubwayLineId + "/subway-section", SubwaySectionCreateRequestDto.of(createdStationId3, createdStationId4));
-        createResource("/subway-lines/" + createdSubwayLineId + "/subway-section", SubwaySectionCreateRequestDto.of(createdStationId2, createdStationId3));
-        createResource("/subway-lines/" + createdSubwayLineId + "/subway-section", SubwaySectionCreateRequestDto.of(createdStationId5, createdStationId1));
+        createSubwaySectionResource(createdSubwayLineId, createdStationId1, createdStationId2);
+        createSubwaySectionResource(createdSubwayLineId, createdStationId3, createdStationId4);
+        createSubwaySectionResource(createdSubwayLineId, createdStationId2, createdStationId3);
+        createSubwaySectionResource(createdSubwayLineId, createdStationId5, createdStationId1);
 
         // when
         EntityExchangeResult<ShortestPathResponseDto> result = webTestClient.get()

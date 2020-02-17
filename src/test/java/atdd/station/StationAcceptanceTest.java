@@ -29,8 +29,8 @@ public class StationAcceptanceTest extends SubwayAcceptanceTestSupport {
     @Test
     public void retrieveStations() {
         // given
-        createResource("/stations", StationCreateRequestDto.of("강남역"));
-        createResource("/stations", StationCreateRequestDto.of("잠실역"));
+        createStationResource("강남역");
+        createStationResource("잠실역");
 
         // when, then
         webTestClient.get()
@@ -49,10 +49,10 @@ public class StationAcceptanceTest extends SubwayAcceptanceTestSupport {
     public void retrieveStation() {
         // given
         String stationName = "강남역";
-        String locationPath = createResource("/stations", StationCreateRequestDto.of(stationName));
+        Long createdStationId = createStationResource(stationName);
 
         // when, then
-        assertThat(getResource(locationPath, StationResponseDto.class).getResponseBody().getName())
+        assertThat(getStationResource(createdStationId).getResponseBody().getName())
                 .isEqualTo(stationName);
     }
 
@@ -61,18 +61,14 @@ public class StationAcceptanceTest extends SubwayAcceptanceTestSupport {
     public void deleteFromStationName() {
         // given
         String stationName = "강남역";
-        String locationPath = createResource("/stations", StationCreateRequestDto.of(stationName));
+        Long createdStationId = createStationResource(stationName);
 
         // when
-        webTestClient.delete()
-                .uri(locationPath)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk();
+        deleteStationResource(createdStationId);
 
         // then
         webTestClient.get()
-                .uri(locationPath)
+                .uri("/stations/" + createdStationId)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isBadRequest();
