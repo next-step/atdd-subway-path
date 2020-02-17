@@ -8,6 +8,7 @@ import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 public class SubwayLine {
@@ -36,19 +37,24 @@ public class SubwayLine {
     @OrderBy("id ASC")
     private List<Subway> subways = new ArrayList<>();
 
+    @Embedded
+    private Edges edges = new Edges();
+
     private boolean deleted = false;
 
     public SubwayLine() {
     }
 
     @Builder
-    public SubwayLine(String name, String startTime, String endTime, String intervalTime, List<Subway> subways) {
+    public SubwayLine(long id, String name, String startTime, String endTime, String intervalTime, List<Subway> subways, Edges edges) {
+        this.id = id;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.startTime = startTime;
         this.subways = subways;
+        this.edges = edges;
     }
 
     public SubwayLine(String name) {
@@ -56,6 +62,15 @@ public class SubwayLine {
         this.startTime = DEFAULT_START_TIME;
         this.endTime = DEFAULT_END_TIME;
         this.intervalTime = DEFAULT_INTERVAL;
+        this.edges = new Edges();
+    }
+
+    public SubwayLine(String name, Edges edges) {
+        this.name = name;
+        this.startTime = DEFAULT_START_TIME;
+        this.endTime = DEFAULT_END_TIME;
+        this.intervalTime = DEFAULT_INTERVAL;
+        this.edges = edges;
     }
 
     public long getId() {
@@ -88,6 +103,14 @@ public class SubwayLine {
 
     public List<Subway> getSubways() {
         return this.subways;
+    }
+
+    public Edges getEdges() {
+        return edges;
+    }
+
+    public Stream<Edge> getEdgesStream() {
+        return this.edges.getEdges().stream();
     }
 
     public List<Station> getStations() {
