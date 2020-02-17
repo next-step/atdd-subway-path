@@ -16,10 +16,9 @@ class SubwayMapTest {
     void getShortestPath() {
         // given
         SubwayLine subwayLine = SubwayLine.of("8호선");
-        SubwaySection subwaySection1 = SubwaySection.of(subwayLine, Station.of(3L, "몽촌토성역"), Station.of(4L, "잠실역"));
-        SubwaySection subwaySection2 = SubwaySection.of(subwayLine, Station.of(2L, "강동구청역"), Station.of(3L, "몽촌토성역"));
-        SubwaySection subwaySection3 = SubwaySection.of(subwayLine, Station.of(1L, "천호역"), Station.of(2L, "강동구청역"));
-        subwayLine.setSubwaySections(Arrays.asList(subwaySection1, subwaySection2, subwaySection3));
+        subwayLine.setSubwaySections(Arrays.asList(SubwaySection.of(subwayLine, Station.of(3L, "몽촌토성역"), Station.of(4L, "잠실역"))
+                , SubwaySection.of(subwayLine, Station.of(2L, "강동구청역"), Station.of(3L, "몽촌토성역"))
+                , SubwaySection.of(subwayLine, Station.of(1L, "천호역"), Station.of(2L, "강동구청역"))));
 
         SubwayMap subwayMap = new SubwayMap(Collections.singletonList(subwayLine));
 
