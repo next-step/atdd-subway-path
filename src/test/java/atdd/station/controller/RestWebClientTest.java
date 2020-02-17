@@ -1,9 +1,14 @@
 package atdd.station.controller;
 
+import atdd.station.domain.SubwayLine;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
+
+import java.util.Objects;
+
+import static atdd.station.controller.SubwayLineAcceptanceTest.SUBWAY_LINE_API_BASE_URL;
 
 public class RestWebClientTest {
     private WebTestClient webTestClient;
@@ -38,4 +43,11 @@ public class RestWebClientTest {
                 .returnResult();
     }
 
+    public String creatSubwayLine(SubwayLine subwayLine) {
+        return Objects.requireNonNull(this
+                .postMethodAcceptance(SUBWAY_LINE_API_BASE_URL, subwayLine, SubwayLine.class)
+                .getResponseHeaders()
+                .getLocation())
+                .getPath();
+    }
 }
