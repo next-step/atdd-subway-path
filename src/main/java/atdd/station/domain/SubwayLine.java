@@ -50,6 +50,10 @@ public class SubwayLine {
         return connectStations(subwaySections);
     }
 
+    public void setSubwaySections(List<SubwaySection> subwaySections) {
+        this.subwaySections = subwaySections;
+    }
+
     private List<Station> connectStations(List<SubwaySection> subwaySections) {
         Deque<SubwaySection> orderedSectionsQueue = new ArrayDeque<>();
         Deque<SubwaySection> waitingQueue = new ArrayDeque<>(subwaySections);
@@ -67,8 +71,13 @@ public class SubwayLine {
 
             waitingQueueSection = waitingQueue.pollFirst();
 
+            if (Objects.isNull(waitingQueueSection)) {
+                break;
+            }
+
             SubwaySectionQueueUtils.pushSectionIfConditionCorrect(orderedSectionsQueue
                     , waitingQueue, waitingQueueSection, orderedSectionsQueue.getLast());
+
         }
 
         Set<Station> stations = new LinkedHashSet<>();

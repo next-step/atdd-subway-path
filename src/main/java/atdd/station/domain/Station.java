@@ -17,11 +17,20 @@ public class Station {
     }
 
     public Station(String name) {
+        this(null, name);
+    }
+
+    public Station(Long id, String name) {
+        this.id = id;
         this.name = name;
     }
 
     public static Station of(String stationName) {
         return new Station(stationName);
+    }
+
+    public static Station of(Long id, String stationName) {
+        return new Station(id, stationName);
     }
 
     public boolean isNotMatchBy(Station savedStation) {
