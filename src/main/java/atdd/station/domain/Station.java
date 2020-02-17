@@ -18,12 +18,6 @@ public class Station {
     @Size(min = 2, max = 20)
     private String name;
 
-    @Size(min = 2, max = 20)
-    private String beforeStation;
-
-    @Size(min = 2, max = 20)
-    private String afterStation;
-
     @OneToMany(mappedBy = "subwayLine", fetch = FetchType.EAGER)
     @Where(clause = "deleted = false")
     @OrderBy("id ASC")
@@ -32,6 +26,11 @@ public class Station {
     private boolean deleted = false;
 
     public Station() {
+    }
+
+    public Station(long id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public Station(String name) {
@@ -62,20 +61,20 @@ public class Station {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public String toString() {
-        return "Station{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
-    }
-
     public void deleteStation() {
         this.deleted = true;
     }
 
     public boolean isDeleted() {
         return this.deleted;
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
 
