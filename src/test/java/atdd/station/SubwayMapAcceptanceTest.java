@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,13 +44,13 @@ public class SubwayMapAcceptanceTest extends SubwayAcceptanceTestSupport {
                 .expectStatus().isOk()
                 .expectBody(ShortestPathResponseDto.class)
                 .returnResult();
+        List<StationResponseDto> stations = result.getResponseBody().getStations();
 
         // then
-        assertThat(result.getResponseBody().getStations().size()).isEqualTo(3);
-        assertThat(result.getResponseBody().getStations()).isEqualTo(Arrays.asList(
+        assertThat(stations).hasSize(3);
+        assertThat(stations).containsExactly(
                 StationResponseDto.of(Station.of("교대역"), Arrays.asList(SubwayCommonResponseDto.of(SubwayLine.of("2호선")))),
                 StationResponseDto.of(Station.of("강남역"), Arrays.asList(SubwayCommonResponseDto.of(SubwayLine.of("2호선")))),
-                StationResponseDto.of(Station.of("역삼역"), Arrays.asList(SubwayCommonResponseDto.of(SubwayLine.of("2호선"))))
-        ));
+                StationResponseDto.of(Station.of("역삼역"), Arrays.asList(SubwayCommonResponseDto.of(SubwayLine.of("2호선")))));
     }
 }
