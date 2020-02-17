@@ -8,7 +8,7 @@ import java.util.List;
 import static atdd.station.fixture.StationFixture.KANGNAM_AND_YUCKSAM_STATIONS;
 import static atdd.station.fixture.StationFixture.YUCKSAM_STATION_NAME;
 import static atdd.station.fixture.SubwayLineFixture.SECOND_SUBWAY_LINE_NAME;
-import static atdd.station.fixture.SubwayLineFixture.getSecondSubwayLineName;
+import static atdd.station.fixture.SubwayLineFixture.getSecondSubwayLine;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SubwayLineTest {
@@ -59,7 +59,7 @@ public class SubwayLineTest {
     @Test
     public void deleteStationByNameTest() {
         //given
-        SubwayLine subwayLine = getSecondSubwayLineName();
+        SubwayLine subwayLine = getSecondSubwayLine();
 
         //when
         subwayLine.deleteStationByName(YUCKSAM_STATION_NAME);
@@ -72,7 +72,7 @@ public class SubwayLineTest {
     @Test
     public void getStationByNameSuccessTest() {
         //given
-        SubwayLine subwayLine = getSecondSubwayLineName();
+        SubwayLine subwayLine = getSecondSubwayLine();
 
         //when
         Station station = subwayLine.getStationByName(YUCKSAM_STATION_NAME);

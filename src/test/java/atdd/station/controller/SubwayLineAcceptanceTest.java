@@ -16,13 +16,13 @@ import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import java.util.List;
 import java.util.Objects;
 
-import static atdd.station.fixture.StationFixture.KANGNAM_AND_YUCKSAM_STATIONS;
+import static atdd.station.fixture.StationFixture.KANGNAM_AND_YUCKSAM_STATIONS_DTO;
 import static atdd.station.fixture.StationFixture.YUCKSAM_STATION_NAME;
 import static atdd.station.fixture.SubwayLineFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SubwayLineAcceptanceTest extends AbstractAcceptanceTest {
-    private static final String SUBWAY_LINE_API_BASE_URL = "/subway-lines/";
+    static final String SUBWAY_LINE_API_BASE_URL = "/subway-lines/";
 
     private RestWebClientTest restWebClientTest;
 
@@ -106,9 +106,8 @@ public class SubwayLineAcceptanceTest extends AbstractAcceptanceTest {
         String location = creatSubwayLine(SECOND_SUBWAY_LINE_NAME);
 
         //whens
-
         EntityExchangeResult<SubwayLine> expectResponse
-                = restWebClientTest.postMethodAcceptance(location + "/subways/", KANGNAM_AND_YUCKSAM_STATIONS, SubwayLine.class);
+                = restWebClientTest.postMethodAcceptance(location + "/subways", KANGNAM_AND_YUCKSAM_STATIONS_DTO, SubwayLine.class);
 
         //then
         assertThat(expectResponse.getStatus()).isEqualTo(HttpStatus.OK);
@@ -118,7 +117,7 @@ public class SubwayLineAcceptanceTest extends AbstractAcceptanceTest {
     @DisplayName("2호선_지하철노선에_내에_존재하는_강남역을_삭제가_성공하는지")
     @Test
     void deleteKanNamStationInSecondSubwaySuccessTest() {
-        String location = creatSecondSubwayLine();
+        String location = restWebClientTest.creatSubwayLine(getSecondSubwayLine());
 
         //whens
         EntityExchangeResult expectResponse = restWebClientTest.deleteMethodAcceptance(location + "/stations/" + YUCKSAM_STATION_NAME);
@@ -129,17 +128,16 @@ public class SubwayLineAcceptanceTest extends AbstractAcceptanceTest {
 
 
     private String creatSubwayLine(String subwayLineName) {
-        return Objects.requireNonNull(
-                restWebClientTest
+        return Objects.requireNonNull(restWebClientTest
                 .postMethodAcceptance(SUBWAY_LINE_API_BASE_URL, getSubwayLine(subwayLineName), SubwayLine.class)
                 .getResponseHeaders()
                 .getLocation())
                 .getPath();
     }
 
-    private String creatSecondSubwayLine() {
+    public String creatSecondSubwayLine() {
         return Objects.requireNonNull(restWebClientTest
-                .postMethodAcceptance(SUBWAY_LINE_API_BASE_URL, getSecondSubwayLineName(), SubwayLine.class)
+                .postMethodAcceptance(SUBWAY_LINE_API_BASE_URL, getSecondSubwayLine(), SubwayLine.class)
                 .getResponseHeaders()
                 .getLocation())
                 .getPath();

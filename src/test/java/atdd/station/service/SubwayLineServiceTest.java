@@ -34,7 +34,7 @@ public class SubwayLineServiceTest {
     @Test
     public void 지하철노선_생성시_성공하는지(SoftAssertions softly) {
         //given
-        SubwayLine subwayLine = getSecondSubwayLineName();
+        SubwayLine subwayLine = getSecondSubwayLine();
 
         //when
         when(subwayLineRepository.save(any())).thenReturn(subwayLine);
@@ -65,7 +65,7 @@ public class SubwayLineServiceTest {
     @Test
     public void 지하철노선_상세_조회가_성공하는지(SoftAssertions softly) {
         //given
-        SubwayLine subwayLine = getSecondSubwayLineName();
+        SubwayLine subwayLine = getSecondSubwayLine();
 
         //when
         when(subwayLineRepository.findById(DEFAULT_ID)).thenReturn(java.util.Optional.ofNullable(subwayLine));
@@ -80,7 +80,7 @@ public class SubwayLineServiceTest {
     @Test
     public void 지하철노선_삭제가_성공하는지(SoftAssertions softly) {
         //given
-        SubwayLine subwayLine = getSecondSubwayLineName();
+        SubwayLine subwayLine = getSecondSubwayLine();
 
         when(subwayLineRepository.findById(DEFAULT_ID)).thenReturn(java.util.Optional.of(subwayLine));
         subwayLineService.delete(DEFAULT_ID);
@@ -108,7 +108,7 @@ public class SubwayLineServiceTest {
     @Test
     public void 지하철_2호선에서_역삼역이_삭제되는지(SoftAssertions softly) {
         //given
-        SubwayLine subwayLine = getSecondSubwayLineName();
+        SubwayLine subwayLine = getSecondSubwayLine();
 
         when(subwayLineRepository.findById(DEFAULT_ID)).thenReturn(java.util.Optional.of(subwayLine));
 

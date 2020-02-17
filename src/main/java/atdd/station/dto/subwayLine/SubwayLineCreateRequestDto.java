@@ -1,5 +1,6 @@
 package atdd.station.dto.subwayLine;
 
+import atdd.station.domain.Edges;
 import atdd.station.domain.Subway;
 import atdd.station.domain.SubwayLine;
 import lombok.Builder;
@@ -18,14 +19,16 @@ public class SubwayLineCreateRequestDto {
     private String endTime;
     private String intervalTime;
     private List<Subway> subways;
+    private Edges edges;
 
     @Builder
-    public SubwayLineCreateRequestDto(String name, String startTime, String endTime, String intervalTime, List<Subway> subways) {
+    public SubwayLineCreateRequestDto(String name, String startTime, String endTime, String intervalTime, List<Subway> subways, Edges edges) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.subways = subways;
+        this.edges = edges;
     }
 
     public SubwayLine toEntity() {
@@ -35,6 +38,7 @@ public class SubwayLineCreateRequestDto {
                 .endTime(this.endTime)
                 .intervalTime(this.intervalTime)
                 .subways(this.subways)
+                .edges(this.edges)
                 .build();
     }
 
@@ -45,6 +49,7 @@ public class SubwayLineCreateRequestDto {
                 .endTime(subwayLine.getEndTime())
                 .intervalTime(subwayLine.getIntervalTime())
                 .subways(subways)
+                .edges(subwayLine.getEdges())
                 .build();
     }
 }
