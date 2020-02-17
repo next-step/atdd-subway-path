@@ -18,7 +18,7 @@ public class GraphTest {
         //given
         long startId = 0L;
         long endId = 3L;
-        Graph graph = new Graph(Arrays.asList(getSecondSubwayLineName(), getFirstSubwayLineName()));
+        Graph graph = new Graph(Arrays.asList(getSecondSubwayLine(), getFirstSubwayLine()));
 
         //when
         List<Station> result = graph.getShortestDistancePath(startId, endId);

@@ -1,7 +1,7 @@
 package atdd.station.service;
 
-import atdd.station.domain.Station;
-import atdd.station.domain.StationRepository;
+import atdd.station.domain.SubwayLine;
+import atdd.station.domain.SubwayLineRepository;
 import atdd.station.dto.path.PathFindResponseDto;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -15,31 +15,32 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Arrays;
 import java.util.List;
 
-import static atdd.station.fixture.StationFixture.*;
+import static atdd.station.fixture.SubwayLineFixture.getFirstSubwayLine;
+import static atdd.station.fixture.SubwayLineFixture.getSecondSubwayLine;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(SoftAssertionsExtension.class)
 public class PathServiceTest {
     @Mock
-    StationRepository stationRepository;
+    SubwayLineRepository subwayLineRepository;
 
     @InjectMocks
-    StationService stationService;
+    PathService pathService;
 
     @DisplayName("지하철역_사이의_최단거리_꼉로_조회가_되는지")
     @Test
     public void findPathTest(SoftAssertions softly) {
         //given
-        List<Station> stations = Arrays.asList(KANGNAM_STATON, YUCKSAM_STATON, SUNLENG_STATON);
+        List<SubwayLine> subwayLines = Arrays.asList(getSecondSubwayLine(), getFirstSubwayLine());
 
         //when
-        when(stationRepository.findAll()).thenReturn(stations);
-        PathFindResponseDto shortestPath = stationService.findPath();
+        when(subwayLineRepository.findAll()).thenReturn(subwayLines);
+        PathFindResponseDto shortestPath = pathService.findPath(0L, 3L);
 
         //then
-        softly.assertThat(shortestPath.getStartStationId()).isEqualTo(1L);
-        softly.assertThat(shortestPath.getEndStationId()).isEqualTo(5L);
-        softly.assertThat(shortestPath.getStations().size()).isEqualTo(4);
+        softly.assertThat(shortestPath.getStartStationId()).isEqualTo(0L);
+        softly.assertThat(shortestPath.getEndStationId()).isEqualTo(0L);
+        softly.assertThat(shortestPath.getStations().size()).isEqualTo(3);
     }
 }
