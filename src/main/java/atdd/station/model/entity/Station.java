@@ -1,7 +1,6 @@
 package atdd.station.model.entity;
 
 
-import atdd.station.converter.LineDtoListConverter;
 import atdd.station.converter.LongListConverter;
 import atdd.station.model.dto.LineDto;
 import atdd.station.model.dto.StationDto;
