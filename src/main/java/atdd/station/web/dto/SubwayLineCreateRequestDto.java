@@ -6,6 +6,14 @@ public class SubwayLineCreateRequestDto {
     public SubwayLineCreateRequestDto() {
     }
 
+    public SubwayLineCreateRequestDto(String name) {
+        this.name = name;
+    }
+
+    public static SubwayLineCreateRequestDto of(String name) {
+        return new SubwayLineCreateRequestDto(name);
+    }
+
     public void setName(String name) {
         this.name = name;
     }

@@ -1,0 +1,5 @@
+###
+GET {{host}}/subway-map/shortest-path?startStationId=1&destinationStationId=4
+Content-Type: application/json
+
+###

@@ -1,7 +1,10 @@
 package atdd.station.application;
 
 import atdd.station.application.dto.SubwayCommonResponseDto;
-import atdd.station.domain.*;
+import atdd.station.domain.Station;
+import atdd.station.domain.StationRepository;
+import atdd.station.domain.SubwaySection;
+import atdd.station.domain.SubwaySectionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,15 +15,12 @@ import java.util.stream.Collectors;
 public class SubwaySectionQueryService {
     private SubwaySectionRepository subwaySectionRepository;
     private StationRepository stationRepository;
-    private SubwayLineRepository subwayLineRepository;
 
     public SubwaySectionQueryService(SubwaySectionRepository subwaySectionRepository,
-                                     StationRepository stationRepository,
-                                     SubwayLineRepository subwayLineRepository) {
+                                     StationRepository stationRepository) {
 
         this.subwaySectionRepository = subwaySectionRepository;
         this.stationRepository = stationRepository;
-        this.subwayLineRepository = subwayLineRepository;
     }
 
     @Transactional
@@ -31,11 +31,8 @@ public class SubwaySectionQueryService {
         List<SubwaySection> subwaySections = subwaySectionRepository.findAllBySourceStationOrTargetStation(savedStation, savedStation);
         return subwaySections.stream()
                 .map(subwaySection -> SubwayCommonResponseDto.of(subwaySection.getSubwayLine()))
+                .distinct()
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    public List<SubwaySection> findAllBySubwayLine(SubwayLine subwayLine) {
-        return subwaySectionRepository.findBySubwayLine(subwayLine);
-    }
 }

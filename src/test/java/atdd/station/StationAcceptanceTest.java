@@ -2,13 +2,13 @@ package atdd.station;
 
 import atdd.station.application.dto.StationResponseDto;
 import atdd.station.domain.Station;
+import atdd.station.web.dto.StationCreateRequestDto;
 import atdd.support.SubwayAcceptanceTestSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.EntityExchangeResult;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,15 +22,15 @@ public class StationAcceptanceTest extends SubwayAcceptanceTestSupport {
     @ValueSource(strings = {"강남역", "잠실역", "장한평역"})
     public void create(String stationName) {
         // expect
-        createStation(stationName);
+        createResource("/stations", StationCreateRequestDto.of(stationName));
     }
 
     @DisplayName("지하철역 목록을 조회한다")
     @Test
     public void retrieveStations() {
         // given
-        createStation("강남역");
-        createStation("잠실역");
+        createStationResource("강남역");
+        createStationResource("잠실역");
 
         // when, then
         webTestClient.get()
@@ -49,12 +49,10 @@ public class StationAcceptanceTest extends SubwayAcceptanceTestSupport {
     public void retrieveStation() {
         // given
         String stationName = "강남역";
-        EntityExchangeResult<Void> createdResult = createStation(stationName);
-
-        String locationPath = createdResult.getResponseHeaders().getLocation().getPath();
+        Long createdStationId = createStationResource(stationName);
 
         // when, then
-        assertThat(getStationFromLocationPath(locationPath).getResponseBody().getName())
+        assertThat(getStationResource(createdStationId).getResponseBody().getName())
                 .isEqualTo(stationName);
     }
 
@@ -63,18 +61,14 @@ public class StationAcceptanceTest extends SubwayAcceptanceTestSupport {
     public void deleteFromStationName() {
         // given
         String stationName = "강남역";
-        EntityExchangeResult<Void> createdResult = createStation(stationName);
+        Long createdStationId = createStationResource(stationName);
 
         // when
-        webTestClient.delete()
-                .uri(createdResult.getResponseHeaders().getLocation().getPath())
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk();
+        deleteStationResource(createdStationId);
 
         // then
         webTestClient.get()
-                .uri(createdResult.getResponseHeaders().getLocation().getPath())
+                .uri("/stations/" + createdStationId)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isBadRequest();
