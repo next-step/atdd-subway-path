@@ -5,6 +5,7 @@ import atdd.line.controller.LineController;
 import atdd.line.dto.LineCreateRequestDto;
 import atdd.line.dto.LineResponseDto;
 import atdd.station.StationHttpTestSupport;
+import atdd.station.dto.SectionCreateRequestDto;
 import atdd.station.dto.StationCreateRequestDto;
 import atdd.station.dto.StationResponseDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -173,10 +174,49 @@ public class LineAcceptanceTest extends AcceptanceTestSupport {
 
         final LineResponseDto responseDto = lineHttpTestSupport.findAll().get(0);
         assertThat(responseDto.getStations()).hasSize(1);
-        final StationResponseDto station = responseDto.getStations().get(0);
+        final LineResponseDto.StationDto station = responseDto.getStations().get(0);
         assertThat(station.getId()).isEqualTo(createdStation.getId());
         assertThat(station.getName()).isEqualTo(createdStation.getName());
 
+    }
+
+    @DisplayName("지하철노선에 지하철 구간을 등록")
+    @Test
+    void addSection() {
+        final LineCreateRequestDto lineRequestDto = new LineCreateRequestDto(name1, startTime, endTime, intervalTime);
+        final LineResponseDto createdLine = lineHttpTestSupport.createLine(lineRequestDto);
+
+        final StationResponseDto createdStation1 = stationHttpTestSupport.createStation(StationCreateRequestDto.of("강남역"));
+        final StationResponseDto createdStation2 = stationHttpTestSupport.createStation(StationCreateRequestDto.of("역삼역"));
+
+        lineHttpTestSupport.addStation(createdLine.getId(), createdStation1.getId());
+        lineHttpTestSupport.addStation(createdLine.getId(), createdStation2.getId());
+
+
+        final LocalTime duration = LocalTime.MAX;
+        final double distance = 1.5;
+        final SectionCreateRequestDto createRequestDto = SectionCreateRequestDto.of(createdStation2.getId(), duration, distance);
+        final String uri = LineController.ROOT_URI + "/{lineId}/stations/{stationId}/sections";
+
+        webTestClient.put()
+                .uri(uri, createdLine.getId(), createdStation1.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(createRequestDto), SectionCreateRequestDto.class)
+                .exchange()
+                .expectStatus().isOk();
+
+
+        final List<LineResponseDto> lineResponseDtos = lineHttpTestSupport.findAll();
+        assertThat(lineResponseDtos).hasSize(1);
+
+        final LineResponseDto lineResponseDto = lineResponseDtos.get(0);
+        assertThat(lineResponseDto.getId()).isEqualTo(createdLine.getId());
+
+        final List<LineResponseDto.StationDto> stations = lineResponseDto.getStations();
+        assertThat(stations).hasSize(2);
+
+        assertThat(stations.get(0).getId()).isEqualTo(createdStation1.getId());
+        assertThat(stations.get(1).getId()).isEqualTo(createdStation2.getId());
     }
 
     private void assertEqual(LineResponseDto responseDto, LineCreateRequestDto requestDto) {

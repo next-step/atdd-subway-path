@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.eq;
@@ -40,7 +41,7 @@ class StationControllerTest {
         final String stationName = "강남역";
         final String requestJson = "{\"name\": \"" + stationName + "\"}";
 
-        when(stationService.create(eq(stationName))).thenReturn(new StationResponseDto(id, stationName));
+        when(stationService.create(eq(stationName))).thenReturn(new StationResponseDto(id, stationName, new ArrayList<>()));
 
         mockMvc.perform(post(StationController.ROOT_URI)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -81,7 +82,7 @@ class StationControllerTest {
         final Long id = 41546L;
         final String name = "stationName!!";
 
-        when(stationService.getStation(id)).thenReturn(new StationResponseDto(id, name));
+        when(stationService.getStation(id)).thenReturn(new StationResponseDto(id, name, new ArrayList<>()));
 
         mockMvc.perform(get(StationController.ROOT_URI + "/" + id)
                 .characterEncoding(StandardCharsets.UTF_8.name()))

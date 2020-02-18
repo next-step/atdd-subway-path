@@ -1,5 +1,6 @@
 package atdd.station.service;
 
+import atdd.line.domain.Line;
 import atdd.station.domain.Station;
 import atdd.station.dto.StationResponseDto;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,18 @@ public class StationAssembler {
 
     @Transactional(readOnly = true)
     public StationResponseDto convertToDto(Station station) {
-        return new StationResponseDto(station.getId(), station.getName());
+
+        return new StationResponseDto(station.getId(), station.getName(), convertLineDtos(station.getLines()));
+    }
+
+    private List<StationResponseDto.LineDto> convertLineDtos(List<Line> lines) {
+        return lines.stream()
+                .map(this::convertLineDto)
+                .collect(Collectors.toList());
+    }
+
+    private StationResponseDto.LineDto convertLineDto(Line line) {
+        return StationResponseDto.LineDto.of(line.getId(), line.getName());
     }
 
     @Transactional(readOnly = true)

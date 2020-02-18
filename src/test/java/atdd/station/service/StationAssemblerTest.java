@@ -1,6 +1,7 @@
 package atdd.station.service;
 
 import atdd.station.domain.Station;
+import atdd.station.domain.StationTest;
 import atdd.station.dto.StationResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +27,7 @@ class StationAssemblerTest {
         final Long id = 551342L;
         final String name = "name!!!";
 
-        final Station station = Station.of(id, name);
+        final Station station = StationTest.create(id, name);
 
         final StationResponseDto responseDto = stationAssembler.convertToDto(station);
 
@@ -42,8 +43,8 @@ class StationAssemblerTest {
     @Test
     void convertToDtos() {
 
-        final Station station1 = Station.of(55134L, "name1111");
-        final Station station2 = Station.of(79869L, "name2222");
+        final Station station1 = StationTest.create(55134L, "name1111");
+        final Station station2 = StationTest.create(79869L, "name2222");
 
         final List<Station> stations = Arrays.asList(station1, station2);
 

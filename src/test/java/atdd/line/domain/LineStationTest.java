@@ -1,6 +1,7 @@
 package atdd.line.domain;
 
 import atdd.station.domain.Station;
+import atdd.station.domain.StationTest;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalTime;
@@ -10,8 +11,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineStationTest {
 
-    private final Line line = Line.of(123L, "lineName!!", new TimeTable(LocalTime.MIN, LocalTime.MIDNIGHT), 0);
-    private final Station station = Station.of(634L, "stationName!!");
+    private final Line line = LineTest.create(123L, "lineName!!", new TimeTable(LocalTime.MIN, LocalTime.MIDNIGHT), 0);
+    private final Station station = StationTest.create(634L, "stationName!!");
 
     @Test
     void create() {

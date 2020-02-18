@@ -1,27 +1,35 @@
 package atdd.line.service;
 
 import atdd.line.domain.Line;
-import atdd.line.domain.TimeTable;
 import atdd.line.dto.LineResponseDto;
-import atdd.station.service.StationAssembler;
+import atdd.station.domain.Station;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class LineAssembler {
 
-    private final StationAssembler stationAssembler;
-
-    public LineAssembler(StationAssembler stationAssembler) {
-        this.stationAssembler = stationAssembler;
-    }
-
     @Transactional(readOnly = true)
     public LineResponseDto convertToResponseDto(Line line) {
 
-        final TimeTable timeTable = line.getTimeTable();
+        return new LineResponseDto(line.getId(),
+                line.getName(),
+                line.getTimeTable(),
+                line.getIntervalTime(),
+                convertToStationDtos(line.getOrderedStations()));
+    }
 
-        return new LineResponseDto(line.getId(), line.getName(), timeTable, line.getIntervalTime(), stationAssembler.convertToDtos(line.getStations()));
+    private List<LineResponseDto.StationDto> convertToStationDtos(List<Station> stations) {
+        return stations.stream()
+                .map(this::convertToStationDto)
+                .collect(Collectors.toList());
+    }
+
+    private LineResponseDto.StationDto convertToStationDto(Station station) {
+        return LineResponseDto.StationDto.of(station.getId(), station.getName());
     }
 
 }

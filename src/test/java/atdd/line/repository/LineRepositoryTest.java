@@ -3,6 +3,7 @@ package atdd.line.repository;
 import atdd.line.domain.Line;
 import atdd.line.domain.LineStation;
 import atdd.line.domain.TimeTable;
+import atdd.station.domain.Duration;
 import atdd.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -77,7 +78,7 @@ class LineRepositoryTest {
         assertThat(addedStation.getId()).isNotNull();
         assertThat(addedStation.getName()).isEqualTo(station.getName());
 
-        assertThat(line.getStartStation()).isEqualTo(addedStation);
+        assertThat(line.getStartStation().get()).isEqualTo(addedStation);
     }
 
     @Test
@@ -92,6 +93,28 @@ class LineRepositoryTest {
 
         final List<LineStation> lineStations = lineStationRepository.findAll();
         assertThat(lineStations).isEmpty();
+    }
+
+    @Test
+    void addSection() {
+        final Line line = getSavedLine();
+        final Station station1 = Station.create("stationName11");
+        final Station station2 = Station.create("stationName22");
+        line.addStation(station1);
+        line.addStation(station2);
+
+        lineRepository.flush();
+
+        final Duration duration = new Duration(LocalTime.MAX);
+        final double distance = 1.5;
+        line.addSection(station1.getId(), station2.getId(), duration, distance);
+
+        lineRepository.flush();
+
+        final List<Station> orderedStations = line.getOrderedStations();
+        assertThat(orderedStations).hasSize(2);
+        assertThat(orderedStations.get(0)).isEqualTo(station1);
+        assertThat(orderedStations.get(1)).isEqualTo(station2);
     }
 
     private Line getSavedLine() {

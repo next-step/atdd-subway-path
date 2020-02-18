@@ -1,10 +1,15 @@
 package atdd.line.domain;
 
+import atdd.station.domain.Duration;
 import atdd.station.domain.Station;
+import atdd.station.domain.StationTest;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -12,10 +17,12 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class LineTest {
+public class LineTest {
 
-    final Station station1 = Station.of(4341L, "stationName1!!");
-    final Station station2 = Station.of(4341L, "stationName2!!");
+    private final Station station1 = StationTest.create(4341L, "stationName1!!");
+    private final Station station2 = StationTest.create(4342L, "stationName2!!");
+    private final Station station3 = StationTest.create(4343L, "stationName3!!");
+    private final Station station4 = StationTest.create(4344L, "stationName4!!");
     private final String name = "name!!";
     private final TimeTable timeTable = new TimeTable(LocalTime.MIN, LocalTime.MAX);
     private final int intervalTime = 1;
@@ -66,7 +73,7 @@ class LineTest {
         line.addStation(station1);
         line.addStation(station2);
 
-        assertThat(line.getStartStation()).isEqualTo(station1);
+        assertThat(line.getStartStation().get()).isEqualTo(station1);
     }
 
     @DisplayName("addStation - 동일한 이름의 Station 추가시 에러")
@@ -135,7 +142,65 @@ class LineTest {
         line.changeStartStation(station2);
 
 
-        assertThat(line.getStartStation()).isEqualTo(station2);
+        assertThat(line.getStartStation().get()).isEqualTo(station2);
+    }
+
+    @Test
+    void addSection() throws Exception {
+        final Duration duration = new Duration(LocalTime.MAX);
+        final double distance = 1;
+
+        final Line line = Line.create(name, timeTable, intervalTime);
+        line.addStation(station1);
+        line.addStation(station2);
+
+
+        line.addSection(station1.getId(), station2.getId(), duration, distance);
+
+
+        final Station nextStation1 = CollectionUtils.firstElement(station1.getSameLineNextStations(line));
+        final Station nextStation2 = CollectionUtils.firstElement(station2.getSameLineNextStations(line));
+        assertThat(nextStation1).isEqualTo(station2);
+        assertThat(nextStation2).isEqualTo(station1);
+    }
+
+    @DisplayName("getOrderedStations - 첫번째 역이 없으면 empty")
+    @Test
+    void getOrderedStationsNullStartStation() throws Exception {
+        Line line = Line.create(name, timeTable, intervalTime);
+
+        assertThat(line.getOrderedStations()).isEmpty();
+    }
+
+    @DisplayName("getOrderedStations - 구간 순서대로 역이 반환된다.")
+    @Test
+    void getOrderedStations() throws Exception {
+        final Duration duration = new Duration(LocalTime.MAX);
+        final double distance = 1;
+        final Line line = Line.create(name, timeTable, intervalTime);
+        final List<Station> expectedOrderedStation = Lists.list(station1, station3, station2, station4);
+
+        line.addStation(station1);
+        line.addStation(station4);
+        line.addStation(station3);
+        line.addStation(station2);
+
+        line.addSection(station1.getId(), station3.getId(), duration, distance);
+        line.addSection(station3.getId(), station2.getId(), duration, distance);
+        line.addSection(station2.getId(), station4.getId(), duration, distance);
+
+        final List<Station> orderedStations = line.getOrderedStations();
+
+        assertThat(orderedStations).isEqualTo(expectedOrderedStation);
+    }
+
+    public static Line create(Long id, String name, TimeTable timeTable, int intervalTime) {
+        Line line = new Line();
+        ReflectionTestUtils.setField(line, "id", id);
+        ReflectionTestUtils.setField(line, "name", name);
+        ReflectionTestUtils.setField(line, "timeTable", timeTable);
+        ReflectionTestUtils.setField(line, "intervalTime", intervalTime);
+        return line;
     }
 
 }

@@ -8,6 +8,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
@@ -16,7 +17,7 @@ public class Station {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
     @Column(name = "name", nullable = false, unique = true)
@@ -25,16 +26,15 @@ public class Station {
     @OneToMany(mappedBy = "station", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<LineStation> lineStations = new ArrayList<>();
 
-    protected Station() { }
+    @OneToMany(mappedBy = "station", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<Section> sections = new ArrayList<>();
+
+    protected Station() {
+    }
 
     public static Station create(String name) {
         Assert.hasText(name, "name은 필수 입니다.");
-        return of(null, name);
-    }
-
-    public static Station of(Long id, String name) {
         Station station = new Station();
-        station.id = id;
         station.name = name;
         return station;
     }
@@ -59,6 +59,38 @@ public class Station {
         return name;
     }
 
+    public List<Line> getLines() {
+        return this.lineStations.stream()
+                .map(LineStation::getLine)
+                .collect(Collectors.toList());
+    }
+
+    public void addNextStation(Line line, Station nextStation, Duration duration, double distance) {
+        if (existSameLineNextStation(line, nextStation)) {
+            throw new IllegalArgumentException(String.format("동일한 다음역이 존재합니다. lineName : [%s], nextStationName : [%s]",
+                    line.getName(), nextStation.getName())
+            );
+        }
+
+        Section section = Section.create(line, this, nextStation, duration, distance);
+        this.sections.add(section);
+    }
+
+    public Set<Station> getSameLineNextStations(Line line) {
+        return sections.stream()
+                .filter(section -> section.isEqualLine(line.getName()))
+                .map(Section::getNextStation)
+                .collect(Collectors.toSet());
+    }
+
+    public boolean existSameLineNextStation(Line line, Station nextStation) {
+        return getSameLineNextStations(line).contains(nextStation);
+    }
+
+    public boolean isEqualStation(Long stationId) {
+        return Objects.equals(id, stationId);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -72,10 +104,12 @@ public class Station {
         return Objects.hash(id);
     }
 
-    public List<Line> getLines() {
-        return this.lineStations.stream()
-                .map(LineStation::getLine)
-                .collect(Collectors.toList());
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 
 }

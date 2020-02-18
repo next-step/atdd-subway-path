@@ -5,7 +5,9 @@ import atdd.line.domain.TimeTable;
 import atdd.line.dto.LineCreateRequestDto;
 import atdd.line.dto.LineResponseDto;
 import atdd.line.repository.LineRepository;
+import atdd.station.domain.Duration;
 import atdd.station.domain.Station;
+import atdd.station.dto.SectionCreateRequestDto;
 import atdd.station.service.StationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,6 +76,13 @@ public class LineService {
         Station station = stationService.findById(stationId);
 
         line.addStation(station);
+    }
+
+    @Transactional
+    public void addSection(Long lineId, Long stationId, SectionCreateRequestDto sectionRequestDto) {
+        final Line line = findById(lineId);
+        final Duration duration = new Duration(sectionRequestDto.getDuration());
+        line.addSection(stationId, sectionRequestDto.getNextStationId(), duration, sectionRequestDto.getDistance());
     }
 
 }

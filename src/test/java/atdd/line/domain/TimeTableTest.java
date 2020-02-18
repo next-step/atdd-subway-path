@@ -17,7 +17,7 @@ class TimeTableTest {
 
         assertThatThrownBy(() -> new TimeTable(startTime, LocalTime.MIDNIGHT))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("시 시간은 필수 입니다.");
+                .hasMessage("시작 시간은 필수 입니다.");
     }
 
     @DisplayName("종료 시간은 필수")

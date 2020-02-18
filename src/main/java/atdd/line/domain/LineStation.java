@@ -15,11 +15,11 @@ public class LineStation {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "line_id")
+    @JoinColumn(name = "line_id", nullable = false, updatable = false)
     private Line line;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
-    @JoinColumn(name = "station_id")
+    @JoinColumn(name = "station_id", nullable = false, updatable = false)
     private Station station;
 
     protected LineStation() {

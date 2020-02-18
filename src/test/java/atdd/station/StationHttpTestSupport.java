@@ -14,7 +14,7 @@ public class StationHttpTestSupport extends HttpTestSupport {
     }
 
     public StationResponseDto createStation(StationCreateRequestDto requestDto) {
-        return create(ROOT_URI, requestDto, StationCreateRequestDto.class, StationResponseDto.class);
+        return post(ROOT_URI, requestDto, StationCreateRequestDto.class, StationResponseDto.class);
     }
 
 }

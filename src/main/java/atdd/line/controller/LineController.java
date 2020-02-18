@@ -3,6 +3,7 @@ package atdd.line.controller;
 import atdd.line.dto.LineCreateRequestDto;
 import atdd.line.dto.LineResponseDto;
 import atdd.line.service.LineService;
+import atdd.station.dto.SectionCreateRequestDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,6 +47,12 @@ public class LineController {
     @PutMapping("/{lineId}/stations/{stationId}")
     public void addStation(@PathVariable Long lineId, @PathVariable Long stationId) {
         lineService.addStation(lineId, stationId);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/{lineId}/stations/{stationId}/sections")
+    public void addSection(@PathVariable Long lineId, @PathVariable Long stationId, @Valid @RequestBody SectionCreateRequestDto requestDto) {
+        lineService.addSection(lineId, stationId, requestDto);
     }
 
 }

@@ -1,10 +1,13 @@
 package atdd.line.service;
 
 import atdd.line.domain.Line;
+import atdd.line.domain.LineTest;
 import atdd.line.domain.TimeTable;
 import atdd.line.dto.LineResponseDto;
 import atdd.line.repository.LineRepository;
 import atdd.station.domain.Station;
+import atdd.station.domain.StationTest;
+import atdd.station.dto.SectionCreateRequestDto;
 import atdd.station.service.StationService;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +17,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -31,8 +35,12 @@ class LineServiceTest {
     private static final String NAME_2 = "name222";
     private static final TimeTable TIME_TABLE = new TimeTable(LocalTime.MIN, LocalTime.MAX);;
 
-    private final Line line1 = Line.of(143L, NAME_1, TIME_TABLE, 0);
-    private final Line line2 = Line.of(144L, NAME_2, TIME_TABLE, 0);
+    private final Line line1 = LineTest.create(143L, NAME_1, TIME_TABLE, 0);
+    private final Line line2 = LineTest.create(144L, NAME_2, TIME_TABLE, 0);
+
+    private final Station station1 = StationTest.create(413L, "station111");
+    private final Station station2 = StationTest.create(414L, "station222");
+    private final Station station3 = StationTest.create(415L, "station333");
 
     private LineService lineService;
 
@@ -114,7 +122,7 @@ class LineServiceTest {
 
     @Test
     void addStation() {
-        final Station station = Station.of(4156L, "stationName!!");
+        final Station station = StationTest.create(4156L, "stationName!!");
 
         given(lineRepository.findById(line1.getId())).willReturn(Optional.of(line1));
         given(stationService.findById(station.getId())).willReturn(station);
@@ -131,4 +139,27 @@ class LineServiceTest {
         assertThat(addedStation.getName()).isEqualTo(station.getName());
     }
 
+    @Test
+    void addSection() throws Exception {
+        final SectionCreateRequestDto requestDto = SectionCreateRequestDto.of(station2.getId(), LocalTime.MAX, 1);
+
+        line1.addStation(station1);
+        line1.addStation(station2);
+        given(lineRepository.findById(line1.getId())).willReturn(Optional.of(line1));
+
+        lineService.addSection(line1.getId(), station1.getId(), requestDto);
+
+        final Station nextStation1 = CollectionUtils.firstElement(station1.getSameLineNextStations(line1));
+        final Station nextStation2 = CollectionUtils.firstElement(station2.getSameLineNextStations(line1));
+        assertThat(nextStation1).isEqualTo(station2);
+        assertThat(nextStation2).isEqualTo(station1);
+    }
+
+    // TODO: 2020-02-17 노선에 입력받은 역에 대한 구간 추가
+    // TODO: 2020-02-17  -   노선에 해당 역 있는지 체크
+    // TODO: 2020-02-17  -   노선에 다음 역이 있는지 체크
+    // TODO: 2020-02-17  - 해당역에 다음역 추가
+    // TODO: 2020-02-17  -   노선에 해당 역에 다음 역이 있는지 체크
+    // TODO: 2020-02-17  - 다음역에 해당역 추가
+    // TODO: 2020-02-17  -   다음역에 해당역이 있는지 체크
 }
