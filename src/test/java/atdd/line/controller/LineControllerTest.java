@@ -75,6 +75,18 @@ class LineControllerTest {
     }
 
     @Test
+    void getStation() throws Exception {
+        final Long lineId = 3L;
+
+        final MockHttpServletResponse response = mockMvc.perform(get(LineController.ROOT_URI + "/" + lineId))
+                .andReturn()
+                .getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        verify(lineService, times(1)).getLine(lineId);
+    }
+
+    @Test
     void findAll() throws Exception {
         final MockHttpServletResponse response = mockMvc.perform(get(LineController.ROOT_URI))
                 .andReturn()
@@ -139,6 +151,21 @@ class LineControllerTest {
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         verify(lineService, times(1)).addSection(lineId, stationId, requestDto);
+    }
+
+    @Test
+    void deleteStation() throws Exception {
+        final Long lineId = 4452L;
+        final Long stationId = 623L;
+        final String uri = LineController.ROOT_URI + "/{lineId}/stations/{stationId}";
+
+        final MockHttpServletResponse response = mockMvc.perform(delete(uri, lineId, stationId))
+                .andReturn()
+                .getResponse();
+
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        verify(lineService, times(1)).deleteStation(lineId, stationId);
     }
 
     private String toJsonString(Object requestDto) throws JsonProcessingException {

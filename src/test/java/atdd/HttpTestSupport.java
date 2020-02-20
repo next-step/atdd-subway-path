@@ -21,6 +21,7 @@ public abstract class HttpTestSupport {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(request), requestType)
                 .exchange()
+                .expectStatus().isCreated()
                 .expectBody(returnType)
                 .returnResult().getResponseBody();
     }
@@ -30,6 +31,7 @@ public abstract class HttpTestSupport {
                 .uri(uri)
                 .contentType(MediaType.APPLICATION_JSON)
                 .exchange()
+                .expectStatus().isOk()
                 .expectBody(returnType)
                 .returnResult().getResponseBody();
     }
@@ -40,6 +42,7 @@ public abstract class HttpTestSupport {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(request), requestType)
                 .exchange()
+                .expectStatus().isOk()
                 .expectBody(returnType)
                 .returnResult().getResponseBody();
     }
@@ -50,7 +53,19 @@ public abstract class HttpTestSupport {
                 .acceptCharset(StandardCharsets.UTF_8)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
+                .expectStatus().isOk()
                 .expectBodyList(returnType)
+                .returnResult().getResponseBody();
+    }
+
+    protected <T> T get(String uri, Class<T> returnType) {
+        return webTestClient.get()
+                .uri(uri)
+                .acceptCharset(StandardCharsets.UTF_8)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(returnType)
                 .returnResult().getResponseBody();
     }
 

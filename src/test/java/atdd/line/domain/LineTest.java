@@ -4,6 +4,7 @@ import atdd.station.domain.Duration;
 import atdd.station.domain.Station;
 import atdd.station.domain.StationTest;
 import org.assertj.core.util.Lists;
+import org.assertj.core.util.Sets;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,19 +14,21 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class LineTest {
 
+    private final String name = "name!!";
+    private final TimeTable timeTable = new TimeTable(LocalTime.MIN, LocalTime.MAX);
+    private final int intervalTime = 1;
+
     private final Station station1 = StationTest.create(4341L, "stationName1!!");
     private final Station station2 = StationTest.create(4342L, "stationName2!!");
     private final Station station3 = StationTest.create(4343L, "stationName3!!");
     private final Station station4 = StationTest.create(4344L, "stationName4!!");
-    private final String name = "name!!";
-    private final TimeTable timeTable = new TimeTable(LocalTime.MIN, LocalTime.MAX);
-    private final int intervalTime = 1;
 
     @Test
     void create() throws Exception {
@@ -63,17 +66,6 @@ public class LineTest {
         assertThatThrownBy(() -> Line.create(name, timeTable, negativeIntervalTime))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("intervalTime 은 음수일 수 없습니다.");
-    }
-
-    @DisplayName("addStation - line 에 Station 최초로 추가한 station 이  startStation 이 된다.")
-    @Test
-    void addStation() throws Exception {
-        final Line line = Line.create(name, timeTable, intervalTime);
-
-        line.addStation(station1);
-        line.addStation(station2);
-
-        assertThat(line.getStartStation().get()).isEqualTo(station1);
     }
 
     @DisplayName("addStation - 동일한 이름의 Station 추가시 에러")
@@ -122,29 +114,7 @@ public class LineTest {
         assertThat(line.isSameName(nullAndEmptyName)).isFalse();
     }
 
-    @DisplayName("changeStation - 등록되어 있지 않은 역으로 변경시 에러")
-    @Test
-    void changeStationNotExistStation() {
-        final Line line = Line.create(name, timeTable, intervalTime);
-
-        assertThatThrownBy(() -> line.changeStartStation(station1))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("존재하지 않는 역입니다. name : [stationName1!!]");
-    }
-
-    @Test
-    void changeStation() throws Exception {
-        final Line line = Line.create(name, timeTable, intervalTime);
-        line.addStation(station1);
-        line.addStation(station2);
-
-
-        line.changeStartStation(station2);
-
-
-        assertThat(line.getStartStation().get()).isEqualTo(station2);
-    }
-
+    @DisplayName("addStation - line 에 Station 최초로 추가한 station 이  startStation 이 된다.")
     @Test
     void addSection() throws Exception {
         final Duration duration = new Duration(LocalTime.MAX);
@@ -156,6 +126,9 @@ public class LineTest {
 
 
         line.addSection(station1.getId(), station2.getId(), duration, distance);
+
+
+        assertThat(line.getStartStation().get()).isEqualTo(station1);
 
 
         final Station nextStation1 = CollectionUtils.firstElement(station1.getSameLineNextStations(line));
@@ -192,6 +165,106 @@ public class LineTest {
         final List<Station> orderedStations = line.getOrderedStations();
 
         assertThat(orderedStations).isEqualTo(expectedOrderedStation);
+    }
+
+    @DisplayName("deleteStation - 중간 역을 삭제하면 앞/뒤 역이 연결된다.")
+    @Test
+    void deleteStation() throws Exception {
+        final List<Station> expectedOrderedStation = Lists.list(station1, station3);
+
+        final Duration duration1 = new Duration(LocalTime.of(1, 1));
+        final Duration duration2 = new Duration(LocalTime.of(2, 2));
+        final Duration expectedDuration = duration1.add(duration2);
+
+        final double distance1 = 1.5;
+        final double distance2 = 2.5;
+        final double expectedDistance = distance1 + distance2;
+
+        final Line line = Line.create(name, timeTable, intervalTime);
+
+        line.addStation(station1);
+        line.addStation(station2);
+        line.addStation(station3);
+
+        line.addSection(station1.getId(), station2.getId(), duration1, distance1);
+        line.addSection(station2.getId(), station3.getId(), duration2, distance2);
+
+        
+        line.deleteStation(station2.getId());
+
+
+        final List<Station> stations = line.getStations();
+        assertThat(Sets.newHashSet(stations)).isEqualTo(Sets.newHashSet(expectedOrderedStation));
+
+        final List<Station> orderedStations = line.getOrderedStations();
+        assertThat(orderedStations).isEqualTo(expectedOrderedStation);
+
+        final Station result1 = orderedStations.get(0);
+        final Station result2 = orderedStations.get(1);
+
+        assertThat(result1.getDuration(line, result2)).isEqualTo(expectedDuration);
+        assertThat(result2.getDuration(line, result1)).isEqualTo(expectedDuration);
+
+        assertThat(result1.getDistance(line, result2)).isEqualTo(expectedDistance);
+        assertThat(result2.getDistance(line, result1)).isEqualTo(expectedDistance);
+
+
+        final Set<Station> sameLineStations = station2.getSameLineNextStations(line);
+        assertThat(sameLineStations).isEmpty();
+    }
+
+    @DisplayName("deleteStation - 첫번째 역을 삭제하면 두번째 역이 첫번째 역이 된다.")
+    @Test
+    void deleteStationWithStartStation() throws Exception {
+        final List<Station> expectedOrderedStation = Lists.list(station2, station3);
+
+        final Duration duration1 = new Duration(LocalTime.of(1, 1));
+        final Duration duration2 = new Duration(LocalTime.of(2, 2));
+
+        final double distance1 = 1.5;
+        final double distance2 = 2.5;
+
+        final Line line = Line.create(name, timeTable, intervalTime);
+
+        line.addStation(station1);
+        line.addStation(station2);
+        line.addStation(station3);
+
+        line.addSection(station1.getId(), station2.getId(), duration1, distance1);
+        line.addSection(station2.getId(), station3.getId(), duration2, distance2);
+
+
+        line.deleteStation(station1.getId());
+
+
+        final List<Station> stations = line.getStations();
+        assertThat(Sets.newHashSet(stations)).isEqualTo(Sets.newHashSet(expectedOrderedStation));
+
+        final List<Station> orderedStations = line.getOrderedStations();
+        assertThat(orderedStations).isEqualTo(expectedOrderedStation);
+    }
+
+
+    @DisplayName("delete - 삭제 대상역의 동일한 노선에 연결된 역의 갯수가 3개 이상이면 에러")
+    @Test
+    void deleteStationNotDeletableSize() throws Exception {
+        final Duration duration = new Duration(LocalTime.MAX);
+        final double distance = 1;
+
+        final Line line = Line.create(name, timeTable, intervalTime);
+
+        line.addStation(station1);
+        line.addStation(station2);
+        line.addStation(station3);
+        line.addStation(station4);
+
+        line.addSection(station1.getId(), station2.getId(), duration, distance);
+        line.addSection(station2.getId(), station3.getId(), duration, distance);
+        line.addSection(station2.getId(), station4.getId(), duration, distance);
+
+        assertThatThrownBy(() -> line.deleteStation(station2.getId()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("3개 역이 연결되어 있습니다. 삭제는 2개일때만 가능합니다.");
     }
 
     public static Line create(Long id, String name, TimeTable timeTable, int intervalTime) {

@@ -17,7 +17,7 @@ public class Station {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, updatable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Column(name = "name", nullable = false, unique = true)
@@ -66,14 +66,21 @@ public class Station {
     }
 
     public void addNextStation(Line line, Station nextStation, Duration duration, double distance) {
-        if (existSameLineNextStation(line, nextStation)) {
-            throw new IllegalArgumentException(String.format("동일한 다음역이 존재합니다. lineName : [%s], nextStationName : [%s]",
-                    line.getName(), nextStation.getName())
-            );
-        }
+        checkExistSameLineNextStation(line, nextStation);
 
         Section section = Section.create(line, this, nextStation, duration, distance);
         this.sections.add(section);
+    }
+
+    public boolean existSameLineNextStation(Line line, Station nextStation) {
+        return getSameLineNextStations(line).contains(nextStation);
+    }
+
+    private void checkExistSameLineNextStation(Line line, Station target) {
+        if (existSameLineNextStation(line, target)) {
+            throw new IllegalArgumentException(String.format("동일한 다음역이 존재합니다. lineName : [%s], nextStationName : [%s]",
+                    line.getName(), target.getName()));
+        }
     }
 
     public Set<Station> getSameLineNextStations(Line line) {
@@ -83,12 +90,38 @@ public class Station {
                 .collect(Collectors.toSet());
     }
 
-    public boolean existSameLineNextStation(Line line, Station nextStation) {
-        return getSameLineNextStations(line).contains(nextStation);
-    }
-
     public boolean isEqualStation(Long stationId) {
         return Objects.equals(id, stationId);
+    }
+
+    public Duration getDuration(Line line, Station station) {
+        return getSection(line, station).getDuration();
+    }
+
+    public double getDistance(Line line, Station station) {
+        return getSection(line, station).getDistance();
+    }
+
+    private Section getSection(Line line, Station station) {
+        final String lineName = line.getName();
+        final String stationName = station.getName();
+        return sections.stream()
+                .filter(section -> section.isEqualNextSection(lineName, stationName))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(String.format(
+                        "등록된 구간이 없습니다. currentStation : [%s], lineName : [%s], stationName : [%s]",
+                        this.name, lineName, stationName)));
+    }
+
+    public void deleteSection(Line line, Station target) {
+        final String lineName = line.getName();
+        final String stationName = target.getName();
+        final boolean remove = sections.removeIf(section -> section.isEqualNextSection(lineName, stationName));
+        if (!remove) {
+            throw new IllegalArgumentException(String.format(
+                    "등록된 다음역이 없습니다. currentStation : [%s], lineName : [%s], stationName : [%s]",
+                    name, lineName, stationName));
+        }
     }
 
     @Override

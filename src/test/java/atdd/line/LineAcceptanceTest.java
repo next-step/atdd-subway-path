@@ -21,6 +21,7 @@ import reactor.core.publisher.Mono;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -136,16 +137,13 @@ public class LineAcceptanceTest extends AcceptanceTestSupport {
                 .build(createdResponse1.getId())
                 .toString();
 
-        final EntityExchangeResult<List<LineResponseDto>> result = webTestClient.delete()
+        webTestClient.delete()
                 .uri(requestURI)
                 .acceptCharset(StandardCharsets.UTF_8)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
-                .expectBodyList(LineResponseDto.class)
-                .returnResult();
+                .expectStatus().isNoContent();
 
-
-        assertThat(result.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
 
         final List<LineResponseDto> lineResponseDtos = lineHttpTestSupport.findAll();
 
@@ -165,19 +163,24 @@ public class LineAcceptanceTest extends AcceptanceTestSupport {
 
 
         final String uri = LineController.ROOT_URI + "/{lineId}/stations/{stationId}";
+        final Long lineId = createdLine.getId();
+        final Long stationId = createdStation.getId();
         webTestClient.put()
-                .uri(uri, createdLine.getId(), createdStation.getId())
+                .uri(uri, lineId, stationId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk();
 
 
         final LineResponseDto responseDto = lineHttpTestSupport.findAll().get(0);
-        assertThat(responseDto.getStations()).hasSize(1);
-        final LineResponseDto.StationDto station = responseDto.getStations().get(0);
-        assertThat(station.getId()).isEqualTo(createdStation.getId());
-        assertThat(station.getName()).isEqualTo(createdStation.getName());
+        assertThat(responseDto.getStations()).isEmpty();
 
+        final StationResponseDto stationResponseDto = stationHttpTestSupport.getStation(stationId);
+
+        final boolean existLine = stationResponseDto.getLines().stream()
+                .anyMatch(lineDto -> Objects.equals(lineId, lineDto.getId()));
+
+        assertThat(existLine).isTrue();
     }
 
     @DisplayName("지하철노선에 지하철 구간을 등록")
@@ -217,6 +220,51 @@ public class LineAcceptanceTest extends AcceptanceTestSupport {
 
         assertThat(stations.get(0).getId()).isEqualTo(createdStation1.getId());
         assertThat(stations.get(1).getId()).isEqualTo(createdStation2.getId());
+    }
+
+    @DisplayName("지하철노선에 지하철 구간을 제외")
+    @Test
+    void deleteSection() throws Exception {
+        final LocalTime duration = LocalTime.of(2, 5);
+        final double distance = 1.5;
+
+        final LineResponseDto createdLine = lineHttpTestSupport.createLine(new LineCreateRequestDto(name1, startTime, endTime, intervalTime));
+        final Long lineId = createdLine.getId();
+
+        final StationResponseDto createdStation1 = stationHttpTestSupport.createStation(StationCreateRequestDto.of("강남역"));
+        final StationResponseDto createdStation2 = stationHttpTestSupport.createStation(StationCreateRequestDto.of("역삼역"));
+        final StationResponseDto createdStation3 = stationHttpTestSupport.createStation(StationCreateRequestDto.of("선릉역"));
+        final Long stationId1 = createdStation1.getId();
+        final Long stationId2 = createdStation2.getId();
+        final Long stationId3 = createdStation3.getId();
+
+        lineHttpTestSupport.addStation(lineId, stationId1);
+        lineHttpTestSupport.addStation(lineId, stationId2);
+        lineHttpTestSupport.addStation(lineId, stationId3);
+
+        lineHttpTestSupport.addSection(lineId, stationId1, SectionCreateRequestDto.of(stationId2, duration, distance));
+        lineHttpTestSupport.addSection(lineId, stationId2, SectionCreateRequestDto.of(stationId3, duration, distance));
+
+
+        final String uri = LineController.ROOT_URI + "/{lineId}/stations/{stationId}";
+        final String requestURI = UriComponentsBuilder.fromUriString(uri)
+                .build(lineId, stationId2)
+                .toString();
+
+        webTestClient.delete()
+                .uri(requestURI)
+                .acceptCharset(StandardCharsets.UTF_8)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isNoContent();
+
+
+        final LineResponseDto line = lineHttpTestSupport.getLine(lineId);
+        final List<LineResponseDto.StationDto> stationDtos = line.getStations();
+
+        assertThat(stationDtos).hasSize(2);
+        assertThat(stationDtos.get(0).getId()).isEqualTo(stationId1);
+        assertThat(stationDtos.get(1).getId()).isEqualTo(stationId3);
     }
 
     private void assertEqual(LineResponseDto responseDto, LineCreateRequestDto requestDto) {

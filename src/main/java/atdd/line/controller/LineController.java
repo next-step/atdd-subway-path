@@ -32,6 +32,11 @@ public class LineController {
         return ResponseEntity.created(URI.create(ROOT_URI + "/" + responseDto.getId())).body(responseDto);
     }
 
+    @GetMapping("/{lineId}")
+    public LineResponseDto getLine(@PathVariable Long lineId) {
+        return lineService.getLine(lineId);
+    }
+
     @GetMapping
     public List<LineResponseDto> findAll(@RequestParam(required = false) String name) {
         return lineService.findAll(name);
@@ -43,16 +48,19 @@ public class LineController {
         lineService.delete(lineId);
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{lineId}/stations/{stationId}")
     public void addStation(@PathVariable Long lineId, @PathVariable Long stationId) {
         lineService.addStation(lineId, stationId);
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{lineId}/stations/{stationId}/sections")
     public void addSection(@PathVariable Long lineId, @PathVariable Long stationId, @Valid @RequestBody SectionCreateRequestDto requestDto) {
         lineService.addSection(lineId, stationId, requestDto);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{lineId}/stations/{stationId}")
+    public void deleteStation(@PathVariable Long lineId, @PathVariable Long stationId) {
+        lineService.deleteStation(lineId, stationId);
+    }
 }

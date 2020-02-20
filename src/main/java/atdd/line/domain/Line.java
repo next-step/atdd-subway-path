@@ -3,6 +3,7 @@ package atdd.line.domain;
 import atdd.station.domain.Duration;
 import atdd.station.domain.Station;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
@@ -13,9 +14,11 @@ import java.util.stream.Collectors;
 @Table(name = "line")
 public class Line {
 
+    public static final int DELETABLE_SIZE = 2;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, updatable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Column(name = "name", unique = true, nullable = false)
@@ -87,21 +90,6 @@ public class Line {
         }
 
         this.lineStations.add(new LineStation(this, station));
-        if (Objects.isNull(startLineStation)) {
-            changeStartStation(station);
-        }
-    }
-
-    public void changeStartStation(Station station) {
-        this.startLineStation = getLineStation(station);
-    }
-
-    private LineStation getLineStation(Station station) {
-        final String stationName = station.getName();
-        return this.lineStations.stream()
-                .filter(lineStation -> lineStation.isEqualStation(stationName))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다. name : [" + stationName + "]"));
     }
 
     private boolean existStation(Station station) {
@@ -139,11 +127,27 @@ public class Line {
     }
 
     public void addSection(Long stationId, Long nextStationId, Duration duration, double distance) {
+
         final Station station = getStation(stationId);
         final Station nextStation = getStation(nextStationId);
+        if (Objects.isNull(startLineStation)) {
+            changeStartStation(station);
+        }
 
         station.addNextStation(this, nextStation, duration, distance);
         nextStation.addNextStation(this, station, duration, distance);
+    }
+
+    private void changeStartStation(Station station) {
+        this.startLineStation = getLineStation(station);
+    }
+
+    private LineStation getLineStation(Station station) {
+        final String stationName = station.getName();
+        return this.lineStations.stream()
+                .filter(lineStation -> lineStation.isEqualStation(stationName))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다. name : [" + stationName + "]"));
     }
 
     private Station getStation(Long stationId) {
@@ -151,6 +155,77 @@ public class Line {
                 .filter(station -> station.isEqualStation(stationId))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 station 입니다. stationId : [" + stationId + "]"));
+    }
+
+    public void deleteStation(Long stationId) {
+        final Station deleteTargetStation = getStation(stationId);
+        final Set<Station> nextStations = deleteTargetStation.getSameLineNextStations(this);
+        if (CollectionUtils.isEmpty(nextStations)) {
+            return;
+        }
+
+        checkDeletableSize(nextStations);
+
+        final Duration sumOfDuration = sumDuration(nextStations, deleteTargetStation);
+        final double sumOfDistance = sumDistance(nextStations, deleteTargetStation);
+        joinStations(nextStations, sumOfDuration, sumOfDistance);
+
+        if (isStartStation(deleteTargetStation)) {
+            changeStartStation(CollectionUtils.firstElement(nextStations));
+        }
+
+        deleteSections(nextStations, deleteTargetStation);
+        removeLineStation(deleteTargetStation);
+    }
+
+    private boolean isStartStation(Station deleteTargetStation) {
+        if (startLineStation == null) {
+            return false;
+        }
+        return Objects.equals(startLineStation.getStation(), deleteTargetStation);
+    }
+
+    private void checkDeletableSize(Set<Station> nextStations) {
+        if (nextStations.size() > DELETABLE_SIZE) {
+            throw new IllegalArgumentException(nextStations.size() + "개 역이 연결되어 있습니다. 삭제는 2개일때만 가능합니다.");
+        }
+    }
+
+    private void deleteSections(Set<Station> nextStations, Station deleteTargetStation) {
+        for (Station nextStation : nextStations) {
+            nextStation.deleteSection(this, deleteTargetStation);
+            deleteTargetStation.deleteSection(this, nextStation);
+        }
+    }
+
+    private void joinStations(Set<Station> stations, Duration duration, double distance) {
+        final Station beforeStation = CollectionUtils.firstElement(stations);
+        final Station afterStation = CollectionUtils.lastElement(stations);
+
+        if (Objects.equals(beforeStation, afterStation)) {
+            return;
+        }
+
+        beforeStation.addNextStation(this, afterStation, duration, distance);
+        afterStation.addNextStation(this, beforeStation, duration, distance);
+    }
+
+    private double sumDistance(Set<Station> nextStations, Station deleteTargetStation) {
+        return nextStations.stream()
+                .map(station -> station.getDistance(this, deleteTargetStation))
+                .reduce(Double::sum)
+                .orElseThrow(() -> new IllegalArgumentException("nextStations 의 size 가 0 입니다."));
+    }
+
+    private Duration sumDuration(Set<Station> nextStations, Station deleteTargetStation) {
+        return nextStations.stream()
+                .map(station -> station.getDuration(this, deleteTargetStation))
+                .reduce(Duration::add)
+                .orElseThrow(() -> new IllegalArgumentException("nextStations 의 size 가 0 입니다."));
+    }
+
+    private void removeLineStation(Station deleteTargetStation) {
+        lineStations.removeIf(lineStation -> lineStation.isEqualStation(deleteTargetStation.getName()));
     }
 
     @Override

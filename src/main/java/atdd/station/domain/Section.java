@@ -12,7 +12,7 @@ public class Section {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", updatable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -75,8 +75,16 @@ public class Section {
         return distance;
     }
 
+    public boolean isEqualNextSection(String lineName, String stationName) {
+        return isEqualLine(lineName) && isEqualNextStation(stationName);
+    }
+
     public boolean isEqualLine(String lineName) {
         return Objects.equals(lineName, line.getName());
+    }
+
+    private boolean isEqualNextStation(String stationName) {
+        return Objects.equals(stationName, nextStation.getName());
     }
 
     @Override

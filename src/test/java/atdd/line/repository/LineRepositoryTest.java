@@ -5,6 +5,7 @@ import atdd.line.domain.LineStation;
 import atdd.line.domain.TimeTable;
 import atdd.station.domain.Duration;
 import atdd.station.domain.Station;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
-@DataJpaTest(properties = "spring.jpa.hibernate.ddl-auto=create-drop")
+@DataJpaTest
 class LineRepositoryTest {
 
     @Autowired
@@ -77,8 +78,6 @@ class LineRepositoryTest {
         final Station addedStation = stations.get(0);
         assertThat(addedStation.getId()).isNotNull();
         assertThat(addedStation.getName()).isEqualTo(station.getName());
-
-        assertThat(line.getStartStation().get()).isEqualTo(addedStation);
     }
 
     @Test
@@ -115,6 +114,35 @@ class LineRepositoryTest {
         assertThat(orderedStations).hasSize(2);
         assertThat(orderedStations.get(0)).isEqualTo(station1);
         assertThat(orderedStations.get(1)).isEqualTo(station2);
+
+        assertThat(line.getStartStation().get()).isEqualTo(orderedStations.get(0));
+    }
+
+    @Test
+    void deleteStation() {
+        final Line line = getSavedLine();
+        final Station station1 = Station.create("stationName11");
+        final Station station2 = Station.create("stationName22");
+        final Station station3 = Station.create("stationName33");
+        final List<Station> expectedStations = Lists.list(station1, station3);
+
+        line.addStation(station1);
+        line.addStation(station2);
+        line.addStation(station3);
+        lineRepository.flush();
+
+        final Duration duration = new Duration(LocalTime.of(1, 1));
+        final double distance = 1.5;
+        line.addSection(station1.getId(), station2.getId(), duration, distance);
+        line.addSection(station2.getId(), station3.getId(), duration, distance);
+        lineRepository.flush();
+
+
+        line.deleteStation(station2.getId());
+        lineRepository.flush();
+
+        final List<Station> orderedStations = line.getOrderedStations();
+        assertThat(orderedStations).isEqualTo(expectedStations);
     }
 
     private Line getSavedLine() {

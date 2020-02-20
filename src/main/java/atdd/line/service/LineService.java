@@ -44,6 +44,17 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
+    public LineResponseDto getLine(Long lineId) {
+        final Line line = findById(lineId);
+        return lineAssembler.convertToResponseDto(line);
+    }
+
+    private Line findById(Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 lineId 입니다. lineId : [" + lineId + "]"));
+    }
+
+    @Transactional(readOnly = true)
     public List<LineResponseDto> findAll(String name) {
         return lineRepository.findAll().stream()
                 .filter(line -> isSameName(line, name))
@@ -65,11 +76,6 @@ public class LineService {
         lineRepository.delete(line);
     }
 
-    private Line findById(Long lineId) {
-        return lineRepository.findById(lineId)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 lineId 입니다. lineId : [" + lineId + "]"));
-    }
-
     @Transactional
     public void addStation(Long lineId, Long stationId) {
         Line line = findById(lineId);
@@ -83,6 +89,12 @@ public class LineService {
         final Line line = findById(lineId);
         final Duration duration = new Duration(sectionRequestDto.getDuration());
         line.addSection(stationId, sectionRequestDto.getNextStationId(), duration, sectionRequestDto.getDistance());
+    }
+
+    @Transactional
+    public void deleteStation(Long lineId, Long stationId) {
+        final Line line = findById(lineId);
+        line.deleteStation(stationId);
     }
 
 }
