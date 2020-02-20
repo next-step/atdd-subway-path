@@ -53,7 +53,7 @@ class LineControllerTest {
         final int intervalTime = 3;
         final List<StationResponseDto> stations = new ArrayList<>();
 
-        final LineCreateRequestDto requestDto = new LineCreateRequestDto(name, startTime, endTime, intervalTime);
+        final LineCreateRequestDto requestDto = LineCreateRequestDto.of(name, startTime, endTime, intervalTime);
         final LineResponseDto responseDto = new LineResponseDto(1L, name, timeTable, intervalTime, new ArrayList<>());
 
         given(lineService.create(requestDto)).willReturn(responseDto);

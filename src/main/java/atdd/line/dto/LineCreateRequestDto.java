@@ -17,11 +17,13 @@ public class LineCreateRequestDto {
 
     private LineCreateRequestDto() { }
 
-    public LineCreateRequestDto(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
-        this.name = name;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.intervalTime = intervalTime;
+    public static LineCreateRequestDto of(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
+        LineCreateRequestDto requestDto = new LineCreateRequestDto();
+        requestDto.name = name;
+        requestDto.startTime = startTime;
+        requestDto.endTime = endTime;
+        requestDto.intervalTime = intervalTime;
+        return requestDto;
     }
 
     public String getName() {

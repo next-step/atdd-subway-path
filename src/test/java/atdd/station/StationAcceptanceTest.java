@@ -44,9 +44,9 @@ public class StationAcceptanceTest extends AcceptanceTestSupport {
                 .expectBody(StationResponseDto.class)
                 .returnResult();
 
+
         final String location = result.getResponseHeaders().getLocation().getPath();
         final StationResponseDto responseView = result.getResponseBody();
-
         assertThat(location).isEqualTo(uri + "/" + responseView.getId());
         assertThat(responseView.getName()).isEqualTo(stationName);
     }
@@ -75,6 +75,7 @@ public class StationAcceptanceTest extends AcceptanceTestSupport {
     void getStation() {
         final StationResponseDto responseDto = stationHttpTestSupport.createStation(StationCreateRequestDto.of(stationName));
 
+
         final StationResponseDto stationResponseDto = webTestClient.get()
                 .uri(StationController.ROOT_URI + "/" + responseDto.getId())
                 .exchange()
@@ -83,7 +84,7 @@ public class StationAcceptanceTest extends AcceptanceTestSupport {
                 .returnResult().getResponseBody();
 
         assertThat(stationResponseDto).isNotNull();
-        assertThat(stationResponseDto.getName()).isEqualTo(stationName);
+        assertThat(stationResponseDto.getName()).isEqualTo(responseDto.getName());
     }
 
     @DisplayName("지하철역 지하철역 삭제")

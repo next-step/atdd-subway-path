@@ -22,6 +22,10 @@ public class LineHttpTestSupport extends HttpTestSupport {
         return post(ROOT_URI, requestDto, LineCreateRequestDto.class, LineResponseDto.class);
     }
 
+    public Long createLineAndGetId(LineCreateRequestDto requestDto) {
+        return createLine(requestDto).getId();
+    }
+
     public List<LineResponseDto> findAll() {
         return findAll(ROOT_URI, LineResponseDto.class);
     }

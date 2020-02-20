@@ -7,15 +7,14 @@ import atdd.line.dto.LineResponseDto;
 import atdd.station.StationHttpTestSupport;
 import atdd.station.dto.SectionCreateRequestDto;
 import atdd.station.dto.StationCreateRequestDto;
-import atdd.station.dto.StationResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
@@ -34,8 +33,12 @@ public class LineAcceptanceTest extends AcceptanceTestSupport {
     private final String name1 = "2호선";
     private final String name2 = "3호선";
 
+    private final LineCreateRequestDto lineCreateRequestDto1 = LineCreateRequestDto.of(name1, startTime, endTime, intervalTime);
+    private final LineCreateRequestDto lineCreateRequestDto2 = LineCreateRequestDto.of(name2, startTime, endTime, intervalTime);
+
     private LineHttpTestSupport lineHttpTestSupport;
     private StationHttpTestSupport stationHttpTestSupport;
+
 
     @BeforeEach
     void setup() {
@@ -46,7 +49,7 @@ public class LineAcceptanceTest extends AcceptanceTestSupport {
     @DisplayName("지하철 노선 등록")
     @Test
     public void create() {
-        final LineCreateRequestDto requestDto = new LineCreateRequestDto(name1, startTime, endTime, intervalTime);
+        final LineCreateRequestDto requestDto = LineCreateRequestDto.of(name1, startTime, endTime, intervalTime);
 
 
         final EntityExchangeResult<LineResponseDto> result = webTestClient.post()
@@ -55,8 +58,6 @@ public class LineAcceptanceTest extends AcceptanceTestSupport {
                 .body(Mono.just(requestDto), LineCreateRequestDto.class)
                 .exchange()
                 .expectStatus().isCreated()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectHeader().exists(HttpHeaders.LOCATION)
                 .expectBody(LineResponseDto.class)
                 .returnResult();
 
@@ -73,13 +74,11 @@ public class LineAcceptanceTest extends AcceptanceTestSupport {
     @DisplayName("지하철 노선 목록 조회")
     @Test
     void findAll() {
-        final LineCreateRequestDto requestDto1 = new LineCreateRequestDto(name1, startTime, endTime, intervalTime);
-        final LineCreateRequestDto requestDto2 = new LineCreateRequestDto(name2, startTime, endTime, intervalTime);
-        lineHttpTestSupport.createLine(requestDto1);
-        lineHttpTestSupport.createLine(requestDto2);
+        lineHttpTestSupport.createLine(lineCreateRequestDto1);
+        lineHttpTestSupport.createLine(lineCreateRequestDto2);
 
-        final EntityExchangeResult<List<LineResponseDto>> result = webTestClient.get().uri(
-                LineController.ROOT_URI)
+        final EntityExchangeResult<List<LineResponseDto>> result = webTestClient.get()
+                .uri(LineController.ROOT_URI)
                 .exchange()
                 .expectBodyList(LineResponseDto.class)
                 .returnResult();
@@ -89,26 +88,22 @@ public class LineAcceptanceTest extends AcceptanceTestSupport {
 
         final List<LineResponseDto> lineResponseDtos = result.getResponseBody();
         assertThat(lineResponseDtos).hasSize(2);
-        assertEqual(lineResponseDtos.get(0), requestDto1);
-        assertEqual(lineResponseDtos.get(1), requestDto2);
+        assertEqual(lineResponseDtos.get(0), lineCreateRequestDto1);
+        assertEqual(lineResponseDtos.get(1), lineCreateRequestDto2);
     }
 
     @DisplayName("지하철 노선 정보 조회")
     @Test
     void findAllByName() {
-        final LineCreateRequestDto requestDto1 = new LineCreateRequestDto(name1, startTime, endTime, intervalTime);
-        final LineCreateRequestDto requestDto2 = new LineCreateRequestDto(name2, startTime, endTime, intervalTime);
-        lineHttpTestSupport.createLine(requestDto1);
-        lineHttpTestSupport.createLine(requestDto2);
+        lineHttpTestSupport.createLine(lineCreateRequestDto1);
+        lineHttpTestSupport.createLine(lineCreateRequestDto2);
 
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("name", lineCreateRequestDto1.getName());
 
-        final String requestURI = UriComponentsBuilder.fromUriString(LineController.ROOT_URI)
-                .queryParam("name", name1)
-                .build()
-                .toUriString();
-
+        final String requestUri = lineHttpTestSupport.makeRequestUri(LineController.ROOT_URI, params);
         final EntityExchangeResult<List<LineResponseDto>> result = webTestClient.get()
-                .uri(requestURI)
+                .uri(requestUri)
                 .acceptCharset(StandardCharsets.UTF_8)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -126,19 +121,13 @@ public class LineAcceptanceTest extends AcceptanceTestSupport {
     @DisplayName("지하철 노선 삭제")
     @Test
     void delete() {
-        final LineCreateRequestDto requestDto1 = new LineCreateRequestDto(name1, startTime, endTime, intervalTime);
-        final LineCreateRequestDto requestDto2 = new LineCreateRequestDto(name2, startTime, endTime, intervalTime);
-
-        final LineResponseDto createdResponse1 = lineHttpTestSupport.createLine(requestDto1);
-        lineHttpTestSupport.createLine(requestDto2);
+        final LineResponseDto createdResponse1 = lineHttpTestSupport.createLine(lineCreateRequestDto1);
+        lineHttpTestSupport.createLine(lineCreateRequestDto2);
 
 
-        final String requestURI = UriComponentsBuilder.fromUriString(LineController.ROOT_URI + "/{lineId}")
-                .build(createdResponse1.getId())
-                .toString();
-
+        final String uri = LineController.ROOT_URI + "/{lineId}";
         webTestClient.delete()
-                .uri(requestURI)
+                .uri(uri, createdResponse1.getId())
                 .acceptCharset(StandardCharsets.UTF_8)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -146,7 +135,6 @@ public class LineAcceptanceTest extends AcceptanceTestSupport {
 
 
         final List<LineResponseDto> lineResponseDtos = lineHttpTestSupport.findAll();
-
         assertThat(lineResponseDtos).hasSize(1);
         assertThat(lineResponseDtos.get(0).getName()).isNotEqualTo(createdResponse1.getName());
     }
@@ -154,17 +142,11 @@ public class LineAcceptanceTest extends AcceptanceTestSupport {
     @DisplayName("지하철 노선에 역을 추가")
     @Test
     void addStation() throws Exception {
-        final LineCreateRequestDto lineRequestDto = new LineCreateRequestDto(name1, startTime, endTime, intervalTime);
-        final LineResponseDto createdLine = lineHttpTestSupport.createLine(lineRequestDto);
-
-        final String stationName = "강남역";
-        final StationCreateRequestDto stationRequestDto = StationCreateRequestDto.of(stationName);
-        final StationResponseDto createdStation = stationHttpTestSupport.createStation(stationRequestDto);
+        final Long lineId = lineHttpTestSupport.createLineAndGetId(LineCreateRequestDto.of(name1, startTime, endTime, intervalTime));
+        final Long stationId = stationHttpTestSupport.createStationAndGetId(StationCreateRequestDto.of("강남역"));
 
 
         final String uri = LineController.ROOT_URI + "/{lineId}/stations/{stationId}";
-        final Long lineId = createdLine.getId();
-        final Long stationId = createdStation.getId();
         webTestClient.put()
                 .uri(uri, lineId, stationId)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -175,9 +157,7 @@ public class LineAcceptanceTest extends AcceptanceTestSupport {
         final LineResponseDto responseDto = lineHttpTestSupport.findAll().get(0);
         assertThat(responseDto.getStations()).isEmpty();
 
-        final StationResponseDto stationResponseDto = stationHttpTestSupport.getStation(stationId);
-
-        final boolean existLine = stationResponseDto.getLines().stream()
+        final boolean existLine = stationHttpTestSupport.getStation(stationId).getLines().stream()
                 .anyMatch(lineDto -> Objects.equals(lineId, lineDto.getId()));
 
         assertThat(existLine).isTrue();
@@ -186,23 +166,20 @@ public class LineAcceptanceTest extends AcceptanceTestSupport {
     @DisplayName("지하철노선에 지하철 구간을 등록")
     @Test
     void addSection() {
-        final LineCreateRequestDto lineRequestDto = new LineCreateRequestDto(name1, startTime, endTime, intervalTime);
-        final LineResponseDto createdLine = lineHttpTestSupport.createLine(lineRequestDto);
-
-        final StationResponseDto createdStation1 = stationHttpTestSupport.createStation(StationCreateRequestDto.of("강남역"));
-        final StationResponseDto createdStation2 = stationHttpTestSupport.createStation(StationCreateRequestDto.of("역삼역"));
-
-        lineHttpTestSupport.addStation(createdLine.getId(), createdStation1.getId());
-        lineHttpTestSupport.addStation(createdLine.getId(), createdStation2.getId());
-
+        final Long lineId = lineHttpTestSupport.createLineAndGetId(LineCreateRequestDto.of(name1, startTime, endTime, intervalTime));
+        final Long stationId1 = stationHttpTestSupport.createStationAndGetId(StationCreateRequestDto.of("강남역"));
+        final Long stationId2 = stationHttpTestSupport.createStationAndGetId(StationCreateRequestDto.of("역삼역"));
+        lineHttpTestSupport.addStation(lineId, stationId1);
+        lineHttpTestSupport.addStation(lineId, stationId2);
 
         final LocalTime duration = LocalTime.MAX;
         final double distance = 1.5;
-        final SectionCreateRequestDto createRequestDto = SectionCreateRequestDto.of(createdStation2.getId(), duration, distance);
-        final String uri = LineController.ROOT_URI + "/{lineId}/stations/{stationId}/sections";
+        final SectionCreateRequestDto createRequestDto = SectionCreateRequestDto.of(stationId2, duration, distance);
 
+
+        final String uri = LineController.ROOT_URI + "/{lineId}/stations/{stationId}/sections";
         webTestClient.put()
-                .uri(uri, createdLine.getId(), createdStation1.getId())
+                .uri(uri, lineId, stationId1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(createRequestDto), SectionCreateRequestDto.class)
                 .exchange()
@@ -211,15 +188,13 @@ public class LineAcceptanceTest extends AcceptanceTestSupport {
 
         final List<LineResponseDto> lineResponseDtos = lineHttpTestSupport.findAll();
         assertThat(lineResponseDtos).hasSize(1);
-
         final LineResponseDto lineResponseDto = lineResponseDtos.get(0);
-        assertThat(lineResponseDto.getId()).isEqualTo(createdLine.getId());
+        assertThat(lineResponseDto.getId()).isEqualTo(lineId);
 
         final List<LineResponseDto.StationDto> stations = lineResponseDto.getStations();
         assertThat(stations).hasSize(2);
-
-        assertThat(stations.get(0).getId()).isEqualTo(createdStation1.getId());
-        assertThat(stations.get(1).getId()).isEqualTo(createdStation2.getId());
+        assertThat(stations.get(0).getId()).isEqualTo(stationId1);
+        assertThat(stations.get(1).getId()).isEqualTo(stationId2);
     }
 
     @DisplayName("지하철노선에 지하철 구간을 제외")
@@ -228,15 +203,10 @@ public class LineAcceptanceTest extends AcceptanceTestSupport {
         final LocalTime duration = LocalTime.of(2, 5);
         final double distance = 1.5;
 
-        final LineResponseDto createdLine = lineHttpTestSupport.createLine(new LineCreateRequestDto(name1, startTime, endTime, intervalTime));
-        final Long lineId = createdLine.getId();
-
-        final StationResponseDto createdStation1 = stationHttpTestSupport.createStation(StationCreateRequestDto.of("강남역"));
-        final StationResponseDto createdStation2 = stationHttpTestSupport.createStation(StationCreateRequestDto.of("역삼역"));
-        final StationResponseDto createdStation3 = stationHttpTestSupport.createStation(StationCreateRequestDto.of("선릉역"));
-        final Long stationId1 = createdStation1.getId();
-        final Long stationId2 = createdStation2.getId();
-        final Long stationId3 = createdStation3.getId();
+        final Long lineId = lineHttpTestSupport.createLineAndGetId(LineCreateRequestDto.of(name1, startTime, endTime, intervalTime));
+        final Long stationId1 = stationHttpTestSupport.createStationAndGetId(StationCreateRequestDto.of("강남역"));
+        final Long stationId2 = stationHttpTestSupport.createStationAndGetId(StationCreateRequestDto.of("역삼역"));
+        final Long stationId3 = stationHttpTestSupport.createStationAndGetId(StationCreateRequestDto.of("선릉역"));
 
         lineHttpTestSupport.addStation(lineId, stationId1);
         lineHttpTestSupport.addStation(lineId, stationId2);
@@ -247,21 +217,15 @@ public class LineAcceptanceTest extends AcceptanceTestSupport {
 
 
         final String uri = LineController.ROOT_URI + "/{lineId}/stations/{stationId}";
-        final String requestURI = UriComponentsBuilder.fromUriString(uri)
-                .build(lineId, stationId2)
-                .toString();
-
         webTestClient.delete()
-                .uri(requestURI)
+                .uri(uri, lineId, stationId2)
                 .acceptCharset(StandardCharsets.UTF_8)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNoContent();
 
 
-        final LineResponseDto line = lineHttpTestSupport.getLine(lineId);
-        final List<LineResponseDto.StationDto> stationDtos = line.getStations();
-
+        final List<LineResponseDto.StationDto> stationDtos = lineHttpTestSupport.getLine(lineId).getStations();
         assertThat(stationDtos).hasSize(2);
         assertThat(stationDtos.get(0).getId()).isEqualTo(stationId1);
         assertThat(stationDtos.get(1).getId()).isEqualTo(stationId3);

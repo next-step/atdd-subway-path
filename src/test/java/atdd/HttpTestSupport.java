@@ -2,6 +2,8 @@ package atdd;
 
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
@@ -13,6 +15,13 @@ public abstract class HttpTestSupport {
 
     public HttpTestSupport(WebTestClient webTestClient) {
         this.webTestClient = webTestClient;
+    }
+
+    public String makeRequestUri(String uri, MultiValueMap<String, String> params) {
+        return UriComponentsBuilder.fromUriString(uri)
+                .queryParams(params)
+                .build()
+                .toUriString();
     }
 
     protected <T, R> R post(String uri, T request, Class<T> requestType, Class<R> returnType) {

@@ -19,6 +19,10 @@ public class StationHttpTestSupport extends HttpTestSupport {
         return post(ROOT_URI, requestDto, StationCreateRequestDto.class, StationResponseDto.class);
     }
 
+    public Long createStationAndGetId(StationCreateRequestDto requestDto) {
+        return createStation(requestDto).getId();
+    }
+
     public List<StationResponseDto> findAll() {
         return findAll(ROOT_URI, StationResponseDto.class);
     }
