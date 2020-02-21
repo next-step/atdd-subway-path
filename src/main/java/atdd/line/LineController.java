@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,9 +21,7 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity create(@RequestBody LineDto.Request request) {
-
         Line createLine = lineService.create(request.toEntity());
-
         return ResponseEntity.created(LineLink.getCreatedUrl(createLine.getId()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .build();
@@ -34,5 +33,10 @@ public class LineController {
             return ResponseEntity.notFound().build();
         lineService.delete(line);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity find(@PathVariable("id") Line line) {
+        return ResponseEntity.ok().body(LineDto.Response.from(line));
     }
 }
