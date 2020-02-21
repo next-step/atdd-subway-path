@@ -16,6 +16,6 @@ public class LineServiceImpl implements LineService {
 
     @Override
     public void delete(Line line) {
-
+        lineRepository.delete(line);
     }
 }

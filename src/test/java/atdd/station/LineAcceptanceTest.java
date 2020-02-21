@@ -1,6 +1,7 @@
 package atdd.station;
 
 import atdd.line.Line;
+import atdd.line.LineDto;
 import atdd.line.LineLink;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -49,12 +50,10 @@ public class LineAcceptanceTest extends AbstractWebTestClientTest {
     @Test
     void show() {
         //expect
-        webTestClient.get().uri("/lines")
+        webTestClient.get().uri(LineLink.ROOT)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(Line.class);
-
-
+                .expectBody(LineDto.Response.class);
     }
 }
