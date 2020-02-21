@@ -49,8 +49,9 @@ public class LineAcceptanceTest extends AbstractWebTestClientTest {
 
     @Test
     void show() {
+        final String path = createLine().getResponseHeaders().getLocation().getPath();
         //expect
-        webTestClient.get().uri(LineLink.ROOT)
+        webTestClient.get().uri(path)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
