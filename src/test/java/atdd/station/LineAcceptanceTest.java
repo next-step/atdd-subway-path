@@ -1,22 +1,20 @@
 package atdd.station;
 
 import atdd.line.Line;
+import atdd.line.LineLink;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import reactor.core.publisher.Mono;
 
 public class LineAcceptanceTest extends AbstractWebTestClientTest {
 
-    private
+    private EntityExchangeResult<Line> createLine() {
 
-    @Test
-    void create() {
-        //given
-        final String inputJson = "";
+        final String inputJson = "{\"name\":\"1호선\",\"startTime\":\"05:30\",\"endTime\":\"23:30\",\"intervalTime\":5}";
 
-        //expect
-        webTestClient.post().uri("/lines")
+        return webTestClient.post().uri(LineLink.ROOT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(inputJson), String.class)
                 .exchange()
@@ -28,13 +26,22 @@ public class LineAcceptanceTest extends AbstractWebTestClientTest {
     }
 
     @Test
-    void delete() {
+    void create() {
         //expect
-        webTestClient.delete().uri("/lines/1")
+        createLine();
+    }
+
+    @Test
+    void delete() {
+
+        final String path = createLine().getResponseHeaders().getLocation().getPath();
+
+        //expect
+        webTestClient.delete().uri(path)
                 .exchange()
                 .expectStatus().isNoContent();
 
-        webTestClient.delete().uri("/lines/1")
+        webTestClient.delete().uri(path)
                 .exchange()
                 .expectStatus().isNotFound();
     }
