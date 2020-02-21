@@ -1,12 +1,11 @@
 package atdd.station.controller;
 
-import atdd.station.dto.StationRequestDto;
+import atdd.station.dto.StationCreateRequestDto;
 import atdd.station.dto.StationResponseDto;
 import atdd.station.service.StationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -26,7 +25,7 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity<StationResponseDto> create(@RequestBody @Valid StationRequestDto requestDto) {
+    public ResponseEntity<StationResponseDto> create(@RequestBody @Valid StationCreateRequestDto requestDto) {
         final StationResponseDto responseDto = stationService.create(requestDto.getName());
 
         return ResponseEntity.created(URI.create(ROOT_URI + "/" + responseDto.getId()))
@@ -39,23 +38,15 @@ public class StationController {
         return stationService.findAll();
     }
 
-    @GetMapping("/by-name")
-    public StationResponseDto getStation(@RequestParam String name) {
-        Assert.hasText(name, "name 값은 필수입니다.");
-        return stationService.getStation(name);
+    @GetMapping("/{id}")
+    public StationResponseDto getStation(@PathVariable Long id) {
+        return stationService.getStation(id);
     }
 
-    @DeleteMapping("/by-name")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@RequestParam String name) {
-        Assert.hasText(name, "name 값은 필수입니다.");
-        stationService.delete(name);
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(IllegalArgumentException.class)
-    public String handleException(IllegalArgumentException e) {
-        return e.getMessage();
+    public void delete(@PathVariable Long id) {
+        stationService.delete(id);
     }
 
 }

@@ -14,17 +14,19 @@ import java.util.stream.Collectors;
 @Service
 public class StationService {
 
+    private final StationAssembler stationAssembler;
     private final StationRepository stationRepository;
 
-    public StationService(StationRepository stationRepository) {
+    public StationService(StationAssembler stationAssembler, StationRepository stationRepository) {
+        this.stationAssembler = stationAssembler;
         this.stationRepository = stationRepository;
     }
 
     @Transactional
     public StationResponseDto create(String name) {
         checkName(name);
-        final Station savedStation = stationRepository.save(new Station(name));
-        return StationResponseDto.from(savedStation);
+        final Station savedStation = stationRepository.save(Station.create(name));
+        return stationAssembler.convertToDto(savedStation);
     }
 
     private void checkName(String name) {
@@ -33,27 +35,28 @@ public class StationService {
 
     @Transactional(readOnly = true)
     public List<StationResponseDto> findAll() {
-        return stationRepository.findAll().stream().map(StationResponseDto::from).collect(Collectors.toList());
+        return stationRepository.findAll().stream()
+                .map(stationAssembler::convertToDto)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public StationResponseDto getStation(String name) {
-        checkName(name);
-        final Station station = stationRepository.findByName(name).orElseThrow(EntityNotFoundException::new);
-        return StationResponseDto.from(station);
+    public StationResponseDto getStation(Long stationId) {
+        final Station station = findById(stationId);
+
+        return stationAssembler.convertToDto(station);
+    }
+
+    @Transactional(readOnly = true)
+    public Station findById(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 stationId 입니다. stationId : [" + stationId + "]"));
     }
 
     @Transactional
-    public void delete(String name) {
-        checkName(name);
-        final int count = stationRepository.deleteByName(name);
-        if (isNotDelete(count)) {
-            throw new IllegalArgumentException("존재하지 않는 name 입니다. name = [" + name + "]");
-        }
-    }
-
-    private boolean isNotDelete(int count) {
-        return count <= 0;
+    public void delete(Long stationId) {
+        Station station = findById(stationId);
+        stationRepository.delete(station);
     }
 
 }
