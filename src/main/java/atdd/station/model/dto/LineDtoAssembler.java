@@ -9,18 +9,18 @@ import java.util.List;
 
 public class LineDtoAssembler {
     public static LineDto assemble(final Line line, final List<Edge> newEdges, final List<Station> stations) {
-        List<LineStationDto> lineStationDtos = new ArrayList<>();
+        List<IdNameDto> idNameDtos = new ArrayList<>();
 
         newEdges.forEach(edgeData -> {
-            if (lineStationDtos.isEmpty()) {
+            if (idNameDtos.isEmpty()) {
                 Station sourceStation = stations.stream().filter(stationData -> stationData.getId() == edgeData.getSourceStationId()).findAny().get();
-                lineStationDtos.add(sourceStation.toLineStationDto());
+                idNameDtos.add(sourceStation.toIdNameDto());
 
                 Station targetStation = stations.stream().filter(stationData -> stationData.getId() == edgeData.getTargetStationId()).findAny().get();
-                lineStationDtos.add(targetStation.toLineStationDto());
+                idNameDtos.add(targetStation.toIdNameDto());
             } else {
                 Station targetStation = stations.stream().filter(stationData -> stationData.getId() == edgeData.getTargetStationId()).findAny().get();
-                lineStationDtos.add(targetStation.toLineStationDto());
+                idNameDtos.add(targetStation.toIdNameDto());
             }
         });
 
@@ -30,6 +30,6 @@ public class LineDtoAssembler {
                 .startTime(line.getStartTime())
                 .endTime(line.getEndTime())
                 .intervalTime(line.getIntervalTime())
-                .stations(lineStationDtos).build();
+                .stations(idNameDtos).build();
     }
 }

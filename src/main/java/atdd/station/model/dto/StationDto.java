@@ -10,13 +10,13 @@ import java.util.List;
 public class StationDto {
     private long id;
     private String name;
-    private List<StationLineDto> lines = new ArrayList<>();
+    private List<IdNameDto> lines = new ArrayList<>();
 
     public StationDto() {
     }
 
     @Builder
-    private StationDto(long id, String name, List<StationLineDto> lines) {
+    private StationDto(long id, String name, List<IdNameDto> lines) {
         this.id = id;
         this.name = name;
         this.lines = lines;
