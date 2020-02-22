@@ -1,40 +1,27 @@
 package atdd.station.converter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import atdd.station.utils.ObjectMapperUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.persistence.AttributeConverter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 public class LongListConverter implements AttributeConverter<List<Long>, String> {
-    private static final Logger logger = LoggerFactory.getLogger(LongListConverter.class);
-
-    final static ObjectMapper mapper = new ObjectMapper();
-
     @Override
     public String convertToDatabaseColumn(List<Long> stations) {
-        try {
-            return mapper.writeValueAsString(stations);
-        } catch (JsonProcessingException e) {
-            logger.error("Long List to Json JsonProcessingException", e);
-        }
-        return null;
+        return ObjectMapperUtils.valueAsString(stations);
     }
 
     @Override
     public List<Long> convertToEntityAttribute(String json) {
-        try {
-            return Objects.isNull(json) ? new ArrayList<>() : mapper.readValue(json, new TypeReference<List<Long>>() {
-            });
-        } catch (JsonProcessingException e) {
-            logger.error("Json to Long List JsonProcessingException", e);
-        }
+        Optional optional = ObjectMapperUtils.readValue(json, new TypeReference<List<Long>>() {
+        });
 
-        return null;
+        if (optional.isPresent())
+            return (List<Long>) optional.get();
+
+        return new ArrayList<>();
     }
 }
