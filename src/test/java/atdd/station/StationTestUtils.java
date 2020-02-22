@@ -1,7 +1,7 @@
 package atdd.station;
 
 import atdd.station.model.CreateStationRequestView;
-import atdd.station.model.entity.Station;
+import atdd.station.model.dto.StationDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.ParameterizedTypeReference;
@@ -22,7 +22,7 @@ public class StationTestUtils {
         this.webTestClient = webTestClient;
     }
 
-    public Station createStation(String name) {
+    public StationDto createStation(String name) {
         String inputJson = writeValueAsString(CreateStationRequestView.builder()
                 .name(name)
                 .build());
@@ -34,32 +34,32 @@ public class StationTestUtils {
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectHeader().exists("Location")
-                .expectBody(Station.class).returnResult();
+                .expectBody(StationDto.class).returnResult();
 
-        return (Station) result.getResponseBody();
+        return (StationDto) result.getResponseBody();
     }
 
-    public List<Station> findAll() {
+    public List<StationDto> findAll() {
         EntityExchangeResult result = webTestClient.get().uri(STATIONS_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(new ParameterizedTypeReference<List<Station>>() {
+                .expectBody(new ParameterizedTypeReference<List<StationDto>>() {
                 }).returnResult();
 
-        return (List<Station>) result.getResponseBody();
+        return (List<StationDto>) result.getResponseBody();
     }
 
-    public Station findById(final long stationId) {
+    public StationDto findById(final long stationId) {
         EntityExchangeResult result = webTestClient.get().uri(STATIONS_PATH + "/" + stationId)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(Station.class).returnResult();
+                .expectBody(StationDto.class).returnResult();
 
-        return (Station) result.getResponseBody();
+        return (StationDto) result.getResponseBody();
     }
 
     public void deleteById(final long id) {

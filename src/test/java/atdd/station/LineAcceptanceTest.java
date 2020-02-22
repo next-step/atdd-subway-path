@@ -2,7 +2,7 @@ package atdd.station;
 
 import atdd.station.model.CreateLineRequestView;
 import atdd.station.model.dto.LineDto;
-import atdd.station.model.entity.Station;
+import atdd.station.model.dto.StationDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,9 +99,9 @@ public class LineAcceptanceTest {
     @Test
     public void addEdge() {
         // given
-        Station station1 = stationTestUtils.createStation("강남역");
-        Station station2 = stationTestUtils.createStation("역삼역");
-        Station station3 = stationTestUtils.createStation("선릉역");
+        StationDto station1 = stationTestUtils.createStation("강남역");
+        StationDto station2 = stationTestUtils.createStation("역삼역");
+        StationDto station3 = stationTestUtils.createStation("선릉역");
 
         LineDto lineDto = lineTestUtils.createLine("2호선",
                 LocalTime.of(5, 0),
@@ -120,9 +120,9 @@ public class LineAcceptanceTest {
     @Test
     public void deleteEdge() {
         // given
-        Station station1 = stationTestUtils.createStation("강남역");
-        Station station2 = stationTestUtils.createStation("역삼역");
-        Station station3 = stationTestUtils.createStation("선릉역");
+        StationDto station1 = stationTestUtils.createStation("강남역");
+        StationDto station2 = stationTestUtils.createStation("역삼역");
+        StationDto station3 = stationTestUtils.createStation("선릉역");
 
         LineDto lineDto = lineTestUtils.createLine("2호선",
                 LocalTime.of(5, 0),

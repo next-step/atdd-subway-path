@@ -1,6 +1,6 @@
 package atdd.station;
 
-import atdd.station.model.entity.Station;
+import atdd.station.model.dto.StationDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,26 +34,21 @@ public class StationAcceptanceTest {
     @Test
     public void createStation() {
         //when
-        Station station = stationTestUtils.createStation(STATION_NAME1);
+        StationDto station = stationTestUtils.createStation(STATION_NAME1);
 
         // then
-        Station actualStation = stationTestUtils.findById(station.getId());
-
-        String expected = stationTestUtils.writeValueAsString(station);
-        String actual = stationTestUtils.writeValueAsString(actualStation);
-
-        assertThat(expected).isEqualTo(actual);
+        assertThat(station.getName()).isEqualTo(STATION_NAME1);
     }
 
     @Test
     public void findAllStations() {
         // given
-        Station stations1 = stationTestUtils.createStation(STATION_NAME1);
-        Station stations2 = stationTestUtils.createStation(STATION_NAME2);
-        Station stations3 = stationTestUtils.createStation(STATION_NAME3);
+        StationDto stations1 = stationTestUtils.createStation(STATION_NAME1);
+        StationDto stations2 = stationTestUtils.createStation(STATION_NAME2);
+        StationDto stations3 = stationTestUtils.createStation(STATION_NAME3);
 
         // when
-        List<Station> stations = stationTestUtils.findAll();
+        List<StationDto> stations = stationTestUtils.findAll();
 
         //then
         assertThat(stations.size()).isEqualTo(3);
@@ -65,12 +60,12 @@ public class StationAcceptanceTest {
     @Test
     public void findStation() {
         // given
-        Station stations1 = stationTestUtils.createStation(STATION_NAME1);
-        Station stations2 = stationTestUtils.createStation(STATION_NAME2);
-        Station stations3 = stationTestUtils.createStation(STATION_NAME3);
+        StationDto stations1 = stationTestUtils.createStation(STATION_NAME1);
+        StationDto stations2 = stationTestUtils.createStation(STATION_NAME2);
+        StationDto stations3 = stationTestUtils.createStation(STATION_NAME3);
 
         // when
-        Station station = stationTestUtils.findById(stations1.getId());
+        StationDto station = stationTestUtils.findById(stations1.getId());
 
         // then
         assertThat(station.getId()).isEqualTo(stations1.getId());
@@ -80,17 +75,15 @@ public class StationAcceptanceTest {
     @Test
     public void deleteStation() {
         // given
-        Station stations1 = stationTestUtils.createStation(STATION_NAME1);
-        Station stations2 = stationTestUtils.createStation(STATION_NAME2);
-        Station stations3 = stationTestUtils.createStation(STATION_NAME3);
+        StationDto stations1 = stationTestUtils.createStation(STATION_NAME1);
+        StationDto stations2 = stationTestUtils.createStation(STATION_NAME2);
+        StationDto stations3 = stationTestUtils.createStation(STATION_NAME3);
 
         // when
         stationTestUtils.deleteById(stations1.getId());
 
         // then
-        List<Station> stations = stationTestUtils.findAll();
-
-        System.out.println();
+        List<StationDto> stations = stationTestUtils.findAll();
 
         assertThat(stations.size()).isEqualTo(2);
         assertThat(stations.get(0).getName()).isNotEqualTo(STATION_NAME1);
