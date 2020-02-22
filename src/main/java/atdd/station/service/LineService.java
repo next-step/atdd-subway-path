@@ -72,12 +72,12 @@ public class LineService {
             stationIds.add(legacyEdge.getSourceStationId());
             stationIds.add(legacyEdge.getTargetStationId());
 
-            if (legacyEdge.connectEdgeWithTargetStation(newEdge)) {
+            if (legacyEdge.connectTargetAndSource(newEdge)) {
                 newEdges.add(legacyEdge);
                 newEdges.add(newEdge);
 
                 continue;
-            } else if (legacyEdge.connectEdgeWithSourceStation(newEdge)) {
+            } else if (legacyEdge.connectSourceAndTarget(newEdge)) {
                 newEdges.add(newEdge);
                 newEdges.add(legacyEdge);
 
