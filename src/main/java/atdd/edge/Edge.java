@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @NoArgsConstructor
@@ -31,5 +33,12 @@ public class Edge extends AbstractEntity {
 
     @ManyToOne
     private Station targetStation;
+
+    public Set<Station> getStations() {
+        Set stations = new HashSet();
+        stations.add(sourceStation);
+        stations.add(targetStation);
+        return stations;
+    }
 
 }

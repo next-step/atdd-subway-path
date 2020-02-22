@@ -9,8 +9,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.MediaType;
 
-import java.util.Arrays;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName(value = "Station Controller 를 테스트한다")
@@ -78,10 +76,7 @@ public class StationAcceptanceTest extends AbstractWebTestClientTest {
                         .expectHeader().contentType(MediaType.APPLICATION_JSON)
                         .expectBodyList(StationDto.Response.class)
                         .hasSize(2)
-                        .isEqualTo(Arrays.asList(
-                                StationDto.Response.from(Station.of("강남역")),
-                                StationDto.Response.from(Station.of("역삼역")))
-                        );
+                        .value(stations -> stations.stream().anyMatch(station -> station.getName().equals("강남역")));
             }
         }
 

@@ -25,7 +25,7 @@ public class StationController {
 
         Station station = stationService.create(request.toEntity());
 
-        return ResponseEntity.created(StationUri.getCreatedUrl(station.getId())).contentType(MediaType.APPLICATION_JSON).build();
+        return ResponseEntity.created(StationUri.getCreatedUrl(station.getId())).contentType(MediaType.APPLICATION_JSON).body(station);
 
     }
 

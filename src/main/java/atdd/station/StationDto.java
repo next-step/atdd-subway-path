@@ -25,10 +25,11 @@ public class StationDto {
     @Getter
     public static class Response {
 
+        private Long id;
         private String name;
 
-        static Response from(Station station){
-            return Response.builder().name(station.getName()).build();
+        public static Response from(Station station) {
+            return Response.builder().id(station.getId()).name(station.getName()).build();
         }
     }
 }
