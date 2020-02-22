@@ -1,6 +1,8 @@
 package atdd.station.controller;
 
 import atdd.station.model.CreateStationRequestView;
+import atdd.station.model.dto.StationDto;
+import atdd.station.model.dto.StationLineDto;
 import atdd.station.model.entity.Station;
 import atdd.station.repository.StationRepository;
 import atdd.station.service.StationService;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,31 +29,51 @@ public class StationController {
     private StationService stationService;
 
     @PostMapping
-    public ResponseEntity<Station> createStation(@RequestBody CreateStationRequestView view) {
+    public ResponseEntity<StationDto> createStation(@RequestBody CreateStationRequestView view) {
         final Station station = stationRepository.save(view.toStation());
 
+        StationDto stationDto = StationDto.builder()
+                .id(station.getId())
+                .name(station.getName()).build();
+
         return ResponseEntity.created(URI.create("/stations/" + station.getId()))
-                .body(station);
+                .body(stationDto);
     }
 
     @GetMapping
-    public ResponseEntity<List<Station>> findAllStations() {
+    public ResponseEntity<List<StationDto>> findAllStations() {
         final List<Station> stations = stationRepository.findAll();
 
-        stations.forEach(data -> data.setStationLineDtos(stationService.lineDtos(data.getLineIds())));
+        List<StationDto> stationDtos = new ArrayList<>();
 
-        return ResponseEntity.ok(stations);
+        for (Station station : stations) {
+            List<StationLineDto> lines = stationService.lineDtos(station.getLineIds());
+
+            StationDto stationDto = StationDto.builder()
+                    .id(station.getId())
+                    .name(station.getName())
+                    .lines(lines).build();
+
+            stationDtos.add(stationDto);
+        }
+
+        return ResponseEntity.ok(stationDtos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Station> findStation(@PathVariable long id) {
+    public ResponseEntity<StationDto> findStation(@PathVariable long id) {
         final Optional<Station> optionalStation = stationRepository.findById(id);
 
-        if(optionalStation.isPresent()) {
+        if (optionalStation.isPresent()) {
             Station station = optionalStation.get();
-            station.setStationLineDtos(stationService.lineDtos(station.getLineIds()));
 
-            return ResponseEntity.ok(station);
+            StationDto stationDto = StationDto.builder()
+                    .id(station.getId())
+                    .name(station.getName())
+                    .lines(stationService.lineDtos(station.getLineIds())).build();
+
+
+            return ResponseEntity.ok(stationDto);
         }
 
         return ResponseEntity

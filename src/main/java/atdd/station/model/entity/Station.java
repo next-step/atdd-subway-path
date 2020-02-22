@@ -2,15 +2,15 @@ package atdd.station.model.entity;
 
 
 import atdd.station.converter.LongListConverter;
-import atdd.station.model.dto.StationLineDto;
-import atdd.station.model.dto.StationDto;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import atdd.station.model.dto.LineStationDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,14 +23,8 @@ public class Station extends BaseEntity {
 
     @Setter
     @Column
-    @JsonIgnore
     @Convert(converter = LongListConverter.class)
     private List<Long> lineIds = new ArrayList<>();
-
-    @Setter
-    @Transient
-    @JsonProperty("lines")
-    private List<StationLineDto> stationLineDtos = new ArrayList<>();
 
     public Station() {
     }
@@ -40,8 +34,8 @@ public class Station extends BaseEntity {
         this.name = name;
     }
 
-    public StationDto toStationDto() {
-        return StationDto.builder()
+    public LineStationDto toLineStationDto() {
+        return LineStationDto.builder()
                 .id(this.getId())
                 .name(this.getName()).build();
     }

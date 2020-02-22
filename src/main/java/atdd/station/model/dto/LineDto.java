@@ -20,13 +20,13 @@ public class LineDto {
 
     private int intervalTime;
 
-    private List<StationDto> stations;
+    private List<LineStationDto> stations;
 
     public LineDto() {
     }
 
     @Builder
-    private LineDto(long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, List<StationDto> stations) {
+    private LineDto(long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, List<LineStationDto> stations) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
