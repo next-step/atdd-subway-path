@@ -4,6 +4,7 @@ import atdd.station.exception.ErrorType;
 import atdd.station.exception.SubwayException;
 import atdd.station.model.CreateEdgeRequestView;
 import atdd.station.model.CreateLineRequestView;
+import atdd.station.model.dto.LineDto;
 import atdd.station.model.entity.Edge;
 import atdd.station.model.entity.Line;
 import atdd.station.service.LineService;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,32 +24,35 @@ public class LineController {
     private LineService lineService;
 
     @PostMapping
-    public ResponseEntity<Line> createLine(@RequestBody CreateLineRequestView view) {
+    public ResponseEntity<LineDto> createLine(@RequestBody CreateLineRequestView view) {
         final Line line = lineService.create(view.toLine());
 
+        LineDto lineDto = lineService.lineToLineDto(line);
+
         return ResponseEntity.created(URI.create("/lines/" + line.getId()))
-                .body(line);
+                .body(lineDto);
     }
 
     @GetMapping
-    public ResponseEntity<List<Line>> findAllLines() {
+    public ResponseEntity<List<LineDto>> findAllLines() {
         final List<Line> lines = lineService.findAll();
 
-        for (Line line : lines)
-            lineService.stationDtos(line);
+        List<LineDto> lineDtos = new ArrayList<>();
 
-        return ResponseEntity.ok(lines);
+        for (Line line : lines)
+            lineDtos.add(lineService.lineToLineDto(line));
+
+        return ResponseEntity.ok(lineDtos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Line> findLine(@PathVariable long id) throws SubwayException {
-
+    public ResponseEntity<LineDto> findLine(@PathVariable long id) throws SubwayException {
         final Optional<Line> optionalLine = lineService.findById(id);
 
         if (optionalLine.isPresent()) {
-            lineService.stationDtos(optionalLine.get());
+            LineDto lineDto = lineService.lineToLineDto(optionalLine.get());
 
-            return ResponseEntity.ok(optionalLine.get());
+            return ResponseEntity.ok(lineDto);
         }
 
         throw new SubwayException(ErrorType.NOT_FOUND);
@@ -61,24 +66,26 @@ public class LineController {
     }
 
     @PostMapping("/{id}/edge")
-    public ResponseEntity<Line> addEdge(@PathVariable long id,
-                                        @RequestBody CreateEdgeRequestView view) throws SubwayException {
+    public ResponseEntity<LineDto> addEdge(@PathVariable long id,
+                                           @RequestBody CreateEdgeRequestView view) throws SubwayException {
         final Edge.EdgeBuilder edgeBuilder = Edge.builder()
                 .sourceStationId(view.getSourceStationId())
                 .targetStationId(view.getTargetStationId());
 
-        Optional<Line> line = lineService.addEdge(id, edgeBuilder.build());
+        Optional<Line> lineOptional = lineService.addEdge(id, edgeBuilder.build());
 
-        if(!line.isPresent()) {
+        if (!lineOptional.isPresent()) {
             throw new SubwayException(ErrorType.NOT_FOUND);
         }
 
-        return ResponseEntity.ok(line.get());
+        LineDto lineDto = lineService.lineToLineDto(lineOptional.get());
+
+        return ResponseEntity.ok(lineDto);
     }
 
     @DeleteMapping("/{id}/edge")
-    public ResponseEntity<Line> deleteLine(@PathVariable long id,
-                                           @RequestParam Long stationId) {
+    public ResponseEntity<LineDto> deleteLine(@PathVariable long id,
+                                              @RequestParam Long stationId) {
         lineService.deleteEdge(id, stationId);
 
         return ResponseEntity.noContent().build();

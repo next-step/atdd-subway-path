@@ -1,13 +1,11 @@
 package atdd.station.model.entity;
 
 import atdd.station.converter.LongListConverter;
-import atdd.station.converter.StationDtoConverter;
-import atdd.station.model.dto.StationDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalTime;
@@ -38,9 +36,13 @@ public class Line extends BaseEntity {
     @Convert(converter = LongListConverter.class)
     private List<Long> edgeIds = new ArrayList<>();
 
+    @Setter
     @Transient
-    @JsonProperty("stations")
-    private List<StationDto> stationDtos = new ArrayList<>();
+    private List<Edge> lineEdges = new ArrayList<>();
+
+    @Setter
+    @Transient
+    private List<Station> lineStations = new ArrayList<>();
 
     public Line() {
     }
@@ -56,27 +58,9 @@ public class Line extends BaseEntity {
         this.intervalTime = intervalTime;
     }
 
-    public void updateEdge(final List<Edge> newEdges, final List<Station> stations) {
-        setEdges(newEdges);
-        setStationDtos(newEdges, stations);
-    }
-
-    private void setEdges(final List<Edge> newEdges) {
+    public void updateEdge(final List<Edge> newEdges, final List<Station> lineStations) {
         this.edgeIds = newEdges.stream().map(Edge::getId).collect(Collectors.toList());
-    }
-
-    public void setStationDtos(final List<Edge> newEdges, final List<Station> stations) {
-        newEdges.forEach(edgeData -> {
-            if (stationDtos.isEmpty()) {
-                Station sourceStation = stations.stream().filter(stationData -> stationData.getId() == edgeData.getSourceStationId()).findAny().get();
-                stationDtos.add(sourceStation.toStationDto());
-
-                Station targetStation = stations.stream().filter(stationData -> stationData.getId() == edgeData.getTargetStationId()).findAny().get();
-                stationDtos.add(targetStation.toStationDto());
-            } else {
-                Station targetStation = stations.stream().filter(stationData -> stationData.getId() == edgeData.getTargetStationId()).findAny().get();
-                stationDtos.add(targetStation.toStationDto());
-            }
-        });
+        this.lineEdges = newEdges;
+        this.lineStations = lineStations;
     }
 }

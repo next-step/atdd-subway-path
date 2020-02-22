@@ -37,7 +37,7 @@ public class StationController {
     public ResponseEntity<List<Station>> findAllStations() {
         final List<Station> stations = stationRepository.findAll();
 
-        stations.forEach(data -> data.setLineDtos(stationService.lineDtos(data.getLineIds())));
+        stations.forEach(data -> data.setStationLineDtos(stationService.lineDtos(data.getLineIds())));
 
         return ResponseEntity.ok(stations);
     }
@@ -48,7 +48,7 @@ public class StationController {
 
         if(optionalStation.isPresent()) {
             Station station = optionalStation.get();
-            station.setLineDtos(stationService.lineDtos(station.getLineIds()));
+            station.setStationLineDtos(stationService.lineDtos(station.getLineIds()));
 
             return ResponseEntity.ok(station);
         }

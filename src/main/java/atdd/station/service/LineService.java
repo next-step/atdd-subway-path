@@ -1,5 +1,7 @@
 package atdd.station.service;
 
+import atdd.station.model.dto.LineDto;
+import atdd.station.model.dto.LineDtoAssembler;
 import atdd.station.model.entity.Edge;
 import atdd.station.model.entity.Line;
 import atdd.station.model.entity.Station;
@@ -36,16 +38,6 @@ public class LineService {
 
     public void deleteById(final long id) {
         lineRepository.deleteById(id);
-    }
-
-    public void stationDtos(final Line line) {
-        List<Edge> edges = edgeRepository.findAllById(line.getEdgeIds());
-
-        Set<Long> stationIds = new HashSet<>();
-        edges.forEach(data -> stationIds.addAll(data.stationIds()));
-        List<Station> stations = stationRepository.findAllById(stationIds);
-
-        line.setStationDtos(edges, stations);
     }
 
     public Optional<Line> addEdge(final long id, final Edge newEdge) {
@@ -173,6 +165,27 @@ public class LineService {
         }
 
         return stationRepository.saveAll(stationList);
+    }
+
+    public LineDto lineToLineDto(final Line line) {
+        List<Edge> edges = line.getLineEdges();
+        List<Station> stations = line.getLineStations();
+
+        if (edges.isEmpty()) {
+            edges = edgeRepository.findAllById(line.getEdgeIds());
+        }
+
+        if (stations.isEmpty()) {
+            Set<Long> stationIds = new HashSet<>();
+
+            for (Edge edge : edges) {
+                stationIds.addAll(edge.stationIds());
+            }
+
+            stations = stationRepository.findAllById(stationIds);
+        }
+
+        return LineDtoAssembler.assemble(line, edges, stations);
     }
 
     private Station deleteLineInStation(final Station station, final long deleteLineId) {

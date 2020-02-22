@@ -2,7 +2,7 @@ package atdd.station.model.entity;
 
 
 import atdd.station.converter.LongListConverter;
-import atdd.station.model.dto.LineDto;
+import atdd.station.model.dto.StationLineDto;
 import atdd.station.model.dto.StationDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -30,7 +30,7 @@ public class Station extends BaseEntity {
     @Setter
     @Transient
     @JsonProperty("lines")
-    private List<LineDto> lineDtos = new ArrayList<>();
+    private List<StationLineDto> stationLineDtos = new ArrayList<>();
 
     public Station() {
     }
