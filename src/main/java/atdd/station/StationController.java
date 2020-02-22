@@ -1,5 +1,7 @@
 package atdd.station;
 
+import atdd.edge.EdgeService;
+import atdd.line.Line;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -19,6 +22,7 @@ import java.util.stream.Collectors;
 public class StationController {
 
     private final StationService stationService;
+    private final EdgeService edgeService;
 
     @PostMapping
     public ResponseEntity create(@RequestBody StationDto.Request request) {
@@ -36,7 +40,10 @@ public class StationController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity get(@PathVariable("id") Station station) {
-        return ResponseEntity.ok().body(StationDto.Response.from(station));
+
+        Set<Line> lines = edgeService.findLinesByStation(station);
+
+        return ResponseEntity.ok().body(StationDto.Response.from(station, lines));
     }
 
     @DeleteMapping(value = "/{id}")
