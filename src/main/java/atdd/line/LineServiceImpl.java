@@ -18,4 +18,9 @@ public class LineServiceImpl implements LineService {
     public void delete(Line line) {
         lineRepository.delete(line);
     }
+
+    @Override
+    public Line findBy(Long id) {
+        return lineRepository.findById(id).orElseThrow(RuntimeException::new);
+    }
 }

@@ -6,10 +6,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.EntityExchangeResult;
-import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 
@@ -17,21 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName(value = "Station Controller 를 테스트한다")
 public class StationAcceptanceTest extends AbstractWebTestClientTest {
-
-    public EntityExchangeResult<Station> createStationBy(String name) {
-
-        final String inputJson = "{\"name\":\"" + name + "\"}";
-
-        return webTestClient.post().uri("/stations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectHeader().exists(HttpHeaders.LOCATION)
-                .expectBody(Station.class)
-                .returnResult();
-    }
 
     @DisplayName(value = "역을 생성하는 API")
     @Nested
@@ -45,7 +27,7 @@ public class StationAcceptanceTest extends AbstractWebTestClientTest {
             @ParameterizedTest
             @ValueSource(strings = {"강남역", "역삼역", "공덕역"})
             void expectCreateStation(String stationName) {
-                createStationBy(stationName);
+                StationHttpSupport.create(webTestClient, stationName);
             }
         }
     }
@@ -59,7 +41,7 @@ public class StationAcceptanceTest extends AbstractWebTestClientTest {
         class GivenStation {
 
             final String stationName = "강남역";
-            final String path = createStationBy(stationName).getResponseHeaders().getLocation().getPath();
+            final String path = StationHttpSupport.create(webTestClient, stationName).getResponseHeaders().getLocation().getPath();
 
             @DisplayName("조회가 제대로 되는지 확인한다")
             @Test
@@ -82,8 +64,8 @@ public class StationAcceptanceTest extends AbstractWebTestClientTest {
 
             @BeforeEach
             void setUp() {
-                createStationBy("강남역");
-                createStationBy("역삼역");
+                StationHttpSupport.create(webTestClient, "강남역");
+                StationHttpSupport.create(webTestClient, "역삼역");
             }
 
             @DisplayName("조회가 제대로 되는지 확인한다")
@@ -113,7 +95,7 @@ public class StationAcceptanceTest extends AbstractWebTestClientTest {
         class GivenStation {
 
             final String stationName = "강남역";
-            final String path = createStationBy(stationName).getResponseHeaders().getLocation().getPath();
+            final String path = StationHttpSupport.create(webTestClient, stationName).getResponseHeaders().getLocation().getPath();
 
             @DisplayName("삭제가 잘 되는지 확인한다")
             @Test

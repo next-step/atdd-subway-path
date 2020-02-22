@@ -6,4 +6,6 @@ public interface LineService {
 
     void delete(Line line);
 
+    Line findBy(Long id);
+
 }

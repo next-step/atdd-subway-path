@@ -9,4 +9,6 @@ public interface StationService {
     void delete(Station station);
 
     List<Station> findAll();
+
+    Station findBy(Long id);
 }

@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @RequiredArgsConstructor
-@Transactional
 @Service
 public class StationServiceImpl implements StationService {
 
@@ -26,5 +25,10 @@ public class StationServiceImpl implements StationService {
     @Override
     public List<Station> findAll() {
         return stationRepository.findAll();
+    }
+
+    @Override
+    public Station findBy(Long id) {
+        return stationRepository.findById(id).orElseThrow(RuntimeException::new);
     }
 }

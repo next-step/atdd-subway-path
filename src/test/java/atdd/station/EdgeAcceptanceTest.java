@@ -1,6 +1,7 @@
 package atdd.station;
 
 import atdd.edge.Edge;
+import atdd.edge.EdgeLink;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -11,9 +12,15 @@ public class EdgeAcceptanceTest extends AbstractWebTestClientTest {
 
     private EntityExchangeResult<Edge> createEdge() {
 
-        final String inputJson = "{\"line\":1,\"elapsedTime\":5,\"distance\":2.0,\"sourceStation\":1,\"targetStation\":2,}";
+        final String inputJson = "{\n" +
+                "  \"lineId\": 1,\n" +
+                "  \"elapsedTime\": 5,\n" +
+                "  \"distance\": 2.0,\n" +
+                "  \"sourceStationId\": 2,\n" +
+                "  \"targetStationId\": 3\n" +
+                "}";
 
-        return webTestClient.post().uri("/edges")
+        return webTestClient.post().uri(EdgeLink.ROOT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(inputJson), String.class)
                 .exchange()
@@ -26,6 +33,13 @@ public class EdgeAcceptanceTest extends AbstractWebTestClientTest {
 
     @Test
     void create() {
+
+        //given
+        LineHttpSupport.create(webTestClient);
+        StationHttpSupport.create(webTestClient, "석계역");
+        StationHttpSupport.create(webTestClient, "서울역");
+        StationHttpSupport.create(webTestClient, "회현");
+
         //expect
         createEdge();
     }
