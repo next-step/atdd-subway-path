@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 public class LineHttpSupport {
 
     public static EntityExchangeResult<Line> create(WebTestClient webTestClient) {
-        return create(webTestClient,"1호선");
+        return create(webTestClient, "1호선");
     }
 
     public static EntityExchangeResult<Line> create(WebTestClient webTestClient, String name) {
