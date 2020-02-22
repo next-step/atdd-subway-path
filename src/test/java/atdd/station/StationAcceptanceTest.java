@@ -53,7 +53,6 @@ public class StationAcceptanceTest extends AbstractWebTestClientTest {
         @Nested
         class GivenStation {
 
-
             final String stationName1 = "강남역";
 
             final String stationName2 = "역삼역";
@@ -71,8 +70,8 @@ public class StationAcceptanceTest extends AbstractWebTestClientTest {
                 Station station2 = StationHttpSupport.create(webTestClient, stationName2).getResponseBody();
                 Station station3 = StationHttpSupport.create(webTestClient, stationName3).getResponseBody();
 
-                Line line = LineHttpSupport.create(webTestClient,"2호선").getResponseBody();
-                Line line2 = LineHttpSupport.create(webTestClient,"분당선").getResponseBody();
+                Line line = LineHttpSupport.create(webTestClient, "2호선").getResponseBody();
+                Line line2 = LineHttpSupport.create(webTestClient, "분당선").getResponseBody();
 
 
                 EdgeHttpSupport.createEdge(webTestClient, line.getId(), station1.getId(), station2.getId());

@@ -12,23 +12,7 @@ public class EdgeHttpSupport {
 
     public static EntityExchangeResult<Edge> createEdge(WebTestClient webTestClient) {
 
-        final String inputJson = "{\n" +
-                "  \"lineId\": 1,\n" +
-                "  \"elapsedTime\": 5,\n" +
-                "  \"distance\": 2.0,\n" +
-                "  \"sourceStationId\": 2,\n" +
-                "  \"targetStationId\": 3\n" +
-                "}";
-
-        return webTestClient.post().uri(EdgeLink.ROOT)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectHeader().exists(HttpHeaders.LOCATION)
-                .expectBody(Edge.class)
-                .returnResult();
+        return createEdge(webTestClient, 1L, 2L, 3L);
     }
 
     public static EntityExchangeResult<Edge> createEdge(WebTestClient webTestClient, Long lineId, Long sourceStationId, Long targetStationId) {
