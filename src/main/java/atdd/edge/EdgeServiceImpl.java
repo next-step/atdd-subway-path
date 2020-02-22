@@ -32,5 +32,10 @@ public class EdgeServiceImpl implements EdgeService {
                 .collect(Collectors.toSet());
     }
 
-
+    @Override
+    public Set<Station> findStationsByLine(Line line) {
+        return edgeRepository.findByLine(line).stream()
+                .flatMap(e -> e.getStations().stream())
+                .collect(Collectors.toSet());
+    }
 }

@@ -1,8 +1,8 @@
 package atdd.line;
 
 
+import atdd.edge.EdgeService;
 import atdd.station.Station;
-import atdd.station.StationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ import java.util.Set;
 public class LineController {
 
     private final LineService lineService;
-    private final StationService stationService;
+    private final EdgeService edgeService;
 
     @PostMapping
     public ResponseEntity create(@RequestBody LineDto.Request request) {
@@ -42,7 +42,7 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity find(@PathVariable("id") Line line) {
-        Set<Station> stations = stationService.findBy(line);
-        return ResponseEntity.ok().body(LineDto.Response.from(line,stations));
+        Set<Station> stations = edgeService.findStationsByLine(line);
+        return ResponseEntity.ok().body(LineDto.Response.from(line, stations));
     }
 }

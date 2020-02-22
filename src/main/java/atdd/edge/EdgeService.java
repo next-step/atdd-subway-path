@@ -12,4 +12,6 @@ public interface EdgeService {
     void delete(Edge edge);
 
     Set<Line> findLinesByStation(Station station);
+
+    Set<Station> findStationsByLine(Line line);
 }
