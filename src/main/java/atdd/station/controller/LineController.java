@@ -4,7 +4,6 @@ import atdd.station.model.CreateEdgeRequestView;
 import atdd.station.model.CreateLineRequestView;
 import atdd.station.model.entity.Edge;
 import atdd.station.model.entity.Line;
-import atdd.station.repository.LineRepository;
 import atdd.station.service.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,14 +17,11 @@ import java.util.Optional;
 @RequestMapping("/lines")
 public class LineController {
     @Autowired
-    private LineRepository lineRepository;
-
-    @Autowired
     private LineService lineService;
 
     @PostMapping
     public ResponseEntity<Line> createLine(@RequestBody CreateLineRequestView view) {
-        final Line line = lineRepository.save(view.toLine());
+        final Line line = lineService.create(view.toLine());
 
         return ResponseEntity.created(URI.create("/lines/" + line.getId()))
                 .body(line);
@@ -33,9 +29,10 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<Line>> findAllLines() {
-        final List<Line> lines = lineRepository.findAll();
+        final List<Line> lines = lineService.findAll();
 
-        lines.forEach(data -> lineService.stationDtos(data));
+        for (Line line : lines)
+            lineService.stationDtos(line);
 
         return ResponseEntity
                 .ok(lines);
@@ -44,7 +41,7 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<Line> findLine(@PathVariable long id) {
 
-        final Optional<Line> optionalLine = lineRepository.findById(id);
+        final Optional<Line> optionalLine = lineService.findById(id);
 
         if (optionalLine.isPresent()) {
             lineService.stationDtos(optionalLine.get());
@@ -58,8 +55,8 @@ public class LineController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Line> deleteLine(@PathVariable long id) {
-        lineRepository.deleteById(id);
+    public ResponseEntity deleteLine(@PathVariable long id) {
+        lineService.deleteById(id);
 
         return ResponseEntity.noContent().build();
     }
@@ -73,10 +70,7 @@ public class LineController {
 
         Optional<Line> line = lineService.addEdge(id, edgeBuilder.build());
 
-        if (line.isPresent())
-            return ResponseEntity.ok(line.get());
-
-        return ResponseEntity.badRequest().build();
+        return line.isPresent() ? ResponseEntity.ok(line.get()) : ResponseEntity.badRequest().build();
     }
 
     @DeleteMapping("/{id}/edge")

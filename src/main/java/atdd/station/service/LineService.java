@@ -22,6 +22,22 @@ public class LineService {
     @Autowired
     private EdgeRepository edgeRepository;
 
+    public Line create(final Line line) {
+        return lineRepository.save(line);
+    }
+
+    public List<Line> findAll() {
+        return lineRepository.findAll();
+    }
+
+    public Optional<Line> findById(final long id) {
+        return lineRepository.findById(id);
+    }
+
+    public void deleteById(final long id) {
+        lineRepository.deleteById(id);
+    }
+
     public void stationDtos(final Line line) {
         List<Edge> edges = edgeRepository.findAllById(line.getEdgeIds());
 
