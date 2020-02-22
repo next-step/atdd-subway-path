@@ -1,7 +1,7 @@
 package atdd.station;
 
 import atdd.station.model.CreateLineRequestView;
-import atdd.station.model.entity.Line;
+import atdd.station.model.dto.LineDto;
 import atdd.station.model.entity.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,9 +12,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,26 +42,26 @@ public class LineAcceptanceTest {
                 .intervalTime(10)
                 .build();
 
-        Line line = lineTestUtils.createLine(createLineRequestView);
+        LineDto lineDto = lineTestUtils.createLine(createLineRequestView);
 
         // then
-        assertThat(line.getName()).isEqualTo("2호선");
+        assertThat(lineDto.getName()).isEqualTo("2호선");
     }
 
     @Test
     public void findAllLines() {
         // given
-        Line line = lineTestUtils.createLine("2호선",
+        LineDto lineDto = lineTestUtils.createLine("2호선",
                 LocalTime.of(5, 0),
                 LocalTime.of(5, 0),
                 10);
 
         // when
-        List<Line> lines = lineTestUtils.findAll();
+        List<LineDto> lineDtos = lineTestUtils.findAll();
 
         //then
-        assertThat(lines.size()).isEqualTo(1);
-        assertThat(lines.get(0).getName()).isEqualTo("2호선");
+        assertThat(lineDtos.size()).isEqualTo(1);
+        assertThat(lineDtos.get(0).getName()).isEqualTo("2호선");
     }
 
     @Test
@@ -75,10 +73,10 @@ public class LineAcceptanceTest {
                 10).getId();
 
         // when
-        Line line = lineTestUtils.findById(lineId);
+        LineDto lineDto = lineTestUtils.findById(lineId);
 
         // then
-        assertThat(line.getName()).isEqualTo("2호선");
+        assertThat(lineDto.getName()).isEqualTo("2호선");
     }
 
     @Test
@@ -93,9 +91,9 @@ public class LineAcceptanceTest {
         lineTestUtils.deleteLine(lineId);
 
         // then
-        List<Line> lines = lineTestUtils.findAll();
+        List<LineDto> lineDtos = lineTestUtils.findAll();
 
-        assertThat(lines.size()).isEqualTo(0);
+        assertThat(lineDtos.size()).isEqualTo(0);
     }
 
     @Test
@@ -105,18 +103,18 @@ public class LineAcceptanceTest {
         Station station2 = stationTestUtils.createStation("역삼역");
         Station station3 = stationTestUtils.createStation("선릉역");
 
-        Line line = lineTestUtils.createLine("2호선",
+        LineDto lineDto = lineTestUtils.createLine("2호선",
                 LocalTime.of(5, 0),
                 LocalTime.of(5, 0),
                 10);
 
         // when
-        Line resultLine = lineTestUtils.addEdge(line.getId(), station1.getId(), station2.getId());
+        LineDto resultLine = lineTestUtils.addEdge(lineDto.getId(), station1.getId(), station2.getId());
 
         // then
-        assertThat(resultLine.getStationDtos().size()).isEqualTo(2);
-        assertThat(resultLine.getStationDtos().get(0).getName()).isEqualTo("강남역");
-        assertThat(resultLine.getStationDtos().get(1).getName()).isEqualTo("역삼역");
+        assertThat(resultLine.getStations().size()).isEqualTo(2);
+        assertThat(resultLine.getStations().get(0).getName()).isEqualTo("강남역");
+        assertThat(resultLine.getStations().get(1).getName()).isEqualTo("역삼역");
     }
 
     @Test
@@ -126,22 +124,22 @@ public class LineAcceptanceTest {
         Station station2 = stationTestUtils.createStation("역삼역");
         Station station3 = stationTestUtils.createStation("선릉역");
 
-        Line line = lineTestUtils.createLine("2호선",
+        LineDto lineDto = lineTestUtils.createLine("2호선",
                 LocalTime.of(5, 0),
                 LocalTime.of(5, 0),
                 10);
 
-        lineTestUtils.addEdge(line.getId(), station1.getId(), station2.getId());
-        lineTestUtils.addEdge(line.getId(), station2.getId(), station3.getId());
+        lineTestUtils.addEdge(lineDto.getId(), station1.getId(), station2.getId());
+        lineTestUtils.addEdge(lineDto.getId(), station2.getId(), station3.getId());
 
         // when
-        lineTestUtils.deleteEdge(line.getId(), station2.getId());
+        lineTestUtils.deleteEdge(lineDto.getId(), station2.getId());
 
         // then
-        Line resultLine = lineTestUtils.findById(line.getId());
+        LineDto resultLine = lineTestUtils.findById(lineDto.getId());
 
-        assertThat(resultLine.getStationDtos().size()).isEqualTo(2);
-        assertThat(resultLine.getStationDtos().get(0).getName()).isEqualTo("강남역");
-        assertThat(resultLine.getStationDtos().get(1).getName()).isEqualTo("선릉역");
+        assertThat(resultLine.getStations().size()).isEqualTo(2);
+        assertThat(resultLine.getStations().get(0).getName()).isEqualTo("강남역");
+        assertThat(resultLine.getStations().get(1).getName()).isEqualTo("선릉역");
     }
 }

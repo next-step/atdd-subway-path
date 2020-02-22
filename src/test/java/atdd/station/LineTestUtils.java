@@ -2,7 +2,7 @@ package atdd.station;
 
 import atdd.station.model.CreateEdgeRequestView;
 import atdd.station.model.CreateLineRequestView;
-import atdd.station.model.entity.Line;
+import atdd.station.model.dto.LineDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.ParameterizedTypeReference;
@@ -29,10 +29,10 @@ public class LineTestUtils {
         this.webTestClient = webTestClient;
     }
 
-    public Line createLine(final String name,
-                           final LocalTime startTime,
-                           final LocalTime endTime,
-                           final int intervalTime) {
+    public LineDto createLine(final String name,
+                              final LocalTime startTime,
+                              final LocalTime endTime,
+                              final int intervalTime) {
         CreateLineRequestView createLineRequestView = CreateLineRequestView.builder()
                 .name(name)
                 .startTime(startTime)
@@ -43,7 +43,7 @@ public class LineTestUtils {
         return createLine(createLineRequestView);
     }
 
-    public Line createLine(CreateLineRequestView createLineRequestView) {
+    public LineDto createLine(CreateLineRequestView createLineRequestView) {
 
         String inputJson = createLineRequestViewToJson(createLineRequestView);
 
@@ -51,35 +51,35 @@ public class LineTestUtils {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(inputJson), String.class)
                 .exchange()
-                .expectBody(Line.class).returnResult();
+                .expectBody(LineDto.class).returnResult();
 
-        Line line = (Line) result.getResponseBody();
+        LineDto lineDto = (LineDto) result.getResponseBody();
 
-        return line;
+        return lineDto;
     }
 
-    public List<Line> findAll() {
+    public List<LineDto> findAll() {
 
         EntityExchangeResult result = webTestClient.get().uri(LINES_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(new ParameterizedTypeReference<List<Line>>() {
+                .expectBody(new ParameterizedTypeReference<List<LineDto>>() {
                 }).returnResult();
 
-        return (List<Line>) result.getResponseBody();
+        return (List<LineDto>) result.getResponseBody();
     }
 
-    public Line findById(final long id) {
+    public LineDto findById(final long id) {
         EntityExchangeResult result = webTestClient.get().uri(LINES_PATH + "/" + id)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(Line.class).returnResult();
+                .expectBody(LineDto.class).returnResult();
 
-        return (Line) result.getResponseBody();
+        return (LineDto) result.getResponseBody();
     }
 
     public void deleteLine(final long id) {
@@ -89,7 +89,7 @@ public class LineTestUtils {
                 .expectBody().returnResult();
     }
 
-    public Line addEdge(final long lineId, final long sourceStationId, final long targetStationId) {
+    public LineDto addEdge(final long lineId, final long sourceStationId, final long targetStationId) {
         CreateEdgeRequestView createEdgeRequestView = new CreateEdgeRequestView();
         createEdgeRequestView.setSourceStationId(sourceStationId);
         createEdgeRequestView.setTargetStationId(targetStationId);
@@ -98,9 +98,9 @@ public class LineTestUtils {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(writeValueAsString(createEdgeRequestView)), String.class)
                 .exchange()
-                .expectBody(Line.class).returnResult();
+                .expectBody(LineDto.class).returnResult();
 
-        return (Line) result.getResponseBody();
+        return (LineDto) result.getResponseBody();
     }
 
     public void deleteEdge(final long id, final long stationId) {
