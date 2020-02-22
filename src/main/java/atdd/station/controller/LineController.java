@@ -1,5 +1,7 @@
 package atdd.station.controller;
 
+import atdd.station.exception.ErrorType;
+import atdd.station.exception.SubwayException;
 import atdd.station.model.CreateEdgeRequestView;
 import atdd.station.model.CreateLineRequestView;
 import atdd.station.model.entity.Edge;
@@ -34,24 +36,21 @@ public class LineController {
         for (Line line : lines)
             lineService.stationDtos(line);
 
-        return ResponseEntity
-                .ok(lines);
+        return ResponseEntity.ok(lines);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Line> findLine(@PathVariable long id) {
+    public ResponseEntity<Line> findLine(@PathVariable long id) throws SubwayException {
 
         final Optional<Line> optionalLine = lineService.findById(id);
 
         if (optionalLine.isPresent()) {
             lineService.stationDtos(optionalLine.get());
 
-            return ResponseEntity
-                    .ok(optionalLine.get());
+            return ResponseEntity.ok(optionalLine.get());
         }
 
-        return ResponseEntity
-                .notFound().build();
+        throw new SubwayException(ErrorType.NOT_FOUND);
     }
 
     @DeleteMapping("/{id}")
@@ -63,14 +62,18 @@ public class LineController {
 
     @PostMapping("/{id}/edge")
     public ResponseEntity<Line> addEdge(@PathVariable long id,
-                                        @RequestBody CreateEdgeRequestView view) {
+                                        @RequestBody CreateEdgeRequestView view) throws SubwayException {
         final Edge.EdgeBuilder edgeBuilder = Edge.builder()
                 .sourceStationId(view.getSourceStationId())
                 .targetStationId(view.getTargetStationId());
 
         Optional<Line> line = lineService.addEdge(id, edgeBuilder.build());
 
-        return line.isPresent() ? ResponseEntity.ok(line.get()) : ResponseEntity.badRequest().build();
+        if(!line.isPresent()) {
+            throw new SubwayException(ErrorType.NOT_FOUND);
+        }
+
+        return ResponseEntity.ok(line.get());
     }
 
     @DeleteMapping("/{id}/edge")
