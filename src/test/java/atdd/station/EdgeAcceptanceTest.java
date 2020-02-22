@@ -1,53 +1,29 @@
 package atdd.station;
 
-import atdd.edge.Edge;
-import atdd.edge.EdgeLink;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.EntityExchangeResult;
-import reactor.core.publisher.Mono;
 
 public class EdgeAcceptanceTest extends AbstractWebTestClientTest {
 
-    private EntityExchangeResult<Edge> createEdge() {
-
-        final String inputJson = "{\n" +
-                "  \"lineId\": 1,\n" +
-                "  \"elapsedTime\": 5,\n" +
-                "  \"distance\": 2.0,\n" +
-                "  \"sourceStationId\": 2,\n" +
-                "  \"targetStationId\": 3\n" +
-                "}";
-
-        return webTestClient.post().uri(EdgeLink.ROOT)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectHeader().exists(HttpHeaders.LOCATION)
-                .expectBody(Edge.class)
-                .returnResult();
+    @BeforeEach
+    void setUp() {
+        LineHttpSupport.create(webTestClient);
+        StationHttpSupport.create(webTestClient, "석계역");
+        StationHttpSupport.create(webTestClient, "서울역");
+        StationHttpSupport.create(webTestClient, "회현");
     }
 
     @Test
     void create() {
 
-        //given
-        LineHttpSupport.create(webTestClient);
-        StationHttpSupport.create(webTestClient, "석계역");
-        StationHttpSupport.create(webTestClient, "서울역");
-        StationHttpSupport.create(webTestClient, "회현");
-
         //expect
-        createEdge();
+        EdgeHttpSupport.createEdge(webTestClient);
     }
 
     @Test
     void delete() {
 
-        final String path = createEdge().getResponseHeaders().getLocation().getPath();
+        final String path = EdgeHttpSupport.createEdge(webTestClient).getResponseHeaders().getLocation().getPath();
 
         //expect
         webTestClient.delete().uri(path)
@@ -58,17 +34,5 @@ public class EdgeAcceptanceTest extends AbstractWebTestClientTest {
                 .exchange()
                 .expectStatus().isNotFound();
     }
-
-    @Test
-    void show() {
-        final String path = createEdge().getResponseHeaders().getLocation().getPath();
-        //expect
-        webTestClient.get().uri(path)
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(Edge.class);
-    }
-
 
 }

@@ -13,4 +13,9 @@ public class EdgeServiceImpl implements EdgeService {
     public Edge create(Edge edge) {
         return edgeRepository.save(edge);
     }
+
+    @Override
+    public void delete(Edge edge) {
+        edgeRepository.delete(edge);
+    }
 }
