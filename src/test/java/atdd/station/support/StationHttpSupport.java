@@ -1,5 +1,7 @@
-package atdd.station;
+package atdd.station.support;
 
+import atdd.station.Station;
+import atdd.station.StationUri;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
