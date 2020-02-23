@@ -9,6 +9,7 @@ import atdd.station.model.entity.Edge;
 import atdd.station.model.entity.Line;
 import atdd.station.service.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -80,7 +81,7 @@ public class LineController {
 
         LineDto lineDto = lineService.lineToLineDto(lineOptional.get());
 
-        return ResponseEntity.ok(lineDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(lineDto);
     }
 
     @DeleteMapping("/{id}/edge")
