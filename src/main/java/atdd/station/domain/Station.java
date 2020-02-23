@@ -45,6 +45,14 @@ public class Station {
         }
         final LineStation lineStation = new LineStation(line, this);
         this.lineStations.add(lineStation);
+        line.addLineStation(lineStation);
+    }
+
+    public void addLineStation(LineStation lineStation) {
+        if (lineStations.contains(lineStation)) {
+            return;
+        }
+        this.lineStations.add(lineStation);
     }
 
     private boolean existLine(Line line) {

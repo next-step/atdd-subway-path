@@ -12,6 +12,7 @@ public class LineStation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -50,6 +51,28 @@ public class LineStation {
 
     public boolean isEqualLine(String lineName) {
         return Objects.equals(lineName, line.getName());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LineStation)) return false;
+        LineStation that = (LineStation) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "LineStation{" +
+                "id=" + id +
+                ", line=" + line.getName() +
+                ", station=" + station.getName() +
+                '}';
     }
 
 }

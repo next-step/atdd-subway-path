@@ -1,5 +1,6 @@
 package atdd.station.controller;
 
+import atdd.station.dto.PathResponseDto;
 import atdd.station.dto.StationResponseDto;
 import atdd.station.service.StationService;
 import org.junit.jupiter.api.DisplayName;
@@ -17,10 +18,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -102,6 +105,26 @@ class StationControllerTest {
                 .queryParam("name", name))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getShortestPath() throws Exception {
+        final Long startStationId = 111L;
+        final Long endStationId = 222L;
+        final PathResponseDto responseDto = PathResponseDto.of(startStationId, endStationId, Collections.emptyList());
+        given(stationService.getShortestPath(startStationId, endStationId)).willReturn(responseDto);
+
+
+        mockMvc.perform(get(StationController.ROOT_URI + "/shortest-path")
+                .queryParam("startStationId", String.valueOf(startStationId))
+                .queryParam("endStationId", String.valueOf(endStationId)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.startStationId").value(startStationId))
+                .andExpect(jsonPath("endStationId").value(endStationId))
+                .andDo(print());
+
+
+        verify(stationService, times(1)).getShortestPath(startStationId, endStationId);
     }
 
 }

@@ -28,6 +28,10 @@ public class Duration {
         return time;
     }
 
+    public long getSecondOfDay() {
+        return time.getLong(ChronoField.SECOND_OF_DAY);
+    }
+
     public Duration add(Duration other) {
         final long totalSecondsOfDay = sumSecondsOfDay(other);
         checkValidTimeRange(totalSecondsOfDay);
@@ -35,8 +39,8 @@ public class Duration {
     }
 
     private long sumSecondsOfDay(Duration other) {
-        final long secondsOfDay = this.time.getLong(ChronoField.SECOND_OF_DAY);
-        final long otherSecondsOfDay = other.time.getLong(ChronoField.SECOND_OF_DAY);
+        final long secondsOfDay = getSecondOfDay();
+        final long otherSecondsOfDay = other.getSecondOfDay();
         return secondsOfDay + otherSecondsOfDay;
     }
 

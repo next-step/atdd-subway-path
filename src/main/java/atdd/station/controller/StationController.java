@@ -1,5 +1,6 @@
 package atdd.station.controller;
 
+import atdd.station.dto.PathResponseDto;
 import atdd.station.dto.StationCreateRequestDto;
 import atdd.station.dto.StationResponseDto;
 import atdd.station.service.StationService;
@@ -47,6 +48,11 @@ public class StationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         stationService.delete(id);
+    }
+
+    @GetMapping("/shortest-path")
+    public PathResponseDto getShortestPath(@RequestParam Long startStationId, @RequestParam Long endStationId) {
+        return stationService.getShortestPath(startStationId, endStationId);
     }
 
 }

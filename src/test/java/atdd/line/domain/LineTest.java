@@ -137,6 +137,24 @@ public class LineTest {
         assertThat(nextStation2).isEqualTo(station1);
     }
 
+    @DisplayName("addStation - 새로운 역에 첫번째 역을 구간으로 추가하면 새로운역이 startStation 이 된다.")
+    @Test
+    void addSectionNewStationToFirstStation() throws Exception {
+        final Duration duration = new Duration(LocalTime.MAX);
+        final double distance = 1;
+
+        final Line line = Line.create(name, timeTable, intervalTime);
+        line.addStation(station1);
+        line.addStation(station2);
+        line.addStation(station3);
+
+
+        line.addSection(station1.getId(), station2.getId(), duration, distance);
+        line.addSection(station3.getId(), station1.getId(), duration, distance);
+
+        assertThat(line.getStartStation().get()).isEqualTo(station3);
+    }
+
     @DisplayName("getOrderedStations - 첫번째 역이 없으면 empty")
     @Test
     void getOrderedStationsNullStartStation() throws Exception {
@@ -274,6 +292,13 @@ public class LineTest {
         ReflectionTestUtils.setField(line, "timeTable", timeTable);
         ReflectionTestUtils.setField(line, "intervalTime", intervalTime);
         return line;
+    }
+
+    public static void addStations(Line line, Station... station) {
+        for (Station target : station) {
+            line.addStation(target);
+        }
+
     }
 
 }

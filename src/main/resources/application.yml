@@ -9,3 +9,9 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: create-drop
+
+logging:
+  level:
+    org.springframework: INFO
+    org.hibernate:
+      SQL: DEBUG

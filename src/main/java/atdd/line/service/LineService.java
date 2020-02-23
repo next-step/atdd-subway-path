@@ -72,7 +72,7 @@ public class LineService {
     @Transactional
     public void delete(Long lineId) {
         final Line line = findById(lineId);
-
+        line.clearStations();
         lineRepository.delete(line);
     }
 

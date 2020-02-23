@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalTime;
+import java.time.temporal.ChronoField;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -46,6 +47,14 @@ class DurationTest {
         assertThatThrownBy(() -> new Duration(localTime))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("시간은 00:00 보다 커야 합니다.");
+    }
+
+    @Test
+    void getSecondOfDay() throws Exception {
+        final LocalTime time = LocalTime.of(12, 3);
+        final Duration duration = new Duration(time);
+
+        assertThat(duration.getSecondOfDay()).isEqualTo(time.getLong(ChronoField.SECOND_OF_DAY));
     }
 
     @Test
