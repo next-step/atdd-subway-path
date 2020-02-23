@@ -1,5 +1,7 @@
 package atdd.station.service;
 
+import atdd.station.exception.ErrorType;
+import atdd.station.exception.SubwayException;
 import atdd.station.model.dto.LineDto;
 import atdd.station.model.dto.LineDtoAssembler;
 import atdd.station.model.entity.Edge;
@@ -40,19 +42,20 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public Optional<Line> addEdge(final long id, final Edge newEdge) {
+    public Optional<Line> addEdge(final long id, final Edge newEdge) throws SubwayException{
         final Line line = lineRepository.findById(id).get();
         final List<Edge> legacyEdges = edgeRepository.findAllById(line.getEdgeIds());
 
+        addNewEdge(legacyEdges, newEdge);
+
+        updateLineWithEdgesAndStations(legacyEdges, newEdge, line);
+
+        return Optional.of(lineRepository.save(line));
+    }
+
+    private void updateLineWithEdgesAndStations(final List<Edge> legacyEdges, final Edge newEdge, final Line line) {
         final List<Edge> newEdges = new ArrayList<>();
         final Set<Long> stationIds = new HashSet<>();
-
-        boolean isConnect = legacyEdges.stream().anyMatch(data -> data.connectedEdge(newEdge));
-
-        if (!legacyEdges.isEmpty() && !isConnect)
-            return Optional.ofNullable(null);
-
-        edgeRepository.save(newEdge);
 
         stationIds.add(newEdge.getTargetStationId());
         stationIds.add(newEdge.getSourceStationId());
@@ -82,8 +85,6 @@ public class LineService {
         List<Station> stationList = updateLineInStations(stationIds, line.getId());
 
         line.updateEdge(newEdges, stationList);
-
-        return Optional.of(lineRepository.save(line));
     }
 
     public Optional<Line> deleteEdge(final long id, final long stationId) {
@@ -186,6 +187,15 @@ public class LineService {
         }
 
         return LineDtoAssembler.assemble(line, edges, stations);
+    }
+
+    private void addNewEdge(final List<Edge> legacyEdges, final Edge newEdge) throws SubwayException{
+        boolean isConnect = legacyEdges.stream().anyMatch(data -> data.connectedEdge(newEdge));
+
+        if (!legacyEdges.isEmpty() && !isConnect)
+            throw new SubwayException(ErrorType.INVALID_EDGE);
+
+        edgeRepository.save(newEdge);
     }
 
     private Station deleteLineInStation(final Station station, final long deleteLineId) {

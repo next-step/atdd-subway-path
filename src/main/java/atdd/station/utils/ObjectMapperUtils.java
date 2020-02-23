@@ -1,13 +1,13 @@
 package atdd.station.utils;
 
+import atdd.station.exception.ErrorType;
+import atdd.station.exception.SubwayException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.experimental.UtilityClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Optional;
 
 @UtilityClass
 public class ObjectMapperUtils {
@@ -20,17 +20,18 @@ public class ObjectMapperUtils {
             return mapper.writeValueAsString(value);
         } catch (JsonProcessingException e) {
             logger.error("ObjectMapperUtils valueAsString JsonProcessingException", e);
+
+            throw new SubwayException(ErrorType.OBJECT_MAPPER_ERROR);
         }
-        return "";
     }
 
-    public <T> Optional<T> readValue(String json, TypeReference<T> valueTypeRef) {
+    public <T> T readValue(String json, TypeReference<T> valueTypeRef) {
         try {
-            return Optional.of(mapper.readValue(json, valueTypeRef));
+            return mapper.readValue(json, valueTypeRef);
         } catch (JsonProcessingException e) {
             logger.error("ObjectMapperUtils readValue JsonProcessingException", e);
-        }
 
-        return Optional.empty();
+            throw new SubwayException(ErrorType.OBJECT_MAPPER_ERROR);
+        }
     }
 }

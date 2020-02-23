@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class SubwayException extends Exception {
+public class SubwayException extends RuntimeException {
     private int code;
     private HttpStatus status;
     private String message;

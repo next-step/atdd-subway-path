@@ -55,7 +55,7 @@ public class LineController {
             return ResponseEntity.ok(lineDto);
         }
 
-        throw new SubwayException(ErrorType.NOT_FOUND);
+        throw new SubwayException(ErrorType.NOT_FOUND_LINE);
     }
 
     @DeleteMapping("/{id}")
@@ -75,7 +75,7 @@ public class LineController {
         Optional<Line> lineOptional = lineService.addEdge(id, edgeBuilder.build());
 
         if (!lineOptional.isPresent()) {
-            throw new SubwayException(ErrorType.NOT_FOUND);
+            throw new SubwayException(ErrorType.NOT_FOUND_EDGE);
         }
 
         LineDto lineDto = lineService.lineToLineDto(lineOptional.get());
