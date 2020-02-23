@@ -1,15 +1,14 @@
 package atdd.station;
 
+import atdd.HttpTestUtils;
 import atdd.station.model.CreateEdgeRequestView;
 import atdd.station.model.CreateLineRequestView;
 import atdd.station.model.dto.LineDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.core.publisher.Mono;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -23,10 +22,13 @@ public class LineTestUtils {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    public WebTestClient webTestClient;
+    private WebTestClient webTestClient;
+    private HttpTestUtils httpTestUtils;
+
 
     public LineTestUtils(WebTestClient webTestClient) {
         this.webTestClient = webTestClient;
+        this.httpTestUtils = new HttpTestUtils(webTestClient);
     }
 
     public LineDto createLine(final String name,
@@ -47,11 +49,7 @@ public class LineTestUtils {
 
         String inputJson = createLineRequestViewToJson(createLineRequestView);
 
-        EntityExchangeResult result = webTestClient.post().uri(LINES_PATH)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
-                .exchange()
-                .expectBody(LineDto.class).returnResult();
+        EntityExchangeResult result = httpTestUtils.postRequest(LINES_PATH, inputJson, LineDto.class);
 
         LineDto lineDto = (LineDto) result.getResponseBody();
 
@@ -59,34 +57,21 @@ public class LineTestUtils {
     }
 
     public List<LineDto> findAll() {
-
-        EntityExchangeResult result = webTestClient.get().uri(LINES_PATH)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(new ParameterizedTypeReference<List<LineDto>>() {
-                }).returnResult();
+        EntityExchangeResult result = httpTestUtils.getRequest(LINES_PATH, new ParameterizedTypeReference<List<LineDto>>() {
+        });
 
         return (List<LineDto>) result.getResponseBody();
     }
 
     public LineDto findById(final long id) {
-        EntityExchangeResult result = webTestClient.get().uri(LINES_PATH + "/" + id)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(LineDto.class).returnResult();
+        EntityExchangeResult result = httpTestUtils.getRequest(LINES_PATH + "/" + id, new ParameterizedTypeReference<LineDto>() {
+        });
 
         return (LineDto) result.getResponseBody();
     }
 
     public void deleteLine(final long id) {
-        EntityExchangeResult result = webTestClient.delete().uri(LINES_PATH + "/" + id)
-                .exchange()
-                .expectStatus().isNoContent()
-                .expectBody().returnResult();
+        httpTestUtils.deleteRequest(LINES_PATH + "/" + id);
     }
 
     public LineDto addEdge(final long lineId, final long sourceStationId, final long targetStationId) {
@@ -94,20 +79,13 @@ public class LineTestUtils {
         createEdgeRequestView.setSourceStationId(sourceStationId);
         createEdgeRequestView.setTargetStationId(targetStationId);
 
-        EntityExchangeResult result = webTestClient.post().uri(LINES_PATH + "/" + lineId + EDGES_PATH)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(writeValueAsString(createEdgeRequestView)), String.class)
-                .exchange()
-                .expectBody(LineDto.class).returnResult();
+        EntityExchangeResult result = httpTestUtils.postRequest(LINES_PATH + "/" + lineId + EDGES_PATH, writeValueAsString(createEdgeRequestView), LineDto.class);
 
         return (LineDto) result.getResponseBody();
     }
 
     public void deleteEdge(final long id, final long stationId) {
-        webTestClient.delete().uri(LINES_PATH + "/" + id + EDGES_PATH + "?stationId=" + stationId)
-                .exchange()
-                .expectStatus().isNoContent()
-                .expectBody().returnResult();
+        httpTestUtils.deleteRequest(LINES_PATH + "/" + id + EDGES_PATH + "?stationId=" + stationId);
     }
 
     public String writeValueAsString(Object object) {
