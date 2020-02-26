@@ -1,7 +1,7 @@
 package atdd.station.controller;
 
 import atdd.station.model.CreateStationRequestView;
-import atdd.station.model.dto.IdNameDto;
+import atdd.station.model.dto.LineSimpleDto;
 import atdd.station.model.dto.StationDto;
 import atdd.station.model.entity.Station;
 import atdd.station.repository.StationRepository;
@@ -47,7 +47,7 @@ public class StationController {
         List<StationDto> stationDtos = new ArrayList<>();
 
         for (Station station : stations) {
-            List<IdNameDto> lines = stationService.lineDtos(station.getLineIds());
+            List<LineSimpleDto> lines = stationService.lineDtos(station.getLineIds());
 
             StationDto stationDto = StationDto.builder()
                     .id(station.getId())

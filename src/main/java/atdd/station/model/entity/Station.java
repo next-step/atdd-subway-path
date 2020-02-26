@@ -2,7 +2,7 @@ package atdd.station.model.entity;
 
 
 import atdd.station.converter.LongListConverter;
-import atdd.station.model.dto.IdNameDto;
+import atdd.station.model.dto.StationSimpleDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,8 +34,8 @@ public class Station extends BaseEntity {
         this.name = name;
     }
 
-    public IdNameDto toIdNameDto() {
-        return IdNameDto.builder()
+    public StationSimpleDto toSimpleDto() {
+        return StationSimpleDto.builder()
                 .id(this.getId())
                 .name(this.getName()).build();
     }

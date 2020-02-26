@@ -4,15 +4,15 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class IdNameDto {
+public class StationSimpleDto {
     private long id;
     private String name;
 
-    public IdNameDto() {
+    public StationSimpleDto() {
     }
 
     @Builder
-    private IdNameDto(long id, String name) {
+    private StationSimpleDto(long id, String name) {
         this.id = id;
         this.name = name;
     }

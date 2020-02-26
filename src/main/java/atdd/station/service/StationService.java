@@ -1,6 +1,6 @@
 package atdd.station.service;
 
-import atdd.station.model.dto.IdNameDto;
+import atdd.station.model.dto.LineSimpleDto;
 import atdd.station.repository.LineRepository;
 import atdd.station.repository.StationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +17,10 @@ public class StationService {
     @Autowired
     private LineRepository lineRepository;
 
-    public List<IdNameDto> lineDtos(List<Long> lineIds) {
+    // TODO 수정
+    public List<LineSimpleDto> lineDtos(List<Long> lineIds) {
         return lineRepository.findAllById(lineIds)
-                .stream().map(data -> IdNameDto.builder()
+                .stream().map(data -> LineSimpleDto.builder()
                         .id(data.getId())
                         .name(data.getName()).build())
                 .collect(Collectors.toList());
