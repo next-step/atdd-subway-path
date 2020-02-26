@@ -8,7 +8,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Getter
-public class LineDto {
+public class LineResponseDto {
     private long id;
     private String name;
 
@@ -22,11 +22,11 @@ public class LineDto {
 
     private List<IdNameDto> stations;
 
-    public LineDto() {
+    public LineResponseDto() {
     }
 
     @Builder
-    private LineDto(long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, List<IdNameDto> stations) {
+    private LineResponseDto(long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime, List<IdNameDto> stations) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;

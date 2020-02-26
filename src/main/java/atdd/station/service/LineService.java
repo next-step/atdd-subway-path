@@ -2,7 +2,7 @@ package atdd.station.service;
 
 import atdd.station.exception.ErrorType;
 import atdd.station.exception.SubwayException;
-import atdd.station.model.dto.LineDto;
+import atdd.station.model.dto.LineResponseDto;
 import atdd.station.model.dto.LineDtoAssembler;
 import atdd.station.model.entity.Edge;
 import atdd.station.model.entity.Line;
@@ -168,7 +168,7 @@ public class LineService {
         return stationRepository.saveAll(stationList);
     }
 
-    public LineDto lineToLineDto(final Line line) {
+    public LineResponseDto lineToLineDto(final Line line) {
         List<Edge> edges = line.getLineEdges();
         List<Station> stations = line.getLineStations();
 

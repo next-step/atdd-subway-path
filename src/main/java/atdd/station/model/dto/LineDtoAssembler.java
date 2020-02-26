@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LineDtoAssembler {
-    public static LineDto assemble(final Line line, final List<Edge> newEdges, final List<Station> stations) {
+    public static LineResponseDto assemble(final Line line, final List<Edge> newEdges, final List<Station> stations) {
         List<IdNameDto> idNameDtos = new ArrayList<>();
 
         newEdges.forEach(edgeData -> {
@@ -24,7 +24,7 @@ public class LineDtoAssembler {
             }
         });
 
-        return LineDto.builder()
+        return LineResponseDto.builder()
                 .id(line.getId())
                 .name(line.getName())
                 .startTime(line.getStartTime())

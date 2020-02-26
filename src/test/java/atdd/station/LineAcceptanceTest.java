@@ -1,7 +1,7 @@
 package atdd.station;
 
 import atdd.station.model.CreateLineRequestView;
-import atdd.station.model.dto.LineDto;
+import atdd.station.model.dto.LineResponseDto;
 import atdd.station.model.dto.StationDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,26 +42,26 @@ public class LineAcceptanceTest {
                 .intervalTime(10)
                 .build();
 
-        LineDto lineDto = lineTestUtils.createLine(createLineRequestView);
+        LineResponseDto lineResponseDto = lineTestUtils.createLine(createLineRequestView);
 
         // then
-        assertThat(lineDto.getName()).isEqualTo("2호선");
+        assertThat(lineResponseDto.getName()).isEqualTo("2호선");
     }
 
     @Test
     public void findAllLines() {
         // given
-        LineDto lineDto = lineTestUtils.createLine("2호선",
+        LineResponseDto lineResponseDto = lineTestUtils.createLine("2호선",
                 LocalTime.of(5, 0),
                 LocalTime.of(5, 0),
                 10);
 
         // when
-        List<LineDto> lineDtos = lineTestUtils.findAll();
+        List<LineResponseDto> lineResponseDtos = lineTestUtils.findAll();
 
         //then
-        assertThat(lineDtos.size()).isEqualTo(1);
-        assertThat(lineDtos.get(0).getName()).isEqualTo("2호선");
+        assertThat(lineResponseDtos.size()).isEqualTo(1);
+        assertThat(lineResponseDtos.get(0).getName()).isEqualTo("2호선");
     }
 
     @Test
@@ -73,10 +73,10 @@ public class LineAcceptanceTest {
                 10).getId();
 
         // when
-        LineDto lineDto = lineTestUtils.findById(lineId);
+        LineResponseDto lineResponseDto = lineTestUtils.findById(lineId);
 
         // then
-        assertThat(lineDto.getName()).isEqualTo("2호선");
+        assertThat(lineResponseDto.getName()).isEqualTo("2호선");
     }
 
     @Test
@@ -91,9 +91,9 @@ public class LineAcceptanceTest {
         lineTestUtils.deleteLine(lineId);
 
         // then
-        List<LineDto> lineDtos = lineTestUtils.findAll();
+        List<LineResponseDto> lineResponseDtos = lineTestUtils.findAll();
 
-        assertThat(lineDtos.size()).isEqualTo(0);
+        assertThat(lineResponseDtos.size()).isEqualTo(0);
     }
 
     @Test
@@ -103,13 +103,13 @@ public class LineAcceptanceTest {
         StationDto station2 = stationTestUtils.createStation("역삼역");
         StationDto station3 = stationTestUtils.createStation("선릉역");
 
-        LineDto lineDto = lineTestUtils.createLine("2호선",
+        LineResponseDto lineResponseDto = lineTestUtils.createLine("2호선",
                 LocalTime.of(5, 0),
                 LocalTime.of(5, 0),
                 10);
 
         // when
-        LineDto resultLine = lineTestUtils.addEdge(lineDto.getId(), station1.getId(), station2.getId());
+        LineResponseDto resultLine = lineTestUtils.addEdge(lineResponseDto.getId(), station1.getId(), station2.getId());
 
         // then
         assertThat(resultLine.getStations().size()).isEqualTo(2);
@@ -124,19 +124,19 @@ public class LineAcceptanceTest {
         StationDto station2 = stationTestUtils.createStation("역삼역");
         StationDto station3 = stationTestUtils.createStation("선릉역");
 
-        LineDto lineDto = lineTestUtils.createLine("2호선",
+        LineResponseDto lineResponseDto = lineTestUtils.createLine("2호선",
                 LocalTime.of(5, 0),
                 LocalTime.of(5, 0),
                 10);
 
-        lineTestUtils.addEdge(lineDto.getId(), station1.getId(), station2.getId());
-        lineTestUtils.addEdge(lineDto.getId(), station2.getId(), station3.getId());
+        lineTestUtils.addEdge(lineResponseDto.getId(), station1.getId(), station2.getId());
+        lineTestUtils.addEdge(lineResponseDto.getId(), station2.getId(), station3.getId());
 
         // when
-        lineTestUtils.deleteEdge(lineDto.getId(), station2.getId());
+        lineTestUtils.deleteEdge(lineResponseDto.getId(), station2.getId());
 
         // then
-        LineDto resultLine = lineTestUtils.findById(lineDto.getId());
+        LineResponseDto resultLine = lineTestUtils.findById(lineResponseDto.getId());
 
         assertThat(resultLine.getStations().size()).isEqualTo(2);
         assertThat(resultLine.getStations().get(0).getName()).isEqualTo("강남역");

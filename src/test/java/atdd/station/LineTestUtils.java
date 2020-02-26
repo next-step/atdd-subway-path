@@ -3,7 +3,7 @@ package atdd.station;
 import atdd.HttpTestUtils;
 import atdd.station.model.CreateEdgeRequestView;
 import atdd.station.model.CreateLineRequestView;
-import atdd.station.model.dto.LineDto;
+import atdd.station.model.dto.LineResponseDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.ParameterizedTypeReference;
@@ -31,10 +31,10 @@ public class LineTestUtils {
         this.httpTestUtils = new HttpTestUtils(webTestClient);
     }
 
-    public LineDto createLine(final String name,
-                              final LocalTime startTime,
-                              final LocalTime endTime,
-                              final int intervalTime) {
+    public LineResponseDto createLine(final String name,
+                                      final LocalTime startTime,
+                                      final LocalTime endTime,
+                                      final int intervalTime) {
         CreateLineRequestView createLineRequestView = CreateLineRequestView.builder()
                 .name(name)
                 .startTime(startTime)
@@ -45,43 +45,43 @@ public class LineTestUtils {
         return createLine(createLineRequestView);
     }
 
-    public LineDto createLine(CreateLineRequestView createLineRequestView) {
+    public LineResponseDto createLine(CreateLineRequestView createLineRequestView) {
 
         String inputJson = createLineRequestViewToJson(createLineRequestView);
 
-        EntityExchangeResult result = httpTestUtils.postRequest(LINES_PATH, inputJson, LineDto.class);
+        EntityExchangeResult result = httpTestUtils.postRequest(LINES_PATH, inputJson, LineResponseDto.class);
 
-        LineDto lineDto = (LineDto) result.getResponseBody();
+        LineResponseDto lineResponseDto = (LineResponseDto) result.getResponseBody();
 
-        return lineDto;
+        return lineResponseDto;
     }
 
-    public List<LineDto> findAll() {
-        EntityExchangeResult result = httpTestUtils.getRequest(LINES_PATH, new ParameterizedTypeReference<List<LineDto>>() {
+    public List<LineResponseDto> findAll() {
+        EntityExchangeResult result = httpTestUtils.getRequest(LINES_PATH, new ParameterizedTypeReference<List<LineResponseDto>>() {
         });
 
-        return (List<LineDto>) result.getResponseBody();
+        return (List<LineResponseDto>) result.getResponseBody();
     }
 
-    public LineDto findById(final long id) {
-        EntityExchangeResult result = httpTestUtils.getRequest(LINES_PATH + "/" + id, new ParameterizedTypeReference<LineDto>() {
+    public LineResponseDto findById(final long id) {
+        EntityExchangeResult result = httpTestUtils.getRequest(LINES_PATH + "/" + id, new ParameterizedTypeReference<LineResponseDto>() {
         });
 
-        return (LineDto) result.getResponseBody();
+        return (LineResponseDto) result.getResponseBody();
     }
 
     public void deleteLine(final long id) {
         httpTestUtils.deleteRequest(LINES_PATH + "/" + id);
     }
 
-    public LineDto addEdge(final long lineId, final long sourceStationId, final long targetStationId) {
+    public LineResponseDto addEdge(final long lineId, final long sourceStationId, final long targetStationId) {
         CreateEdgeRequestView createEdgeRequestView = new CreateEdgeRequestView();
         createEdgeRequestView.setSourceStationId(sourceStationId);
         createEdgeRequestView.setTargetStationId(targetStationId);
 
-        EntityExchangeResult result = httpTestUtils.postRequest(LINES_PATH + "/" + lineId + EDGES_PATH, writeValueAsString(createEdgeRequestView), LineDto.class);
+        EntityExchangeResult result = httpTestUtils.postRequest(LINES_PATH + "/" + lineId + EDGES_PATH, writeValueAsString(createEdgeRequestView), LineResponseDto.class);
 
-        return (LineDto) result.getResponseBody();
+        return (LineResponseDto) result.getResponseBody();
     }
 
     public void deleteEdge(final long id, final long stationId) {
