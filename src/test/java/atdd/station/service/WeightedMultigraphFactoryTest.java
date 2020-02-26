@@ -3,10 +3,12 @@ package atdd.station.service;
 import atdd.line.domain.Line;
 import atdd.line.domain.LineTest;
 import atdd.line.domain.TimeTable;
+import atdd.line.repository.LineRepository;
 import atdd.station.domain.Duration;
 import atdd.station.domain.Station;
 import atdd.station.domain.StationTest;
 import atdd.station.dto.PathStation;
+import org.assertj.core.util.Lists;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,32 +21,38 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 class WeightedMultigraphFactoryTest {
 
     private WeightedMultigraphFactory weightedMultigraphFactory;
 
+    private LineRepository lineRepository = mock(LineRepository.class);
+
+    private final TimeTable timeTable = TimeTable.MAX_INTERVAL_TIME_TABLE;
+    private final Line line2 = LineTest.create(1L, "2호선", timeTable, 5);
+    private final Line line3 = LineTest.create(2L, "3호선", timeTable, 5);
+
+    private final Station gangnam = StationTest.create(1L, "강남역");
+    private final Station gyodae = StationTest.create(2L, "교대역");
+    private final Station terminal = StationTest.create(3L, "고속터미널역");
+
     @BeforeEach
     void setup() {
-        this.weightedMultigraphFactory = new WeightedMultigraphFactory();
+        this.weightedMultigraphFactory = new WeightedMultigraphFactory(lineRepository);
     }
 
     @Test
     void create() throws Exception {
-        final TimeTable timeTable = TimeTable.MAX_INTERVAL_TIME_TABLE;
-        final Line line2 = LineTest.create(1L, "2호선", timeTable, 5);
-        final Line line3 = LineTest.create(2L, "3호선", timeTable, 5);
-
-        final Station gangnam = StationTest.create(1L, "강남역");
-        final Station gyodae = StationTest.create(2L, "교대역");
-        final Station terminal = StationTest.create(3L, "고속터미널역");
-
         LineTest.addStations(line2, gangnam, gyodae);
         LineTest.addStations(line3, gyodae, terminal);
 
         final Duration duration = new Duration(LocalTime.of(0, 5));
         line2.addSection(gangnam.getId(), gyodae.getId(), duration, 0.5);
         line3.addSection(terminal.getId(), gyodae.getId(), duration, 0.5);
+
+        given(lineRepository.findAll()).willReturn(Lists.list(line2, line3));
 
         final Set<PathStation> expectedVertexes = Sets.newSet(
                 PathStation.from(gangnam),
@@ -58,6 +66,28 @@ class WeightedMultigraphFactoryTest {
 
         assertThat(result.vertexSet()).isEqualTo(expectedVertexes);
         assertThat(result.edgeSet()).hasSize(4);
+        verify(lineRepository, times(1)).findAll();
+    }
+
+    @DisplayName("create - 여러번 생성해도 DB 조회는 한번만 한다.")
+    @Test
+    void createMany() throws Exception {
+        LineTest.addStations(line2, gangnam, gyodae);
+        LineTest.addStations(line3, gyodae, terminal);
+
+        final Duration duration = new Duration(LocalTime.of(0, 5));
+        line2.addSection(gangnam.getId(), gyodae.getId(), duration, 0.5);
+        line3.addSection(terminal.getId(), gyodae.getId(), duration, 0.5);
+
+        given(lineRepository.findAll()).willReturn(Lists.list(line2, line3));
+
+
+        weightedMultigraphFactory.create(terminal, gangnam);
+        weightedMultigraphFactory.create(terminal, gangnam);
+        weightedMultigraphFactory.create(terminal, gangnam);
+
+
+        verify(lineRepository, times(1)).findAll();
     }
 
     @DisplayName("create - 출발역은 필수")

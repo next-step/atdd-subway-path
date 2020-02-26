@@ -3,6 +3,7 @@ package atdd.station.service;
 import atdd.line.domain.Line;
 import atdd.line.domain.LineTest;
 import atdd.line.domain.TimeTable;
+import atdd.line.repository.LineRepository;
 import atdd.station.domain.Duration;
 import atdd.station.domain.Station;
 import atdd.station.domain.StationTest;
@@ -17,33 +18,38 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 
 class ShortestPathFinderTest {
 
     private ShortestPathFinder shortestPathFinder;
 
+    private LineRepository lineRepository = mock(LineRepository.class);
+
+    private final TimeTable timeTable = TimeTable.MAX_INTERVAL_TIME_TABLE;
+    private final Line line2 = LineTest.create(1L, "2호선", timeTable, 5);
+    private final Line line3 = LineTest.create(2L, "3호선", timeTable, 5);
+
+    private final Station samsung = StationTest.create(1L, "삼성역");
+    private final Station seonreung = StationTest.create(2L, "선릉역");
+    private final Station yeoksam = StationTest.create(3L, "역삼역");
+    private final Station gangnam = StationTest.create(4L, "강남역");
+    private final Station gyodae = StationTest.create(5L, "교대역");
+    private final Station terminal = StationTest.create(6L, "고속터미널역");
+
     @BeforeEach
     void setup() {
-        this.shortestPathFinder = new ShortestPathFinder(new WeightedMultigraphFactory());
+        given(lineRepository.findAll()).willReturn(Lists.list(line2, line3));
+        final WeightedMultigraphFactory weightedMultigraphFactory = new WeightedMultigraphFactory(lineRepository);
+        this.shortestPathFinder = new ShortestPathFinder(weightedMultigraphFactory);
     }
 
     @Test
     void findPath() throws Exception {
-        final TimeTable timeTable = TimeTable.MAX_INTERVAL_TIME_TABLE;
-        final Line line2 = LineTest.create(1L, "2호선", timeTable, 5);
-        final Line line3 = LineTest.create(2L, "3호선", timeTable, 5);
-
-        final Station samsung = StationTest.create(1L, "삼성역");
-        final Station seonreung = StationTest.create(2L, "선릉역");
-        final Station yeoksam = StationTest.create(3L, "역삼역");
-        final Station gangnam = StationTest.create(4L, "강남역");
-        final Station gyodae = StationTest.create(5L, "교대역");
-        final Station terminal = StationTest.create(6L, "고속터미널역");
-
         LineTest.addStations(line2, samsung, seonreung, yeoksam, gangnam, gyodae);
         LineTest.addStations(line3, gyodae, terminal);
-
 
         final Duration duration = new Duration(LocalTime.of(0, 5));
         line2.addSection(samsung.getId(), seonreung.getId(), duration, 0.5);
@@ -76,17 +82,6 @@ class ShortestPathFinderTest {
     @DisplayName("findPath - 경로를 찾을 수 없으면 빈 배열을 반환한다.")
     @Test
     void findPathNotFound() throws Exception {
-        final TimeTable timeTable = TimeTable.MAX_INTERVAL_TIME_TABLE;
-        final Line line2 = LineTest.create(1L, "2호선", timeTable, 5);
-        final Line line3 = LineTest.create(2L, "3호선", timeTable, 5);
-
-        final Station samsung = StationTest.create(1L, "삼성역");
-        final Station seonreung = StationTest.create(2L, "선릉역");
-        final Station yeoksam = StationTest.create(3L, "역삼역");
-        final Station gangnam = StationTest.create(4L, "강남역");
-        final Station gyodae = StationTest.create(5L, "교대역");
-        final Station terminal = StationTest.create(6L, "고속터미널역");
-
         LineTest.addStations(line2, samsung, seonreung, yeoksam, gangnam, gyodae);
         LineTest.addStations(line3, gyodae, terminal);
 
@@ -110,11 +105,6 @@ class ShortestPathFinderTest {
     @DisplayName("findPath - 출발역과 도착역이 동일하면 입력받은 역을 반환한다.")
     @Test
     void findPathWithSameStation() throws Exception {
-        final TimeTable timeTable = TimeTable.MAX_INTERVAL_TIME_TABLE;
-        final Line line2 = LineTest.create(1L, "2호선", timeTable, 5);
-        final Station samsung = StationTest.create(1L, "삼성역");
-        final Station seonreung = StationTest.create(2L, "선릉역");
-
         LineTest.addStations(line2, samsung, seonreung);
 
 
