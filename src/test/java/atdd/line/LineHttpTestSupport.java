@@ -30,6 +30,12 @@ public class LineHttpTestSupport extends HttpTestSupport {
         return findAll(ROOT_URI, LineResponseDto.class);
     }
 
+    public void addStations(Long lineId, Long... stationId) {
+        for (Long id : stationId) {
+            addStation(lineId, id);
+        }
+    }
+
     public void addStation(Long lineId, Long stationId) {
         final String uri = UriComponentsBuilder.fromUriString(LineController.ROOT_URI + "/{lineId}/stations/{stationId}")
                 .build(lineId, stationId)

@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceContext;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -21,6 +23,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 class LineRepositoryTest {
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     private LineRepository lineRepository;
@@ -84,9 +89,13 @@ class LineRepositoryTest {
         Line line = getSavedLine();
         line.addStation(station);
         lineRepository.flush();
+        entityManager.clear();
 
+        line.clearStations();
         lineRepository.delete(line);
-        lineRepository.flush();
+        entityManager.flush();
+        entityManager.clear();
+
 
         final List<LineStation> lineStations = lineStationRepository.findAll();
         assertThat(lineStations).isEmpty();

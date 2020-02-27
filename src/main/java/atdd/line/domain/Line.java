@@ -89,7 +89,16 @@ public class Line {
             throw new IllegalArgumentException("이미 존재하는 역입니다. 역이름 : [" + station.getName() + "]");
         }
 
-        this.lineStations.add(new LineStation(this, station));
+        final LineStation lineStation = new LineStation(this, station);
+        this.lineStations.add(lineStation);
+        station.addLineStation(lineStation);
+    }
+
+    public void addLineStation(LineStation lineStation) {
+        if (lineStations.contains(lineStation)) {
+            return;
+        }
+        this.lineStations.add(lineStation);
     }
 
     private boolean existStation(Station station) {
@@ -131,6 +140,10 @@ public class Line {
         final Station station = getStation(stationId);
         final Station nextStation = getStation(nextStationId);
         if (Objects.isNull(startLineStation)) {
+            changeStartStation(station);
+        }
+
+        if (startLineStation.isEqualStation(nextStation.getName())) {
             changeStartStation(station);
         }
 
@@ -226,6 +239,10 @@ public class Line {
 
     private void removeLineStation(Station deleteTargetStation) {
         lineStations.removeIf(lineStation -> lineStation.isEqualStation(deleteTargetStation.getName()));
+    }
+
+    public void clearStations() {
+        lineStations.clear();
     }
 
     @Override

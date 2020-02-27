@@ -1,6 +1,7 @@
 package atdd;
 
 import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -76,6 +77,17 @@ public abstract class HttpTestSupport {
                 .expectStatus().isOk()
                 .expectBody(returnType)
                 .returnResult().getResponseBody();
+    }
+
+    protected <T> EntityExchangeResult<T> getEntityResult(String uri, Class<T> returnType) {
+        return webTestClient.get()
+                .uri(uri)
+                .acceptCharset(StandardCharsets.UTF_8)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(returnType)
+                .returnResult();
     }
 
 }

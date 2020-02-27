@@ -1,6 +1,7 @@
 package atdd.station.service;
 
 import atdd.station.domain.Station;
+import atdd.station.dto.PathResponseDto;
 import atdd.station.dto.StationResponseDto;
 import atdd.station.repository.StationRepository;
 import org.springframework.stereotype.Service;
@@ -16,10 +17,15 @@ public class StationService {
 
     private final StationAssembler stationAssembler;
     private final StationRepository stationRepository;
+    private final ShortestPathFinder shortestPathFinder;
 
-    public StationService(StationAssembler stationAssembler, StationRepository stationRepository) {
+    public StationService(StationAssembler stationAssembler,
+                          StationRepository stationRepository,
+                          ShortestPathFinder shortestPathFinder) {
+
         this.stationAssembler = stationAssembler;
         this.stationRepository = stationRepository;
+        this.shortestPathFinder = shortestPathFinder;
     }
 
     @Transactional
@@ -57,6 +63,13 @@ public class StationService {
     public void delete(Long stationId) {
         Station station = findById(stationId);
         stationRepository.delete(station);
+    }
+
+    @Transactional(readOnly = true)
+    public PathResponseDto getShortestPath(Long startStationId, Long endStationId) {
+        final Station startStation = findById(startStationId);
+        final Station endStation = findById(endStationId);
+        return shortestPathFinder.findPath(startStation, endStation);
     }
 
 }
