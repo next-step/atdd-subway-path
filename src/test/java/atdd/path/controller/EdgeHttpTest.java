@@ -1,5 +1,6 @@
-package atdd.edge;
+package atdd.path.controller;
 
+import atdd.path.domain.dto.EdgeDto;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;

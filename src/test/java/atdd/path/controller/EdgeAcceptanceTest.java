@@ -1,10 +1,9 @@
-package atdd.edge;
+package atdd.path.controller;
 
 import atdd.AbstractAcceptanceTest;
-import atdd.line.LineDto;
-import atdd.line.LineHttpTest;
-import atdd.station.StationHttpTest;
-import atdd.station.domain.dto.StationDto;
+import atdd.path.domain.dto.LineDto;
+import atdd.path.domain.dto.EdgeDto;
+import atdd.path.domain.dto.StationDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -69,8 +68,8 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     public void 지하철노선에_지하철_구간을_제외() {
         // given
-        edgeHttpTest.createEdge(this.secondLine.getId(), this.gangnamStation.getId(), this.yeoksamStation.getId()).getResponseBody();
         edgeHttpTest.createEdge(this.secondLine.getId(), this.yeoksamStation.getId(), this.seonneungStation.getId()).getResponseBody();
+        edgeHttpTest.createEdge(this.secondLine.getId(), this.gangnamStation.getId(), this.yeoksamStation.getId()).getResponseBody();
 
         // when
         webTestClient.delete().uri("/edges/{lineId}/{stationId}", this.secondLine.getId(), this.yeoksamStation.getId())
@@ -79,9 +78,9 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
 
         // then
         StationDto station = stationHttpTest.findStationByIdTest(this.yeoksamStation.getId()).getResponseBody();
-        assertThat(station.getLines().size()).isEqualTo(1);
+        assertThat(station.getLines().size()).isEqualTo(0);
 
         LineDto line = lineHttpTest.findLineByTest(this.secondLine.getId()).getResponseBody();
-        assertThat(line.getStations().size()).isEqualTo(3);
+        assertThat(line.getStations().size()).isEqualTo(2);
     }
 }

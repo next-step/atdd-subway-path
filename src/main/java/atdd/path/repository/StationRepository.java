@@ -1,6 +1,6 @@
-package atdd.station.repository;
+package atdd.path.repository;
 
-import atdd.station.domain.Station;
+import atdd.path.domain.Station;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StationRepository extends JpaRepository<Station, Long> {

@@ -1,5 +1,6 @@
-package atdd.edge;
+package atdd.path.domain.dto;
 
+import atdd.path.domain.Edge;
 import lombok.*;
 
 @Getter

@@ -1,7 +1,7 @@
-package atdd.station;
+package atdd.path.controller;
 
 import atdd.AbstractAcceptanceTest;
-import atdd.station.domain.dto.StationDto;
+import atdd.path.domain.dto.StationDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

@@ -1,6 +1,7 @@
-package atdd.line;
+package atdd.path.controller;
 
 import atdd.AbstractAcceptanceTest;
+import atdd.path.domain.dto.LineDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,7 +1,7 @@
-package atdd.station;
+package atdd.path.controller;
 
 import atdd.AbstractAcceptanceTest;
-import atdd.station.domain.dto.StationDto;
+import atdd.path.domain.dto.StationDto;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;

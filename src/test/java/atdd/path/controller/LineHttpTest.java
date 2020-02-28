@@ -1,5 +1,6 @@
-package atdd.line;
+package atdd.path.controller;
 
+import atdd.path.domain.dto.LineDto;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;

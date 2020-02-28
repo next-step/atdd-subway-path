@@ -1,6 +1,6 @@
-package atdd.line;
+package atdd.path.domain.dto;
 
-import atdd.station.domain.dto.Item;
+import atdd.path.domain.Line;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

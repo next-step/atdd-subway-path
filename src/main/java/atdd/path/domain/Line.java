@@ -1,19 +1,14 @@
-package atdd.line;
+package atdd.path.domain;
 
-import atdd.edge.Edge;
-import atdd.station.domain.Station;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Getter
 @Entity
@@ -45,10 +40,7 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        // 무방향 그래프 구현
-
-        return this.edges.stream()
-                .flatMap(it -> Stream.of(it.getSourceStation(), it.getTargetStation()))
-                .collect(Collectors.toList());
+        Edges edges = new Edges(this.edges);
+        return edges.getStations();
     }
 }
