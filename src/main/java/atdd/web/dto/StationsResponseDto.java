@@ -1,6 +1,7 @@
-package atdd.web.dto.station;
+package atdd.web.dto;
 
 import atdd.domain.stations.Line;
+import atdd.domain.stations.StationLine;
 import atdd.domain.stations.Stations;
 import lombok.Builder;
 import lombok.Getter;

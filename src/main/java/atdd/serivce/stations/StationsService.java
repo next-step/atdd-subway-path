@@ -2,9 +2,9 @@ package atdd.serivce.stations;
 
 import atdd.domain.stations.Stations;
 import atdd.domain.stations.StationsRepository;
-import atdd.web.dto.station.StationsListResponseDto;
-import atdd.web.dto.station.StationsResponseDto;
-import atdd.web.dto.station.StationsSaveRequestDto;
+import atdd.web.dto.StationsListResponseDto;
+import atdd.web.dto.StationsResponseDto;
+import atdd.web.dto.StationsSaveRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class StationsService {
+
     private final StationsRepository stationsRepository;
 
     public StationsResponseDto create(StationsSaveRequestDto requestDto){
@@ -25,6 +26,7 @@ public class StationsService {
         Stations stations=checkId(id);
         stationsRepository.delete(stations);
     }
+
 
     public StationsListResponseDto readList() {
        List<Stations> stationsList=stationsRepository.findAll();

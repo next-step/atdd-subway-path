@@ -1,26 +1,27 @@
-package atdd.web.dto.line;
+package atdd.web.dto;
 
-import atdd.domain.stations.Line;
 import atdd.domain.stations.StationLine;
+import atdd.domain.stations.Stations;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 @Getter
 @NoArgsConstructor
-public class LineCreateRequestDto {
+public class StationsSaveRequestDto {
     private String name;
     private List<StationLine> stationLines;
 
     @Builder
-    public LineCreateRequestDto(String name, List<StationLine> stationLines) {
+    public StationsSaveRequestDto(String name, List<StationLine> stationLines) {
         this.name = name;
         this.stationLines=stationLines;
     }
 
-    public Line toEntity(){
-        return Line.builder()
+    public Stations toEntity(){
+        return Stations.builder()
                 .name(name)
                 .stationLines(stationLines)
                 .build();
