@@ -77,11 +77,11 @@ public class LineController {
     }
 
     private LineResponseDto createLineResponseDto(Line line) {
-        final List<Edge> edges = lineService.getEdges(line);
+        final List<Edge> edges = lineService.getLineEdges(line);
         return LineResponseDto.of(
                 line,
                 edges,
-                lineService.getStations(line, edges)
+                lineService.getLineStations(line, edges)
         );
     }
 }

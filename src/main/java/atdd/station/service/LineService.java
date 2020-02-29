@@ -165,7 +165,7 @@ public class LineService {
         return stationService.saveAll(stationList);
     }
 
-    public List<Edge> getEdges(Line line) {
+    public List<Edge> getLineEdges(Line line) {
         List<Edge> edges = line.getLineEdges();
 
         if (edges.isEmpty()) {
@@ -175,7 +175,7 @@ public class LineService {
         return edges;
     }
 
-    public List<Station> getStations(Line line, List<Edge> edges) {
+    public List<Station> getLineStations(Line line, List<Edge> edges) {
         List<Station> stations = line.getLineStations();
 
         if (stations.isEmpty()) {
