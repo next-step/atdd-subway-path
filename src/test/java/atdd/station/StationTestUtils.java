@@ -1,7 +1,7 @@
 package atdd.station;
 
 import atdd.HttpTestUtils;
-import atdd.station.model.CreateStationRequestView;
+import atdd.station.model.dto.CreateStationRequestView;
 import atdd.station.model.dto.StationDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

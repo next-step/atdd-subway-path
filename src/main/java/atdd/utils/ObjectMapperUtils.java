@@ -1,7 +1,7 @@
-package atdd.station.utils;
+package atdd.utils;
 
-import atdd.station.exception.ErrorType;
-import atdd.station.exception.SubwayException;
+import atdd.exception.ErrorType;
+import atdd.exception.SubwayException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,6 +1,6 @@
 package atdd;
 
-import atdd.station.model.CreateLineRequestView;
+import atdd.station.model.dto.CreateLineRequestView;
 
 import java.time.LocalTime;
 

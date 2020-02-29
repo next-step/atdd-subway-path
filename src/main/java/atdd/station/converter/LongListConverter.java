@@ -1,6 +1,6 @@
 package atdd.station.converter;
 
-import atdd.station.utils.ObjectMapperUtils;
+import atdd.utils.ObjectMapperUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import javax.persistence.AttributeConverter;

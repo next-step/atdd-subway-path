@@ -1,8 +1,8 @@
 package atdd.station;
 
 import atdd.HttpTestUtils;
-import atdd.station.model.CreateEdgeRequestView;
-import atdd.station.model.CreateLineRequestView;
+import atdd.station.model.dto.CreateEdgeRequestView;
+import atdd.station.model.dto.CreateLineRequestView;
 import atdd.station.model.dto.LineResponseDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

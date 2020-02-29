@@ -1,6 +1,6 @@
 package atdd.station.controller;
 
-import atdd.station.model.CreateStationRequestView;
+import atdd.station.model.dto.CreateStationRequestView;
 import atdd.station.model.dto.LineSimpleDto;
 import atdd.station.model.dto.StationDto;
 import atdd.station.model.entity.Station;

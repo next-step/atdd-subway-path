@@ -1,4 +1,4 @@
-package atdd.station.model;
+package atdd.station.model.dto;
 
 import lombok.Getter;
 import lombok.Setter;

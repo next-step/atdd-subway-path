@@ -1,4 +1,4 @@
-package atdd.station.exception;
+package atdd.exception;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;

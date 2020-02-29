@@ -1,7 +1,7 @@
 package atdd.station.service;
 
-import atdd.station.exception.ErrorType;
-import atdd.station.exception.SubwayException;
+import atdd.exception.ErrorType;
+import atdd.exception.SubwayException;
 import atdd.station.model.entity.Edge;
 import atdd.station.model.entity.Line;
 import atdd.station.model.entity.Station;

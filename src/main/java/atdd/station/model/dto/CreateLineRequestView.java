@@ -1,4 +1,4 @@
-package atdd.station.model;
+package atdd.station.model.dto;
 
 import atdd.station.model.entity.Line;
 import lombok.Builder;

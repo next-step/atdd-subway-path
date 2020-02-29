@@ -1,8 +1,8 @@
 package atdd.station.controller;
 
-import atdd.station.exception.SubwayException;
-import atdd.station.model.CreateEdgeRequestView;
-import atdd.station.model.CreateLineRequestView;
+import atdd.exception.SubwayException;
+import atdd.station.model.dto.CreateEdgeRequestView;
+import atdd.station.model.dto.CreateLineRequestView;
 import atdd.station.model.dto.LineResponseDto;
 import atdd.station.model.entity.Edge;
 import atdd.station.model.entity.Line;

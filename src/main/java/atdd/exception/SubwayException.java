@@ -1,4 +1,4 @@
-package atdd.station.exception;
+package atdd.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
