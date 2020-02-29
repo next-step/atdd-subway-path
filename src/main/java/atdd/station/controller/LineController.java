@@ -1,6 +1,5 @@
 package atdd.station.controller;
 
-import atdd.station.exception.ErrorType;
 import atdd.station.exception.SubwayException;
 import atdd.station.model.CreateEdgeRequestView;
 import atdd.station.model.CreateLineRequestView;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/lines")
@@ -28,10 +26,8 @@ public class LineController {
     public ResponseEntity<LineResponseDto> createLine(@RequestBody CreateLineRequestView view) {
         final Line line = lineService.create(view.toLine());
 
-        LineResponseDto lineResponseDto = lineService.lineToLineDto(line);
-
         return ResponseEntity.created(URI.create("/lines/" + line.getId()))
-                .body(lineResponseDto);
+                .body(createLineResponseDto(line));
     }
 
     @GetMapping
@@ -41,22 +37,16 @@ public class LineController {
         List<LineResponseDto> lineResponseDtos = new ArrayList<>();
 
         for (Line line : lines)
-            lineResponseDtos.add(lineService.lineToLineDto(line));
+            lineResponseDtos.add(createLineResponseDto(line));
 
         return ResponseEntity.ok(lineResponseDtos);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponseDto> findLine(@PathVariable long id) throws SubwayException {
-        final Optional<Line> optionalLine = lineService.findById(id);
+        final Line line = lineService.findById(id);
 
-        if (optionalLine.isPresent()) {
-            LineResponseDto lineResponseDto = lineService.lineToLineDto(optionalLine.get());
-
-            return ResponseEntity.ok(lineResponseDto);
-        }
-
-        throw new SubwayException(ErrorType.NOT_FOUND_LINE);
+        return ResponseEntity.ok(createLineResponseDto(line));
     }
 
     @DeleteMapping("/{id}")
@@ -73,15 +63,9 @@ public class LineController {
                 .sourceStationId(view.getSourceStationId())
                 .targetStationId(view.getTargetStationId());
 
-        Optional<Line> lineOptional = lineService.addEdge(id, edgeBuilder.build());
+        Line line = lineService.addEdge(id, edgeBuilder.build());
 
-        if (!lineOptional.isPresent()) {
-            throw new SubwayException(ErrorType.NOT_FOUND_EDGE);
-        }
-
-        LineResponseDto lineResponseDto = lineService.lineToLineDto(lineOptional.get());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(lineResponseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createLineResponseDto(line));
     }
 
     @DeleteMapping("/{id}/edge")
@@ -90,5 +74,14 @@ public class LineController {
         lineService.deleteEdge(id, stationId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    private LineResponseDto createLineResponseDto(Line line) {
+        final List<Edge> edges = lineService.getEdges(line);
+        return LineResponseDto.of(
+                line,
+                edges,
+                lineService.getStations(line, edges)
+        );
     }
 }

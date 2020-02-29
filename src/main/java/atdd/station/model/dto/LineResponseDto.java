@@ -1,5 +1,8 @@
 package atdd.station.model.dto;
 
+import atdd.station.model.entity.Edge;
+import atdd.station.model.entity.Line;
+import atdd.station.model.entity.Station;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,5 +36,9 @@ public class LineResponseDto {
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.stations = stations;
+    }
+
+    public static LineResponseDto of(final Line line, final List<Edge> newEdges, final List<Station> stations) {
+        return LineDtoAssembler.assemble(line, newEdges, stations);
     }
 }
