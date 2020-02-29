@@ -11,7 +11,9 @@ public enum ErrorType {
     NOT_FOUND_LINE(-200, HttpStatus.NOT_FOUND, "not found line"),
 
     NOT_FOUND_EDGE(-250, HttpStatus.NOT_FOUND, "not found edge"),
-    INVALID_EDGE(-251, HttpStatus.INTERNAL_SERVER_ERROR, "invalid edge");
+    INVALID_EDGE(-251, HttpStatus.INTERNAL_SERVER_ERROR, "invalid edge"),
+
+    NOT_FOUND_STATION(-300, HttpStatus.NOT_FOUND, "not found station");
 
     private int code;
     private HttpStatus status;
