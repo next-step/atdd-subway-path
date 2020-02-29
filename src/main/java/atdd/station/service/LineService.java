@@ -165,7 +165,6 @@ public class LineService {
         return stationService.saveAll(stationList);
     }
 
-    // TODO 이 부분 먼저 바꿔보자!
     public List<Edge> getEdges(Line line) {
         List<Edge> edges = line.getLineEdges();
 
@@ -192,7 +191,7 @@ public class LineService {
         return stations;
     }
 
-    private void addNewEdge(final List<Edge> legacyEdges, final Edge newEdge) throws SubwayException {
+    private void addNewEdge(final List<Edge> legacyEdges, final Edge newEdge) {
         boolean isConnect = legacyEdges.stream().anyMatch(data -> data.connectedEdge(newEdge));
 
         if (!legacyEdges.isEmpty() && !isConnect)
