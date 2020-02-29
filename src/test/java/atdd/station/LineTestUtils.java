@@ -10,7 +10,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -29,20 +28,6 @@ public class LineTestUtils {
     public LineTestUtils(WebTestClient webTestClient) {
         this.webTestClient = webTestClient;
         this.httpTestUtils = new HttpTestUtils(webTestClient);
-    }
-
-    public LineResponseDto createLine(final String name,
-                                      final LocalTime startTime,
-                                      final LocalTime endTime,
-                                      final int intervalTime) {
-        CreateLineRequestView createLineRequestView = CreateLineRequestView.builder()
-                .name(name)
-                .startTime(startTime)
-                .endTime(endTime)
-                .intervalTime(intervalTime)
-                .build();
-
-        return createLine(createLineRequestView);
     }
 
     public LineResponseDto createLine(CreateLineRequestView createLineRequestView) {
