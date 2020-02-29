@@ -9,7 +9,10 @@ import atdd.station.repository.LineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class LineService {
@@ -38,7 +41,7 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public Line addEdge(final long id, final Edge newEdge){
+    public Line addEdge(final long id, final Edge newEdge) {
         final Line line = findById(id);
         final List<Edge> legacyEdges = edgeService.findAllById(line.getEdgeIds());
 
