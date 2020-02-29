@@ -83,9 +83,8 @@ public class LineService {
         line.updateEdge(newEdges, stationList);
     }
 
-    // TODO optional 제거
-    public Optional<Line> deleteEdge(final long id, final long stationId) {
-        final Line line = lineRepository.findById(id).get();
+    public void deleteEdge(final long id, final long stationId) {
+        final Line line = findById(id);
         final Station station = stationService.findById(stationId);
 
         // 노선에서 구간 삭제
@@ -148,8 +147,6 @@ public class LineService {
 
         // 지하철역에서 라인 삭제
         deleteLineInStation(station, line.getId());
-
-        return Optional.ofNullable(line);
     }
 
     private List<Station> updateLineInStations(final Set<Long> stationIds, final long lineId) {
