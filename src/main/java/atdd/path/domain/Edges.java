@@ -1,14 +1,20 @@
 package atdd.path.domain;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Getter
+@NoArgsConstructor
+@Embeddable
 public class Edges {
+    @OneToMany(mappedBy = "line")
     private List<Edge> edges = new ArrayList<>();
-
-    public Edges() {
-    }
 
     public Edges(List<Edge> edges) {
         checkValidEdges(edges);
@@ -56,11 +62,11 @@ public class Edges {
 
     private Station findFirstStation(List<Edge> edges) {
         List<Station> sourceStations = edges.stream()
-                .map(it -> it.getTargetStation())
+                .map(Edge::getTargetStation)
                 .collect(Collectors.toList());
 
         return edges.stream()
-                .map(it -> it.getSourceStation())
+                .map(Edge::getSourceStation)
                 .filter(it -> !sourceStations.contains(it))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
@@ -69,7 +75,7 @@ public class Edges {
     private Station findNextStationOf(List<Edge> edges, Station firstStation) {
         return edges.stream()
                 .filter(it -> firstStation.equals(it.getSourceStation()))
-                .map(it -> it.getTargetStation())
+                .map(Edge::getTargetStation)
                 .findFirst()
                 .orElse(null);
     }
@@ -103,13 +109,13 @@ public class Edges {
     }
 
     private Integer sum(List<Edge> replaceEdge) {
-        return replaceEdge.stream().map(it -> it.getDistance()).reduce(0, Integer::sum);
+        return replaceEdge.stream().map(Edge::getDistance).reduce(0, Integer::sum);
     }
 
     private Station getSourceStationOf(Station station) {
         return this.edges.stream()
                 .filter(it -> station.equals(it.getTargetStation()))
-                .map(it -> it.getSourceStation())
+                .map(Edge::getSourceStation)
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
     }
@@ -117,13 +123,13 @@ public class Edges {
     private Station getTargetStationOf(Station station) {
         return this.edges.stream()
                 .filter(it -> station.equals(it.getSourceStation()))
-                .map(it -> it.getTargetStation())
+                .map(Edge::getTargetStation)
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
     }
 
     public Edges add(Edge edge) {
-        List<Edge> newEdges = this.edges.stream().collect(Collectors.toList());
+        List<Edge> newEdges = new ArrayList<>(this.edges);
         newEdges.add(edge);
         return new Edges(newEdges);
     }

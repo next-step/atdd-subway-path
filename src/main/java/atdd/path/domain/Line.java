@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -27,8 +26,8 @@ public class Line {
     private int intervalTime;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "line")
-    private List<Edge> edges = new ArrayList();
+    @Embedded
+    private Edges edges = new Edges();
 
     @Builder
     public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
@@ -40,7 +39,10 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        Edges edges = new Edges(this.edges);
-        return edges.getStations();
+        return this.edges.getStations();
+    }
+
+    public List<Edge> getEdges() {
+        return edges.getEdges();
     }
 }

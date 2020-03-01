@@ -38,9 +38,9 @@ public class EdgeController {
     @DeleteMapping("{lineId}/{stationId}")
     public ResponseEntity deleteEdge(@PathVariable Long lineId, @PathVariable Long stationId) {
         Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new RuntimeException());
+                .orElseThrow(RuntimeException::new);
         Station station = stationRepository.findById(stationId)
-                .orElseThrow(() -> new RuntimeException());
+                .orElseThrow(RuntimeException::new);
 
         List<Edge> oldEdges = line.getEdges();
         Edges edges = new Edges(line.getEdges());
