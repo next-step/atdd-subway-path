@@ -21,12 +21,6 @@ public class RouteAcceptanceTest extends AbstractAcceptanceTest {
 
     @BeforeEach
     void setUp() {
-        /*
-         * Given 지하철역들이 등록되어 있다.
-         * And 지하철 노선들이 등록되어 있다.
-         * And 지하철 노선에 지하철 구간들이 등록되어 있다.
-         * */
-
         this.stationHttpTest = new StationHttpTest(webTestClient);
         this.lineHttpTest = new LineHttpTest(webTestClient);
         this.edgeHttpTest = new EdgeHttpTest(webTestClient);
@@ -39,9 +33,9 @@ public class RouteAcceptanceTest extends AbstractAcceptanceTest {
 
         this.secondLine = lineHttpTest.createLineTest().getResponseBody();
 
-        edgeHttpTest.createEdge(secondLine.getId(), gangnamStation.getId(), yeoksamStation.getId());
-        edgeHttpTest.createEdge(secondLine.getId(), yeoksamStation.getId(), seonneungStation.getId());
-        edgeHttpTest.createEdge(secondLine.getId(), seonneungStation.getId(), samsungStation.getId());
+        edgeHttpTest.createEdge(secondLine.getId(), gangnamStation.getId(), yeoksamStation.getId(), 2, 2);
+        edgeHttpTest.createEdge(secondLine.getId(), yeoksamStation.getId(), seonneungStation.getId(), 3, 3);
+        edgeHttpTest.createEdge(secondLine.getId(), seonneungStation.getId(), samsungStation.getId(), 2, 2);
     }
 
     @Test
@@ -50,8 +44,8 @@ public class RouteAcceptanceTest extends AbstractAcceptanceTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.startStationId").isEqualTo(gangnamStation)
-                .jsonPath("$.endStationId").isEqualTo(samsungStation)
+                .jsonPath("$.startStationId").isEqualTo(gangnamStation.getId())
+                .jsonPath("$.endStationId").isEqualTo(samsungStation.getId())
                 .jsonPath("$.stations.size()").isEqualTo(4);
     }
 }

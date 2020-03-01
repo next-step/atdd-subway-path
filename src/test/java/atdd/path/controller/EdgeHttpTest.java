@@ -13,11 +13,13 @@ public class EdgeHttpTest {
         this.webTestClient = webTestClient;
     }
 
-    public EntityExchangeResult<EdgeDto> createEdge(Long lineId, Long sourceStationId, Long targetStationId) {
+    public EntityExchangeResult<EdgeDto> createEdge(Long lineId, Long sourceStationId, Long targetStationId, int distance, int elapsedMinutes) {
         String input = "{" +
                 "\"lineId\": " + lineId + "," +
                 "\"sourceStationId\": " + sourceStationId + "," +
-                "\"targetStationId\": " + targetStationId +
+                "\"targetStationId\": " + targetStationId + "," +
+                "\"distance\": " + distance + "," +
+                "\"elapsedMinutes\": " + elapsedMinutes +
                 "}";
 
         return webTestClient.post().uri("/edges")

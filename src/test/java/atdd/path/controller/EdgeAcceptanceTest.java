@@ -68,8 +68,8 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     public void 지하철노선에_지하철_구간을_제외() {
         // given
-        edgeHttpTest.createEdge(this.secondLine.getId(), this.yeoksamStation.getId(), this.seonneungStation.getId()).getResponseBody();
-        edgeHttpTest.createEdge(this.secondLine.getId(), this.gangnamStation.getId(), this.yeoksamStation.getId()).getResponseBody();
+        edgeHttpTest.createEdge(this.secondLine.getId(), this.yeoksamStation.getId(), this.seonneungStation.getId(), 3, 3).getResponseBody();
+        edgeHttpTest.createEdge(this.secondLine.getId(), this.gangnamStation.getId(), this.yeoksamStation.getId(), 2, 2).getResponseBody();
 
         // when
         webTestClient.delete().uri("/edges/{lineId}/{stationId}", this.secondLine.getId(), this.yeoksamStation.getId())

@@ -31,20 +31,24 @@ public class Edge {
 
     private int distance;
 
+    private int elapsedMinutes;
+
     @Builder
-    public Edge(Long lineId, Long sourceStationId, Long targetStationId, int distance) {
+    public Edge(Long lineId, Long sourceStationId, Long targetStationId, int distance, int elapsedMinutes) {
         this.line = Line.builder().id(lineId).build();
         this.sourceStation = Station.builder().id(sourceStationId).build();
         this.targetStation = Station.builder().id(targetStationId).build();
         this.distance = distance;
+        this.elapsedMinutes = elapsedMinutes;
     }
 
     @Builder(builderClassName = "updateBuilder", builderMethodName = "updateBuilder")
-    public Edge(Long lineId, Station sourceStation, Station targetStation, int distance) {
+    public Edge(Long lineId, Station sourceStation, Station targetStation, int distance, int elapsedMinutes) {
         this.line = Line.builder().id(lineId).build();
         this.sourceStation = sourceStation;
         this.targetStation = targetStation;
         this.distance = distance;
+        this.elapsedMinutes = elapsedMinutes;
     }
 
     public boolean hasStation(Station station) {
