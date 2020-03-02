@@ -10,10 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -82,5 +79,14 @@ public class StationServiceTest {
         //then
         assertThat(stations.size()).isEqualTo(theNumberOfStations);
         assertThat(stations.get(2).getName()).isEqualTo(station3.getName());
+    }
+
+    @Test
+    void 등록된_지하철이_목록_없으면_빈_컬렉션을_리턴한다(){
+        //when이
+        List<Station> stations = stationService.showAll();
+
+        //then
+        assertThat(stations).isEqualTo(Collections.EMPTY_LIST);
     }
 }

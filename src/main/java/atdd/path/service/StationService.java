@@ -6,6 +6,7 @@ import atdd.path.domain.Station;
 import atdd.path.domain.StationRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -31,6 +32,10 @@ public class StationService {
     }
 
     public List<Station> showAll() {
+        List<Station> stations = stationRepository.findAll();
+        if(stations.size()== 0){
+            return Collections.emptyList();
+        }
         return stationRepository.findAll();
     }
 }
