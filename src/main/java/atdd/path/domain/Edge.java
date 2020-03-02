@@ -1,23 +1,33 @@
 package atdd.path.domain;
 
-import javax.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
 
-import static javax.persistence.FetchType.LAZY;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 import static javax.persistence.GenerationType.IDENTITY;
 
+@Getter
 @Entity
 public class Edge {
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "edge_id")
     private Long id;
+    private Long sourceId;
+    private Long targetId;
+    private Long lineId;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "station_id", insertable = false, updatable = false)
-    private Station sourceStation;
+    public Edge() {
+    }
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "station_id", insertable = false, updatable = false)
-    private Station targetStation;
-
+    @Builder
+    public Edge(Long id, Long sourceId, Long targetId, Long lineId) {
+        this.id = id;
+        this.sourceId = sourceId;
+        this.targetId = targetId;
+        this.lineId = lineId;
+    }
 }

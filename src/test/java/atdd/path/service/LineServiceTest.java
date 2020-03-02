@@ -2,13 +2,13 @@ package atdd.path.service;
 
 import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
-import atdd.path.domain.Line;
-import atdd.path.domain.LineRepository;
+import atdd.path.domain.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityExistsException;
 import java.time.LocalTime;
@@ -24,9 +24,25 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 public class LineServiceTest {
     public static final String LINE_2_NAME = "2호선";
+    public static final String STATION_NAME = "사당";
+    public static final String STATION_NAME_2 = "방배";
+    public static final String STATION_NAME_3 = "서초";
+    public static final String STATION_NAME_4 = "강남";
     public static final LocalTime START_TIME = LocalTime.of(5, 00);
     public static final LocalTime END_TIME = LocalTime.of(23, 50);
     public static final int INTERVAL_TIME = 10;
+    public Station station1 = Station.builder()
+            .name(STATION_NAME)
+            .build();
+    public Station station2 = Station.builder()
+            .name(STATION_NAME_2)
+            .build();
+    public Station station3 = Station.builder()
+            .name(STATION_NAME_3)
+            .build();
+    public Station station4 = Station.builder()
+            .name(STATION_NAME_4)
+            .build();
     public Line line = Line.builder()
             .id(1L)
             .name(LINE_2_NAME)
@@ -46,6 +62,12 @@ public class LineServiceTest {
 
     @Mock
     LineRepository lineRepository;
+
+    @Autowired
+    EdgeRepository edgeRepository;
+
+    @Mock
+    StationRepository stationRepository;
 
     @Test
     void 지하철노선_등록하기() {
@@ -121,4 +143,18 @@ public class LineServiceTest {
         //then
         verify(lineRepository, times(0)).deleteById(anyLong());
     }
+
+//    @Test
+//    void 지하철노선에_구간을_추가하기(){
+//        //given
+//        given(stationRepository.findById(station1.getId())).willReturn(Optional.of(station1));
+//        given(stationRepository.findById(station2.getId())).willReturn(Optional.of(station2));
+//
+//        //when
+//        lineService.addEdge(line, station1.getId(), station2.getId(), INTERVAL_TIME);
+//
+//        //then
+//        //verify(edgeRepository, times(1)).save(any(Edge.class));
+//        assertThat(line.getEdges().get(0)).isNotNull();
+//    }
 }

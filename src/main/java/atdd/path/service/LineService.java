@@ -2,9 +2,7 @@ package atdd.path.service;
 
 import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
-import atdd.path.domain.EdgeRepository;
-import atdd.path.domain.Line;
-import atdd.path.domain.LineRepository;
+import atdd.path.domain.*;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityExistsException;
@@ -14,10 +12,13 @@ import java.util.Optional;
 public class LineService {
     private LineRepository lineRepository;
     private EdgeRepository edgeRepository;
+    private StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, EdgeRepository edgeRepository) {
+    public LineService(LineRepository lineRepository, EdgeRepository edgeRepository,
+                       StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.edgeRepository = edgeRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponseView create(LineRequestView requestView) {
@@ -44,4 +45,6 @@ public class LineService {
             lineRepository.deleteById(id);
         }
     }
+
+
 }

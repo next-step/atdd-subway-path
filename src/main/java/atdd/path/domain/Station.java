@@ -6,23 +6,15 @@ import lombok.Getter;
 import javax.persistence.*;
 import java.util.List;
 
+import static javax.persistence.GenerationType.*;
+
 @Entity
 @Getter
 public class Station {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "station_id")
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
     private String name;
-
-    @OneToMany(mappedBy = "sourceStation")
-    private List<Edge> sourceEdges;
-
-    @OneToMany(mappedBy = "targetStation")
-    private List<Edge> targetEdges;
-
-    @OneToMany(mappedBy = "station")
-    private List<StationLine> stationLines;
 
     public Station() {
     }
