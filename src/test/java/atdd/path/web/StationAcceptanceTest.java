@@ -12,6 +12,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class StationAcceptanceTest extends AbstractAcceptanceTest {
+    public static final String STATION_BASE_URI = "/stations";
     private String STATION_NAME = "사당";
     private String STATION_NAME_2 = "방배";
     private String STATION_NAME_3 = "서초";
@@ -39,7 +40,7 @@ public class StationAcceptanceTest extends AbstractAcceptanceTest {
         StationResponseView responseView = stationHttpTest.create(STATION_NAME);
 
         //when, then
-        webTestClient.delete().uri("/stations/" + responseView.getId())
+        webTestClient.delete().uri(STATION_BASE_URI + "/" + responseView.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -48,7 +49,7 @@ public class StationAcceptanceTest extends AbstractAcceptanceTest {
 
     @DisplayName("지하철역 한 개 정보 조회하기")
     @Test
-    public void findById(){
+    public void findById() {
         //given
         StationResponseView responseView = stationHttpTest.create(STATION_NAME);
 
@@ -61,7 +62,7 @@ public class StationAcceptanceTest extends AbstractAcceptanceTest {
 
     @DisplayName("지하철역 목록 정보 조회하기")
     @Test
-    public void showAll(){
+    public void showAll() {
         //given
         int theNumberOfStations = 3;
         stationHttpTest.create(STATION_NAME);
@@ -72,8 +73,9 @@ public class StationAcceptanceTest extends AbstractAcceptanceTest {
         List<StationResponseView> stationResponseViews = stationHttpTest.showAll();
 
         //then
+        int lastIndex = theNumberOfStations - 1;
         assertThat(stationResponseViews.size()).isEqualTo(theNumberOfStations);
-        assertThat(stationResponseViews.get(theNumberOfStations-1).getName())
+        assertThat(stationResponseViews.get(lastIndex).getName())
                 .isEqualTo(STATION_NAME_3);
     }
 }

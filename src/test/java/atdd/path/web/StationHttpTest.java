@@ -1,8 +1,6 @@
 package atdd.path.web;
 
 import atdd.path.application.dto.StationResponseView;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -52,7 +50,7 @@ public class StationHttpTest {
     }
 
     public StationResponseView findById(Long stationId) {
-        return webTestClient.get().uri("/stations/"+stationId)
+        return webTestClient.get().uri("/stations/" + stationId)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
