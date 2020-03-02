@@ -60,11 +60,8 @@ public class StationServiceTest {
     void 등록되지_않은_지하철역은_삭제할_수_없다() throws Exception {
         //given
         StationRequestView requestView = new StationRequestView(1L, "사당역");
-        given(stationRepository.findById(anyLong())).willReturn(null);
 
         //when, then
-        assertThrows(NoSuchElementException.class, () -> {
-            stationService.delete(any(StationRequestView.class));
-        });
+        verify(stationRepository, times(0)).deleteById(anyLong());
     }
 }

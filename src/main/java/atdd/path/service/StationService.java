@@ -24,9 +24,8 @@ public class StationService {
 
     public void delete(StationRequestView requestView) throws Exception{
         Optional<Station> station = stationRepository.findById(requestView.getId());
-        if(Optional.empty().isPresent()){
-            throw new NoSuchElementException("존재하지 않는 지하철역은은 삭제할 수 없습니다.");
+        if(station.isPresent()){
+            stationRepository.deleteById(requestView.getId());
         }
-        stationRepository.deleteById(requestView.getId());
     }
 }
