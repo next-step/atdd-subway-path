@@ -10,9 +10,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -42,7 +44,7 @@ public class StationServiceTest {
     }
 
     @Test
-    void 지하철역_삭제가_된다() {
+    void 지하철역_삭제가_된다() throws Exception {
         //given
         StationRequestView requestView = new StationRequestView(1L, "사당역");
         given(stationRepository.findById(anyLong())).willReturn(Optional.of(requestView.toStation()));
@@ -52,5 +54,17 @@ public class StationServiceTest {
 
         //then
         verify(stationRepository, times(1)).deleteById(anyLong());
+    }
+
+    @Test
+    void 등록되지_않은_지하철역은_삭제할_수_없다() throws Exception {
+        //given
+        StationRequestView requestView = new StationRequestView(1L, "사당역");
+        given(stationRepository.findById(anyLong())).willReturn(null);
+
+        //when, then
+        assertThrows(NoSuchElementException.class, () -> {
+            stationService.delete(any(StationRequestView.class));
+        });
     }
 }

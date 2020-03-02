@@ -6,6 +6,7 @@ import atdd.path.domain.Station;
 import atdd.path.domain.StationRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -21,10 +22,10 @@ public class StationService {
         return StationResponseView.of(savedStation);
     }
 
-    public void delete(StationRequestView requestView) {
+    public void delete(StationRequestView requestView) throws Exception{
         Optional<Station> station = stationRepository.findById(requestView.getId());
         if(Optional.empty().isPresent()){
-            throw new RuntimeException("존재하지 않는 지하철역은은 삭제할 수 없습니다.");
+            throw new NoSuchElementException("존재하지 않는 지하철역은은 삭제할 수 없습니다.");
         }
         stationRepository.deleteById(requestView.getId());
     }
