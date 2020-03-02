@@ -9,6 +9,7 @@ import com.sun.tools.internal.ws.wsdl.framework.NoSuchEntityException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -52,6 +53,9 @@ public class LineService {
     }
 
     public LineListResponseView showAll() {
-        return null;
+        List<Line> lines = lineRepository.findAll();
+        return LineListResponseView.builder()
+                .lines(lines)
+                .build();
     }
 }
