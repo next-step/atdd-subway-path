@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineAcceptanceTest extends AbstractAcceptanceTest {
     public static final String LINE_BASE_URI = "/lines";
     public static final String LINE_NAME = "2호선";
+    public static final String LINE_NAME_2 = "4호선";
     private StationHttpTest stationHttpTest;
     private LineHttpTest lineHttpTest;
     public static final LocalTime START_TIME = LocalTime.of(5, 00);
@@ -93,5 +94,38 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
                 .expectStatus().isOk()
                 .expectBody().jsonPath("$.name").isEqualTo(LINE_NAME)
                 .jsonPath("$.interval").isEqualTo(INTERVAL_TIME);
+    }
+
+    @DisplayName("지하철 노선 목록 조회를 요청한다.")
+    @Test
+    void showAll() throws Exception{
+        //given
+        LineRequestView requestView = LineRequestView.builder()
+                .name(LINE_NAME)
+                .startTime(START_TIME)
+                .endTime(END_TIME)
+                .interval(INTERVAL_TIME)
+                .build();
+        LineRequestView requestView2 = LineRequestView.builder()
+                .name(LINE_NAME)
+                .startTime(START_TIME)
+                .endTime(END_TIME)
+                .interval(INTERVAL_TIME)
+                .build();
+        String inputJson = objectMapper.writeValueAsString(requestView);
+        String inputJson2 = objectMapper.writeValueAsString(requestView2);
+
+        //when
+        lineHttpTest.create(inputJson);
+        lineHttpTest.create(inputJson2);
+
+        //then
+        webTestClient.get().uri(LINE_BASE_URI)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectBodyList(LineResponseView.class)
+                .hasSize(2);
+
+
     }
 }
