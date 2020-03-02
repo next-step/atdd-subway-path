@@ -1,6 +1,6 @@
 package atdd.path.service;
 
-import atdd.path.application.dto.CreateStationRequestView;
+import atdd.path.application.dto.StationRequestView;
 import atdd.path.application.dto.StationResponseView;
 import atdd.path.domain.Station;
 import atdd.path.domain.StationRepository;
@@ -14,8 +14,12 @@ public class StationService {
         this.stationRepository = stationRepository;
     }
 
-    public StationResponseView create(CreateStationRequestView requestView) {
+    public StationResponseView create(StationRequestView requestView) {
         Station savedStation = stationRepository.save(requestView.toStation());
         return StationResponseView.of(savedStation);
+    }
+
+    public void delete(StationRequestView requestView) {
+
     }
 }

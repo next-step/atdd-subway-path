@@ -4,13 +4,13 @@ import atdd.path.domain.Station;
 import lombok.Getter;
 
 @Getter
-public class CreateStationRequestView {
+public class StationRequestView {
     private String name;
 
-    public CreateStationRequestView() {
+    public StationRequestView() {
     }
 
-    public CreateStationRequestView(String name) {
+    public StationRequestView(String name) {
         this.name = name;
     }
 

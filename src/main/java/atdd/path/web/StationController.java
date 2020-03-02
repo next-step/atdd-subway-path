@@ -1,6 +1,6 @@
 package atdd.path.web;
 
-import atdd.path.application.dto.CreateStationRequestView;
+import atdd.path.application.dto.StationRequestView;
 import atdd.path.service.StationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +18,7 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity create(@RequestBody CreateStationRequestView requestView){
+    public ResponseEntity create(@RequestBody StationRequestView requestView){
         return ResponseEntity
                 .ok()
                 .build();
