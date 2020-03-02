@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineAcceptanceTest extends AbstractAcceptanceTest {
     public static final String LINE_BASE_URI = "/lines";
-    public static final String LINE_NAME = "사당역";
+    public static final String LINE_NAME = "2호선";
     private StationHttpTest stationHttpTest;
     private LineHttpTest lineHttpTest;
 

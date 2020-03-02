@@ -4,15 +4,15 @@ import atdd.path.domain.Station;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Getter
 public class LineResponseView {
     private Long id;
     private String name;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private int interval;
     private List<Station> stations;
 
@@ -20,8 +20,8 @@ public class LineResponseView {
     }
 
     @Builder
-    public LineResponseView(Long id, String name, LocalDateTime startTime,
-                            LocalDateTime endTime, int interval, List<Station> stations) {
+    public LineResponseView(Long id, String name, LocalTime startTime,
+                            LocalTime endTime, int interval, List<Station> stations) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
