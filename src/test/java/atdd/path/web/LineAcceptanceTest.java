@@ -1,6 +1,7 @@
 package atdd.path.web;
 
 import atdd.AbstractAcceptanceTest;
+import atdd.path.application.dto.LineListResponseView;
 import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -100,6 +101,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     void showAll() throws Exception{
         //given
+        int theNumberOfLines = 2;
         LineRequestView requestView = LineRequestView.builder()
                 .name(LINE_NAME)
                 .startTime(START_TIME)
@@ -123,9 +125,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
         webTestClient.get().uri(LINE_BASE_URI)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
-                .expectBodyList(LineResponseView.class)
-                .hasSize(2);
-
-
+                .expectBodyList(LineListResponseView.class)
+                .hasSize(theNumberOfLines);
     }
 }

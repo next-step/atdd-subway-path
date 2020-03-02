@@ -1,5 +1,6 @@
 package atdd.path.web;
 
+import atdd.path.application.dto.LineListResponseView;
 import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
 import atdd.path.service.EdgeService;
@@ -45,8 +46,8 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity showAll(){
+        LineListResponseView responseView = lineService.showAll();
         return ResponseEntity
-                .ok()
-                .build();
+                .ok(responseView.getLines());
     }
 }
