@@ -38,8 +38,8 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity retrieve(@PathVariable Long id){
+        LineResponseView responseView = lineService.retrieve(id);
         return ResponseEntity
-                .ok()
-                .build();
+                .ok(responseView);
     }
 }

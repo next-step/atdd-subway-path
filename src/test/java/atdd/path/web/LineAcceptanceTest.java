@@ -75,7 +75,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
 
     @DisplayName("지하철 노선 정보 조회를 요청한다.")
     @Test
-    void retrieve() throws Exception{
+    void retrieve() throws Exception {
         //given
         LineRequestView requestView = LineRequestView.builder()
                 .name(LINE_NAME)
@@ -87,11 +87,11 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
         LineResponseView responseView = lineHttpTest.create(inputJson);
 
         //when, then
-        webTestClient.get().uri(LINE_BASE_URI+"/"+responseView.getId())
+        webTestClient.get().uri(LINE_BASE_URI + "/" + responseView.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody().jsonPath("$.name").isEqualTo(LINE_NAME)
-                .jsonPath("$.startTime").isEqualTo(START_TIME);
+                .jsonPath("$.interval").isEqualTo(INTERVAL_TIME);
     }
 }
