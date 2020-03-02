@@ -7,6 +7,9 @@ import atdd.path.domain.Line;
 import atdd.path.domain.LineRepository;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityExistsException;
+import java.util.Optional;
+
 @Service
 public class LineService {
     private LineRepository lineRepository;
@@ -17,13 +20,20 @@ public class LineService {
         this.edgeRepository = edgeRepository;
     }
 
-    public LineResponseView create(LineRequestView requestView){
-        if(requestView.getStartTime().isAfter(requestView.getEndTime())){
+    public LineResponseView create(LineRequestView requestView) {
+        Optional<Line> lineByExactName = lineRepository.findByName(requestView.getName());
+        if (lineByExactName.isPresent()) {
+            throw new EntityExistsException("이미 등록된 노선입니다.");
+        }
+
+        if (requestView.getStartTime().isAfter(requestView.getEndTime())) {
             throw new IllegalArgumentException("노선의 시작시간은 종료시간보다 빨라야 합니다.");
         }
-        if(requestView.getInterval() < 0){
+
+        if (requestView.getInterval() < 0) {
             throw new IllegalArgumentException("노선의 배차간격은 0보다 커야 합니다.");
         }
+
         Line line = lineRepository.save(requestView.toLine());
         return LineResponseView.of(line);
     }

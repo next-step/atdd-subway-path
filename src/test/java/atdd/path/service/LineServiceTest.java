@@ -17,12 +17,11 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceTest {
-    public static final String LINE_BASE_URI = "/lines";
     public static final String LINE_2_NAME = "2호선";
     public static final LocalTime START_TIME = LocalTime.of(5, 00);
     public static final LocalTime END_TIME = LocalTime.of(23, 50);
@@ -51,6 +50,7 @@ public class LineServiceTest {
     void 지하철노선_등록하기() {
         //given
         given(lineRepository.save(any(Line.class))).willReturn(line);
+        given(lineRepository.findByName(anyString())).willReturn(Optional.empty());
 
         //when
         LineResponseView responseView = lineService.create(requestView);
@@ -65,6 +65,7 @@ public class LineServiceTest {
         //given
         LocalTime newStartTime = LocalTime.of(23, 55);
         line.changeStartTime(newStartTime);
+        given(lineRepository.findByName(anyString())).willReturn(Optional.empty());
 
         //when, then
         assertThrows(IllegalArgumentException.class, () -> {
@@ -77,6 +78,7 @@ public class LineServiceTest {
         //given
         int newInterval = -2;
         line.changeInterval(newInterval);
+        given(lineRepository.findByName(anyString())).willReturn(Optional.empty());
 
         //when, then
         assertThrows(IllegalArgumentException.class, () -> {
@@ -85,13 +87,20 @@ public class LineServiceTest {
     }
 
     @Test
-    void 이미_등록된_노선은_다시_등록할_수_없다(){
+    void 이미_등록된_노선은_다시_등록할_수_없다() {
         //given
-        given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
+        String newName = "100호선";
+        Line line2 = Line.builder()
+                .name(newName)
+                .startTime(START_TIME)
+                .endTime(END_TIME)
+                .interval(INTERVAL_TIME)
+                .build();
+        given(lineRepository.findByName(anyString())).willReturn(Optional.of(line2));
 
         //when, then
         assertThrows(EntityExistsException.class, () -> {
-            lineService.create(LineRequestView.of(line));
+            lineService.create(LineRequestView.of(line2));
         });
     }
 }
