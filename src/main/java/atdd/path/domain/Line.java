@@ -1,11 +1,9 @@
 package atdd.path.domain;
 
-import atdd.path.application.dto.LineResponseView;
 import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -38,5 +36,17 @@ public class Line {
         this.endTime = endTime;
         this.interval = interval;
         this.stationLines = stationLines;
+    }
+
+    public void changeStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void changeEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void changeInterval(int interval) {
+        this.interval = interval;
     }
 }

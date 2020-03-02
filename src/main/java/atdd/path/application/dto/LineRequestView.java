@@ -34,4 +34,13 @@ public class LineRequestView {
                 .interval(interval)
                 .build();
     }
+
+    public static LineRequestView of(Line line){
+        return LineRequestView.builder()
+                .name(line.getName())
+                .startTime(line.getStartTime())
+                .endTime(line.getEndTime())
+                .interval(line.getInterval())
+                .build();
+    }
 }
