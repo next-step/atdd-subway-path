@@ -23,8 +23,22 @@ public class Graph {
         return getPathStations(makeGraph(lines), startId, endId);
     }
 
-    public List<Station> getShortestTimePath(Long startId, Long endId) {
-        return this.getPathStations(makeGraph(lines), startId, endId);
+    public int getEstimatedTime(Long startId, Long endId) {
+        WeightedMultigraph<Long, DefaultWeightedEdge> graph = makeGraph(lines);
+        GraphPath<Long, DefaultWeightedEdge> path = new DijkstraShortestPath(graph).getPath(startId, endId);
+
+        return path.getEdgeList().stream()
+                .map(it -> findEdge(graph.getEdgeSource(it), graph.getEdgeTarget(it)))
+                .mapToInt(Edge::getElapsedMinutes)
+                .sum();
+    }
+
+    private Edge findEdge(Long edgeSource, Long edgeTarget) {
+        return lines.stream()
+                .flatMap(it -> it.getEdges().stream())
+                .filter(it -> it.getSourceStation().equals(edgeSource) && it.getTargetStation().equals(edgeTarget))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
     }
 
     private WeightedMultigraph<Long, DefaultWeightedEdge> makeGraph(List<Line> lines) {

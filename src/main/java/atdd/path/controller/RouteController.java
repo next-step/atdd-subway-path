@@ -27,10 +27,12 @@ public class RouteController {
     public ResponseEntity findShortestPath(@RequestParam("startId") Long startId, @RequestParam("endId") Long endId) {
         Graph graph = new Graph(lineRepository.findAll());
         List<Station> paths = graph.getShortestDistancePath(startId, endId);
+
         return ResponseEntity.ok().body(RouteResponseDto.builder()
                 .startStationId(startId)
                 .endStationId(endId)
                 .stations(StationDto.listOf(paths))
+                .estimatedTime(graph.getEstimatedTime(startId, endId))
                 .build());
     }
 }
