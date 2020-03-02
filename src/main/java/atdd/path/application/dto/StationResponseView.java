@@ -1,6 +1,7 @@
 package atdd.path.application.dto;
 
 import atdd.path.domain.Line;
+import atdd.path.domain.Station;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,5 +21,11 @@ public class StationResponseView {
         this.id = id;
         this.name = name;
         this.lines = lines;
+    }
+
+    public static StationResponseView of(Station station){
+        return StationResponseView.builder()
+                .name(station.getName())
+                .build();
     }
 }

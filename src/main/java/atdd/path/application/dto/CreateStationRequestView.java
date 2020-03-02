@@ -15,6 +15,8 @@ public class CreateStationRequestView {
     }
 
     public Station toStation(){
-        return new Station(name);
+        return Station.builder()
+                .name(name)
+                .build();
     }
 }
