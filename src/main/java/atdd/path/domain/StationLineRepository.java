@@ -1,4 +1,4 @@
-package atdd.domain.stations;
+package atdd.path.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
