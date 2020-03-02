@@ -107,6 +107,6 @@ public class LineServiceTest {
         lineService.delete(line.getId());
 
         //then
-        verify(lineRepository, times(1)).delete(any(Line.class));
+        verify(lineRepository, times(1)).deleteById(anyLong());
     }
 }

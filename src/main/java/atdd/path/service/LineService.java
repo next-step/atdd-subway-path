@@ -39,6 +39,9 @@ public class LineService {
     }
 
     public void delete(Long id) {
-
+        Optional<Line> line = lineRepository.findById(id);
+        if(line.isPresent()){
+            lineRepository.deleteById(id);
+        }
     }
 }
