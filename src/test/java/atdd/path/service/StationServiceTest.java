@@ -83,7 +83,7 @@ public class StationServiceTest {
 
     @Test
     void 등록된_지하철이_목록_없으면_빈_컬렉션을_리턴한다(){
-        //when이
+        //when
         List<Station> stations = stationService.showAll();
 
         //then
