@@ -21,7 +21,13 @@ public class EdgeService {
     }
 
     public Edge createEdge(EdgeRequestView requestView) throws Exception{
+        if(requestView.getSourceId() == requestView.getTargetId()){
+            throw new IllegalArgumentException("출발역과 도착역이 같으면 안 됩니다.");
+        }
         Edge savedEdge = edgeRepository.save(EdgeRequestView.of(requestView));
         return savedEdge;
+    }
+
+    public void deleteEdge(Long id) {
     }
 }

@@ -1,16 +1,15 @@
 package atdd.path.service;
 
 import atdd.path.application.dto.EdgeRequestView;
-import atdd.path.application.dto.LineRequestView;
-import atdd.path.domain.*;
-import org.assertj.core.api.Assertions;
+import atdd.path.domain.Edge;
+import atdd.path.domain.EdgeRepository;
+import atdd.path.domain.Line;
+import atdd.path.domain.Station;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalTime;
 import java.util.Optional;
@@ -18,7 +17,10 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class EdgeServiceTest {
@@ -90,7 +92,7 @@ public class EdgeServiceTest {
     }
 
     @Test
-    void 엣지의_출발역과_도착역이_같으면_안_된다(){
+    void 엣지의_출발역과_도착역이_같으면_안_된다() {
         //given
         EdgeRequestView requestView = EdgeRequestView.builder()
                 .sourceId(station1.getId())
@@ -102,6 +104,17 @@ public class EdgeServiceTest {
         assertThrows(IllegalArgumentException.class, () -> {
             edgeService.createEdge(requestView);
         });
+    }
 
+    @Test
+    void 엣지를_삭제한다(){
+        //given
+        given(edgeRepository.findById(edge.getId())).willReturn(Optional.of(edge));
+
+        //when
+        edgeService.deleteEdge(edge.getId());
+
+        //then
+        verify(edgeRepository, times(1)).deleteById(edge.getId());
     }
 }
