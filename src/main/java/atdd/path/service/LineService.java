@@ -21,7 +21,9 @@ public class LineService {
         if(requestView.getStartTime().isAfter(requestView.getEndTime())){
             throw new IllegalArgumentException("노선의 시작시간은 종료시간보다 빨라야 합니다.");
         }
-
+        if(requestView.getInterval() < 0){
+            throw new IllegalArgumentException("노선의 배차간격은 0보다 커야 합니다.");
+        }
         Line line = lineRepository.save(requestView.toLine());
         return LineResponseView.of(line);
     }
