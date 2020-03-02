@@ -41,4 +41,17 @@ public class StationAcceptanceTest extends AbstractAcceptanceTest {
                 .expectStatus().isOk()
                 .expectBody().isEmpty();
     }
+
+    @DisplayName("지하철역 한 개 정보 조회하기")
+    @Test
+    public void findById(){
+        //given
+        StationResponseView responseView = stationHttpTest.create(STATION_NAME);
+
+        //when
+        StationResponseView stationById = stationHttpTest.findById(responseView.getId());
+
+        //then
+        assertThat(stationById.getName()).isEqualTo(STATION_NAME);
+    }
 }

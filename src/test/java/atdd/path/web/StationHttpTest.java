@@ -41,7 +41,7 @@ public class StationHttpTest {
                 .returnResult();
     }
 
-    public List<StationResponseView> showStationsRequest() {
+    public List<StationResponseView> show() {
         return webTestClient.get().uri("/stations")
                 .exchange()
                 .expectStatus().isOk()
@@ -51,7 +51,13 @@ public class StationHttpTest {
                 .getResponseBody();
     }
 
-    public EntityExchangeResult<StationResponseView> retrieveStation(Long stationId) {
-        return retrieveStationRequest("/stations/" + stationId);
+    public StationResponseView findById(Long stationId) {
+        return webTestClient.get().uri("/stations/"+stationId)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(StationResponseView.class)
+                .returnResult()
+                .getResponseBody();
     }
 }
