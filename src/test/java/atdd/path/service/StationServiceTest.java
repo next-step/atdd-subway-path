@@ -89,4 +89,18 @@ public class StationServiceTest {
         //then
         assertThat(stations).isEqualTo(Collections.EMPTY_LIST);
     }
+
+    @Test
+    void 지하철역을_한_개를_조회한다(){
+        //given
+        Station station1 = new Station(1L, "사당");
+        given(stationRepository.findById(anyLong())).willReturn(Optional.of(station1));
+
+        //when
+        Station stationById = stationService.findById(station1.getId());
+
+        //then
+        verify(stationRepository, times(1)).findById(anyLong());
+        assertThat(stationById.getName()).isEqualTo(station1.getName());
+    }
 }

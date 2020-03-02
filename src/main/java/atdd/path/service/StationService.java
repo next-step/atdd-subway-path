@@ -38,4 +38,8 @@ public class StationService {
         }
         return stationRepository.findAll();
     }
+
+    public Station findById(Long id) {
+        return new Station();
+    }
 }
