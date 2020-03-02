@@ -1,5 +1,6 @@
 package atdd.path.service;
 
+import atdd.path.application.dto.LineListResponseView;
 import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
 import atdd.path.domain.Line;
@@ -48,5 +49,9 @@ public class LineService {
         Optional<Line> line = lineRepository.findById(id);
         line.orElseThrow(NoSuchElementException::new);
         return LineResponseView.of(line.get());
+    }
+
+    public LineListResponseView showAll() {
+        return null;
     }
 }

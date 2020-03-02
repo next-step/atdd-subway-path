@@ -1,5 +1,6 @@
 package atdd.path.service;
 
+import atdd.path.application.dto.LineListResponseView;
 import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
 import atdd.path.domain.*;
@@ -12,6 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.persistence.EntityExistsException;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,6 +27,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 public class LineServiceTest {
     public static final String LINE_2_NAME = "2호선";
+    public static final String LINE_4_NAME = "2호선";
     public static final String STATION_NAME = "사당";
     public static final String STATION_NAME_2 = "방배";
     public static final String STATION_NAME_3 = "서초";
@@ -46,6 +50,13 @@ public class LineServiceTest {
     public Line line = Line.builder()
             .id(1L)
             .name(LINE_2_NAME)
+            .startTime(START_TIME)
+            .endTime(END_TIME)
+            .interval(INTERVAL_TIME)
+            .build();
+    public Line line2 = Line.builder()
+            .id(2L)
+            .name(LINE_4_NAME)
             .startTime(START_TIME)
             .endTime(END_TIME)
             .interval(INTERVAL_TIME)
@@ -151,5 +162,18 @@ public class LineServiceTest {
         assertThrows(NoSuchEntityException.class, () -> {
             lineService.retrieve(line.getId());
         });
+    }
+
+    @Test
+    void 노선_목록_조회하기(){
+        //given
+        int theNumberOfLine = 2;
+        given(lineRepository.findAll()).willReturn(Arrays.asList(line, line2));
+
+        //when
+        LineListResponseView responseView = lineService.showAll();
+
+        //then
+        assertThat(responseView.getLines().size()).isEqualTo(theNumberOfLine);
     }
 }

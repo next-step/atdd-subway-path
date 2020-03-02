@@ -42,4 +42,11 @@ public class LineController {
         return ResponseEntity
                 .ok(responseView);
     }
+
+    @GetMapping
+    public ResponseEntity showAll(){
+        return ResponseEntity
+                .ok()
+                .build();
+    }
 }
