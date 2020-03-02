@@ -3,6 +3,7 @@ package atdd.path.service;
 import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
 import atdd.path.domain.*;
+import com.sun.tools.internal.ws.wsdl.framework.NoSuchEntityException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -139,5 +140,16 @@ public class LineServiceTest {
         //then
         assertThat(responseView.getId()).isEqualTo(line.getId());
         assertThat(responseView.getName()).isEqualTo(line.getName());
+    }
+
+    @Test
+    void 등록된_노선만_조회_가능하다(){
+        //given
+        given(lineRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        //when, then
+        assertThrows(NoSuchEntityException.class, () -> {
+            lineService.retrieve(line.getId());
+        });
     }
 }
