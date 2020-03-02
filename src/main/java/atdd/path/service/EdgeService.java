@@ -7,6 +7,8 @@ import atdd.path.domain.LineRepository;
 import atdd.path.domain.StationRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class EdgeService {
     private LineRepository lineRepository;
@@ -29,5 +31,7 @@ public class EdgeService {
     }
 
     public void deleteEdge(Long id) {
+        Optional<Edge> edge = edgeRepository.findById(id);
+        edgeRepository.deleteById(id);
     }
 }
