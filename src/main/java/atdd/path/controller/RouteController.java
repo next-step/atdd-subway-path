@@ -28,17 +28,26 @@ public class RouteController {
         Graph graph = new Graph(lineRepository.findAll());
         List<Station> paths = graph.getShortestDistancePath(startId, endId);
 
-        return ResponseEntity.ok().body(RouteResponseDto.builder()
-                .startStationId(startId)
-                .endStationId(endId)
-                .stations(StationDto.listOf(paths))
-                .estimatedTime(graph.getEstimatedTime(startId, endId))
-                .build());
+        return ResponseEntity.ok()
+                .body(RouteResponseDto.builder()
+                        .startStationId(startId)
+                        .endStationId(endId)
+                        .stations(StationDto.listOf(paths))
+                        .estimatedTime(graph.getEstimatedTime(startId, endId))
+                        .build());
     }
 
     @GetMapping("time")
     public ResponseEntity findShortestTimePath(@RequestParam("startId") Long startId, @RequestParam("endId") Long endId) {
+        Graph graph = new Graph(lineRepository.findAll());
+        List<Station> paths = graph.getShortestTimePath(startId, endId);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+                .body(RouteResponseDto.builder()
+                        .startStationId(startId)
+                        .endStationId(endId)
+                        .stations(StationDto.listOf(paths))
+                        .estimatedTime(graph.getEstimatedTime(startId, endId))
+                        .build());
     }
 }

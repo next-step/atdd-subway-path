@@ -20,11 +20,15 @@ public class Graph {
     }
 
     public List<Station> getShortestDistancePath(Long startId, Long endId) {
-        return getPathStations(makeGraph(lines), startId, endId);
+        return getPathStations(makeGraph(lines, true), startId, endId);
+    }
+
+    public List<Station> getShortestTimePath(Long startId, Long endId) {
+        return getPathStations(makeGraph(lines, false), startId, endId);
     }
 
     public int getEstimatedTime(Long startId, Long endId) {
-        WeightedMultigraph<Long, DefaultWeightedEdge> graph = makeGraph(lines);
+        WeightedMultigraph<Long, DefaultWeightedEdge> graph = makeGraph(lines, false);
         GraphPath<Long, DefaultWeightedEdge> path = new DijkstraShortestPath(graph).getPath(startId, endId);
 
         return path.getEdgeList().stream()
@@ -33,15 +37,7 @@ public class Graph {
                 .sum();
     }
 
-    private Edge findEdge(Long edgeSource, Long edgeTarget) {
-        return lines.stream()
-                .flatMap(it -> it.getEdges().stream())
-                .filter(it -> it.getSourceStation().equals(edgeSource) && it.getTargetStation().equals(edgeTarget))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
-    }
-
-    private WeightedMultigraph<Long, DefaultWeightedEdge> makeGraph(List<Line> lines) {
+    private WeightedMultigraph<Long, DefaultWeightedEdge> makeGraph(List<Line> lines, boolean isDistanceWeight) {
         WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
         lines.stream()
                 .flatMap(it -> it.getStations().stream())
@@ -49,7 +45,8 @@ public class Graph {
 
         lines.stream()
                 .flatMap(it -> it.getEdges().stream())
-                .forEach(it -> graph.setEdgeWeight(graph.addEdge(it.getSourceStation().getId(), it.getTargetStation().getId()), it.getDistance()));
+                .forEach(it -> graph.setEdgeWeight(graph.addEdge(it.getSourceStation().getId(), it.getTargetStation().getId()),
+                        isDistanceWeight ? it.getDistance() : it.getElapsedMinutes()));
         return graph;
     }
 
@@ -65,6 +62,15 @@ public class Graph {
         return lines.stream()
                 .flatMap(it -> it.getStations().stream())
                 .filter(it -> it.getId().equals(stationId))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+    }
+
+    private Edge findEdge(Long edgeSource, Long edgeTarget) {
+        return lines.stream()
+                .flatMap(it -> it.getEdges().stream())
+                .filter(it -> it.getSourceStation().getId().equals(edgeSource)
+                        && it.getTargetStation().getId().equals(edgeTarget))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
     }
