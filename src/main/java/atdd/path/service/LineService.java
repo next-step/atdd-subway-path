@@ -43,6 +43,7 @@ public class LineService {
     }
 
     public LineResponseView retrieve(Long id) {
-        return new LineResponseView();
+        Optional<Line> line = lineRepository.findById(id);
+        return LineResponseView.of(line.get());
     }
 }
