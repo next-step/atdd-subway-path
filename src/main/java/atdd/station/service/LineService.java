@@ -41,86 +41,78 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public Line addEdge(final long id, final Edge newEdge) {
+    // TODO 테스트 코드 작성
+    public Line addEdge(final long id, Edge newEdge) {
         final Line line = findById(id);
         final List<Edge> legacyEdges = edgeService.findAllById(line.getEdgeIds());
 
-        addNewEdge(legacyEdges, newEdge);
+        newEdge = edgeService.createEdge(legacyEdges, newEdge);
+        line.setLineEdges(legacyEdges, newEdge);
 
-        updateLineWithEdgesAndStations(legacyEdges, newEdge, line);
+        // update station
+        final Set<Long> stationIds = stationIdsInEdges(line.getLineEdges());
+        List<Station> stationList = stationService.updateLine(stationIds, line.getId());
+
+        line.setLineStations(stationList);
 
         return lineRepository.save(line);
     }
 
-    private void updateLineWithEdgesAndStations(final List<Edge> legacyEdges, final Edge newEdge, final Line line) {
-        final List<Edge> newEdges = new ArrayList<>();
+    private Set<Long> stationIdsInEdges(final List<Edge> edges) {
         final Set<Long> stationIds = new HashSet<>();
 
-        stationIds.add(newEdge.getTargetStationId());
-        stationIds.add(newEdge.getSourceStationId());
+        edges.stream().forEach(data -> {
+            stationIds.addAll(data.stationIds());
+        });
 
-        if (legacyEdges.isEmpty())
-            newEdges.add(newEdge);
-
-        for (Edge legacyEdge : legacyEdges) {
-            stationIds.add(legacyEdge.getSourceStationId());
-            stationIds.add(legacyEdge.getTargetStationId());
-
-            if (legacyEdge.connectTargetAndSource(newEdge)) {
-                newEdges.add(legacyEdge);
-                newEdges.add(newEdge);
-
-                continue;
-            } else if (legacyEdge.connectSourceAndTarget(newEdge)) {
-                newEdges.add(newEdge);
-                newEdges.add(legacyEdge);
-
-                continue;
-            }
-
-            newEdges.add(legacyEdge);
-        }
-
-        List<Station> stationList = updateLineInStations(stationIds, line.getId());
-
-        line.updateEdge(newEdges, stationList);
+        return stationIds;
     }
 
-    public void deleteEdge(final long id, final long stationId) {
+    // TODO 리팩토링 , 테스트 코드 작성
+    public void deleteStationInLine(final long id, final long stationId) {
         final Line line = findById(id);
-        final Station station = stationService.findById(stationId);
+        final Station deleteStation = stationService.findById(stationId);
 
         // 노선에서 구간 삭제
+        deleteEdgeInLine(line, deleteStation);
+        lineRepository.save(line);
+
+        // 지하철역에서 라인 삭제
+        deleteLineInStation(deleteStation, line.getId());
+    }
+
+    // TODO 리팩토링 테스트 코드 작성
+    private void deleteEdgeInLine(final Line line, final Station deleteStation) {
         final List<Edge> legacyEdges = edgeService.findAllById(line.getEdgeIds());
 
         final List<Edge> newEdges = new ArrayList<>();
         final Set<Long> newStationIds = new HashSet<>();
 
         int edgeIndex = 0;
-        int continueIndex = -1;
+        int deleteIndex = -1;
         for (Edge legacyEdge : legacyEdges) {
-            if (continueIndex > 0 && continueIndex == edgeIndex) {
-                continueIndex = -1;
+            if (deleteIndex > 0 && deleteIndex == edgeIndex) {
+                deleteIndex = -1;
 
                 edgeService.deleteById(legacyEdge.getId());
                 continue;
             }
 
-            if (legacyEdge.getSourceStationId() == station.getId() || legacyEdge.getTargetStationId() == station.getId()) {
-                if (newEdges.isEmpty() && legacyEdge.getSourceStationId() == station.getId()) {
+            if (legacyEdge.connectSourceStation(deleteStation.getId()) || legacyEdge.connectTargetStation(deleteStation.getId())) {
+                if (newEdges.isEmpty() && legacyEdge.connectSourceStation(deleteStation.getId())) {
                     edgeService.deleteById(legacyEdge.getId());
                     continue;
                 }
 
-                if (edgeIndex == (legacyEdges.size() - 1) && legacyEdge.getTargetStationId() == station.getId()) {
+                if (edgeIndex == (legacyEdges.size() - 1) && legacyEdge.connectTargetStation(deleteStation.getId())) {
                     edgeService.deleteById(legacyEdge.getId());
                     continue;
                 }
 
-                if (legacyEdge.getTargetStationId() == station.getId()) {
-                    continueIndex = edgeIndex + 1;
+                if (legacyEdge.connectTargetStation(deleteStation.getId())) {
+                    deleteIndex = edgeIndex + 1;
 
-                    Edge nextLegacyEdge = legacyEdges.get(continueIndex);
+                    Edge nextLegacyEdge = legacyEdges.get(deleteIndex);
                     Edge newEdge = Edge.builder()
                             .sourceStationId(legacyEdge.getSourceStationId())
                             .targetStationId(nextLegacyEdge.getTargetStationId()).build();
@@ -146,23 +138,6 @@ public class LineService {
         List<Station> stationList = stationService.findAllById(newStationIds);
 
         line.updateEdge(newEdges, stationList);
-        lineRepository.save(line);
-
-        // 지하철역에서 라인 삭제
-        deleteLineInStation(station, line.getId());
-    }
-
-    private List<Station> updateLineInStations(final Set<Long> stationIds, final long lineId) {
-        List<Station> stationList = stationService.findAllById(stationIds);
-
-        for (Station station : stationList) {
-            Set<Long> lineIds = new HashSet<>(station.getLineIds());
-            lineIds.add(lineId);
-
-            station.setLineIds(new ArrayList<>(lineIds));
-        }
-
-        return stationService.saveAll(stationList);
     }
 
     public List<Edge> getLineEdges(Line line) {
@@ -189,15 +164,6 @@ public class LineService {
         }
 
         return stations;
-    }
-
-    private void addNewEdge(final List<Edge> legacyEdges, final Edge newEdge) {
-        boolean isConnect = legacyEdges.stream().anyMatch(data -> data.connectedEdge(newEdge));
-
-        if (!legacyEdges.isEmpty() && !isConnect)
-            throw new SubwayException(ErrorType.INVALID_EDGE);
-
-        edgeService.save(newEdge);
     }
 
     private Station deleteLineInStation(final Station station, final long deleteLineId) {

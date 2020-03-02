@@ -9,7 +9,10 @@ import atdd.station.repository.StationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +37,19 @@ public class StationService {
 
     public List<Station> saveAll(Iterable<Station> stations) {
         return stationRepository.saveAll(stations);
+    }
+
+    public List<Station> updateLine(final Set<Long> stationIds, final long lineId) {
+        List<Station> stationList = stationRepository.findAllById(stationIds);
+
+        for (Station station : stationList) {
+            Set<Long> lineIds = new HashSet<>(station.getLineIds());
+            lineIds.add(lineId);
+
+            station.setLineIds(new ArrayList<>(lineIds));
+        }
+
+        return stationRepository.saveAll(stationList);
     }
 
     // TODO 수정

@@ -36,7 +36,6 @@ public class Line extends BaseEntity {
     @Convert(converter = LongListConverter.class)
     private List<Long> edgeIds = new ArrayList<>();
 
-    @Setter
     @Transient
     private List<Edge> lineEdges = new ArrayList<>();
 
@@ -58,9 +57,39 @@ public class Line extends BaseEntity {
         this.intervalTime = intervalTime;
     }
 
+    public void setLineEdges(final List<Edge> legacyEdges, final Edge newEdge) {
+        this.lineEdges = sortEdge(legacyEdges, newEdge);
+        this.edgeIds =  lineEdges.stream().map(Edge::getId).collect(Collectors.toList());
+    }
+
+    // TODO 삭제
     public void updateEdge(final List<Edge> newEdges, final List<Station> lineStations) {
         this.edgeIds = newEdges.stream().map(Edge::getId).collect(Collectors.toList());
         this.lineEdges = newEdges;
         this.lineStations = lineStations;
+    }
+
+    private List<Edge> sortEdge(final List<Edge> legacyEdges, final Edge newEdge) {
+        final List<Edge> sortedEdges = new ArrayList<>();
+        if (legacyEdges.isEmpty())
+            sortedEdges.add(newEdge);
+
+        for (Edge legacyEdge : legacyEdges) {
+            if (legacyEdge.connectTargetStation(newEdge.getSourceStationId())) {
+                sortedEdges.add(legacyEdge);
+                sortedEdges.add(newEdge);
+
+                continue;
+            } else if (legacyEdge.connectSourceStation(newEdge.getTargetStationId())) {
+                sortedEdges.add(newEdge);
+                sortedEdges.add(legacyEdge);
+
+                continue;
+            }
+
+            sortedEdges.add(legacyEdge);
+        }
+
+        return sortedEdges;
     }
 }
