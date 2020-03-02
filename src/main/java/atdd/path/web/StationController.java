@@ -2,6 +2,7 @@ package atdd.path.web;
 
 import atdd.path.application.dto.StationRequestView;
 import atdd.path.application.dto.StationResponseView;
+import atdd.path.domain.Station;
 import atdd.path.service.StationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,10 +29,20 @@ public class StationController {
     @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable Long id) throws Exception {
         stationService.delete(StationRequestView.builder()
-                .id(id)
-                .build());
+                                                 .id(id)
+                                                 .build());
         return ResponseEntity
                 .ok()
                 .build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity findById(@PathVariable Long id) throws Exception{
+        Station station = stationService.findById(StationRequestView.builder()
+                                                                 .id(id)
+                                                                 .build());
+        return ResponseEntity
+                .ok()
+                .body(station);
     }
 }
