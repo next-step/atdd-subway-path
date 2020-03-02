@@ -13,11 +13,11 @@ public class Edge {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "station_id")
+    @JoinColumn(name = "station_id", insertable = false, updatable = false)
     private Station sourceStation;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "station_id")
+    @JoinColumn(name = "station_id", insertable = false, updatable = false)
     private Station targetStation;
 
 }

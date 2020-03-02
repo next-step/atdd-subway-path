@@ -82,7 +82,7 @@ public class StationServiceTest {
     }
 
     @Test
-    void 등록된_지하철이_목록_없으면_빈_컬렉션을_리턴한다(){
+    void 등록된_지하철이_목록_없으면_빈_컬렉션을_리턴한다() {
         //when
         List<Station> stations = stationService.showAll();
 
@@ -91,7 +91,7 @@ public class StationServiceTest {
     }
 
     @Test
-    void 지하철역을_한_개를_조회한다(){
+    void 지하철역을_한_개를_조회한다() {
         //given
         StationRequestView requestView = new StationRequestView(1L, "사당");
         Station station = requestView.toStation();
@@ -106,7 +106,7 @@ public class StationServiceTest {
     }
 
     @Test
-    void 등록되지_않은_지하철역을_조회하면_익셉션을_발생시킨다(){
+    void 등록되지_않은_지하철역을_조회하면_익셉션을_발생시킨다() {
         //when, then
         assertThrows(NoSuchElementException.class, () -> {
             stationService.findById(new StationRequestView());

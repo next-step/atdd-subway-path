@@ -1,6 +1,8 @@
 package atdd.path.web;
 
 import atdd.path.application.dto.StationResponseView;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -15,7 +17,7 @@ public class StationHttpTest {
         this.webTestClient = webTestClient;
     }
 
-    public EntityExchangeResult<StationResponseView> createStationRequest(String stationName) {
+    public StationResponseView create(String stationName) {
         String inputJson = "{\"name\":\"" + stationName + "\"}";
 
         return webTestClient.post().uri("/stations")
@@ -26,7 +28,8 @@ public class StationHttpTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectHeader().exists("Location")
                 .expectBody(StationResponseView.class)
-                .returnResult();
+                .returnResult()
+                .getResponseBody();
     }
 
     public EntityExchangeResult<StationResponseView> retrieveStationRequest(String uri) {
@@ -38,18 +41,14 @@ public class StationHttpTest {
                 .returnResult();
     }
 
-    public EntityExchangeResult<List<StationResponseView>> showStationsRequest() {
+    public List<StationResponseView> showStationsRequest() {
         return webTestClient.get().uri("/stations")
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBodyList(StationResponseView.class)
-                .returnResult();
-    }
-
-    public Long createStation(String stationName) {
-        EntityExchangeResult<StationResponseView> stationResponse = createStationRequest(stationName);
-        return stationResponse.getResponseBody().getId();
+                .returnResult()
+                .getResponseBody();
     }
 
     public EntityExchangeResult<StationResponseView> retrieveStation(Long stationId) {

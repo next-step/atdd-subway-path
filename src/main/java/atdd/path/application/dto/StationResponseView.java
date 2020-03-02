@@ -25,6 +25,7 @@ public class StationResponseView {
 
     public static StationResponseView of(Station station){
         return StationResponseView.builder()
+                .id(station.getId())
                 .name(station.getName())
                 .build();
     }
