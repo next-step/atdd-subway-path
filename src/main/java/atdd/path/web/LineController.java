@@ -5,10 +5,7 @@ import atdd.path.application.dto.LineResponseView;
 import atdd.path.service.EdgeService;
 import atdd.path.service.LineService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -29,5 +26,13 @@ public class LineController {
         return ResponseEntity
                 .created(URI.create("/lines/"+responseView.getId()))
                 .body(responseView);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity delete(@PathVariable Long id){
+        lineService.delete(id);
+        return ResponseEntity
+                .ok()
+                .build();
     }
 }
