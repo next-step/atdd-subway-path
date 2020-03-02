@@ -7,6 +7,7 @@ import atdd.path.domain.LineRepository;
 import atdd.path.domain.StationRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -32,6 +33,7 @@ public class EdgeService {
 
     public void deleteEdge(Long id) {
         Optional<Edge> edge = edgeRepository.findById(id);
+        edge.orElseThrow(NoSuchElementException::new);
         edgeRepository.deleteById(id);
     }
 }

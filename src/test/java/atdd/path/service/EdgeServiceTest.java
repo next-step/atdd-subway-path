@@ -12,12 +12,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalTime;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -107,7 +107,7 @@ public class EdgeServiceTest {
     }
 
     @Test
-    void 엣지를_삭제한다(){
+    void 엣지를_삭제한다() {
         //given
         given(edgeRepository.findById(edge.getId())).willReturn(Optional.of(edge));
 
@@ -119,14 +119,14 @@ public class EdgeServiceTest {
     }
 
     @Test
-    void 등록된_엣지만_삭제할_수_있다(){
+    void 등록된_엣지만_삭제할_수_있다() {
         //given
         given(edgeRepository.findById(edge.getId())).willReturn(Optional.empty());
 
-        //when
-        edgeService.deleteEdge(edge.getId());
-
-        //then
-        verify(edgeRepository, times(0)).deleteById(edge.getId());
+        //when, then
+        assertThrows(NoSuchElementException.class, () -> {
+            edgeService.deleteEdge(edge.getId());
+        });
+        verify(edgeRepository, times(0)).deleteById(any());
     }
 }
