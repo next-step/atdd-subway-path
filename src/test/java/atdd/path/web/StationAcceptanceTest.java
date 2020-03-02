@@ -30,7 +30,7 @@ public class StationAcceptanceTest extends AbstractAcceptanceTest {
 
     @DisplayName("지하철역 삭제하기")
     @Test
-    public void delete(Long id) {
+    public void delete() {
         //given
         StationResponseView responseView = stationHttpTest.create(STATION_NAME);
 

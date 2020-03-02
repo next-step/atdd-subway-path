@@ -4,10 +4,7 @@ import atdd.path.application.dto.StationRequestView;
 import atdd.path.application.dto.StationResponseView;
 import atdd.path.service.StationService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -26,5 +23,15 @@ public class StationController {
         return ResponseEntity
                 .created(URI.create("/stations/" + responseView.getId()))
                 .body(responseView);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity delete(@PathVariable Long id) throws Exception {
+        stationService.delete(StationRequestView.builder()
+                .id(id)
+                .build());
+        return ResponseEntity
+                .ok()
+                .build();
     }
 }
