@@ -109,4 +109,16 @@ public class LineServiceTest {
         //then
         verify(lineRepository, times(1)).deleteById(anyLong());
     }
+
+    @Test
+    void 이미_등록된_지하철노선만_삭제_가능하다(){
+        //given
+        given(lineRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        //when
+        lineService.delete(line.getId());
+
+        //then
+        verify(lineRepository, times(0)).deleteById(anyLong());
+    }
 }
