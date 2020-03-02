@@ -83,4 +83,15 @@ public class LineServiceTest {
             lineService.create(LineRequestView.of(line));
         });
     }
+
+    @Test
+    void 이미_등록된_노선은_다시_등록할_수_없다(){
+        //given
+        given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
+
+        //when, then
+        assertThrows(EntityExistsException.class, () -> {
+            lineService.create(LineRequestView.of(line));
+        });
+    }
 }
