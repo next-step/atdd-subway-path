@@ -56,6 +56,11 @@ public class LineServiceTest {
             .endTime(END_TIME)
             .interval(INTERVAL_TIME)
             .build();
+    public Edge edge = Edge.builder()
+            .lineId(line.getId())
+            .sourceId(station1.getId())
+            .targetId(station2.getId())
+            .build();
 
     @InjectMocks
     LineService lineService;
@@ -63,8 +68,8 @@ public class LineServiceTest {
     @Mock
     LineRepository lineRepository;
 
-    @Autowired
-    EdgeRepository edgeRepository;
+    @Mock
+    EdgeService edgeService;
 
     @Mock
     StationRepository stationRepository;
@@ -144,17 +149,18 @@ public class LineServiceTest {
         verify(lineRepository, times(0)).deleteById(anyLong());
     }
 
-//    @Test
-//    void 지하철노선에_구간을_추가하기(){
-//        //given
-//        given(stationRepository.findById(station1.getId())).willReturn(Optional.of(station1));
-//        given(stationRepository.findById(station2.getId())).willReturn(Optional.of(station2));
-//
-//        //when
-//        lineService.addEdge(line, station1.getId(), station2.getId(), INTERVAL_TIME);
-//
-//        //then
-//        //verify(edgeRepository, times(1)).save(any(Edge.class));
-//        assertThat(line.getEdges().get(0)).isNotNull();
-//    }
+    @Test
+    void 지하철노선에_구간을_추가하기() throws Exception {
+        //give
+        given(edgeService.createEdge(any())).willReturn(edge);
+
+        //when
+        Edge edge = lineService.addEdge(line.getId(), station1.getId(), station2.getId());
+
+        //then
+        assertThat(edge.getId()).isEqualTo(1L);
+        assertThat(edge.getSourceId()).isEqualTo(station1.getId());
+        assertThat(edge.getTargetId()).isEqualTo(station2.getId());
+        assertThat(edge.getLineId()).isEqualTo(line.getId());
+    }
 }

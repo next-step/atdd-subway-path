@@ -47,4 +47,7 @@ public class LineService {
     }
 
 
+    public Edge addEdge(Long lineId, Long sourceStationId, Long targetStationId) {
+
+    }
 }
