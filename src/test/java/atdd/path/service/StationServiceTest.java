@@ -44,9 +44,8 @@ public class StationServiceTest {
     @Test
     void 지하철역_삭제가_된다() {
         //given
-        StationRequestView requestView = new StationRequestView("사당역");
-        Station station = new Station(1L, "사당역");
-        given(stationRepository.findById(anyLong())).willReturn(Optional.of(station));
+        StationRequestView requestView = new StationRequestView(1L, "사당역");
+        given(stationRepository.findById(anyLong())).willReturn(Optional.of(requestView.toStation()));
 
         //when
         stationService.delete(requestView);
