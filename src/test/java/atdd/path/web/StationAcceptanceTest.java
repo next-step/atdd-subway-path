@@ -7,10 +7,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class StationAcceptanceTest extends AbstractAcceptanceTest {
-    private String STATION_NAME = "사당역";
+    private String STATION_NAME = "사당";
+    private String STATION_NAME_2 = "방배";
+    private String STATION_NAME_3 = "서초";
     private StationHttpTest stationHttpTest;
 
     @BeforeEach
@@ -53,5 +57,22 @@ public class StationAcceptanceTest extends AbstractAcceptanceTest {
 
         //then
         assertThat(stationById.getName()).isEqualTo(STATION_NAME);
+    }
+
+    @DisplayName("지하철역 목록 정보 조회하기")
+    @Test
+    public void showAll(){
+        //given
+        int theNumberOfStations = 3;
+        stationHttpTest.create(STATION_NAME);
+        stationHttpTest.create(STATION_NAME_2);
+        stationHttpTest.create(STATION_NAME_3);
+
+        //when
+        List<StationResponseView> stationResponseViews = stationHttpTest.showAll();
+
+        //then
+        assertThat(stationResponseViews.size()).isEqualTo(theNumberOfStations);
+        assertThat(stationResponseViews.get(2).getName()).isEqualTo(STATION_NAME_3);
     }
 }

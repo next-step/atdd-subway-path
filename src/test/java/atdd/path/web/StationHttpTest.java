@@ -41,7 +41,7 @@ public class StationHttpTest {
                 .returnResult();
     }
 
-    public List<StationResponseView> show() {
+    public List<StationResponseView> showAll() {
         return webTestClient.get().uri("/stations")
                 .exchange()
                 .expectStatus().isOk()
