@@ -34,7 +34,7 @@ public class RouteAcceptanceTest extends AbstractAcceptanceTest {
         this.secondLine = lineHttpTest.createLineTest().getResponseBody();
 
         edgeHttpTest.createEdge(secondLine.getId(), gangnamStation.getId(), yeoksamStation.getId(), 2, 2);
-        edgeHttpTest.createEdge(secondLine.getId(), yeoksamStation.getId(), seonneungStation.getId(), 3, 3);
+        edgeHttpTest.createEdge(secondLine.getId(), yeoksamStation.getId(), seonneungStation.getId(), 3, 4);
         edgeHttpTest.createEdge(secondLine.getId(), seonneungStation.getId(), samsungStation.getId(), 2, 2);
     }
 
@@ -46,6 +46,19 @@ public class RouteAcceptanceTest extends AbstractAcceptanceTest {
                 .expectBody()
                 .jsonPath("$.startStationId").isEqualTo(gangnamStation.getId())
                 .jsonPath("$.endStationId").isEqualTo(samsungStation.getId())
-                .jsonPath("$.stations.size()").isEqualTo(4);
+                .jsonPath("$.stations.size()").isEqualTo(4)
+                .jsonPath("$.estimatedTime").isEqualTo(8);
+    }
+
+    @Test
+    void 지하철역_사이의_최단_시간_경로_조회() {
+        webTestClient.get().uri("routes/time?startId=" + gangnamStation.getId() + "&endId=" + samsungStation.getId())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.startStationId").isEqualTo(gangnamStation.getId())
+                .jsonPath("$.endStationId").isEqualTo(samsungStation.getId())
+                .jsonPath("$.stations.size()").isEqualTo(4)
+                .jsonPath("$.estimatedTime").isEqualTo(8);
     }
 }

@@ -24,7 +24,7 @@ public class RouteController {
     }
 
     @GetMapping("distance")
-    public ResponseEntity findShortestPath(@RequestParam("startId") Long startId, @RequestParam("endId") Long endId) {
+    public ResponseEntity findShortestDistancePath(@RequestParam("startId") Long startId, @RequestParam("endId") Long endId) {
         Graph graph = new Graph(lineRepository.findAll());
         List<Station> paths = graph.getShortestDistancePath(startId, endId);
 
@@ -34,5 +34,11 @@ public class RouteController {
                 .stations(StationDto.listOf(paths))
                 .estimatedTime(graph.getEstimatedTime(startId, endId))
                 .build());
+    }
+
+    @GetMapping("time")
+    public ResponseEntity findShortestTimePath(@RequestParam("startId") Long startId, @RequestParam("endId") Long endId) {
+
+        return ResponseEntity.ok().build();
     }
 }
