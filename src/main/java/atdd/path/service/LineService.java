@@ -4,6 +4,7 @@ import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
 import atdd.path.domain.Line;
 import atdd.path.domain.LineRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -39,5 +40,9 @@ public class LineService {
         if(line.isPresent()){
             lineRepository.deleteById(id);
         }
+    }
+
+    public LineResponseView retrieve(Long id) {
+        return new LineResponseView();
     }
 }

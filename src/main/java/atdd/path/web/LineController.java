@@ -35,4 +35,11 @@ public class LineController {
                 .ok()
                 .build();
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity retrieve(@PathVariable Long id){
+        return ResponseEntity
+                .ok()
+                .build();
+    }
 }

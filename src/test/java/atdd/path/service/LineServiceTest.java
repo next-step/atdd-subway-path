@@ -104,17 +104,6 @@ public class LineServiceTest {
         });
     }
 
-//    @Test
-//    void 이미_등록된_노선은_다시_등록할_수_없다() {
-//        //given
-//        given(lineRepository.findByName(anyString())).willReturn(Optional.of(line));
-//
-//        //when, then
-//        assertThrows(EntityExistsException.class, () -> {
-//            lineService.create(LineRequestView.of(line));
-//        });
-//    }
-
     @Test
     void 지하철노선을_삭제한다() {
         //given
@@ -137,5 +126,18 @@ public class LineServiceTest {
 
         //then
         verify(lineRepository, times(0)).deleteById(anyLong());
+    }
+
+    @Test
+    void 지하철_노선_정보_조회하기(){
+        //given
+        given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
+
+        //when
+        LineResponseView responseView = lineService.retrieve(line.getId());
+
+        //then
+        assertThat(responseView.getId()).isEqualTo(line.getId());
+        assertThat(responseView.getName()).isEqualTo(line.getName());
     }
 }
