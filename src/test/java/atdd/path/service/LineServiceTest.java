@@ -4,7 +4,6 @@ import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
 import atdd.path.domain.Line;
 import atdd.path.domain.LineRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -59,10 +58,22 @@ public class LineServiceTest {
     }
 
     @Test
-    void 지하철노선의_시작시간은_종료시간보다_빨라야_한다(){
+    void 지하철노선의_시작시간은_종료시간보다_빨라야_한다() {
         //given
         LocalTime newStartTime = LocalTime.of(23, 55);
         line.changeStartTime(newStartTime);
+
+        //when, then
+        assertThrows(IllegalArgumentException.class, () -> {
+            lineService.create(LineRequestView.of(line));
+        });
+    }
+
+    @Test
+    void 지하철노선의_배차간격은_영보다_커야한다() {
+        //given
+        int newInterval = -2;
+        line.changeInterval(newInterval);
 
         //when, then
         assertThrows(IllegalArgumentException.class, () -> {
