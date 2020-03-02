@@ -20,7 +20,7 @@ public class EdgeService {
         this.stationRepository = stationRepository;
     }
 
-    public Edge createEdge(EdgeRequestView requestView){
+    public Edge createEdge(EdgeRequestView requestView) throws Exception{
         Edge savedEdge = edgeRepository.save(EdgeRequestView.of(requestView));
         return savedEdge;
     }

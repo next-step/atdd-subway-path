@@ -16,6 +16,7 @@ import java.time.LocalTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -72,19 +73,35 @@ public class EdgeServiceTest {
     EdgeRepository edgeRepository;
 
     @Test
-    void 엣지를_추가한다(){
+    void 엣지를_추가한다() throws Exception {
         //given
         given(edgeRepository.save(any())).willReturn(edge);
-
-        //when
         EdgeRequestView requestView = EdgeRequestView.builder()
                 .sourceId(station1.getId())
                 .targetId(station2.getId())
                 .lineId(line.getId())
                 .build();
+
+        //when
         Edge edge2 = edgeService.createEdge(requestView);
 
         //then
         assertThat(edge2.getId()).isEqualTo(1L);
+    }
+
+    @Test
+    void 엣지의_출발역과_도착역이_같으면_안_된다(){
+        //given
+        EdgeRequestView requestView = EdgeRequestView.builder()
+                .sourceId(station1.getId())
+                .targetId(station1.getId())
+                .lineId(line.getId())
+                .build();
+
+        //when, then
+        assertThrows(IllegalArgumentException.class, () -> {
+            edgeService.createEdge(requestView);
+        });
+
     }
 }
