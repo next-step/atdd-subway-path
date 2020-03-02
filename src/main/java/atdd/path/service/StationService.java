@@ -6,6 +6,7 @@ import atdd.path.domain.Station;
 import atdd.path.domain.StationRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -27,5 +28,9 @@ public class StationService {
         if(station.isPresent()){
             stationRepository.deleteById(requestView.getId());
         }
+    }
+
+    public List<Station> showAll() {
+        return null;
     }
 }

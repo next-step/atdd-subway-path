@@ -10,6 +10,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -59,9 +61,26 @@ public class StationServiceTest {
     @Test
     void 등록되지_않은_지하철역은_삭제할_수_없다() throws Exception {
         //given
-        StationRequestView requestView = new StationRequestView(1L, "사당역");
+        StationRequestView requestView = new StationRequestView(1L, "사당");
 
         //when, then
         verify(stationRepository, times(0)).deleteById(anyLong());
+    }
+
+    @Test
+    void 등록된_지하철역_목록을_불러온다() {
+        //given
+        int theNumberOfStations = 3;
+        Station station1 = new Station(1L, "사당");
+        Station station2 = new Station(2L, "방배");
+        Station station3 = new Station(3L, "서초");
+        given(stationRepository.findAll()).willReturn(Arrays.asList(station1, station2, station3));
+
+        //when
+        List<Station> stations = stationService.showAll();
+
+        //then
+        assertThat(stations.size()).isEqualTo(theNumberOfStations);
+        assertThat(stations.get(2).getName()).isEqualTo(station3.getName());
     }
 }
