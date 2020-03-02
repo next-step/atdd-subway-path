@@ -1,14 +1,13 @@
-package atdd.station.controller;
+package atdd.path.controller;
 
-import atdd.station.domain.Station;
-import atdd.station.domain.dto.StationDto;
-import atdd.station.repository.StationRepository;
+import atdd.path.domain.Station;
+import atdd.path.domain.dto.StationDto;
+import atdd.path.repository.StationRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("stations")

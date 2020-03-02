@@ -4,6 +4,8 @@ spring:
     url: jdbc:h2:mem:testdb
     username: sa
     password: password
+  jpa:
+    show-sql: true
   h2:
     console:
       enabled: true

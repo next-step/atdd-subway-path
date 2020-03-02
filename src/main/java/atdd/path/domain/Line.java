@@ -1,19 +1,13 @@
-package atdd.line;
+package atdd.path.domain;
 
-import atdd.edge.Edge;
-import atdd.station.domain.Station;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Getter
 @Entity
@@ -32,8 +26,8 @@ public class Line {
     private int intervalTime;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "line")
-    private List<Edge> edges = new ArrayList();
+    @Embedded
+    private Edges edges = new Edges();
 
     @Builder
     public Line(Long id, String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
@@ -45,10 +39,10 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        // 무방향 그래프 구현
+        return this.edges.getStations();
+    }
 
-        return this.edges.stream()
-                .flatMap(it -> Stream.of(it.getSourceStation(), it.getTargetStation()))
-                .collect(Collectors.toList());
+    public List<Edge> getEdges() {
+        return edges.getEdges();
     }
 }

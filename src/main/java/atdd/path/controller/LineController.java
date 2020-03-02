@@ -1,5 +1,8 @@
-package atdd.line;
+package atdd.path.controller;
 
+import atdd.path.domain.Line;
+import atdd.path.domain.dto.LineDto;
+import atdd.path.repository.LineRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

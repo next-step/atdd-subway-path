@@ -1,7 +1,5 @@
-package atdd.station.domain;
+package atdd.path.domain;
 
-import atdd.edge.Edge;
-import atdd.line.Line;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +8,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

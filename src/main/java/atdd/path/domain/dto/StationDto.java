@@ -1,6 +1,6 @@
-package atdd.station.domain.dto;
+package atdd.path.domain.dto;
 
-import atdd.station.domain.Station;
+import atdd.path.domain.Station;
 import lombok.*;
 
 import java.util.List;

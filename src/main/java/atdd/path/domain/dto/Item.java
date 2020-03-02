@@ -1,4 +1,4 @@
-package atdd.station.domain.dto;
+package atdd.path.domain.dto;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
