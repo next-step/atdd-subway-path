@@ -37,4 +37,8 @@ public class LineService {
         Line line = lineRepository.save(requestView.toLine());
         return LineResponseView.of(line);
     }
+
+    public void delete(Long id) {
+
+    }
 }

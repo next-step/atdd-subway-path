@@ -16,9 +16,10 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceTest {
@@ -89,18 +90,23 @@ public class LineServiceTest {
     @Test
     void 이미_등록된_노선은_다시_등록할_수_없다() {
         //given
-        String newName = "100호선";
-        Line line2 = Line.builder()
-                .name(newName)
-                .startTime(START_TIME)
-                .endTime(END_TIME)
-                .interval(INTERVAL_TIME)
-                .build();
-        given(lineRepository.findByName(anyString())).willReturn(Optional.of(line2));
+        given(lineRepository.findByName(anyString())).willReturn(Optional.of(line));
 
         //when, then
         assertThrows(EntityExistsException.class, () -> {
-            lineService.create(LineRequestView.of(line2));
+            lineService.create(LineRequestView.of(line));
         });
+    }
+
+    @Test
+    void 지하철노선을_삭제한다(){
+        //given
+        given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
+
+        //when
+        lineService.delete(line.getId());
+
+        //then
+        verify(lineRepository, times(1)).delete(any(Line.class));
     }
 }
