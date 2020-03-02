@@ -7,7 +7,10 @@ import lombok.Getter;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -22,6 +25,8 @@ public class Line {
     private LocalTime endTime;
     private Integer intervalTime;
 
+    @Transient
+    private List<Station> stations = new ArrayList<>();
 
     public Line() {
     }

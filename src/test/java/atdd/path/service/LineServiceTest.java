@@ -5,21 +5,23 @@ import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
 import atdd.path.domain.*;
 import com.sun.tools.internal.ws.wsdl.framework.NoSuchEntityException;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.persistence.EntityExistsException;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.iterator;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -35,18 +37,6 @@ public class LineServiceTest {
     public static final LocalTime START_TIME = LocalTime.of(5, 00);
     public static final LocalTime END_TIME = LocalTime.of(23, 50);
     public static final int INTERVAL_TIME = 10;
-    public Station station1 = Station.builder()
-            .name(STATION_NAME)
-            .build();
-    public Station station2 = Station.builder()
-            .name(STATION_NAME_2)
-            .build();
-    public Station station3 = Station.builder()
-            .name(STATION_NAME_3)
-            .build();
-    public Station station4 = Station.builder()
-            .name(STATION_NAME_4)
-            .build();
     public Line line = Line.builder()
             .id(1L)
             .name(LINE_2_NAME)
@@ -60,6 +50,20 @@ public class LineServiceTest {
             .startTime(START_TIME)
             .endTime(END_TIME)
             .interval(INTERVAL_TIME)
+            .build();
+    public Station station1 = Station.builder()
+            .name(STATION_NAME)
+            .lines(Arrays.asList(line))
+            .build();
+    public Station station2 = Station.builder()
+            .name(STATION_NAME_2)
+            .lines(Arrays.asList(line))
+            .build();
+    public Station station3 = Station.builder()
+            .name(STATION_NAME_3)
+            .build();
+    public Station station4 = Station.builder()
+            .name(STATION_NAME_4)
             .build();
     public LineRequestView requestView = LineRequestView.builder()
             .name(LINE_2_NAME)
@@ -78,6 +82,9 @@ public class LineServiceTest {
 
     @Mock
     LineRepository lineRepository;
+
+    @Mock
+    EdgeRepository edgeRepository;
 
     @Test
     void 지하철노선_등록하기() {
@@ -175,5 +182,19 @@ public class LineServiceTest {
 
         //then
         assertThat(responseView.getLines().size()).isEqualTo(theNumberOfLine);
+    }
+
+    @Test
+    void 노선에_해당하는_지하철역_조회하기(){
+        //given
+        int theNumberOfStations = 2;
+        given(edgeRepository.findAllStationIdByLineId(any()))
+                .willReturn(Arrays.asList(station1.getId(), station2.getId()));
+
+        //when
+        List<Station> stations = lineService.findAllStationsByLineId(line.getId());
+
+        //then
+        assertThat(stations.size()).isEqualTo(theNumberOfStations);
     }
 }

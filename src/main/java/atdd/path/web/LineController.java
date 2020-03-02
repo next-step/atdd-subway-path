@@ -72,6 +72,7 @@ public class LineController {
                 .build());
         targetStation.addLine(line);
 
+        line.getStations()=lineService.
         EdgeResponseView edgeResponseView = EdgeResponseView.builder()
                 .id(edge.getId())
                 .line(line)

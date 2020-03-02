@@ -5,6 +5,7 @@ import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
 import atdd.path.domain.Line;
 import atdd.path.domain.LineRepository;
+import atdd.path.domain.Station;
 import com.sun.tools.internal.ws.wsdl.framework.NoSuchEntityException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -57,5 +58,9 @@ public class LineService {
         return LineListResponseView.builder()
                 .lines(lines)
                 .build();
+    }
+
+    public List<Station> findAllStationsByLineId(Long id) {
+        return null;
     }
 }
