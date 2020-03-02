@@ -31,6 +31,6 @@ public class StationService {
     }
 
     public List<Station> showAll() {
-        return null;
+        return stationRepository.findAll();
     }
 }
