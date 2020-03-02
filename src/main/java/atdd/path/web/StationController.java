@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/stations")
@@ -29,20 +30,26 @@ public class StationController {
     @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable Long id) throws Exception {
         stationService.delete(StationRequestView.builder()
-                                                 .id(id)
-                                                 .build());
+                .id(id)
+                .build());
         return ResponseEntity
                 .ok()
                 .build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity findById(@PathVariable Long id) throws Exception{
+    public ResponseEntity findById(@PathVariable Long id) throws Exception {
         Station station = stationService.findById(StationRequestView.builder()
-                                                                 .id(id)
-                                                                 .build());
+                .id(id)
+                .build());
         return ResponseEntity
-                .ok()
-                .body(station);
+                .ok(station);
+    }
+
+    @GetMapping
+    public ResponseEntity showAll() throws Exception {
+        List<Station> responseViews = stationService.showAll();
+        return ResponseEntity
+                .ok(responseViews);
     }
 }
