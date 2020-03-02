@@ -23,7 +23,7 @@ public class EdgeService {
         this.stationRepository = stationRepository;
     }
 
-    public Edge createEdge(EdgeRequestView requestView) throws Exception{
+    public Edge addEdge(EdgeRequestView requestView) throws Exception{
         if(requestView.getSourceId() == requestView.getTargetId()){
             throw new IllegalArgumentException("출발역과 도착역이 같으면 안 됩니다.");
         }

@@ -23,10 +23,18 @@ public class StationResponseView {
         this.lines = lines;
     }
 
+    public List<Line> getLines() {
+        return lines;
+    }
+
     public static StationResponseView of(Station station){
         return StationResponseView.builder()
                 .id(station.getId())
                 .name(station.getName())
                 .build();
+    }
+
+    public void addLine(Line line){
+        this.lines.add(line);
     }
 }

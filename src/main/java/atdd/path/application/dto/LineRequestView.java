@@ -40,7 +40,7 @@ public class LineRequestView {
                 .name(line.getName())
                 .startTime(line.getStartTime())
                 .endTime(line.getEndTime())
-                .interval(line.getInterval())
+                .interval(line.getIntervalTime())
                 .build();
     }
 }

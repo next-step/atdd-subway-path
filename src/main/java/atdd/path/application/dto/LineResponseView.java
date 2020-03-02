@@ -37,7 +37,7 @@ public class LineResponseView {
                 .name(line.getName())
                 .startTime(line.getStartTime())
                 .endTime(line.getEndTime())
-                .interval(line.getInterval())
+                .interval(line.getIntervalTime())
                 .build();
     }
 }

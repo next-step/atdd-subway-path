@@ -3,9 +3,10 @@ package atdd.path.domain;
 import lombok.Builder;
 import lombok.Getter;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.time.LocalTime;
-import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -18,7 +19,7 @@ public class Line {
     private String name;
     private LocalTime startTime;
     private LocalTime endTime;
-    private int interval;
+    private Integer intervalTime;
 
 
     public Line() {
@@ -31,7 +32,7 @@ public class Line {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.interval = interval;
+        this.intervalTime = interval;
     }
 
     public void changeStartTime(LocalTime startTime) {
@@ -43,6 +44,6 @@ public class Line {
     }
 
     public void changeInterval(int interval) {
-        this.interval = interval;
+        this.intervalTime = interval;
     }
 }

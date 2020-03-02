@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityExistsException;
 import java.time.LocalTime;
@@ -68,17 +67,10 @@ public class LineServiceTest {
     @Mock
     LineRepository lineRepository;
 
-    @Mock
-    EdgeService edgeService;
-
-    @Mock
-    StationRepository stationRepository;
-
     @Test
     void 지하철노선_등록하기() {
         //given
         given(lineRepository.save(any(Line.class))).willReturn(line);
-        given(lineRepository.findByName(anyString())).willReturn(Optional.empty());
 
         //when
         LineResponseView responseView = lineService.create(requestView);
@@ -93,7 +85,6 @@ public class LineServiceTest {
         //given
         LocalTime newStartTime = LocalTime.of(23, 55);
         line.changeStartTime(newStartTime);
-        given(lineRepository.findByName(anyString())).willReturn(Optional.empty());
 
         //when, then
         assertThrows(IllegalArgumentException.class, () -> {
@@ -106,7 +97,6 @@ public class LineServiceTest {
         //given
         int newInterval = -2;
         line.changeInterval(newInterval);
-        given(lineRepository.findByName(anyString())).willReturn(Optional.empty());
 
         //when, then
         assertThrows(IllegalArgumentException.class, () -> {
@@ -114,19 +104,19 @@ public class LineServiceTest {
         });
     }
 
-    @Test
-    void 이미_등록된_노선은_다시_등록할_수_없다() {
-        //given
-        given(lineRepository.findByName(anyString())).willReturn(Optional.of(line));
+//    @Test
+//    void 이미_등록된_노선은_다시_등록할_수_없다() {
+//        //given
+//        given(lineRepository.findByName(anyString())).willReturn(Optional.of(line));
+//
+//        //when, then
+//        assertThrows(EntityExistsException.class, () -> {
+//            lineService.create(LineRequestView.of(line));
+//        });
+//    }
 
-        //when, then
-        assertThrows(EntityExistsException.class, () -> {
-            lineService.create(LineRequestView.of(line));
-        });
-    }
-
     @Test
-    void 지하철노선을_삭제한다(){
+    void 지하철노선을_삭제한다() {
         //given
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
@@ -138,7 +128,7 @@ public class LineServiceTest {
     }
 
     @Test
-    void 이미_등록된_지하철노선만_삭제_가능하다(){
+    void 이미_등록된_지하철노선만_삭제_가능하다() {
         //given
         given(lineRepository.findById(anyLong())).willReturn(Optional.empty());
 
@@ -147,20 +137,5 @@ public class LineServiceTest {
 
         //then
         verify(lineRepository, times(0)).deleteById(anyLong());
-    }
-
-    @Test
-    void 지하철노선에_구간을_추가하기() throws Exception {
-        //give
-        given(edgeService.createEdge(any())).willReturn(edge);
-
-        //when
-        Edge edge = lineService.addEdge(line.getId(), station1.getId(), station2.getId());
-
-        //then
-        assertThat(edge.getId()).isEqualTo(1L);
-        assertThat(edge.getSourceId()).isEqualTo(station1.getId());
-        assertThat(edge.getTargetId()).isEqualTo(station2.getId());
-        assertThat(edge.getLineId()).isEqualTo(line.getId());
     }
 }

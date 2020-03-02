@@ -85,7 +85,7 @@ public class EdgeServiceTest {
                 .build();
 
         //when
-        Edge edge2 = edgeService.createEdge(requestView);
+        Edge edge2 = edgeService.addEdge(requestView);
 
         //then
         assertThat(edge2.getId()).isEqualTo(1L);
@@ -102,7 +102,7 @@ public class EdgeServiceTest {
 
         //when, then
         assertThrows(IllegalArgumentException.class, () -> {
-            edgeService.createEdge(requestView);
+            edgeService.addEdge(requestView);
         });
     }
 
