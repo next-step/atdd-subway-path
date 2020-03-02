@@ -1,15 +1,14 @@
 package atdd.path.web;
 
 import atdd.AbstractAcceptanceTest;
-import atdd.path.application.dto.LineListResponseView;
-import atdd.path.application.dto.LineRequestView;
-import atdd.path.application.dto.LineResponseView;
+import atdd.path.application.dto.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalTime;
 
@@ -136,22 +135,38 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     void addEdge() throws Exception {
         //given
-        stationHttpTest.create(STATION_NAME);
-        stationHttpTest.create(STATION_NAME_2);
+        StationResponseView responseView1 = stationHttpTest.create(STATION_NAME);
+        StationResponseView responseView2 = stationHttpTest.create(STATION_NAME_2);
         LineRequestView requestView = LineRequestView.builder()
                 .name(LINE_NAME)
                 .startTime(START_TIME)
                 .endTime(END_TIME)
                 .interval(INTERVAL_TIME)
                 .build();
-        String inputJson = objectMapper.writeValueAsString(requestView);
-        LineResponseView responseView = lineHttpTest.create(inputJson);
+        String input = objectMapper.writeValueAsString(requestView);
+        LineResponseView responseView = lineHttpTest.create(input);
 
-        //when, then
-        webTestClient.post().uri("/lines/" + responseView.getId() + "/edges")
+        //when
+        EdgeRequestView edgeRequestView = EdgeRequestView.builder()
+                .lineId(responseView.getId())
+                .sourceId(responseView1.getId())
+                .targetId(responseView2.getId())
+                .build();
+        String inputJson = objectMapper.writeValueAsString(edgeRequestView);
+
+        // then
+        EdgeResponseView responseBody = webTestClient.post().uri("/lines/" + responseView.getId() + "/edges")
                 .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(inputJson), String.class)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
-                .expectStatus().isCreated();
+                .expectStatus().isCreated()
+                .expectBody(EdgeResponseView.class)
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(responseBody.getId()).isEqualTo(1L);
+        assertThat(responseBody.getSource().getName()).isEqualTo(STATION_NAME);
+        assertThat(responseBody.getSource().getLines().get(0).getName()).isEqualTo(LINE_NAME);
     }
 }

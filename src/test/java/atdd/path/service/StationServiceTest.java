@@ -68,9 +68,18 @@ public class StationServiceTest {
     void 등록된_지하철역_목록을_불러온다() {
         //given
         int theNumberOfStations = 3;
-        Station station1 = new Station(1L, "사당");
-        Station station2 = new Station(2L, "방배");
-        Station station3 = new Station(3L, "서초");
+        Station station1 = Station.builder()
+                .id(1L)
+                .name("사당")
+                .build();
+        Station station2 = Station.builder()
+                .id(2L)
+                .name("방배")
+                .build();
+        Station station3 = Station.builder()
+                .id(3L)
+                .name("서초")
+                .build();
         given(stationRepository.findAll()).willReturn(Arrays.asList(station1, station2, station3));
 
         //when

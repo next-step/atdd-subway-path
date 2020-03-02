@@ -30,7 +30,6 @@ public class LineResponseView {
         this.interval = interval;
         this.stations = stations;
     }
-
     public static LineResponseView of(Line line){
         return LineResponseView.builder()
                 .id(line.getId())
