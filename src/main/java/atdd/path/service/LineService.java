@@ -18,6 +18,10 @@ public class LineService {
     }
 
     public LineResponseView create(LineRequestView requestView){
+        if(requestView.getStartTime().isAfter(requestView.getEndTime())){
+            throw new IllegalArgumentException("노선의 시작시간은 종료시간보다 빨라야 합니다.");
+        }
+
         Line line = lineRepository.save(requestView.toLine());
         return LineResponseView.of(line);
     }
