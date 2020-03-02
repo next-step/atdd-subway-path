@@ -5,6 +5,7 @@ import atdd.path.application.dto.StationResponseView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,5 +26,19 @@ public class StationAcceptanceTest extends AbstractAcceptanceTest {
 
         // then
         assertThat(responseView.getId()).isEqualTo(1L);
+    }
+
+    @DisplayName("지하철역 삭제하기")
+    @Test
+    public void delete(Long id) {
+        //given
+        StationResponseView responseView = stationHttpTest.create(STATION_NAME);
+
+        //when, then
+        webTestClient.delete().uri("/stations/" + responseView.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody().isEmpty();
     }
 }
