@@ -4,9 +4,11 @@ import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
 import atdd.path.domain.Line;
 import atdd.path.domain.LineRepository;
+import com.sun.tools.internal.ws.wsdl.framework.NoSuchEntityException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -44,6 +46,7 @@ public class LineService {
 
     public LineResponseView retrieve(Long id) {
         Optional<Line> line = lineRepository.findById(id);
+        line.orElseThrow(NoSuchElementException::new);
         return LineResponseView.of(line.get());
     }
 }
