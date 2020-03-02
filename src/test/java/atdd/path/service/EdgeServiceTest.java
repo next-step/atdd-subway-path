@@ -117,4 +117,16 @@ public class EdgeServiceTest {
         //then
         verify(edgeRepository, times(1)).deleteById(edge.getId());
     }
+
+    @Test
+    void 등록된_엣지만_삭제할_수_있다(){
+        //given
+        given(edgeRepository.findById(edge.getId())).willReturn(Optional.empty());
+
+        //when
+        edgeService.deleteEdge(edge.getId());
+
+        //then
+        verify(edgeRepository, times(0)).deleteById(edge.getId());
+    }
 }
