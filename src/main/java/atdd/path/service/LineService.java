@@ -3,6 +3,7 @@ package atdd.path.service;
 import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
 import atdd.path.domain.EdgeRepository;
+import atdd.path.domain.Line;
 import atdd.path.domain.LineRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ public class LineService {
     }
 
     public LineResponseView create(LineRequestView requestView){
-        return new LineResponseView();
+        Line line = lineRepository.save(requestView.toLine());
+        return LineResponseView.of(line);
     }
 }

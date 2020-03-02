@@ -2,10 +2,12 @@ package atdd.path.service;
 
 import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
+import atdd.path.domain.Line;
 import atdd.path.domain.LineRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -13,6 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceTest {
@@ -31,12 +35,20 @@ public class LineServiceTest {
     @Test
     void 지하철노선_등록하기() {
         //given
+        Line line = Line.builder()
+                .id(1L)
+                .name(LINE_2_NAME)
+                .startTime(START_TIME)
+                .endTime(END_TIME)
+                .interval(INTERVAL_TIME)
+                .build();
         LineRequestView requestView = LineRequestView.builder()
                 .name(LINE_2_NAME)
                 .startTime(START_TIME)
                 .endTime(END_TIME)
                 .interval(INTERVAL_TIME)
                 .build();
+        given(lineRepository.save(any(Line.class))).willReturn(line);
 
         //when
         LineResponseView responseView = lineService.create(requestView);
@@ -45,5 +57,4 @@ public class LineServiceTest {
         assertThat(responseView.getName()).isEqualTo(LINE_2_NAME);
         assertThat(responseView.getEndTime()).isEqualTo(END_TIME);
     }
-
 }

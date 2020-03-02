@@ -1,10 +1,12 @@
 package atdd.path.application.dto;
 
+import atdd.path.domain.Line;
 import lombok.Builder;
+import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+@Getter
 public class LineRequestView {
     private Long id;
     private String name;
@@ -22,5 +24,14 @@ public class LineRequestView {
         this.startTime = startTime;
         this.endTime = endTime;
         this.interval = interval;
+    }
+
+    public Line toLine(){
+        return Line.builder()
+                .name(name)
+                .startTime(startTime)
+                .endTime(endTime)
+                .interval(interval)
+                .build();
     }
 }
