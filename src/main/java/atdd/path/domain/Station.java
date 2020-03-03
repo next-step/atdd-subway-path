@@ -3,11 +3,7 @@ package atdd.path.domain;
 import lombok.Builder;
 import lombok.Getter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Transient;
-
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +17,11 @@ public class Station {
     private Long id;
     private String name;
 
-    @Transient
-    private List<Line> lines = new ArrayList<>();
+    @OneToMany(mappedBy = "source", cascade = CascadeType.ALL)
+    private List<Edge> edgesAsSource;
+
+    @OneToMany(mappedBy = "target", cascade = CascadeType.ALL)
+    private List<Edge> edgesAsTarget;
 
     public Station() {
     }
@@ -32,14 +31,24 @@ public class Station {
     }
 
     @Builder
-    public Station(Long id, String name, List<Line> lines) {
+    public Station(Long id, String name, List<Edge> edgesAsSource, List<Edge> edgeAsTarget) {
         this.id = id;
         this.name = name;
-        this.lines = lines;
+        this.edgesAsSource = edgesAsSource;
+        this.edgesAsTarget = edgeAsTarget;
     }
 
-    public void addLine(Line line){
-        this.lines.add(line);
+    public void addEdgeToSource(Edge edge){
+        if(edgesAsSource == null){
+            edgesAsSource = new ArrayList<>();
+        }
+        edgesAsSource.add(edge);
+    }
+    public void addEdgeToTarget(Edge edge){
+        if(edgesAsTarget == null){
+            edgesAsTarget = new ArrayList<>();
+        }
+        edgesAsTarget.add(edge);
     }
 }
 

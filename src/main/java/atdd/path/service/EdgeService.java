@@ -1,14 +1,7 @@
 package atdd.path.service;
 
-import atdd.path.application.dto.EdgeRequestView;
-import atdd.path.domain.Edge;
-import atdd.path.domain.EdgeRepository;
-import atdd.path.domain.LineRepository;
-import atdd.path.domain.StationRepository;
+import atdd.path.domain.*;
 import org.springframework.stereotype.Service;
-
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 public class EdgeService {
@@ -23,17 +16,16 @@ public class EdgeService {
         this.stationRepository = stationRepository;
     }
 
-    public Edge addEdge(EdgeRequestView requestView) throws Exception{
-        if(requestView.getSourceId() == requestView.getTargetId()){
-            throw new IllegalArgumentException("출발역과 도착역이 같으면 안 됩니다.");
-        }
-        Edge savedEdge = edgeRepository.save(EdgeRequestView.of(requestView));
+    public Edge addEdge(Line line, Station source, Station target) throws Exception {
+        Edge savedEdge = edgeRepository.save(
+                Edge.builder()
+                        .line(line)
+                        .source(source)
+                        .target(target)
+                        .build());
+        source.addEdgeToSource(savedEdge);
+        target.addEdgeToTarget(savedEdge);
+        line.addEdgeToLine(savedEdge);
         return savedEdge;
-    }
-
-    public void deleteEdge(Long id) {
-        Optional<Edge> edge = edgeRepository.findById(id);
-        edge.orElseThrow(NoSuchElementException::new);
-        edgeRepository.deleteById(id);
     }
 }

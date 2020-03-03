@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/lines")
@@ -56,32 +58,4 @@ public class LineController {
                 .ok(responseView.getLines());
     }
 
-    @PostMapping("/{id}/edges")
-    public ResponseEntity createEdge(@PathVariable Long id,
-                                     @RequestBody EdgeRequestView requestView) throws Exception {
-        Edge edge = edgeService.addEdge(requestView);
-        LineResponseView lineResponseView = lineService.retrieve(edge.getLineId());
-        Line line = Line.of(lineResponseView);
-
-        Station sourceStation = stationService.findById(StationRequestView.builder()
-                .id(edge.getSourceId())
-                .build());
-        sourceStation.addLine(line);
-        Station targetStation = stationService.findById(StationRequestView.builder()
-                .id(edge.getTargetId())
-                .build());
-        targetStation.addLine(line);
-
-        line.getStations()=lineService.
-        EdgeResponseView edgeResponseView = EdgeResponseView.builder()
-                .id(edge.getId())
-                .line(line)
-                .source(sourceStation)
-                .target(targetStation)
-                .build();
-
-        return ResponseEntity
-                .created(URI.create("/lines/"+id+"/"+edge.getId()))
-                .body(edgeResponseView);
-    }
 }

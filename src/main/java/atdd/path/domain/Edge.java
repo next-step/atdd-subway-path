@@ -3,10 +3,12 @@ package atdd.path.domain;
 import lombok.Builder;
 import lombok.Getter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Getter
@@ -15,18 +17,27 @@ public class Edge {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
-    private Long sourceId;
-    private Long targetId;
-    private Long lineId;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "id")
+    private Station source;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "id", nullable = false)
+    private Station target;
+
+    @OneToMany(fetch = LAZY)
+    @JoinColumn(name = "id")
+    private Line line;
 
     public Edge() {
     }
 
     @Builder
-    public Edge(Long id, Long sourceId, Long targetId, Long lineId) {
+    public Edge(Long id, Station source, Station target, Line line) {
         this.id = id;
-        this.sourceId = sourceId;
-        this.targetId = targetId;
-        this.lineId = lineId;
+        this.source = source;
+        this.target = target;
+        this.line = line;
     }
 }

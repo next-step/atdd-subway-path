@@ -1,25 +1,28 @@
 package atdd.path.service;
 
+import atdd.path.application.dto.EdgeResponseView;
 import atdd.path.application.dto.LineListResponseView;
 import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
-import atdd.path.domain.Line;
-import atdd.path.domain.LineRepository;
-import atdd.path.domain.Station;
-import com.sun.tools.internal.ws.wsdl.framework.NoSuchEntityException;
-import org.springframework.http.ResponseEntity;
+import atdd.path.domain.*;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class LineService {
     private LineRepository lineRepository;
+    private EdgeRepository edgeRepository;
+    private StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository,
+                       EdgeRepository edgeRepository,
+                       StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.edgeRepository = edgeRepository;
+        this.stationRepository = stationRepository;
     }
 
     public LineResponseView create(LineRequestView requestView) {
@@ -34,7 +37,7 @@ public class LineService {
                 .name(requestView.getName())
                 .startTime(requestView.getStartTime())
                 .endTime(requestView.getEndTime())
-                .interval(requestView.getInterval())
+                .intervalTime(requestView.getInterval())
                 .build();
         Line savedLine = lineRepository.save(line);
         return LineResponseView.of(savedLine);
@@ -42,7 +45,7 @@ public class LineService {
 
     public void delete(Long id) {
         Optional<Line> line = lineRepository.findById(id);
-        if(line.isPresent()){
+        if (line.isPresent()) {
             lineRepository.deleteById(id);
         }
     }
@@ -60,7 +63,4 @@ public class LineService {
                 .build();
     }
 
-    public List<Station> findAllStationsByLineId(Long id) {
-        return null;
-    }
 }

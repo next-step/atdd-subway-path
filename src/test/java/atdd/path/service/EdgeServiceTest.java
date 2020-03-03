@@ -1,10 +1,7 @@
 package atdd.path.service;
 
 import atdd.path.application.dto.EdgeRequestView;
-import atdd.path.domain.Edge;
-import atdd.path.domain.EdgeRepository;
-import atdd.path.domain.Line;
-import atdd.path.domain.Station;
+import atdd.path.domain.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,6 +15,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -53,7 +51,7 @@ public class EdgeServiceTest {
             .name(LINE_2_NAME)
             .startTime(START_TIME)
             .endTime(END_TIME)
-            .interval(INTERVAL_TIME)
+            .intervalTime(INTERVAL_TIME)
             .build();
     public EdgeRequestView edgeRequestView = EdgeRequestView.builder()
             .sourceId(station1.getId())
@@ -62,9 +60,15 @@ public class EdgeServiceTest {
             .build();
     public Edge edge = Edge.builder()
             .id(1L)
-            .lineId(1L)
-            .sourceId(1L)
-            .targetId(2L)
+            .line(line)
+            .source(station1)
+            .target(station2)
+            .build();
+    public Edge edge2 = Edge.builder()
+            .id(2L)
+            .line(line)
+            .source(station2)
+            .target(station3)
             .build();
 
 
@@ -74,59 +78,23 @@ public class EdgeServiceTest {
     @Mock
     EdgeRepository edgeRepository;
 
+    @Mock
+    StationRepository stationRepository;
+
+    @Mock
+    LineRepository lineRepository;
+
     @Test
     void 엣지를_추가한다() throws Exception {
         //given
         given(edgeRepository.save(any())).willReturn(edge);
-        EdgeRequestView requestView = EdgeRequestView.builder()
-                .sourceId(station1.getId())
-                .targetId(station2.getId())
-                .lineId(line.getId())
-                .build();
 
         //when
-        Edge edge2 = edgeService.addEdge(requestView);
+        Edge savedEdge= edgeService.addEdge(line, station1, station2);
 
         //then
-        assertThat(edge2.getId()).isEqualTo(1L);
-    }
-
-    @Test
-    void 엣지의_출발역과_도착역이_같으면_안_된다() {
-        //given
-        EdgeRequestView requestView = EdgeRequestView.builder()
-                .sourceId(station1.getId())
-                .targetId(station1.getId())
-                .lineId(line.getId())
-                .build();
-
-        //when, then
-        assertThrows(IllegalArgumentException.class, () -> {
-            edgeService.addEdge(requestView);
-        });
-    }
-
-    @Test
-    void 엣지를_삭제한다() {
-        //given
-        given(edgeRepository.findById(edge.getId())).willReturn(Optional.of(edge));
-
-        //when
-        edgeService.deleteEdge(edge.getId());
-
-        //then
-        verify(edgeRepository, times(1)).deleteById(edge.getId());
-    }
-
-    @Test
-    void 등록된_엣지만_삭제할_수_있다() {
-        //given
-        given(edgeRepository.findById(edge.getId())).willReturn(Optional.empty());
-
-        //when, then
-        assertThrows(NoSuchElementException.class, () -> {
-            edgeService.deleteEdge(edge.getId());
-        });
-        verify(edgeRepository, times(0)).deleteById(any());
+        assertThat(savedEdge.getLine().getEdges().size()).isEqualTo(1);
+        assertThat(savedEdge.getSource().getEdgesAsSource().size()).isEqualTo(1);
+        assertThat(savedEdge.getTarget().getEdgesAsTarget().size()).isEqualTo(1);
     }
 }

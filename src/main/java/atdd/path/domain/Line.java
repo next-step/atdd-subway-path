@@ -4,10 +4,7 @@ import atdd.path.application.dto.LineResponseView;
 import lombok.Builder;
 import lombok.Getter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,21 +22,23 @@ public class Line {
     private LocalTime endTime;
     private Integer intervalTime;
 
-    @Transient
-    private List<Station> stations = new ArrayList<>();
+    @OneToMany(mappedBy = "line")
+    private List<Edge> edges;
 
     public Line() {
     }
 
     @Builder
-    public Line(Long id, String name, LocalTime startTime,
-                LocalTime endTime, int interval) {
+    public Line(Long id, String name, LocalTime startTime, LocalTime endTime,
+                Integer intervalTime, List<Edge> edges) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.intervalTime = interval;
+        this.intervalTime = intervalTime;
+        this.edges = edges;
     }
+
 
     public void changeStartTime(LocalTime startTime) {
         this.startTime = startTime;
@@ -53,13 +52,20 @@ public class Line {
         this.intervalTime = interval;
     }
 
-    public static Line of(LineResponseView responseView){
+    public static Line of(LineResponseView responseView) {
         return Line.builder()
                 .id(responseView.getId())
                 .name(responseView.getName())
                 .startTime(responseView.getStartTime())
                 .endTime(responseView.getEndTime())
-                .interval(responseView.getInterval())
+                .intervalTime(responseView.getInterval())
                 .build();
+    }
+
+    public void addEdgeToLine(Edge edge){
+        if(edges == null){
+            edges = new ArrayList<>();
+        }
+        edges.add(edge);
     }
 }

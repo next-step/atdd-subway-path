@@ -131,42 +131,43 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
                 .hasSize(theNumberOfLines);
     }
 
-    @DisplayName("지하철 노선에 구간 등록을 요청한다.")
-    @Test
-    void addEdge() throws Exception {
-        //given
-        StationResponseView responseView1 = stationHttpTest.create(STATION_NAME);
-        StationResponseView responseView2 = stationHttpTest.create(STATION_NAME_2);
-        LineRequestView requestView = LineRequestView.builder()
-                .name(LINE_NAME)
-                .startTime(START_TIME)
-                .endTime(END_TIME)
-                .interval(INTERVAL_TIME)
-                .build();
-        String input = objectMapper.writeValueAsString(requestView);
-        LineResponseView responseView = lineHttpTest.create(input);
-
-        //when
-        EdgeRequestView edgeRequestView = EdgeRequestView.builder()
-                .lineId(responseView.getId())
-                .sourceId(responseView1.getId())
-                .targetId(responseView2.getId())
-                .build();
-        String inputJson = objectMapper.writeValueAsString(edgeRequestView);
-
-        // then
-        EdgeResponseView responseBody = webTestClient.post().uri("/lines/" + responseView.getId() + "/edges")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectBody(EdgeResponseView.class)
-                .returnResult()
-                .getResponseBody();
-
-        assertThat(responseBody.getId()).isEqualTo(1L);
-        assertThat(responseBody.getSource().getName()).isEqualTo(STATION_NAME);
-        assertThat(responseBody.getSource().getLines().get(0).getName()).isEqualTo(LINE_NAME);
-    }
+//    @DisplayName("지하철 노선에 구간 등록을 요청한다.")
+//    @Test
+//    void addEdge() throws Exception {
+//        //given
+//        StationResponseView responseView1 = stationHttpTest.create(STATION_NAME);
+//        StationResponseView responseView2 = stationHttpTest.create(STATION_NAME_2);
+//        LineRequestView requestView = LineRequestView.builder()
+//                .name(LINE_NAME)
+//                .startTime(START_TIME)
+//                .endTime(END_TIME)
+//                .interval(INTERVAL_TIME)
+//                .build();
+//        String input = objectMapper.writeValueAsString(requestView);
+//        LineResponseView responseView = lineHttpTest.create(input);
+//
+//        //when
+//        EdgeRequestView edgeRequestView = EdgeRequestView.builder()
+//                .lineId(responseView.getId())
+//                .sourceId(responseView1.getId())
+//                .targetId(responseView2.getId())
+//                .build();
+//        String inputJson = objectMapper.writeValueAsString(edgeRequestView);
+//
+//        // then
+//        EdgeResponseView responseBody = webTestClient.post().uri("/lines/" + responseView.getId() + "/edges")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .body(Mono.just(inputJson), String.class)
+//                .accept(MediaType.APPLICATION_JSON)
+//                .exchange()
+//                .expectStatus().isCreated()
+//                .expectBody(EdgeResponseView.class)
+//                .returnResult()
+//                .getResponseBody();
+//
+//        assertThat(responseBody.getId()).isEqualTo(1L);
+//        assertThat(responseBody.getSource().getName()).isEqualTo(STATION_NAME);
+//        assertThat(responseBody.getSource().getLines().get(0).getName()).isEqualTo(LINE_NAME);
+//        assertThat(responseBody.getLine().getStations().size()).isEqualTo(2);
+//    }
 }

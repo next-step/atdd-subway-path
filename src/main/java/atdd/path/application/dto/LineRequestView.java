@@ -31,7 +31,7 @@ public class LineRequestView {
                 .name(name)
                 .startTime(startTime)
                 .endTime(endTime)
-                .interval(interval)
+                .intervalTime(interval)
                 .build();
     }
 

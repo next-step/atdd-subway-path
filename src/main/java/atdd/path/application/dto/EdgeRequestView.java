@@ -1,6 +1,5 @@
 package atdd.path.application.dto;
 
-import atdd.path.domain.Edge;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,13 +19,5 @@ public class EdgeRequestView {
         this.sourceId = sourceId;
         this.targetId = targetId;
         this.lineId = lineId;
-    }
-
-    public static Edge of(EdgeRequestView requestView){
-        return Edge.builder()
-                .lineId(requestView.lineId)
-                .sourceId(requestView.sourceId)
-                .targetId(requestView.targetId)
-                .build();
     }
 }
