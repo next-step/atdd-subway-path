@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 
 @RestController
+@RequestMapping(value = "/lines")
 public class LineController {
     private LineService lineService;
     private EdgeService edgeService;
@@ -25,7 +26,6 @@ public class LineController {
     }
 
     @PostMapping
-    @RequestMapping(value = "/lines", method = RequestMethod.POST)
     public ResponseEntity create(@RequestBody LineRequestView requestView) {
         LineResponseView responseView = lineService.create(requestView);
         return ResponseEntity
@@ -33,8 +33,7 @@ public class LineController {
                 .body(responseView);
     }
 
-    @DeleteMapping
-    @RequestMapping("/lines/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable Long id) {
         lineService.delete(id);
         return ResponseEntity
@@ -42,8 +41,7 @@ public class LineController {
                 .build();
     }
 
-    @GetMapping
-    @RequestMapping("/lines/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity retrieve(@PathVariable Long id) {
         LineResponseView responseView = lineService.retrieve(id);
         return ResponseEntity
@@ -51,7 +49,6 @@ public class LineController {
     }
 
     @GetMapping
-    @RequestMapping("/lines")
     public ResponseEntity showAll() {
         LineListResponseView responseView = lineService.showAll();
         return ResponseEntity
