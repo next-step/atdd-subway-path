@@ -1,23 +1,31 @@
 package atdd.path.application.dto;
 
+import atdd.path.domain.Edge;
+import atdd.path.domain.Line;
+import atdd.path.domain.Station;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 public class EdgeRequestView {
     private Long id;
-    private Long sourceId;
-    private Long targetId;
-    private Long lineId;
+    private Line line;
+    private Station source;
+    private Station target;
+    private int distance;
+    private int timeToTake;
 
     public EdgeRequestView() {
     }
 
     @Builder
-    public EdgeRequestView(Long id, Long sourceId, Long targetId, Long lineId) {
+    public EdgeRequestView(Long id, Line line, Station source,
+                           Station target, int distance, int timeToTake) {
         this.id = id;
-        this.sourceId = sourceId;
-        this.targetId = targetId;
-        this.lineId = lineId;
+        this.line = line;
+        this.source = source;
+        this.target = target;
+        this.distance = distance;
+        this.timeToTake = timeToTake;
     }
 }

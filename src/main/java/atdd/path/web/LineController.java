@@ -2,8 +2,6 @@ package atdd.path.web;
 
 import atdd.path.application.dto.*;
 import atdd.path.domain.Edge;
-import atdd.path.domain.Line;
-import atdd.path.domain.Station;
 import atdd.path.service.EdgeService;
 import atdd.path.service.LineService;
 import atdd.path.service.StationService;
@@ -11,8 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/lines")
@@ -58,4 +54,12 @@ public class LineController {
                 .ok(responseView.getLines());
     }
 
+    @PostMapping("/{id}/edges")
+    public ResponseEntity addEdge(@PathVariable Long id,
+                                  @RequestBody EdgeRequestView requestView) throws Exception {
+        EdgeResponseView edgeResponseView = edgeService.addEdge(requestView);
+        return ResponseEntity
+                .created(URI.create("/lines/" + id + "/edges/" + edgeResponseView.getId()))
+                .body(edgeResponseView);
+    }
 }

@@ -1,73 +1,36 @@
 package atdd.path.domain;
 
-import atdd.path.application.dto.LineResponseView;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Builder;
-import lombok.Getter;
-
-import javax.persistence.*;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static javax.persistence.GenerationType.IDENTITY;
-
-@Getter
-@Entity
-public class Line {
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "line_id")
-    private Long id;
-
-    private String name;
-
-    private LocalTime startTime;
-
-    private LocalTime endTime;
-
-    private Integer intervalTime;
-
-    @JsonIgnore
-    @OneToMany
-    @JoinColumn(name = "edge_id")
+public class Edges {
     private List<Edge> edges = new ArrayList<>();
 
-    public Line() {
+    public Edges() {
     }
 
-    @Builder
-    public Line(Long id, String name, LocalTime startTime, LocalTime endTime,
-                Integer intervalTime, List<Edge> edges) {
-        this.id = id;
-        this.name = name;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.intervalTime = intervalTime;
+    public Edges(List<Edge> edges) {
+        checkValidEdges(edges);
         this.edges = edges;
     }
 
-    public void changeStartTime(LocalTime startTime) {
-        this.startTime = startTime;
+    public List<Edge> getEdges() {
+        return edges;
     }
 
-    public void changeEndTime(LocalTime endTime) {
-        this.endTime = endTime;
+    private void checkValidEdges(List<Edge> edges) {
+        if (edges.size() == 0) {
+            return;
+        }
+
+        if (getStations(edges).size() != edges.size() + 1) {
+            throw new RuntimeException();
+        }
     }
 
-    public void changeInterval(int interval) {
-        this.intervalTime = interval;
-    }
-
-    public static Line of(LineResponseView responseView) {
-        return Line.builder()
-                .id(responseView.getId())
-                .name(responseView.getName())
-                .startTime(responseView.getStartTime())
-                .endTime(responseView.getEndTime())
-                .intervalTime(responseView.getInterval())
-                .build();
+    public List<Station> getStations() {
+        return getStations(this.edges);
     }
 
     private List<Station> getStations(List<Edge> edges) {
@@ -151,23 +114,14 @@ public class Line {
                 .orElseThrow(RuntimeException::new);
     }
 
-    public void addEdgeToLine(Edge edge) {
-        if(edges == null){
-            edges = new ArrayList<>();
-        }
-        this.edges.add(edge);
-//        List<Edge> newEdges = new ArrayList<>();
-//
-//        newEdges = this.edges.stream().collect(Collectors.toList());
-//        newEdges.add(edge);
-//        return new Edges(newEdges);
+    public Edges add(Edge edge) {
+        List<Edge> newEdges = new ArrayList<>();
+        newEdges = this.edges.stream().collect(Collectors.toList());
+        newEdges.add(edge);
+        return new Edges(newEdges);
     }
 
     private Integer sum(List<Edge> replaceEdge) {
         return replaceEdge.stream().map(it -> it.getDistance()).reduce(0, Integer::sum);
-    }
-
-    public List<Station> getStations() {
-        return getStations(this.edges);
     }
 }

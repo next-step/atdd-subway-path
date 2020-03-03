@@ -1,31 +1,43 @@
 package atdd.path.domain;
 
+import atdd.path.application.dto.StationResponseView;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
+@ToString(of = {"id", "name"})
 public class Station {
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "station_id")
     private Long id;
+
     private String name;
 
-    @OneToMany(mappedBy = "source", cascade = CascadeType.ALL)
-    private List<Edge> edgesAsSource;
+    @JsonIgnore
+    @OneToMany(mappedBy = "source")
+    private List<Edge> edgesAsSource = new ArrayList<>();
 
-    @OneToMany(mappedBy = "target", cascade = CascadeType.ALL)
-    private List<Edge> edgesAsTarget;
+    @JsonIgnore
+    @OneToMany(mappedBy = "target")
+    private List<Edge> edgesAsTarget = new ArrayList<>();
 
-    private Set<Line> lines;
+    @JsonIgnore
+    @OneToMany
+    private Set<Line> lines = new HashSet<>();
 
     public Station() {
     }
@@ -42,24 +54,38 @@ public class Station {
         this.edgesAsTarget = edgeAsTarget;
     }
 
-    public void addEdgeToSource(Edge edge){
+    public void addEdgeToSource(Edge edge) {
         if(edgesAsSource == null){
             edgesAsSource = new ArrayList<>();
         }
-        edgesAsSource.add(edge);
+        this.edgesAsSource.add(edge);
     }
-    public void addEdgeToTarget(Edge edge){
+
+    public void addEdgeToTarget(Edge edge) {
         if(edgesAsTarget == null){
             edgesAsTarget = new ArrayList<>();
         }
-        edgesAsTarget.add(edge);
+        this.edgesAsTarget.add(edge);
     }
 
     public void addLine(Line line){
         if(lines == null){
             lines = new HashSet<>();
         }
-        lines.add(line);
+        this.lines.add(line);
+    }
+
+//    public List<Line> getLines() {
+//        return Stream.concat(edgesAsSource.stream(), edgesAsTarget.stream())
+//                .map(it -> it.getLine())
+//                .collect(Collectors.toList());
+//    }
+
+    public static Station of(StationResponseView responseView) {
+        return Station.builder()
+                .id(responseView.getId())
+                .name(responseView.getName())
+                .build();
     }
 }
 

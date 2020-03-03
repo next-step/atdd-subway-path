@@ -62,5 +62,4 @@ public class LineService {
                 .lines(lines)
                 .build();
     }
-
 }

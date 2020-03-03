@@ -1,5 +1,7 @@
 package atdd.path.service;
 
+import atdd.path.application.dto.EdgeRequestView;
+import atdd.path.application.dto.EdgeResponseView;
 import atdd.path.domain.*;
 import org.springframework.stereotype.Service;
 
@@ -16,18 +18,18 @@ public class EdgeService {
         this.stationRepository = stationRepository;
     }
 
-    public Edge addEdge(Line line, Station source, Station target) throws Exception {
-        Edge savedEdge = edgeRepository.save(
-                Edge.builder()
-                        .line(line)
-                        .source(source)
-                        .target(target)
-                        .build());
-        source.addEdgeToSource(savedEdge);
-        source.addLine(line);
-        target.addEdgeToTarget(savedEdge);
-        target.addLine(line);
-        line.addEdgeToLine(savedEdge);
-        return savedEdge;
+    public EdgeResponseView addEdge(EdgeRequestView requestView) throws Exception {
+        Edge savedEdge = edgeRepository.save(Edge.builder()
+                .line(requestView.getLine())
+                .source(requestView.getSource())
+                .target(requestView.getTarget())
+                .distance(requestView.getDistance())
+                .build());
+        savedEdge.getSource().addEdgeToSource(savedEdge);
+        savedEdge.getSource().addLine(requestView.getLine());
+        savedEdge.getTarget().addEdgeToTarget(savedEdge);
+        savedEdge.getTarget().addLine(requestView.getLine());
+        savedEdge.getLine().addEdgeToLine(savedEdge);
+        return EdgeResponseView.of(savedEdge);
     }
 }

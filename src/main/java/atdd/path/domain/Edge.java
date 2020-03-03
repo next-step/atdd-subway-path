@@ -1,5 +1,6 @@
 package atdd.path.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,28 +17,49 @@ import static javax.persistence.GenerationType.IDENTITY;
 public class Edge {
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "edge_id")
     private Long id;
 
+    @JsonIgnore
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "station_id", updatable = false, insertable = false)
     private Station source;
 
+    @JsonIgnore
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "id", nullable = false)
+    @JoinColumn(name = "station_id", updatable = false, insertable = false)
     private Station target;
 
-    @OneToMany(fetch = LAZY)
-    @JoinColumn(name = "id")
+    @JsonIgnore
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "id", insertable = false, updatable = false)
     private Line line;
+
+    private int distance;
+
+    private int timeToTake;
 
     public Edge() {
     }
 
     @Builder
-    public Edge(Long id, Station source, Station target, Line line) {
+    public Edge(Long id, Station source, Station target, Line line, int distance, int timeToTake) {
         this.id = id;
         this.source = source;
         this.target = target;
         this.line = line;
+        this.distance = distance;
+        this.timeToTake = timeToTake;
+    }
+
+    public static Edge of(Station source, Station target){
+        return Edge.builder()
+                .source(source)
+                .target(target)
+                .build();
+    }
+
+    public boolean hasStation(Station station) {
+        return source.equals(station) || target.equals(station);
     }
 }

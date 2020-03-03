@@ -1,7 +1,11 @@
 package atdd.path.service;
 
 import atdd.path.application.dto.EdgeRequestView;
-import atdd.path.domain.*;
+import atdd.path.application.dto.EdgeResponseView;
+import atdd.path.domain.Edge;
+import atdd.path.domain.EdgeRepository;
+import atdd.path.domain.Line;
+import atdd.path.domain.Station;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -9,16 +13,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalTime;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class EdgeServiceTest {
@@ -30,6 +28,7 @@ public class EdgeServiceTest {
     public static final LocalTime START_TIME = LocalTime.of(5, 00);
     public static final LocalTime END_TIME = LocalTime.of(23, 50);
     public static final int INTERVAL_TIME = 10;
+    public static final int DISTANCE_KM = 5;
     public Station station1 = Station.builder()
             .id(1L)
             .name(STATION_NAME)
@@ -54,15 +53,19 @@ public class EdgeServiceTest {
             .intervalTime(INTERVAL_TIME)
             .build();
     public EdgeRequestView edgeRequestView = EdgeRequestView.builder()
-            .sourceId(station1.getId())
-            .targetId(station2.getId())
-            .lineId(line.getId())
+            .source(station1)
+            .target(station2)
+            .line(line)
+            .timeToTake(INTERVAL_TIME)
+            .distance(DISTANCE_KM)
             .build();
     public Edge edge = Edge.builder()
             .id(1L)
             .line(line)
             .source(station1)
             .target(station2)
+            .distance(DISTANCE_KM)
+            .timeToTake(INTERVAL_TIME)
             .build();
     public Edge edge2 = Edge.builder()
             .id(2L)
@@ -71,18 +74,11 @@ public class EdgeServiceTest {
             .target(station3)
             .build();
 
-
     @InjectMocks
     EdgeService edgeService;
 
     @Mock
     EdgeRepository edgeRepository;
-
-    @Mock
-    StationRepository stationRepository;
-
-    @Mock
-    LineRepository lineRepository;
 
     @Test
     void 엣지를_추가한다() throws Exception {
@@ -90,12 +86,12 @@ public class EdgeServiceTest {
         given(edgeRepository.save(any())).willReturn(edge);
 
         //when
-        Edge savedEdge= edgeService.addEdge(line, station1, station2);
+        EdgeResponseView edgeResponseView = edgeService.addEdge(edgeRequestView);
 
         //then
-        assertThat(savedEdge.getLine().getEdges().size()).isEqualTo(1);
-        assertThat(savedEdge.getSource().getEdgesAsSource().size()).isEqualTo(1);
-        assertThat(savedEdge.getTarget().getEdgesAsTarget().size()).isEqualTo(1);
-        assertThat(savedEdge.getSource().getLines().size()).isEqualTo(1);
+        assertThat(edgeResponseView.getSource().getEdgesAsSource().size()).isEqualTo(1);
+        assertThat(edgeResponseView.getTarget().getEdgesAsTarget().size()).isEqualTo(1);
+        assertThat(edgeResponseView.getSource().getLines().size()).isEqualTo(1);
+        assertThat(edgeResponseView.getTarget().getLines().size()).isEqualTo(1);
     }
 }
