@@ -1,6 +1,5 @@
 package atdd.path.application.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.boot.jackson.JsonComponent;

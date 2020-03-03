@@ -30,7 +30,7 @@ public class StationRequestView {
         return name;
     }
 
-    public Station toStation(){
+    public Station toStation() {
         return Station.builder()
                 .name(name)
                 .build();

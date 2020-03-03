@@ -26,7 +26,7 @@ public class LineRequestView {
         this.interval = interval;
     }
 
-    public Line toLine(){
+    public Line toLine() {
         return Line.builder()
                 .name(name)
                 .startTime(startTime)
@@ -35,7 +35,7 @@ public class LineRequestView {
                 .build();
     }
 
-    public static LineRequestView of(Line line){
+    public static LineRequestView of(Line line) {
         return LineRequestView.builder()
                 .name(line.getName())
                 .startTime(line.getStartTime())

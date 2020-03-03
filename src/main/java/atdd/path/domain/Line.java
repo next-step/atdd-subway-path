@@ -52,10 +52,6 @@ public class Line {
         this.startTime = startTime;
     }
 
-    public void changeEndTime(LocalTime endTime) {
-        this.endTime = endTime;
-    }
-
     public void changeInterval(int interval) {
         this.intervalTime = interval;
     }
@@ -111,56 +107,12 @@ public class Line {
                 .orElse(null);
     }
 
-    public Edges removeStation(Station station) {
-        List<Edge> replaceEdge = this.edges.stream()
-                .filter(it -> it.hasStation(station))
-                .collect(Collectors.toList());
-
-        if (replaceEdge.size() == 0) {
-            throw new RuntimeException();
-        }
-
-        List<Edge> newEdges = this.edges.stream()
-                .filter(it -> !replaceEdge.contains(it))
-                .collect(Collectors.toList());
-
-        if (replaceEdge.size() == 1) {
-            this.edges = newEdges;
-            return new Edges(newEdges);
-        }
-
-        Edge newEdge = Edge.of(getSourceStationOf(station), getTargetStationOf(station));
-        newEdges.add(newEdge);
-
-        return new Edges(newEdges);
-    }
-
-    private Station getSourceStationOf(Station station) {
-        return this.edges.stream()
-                .filter(it -> station.equals(it.getTarget()))
-                .map(it -> it.getSource())
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
-    }
-
-    private Station getTargetStationOf(Station station) {
-        return this.edges.stream()
-                .filter(it -> station.equals(it.getSource()))
-                .map(it -> it.getTarget())
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
-    }
 
     public void addEdgeToLine(Edge edge) {
-        if(edges == null){
+        if (edges == null) {
             edges = new ArrayList<>();
         }
         this.edges.add(edge);
-//        List<Edge> newEdges = new ArrayList<>();
-//
-//        newEdges = this.edges.stream().collect(Collectors.toList());
-//        newEdges.add(edge);
-//        return new Edges(newEdges);
     }
 
     private Integer sum(List<Edge> replaceEdge) {

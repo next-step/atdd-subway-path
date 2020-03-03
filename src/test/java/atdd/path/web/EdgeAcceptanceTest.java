@@ -2,20 +2,15 @@ package atdd.path.web;
 
 import atdd.AbstractAcceptanceTest;
 import atdd.path.application.dto.*;
-import atdd.path.domain.Line;
-import atdd.path.domain.Station;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalTime;
-import java.util.Iterator;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -3,10 +3,8 @@ package atdd.path.application.dto;
 import atdd.path.domain.Edge;
 import atdd.path.domain.Line;
 import atdd.path.domain.Station;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.boot.jackson.JsonComponent;
 
 import java.util.List;
 
@@ -41,7 +39,7 @@ public class EdgeResponseView {
         this.edges = edges;
     }
 
-    public static EdgeResponseView of(Edge edge){
+    public static EdgeResponseView of(Edge edge) {
         return EdgeResponseView.builder()
                 .id(edge.getId())
                 .line(edge.getLine())

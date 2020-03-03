@@ -49,7 +49,7 @@ public class Edge {
         this.timeToTake = timeToTake;
     }
 
-    public static Edge of(Station source, Station target){
+    public static Edge of(Station source, Station target) {
         return Edge.builder()
                 .source(source)
                 .target(target)

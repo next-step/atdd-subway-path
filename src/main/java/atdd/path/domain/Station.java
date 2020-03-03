@@ -8,11 +8,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -55,21 +51,21 @@ public class Station {
     }
 
     public void addEdgeToSource(Edge edge) {
-        if(edgesAsSource == null){
+        if (edgesAsSource == null) {
             edgesAsSource = new ArrayList<>();
         }
         this.edgesAsSource.add(edge);
     }
 
     public void addEdgeToTarget(Edge edge) {
-        if(edgesAsTarget == null){
+        if (edgesAsTarget == null) {
             edgesAsTarget = new ArrayList<>();
         }
         this.edgesAsTarget.add(edge);
     }
 
-    public void addLine(Line line){
-        if(lines == null){
+    public void addLine(Line line) {
+        if (lines == null) {
             lines = new ArrayList<>();
         }
         this.lines.add(line);
