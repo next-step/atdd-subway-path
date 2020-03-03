@@ -6,7 +6,6 @@ import atdd.station.domain.Station;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.util.StringJoiner;
 
 import static lombok.AccessLevel.PROTECTED;
@@ -16,7 +15,7 @@ import static lombok.AccessLevel.PROTECTED;
 public class CreateEdgeRequestView {
 
     private int elapsedTime;
-    private BigDecimal distance;
+    private int distance;
     private Long sourceStationId;
     private Long targetStationId;
 

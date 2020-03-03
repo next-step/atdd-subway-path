@@ -10,19 +10,19 @@ import static lombok.AccessLevel.PROTECTED;
 
 @NoArgsConstructor(access = PROTECTED)
 @Getter
-public class StationListResponseView {
+public class StationsResponseView {
 
     private int count;
     private List<StationResponseView> stations;
 
-    public StationListResponseView(int count, List<StationResponseView> stations) {
-        this.count = count;
+    public StationsResponseView(List<StationResponseView> stations) {
+        this.count = stations.size();
         this.stations = stations;
     }
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", StationListResponseView.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", StationsResponseView.class.getSimpleName() + "[", "]")
                 .add("count=" + count)
                 .add("stations=" + stations)
                 .toString();

@@ -1,13 +1,12 @@
 package atdd.line.api.request;
 
+import atdd.global.util.LocalTimeUtils;
 import atdd.line.domain.Line;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalTime;
 import java.util.StringJoiner;
 
-import static atdd.global.util.LocalTimeUtils.localTimeOf;
 import static lombok.AccessLevel.PROTECTED;
 
 @NoArgsConstructor(access = PROTECTED)
@@ -22,8 +21,8 @@ public class CreateLineRequestView {
     public Line toLine() {
         return Line.builder()
                 .name(name)
-                .startTime(getLocalTime(startTime))
-                .endTime(getLocalTime(endTime))
+                .startTime(LocalTimeUtils.valueOf(startTime))
+                .endTime(LocalTimeUtils.valueOf(endTime))
                 .intervalTime(intervalTime)
                 .build();
     }
@@ -36,10 +35,6 @@ public class CreateLineRequestView {
                 .add("endTime='" + endTime + "'")
                 .add("intervalTime=" + intervalTime)
                 .toString();
-    }
-
-    private LocalTime getLocalTime(String localTime) {
-        return localTimeOf(localTime).orElseThrow(() -> new IllegalArgumentException("유효하지 않은 파라미터 입니다."));
     }
 
 }

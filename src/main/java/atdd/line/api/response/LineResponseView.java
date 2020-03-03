@@ -9,6 +9,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.StringJoiner;
 
+import static java.util.Collections.emptyList;
 import static lombok.AccessLevel.PROTECTED;
 
 @NoArgsConstructor(access = PROTECTED)
@@ -27,6 +28,10 @@ public class LineResponseView {
     private int intervalTime;
 
     private List<LineStationResponse> stations;
+
+    public LineResponseView(Line line) {
+        this(line, emptyList());
+    }
 
     public LineResponseView(Line line, List<LineStationResponse> stations) {
         this.id = line.getId();

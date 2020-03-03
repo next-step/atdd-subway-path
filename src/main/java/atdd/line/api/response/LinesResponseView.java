@@ -10,13 +10,13 @@ import static lombok.AccessLevel.PROTECTED;
 
 @NoArgsConstructor(access = PROTECTED)
 @Getter
-public class LineListResponseView {
+public class LinesResponseView {
 
     private int count;
     private List<LineResponseView> lines;
 
-    public LineListResponseView(int count, List<LineResponseView> lines) {
-        this.count = count;
+    public LinesResponseView(List<LineResponseView> lines) {
+        this.count = lines.size();
         this.lines = lines;
     }
 

@@ -1,10 +1,11 @@
 package atdd.line.controller;
 
+import atdd.global.exception.ServiceNotFoundException;
 import atdd.line.api.request.CreateEdgeRequestView;
 import atdd.line.api.request.CreateLineRequestView;
-import atdd.line.api.response.LineListResponseView;
 import atdd.line.api.response.LineResponseView;
 import atdd.line.api.response.LineStationResponse;
+import atdd.line.api.response.LinesResponseView;
 import atdd.line.domain.Edge;
 import atdd.line.domain.Line;
 import atdd.line.service.LineService;
@@ -16,9 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
@@ -30,23 +31,25 @@ import static java.util.stream.Collectors.toList;
 @RestController
 public class LineController {
 
+    public static final String LINE_URL = "/lines";
+    public static final String EDGE_URL = "/edges";
+
     private final LineService lineService;
     private final StationService stationService;
 
     @PostMapping
-    public ResponseEntity<LineResponseView> createLine(@RequestBody CreateLineRequestView view, HttpServletRequest request) {
+    public ResponseEntity<LineResponseView> createLine(@RequestBody CreateLineRequestView view) {
         final Line line = view.toLine();
         final Line persistLine = lineService.saveLine(line);
 
         return ResponseEntity
-                .created(URI.create(request.getServletPath() + "/" + persistLine.getId()))
-                .body(new LineResponseView(persistLine, emptyList()));
+                .created(URI.create(LINE_URL + "/" + persistLine.getId()))
+                .body(new LineResponseView(persistLine));
     }
 
     @PostMapping("/{id}/edges")
     public ResponseEntity<LineResponseView> createEdge(@PathVariable("id") Long lineId,
-                                                       @RequestBody CreateEdgeRequestView view,
-                                                       HttpServletRequest request) {
+                                                       @RequestBody CreateEdgeRequestView view) {
 
         final Edge edge = viewToEdge(lineId, view);
         final Line persistLine = lineService.saveEdge(edge);
@@ -54,16 +57,16 @@ public class LineController {
         final LineResponseView lineResponseView = lineToView(persistLine);
 
         return ResponseEntity
-                .created(URI.create(request.getServletPath() + "/" + persistLine.getId()))
+                .created(URI.create(LINE_URL + "/" + persistLine.getId()))
                 .body(lineResponseView);
     }
 
     @GetMapping
-    public ResponseEntity<LineListResponseView> getLines() {
+    public ResponseEntity<LinesResponseView> getLines() {
         final List<Line> lines = lineService.findAll();
         final List<LineResponseView> views = lines.stream().map(this::lineToView).collect(toList());
 
-        return ResponseEntity.ok(new LineListResponseView(lines.size(), views));
+        return ResponseEntity.ok(new LinesResponseView(views));
     }
 
     @GetMapping("/{id}")
@@ -90,8 +93,8 @@ public class LineController {
 
     private Edge viewToEdge(Long lineId, CreateEdgeRequestView view) {
         final Line findLine = lineService.findLineById(lineId);
-        final Station sourceStation = stationService.findStationById(view.getSourceStationId());
-        final Station targetStation = stationService.findStationById(view.getTargetStationId());
+        final Station sourceStation = getStationById(view.getSourceStationId());
+        final Station targetStation = getStationById(view.getTargetStationId());
 
         return Edge.builder()
                 .line(findLine)
@@ -102,10 +105,15 @@ public class LineController {
                 .build();
     }
 
+    private Station getStationById(Long stationId) {
+        return stationService.findStationById(stationId)
+                .orElseThrow(() -> new ServiceNotFoundException("지하철 역이 존재하지 않습니다.", Map.of("id", stationId)));
+    }
+
     private LineResponseView lineToView(Line line) {
         final List<Edge> findEdges = lineService.findEdgesByLineId(line.getId());
         final List<LineStationResponse> stations = CollectionUtils.isEmpty(findEdges)
-                                                    ? emptyList() : edgesToStations(findEdges);
+                ? emptyList() : edgesToStations(findEdges);
 
         return new LineResponseView(line, stations);
     }

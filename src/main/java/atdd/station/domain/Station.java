@@ -1,5 +1,6 @@
 package atdd.station.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,6 +25,16 @@ public class Station {
 
     public Station(String name) {
         this.name = name;
+    }
+
+    @Builder(builderMethodName = "testBuilder")
+    protected Station(Long id, String name) {
+        this(name);
+        this.id = id;
+    }
+
+    public static Station emptyStation() {
+        return new Station();
     }
 
     @Override
