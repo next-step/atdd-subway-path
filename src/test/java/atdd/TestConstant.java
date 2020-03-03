@@ -1,10 +1,18 @@
 package atdd;
 
 import atdd.station.model.dto.CreateLineRequestView;
+import atdd.station.model.entity.Edge;
+import atdd.station.model.entity.Line;
 
 import java.time.LocalTime;
 
 public class TestConstant {
+    public static final long STATION_ID_1 = 1l;
+    public static final long STATION_ID_2 = 2l;
+    public static final long STATION_ID_3 = 3l;
+    public static final long STATION_ID_4 = 4l;
+    public static final long STATION_ID_5 = 5l;
+
     public static final String STATION_NAME = "강남역";
     public static final String STATION_NAME_2 = "역삼역";
     public static final String STATION_NAME_3 = "선릉역";
@@ -40,4 +48,12 @@ public class TestConstant {
     public static final CreateLineRequestView CREATE_LINE_REQUEST_VIEW_2 = CreateLineRequestView.builder().name(LINE_NAME_2).startTime(LocalTime.of(0, 0)).endTime(LocalTime.of(23, 30)).intervalTime(30).build();
     public static final CreateLineRequestView CREATE_LINE_REQUEST_VIEW_3 = CreateLineRequestView.builder().name(LINE_NAME_3).startTime(LocalTime.of(0, 0)).endTime(LocalTime.of(23, 30)).intervalTime(30).build();
     public static final CreateLineRequestView CREATE_LINE_REQUEST_VIEW_4 = CreateLineRequestView.builder().name(LINE_NAME_4).startTime(LocalTime.of(0, 0)).endTime(LocalTime.of(23, 30)).intervalTime(30).build();
+
+    public static final Line LINE_1 = Line.builder().name(STATION_NAME).startTime(LocalTime.of(5, 0)).endTime(LocalTime.of(23, 50)).intervalTime(10).build();
+
+    public static final Edge EDGE_1 = Edge.builder().sourceStationId(STATION_ID_1).targetStationId(STATION_ID_2).build();
+    public static final Edge EDGE_2 = Edge.builder().sourceStationId(STATION_ID_2).targetStationId(STATION_ID_3).build();
+    public static final Edge EDGE_3 = Edge.builder().sourceStationId(STATION_ID_3).targetStationId(STATION_ID_5).build();
+
+    public static final Edge NEW_EDGE_1 = Edge.builder().sourceStationId(STATION_ID_3).targetStationId(STATION_ID_4).build();
 }
