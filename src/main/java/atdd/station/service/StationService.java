@@ -3,6 +3,7 @@ package atdd.station.service;
 import atdd.global.exception.ServiceNotFoundException;
 import atdd.station.domain.Station;
 import atdd.station.domain.StationRepository;
+import atdd.station.domain.query.StationQueryView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,10 @@ public class StationService {
 
     public Optional<Station> findStationById(Long id) {
         return stationRepository.findById(id);
+    }
+
+    public StationQueryView findStationWithLine(Long id) {
+        return stationRepository.findStationWithLine(id);
     }
 
     @Transactional
