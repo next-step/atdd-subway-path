@@ -184,18 +184,5 @@ public class LineServiceTest {
         assertThat(responseView.getLines().size()).isEqualTo(theNumberOfLine);
     }
 
-//    @Test
-//    void 노선에_해당하는_지하철역_목록_조회하기(){
-//        //given
-//        int theNumberOfStations = 2;
-//        given(edgeRepository.findAllByLineId(any()))
-//                .willReturn(Arrays.asList(station1.getId(), station2.getId()));
-//        given(stationRepository.findById(any())).willReturn(Optional.of(station1));
-//
-//        //when
-//        List<Station> stations = lineService.findAllStationsByLineId(line.getId());
-//
-//        //then
-//        assertThat(stations.size()).isEqualTo(theNumberOfStations);
-//    }
+
 }

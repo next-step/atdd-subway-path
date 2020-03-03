@@ -24,7 +24,9 @@ public class EdgeService {
                         .target(target)
                         .build());
         source.addEdgeToSource(savedEdge);
+        source.addLine(line);
         target.addEdgeToTarget(savedEdge);
+        target.addLine(line);
         line.addEdgeToLine(savedEdge);
         return savedEdge;
     }

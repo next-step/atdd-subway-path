@@ -5,7 +5,9 @@ import lombok.Getter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -22,6 +24,8 @@ public class Station {
 
     @OneToMany(mappedBy = "target", cascade = CascadeType.ALL)
     private List<Edge> edgesAsTarget;
+
+    private Set<Line> lines;
 
     public Station() {
     }
@@ -49,6 +53,13 @@ public class Station {
             edgesAsTarget = new ArrayList<>();
         }
         edgesAsTarget.add(edge);
+    }
+
+    public void addLine(Line line){
+        if(lines == null){
+            lines = new HashSet<>();
+        }
+        lines.add(line);
     }
 }
 

@@ -96,5 +96,6 @@ public class EdgeServiceTest {
         assertThat(savedEdge.getLine().getEdges().size()).isEqualTo(1);
         assertThat(savedEdge.getSource().getEdgesAsSource().size()).isEqualTo(1);
         assertThat(savedEdge.getTarget().getEdgesAsTarget().size()).isEqualTo(1);
+        assertThat(savedEdge.getSource().getLines().size()).isEqualTo(1);
     }
 }
