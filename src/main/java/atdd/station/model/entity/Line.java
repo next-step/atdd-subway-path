@@ -74,7 +74,10 @@ public class Line extends BaseEntity {
         if (legacyEdges.isEmpty())
             sortedEdges.add(newEdge);
 
+        int i = -1;
         for (Edge legacyEdge : legacyEdges) {
+            i++;
+
             if (legacyEdge.connectTargetStation(newEdge.getSourceStationId())) {
                 sortedEdges.add(legacyEdge);
                 sortedEdges.add(newEdge);
@@ -85,6 +88,10 @@ public class Line extends BaseEntity {
                 sortedEdges.add(legacyEdge);
 
                 continue;
+            }
+
+            if(i > 0) {
+                legacyEdge.setSourceStationId(sortedEdges.get(i).getTargetStationId());
             }
 
             sortedEdges.add(legacyEdge);

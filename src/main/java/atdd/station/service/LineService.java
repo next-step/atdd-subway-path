@@ -41,7 +41,6 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    // TODO 테스트 코드 작성
     public Line addEdge(final long id, Edge newEdge) {
         final Line line = findById(id);
         final List<Edge> legacyEdges = edgeService.findAllById(line.getEdgeIds());
@@ -143,7 +142,7 @@ public class LineService {
     public List<Edge> getLineEdges(Line line) {
         List<Edge> edges = line.getLineEdges();
 
-        if (edges.isEmpty()) {
+        if (edges.isEmpty() && !line.getEdgeIds().isEmpty()) {
             return edgeService.findAllById(line.getEdgeIds());
         }
 

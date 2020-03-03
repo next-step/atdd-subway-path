@@ -2,6 +2,7 @@ package atdd.station.model.entity;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +14,7 @@ import java.util.List;
 @Entity
 @Getter
 public class Edge extends BaseEntity {
+    @Setter
     @Column(nullable = false)
     private long sourceStationId;
 
