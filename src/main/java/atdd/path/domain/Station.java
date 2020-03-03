@@ -36,8 +36,8 @@ public class Station {
     private List<Edge> edgesAsTarget = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany
-    private Set<Line> lines = new HashSet<>();
+    @Transient
+    private List<Line> lines = new ArrayList<>();
 
     public Station() {
     }
@@ -70,11 +70,11 @@ public class Station {
 
     public void addLine(Line line){
         if(lines == null){
-            lines = new HashSet<>();
+            lines = new ArrayList<>();
         }
         this.lines.add(line);
     }
-
+//
 //    public List<Line> getLines() {
 //        return Stream.concat(edgesAsSource.stream(), edgesAsTarget.stream())
 //                .map(it -> it.getLine())

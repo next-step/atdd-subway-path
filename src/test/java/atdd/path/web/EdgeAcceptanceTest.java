@@ -1,23 +1,27 @@
 package atdd.path.web;
 
 import atdd.AbstractAcceptanceTest;
-import atdd.path.application.dto.EdgeRequestViewFromClient;
-import atdd.path.application.dto.LineRequestView;
-import atdd.path.application.dto.LineResponseView;
-import atdd.path.application.dto.StationResponseView;
+import atdd.path.application.dto.*;
+import atdd.path.domain.Line;
+import atdd.path.domain.Station;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalTime;
+import java.util.Iterator;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
     public static final String LINE_NAME = "2호선";
-    public static final String LINE_NAME_2 = "4호선";
     private String STATION_NAME = "사당";
     private String STATION_NAME_2 = "방배";
     private String STATION_NAME_3 = "서초";
@@ -63,15 +67,21 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
                 .build();
         String value = objectMapper.writeValueAsString(edgeRequestViewFromClient);
 
-        // then
-        webTestClient.post().uri("/edges")
+        EdgeResponseView edgeResponseView = webTestClient.post().uri("/edges")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .body(Mono.just(value), String.class)
+                .body(Mono.just(edgeRequestViewFromClient), EdgeRequestViewFromClient.class)
                 .exchange()
-                .expectStatus().isCreated();
-        //assertThat(responseBody.getSource().getName()).isEqualTo(STATION_NAME);
-        // assertThat(responseBody.getSource().getLines().size()).isEqualTo(1);
-//        assertThat(responseBody.getLine().bringStations().size()).isEqualTo(2);
+                .expectStatus().isCreated()
+                .expectBodyList(EdgeResponseView.class)
+                .returnResult()
+                .getResponseBody()
+                .stream()
+                .collect(Collectors.toList())
+                .get(0);
+
+        assertThat(edgeResponseView.getId()).isEqualTo(1L);
+        assertThat(edgeResponseView.getSource().getName()).isEqualTo(STATION_NAME);
+        assertThat(edgeResponseView.getTarget().getName()).isEqualTo(STATION_NAME_2);
     }
 }

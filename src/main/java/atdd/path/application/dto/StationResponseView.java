@@ -4,9 +4,11 @@ import atdd.path.domain.Line;
 import atdd.path.domain.Station;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.boot.jackson.JsonComponent;
 
 import java.util.List;
 
+@JsonComponent
 @Getter
 public class StationResponseView {
     private Long id;

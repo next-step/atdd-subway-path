@@ -14,20 +14,16 @@ import java.util.List;
 public class EdgeResponseView {
     private Long id;
 
-    @JsonIgnore
     private Line line;
 
-    @JsonIgnore
     private Station source;
 
-    @JsonIgnore
     private Station target;
 
     private int distance;
 
     private int timeToTake;
 
-    @JsonIgnore
     private List<Edge> edges;
 
     public EdgeResponseView() {

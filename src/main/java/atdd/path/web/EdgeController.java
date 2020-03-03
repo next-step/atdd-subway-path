@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 
-@RestController(value = "/edges")
+@RestController
+@RequestMapping(value = "/edges")
 public class EdgeController {
     private LineService lineService;
     private EdgeService edgeService;
@@ -29,7 +30,7 @@ public class EdgeController {
 
     @PostMapping
     public ResponseEntity addEdge(@RequestBody EdgeRequestViewFromClient requestViewFromClient,
-                                  @RequestBody EdgeRequestView edgeRequestView) throws Exception {
+                                  EdgeRequestView edgeRequestView) throws Exception {
         LineResponseView lineResponseView = lineService.retrieve(requestViewFromClient.getLineId());
         Long sourceId = requestViewFromClient.getSourceId();
         Long targetId = requestViewFromClient.getTargetId();
