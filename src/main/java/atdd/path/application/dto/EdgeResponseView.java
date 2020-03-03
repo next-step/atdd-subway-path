@@ -3,21 +3,32 @@ package atdd.path.application.dto;
 import atdd.path.domain.Edge;
 import atdd.path.domain.Line;
 import atdd.path.domain.Station;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.boot.jackson.JsonComponent;
 
 import java.util.List;
 
 @Getter
 public class EdgeResponseView {
     private Long id;
-    private Line line;
-    private Station source;
-    private Station target;
-    private int distance;
-    private int timeToTake;
-    private List<Edge> edges;
 
+    @JsonIgnore
+    private Line line;
+
+    @JsonIgnore
+    private Station source;
+
+    @JsonIgnore
+    private Station target;
+
+    private int distance;
+
+    private int timeToTake;
+
+    @JsonIgnore
+    private List<Edge> edges;
 
     public EdgeResponseView() {
     }

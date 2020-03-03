@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -166,7 +167,7 @@ public class LineServiceTest {
         given(lineRepository.findById(anyLong())).willReturn(Optional.empty());
 
         //when, then
-        assertThrows(NoSuchEntityException.class, () -> {
+        assertThrows(NoSuchElementException.class, () -> {
             lineService.retrieve(line.getId());
         });
     }

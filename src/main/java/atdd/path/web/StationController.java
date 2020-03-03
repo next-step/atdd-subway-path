@@ -11,7 +11,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/stations")
+@RequestMapping(value = "/stations")
 public class StationController {
     private StationService stationService;
 
