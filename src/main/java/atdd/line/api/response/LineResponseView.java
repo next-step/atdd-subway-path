@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.StringJoiner;
 
 import static java.util.Collections.emptyList;
 import static lombok.AccessLevel.PROTECTED;
@@ -40,18 +39,6 @@ public class LineResponseView {
         this.endTime = line.getEndTime();
         this.intervalTime = line.getIntervalTime();
         this.stations = stations;
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", LineResponseView.class.getSimpleName() + "[", "]")
-                .add("id=" + id)
-                .add("name='" + name + "'")
-                .add("startTime=" + startTime)
-                .add("endTime=" + endTime)
-                .add("intervalTime=" + intervalTime)
-                .add("stations=" + stations)
-                .toString();
     }
 
 }

@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.StringJoiner;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -18,14 +17,6 @@ public class LinesResponseView {
     public LinesResponseView(List<LineResponseView> lines) {
         this.count = lines.size();
         this.lines = lines;
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", LineResponseView.class.getSimpleName() + "[", "]")
-                .add("count=" + count)
-                .add("lines=" + lines)
-                .toString();
     }
 
 }

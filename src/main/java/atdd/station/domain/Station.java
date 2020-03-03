@@ -4,9 +4,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-
-import java.util.StringJoiner;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -35,14 +36,6 @@ public class Station {
 
     public static Station emptyStation() {
         return new Station();
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", Station.class.getSimpleName() + "[", "]")
-                .add("id=" + id)
-                .add("name='" + name + "'")
-                .toString();
     }
 
 }

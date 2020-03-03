@@ -4,8 +4,6 @@ import atdd.station.domain.Station;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.StringJoiner;
-
 import static lombok.AccessLevel.PROTECTED;
 
 @NoArgsConstructor(access = PROTECTED)
@@ -18,14 +16,6 @@ public class LineStationResponse {
     public LineStationResponse(Station station) {
         this.id = station.getId();
         this.name = station.getName();
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", LineStationResponse.class.getSimpleName() + "[", "]")
-                .add("id=" + id)
-                .add("name='" + name + "'")
-                .toString();
     }
 
 }

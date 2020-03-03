@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.StringJoiner;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -64,15 +63,6 @@ public class Edge {
 
     public Long getTargetStationId() {
         return targetStation.getId();
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", Edge.class.getSimpleName() + "[", "]")
-                .add("id=" + id)
-                .add("elapsedTime=" + elapsedTime)
-                .add("distance=" + distance)
-                .toString();
     }
 
 }

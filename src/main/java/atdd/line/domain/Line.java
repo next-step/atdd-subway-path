@@ -8,7 +8,6 @@ import javax.persistence.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -49,17 +48,6 @@ public class Line {
         this(name, startTime, endTime, intervalTime);
         this.id = id;
         this.edges = edges;
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", Line.class.getSimpleName() + "[", "]")
-                .add("id=" + id)
-                .add("name='" + name + "'")
-                .add("startTime=" + startTime)
-                .add("endTime=" + endTime)
-                .add("intervalTime=" + intervalTime)
-                .toString();
     }
 
 }

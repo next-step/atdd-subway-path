@@ -5,8 +5,6 @@ import atdd.line.domain.Line;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.StringJoiner;
-
 import static lombok.AccessLevel.PROTECTED;
 
 @NoArgsConstructor(access = PROTECTED)
@@ -25,16 +23,6 @@ public class CreateLineRequestView {
                 .endTime(LocalTimeUtils.valueOf(endTime))
                 .intervalTime(intervalTime)
                 .build();
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", CreateLineRequestView.class.getSimpleName() + "[", "]")
-                .add("name='" + name + "'")
-                .add("startTime='" + startTime + "'")
-                .add("endTime='" + endTime + "'")
-                .add("intervalTime=" + intervalTime)
-                .toString();
     }
 
 }

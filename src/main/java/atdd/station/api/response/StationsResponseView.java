@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.StringJoiner;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -18,14 +17,6 @@ public class StationsResponseView {
     public StationsResponseView(List<StationResponseView> stations) {
         this.count = stations.size();
         this.stations = stations;
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", StationsResponseView.class.getSimpleName() + "[", "]")
-                .add("count=" + count)
-                .add("stations=" + stations)
-                .toString();
     }
 
 }
