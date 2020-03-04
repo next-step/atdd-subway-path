@@ -64,7 +64,6 @@ public class LineService {
         return stationIds;
     }
 
-    // TODO 테스트 코드 작성
     public void deleteEdge(final long id, final long stationId) {
         final Line line = findById(id);
         final Station deleteStation = stationService.findById(stationId);
@@ -75,6 +74,47 @@ public class LineService {
 
         // 지하철역에서 라인 삭제
         deleteLineInStation(deleteStation, line.getId());
+    }
+
+    public List<Edge> getLineEdges(Line line) {
+        List<Edge> edges = line.getLineEdges();
+
+        if (edges.isEmpty() && !line.getEdgeIds().isEmpty()) {
+            return edgeService.findAllById(line.getEdgeIds());
+        }
+
+        return edges;
+    }
+
+    public List<Station> getLineStations(Line line, List<Edge> edges) {
+        List<Station> stations = line.getLineStations();
+
+        if (stations.isEmpty()) {
+            Set<Long> stationIds = new HashSet<>();
+
+            for (Edge edge : edges) {
+                stationIds.addAll(edge.getStationIds());
+            }
+
+            return stationService.findAllById(stationIds);
+        }
+
+        return stations;
+    }
+
+    private Station deleteLineInStation(final Station station, final long deleteLineId) {
+        Iterator iterator = station.getLineIds().iterator();
+
+        while (iterator.hasNext()) {
+            long value = (Long) iterator.next();
+
+            if (value == deleteLineId) {
+                iterator.remove();
+                break;
+            }
+        }
+
+        return stationService.save(station);
     }
 
     private void deleteEdgeInLine(final Line line, final Station deleteStation) {
@@ -121,47 +161,6 @@ public class LineService {
         }
 
         line.setEdges(sortEdges);
-    }
-
-    public List<Edge> getLineEdges(Line line) {
-        List<Edge> edges = line.getLineEdges();
-
-        if (edges.isEmpty() && !line.getEdgeIds().isEmpty()) {
-            return edgeService.findAllById(line.getEdgeIds());
-        }
-
-        return edges;
-    }
-
-    public List<Station> getLineStations(Line line, List<Edge> edges) {
-        List<Station> stations = line.getLineStations();
-
-        if (stations.isEmpty()) {
-            Set<Long> stationIds = new HashSet<>();
-
-            for (Edge edge : edges) {
-                stationIds.addAll(edge.getStationIds());
-            }
-
-            return stationService.findAllById(stationIds);
-        }
-
-        return stations;
-    }
-
-    private Station deleteLineInStation(final Station station, final long deleteLineId) {
-        Iterator iterator = station.getLineIds().iterator();
-
-        while (iterator.hasNext()) {
-            long value = (Long) iterator.next();
-
-            if (value == deleteLineId) {
-                iterator.remove();
-                break;
-            }
-        }
-
-        return stationService.save(station);
     }
 
     private Edge createEdge(final long sourceStationId, final long targetStationId) {
