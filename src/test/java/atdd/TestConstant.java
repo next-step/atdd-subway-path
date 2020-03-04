@@ -119,7 +119,7 @@ public class TestConstant {
     public static Edge TEST_EDGE_2 = Edge.testBuilder().id(EDGE_ID_2).sourceStation(TEST_STATION_2).targetStation(TEST_STATION_3).distance(10).elapsedTime(5).build();
     public static Edge TEST_EDGE_3 = Edge.testBuilder().id(EDGE_ID_3).sourceStation(TEST_STATION_3).targetStation(TEST_STATION_4).distance(10).elapsedTime(5).build();
     public static Edge TEST_EDGE_4 = Edge.testBuilder().id(EDGE_ID_4).sourceStation(TEST_STATION_4).targetStation(TEST_STATION_5).distance(10).elapsedTime(5).build();
-    public static Edge TEST_EDGE_23 = Edge.testBuilder().id(EDGE_ID_23).sourceStation(TEST_STATION_12).targetStation(TEST_STATION).distance(10).elapsedTime(5).build();
+    public static Edge TEST_EDGE_23 = Edge.testBuilder().id(EDGE_ID_23).sourceStation(TEST_STATION_12).targetStation(TEST_STATION).distance(10).elapsedTime(10).build();
 
     // 신분당선
     public static Edge TEST_EDGE_5 = Edge.testBuilder().id(EDGE_ID_5).sourceStation(TEST_STATION).targetStation(TEST_STATION_6).distance(10).elapsedTime(5).build();
