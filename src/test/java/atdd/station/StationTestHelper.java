@@ -1,6 +1,6 @@
 package atdd.station;
 
-import atdd.HttpTestUtils;
+import atdd.HttpTestHelper;
 import atdd.station.model.dto.CreateStationRequestView;
 import atdd.station.model.dto.StationDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,16 +11,16 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.List;
 
-public class StationTestUtils {
+public class StationTestHelper {
     private final String STATIONS_PATH = "/stations";
 
     private static final ObjectMapper mapper = new ObjectMapper();
     private WebTestClient webTestClient;
-    private HttpTestUtils httpTestUtils;
+    private HttpTestHelper httpTestHelper;
 
-    public StationTestUtils(WebTestClient webTestClient) {
+    public StationTestHelper(WebTestClient webTestClient) {
         this.webTestClient = webTestClient;
-        this.httpTestUtils = new HttpTestUtils(webTestClient);
+        this.httpTestHelper = new HttpTestHelper(webTestClient);
     }
 
     public StationDto createStation(String name) {
@@ -28,27 +28,27 @@ public class StationTestUtils {
                 .name(name)
                 .build());
 
-        EntityExchangeResult result = httpTestUtils.postRequest(STATIONS_PATH, inputJson, StationDto.class);
+        EntityExchangeResult result = httpTestHelper.postRequest(STATIONS_PATH, inputJson, StationDto.class);
 
         return (StationDto) result.getResponseBody();
     }
 
     public List<StationDto> findAll() {
-        EntityExchangeResult result = httpTestUtils.getRequest(STATIONS_PATH, new ParameterizedTypeReference<List<StationDto>>() {
+        EntityExchangeResult result = httpTestHelper.getRequest(STATIONS_PATH, new ParameterizedTypeReference<List<StationDto>>() {
         });
 
         return (List<StationDto>) result.getResponseBody();
     }
 
     public StationDto findById(final long stationId) {
-        EntityExchangeResult result = httpTestUtils.getRequest(STATIONS_PATH + "/" + stationId, new ParameterizedTypeReference<StationDto>() {
+        EntityExchangeResult result = httpTestHelper.getRequest(STATIONS_PATH + "/" + stationId, new ParameterizedTypeReference<StationDto>() {
         });
 
         return (StationDto) result.getResponseBody();
     }
 
     public void deleteById(final long id) {
-        httpTestUtils.deleteRequest(STATIONS_PATH + "/" + id);
+        httpTestHelper.deleteRequest(STATIONS_PATH + "/" + id);
     }
 
     public String writeValueAsString(Object object) {

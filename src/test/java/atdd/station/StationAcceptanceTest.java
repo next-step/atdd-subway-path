@@ -21,20 +21,20 @@ public class StationAcceptanceTest {
     private final String STATION_NAME2 = "역삼역";
     private final String STATION_NAME3 = "선릉역";
 
-    private StationTestUtils stationTestUtils;
+    private StationTestHelper stationTestHelper;
 
     @Autowired
     private WebTestClient webTestClient;
 
     @BeforeEach
     void setUp() {
-        this.stationTestUtils = new StationTestUtils(webTestClient);
+        this.stationTestHelper = new StationTestHelper(webTestClient);
     }
 
     @Test
     public void createStation() {
         //when
-        StationDto station = stationTestUtils.createStation(STATION_NAME1);
+        StationDto station = stationTestHelper.createStation(STATION_NAME1);
 
         // then
         assertThat(station.getName()).isEqualTo(STATION_NAME1);
@@ -43,12 +43,12 @@ public class StationAcceptanceTest {
     @Test
     public void findAllStations() {
         // given
-        StationDto stations1 = stationTestUtils.createStation(STATION_NAME1);
-        StationDto stations2 = stationTestUtils.createStation(STATION_NAME2);
-        StationDto stations3 = stationTestUtils.createStation(STATION_NAME3);
+        StationDto stations1 = stationTestHelper.createStation(STATION_NAME1);
+        StationDto stations2 = stationTestHelper.createStation(STATION_NAME2);
+        StationDto stations3 = stationTestHelper.createStation(STATION_NAME3);
 
         // when
-        List<StationDto> stations = stationTestUtils.findAll();
+        List<StationDto> stations = stationTestHelper.findAll();
 
         //then
         assertThat(stations.size()).isEqualTo(3);
@@ -60,12 +60,12 @@ public class StationAcceptanceTest {
     @Test
     public void findStation() {
         // given
-        StationDto stations1 = stationTestUtils.createStation(STATION_NAME1);
-        StationDto stations2 = stationTestUtils.createStation(STATION_NAME2);
-        StationDto stations3 = stationTestUtils.createStation(STATION_NAME3);
+        StationDto stations1 = stationTestHelper.createStation(STATION_NAME1);
+        StationDto stations2 = stationTestHelper.createStation(STATION_NAME2);
+        StationDto stations3 = stationTestHelper.createStation(STATION_NAME3);
 
         // when
-        StationDto station = stationTestUtils.findById(stations1.getId());
+        StationDto station = stationTestHelper.findById(stations1.getId());
 
         // then
         assertThat(station.getId()).isEqualTo(stations1.getId());
@@ -75,15 +75,15 @@ public class StationAcceptanceTest {
     @Test
     public void deleteStation() {
         // given
-        StationDto stations1 = stationTestUtils.createStation(STATION_NAME1);
-        StationDto stations2 = stationTestUtils.createStation(STATION_NAME2);
-        StationDto stations3 = stationTestUtils.createStation(STATION_NAME3);
+        StationDto stations1 = stationTestHelper.createStation(STATION_NAME1);
+        StationDto stations2 = stationTestHelper.createStation(STATION_NAME2);
+        StationDto stations3 = stationTestHelper.createStation(STATION_NAME3);
 
         // when
-        stationTestUtils.deleteById(stations1.getId());
+        stationTestHelper.deleteById(stations1.getId());
 
         // then
-        List<StationDto> stations = stationTestUtils.findAll();
+        List<StationDto> stations = stationTestHelper.findAll();
 
         assertThat(stations.size()).isEqualTo(2);
         assertThat(stations.get(0).getName()).isNotEqualTo(STATION_NAME1);

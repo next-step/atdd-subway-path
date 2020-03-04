@@ -6,10 +6,10 @@ import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
-public class HttpTestUtils {
+public class HttpTestHelper {
     private WebTestClient webTestClient;
 
-    public HttpTestUtils(WebTestClient webTestClient) {
+    public HttpTestHelper(WebTestClient webTestClient) {
         this.webTestClient = webTestClient;
     }
 

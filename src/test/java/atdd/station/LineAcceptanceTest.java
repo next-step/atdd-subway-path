@@ -19,13 +19,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 public class LineAcceptanceTest {
-    private StationTestUtils stationTestUtils;
-    private LineTestUtils lineTestUtils;
+    private StationTestHelper stationTestHelper;
+    private LineTestHelper lineTestHelper;
 
     @BeforeEach
     void setUp() {
-        this.stationTestUtils = new StationTestUtils(webTestClient);
-        this.lineTestUtils = new LineTestUtils(webTestClient);
+        this.stationTestHelper = new StationTestHelper(webTestClient);
+        this.lineTestHelper = new LineTestHelper(webTestClient);
     }
 
     @Autowired
@@ -34,7 +34,7 @@ public class LineAcceptanceTest {
     @Test
     public void createLine() {
         //when
-        LineResponseDto lineResponseDto = lineTestUtils.createLine(CREATE_LINE_REQUEST_VIEW_1);
+        LineResponseDto lineResponseDto = lineTestHelper.createLine(CREATE_LINE_REQUEST_VIEW_1);
 
         // then
         assertThat(lineResponseDto.getName()).isEqualTo(LINE_NAME_1);
@@ -44,10 +44,10 @@ public class LineAcceptanceTest {
     @Test
     public void findAllLines() {
         // given
-        LineResponseDto lineResponseDto = lineTestUtils.createLine(CREATE_LINE_REQUEST_VIEW_1);
+        LineResponseDto lineResponseDto = lineTestHelper.createLine(CREATE_LINE_REQUEST_VIEW_1);
 
         // when
-        List<LineResponseDto> lineResponseDtos = lineTestUtils.findAll();
+        List<LineResponseDto> lineResponseDtos = lineTestHelper.findAll();
 
         //then
         assertThat(lineResponseDtos.size()).isEqualTo(1);
@@ -58,10 +58,10 @@ public class LineAcceptanceTest {
     @Test
     public void findLine() {
         // given
-        long lineId = lineTestUtils.createLine(CREATE_LINE_REQUEST_VIEW_1).getId();
+        long lineId = lineTestHelper.createLine(CREATE_LINE_REQUEST_VIEW_1).getId();
 
         // when
-        LineResponseDto lineResponseDto = lineTestUtils.findById(lineId);
+        LineResponseDto lineResponseDto = lineTestHelper.findById(lineId);
 
         // then
         assertThat(lineResponseDto.getName()).isEqualTo(LINE_NAME_1);
@@ -70,13 +70,13 @@ public class LineAcceptanceTest {
     @Test
     public void deleteLine() {
         // given
-        long lineId = lineTestUtils.createLine(CREATE_LINE_REQUEST_VIEW_1).getId();
+        long lineId = lineTestHelper.createLine(CREATE_LINE_REQUEST_VIEW_1).getId();
 
         // when
-        lineTestUtils.deleteLine(lineId);
+        lineTestHelper.deleteLine(lineId);
 
         // then
-        List<LineResponseDto> lineResponseDtos = lineTestUtils.findAll();
+        List<LineResponseDto> lineResponseDtos = lineTestHelper.findAll();
 
         assertThat(lineResponseDtos.size()).isEqualTo(0);
     }
@@ -84,14 +84,14 @@ public class LineAcceptanceTest {
     @Test
     public void addEdge() {
         // given
-        StationDto station1 = stationTestUtils.createStation(STATION_NAME);
-        StationDto station2 = stationTestUtils.createStation(STATION_NAME_2);
-        StationDto station3 = stationTestUtils.createStation(STATION_NAME_3);
+        StationDto station1 = stationTestHelper.createStation(STATION_NAME);
+        StationDto station2 = stationTestHelper.createStation(STATION_NAME_2);
+        StationDto station3 = stationTestHelper.createStation(STATION_NAME_3);
 
-        LineResponseDto lineResponseDto = lineTestUtils.createLine(CREATE_LINE_REQUEST_VIEW_1);
+        LineResponseDto lineResponseDto = lineTestHelper.createLine(CREATE_LINE_REQUEST_VIEW_1);
 
         // when
-        LineResponseDto resultLine = lineTestUtils.addEdge(lineResponseDto.getId(), station1.getId(), station2.getId());
+        LineResponseDto resultLine = lineTestHelper.addEdge(lineResponseDto.getId(), station1.getId(), station2.getId());
 
         // then
         assertThat(resultLine.getStations().size()).isEqualTo(2);
@@ -102,20 +102,20 @@ public class LineAcceptanceTest {
     @Test
     public void deleteEdge() {
         // given
-        StationDto station1 = stationTestUtils.createStation(STATION_NAME);
-        StationDto station2 = stationTestUtils.createStation(STATION_NAME_2);
-        StationDto station3 = stationTestUtils.createStation(STATION_NAME_3);
+        StationDto station1 = stationTestHelper.createStation(STATION_NAME);
+        StationDto station2 = stationTestHelper.createStation(STATION_NAME_2);
+        StationDto station3 = stationTestHelper.createStation(STATION_NAME_3);
 
-        LineResponseDto lineResponseDto = lineTestUtils.createLine(CREATE_LINE_REQUEST_VIEW_1);
+        LineResponseDto lineResponseDto = lineTestHelper.createLine(CREATE_LINE_REQUEST_VIEW_1);
 
-        lineTestUtils.addEdge(lineResponseDto.getId(), station1.getId(), station2.getId());
-        lineTestUtils.addEdge(lineResponseDto.getId(), station2.getId(), station3.getId());
+        lineTestHelper.addEdge(lineResponseDto.getId(), station1.getId(), station2.getId());
+        lineTestHelper.addEdge(lineResponseDto.getId(), station2.getId(), station3.getId());
 
         // when
-        lineTestUtils.deleteEdge(lineResponseDto.getId(), station2.getId());
+        lineTestHelper.deleteEdge(lineResponseDto.getId(), station2.getId());
 
         // then
-        LineResponseDto resultLine = lineTestUtils.findById(lineResponseDto.getId());
+        LineResponseDto resultLine = lineTestHelper.findById(lineResponseDto.getId());
 
         assertThat(resultLine.getStations().size()).isEqualTo(2);
         assertThat(resultLine.getStations().get(0).getName()).isEqualTo(STATION_NAME);

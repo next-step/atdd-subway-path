@@ -1,6 +1,6 @@
 package atdd.station;
 
-import atdd.HttpTestUtils;
+import atdd.HttpTestHelper;
 import atdd.station.model.dto.CreateEdgeRequestView;
 import atdd.station.model.dto.CreateLineRequestView;
 import atdd.station.model.dto.LineResponseDto;
@@ -13,7 +13,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class LineTestUtils {
+public class LineTestHelper {
     private final String LINES_PATH = "/lines";
     private final String EDGES_PATH = "/edge";
 
@@ -22,19 +22,19 @@ public class LineTestUtils {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     private WebTestClient webTestClient;
-    private HttpTestUtils httpTestUtils;
+    private HttpTestHelper httpTestHelper;
 
 
-    public LineTestUtils(WebTestClient webTestClient) {
+    public LineTestHelper(WebTestClient webTestClient) {
         this.webTestClient = webTestClient;
-        this.httpTestUtils = new HttpTestUtils(webTestClient);
+        this.httpTestHelper = new HttpTestHelper(webTestClient);
     }
 
     public LineResponseDto createLine(CreateLineRequestView createLineRequestView) {
 
         String inputJson = createLineRequestViewToJson(createLineRequestView);
 
-        EntityExchangeResult result = httpTestUtils.postRequest(LINES_PATH, inputJson, LineResponseDto.class);
+        EntityExchangeResult result = httpTestHelper.postRequest(LINES_PATH, inputJson, LineResponseDto.class);
 
         LineResponseDto lineResponseDto = (LineResponseDto) result.getResponseBody();
 
@@ -42,21 +42,21 @@ public class LineTestUtils {
     }
 
     public List<LineResponseDto> findAll() {
-        EntityExchangeResult result = httpTestUtils.getRequest(LINES_PATH, new ParameterizedTypeReference<List<LineResponseDto>>() {
+        EntityExchangeResult result = httpTestHelper.getRequest(LINES_PATH, new ParameterizedTypeReference<List<LineResponseDto>>() {
         });
 
         return (List<LineResponseDto>) result.getResponseBody();
     }
 
     public LineResponseDto findById(final long id) {
-        EntityExchangeResult result = httpTestUtils.getRequest(LINES_PATH + "/" + id, new ParameterizedTypeReference<LineResponseDto>() {
+        EntityExchangeResult result = httpTestHelper.getRequest(LINES_PATH + "/" + id, new ParameterizedTypeReference<LineResponseDto>() {
         });
 
         return (LineResponseDto) result.getResponseBody();
     }
 
     public void deleteLine(final long id) {
-        httpTestUtils.deleteRequest(LINES_PATH + "/" + id);
+        httpTestHelper.deleteRequest(LINES_PATH + "/" + id);
     }
 
     public LineResponseDto addEdge(final long lineId, final long sourceStationId, final long targetStationId) {
@@ -64,13 +64,13 @@ public class LineTestUtils {
         createEdgeRequestView.setSourceStationId(sourceStationId);
         createEdgeRequestView.setTargetStationId(targetStationId);
 
-        EntityExchangeResult result = httpTestUtils.postRequest(LINES_PATH + "/" + lineId + EDGES_PATH, writeValueAsString(createEdgeRequestView), LineResponseDto.class);
+        EntityExchangeResult result = httpTestHelper.postRequest(LINES_PATH + "/" + lineId + EDGES_PATH, writeValueAsString(createEdgeRequestView), LineResponseDto.class);
 
         return (LineResponseDto) result.getResponseBody();
     }
 
     public void deleteEdge(final long id, final long stationId) {
-        httpTestUtils.deleteRequest(LINES_PATH + "/" + id + EDGES_PATH + "?stationId=" + stationId);
+        httpTestHelper.deleteRequest(LINES_PATH + "/" + id + EDGES_PATH + "?stationId=" + stationId);
     }
 
     public String writeValueAsString(Object object) {
