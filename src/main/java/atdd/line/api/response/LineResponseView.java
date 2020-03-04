@@ -1,17 +1,19 @@
 package atdd.line.api.response;
 
 import atdd.line.domain.Line;
+import atdd.station.api.response.StationResponseView;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
 import java.util.List;
 
-import static java.util.Collections.emptyList;
-import static lombok.AccessLevel.PROTECTED;
+import static java.util.stream.Collectors.toList;
+import static lombok.AccessLevel.PRIVATE;
 
-@NoArgsConstructor(access = PROTECTED)
+@NoArgsConstructor(access = PRIVATE)
 @Getter
 public class LineResponseView {
 
@@ -26,19 +28,15 @@ public class LineResponseView {
 
     private int intervalTime;
 
-    private List<LineStationResponse> stations;
+    private List<StationResponseView> stations;
 
     public LineResponseView(Line line) {
-        this(line, emptyList());
-    }
-
-    public LineResponseView(Line line, List<LineStationResponse> stations) {
         this.id = line.getId();
         this.name = line.getName();
         this.startTime = line.getStartTime();
         this.endTime = line.getEndTime();
         this.intervalTime = line.getIntervalTime();
-        this.stations = stations;
+        this.stations = line.getStations().stream().map(StationResponseView::new).collect(toList());
     }
 
 }

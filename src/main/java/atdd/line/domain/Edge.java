@@ -53,8 +53,8 @@ public class Edge {
         this.id = id;
     }
 
-    public void changeTargetStation(Station targetStation) {
-        this.targetStation = targetStation;
+    public void changeLine(Line line) {
+        this.line = line;
     }
 
     public Long getSourceStationId() {
@@ -63,6 +63,10 @@ public class Edge {
 
     public Long getTargetStationId() {
         return targetStation.getId();
+    }
+
+    public boolean hasStation(Station station) {
+        return sourceStation.equals(station) || targetStation.equals(station);
     }
 
 }

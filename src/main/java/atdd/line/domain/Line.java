@@ -1,5 +1,7 @@
 package atdd.line.domain;
 
+import atdd.path.domain.Edges;
+import atdd.station.domain.Station;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +18,8 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Entity
 public class Line {
+
+    public static final Line EMPTY_LINE = new Line();
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -48,6 +52,19 @@ public class Line {
         this(name, startTime, endTime, intervalTime);
         this.id = id;
         this.edges = edges;
+    }
+
+    public void addEdge(Edge edge) {
+        this.edges.add(edge);
+        edge.changeLine(this);
+    }
+
+    public List<Station> getStations() {
+        return new Edges(edges).getStations();
+    }
+
+    public Edges removeStation(Station station) {
+        return new Edges(edges).removeStation(station);
     }
 
 }

@@ -1,29 +1,20 @@
 package atdd.line.controller;
 
-import atdd.global.exception.ServiceNotFoundException;
 import atdd.line.api.request.CreateEdgeRequestView;
 import atdd.line.api.request.CreateLineRequestView;
 import atdd.line.api.response.LineResponseView;
-import atdd.line.api.response.LineStationResponse;
 import atdd.line.api.response.LinesResponseView;
-import atdd.line.domain.Edge;
 import atdd.line.domain.Line;
 import atdd.line.service.LineService;
-import atdd.station.domain.Station;
-import atdd.station.service.StationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
+import static atdd.line.domain.Line.EMPTY_LINE;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -35,7 +26,6 @@ public class LineController {
     public static final String EDGE_URL = "/edges";
 
     private final LineService lineService;
-    private final StationService stationService;
 
     @PostMapping
     public ResponseEntity<LineResponseView> createLine(@RequestBody CreateLineRequestView view) {
@@ -47,34 +37,16 @@ public class LineController {
                 .body(new LineResponseView(persistLine));
     }
 
-    @PostMapping("/{id}/edges")
-    public ResponseEntity<LineResponseView> createEdge(@PathVariable("id") Long lineId,
-                                                       @RequestBody CreateEdgeRequestView view) {
-
-        final Edge edge = viewToEdge(lineId, view);
-        final Line persistLine = lineService.saveEdge(edge);
-
-        final LineResponseView lineResponseView = lineToView(persistLine);
-
-        return ResponseEntity
-                .created(URI.create(LINE_URL + "/" + persistLine.getId()))
-                .body(lineResponseView);
-    }
-
     @GetMapping
     public ResponseEntity<LinesResponseView> getLines() {
-        final List<Line> lines = lineService.findAll();
-        final List<LineResponseView> views = lines.stream().map(this::lineToView).collect(toList());
-
-        return ResponseEntity.ok(new LinesResponseView(views));
+        final List<Line> lines = lineService.findLineWithEdgeAll();
+        return ResponseEntity.ok(new LinesResponseView(lines));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponseView> getLine(@PathVariable("id") Long id) {
-        final Line findLine = lineService.findLineById(id);
-        final LineResponseView lineResponseView = lineToView(findLine);
-
-        return ResponseEntity.ok(lineResponseView);
+        final Line findLine = lineService.findLineWithEdgeById(id).orElse(EMPTY_LINE);
+        return ResponseEntity.ok(new LineResponseView(findLine));
     }
 
     @DeleteMapping("/{id}")
@@ -83,62 +55,23 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{lineId}/stations/{stationId}")
+    @PostMapping("/{id}/edges")
+    public ResponseEntity<LineResponseView> createEdge(@PathVariable("id") Long lineId,
+                                                       @RequestBody CreateEdgeRequestView view) {
+        final Line persistLine = lineService.saveEdge(lineId, view.getSourceStationId(), view.getTargetStationId(),
+                view.getElapsedTime(), view.getDistance());
+
+        return ResponseEntity
+                .created(URI.create(LINE_URL + "/" + persistLine.getId()))
+                .body(new LineResponseView(persistLine));
+    }
+
+    @DeleteMapping("/{lineId}/edges")
     public ResponseEntity<Object> deleteLineStation(@PathVariable("lineId") Long lineId,
-                                                    @PathVariable("stationId") Long stationId) {
+                                                    @RequestParam("stationId") Long stationId) {
 
-        lineService.deleteEdge(lineId, stationId);
+        lineService.deleteEdgeStation(lineId, stationId);
         return ResponseEntity.noContent().build();
-    }
-
-    private Edge viewToEdge(Long lineId, CreateEdgeRequestView view) {
-        final Line findLine = lineService.findLineById(lineId);
-        final Station sourceStation = getStationById(view.getSourceStationId());
-        final Station targetStation = getStationById(view.getTargetStationId());
-
-        return Edge.builder()
-                .line(findLine)
-                .elapsedTime(view.getElapsedTime())
-                .distance(view.getDistance())
-                .sourceStation(sourceStation)
-                .targetStation(targetStation)
-                .build();
-    }
-
-    private Station getStationById(Long stationId) {
-        return stationService.findStationById(stationId)
-                .orElseThrow(() -> new ServiceNotFoundException("지하철 역이 존재하지 않습니다.", Map.of("id", stationId)));
-    }
-
-    private LineResponseView lineToView(Line line) {
-        final List<Edge> findEdges = lineService.findEdgesByLineId(line.getId());
-        final List<LineStationResponse> stations = CollectionUtils.isEmpty(findEdges)
-                ? emptyList() : edgesToStations(findEdges);
-
-        return new LineResponseView(line, stations);
-    }
-
-    private List<LineStationResponse> edgesToStations(List<Edge> edges) {
-        // 종점 목록만 가져온다.
-        final List<LineStationResponse> stations = edges.stream()
-                .map(Edge::getTargetStation)
-                .map(LineStationResponse::new)
-                .collect(toList());
-
-        // 마지막 출발점역을 가져온다.
-        getLastSourceStation(edges)
-                .ifPresent(stations::add);
-
-        return stations;
-    }
-
-    private Optional<LineStationResponse> getLastSourceStation(List<Edge> edges) {
-        final int lastIndex = edges.size() - 1;
-        return edges.stream()
-                .skip(lastIndex)
-                .map(Edge::getSourceStation)
-                .map(LineStationResponse::new)
-                .findFirst();
     }
 
 }
