@@ -33,15 +33,6 @@ public abstract class BaseAcceptanceTest {
     @Autowired
     protected WebTestClient webTestClient;
 
-    @Autowired
-    private StationRepository stationRepository;
-
-    @Autowired
-    private LineRepository lineRepository;
-
-    @Autowired
-    private EdgeRepository edgeRepository;
-
     protected EntityExchangeResult<StationResponseView> createStation(Station station) {
         Map<String, Object> map = Map.ofEntries(
                 Map.entry("name", station.getName())
@@ -67,12 +58,6 @@ public abstract class BaseAcceptanceTest {
                 Map.entry("targetStationId", edge.getTargetStationId())
         );
         return requestCreatePost(LineResponseView.class, LINE_URL + "/" + lineId + EDGE_URL, jsonOf(map));
-    }
-
-    protected void deleteAll() {
-        edgeRepository.deleteAll();
-        lineRepository.deleteAll();
-        stationRepository.deleteAll();
     }
 
     private <T> EntityExchangeResult<T> requestCreatePost(Class<T> body, String uri, String inputJson) {
