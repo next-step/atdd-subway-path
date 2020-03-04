@@ -21,4 +21,9 @@ public class PathController {
         return ResponseEntity.ok(new PathResponseView(startId, endId, graphService.findDistancePath(startId, endId)));
     }
 
+    @GetMapping("/time")
+    public ResponseEntity<PathResponseView> findTimePath(@RequestParam Long startId, @RequestParam Long endId) {
+        return ResponseEntity.ok(new PathResponseView(startId, endId, graphService.findTimePath(startId, endId)));
+    }
+
 }

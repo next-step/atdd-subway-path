@@ -1,5 +1,6 @@
 package atdd.path.domain;
 
+import atdd.line.domain.Edge;
 import atdd.line.domain.Line;
 import atdd.station.domain.Station;
 import org.jgrapht.GraphPath;
@@ -8,6 +9,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.List;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 public class Graph {
@@ -22,11 +24,11 @@ public class Graph {
         return lines;
     }
 
-    public List<Station> getShortestDistancePath(Long startId, Long endId) {
-        return getPathStations(makeGraph(lines), startId, endId);
+    public List<Station> getShortestPath(Long startId, Long endId, ToIntFunction<Edge> edgeWeight) {
+        return getPathStations(makeGraph(lines, edgeWeight), startId, endId);
     }
 
-    private WeightedMultigraph<Long, DefaultWeightedEdge> makeGraph(List<Line> lines) {
+    private WeightedMultigraph<Long, DefaultWeightedEdge> makeGraph(List<Line> lines, ToIntFunction<Edge> edgeWeight) {
         WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
         lines.stream()
                 .flatMap(it -> it.getStations().stream())
@@ -34,7 +36,11 @@ public class Graph {
 
         lines.stream()
                 .flatMap(it -> it.getEdges().stream())
-                .forEach(it -> graph.setEdgeWeight(graph.addEdge(it.getSourceStation().getId(), it.getTargetStation().getId()), it.getDistance()));
+                .forEach(it -> graph.setEdgeWeight(
+                        graph.addEdge(
+                                it.getSourceStation().getId(),
+                                it.getTargetStation().getId()),
+                                edgeWeight.applyAsInt(it)));
         return graph;
     }
 
