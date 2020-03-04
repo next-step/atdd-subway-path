@@ -51,7 +51,7 @@ public class Edge extends BaseEntity {
         return false;
     }
 
-    public List<Long> stationIds() {
+    public List<Long> getStationIds() {
         return Arrays.asList(this.sourceStationId, this.targetStationId);
     }
 }

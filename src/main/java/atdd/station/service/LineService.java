@@ -58,7 +58,7 @@ public class LineService {
         final Set<Long> stationIds = new HashSet<>();
 
         edges.stream().forEach(data -> {
-            stationIds.addAll(data.stationIds());
+            stationIds.addAll(data.getStationIds());
         });
 
         return stationIds;
@@ -80,7 +80,7 @@ public class LineService {
     private void deleteEdgeInLine(final Line line, final Station deleteStation) {
         final List<Edge> legacyEdges = edgeService.findAllById(line.getEdgeIds());
 
-        if(legacyEdges.isEmpty())
+        if (legacyEdges.isEmpty())
             return;
 
         final List<Edge> sortEdges = new ArrayList<>();
@@ -91,7 +91,7 @@ public class LineService {
         int deleteIndex = -1;
 
         for (Edge legacyEdge : legacyEdges) {
-            if(deleteEdgeIds.isEmpty()) {
+            if (deleteEdgeIds.isEmpty()) {
                 if (deleteIndex == edgeIndex) {
                     continue;
                 }
@@ -140,7 +140,7 @@ public class LineService {
             Set<Long> stationIds = new HashSet<>();
 
             for (Edge edge : edges) {
-                stationIds.addAll(edge.stationIds());
+                stationIds.addAll(edge.getStationIds());
             }
 
             return stationService.findAllById(stationIds);
@@ -152,10 +152,10 @@ public class LineService {
     private Station deleteLineInStation(final Station station, final long deleteLineId) {
         Iterator iterator = station.getLineIds().iterator();
 
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             long value = (Long) iterator.next();
 
-            if(value == deleteLineId) {
+            if (value == deleteLineId) {
                 iterator.remove();
                 break;
             }
@@ -181,7 +181,7 @@ public class LineService {
         if (firstLegacyEdge.connectSourceStation(deleteStationId)) {
             deleteEdgeIds.add(firstLegacyEdge.getId());
             legacyEdges.remove(0);
-        }else if(lastLegacyEdge.connectTargetStation(deleteStationId)) {
+        } else if (lastLegacyEdge.connectTargetStation(deleteStationId)) {
             deleteEdgeIds.add(lastLegacyEdge.getId());
             legacyEdges.remove(legacyEdges.size() - 1);
         }
