@@ -3,6 +3,7 @@ package atdd;
 import atdd.station.model.dto.CreateLineRequestView;
 import atdd.station.model.entity.Edge;
 import atdd.station.model.entity.Line;
+import atdd.station.model.entity.Station;
 
 import java.time.LocalTime;
 
@@ -56,4 +57,16 @@ public class TestConstant {
     public static final Edge EDGE_3 = Edge.builder().sourceStationId(STATION_ID_3).targetStationId(STATION_ID_5).build();
 
     public static final Edge NEW_EDGE_1 = Edge.builder().sourceStationId(STATION_ID_3).targetStationId(STATION_ID_4).build();
+
+    // edge delete test
+    public static final Station STATION_1 = Station.builder().name(STATION_NAME).build();
+
+    public static final Edge EDGE_50 = Edge.builder().sourceStationId(STATION_ID_1).targetStationId(STATION_ID_2).build();
+    public static final Edge EDGE_51 = Edge.builder().sourceStationId(STATION_ID_2).targetStationId(STATION_ID_3).build();
+    public static final Edge EDGE_52 = Edge.builder().sourceStationId(STATION_ID_3).targetStationId(STATION_ID_4).build();
+    public static final Edge EDGE_53 = Edge.builder().sourceStationId(STATION_ID_4).targetStationId(STATION_ID_5).build();
+
+    public static final Edge NEW_EDGE = Edge.builder().sourceStationId(STATION_ID_4).targetStationId(STATION_ID_5).build();
+
+
 }
