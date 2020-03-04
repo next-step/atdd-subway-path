@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 
 import static atdd.TestConstant.*;
+import static atdd.line.controller.LineController.EDGE_URL;
 import static atdd.line.controller.LineController.LINE_URL;
 import static atdd.station.controller.StationController.STATION_URL;
 import static atdd.util.TestUtils.getLocationPath;
@@ -101,7 +102,10 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         createEdge(LINE_ID, TEST_EDGE);
         createEdge(LINE_ID, TEST_EDGE_2);
 
-        webTestClient.delete().uri(LINE_URL + "/" + LINE_ID + STATION_URL + "/" + STATION_ID_2)
+        webTestClient.delete().uri(uriBuilder ->
+                uriBuilder.path(LINE_URL + "/" + LINE_ID + EDGE_URL)
+                        .queryParam("stationId", STATION_ID_2)
+                        .build())
                 .exchange()
                 .expectStatus().isNoContent();
 
