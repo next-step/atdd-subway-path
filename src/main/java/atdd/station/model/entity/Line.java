@@ -58,15 +58,12 @@ public class Line extends BaseEntity {
     }
 
     public void setLineEdges(final List<Edge> legacyEdges, final Edge newEdge) {
-        this.lineEdges = sortEdge(legacyEdges, newEdge);
-        this.edgeIds =  lineEdges.stream().map(Edge::getId).collect(Collectors.toList());
+        setEdges(sortEdge(legacyEdges, newEdge));
     }
 
-    // TODO 삭제
-    public void updateEdge(final List<Edge> newEdges, final List<Station> lineStations) {
+    public void setEdges(final List<Edge> newEdges) {
         this.edgeIds = newEdges.stream().map(Edge::getId).collect(Collectors.toList());
         this.lineEdges = newEdges;
-        this.lineStations = lineStations;
     }
 
     private List<Edge> sortEdge(final List<Edge> legacyEdges, final Edge newEdge) {
