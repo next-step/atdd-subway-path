@@ -3,14 +3,12 @@ package atdd.line.api.response;
 import atdd.line.domain.Line;
 import atdd.station.api.response.StationResponseView;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
@@ -36,7 +34,7 @@ public class LineResponseView {
         this.startTime = line.getStartTime();
         this.endTime = line.getEndTime();
         this.intervalTime = line.getIntervalTime();
-        this.stations = line.getStations().stream().map(StationResponseView::new).collect(toList());
+        this.stations = StationResponseView.listOf(line.getStations());
     }
 
 }

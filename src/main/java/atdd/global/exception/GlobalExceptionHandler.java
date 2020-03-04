@@ -13,7 +13,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, Object> handleNotFoundException(ServiceNotFoundException e) {
         final String message = e.getMessage();
         log.error("{}: {}", message, e.getParams(), e);

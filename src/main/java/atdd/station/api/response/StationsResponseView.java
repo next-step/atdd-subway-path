@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
@@ -18,7 +17,7 @@ public class StationsResponseView {
 
     public StationsResponseView(List<Station> stations) {
         this.count = stations.size();
-        this.stations = stations.stream().map(StationResponseView::new).collect(toList());
+        this.stations = StationResponseView.listOf(stations);
     }
 
 }

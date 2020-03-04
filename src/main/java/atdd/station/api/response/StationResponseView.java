@@ -4,6 +4,9 @@ import atdd.station.domain.Station;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
@@ -16,6 +19,10 @@ public class StationResponseView {
     public StationResponseView(Station station) {
         this.id = station.getId();
         this.name = station.getName();
+    }
+
+    public static List<StationResponseView> listOf(List<Station> stations) {
+        return stations.stream().map(StationResponseView::new).collect(toList());
     }
 
 }
