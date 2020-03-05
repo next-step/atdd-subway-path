@@ -1,5 +1,6 @@
 package atdd.path.domain;
 
+import atdd.path.application.dto.EdgeRequestView;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,6 +40,14 @@ public class Edge {
     public Edge() {
     }
 
+    public Edge(Station source, Station target, Line line, int distance, int timeToTake) {
+        this.source = source;
+        this.target = target;
+        this.line = line;
+        this.distance = distance;
+        this.timeToTake = timeToTake;
+    }
+
     @Builder
     public Edge(Long id, Station source, Station target, Line line, int distance, int timeToTake) {
         this.id = id;
@@ -53,6 +62,17 @@ public class Edge {
         return Edge.builder()
                 .source(source)
                 .target(target)
+                .build();
+    }
+
+
+    public static Edge of(EdgeRequestView requestView){
+        return Edge.builder()
+                .source(requestView.getSource())
+                .target(requestView.getTarget())
+                .line(requestView.getLine())
+                .distance(requestView.getDistance())
+                .timeToTake(requestView.getTimeToTake())
                 .build();
     }
 

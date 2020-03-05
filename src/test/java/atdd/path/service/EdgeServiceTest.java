@@ -2,10 +2,7 @@ package atdd.path.service;
 
 import atdd.path.application.dto.EdgeRequestView;
 import atdd.path.application.dto.EdgeResponseView;
-import atdd.path.domain.Edge;
-import atdd.path.domain.EdgeRepository;
-import atdd.path.domain.Line;
-import atdd.path.domain.Station;
+import atdd.path.domain.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,9 +10,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -80,6 +79,9 @@ public class EdgeServiceTest {
     @Mock
     EdgeRepository edgeRepository;
 
+    @Mock
+    StationRepository stationRepository;
+
     @Test
     void 엣지를_추가한다() throws Exception {
         //given
@@ -93,5 +95,18 @@ public class EdgeServiceTest {
         assertThat(edgeResponseView.getTarget().getEdgesAsTarget().size()).isEqualTo(1);
         assertThat(edgeResponseView.getSource().getLines().size()).isEqualTo(1);
         assertThat(edgeResponseView.getTarget().getLines().size()).isEqualTo(1);
+    }
+
+    @Test
+    void 지하철역_아이디를_주면_해당_역이_포함된_엣지를_삭제한다() throws Exception {
+        //given
+        given(stationRepository.findById(anyLong()))
+                .willReturn(Optional.of(station2));
+
+        //when
+        edgeService.deleteEdgesByStationId(station2.getId());
+
+        //then
+        assertThat(station2.getEdgesAsTarget()).isNull();
     }
 }

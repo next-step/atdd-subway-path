@@ -1,5 +1,6 @@
 package atdd.path.application.dto;
 
+import atdd.path.domain.Edge;
 import atdd.path.domain.Line;
 import atdd.path.domain.Station;
 import com.fasterxml.jackson.annotation.JsonIgnore;
