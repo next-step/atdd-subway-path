@@ -109,4 +109,14 @@ public class EdgeServiceTest {
         //then
         assertThat(station2.getEdgesAsTarget()).isNull();
     }
+
+    @Test
+    void 지하철역이_삭제된_엣지아이디를_2개를_주면_병합한다() throws Exception{
+        //when
+        Edge newEdge = edgeService.mergeEdges(this.edge.getId(), this.edge2.getId());
+
+        //then
+        assertThat(newEdge.getSource()).isEqualTo(edge.getSource());
+        assertThat(newEdge.getTarget()).isEqualTo(edge2.getTarget());
+    }
 }

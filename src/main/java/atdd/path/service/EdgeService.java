@@ -50,4 +50,8 @@ public class EdgeService {
             }
         }
     }
+
+    public Edge mergeEdges(Long id, Long id1) {
+        return null;
+    }
 }
