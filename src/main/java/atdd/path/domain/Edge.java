@@ -58,6 +58,31 @@ public class Edge {
         this.timeToTake = timeToTake;
     }
 
+
+    public Long getId() {
+        return id;
+    }
+
+    public Station getSource() {
+        return source;
+    }
+
+    public Station getTarget() {
+        return target;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public int getTimeToTake() {
+        return timeToTake;
+    }
+
     public static Edge of(Station source, Station target) {
         return Edge.builder()
                 .source(source)

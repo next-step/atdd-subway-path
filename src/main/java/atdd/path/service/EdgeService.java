@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class EdgeService {
@@ -51,7 +52,28 @@ public class EdgeService {
         }
     }
 
-    public Edge mergeEdges(Long id, Long id1) {
-        return null;
+    public Edge mergeEdges(Long edgeIdWithSource, Long edgeIdWithTarget) {
+        Edge edgeWithSource = edgeRepository.findById(edgeIdWithSource).get();
+        Station newSource = edgeWithSource.getSource();
+        Edge edgeWithTarget = edgeRepository.findById(edgeIdWithTarget).get();
+        Station newTarget = edgeWithTarget.getTarget();
+
+        Line line=new Line();
+        for(Line tmp:newSource.getLines()){
+            if(tmp.equals(newTarget.getLines())){
+                line=tmp;
+            }
+        }
+
+        Edge newEdge = Edge.builder()
+                .source(newSource)
+                .target(newTarget)
+                .line(line)
+                .distance(edgeWithSource.getDistance()+edgeWithTarget.getDistance())
+                .timeToTake(edgeWithSource.getTimeToTake()+edgeWithTarget.getDistance())
+                .build();
+        Edge newSavedEdge = edgeRepository.save(newEdge);
+
+        return newSavedEdge;
     }
 }

@@ -72,6 +72,14 @@ public class EdgeServiceTest {
             .source(station2)
             .target(station3)
             .build();
+    public Edge newEdge = Edge.builder()
+            .id(3L)
+            .line(line)
+            .source(edge.getSource())
+            .target(edge2.getTarget())
+            .distance(edge.getDistance()+edge2.getDistance())
+            .timeToTake(edge.getTimeToTake()+edge2.getDistance())
+            .build();
 
     @InjectMocks
     EdgeService edgeService;
@@ -112,6 +120,11 @@ public class EdgeServiceTest {
 
     @Test
     void 지하철역이_삭제된_엣지아이디를_2개를_주면_병합한다() throws Exception{
+        //given
+        given(edgeRepository.findById(1L)).willReturn(Optional.of(edge));
+        given(edgeRepository.findById(2L)).willReturn(Optional.of(edge2));
+        given(edgeRepository.save(any())).willReturn(newEdge);
+
         //when
         Edge newEdge = edgeService.mergeEdges(this.edge.getId(), this.edge2.getId());
 
