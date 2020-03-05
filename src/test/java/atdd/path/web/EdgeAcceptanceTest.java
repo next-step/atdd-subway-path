@@ -19,9 +19,9 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
     public static final String LINE_NAME = "2호선";
     private String STATION_NAME = "사당";
     private String STATION_NAME_2 = "방배";
-    private String STATION_NAME_3 = "서초";
     private StationHttpTest stationHttpTest;
     private LineHttpTest lineHttpTest;
+    private EdgeHttpTest edgeHttpTest;
     public static final LocalTime START_TIME = LocalTime.of(5, 00);
     public static final LocalTime END_TIME = LocalTime.of(23, 50);
     public static final int INTERVAL_TIME = 10;
@@ -37,14 +37,14 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
     void setUp() {
         this.stationHttpTest = new StationHttpTest(webTestClient);
         this.lineHttpTest = new LineHttpTest(webTestClient);
+        this.edgeHttpTest = new EdgeHttpTest(webTestClient);
     }
 
     @Autowired
     ObjectMapper objectMapper;
 
-    @DisplayName("지하철 노선에 구간 등록을 요청한다.")
     @Test
-    void addEdge() throws Exception {
+    void 지하철_노선에_구간_등록을_요청한다() throws Exception {
         //given
         StationResponseView stationResponseView = stationHttpTest.create(STATION_NAME);
         StationResponseView stationResponseView2 = stationHttpTest.create(STATION_NAME_2);
@@ -52,29 +52,11 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
         LineResponseView lineResponseView = lineHttpTest.create(input);
 
         //when
-        EdgeRequestViewFromClient edgeRequestViewFromClient
-                = EdgeRequestViewFromClient.builder()
-                .lineId(1L)
-                .sourceId(1L)
-                .targetId(2L)
-                .distance(DISTANCE_KM)
-                .timeToTake(INTERVAL_TIME)
-                .build();
-        String value = objectMapper.writeValueAsString(edgeRequestViewFromClient);
+        EdgeResponseView edgeResponseView
+                = edgeHttpTest.createEdge(1L, 1L, 2L,
+                DISTANCE_KM, INTERVAL_TIME, objectMapper);
 
-        EdgeResponseView edgeResponseView = webTestClient.post().uri("/edges")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(Mono.just(edgeRequestViewFromClient), EdgeRequestViewFromClient.class)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectBodyList(EdgeResponseView.class)
-                .returnResult()
-                .getResponseBody()
-                .stream()
-                .collect(Collectors.toList())
-                .get(0);
-
+        //then
         assertThat(edgeResponseView.getId()).isEqualTo(1L);
         assertThat(edgeResponseView.getSource().getName()).isEqualTo(STATION_NAME);
         assertThat(edgeResponseView.getTarget().getName()).isEqualTo(STATION_NAME_2);
