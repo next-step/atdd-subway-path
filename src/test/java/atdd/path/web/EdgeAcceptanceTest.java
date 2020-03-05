@@ -61,4 +61,22 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
         assertThat(edgeResponseView.getSource().getName()).isEqualTo(STATION_NAME);
         assertThat(edgeResponseView.getTarget().getName()).isEqualTo(STATION_NAME_2);
     }
+
+    @Test
+    void 지하철_노선에_구간_제외를_요청한다() throws Exception{
+        //given
+        StationResponseView stationResponseView = stationHttpTest.create(STATION_NAME);
+        StationResponseView stationResponseView2 = stationHttpTest.create(STATION_NAME_2);
+        String input = objectMapper.writeValueAsString(requestView);
+        LineResponseView lineResponseView = lineHttpTest.create(input);
+        EdgeResponseView edgeResponseView = edgeHttpTest.createEdge(1L, 1L, 2L,
+                DISTANCE_KM, INTERVAL_TIME, objectMapper);
+
+        //when, then
+        webTestClient.delete().uri("/edges/"+edgeResponseView.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isNoContent()
+                .expectBody().isEmpty();
+    }
 }
