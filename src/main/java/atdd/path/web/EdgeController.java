@@ -7,10 +7,7 @@ import atdd.path.service.EdgeService;
 import atdd.path.service.LineService;
 import atdd.path.service.StationService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -45,7 +42,14 @@ public class EdgeController {
         EdgeResponseView edgeResponseView = edgeService.addEdge(edgeRequestView);
 
         return ResponseEntity
-                .created(URI.create("/edges/" + edgeResponseView.getId()))
+                .created(URI.create("/edges/" + lineResponseView.getId()+"/"+edgeResponseView.getId()))
                 .body(edgeResponseView);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteStation(@PathVariable Long lineId, @RequestParam Long stationId){
+////        Long newEdgeId = edgeService.deleteEdgesByStationId(lineId, stationId);
+//        return ResponseEntity
+//                .ok(newEdgeId);
     }
 }

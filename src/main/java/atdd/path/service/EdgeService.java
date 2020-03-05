@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class EdgeService {
@@ -32,45 +34,42 @@ public class EdgeService {
         return EdgeResponseView.of(savedEdge);
     }
 
-    public void deleteEdgesByStationId(Long id) {
+    public void deleteEdgesByStationId(Long lineId, Long id) {
         //지하철역_아이디를_주_해당_역이_포함된_엣지를_삭제한다
         Station station = stationRepository.findById(id)
                 .orElseThrow(NoSuchElementException::new);
-
+        Optional<Line> line = lineRepository.findById(id);
+        List<Edge> edges = line.get().getEdges();
         List<Edge> edgesAsSource = station.getEdgesAsSource();
-        if (edgesAsSource != null) {
-            for (Edge edge : edgesAsSource) {
-                edgeRepository.deleteById(edge.getId());
-            }
+        List<Edge> edgesAsTarget = station.getEdgesAsTarget();
+
+        Long edgeIdWithNewTarget;
+        if(edgesAsSource != null){
+            edgeIdWithNewTarget = edgesAsSource.get(0).getId();
+            edgeRepository.deleteById(edgeIdWithNewTarget);
         }
 
-        List<Edge> edgesAsTarget = station.getEdgesAsTarget();
-        if (edgesAsTarget != null) {
-            for (Edge edge : edgesAsTarget) {
-                edgeRepository.deleteById(edge.getId());
-            }
+        Long edgeIdWithNewSource;
+        if(edgesAsTarget != null){
+            edgeIdWithNewSource = edgesAsTarget.get(0).getId();
+            edgeRepository.deleteById(edgeIdWithNewSource);
         }
     }
 
-    public Edge mergeEdges(Long edgeIdWithSource, Long edgeIdWithTarget) {
+    public Edge mergeEdges(Long lineId, Long edgeIdWithSource, Long edgeIdWithTarget) {
         Edge edgeWithSource = edgeRepository.findById(edgeIdWithSource).get();
         Station newSource = edgeWithSource.getSource();
         Edge edgeWithTarget = edgeRepository.findById(edgeIdWithTarget).get();
         Station newTarget = edgeWithTarget.getTarget();
 
-        Line line=new Line();
-        for(Line tmp:newSource.getLines()){
-            if(tmp.equals(newTarget.getLines())){
-                line=tmp;
-            }
-        }
+        Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
 
         Edge newEdge = Edge.builder()
                 .source(newSource)
                 .target(newTarget)
                 .line(line)
-                .distance(edgeWithSource.getDistance()+edgeWithTarget.getDistance())
-                .timeToTake(edgeWithSource.getTimeToTake()+edgeWithTarget.getDistance())
+                .distance(edgeWithSource.getDistance() + edgeWithTarget.getDistance())
+                .timeToTake(edgeWithSource.getTimeToTake() + edgeWithTarget.getDistance())
                 .build();
         Edge newSavedEdge = edgeRepository.save(newEdge);
 

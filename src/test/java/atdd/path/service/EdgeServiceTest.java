@@ -16,6 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class EdgeServiceTest {
@@ -58,6 +60,13 @@ public class EdgeServiceTest {
             .timeToTake(INTERVAL_TIME)
             .distance(DISTANCE_KM)
             .build();
+    public EdgeRequestView edgeRequestView2 = EdgeRequestView.builder()
+            .source(station2)
+            .target(station3)
+            .line(line)
+            .timeToTake(INTERVAL_TIME)
+            .distance(DISTANCE_KM)
+            .build();
     public Edge edge = Edge.builder()
             .id(1L)
             .line(line)
@@ -90,6 +99,9 @@ public class EdgeServiceTest {
     @Mock
     StationRepository stationRepository;
 
+    @Mock
+    LineRepository lineRepository;
+
     @Test
     void 엣지를_추가한다() throws Exception {
         //given
@@ -108,25 +120,35 @@ public class EdgeServiceTest {
     @Test
     void 지하철역_아이디를_주면_해당_역이_포함된_엣지를_삭제한다() throws Exception {
         //given
+        line.addEdgeToLine(edge);
+        station2.addEdgeToTarget(edge);
+        station1.addEdgeToSource(edge);
         given(stationRepository.findById(anyLong()))
                 .willReturn(Optional.of(station2));
+        given(lineRepository.findById(any()))
+                .willReturn(Optional.of(line));
 
         //when
-        edgeService.deleteEdgesByStationId(station2.getId());
+        edgeService.deleteEdgesByStationId(1L, station2.getId());
 
         //then
-        assertThat(station2.getEdgesAsTarget()).isNull();
+        verify(edgeRepository, times(1)).deleteById(edge.getId());
     }
 
     @Test
     void 지하철역이_삭제된_엣지아이디를_2개를_주면_병합한다() throws Exception{
         //given
-        given(edgeRepository.findById(1L)).willReturn(Optional.of(edge));
-        given(edgeRepository.findById(2L)).willReturn(Optional.of(edge2));
-        given(edgeRepository.save(any())).willReturn(newEdge);
+        given(edgeRepository.findById(1L))
+                .willReturn(Optional.of(edge));
+        given(edgeRepository.findById(2L))
+                .willReturn(Optional.of(edge2));
+        given(edgeRepository.save(any()))
+                .willReturn(newEdge);
+        given(lineRepository.findById(1L))
+                .willReturn(Optional.of(line));
 
         //when
-        Edge newEdge = edgeService.mergeEdges(this.edge.getId(), this.edge2.getId());
+        Edge newEdge = edgeService.mergeEdges(1L, this.edge.getId(), this.edge2.getId());
 
         //then
         assertThat(newEdge.getSource()).isEqualTo(edge.getSource());

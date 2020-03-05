@@ -1,17 +1,17 @@
 package atdd.path.web;
 
 import atdd.AbstractAcceptanceTest;
-import atdd.path.application.dto.*;
+import atdd.path.application.dto.EdgeResponseView;
+import atdd.path.application.dto.LineRequestView;
+import atdd.path.application.dto.LineResponseView;
+import atdd.path.application.dto.StationResponseView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import reactor.core.publisher.Mono;
 
 import java.time.LocalTime;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,6 +19,7 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
     public static final String LINE_NAME = "2호선";
     private String STATION_NAME = "사당";
     private String STATION_NAME_2 = "방배";
+    private String STATION_NAME_3 = "서초";
     private StationHttpTest stationHttpTest;
     private LineHttpTest lineHttpTest;
     private EdgeHttpTest edgeHttpTest;
@@ -63,17 +64,22 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
     }
 
     @Test
-    void 지하철_노선에_구간_제외를_요청한다() throws Exception{
+    void 지하철_노선에_구간_제외를_요청한다() throws Exception {
         //given
         StationResponseView stationResponseView = stationHttpTest.create(STATION_NAME);
         StationResponseView stationResponseView2 = stationHttpTest.create(STATION_NAME_2);
+        StationResponseView stationResponseView3 = stationHttpTest.create(STATION_NAME_3);
         String input = objectMapper.writeValueAsString(requestView);
         LineResponseView lineResponseView = lineHttpTest.create(input);
         EdgeResponseView edgeResponseView = edgeHttpTest.createEdge(1L, 1L, 2L,
                 DISTANCE_KM, INTERVAL_TIME, objectMapper);
+        EdgeResponseView edgeResponseView2 = edgeHttpTest.createEdge(1L, 2L, 3L,
+                DISTANCE_KM, INTERVAL_TIME, objectMapper);
 
         //when, then
-        webTestClient.delete().uri("/edges/"+edgeResponseView.getId())
+        webTestClient.delete()
+                .uri("/edges/" + lineResponseView.getId()
+                        + "?stationId=" + stationResponseView2.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNoContent()
