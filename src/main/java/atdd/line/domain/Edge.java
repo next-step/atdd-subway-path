@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-import java.math.BigDecimal;
-import java.util.StringJoiner;
-
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -31,7 +28,7 @@ public class Edge {
     private int elapsedTime;
 
     @Column(nullable = false)
-    private BigDecimal distance;
+    private int distance;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "source_station_id", referencedColumnName = "id", nullable = false)
@@ -42,7 +39,7 @@ public class Edge {
     private Station targetStation;
 
     @Builder
-    protected Edge(Line line, int elapsedTime, BigDecimal distance, Station sourceStation, Station targetStation) {
+    protected Edge(Line line, int elapsedTime, int distance, Station sourceStation, Station targetStation) {
         this.line = line;
         this.elapsedTime = elapsedTime;
         this.distance = distance;
@@ -50,17 +47,26 @@ public class Edge {
         this.targetStation = targetStation;
     }
 
-    public void changeTargetStation(Station targetStation) {
-        this.targetStation = targetStation;
+    @Builder(builderMethodName = "testBuilder")
+    protected Edge(Long id, Line line, int elapsedTime, int distance, Station sourceStation, Station targetStation) {
+        this(line, elapsedTime, distance, sourceStation, targetStation);
+        this.id = id;
     }
 
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", Edge.class.getSimpleName() + "[", "]")
-                .add("id=" + id)
-                .add("elapsedTime=" + elapsedTime)
-                .add("distance=" + distance)
-                .toString();
+    public void changeLine(Line line) {
+        this.line = line;
+    }
+
+    public Long getSourceStationId() {
+        return sourceStation.getId();
+    }
+
+    public Long getTargetStationId() {
+        return targetStation.getId();
+    }
+
+    public boolean hasStation(Station station) {
+        return sourceStation.equals(station) || targetStation.equals(station);
     }
 
 }

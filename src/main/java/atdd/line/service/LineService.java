@@ -5,19 +5,23 @@ import atdd.line.domain.Edge;
 import atdd.line.domain.EdgeRepository;
 import atdd.line.domain.Line;
 import atdd.line.domain.LineRepository;
+import atdd.path.domain.Edges;
 import atdd.station.domain.Station;
+import atdd.station.service.StationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class LineService {
+
+    private final StationService stationService;
 
     private final LineRepository lineRepository;
     private final EdgeRepository edgeRepository;
@@ -27,53 +31,69 @@ public class LineService {
         return lineRepository.save(line);
     }
 
-    @Transactional
-    public Line saveEdge(Edge edge) {
-        final Edge savedEdge = edgeRepository.save(edge);
-        return savedEdge.getLine();
+    public List<Line> findLineWithEdgeAll() {
+        return lineRepository.findLineWithEdgeAll();
     }
 
-    public List<Line> findAll() {
-        return lineRepository.findAll();
+    public Optional<Line> findLineById(Long id) {
+        return lineRepository.findById(id);
     }
 
-    public Line findLineById(Long id) {
-        return lineRepository.findById(id)
-                .orElseThrow(() -> new ServiceNotFoundException("지하철 노선이 존재하지 않습니다.", Map.of("id", id)));
+    public Optional<Line> findLineWithEdgeById(Long id) {
+        return lineRepository.findLineWithEdgeById(id);
     }
 
     @Transactional
     public void deleteLineById(Long id) {
-        final Line findLine = findLineById(id);
+        final Line findLine = findLineById(id)
+                .orElseThrow(() -> new ServiceNotFoundException("지하철 노선이 존재하지 않습니다.", Map.of("id", id)));
         lineRepository.deleteById(findLine.getId());
     }
 
     @Transactional
-    public void deleteEdge(Long lineId, Long stationId) {
-        final List<Edge> edges = edgeRepository.findEdges(lineId, stationId);
+    public Line saveEdge(Long lineId, Long sourceStationId, Long targetStationId, int elapsedTime, int distance) {
+        final Line findLine = getLineWithEdgeById(lineId);
+        final Station sourceStation = getStationById(sourceStationId);
+        final Station targetStation = getStationById(targetStationId);
 
-        if (!CollectionUtils.isEmpty(edges)) {
-            final Edge firstEdge = edges.get(0);
-            final Station targetStation = firstEdge.getTargetStation();
+        final Edge edge = Edge.builder()
+                .line(findLine)
+                .sourceStation(sourceStation)
+                .targetStation(targetStation)
+                .elapsedTime(elapsedTime)
+                .distance(distance)
+                .build();
+        findLine.addEdge(edge);
 
-            edgeRepository.deleteEdgeById(firstEdge.getId());
-
-            changeTargetStationInSecondEdge(edges, targetStation);
-        }
+        final Edge savedEdge = edgeRepository.save(edge);
+        return savedEdge.getLine();
     }
 
-    public List<Edge> findEdgesByStationId(Long stationId) {
-        return edgeRepository.findEdgesByStationId(stationId);
+    @Transactional
+    public void deleteEdgeStation(Long lineId, Long stationId) {
+        final Station findStation = getStationById(stationId);
+        final Line findLine = getLineWithEdgeById(lineId);
+
+        final List<Edge> oldEdges = findLine.getEdges();
+        final Edges edges = findLine.removeStation(findStation);
+        final Edge newEdge = edges.getEdges().stream()
+                .filter(edge -> !oldEdges.contains(edge))
+                .findFirst().orElseThrow(RuntimeException::new);
+
+        edgeRepository.deleteEdgeByLineIdAndStationId(findLine.getId(), findStation.getId());
+
+        newEdge.changeLine(findLine);
+        edgeRepository.save(newEdge);
     }
 
-    public List<Edge> findEdgesByLineId(Long lineId) {
-        return edgeRepository.findEdgesByLineId(lineId);
+    private Line getLineWithEdgeById(Long lineId) {
+        return findLineWithEdgeById(lineId)
+                .orElseThrow(() -> new ServiceNotFoundException("지하철 노선이 존재하지 않습니다.", Map.of("id", lineId)));
     }
 
-    private void changeTargetStationInSecondEdge(List<Edge> edges, Station targetStation) {
-        if (2 == edges.size()) {
-            edges.get(1).changeTargetStation(targetStation);
-        }
+    private Station getStationById(Long stationId) {
+        return stationService.findStationById(stationId)
+                .orElseThrow(() -> new ServiceNotFoundException("지하철 역이 존재하지 않습니다.", Map.of("id", stationId)));
     }
 
 }

@@ -1,16 +1,15 @@
 package atdd.line.domain;
 
+import atdd.path.domain.Edges;
 import atdd.station.domain.Station;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -19,6 +18,8 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Entity
 public class Line {
+
+    public static final Line EMPTY_LINE = new Line();
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -35,8 +36,8 @@ public class Line {
 
     private int intervalTime;
 
-    @Transient
-    private List<Station> stations = new ArrayList<>();
+    @OneToMany(mappedBy = "line")
+    private List<Edge> edges = new ArrayList<>();
 
     @Builder
     protected Line(String name, LocalTime startTime, LocalTime endTime, int intervalTime) {
@@ -46,20 +47,24 @@ public class Line {
         this.intervalTime = intervalTime;
     }
 
-    public Line withStation(List<Station> stations) {
-        this.stations = stations;
-        return this;
+    @Builder(builderMethodName = "testBuilder")
+    protected Line(Long id, String name, List<Edge> edges, LocalTime startTime, LocalTime endTime, int intervalTime) {
+        this(name, startTime, endTime, intervalTime);
+        this.id = id;
+        this.edges = edges;
     }
 
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", Line.class.getSimpleName() + "[", "]")
-                .add("id=" + id)
-                .add("name='" + name + "'")
-                .add("startTime=" + startTime)
-                .add("endTime=" + endTime)
-                .add("intervalTime=" + intervalTime)
-                .toString();
+    public void addEdge(Edge edge) {
+        this.edges.add(edge);
+        edge.changeLine(this);
+    }
+
+    public List<Station> getStations() {
+        return new Edges(edges).getStations();
+    }
+
+    public Edges removeStation(Station station) {
+        return new Edges(edges).removeStation(station);
     }
 
 }

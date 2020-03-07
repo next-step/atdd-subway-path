@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpHeaders;
 
 import java.net.URI;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Objects;
 
@@ -17,6 +19,10 @@ public class TestUtils {
     public static String getLocationPath(HttpHeaders responseHeaders) {
         URI location = responseHeaders.getLocation();
         return Objects.nonNull(location) ? location.getPath() : "noLocation";
+    }
+
+    public static String localTimeToString(LocalTime localTime) {
+        return localTime.format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 
     public static String jsonOf(Map<String, Object> data) {

@@ -5,31 +5,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.StringJoiner;
 
-import static lombok.AccessLevel.PROTECTED;
+import static java.util.stream.Collectors.toList;
+import static lombok.AccessLevel.PRIVATE;
 
-@NoArgsConstructor(access = PROTECTED)
+@NoArgsConstructor(access = PRIVATE)
 @Getter
 public class StationResponseView {
 
     private Long id;
     private String name;
-    private List<StationLineResponse> lines;
 
-    public StationResponseView(Station station, List<StationLineResponse> lines) {
+    public StationResponseView(Station station) {
         this.id = station.getId();
         this.name = station.getName();
-        this.lines = lines;
     }
 
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", StationResponseView.class.getSimpleName() + "[", "]")
-                .add("id=" + id)
-                .add("name='" + name + "'")
-                .add("lines=" + lines)
-                .toString();
+    public static List<StationResponseView> listOf(List<Station> stations) {
+        return stations.stream().map(StationResponseView::new).collect(toList());
     }
 
 }

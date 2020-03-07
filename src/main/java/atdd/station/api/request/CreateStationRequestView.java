@@ -4,11 +4,9 @@ import atdd.station.domain.Station;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.StringJoiner;
+import static lombok.AccessLevel.PRIVATE;
 
-import static lombok.AccessLevel.PROTECTED;
-
-@NoArgsConstructor(access = PROTECTED)
+@NoArgsConstructor(access = PRIVATE)
 @Getter
 public class CreateStationRequestView {
 
@@ -16,13 +14,6 @@ public class CreateStationRequestView {
 
     public Station toStation() {
         return new Station(name);
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", CreateStationRequestView.class.getSimpleName() + "[", "]")
-                .add("name='" + name + "'")
-                .toString();
     }
 
 }
