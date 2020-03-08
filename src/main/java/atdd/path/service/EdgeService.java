@@ -38,6 +38,9 @@ public class EdgeService {
                 .orElseThrow(NoSuchElementException::new);
         Optional<Line> line = lineRepository.findById(lineId);
         List<Edge> edges = line.get().getEdges();
+
+        List<Edge> all = edgeRepository.findAll();
+
         List<Edge> edgesAsSource = station.getEdgesAsSource();
         List<Edge> edgesAsTarget = station.getEdgesAsTarget();
 

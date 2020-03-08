@@ -27,7 +27,7 @@ public class Edge {
     private Station target;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "line_id")
+    @JoinColumn(name = "line_id", updatable = false, insertable = false)
     private Line line;
 
     private int distance;

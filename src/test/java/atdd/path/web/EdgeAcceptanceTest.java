@@ -68,7 +68,7 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
         //given
         StationResponseView stationResponseView = stationHttpTest.create(STATION_NAME);
         StationResponseView stationResponseView2 = stationHttpTest.create(STATION_NAME_2);
-        StationResponseView stationResponseView3 = stationHttpTest.create(STATION_NAME_3);
+//        StationResponseView stationResponseView3 = stationHttpTest.create(STATION_NAME_3);
         String input = objectMapper.writeValueAsString(requestView);
         LineResponseView lineResponseView = lineHttpTest.create(input);
         EdgeResponseView edge = edgeHttpTest.createEdge(lineResponseView.getId(), stationResponseView.getId(), stationResponseView2.getId(),
