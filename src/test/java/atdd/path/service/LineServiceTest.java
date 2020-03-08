@@ -43,14 +43,14 @@ public class LineServiceTest {
             .name(LINE_2_NAME)
             .startTime(START_TIME)
             .endTime(END_TIME)
-            .intervalTime(INTERVAL_TIME)
+            .interval(INTERVAL_TIME)
             .build();
     public Line line2 = Line.builder()
             .id(2L)
             .name(LINE_4_NAME)
             .startTime(START_TIME)
             .endTime(END_TIME)
-            .intervalTime(INTERVAL_TIME)
+            .interval(INTERVAL_TIME)
             .build();
     public Station station1 = Station.builder()
             .name(STATION_NAME)

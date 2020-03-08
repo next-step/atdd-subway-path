@@ -37,7 +37,7 @@ public class LineService {
                 .name(requestView.getName())
                 .startTime(requestView.getStartTime())
                 .endTime(requestView.getEndTime())
-                .intervalTime(requestView.getInterval())
+                .interval(requestView.getInterval())
                 .build();
         Line savedLine = lineRepository.save(line);
         return LineResponseView.of(savedLine);

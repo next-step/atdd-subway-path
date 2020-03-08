@@ -1,9 +1,11 @@
 package atdd.path.web;
 
 import atdd.AbstractAcceptanceTest;
+import atdd.path.application.dto.EdgeResponseView;
 import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
 import atdd.path.application.dto.StationResponseView;
+import atdd.path.domain.Edge;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,8 +57,7 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
 
 
         //when
-        EdgeResponseView edgeResponseView
-                = edgeHttpTest.createEdge(lineId, startId, endId, DISTANCE_KM, INTERVAL_TIME, objectMapper);
+        EdgeResponseView edgeResponseView = edgeHttpTest.createEdge(lineId, startId, endId, DISTANCE_KM, INTERVAL_TIME, objectMapper);
 
         //then
         assertThat(edgeResponseView.getId()).isEqualTo(1L);

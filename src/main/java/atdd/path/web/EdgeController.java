@@ -28,27 +28,7 @@ public class EdgeController {
     @PostMapping
     public ResponseEntity addEdge(@RequestBody EdgeRequestViewFromClient requestViewFromClient,
                                   EdgeRequestView edgeRequestView) throws Exception {
-        LineResponseView lineResponseView = lineService.retrieve(requestViewFromClient.getLineId());
-        Long sourceId = requestViewFromClient.getSourceId();
-        Long targetId = requestViewFromClient.getTargetId();
 
-        Station source = stationService.findById(StationRequestView.builder().id(sourceId).build());
-        Station target = stationService.findById(StationRequestView.builder().id(targetId).build());
-        Line line = Line.of(lineResponseView);
-
-        edgeRequestView.insertLine(line);
-        edgeRequestView.insertSource(source);
-        edgeRequestView.insertTarget(target);
-        EdgeResponseView edgeResponseView = edgeService.addEdge(edgeRequestView);
-
-        return ResponseEntity
-                .created(URI.create("/edges/" + lineResponseView.getId()+"/"+edgeResponseView.getId()))
-                .body(edgeResponseView);
-    }
-
-    @DeleteMapping("/{lineId}")
-    public ResponseEntity deleteStation(@PathVariable("lineId") Long lineId, @RequestParam Long stationId){
-        edgeService.deleteEdgesByStationId(lineId, stationId);
         return ResponseEntity
                 .ok()
                 .build();
