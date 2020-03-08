@@ -35,4 +35,13 @@ public class EdgeController {
                 .ok()
                 .body(EdgeResponseView.of(edge));
     }
+
+    @DeleteMapping("/{lineId}")
+    public ResponseEntity deleteStation(@PathVariable("lineId") Long lineId,
+                                        @RequestParam("stationId") Long stationId){
+        edgeService.deleteEdgeByStationId(lineId, stationId);
+        return ResponseEntity
+                .ok()
+                .build();
+    }
 }

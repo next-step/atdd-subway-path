@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 
 import java.time.LocalTime;
 
@@ -46,13 +47,13 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     void 지하철_노선에_구간_등록을_요청한다() throws Exception {
         //given
-        StationResponseView stationResponseView = stationHttpTest.create(STATION_NAME);
-        StationResponseView stationResponseView2 = stationHttpTest.create(STATION_NAME_2);
-        String input = objectMapper.writeValueAsString(requestView);
-        LineResponseView lineResponseView = lineHttpTest.create(input);
-        Long lineId = lineResponseView.getId();
-        Long startId = stationResponseView.getId();
-        Long endId = stationResponseView2.getId();
+        StationResponseView station1 = stationHttpTest.create(STATION_NAME);
+        StationResponseView station2 = stationHttpTest.create(STATION_NAME_2);
+        String inputJson = objectMapper.writeValueAsString(requestView);
+        LineResponseView line = lineHttpTest.create(inputJson);
+        Long lineId = line.getId();
+        Long startId = station1.getId();
+        Long endId = station2.getId();
 
         //when
         EdgeResponseView response
@@ -62,5 +63,24 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
         assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getSource().getName()).isEqualTo("사당");
         assertThat(response.getTarget().getName()).isEqualTo("방배");
+    }
+
+    @Test
+    void 지하철역_삭제를_하면_관련_엣지들도_삭제된다() throws Exception {
+        //given
+        StationResponseView station1 = stationHttpTest.create(STATION_NAME);
+        StationResponseView station2 = stationHttpTest.create(STATION_NAME_2);
+        String inputJson = objectMapper.writeValueAsString(requestView);
+        LineResponseView line = lineHttpTest.create(inputJson);
+        Long lineId = line.getId();
+        Long startId = station1.getId();
+        Long endId = station2.getId();
+        edgeHttpTest.createEdge(lineId, startId, endId, DISTANCE_KM, INTERVAL_TIME, objectMapper);
+
+        //when, then
+        webTestClient.delete().uri("/edges/" + lineId + "?stationId=" + startId)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk();
     }
 }
