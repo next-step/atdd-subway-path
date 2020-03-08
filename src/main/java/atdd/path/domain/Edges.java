@@ -41,4 +41,34 @@ public class Edges {
 
         return firstStation;
     }
+
+    public Station findTargetStation(Station sourceStation) {
+        Station nextStation = edges.stream()
+                .filter(it -> it.getSource().equals(sourceStation))
+                .findFirst()
+                .map(Edge::getTarget)
+                .orElseThrow(RuntimeException::new);
+
+        return nextStation;
+    }
+
+    public Station findSourceStation(Station targetStation) {
+        Station sourceStation = edges.stream()
+                .filter(it -> it.getTarget().equals(targetStation))
+                .findFirst()
+                .map(Edge::getSource)
+                .orElseThrow(RuntimeException::new);
+        return sourceStation;
+    }
+
+    public Station findLastStation() {
+        Station firstStation = this.findFirstStation();
+        Station targetStation = findTargetStation(firstStation);
+        Station newSource = targetStation;
+        while (targetStation != null) {
+            newSource = targetStation;
+            targetStation = findTargetStation(targetStation);
+        }
+        return newSource;
+    }
 }
