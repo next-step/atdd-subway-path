@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.*;
-
 import java.util.Objects;
 
 import static javax.persistence.FetchType.LAZY;

@@ -36,14 +36,14 @@ public class EdgeService {
         return save;
     }
 
-    public void deleteEdgeByStationId(Long lineId, Long stationId){
+    public void deleteEdgeByStationId(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(NoSuchElementException::new);
         Station stationToDelete = stationRepository.findById(stationId)
                 .orElseThrow(NoSuchElementException::new);
 
         List<Long> idOfEdgesToDelete = line.getEdges().findIdOfEdgesToDelete(stationToDelete);
-        for(Long id:idOfEdgesToDelete){
+        for (Long id : idOfEdgesToDelete) {
             edgeRepository.deleteById(id);
         }
 

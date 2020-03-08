@@ -2,16 +2,13 @@ package atdd.path.web;
 
 import atdd.path.application.dto.EdgeRequestViewFromClient;
 import atdd.path.application.dto.EdgeResponseView;
-import atdd.path.domain.Edge;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalTime;
 import java.util.stream.Collectors;
 
 public class EdgeHttpTest {
@@ -34,7 +31,7 @@ public class EdgeHttpTest {
                 .build();
         String value = objectMapper.writeValueAsString(edgeRequestViewFromClient);
 
-        return webTestClient.post().uri("/edges/"+lineId)
+        return webTestClient.post().uri("/edges/" + lineId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(Mono.just(value), String.class)

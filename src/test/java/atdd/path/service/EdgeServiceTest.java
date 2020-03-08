@@ -57,7 +57,7 @@ public class EdgeServiceTest {
     }
 
     @Test
-    void 지하철역을_삭제하면_해당역을_포함한_엣지도_삭제한다(){
+    void 지하철역을_삭제하면_해당역을_포함한_엣지도_삭제한다() {
         //given
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(TEST_LINE));
         given(stationRepository.findById(anyLong())).willReturn(Optional.of(TEST_STATION_2));

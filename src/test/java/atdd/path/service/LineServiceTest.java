@@ -145,7 +145,7 @@ public class LineServiceTest {
     }
 
     @Test
-    void 지하철_노선_정보_조회하기(){
+    void 지하철_노선_정보_조회하기() {
         //given
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
@@ -158,7 +158,7 @@ public class LineServiceTest {
     }
 
     @Test
-    void 등록된_노선만_조회_가능하다(){
+    void 등록된_노선만_조회_가능하다() {
         //given
         given(lineRepository.findById(anyLong())).willReturn(Optional.empty());
 
@@ -169,7 +169,7 @@ public class LineServiceTest {
     }
 
     @Test
-    void 노선_목록_조회하기(){
+    void 노선_목록_조회하기() {
         //given
         int theNumberOfLine = 2;
         given(lineRepository.findAll()).willReturn(Arrays.asList(line, line2));

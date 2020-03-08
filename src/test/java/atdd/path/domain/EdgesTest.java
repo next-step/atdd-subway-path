@@ -72,7 +72,7 @@ public class EdgesTest {
     }
 
     @Test
-    void findIdOfEdgesToDeleteTest(){
+    void findIdOfEdgesToDeleteTest() {
         //when
         List<Long> idOfEdgesToDelete = edges.findIdOfEdgesToDelete(TEST_STATION_4);
 

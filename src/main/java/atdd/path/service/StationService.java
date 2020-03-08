@@ -24,16 +24,16 @@ public class StationService {
         return StationResponseView.of(savedStation);
     }
 
-    public void delete(StationRequestView requestView) throws Exception{
+    public void delete(StationRequestView requestView) throws Exception {
         Optional<Station> station = stationRepository.findById(requestView.getId());
-        if(station.isPresent()){
+        if (station.isPresent()) {
             stationRepository.deleteById(requestView.getId());
         }
     }
 
     public List<Station> showAll() {
         List<Station> stations = stationRepository.findAll();
-        if(stations.size()== 0){
+        if (stations.size() == 0) {
             return Collections.emptyList();
         }
         return stationRepository.findAll();
