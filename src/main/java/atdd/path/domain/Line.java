@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.time.LocalTime;
+import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -19,20 +20,21 @@ public class Line {
     private String name;
     private LocalTime startTime;
     private LocalTime endTime;
-    private Integer intervalTime;
+    private int intervalTime;
+    private Edges edges;
 
 
     public Line() {
     }
 
     @Builder
-    public Line(Long id, String name, LocalTime startTime,
-                LocalTime endTime, int interval) {
+    public Line(Long id, String name, List<Edge> edges, LocalTime startTime, LocalTime endTime, int interval) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = interval;
+        this.edges = new Edges(edges);
     }
 
     public void changeStartTime(LocalTime startTime) {

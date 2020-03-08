@@ -1,7 +1,6 @@
 package atdd.path.domain;
 
 import atdd.path.application.dto.EdgeRequestView;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -53,6 +52,13 @@ public class Edge {
         this.line = line;
         this.distance = distance;
         this.timeToTake = timeToTake;
+    }
+
+    public Edge(Long edgeId, Station sourceStation, Station targetStation, int distance) {
+        this.id = edgeId;
+        this.source = sourceStation;
+        this.target = targetStation;
+        this.distance = distance;
     }
 
 
