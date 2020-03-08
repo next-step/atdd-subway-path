@@ -48,4 +48,8 @@ public class Line {
     public void changeInterval(int interval) {
         this.intervalTime = interval;
     }
+
+    public List<Station> getStations() {
+        return edges.getStations();
+    }
 }

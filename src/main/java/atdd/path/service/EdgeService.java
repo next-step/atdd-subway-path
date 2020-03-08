@@ -34,4 +34,13 @@ public class EdgeService {
         Edge save = edgeRepository.save(edge);
         return save;
     }
+
+    public void deleteEdgeByStationId(Long lineId, Long stationId){
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(NoSuchElementException::new);
+        Station station = stationRepository.findById(stationId)
+                .orElseThrow(NoSuchElementException::new);
+
+        line.getStations();
+    }
 }

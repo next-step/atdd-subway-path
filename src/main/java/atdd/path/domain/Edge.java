@@ -6,6 +6,8 @@ import lombok.Getter;
 
 import javax.persistence.*;
 
+import java.util.Objects;
+
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -61,6 +63,23 @@ public class Edge {
         this.distance = distance;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Edge edge = (Edge) o;
+        return distance == edge.distance &&
+                timeToTake == edge.timeToTake &&
+                Objects.equals(id, edge.id) &&
+                Objects.equals(source, edge.source) &&
+                Objects.equals(target, edge.target) &&
+                Objects.equals(line, edge.line);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, source, target, line, distance, timeToTake);
+    }
 
     public Long getId() {
         return id;
