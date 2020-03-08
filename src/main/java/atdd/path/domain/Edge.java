@@ -18,17 +18,14 @@ public class Edge {
     @Column(name = "edge_id")
     private Long id;
 
-    @JsonIgnore
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "station_id", updatable = false, insertable = false)
     private Station source;
 
-    @JsonIgnore
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "station_id")
+    @JoinColumn(name = "station_id", updatable = false, insertable = false)
     private Station target;
 
-    @JsonIgnore
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "line_id")
     private Line line;

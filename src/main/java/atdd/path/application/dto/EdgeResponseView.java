@@ -5,7 +5,6 @@ import atdd.path.domain.Line;
 import atdd.path.domain.Station;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
-import lombok.Getter;
 
 import java.util.List;
 
@@ -23,7 +22,6 @@ public class EdgeResponseView {
 
     private int timeToTake;
 
-    @JsonIgnore
     private List<Edge> edges;
 
     public EdgeResponseView() {

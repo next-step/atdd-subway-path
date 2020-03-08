@@ -9,6 +9,8 @@ import lombok.ToString;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -67,12 +69,12 @@ public class Station {
         }
         this.lines.add(line);
     }
-//
-//    public List<Line> getLines() {
-//        return Stream.concat(edgesAsSource.stream(), edgesAsTarget.stream())
-//                .map(it -> it.getLine())
-//                .collect(Collectors.toList());
-//    }
+
+    public List<Line> getLines() {
+        return Stream.concat(edgesAsSource.stream(), edgesAsTarget.stream())
+                .map(it -> it.getLine())
+                .collect(Collectors.toList());
+    }
 
     public static Station of(StationResponseView responseView) {
         return Station.builder()

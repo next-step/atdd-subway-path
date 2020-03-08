@@ -52,8 +52,9 @@ public class EdgeService {
             edgeIdWithNewSource = edgesAsTarget.get(0).getId();
             edgeRepository.deleteById(edgeIdWithNewSource);
         }
-
-        mergeEdges(lineId, edgeIdWithNewSource, edgeIdWithNewTarget);
+        if(edgesAsSource != null && edgesAsTarget != null){
+            mergeEdges(lineId, edgeIdWithNewSource, edgeIdWithNewTarget);
+        }
     }
 
     public Edge mergeEdges(Long lineId, Long edgeIdWithSource, Long edgeIdWithTarget) {

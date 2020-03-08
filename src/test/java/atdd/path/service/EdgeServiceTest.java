@@ -113,8 +113,6 @@ public class EdgeServiceTest {
         //then
         assertThat(edgeResponseView.getSource().getEdgesAsSource().size()).isEqualTo(1);
         assertThat(edgeResponseView.getTarget().getEdgesAsTarget().size()).isEqualTo(1);
-        assertThat(edgeResponseView.getSource().getLines().size()).isEqualTo(1);
-        assertThat(edgeResponseView.getTarget().getLines().size()).isEqualTo(1);
     }
 
     @Test
