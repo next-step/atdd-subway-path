@@ -19,9 +19,6 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     public static final String LINE_BASE_URI = "/lines";
     public static final String LINE_NAME = "2호선";
     public static final String LINE_NAME_2 = "4호선";
-    private String STATION_NAME = "사당";
-    private String STATION_NAME_2 = "방배";
-    private String STATION_NAME_3 = "서초";
     private StationHttpTest stationHttpTest;
     private LineHttpTest lineHttpTest;
     public static final LocalTime START_TIME = LocalTime.of(5, 00);
@@ -102,7 +99,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
 
     @DisplayName("지하철 노선 목록 조회를 요청한다.")
     @Test
-    void showAll() throws Exception {
+    void showAll() throws Exception{
         //given
         int theNumberOfLines = 2;
         LineRequestView requestView = LineRequestView.builder()
@@ -112,7 +109,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
                 .interval(INTERVAL_TIME)
                 .build();
         LineRequestView requestView2 = LineRequestView.builder()
-                .name(LINE_NAME_2)
+                .name(LINE_NAME)
                 .startTime(START_TIME)
                 .endTime(END_TIME)
                 .interval(INTERVAL_TIME)
@@ -130,28 +127,5 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
                 .exchange()
                 .expectBodyList(LineListResponseView.class)
                 .hasSize(theNumberOfLines);
-    }
-
-    @DisplayName("지하철 노선에 구간 등록을 요청한다.")
-    @Test
-    void addEdge() throws Exception {
-        //given
-        stationHttpTest.create(STATION_NAME);
-        stationHttpTest.create(STATION_NAME_2);
-        LineRequestView requestView = LineRequestView.builder()
-                .name(LINE_NAME)
-                .startTime(START_TIME)
-                .endTime(END_TIME)
-                .interval(INTERVAL_TIME)
-                .build();
-        String inputJson = objectMapper.writeValueAsString(requestView);
-        LineResponseView responseView = lineHttpTest.create(inputJson);
-
-        //when, then
-        webTestClient.post().uri("/lines/" + responseView.getId() + "/edges")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isCreated();
     }
 }
