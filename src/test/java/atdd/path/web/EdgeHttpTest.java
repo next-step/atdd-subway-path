@@ -34,12 +34,12 @@ public class EdgeHttpTest {
                 .build();
         String value = objectMapper.writeValueAsString(edgeRequestViewFromClient);
 
-        return webTestClient.post().uri("/edges")
+        return webTestClient.post().uri("/edges/"+lineId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(Mono.just(value), String.class)
                 .exchange()
-                .expectStatus().isCreated()
+                .expectStatus().isOk()
                 .returnResult(EdgeResponseView.class)
                 .getResponseBody()
                 .toStream()

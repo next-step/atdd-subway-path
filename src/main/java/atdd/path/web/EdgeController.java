@@ -1,6 +1,7 @@
 package atdd.path.web;
 
 import atdd.path.application.dto.*;
+import atdd.path.domain.Edge;
 import atdd.path.domain.Line;
 import atdd.path.domain.Station;
 import atdd.path.service.EdgeService;
@@ -25,12 +26,13 @@ public class EdgeController {
         this.stationService = stationService;
     }
 
-    @PostMapping
-    public ResponseEntity addEdge(@RequestBody EdgeRequestViewFromClient requestViewFromClient,
-                                  EdgeRequestView edgeRequestView) throws Exception {
+    @PostMapping("/{lineId}")
+    public ResponseEntity addEdge(@PathVariable("lineId") Long lineId,
+                                  @RequestBody EdgeRequestViewFromClient request ) throws Exception {
 
+        Edge edge = edgeService.addEdge(lineId, request.getSourceId(), request.getTargetId(), request.getDistance());
         return ResponseEntity
                 .ok()
-                .build();
+                .body(EdgeResponseView.of(edge));
     }
 }

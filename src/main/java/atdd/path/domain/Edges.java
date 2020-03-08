@@ -1,8 +1,8 @@
 package atdd.path.domain;
 
-import sun.rmi.runtime.Log;
-
 import javax.persistence.Embeddable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Edges {
+
+    @OneToMany(mappedBy = "line")
     private List<Edge> edges = new ArrayList<>();
 
     public Edges() {

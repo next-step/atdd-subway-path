@@ -5,7 +5,6 @@ import atdd.path.application.dto.EdgeResponseView;
 import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
 import atdd.path.application.dto.StationResponseView;
-import atdd.path.domain.Edge;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,14 +54,13 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
         Long startId = stationResponseView.getId();
         Long endId = stationResponseView2.getId();
 
-
         //when
-        EdgeResponseView edgeResponseView = edgeHttpTest.createEdge(lineId, startId, endId, DISTANCE_KM, INTERVAL_TIME, objectMapper);
+        EdgeResponseView response
+                = edgeHttpTest.createEdge(lineId, startId, endId, DISTANCE_KM, INTERVAL_TIME, objectMapper);
 
         //then
-        assertThat(edgeResponseView.getId()).isEqualTo(1L);
-        assertThat(edgeResponseView.getLine().getId()).isEqualTo(lineId);
-        assertThat(edgeResponseView.getSource().getId()).isEqualTo(startId);
-        assertThat(edgeResponseView.getTarget().getId()).isEqualTo(endId);
+        assertThat(response.getId()).isEqualTo(1L);
+        assertThat(response.getSource().getName()).isEqualTo("사당");
+        assertThat(response.getTarget().getName()).isEqualTo("방배");
     }
 }

@@ -1,11 +1,10 @@
 package atdd.path.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -21,8 +20,10 @@ public class Line {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
-    private Edges edges;
 
+    @JsonIgnore
+    @Embedded
+    private Edges edges = new Edges();
 
     public Line() {
     }
