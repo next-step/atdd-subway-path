@@ -15,6 +15,7 @@ import java.util.Optional;
 import static atdd.path.TestConstant.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -57,11 +58,16 @@ public class EdgeServiceTest {
 
     @Test
     void 지하철역을_삭제하면_해당역을_포함한_엣지도_삭제한다(){
+        //given
+        given(lineRepository.findById(anyLong())).willReturn(Optional.of(TEST_LINE));
+        given(stationRepository.findById(anyLong())).willReturn(Optional.of(TEST_STATION_2));
+
+
         //when
-        edgeRepository.deleteById(EDGE_ID);
+        edgeService.deleteEdgeByStationId(LINE_ID, STATION_ID_2);
 
         //then
-        verify(edgeRepository, times(1))
-                .deleteById(1L);
+        verify(edgeRepository, times(2))
+                .deleteById(anyLong());
     }
 }

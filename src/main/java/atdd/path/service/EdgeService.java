@@ -41,6 +41,12 @@ public class EdgeService {
                 .orElseThrow(NoSuchElementException::new);
         Station stationToDelete = stationRepository.findById(stationId)
                 .orElseThrow(NoSuchElementException::new);
+
+        List<Long> idOfEdgesToDelete = line.getEdges().findIdOfEdgesToDelete(stationToDelete);
+        for(Long id:idOfEdgesToDelete){
+            edgeRepository.deleteById(id);
+        }
+
         Edges newEdges = line.getEdges().findNewEdges(stationToDelete);
         line.changeEdges(newEdges);
         lineRepository.save(line);
