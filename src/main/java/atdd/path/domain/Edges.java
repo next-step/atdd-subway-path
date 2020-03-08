@@ -26,7 +26,20 @@ public class Edges {
     }
 
     private List<Station> getStations(List<Edge> edges) {
-        return null;
+        Station firstStation = findFirstStation();
+        Station lastStation = findLastStation();
+        Station prevLastStation = findSourceStation(lastStation);
+
+        List<Station> stations = new ArrayList<>();
+        stations.add(firstStation);
+        Station nextStation = findTargetStation(firstStation).orElseThrow(RuntimeException::new);
+        while(!nextStation.equals(prevLastStation)){
+            stations.add(nextStation);
+            nextStation = findTargetStation(nextStation).orElseThrow(RuntimeException::new);
+        }
+        stations.add(prevLastStation);
+        stations.add(lastStation);
+        return stations;
     }
 
     public Station findFirstStation() {

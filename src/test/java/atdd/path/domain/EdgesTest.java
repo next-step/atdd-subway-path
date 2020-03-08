@@ -49,4 +49,15 @@ public class EdgesTest {
         //then
         assertThat(lastStation).isEqualTo(TEST_STATION_4);
     }
+
+    @Test
+    void getStationsTest() {
+        //when
+        List<Station> stations = edges.getStations();
+
+        //then
+        assertThat(stations.size()).isEqualTo(4);
+        assertThat(stations.get(0)).isEqualTo(TEST_STATION);
+        assertThat(stations.get(3)).isEqualTo(TEST_STATION_4);
+    }
 }
