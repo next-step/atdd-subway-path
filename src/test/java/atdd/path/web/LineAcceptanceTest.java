@@ -23,6 +23,19 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     public static final LocalTime START_TIME = LocalTime.of(5, 00);
     public static final LocalTime END_TIME = LocalTime.of(23, 50);
     public static final int INTERVAL_TIME = 10;
+    public static LineRequestView requestView = LineRequestView.builder()
+            .name(LINE_NAME)
+            .startTime(START_TIME)
+            .endTime(END_TIME)
+            .interval(INTERVAL_TIME)
+            .build();
+    public static LineRequestView requestView2 = LineRequestView.builder()
+            .name(LINE_NAME_2)
+            .startTime(START_TIME)
+            .endTime(END_TIME)
+            .interval(INTERVAL_TIME)
+            .build();
+
 
     @BeforeEach
     void setUp() {
@@ -37,12 +50,6 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     void create() throws Exception {
         //given
-        LineRequestView requestView = LineRequestView.builder()
-                .name(LINE_NAME)
-                .startTime(START_TIME)
-                .endTime(END_TIME)
-                .interval(INTERVAL_TIME)
-                .build();
         String inputJson = objectMapper.writeValueAsString(requestView);
 
         //when
@@ -57,12 +64,6 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     void delete() throws Exception {
         //given
-        LineRequestView requestView = LineRequestView.builder()
-                .name(LINE_NAME)
-                .startTime(START_TIME)
-                .endTime(END_TIME)
-                .interval(INTERVAL_TIME)
-                .build();
         String inputJson = objectMapper.writeValueAsString(requestView);
         LineResponseView responseView = lineHttpTest.create(inputJson);
 
@@ -78,12 +79,6 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     void retrieve() throws Exception {
         //given
-        LineRequestView requestView = LineRequestView.builder()
-                .name(LINE_NAME)
-                .startTime(START_TIME)
-                .endTime(END_TIME)
-                .interval(INTERVAL_TIME)
-                .build();
         String inputJson = objectMapper.writeValueAsString(requestView);
         LineResponseView responseView = lineHttpTest.create(inputJson);
 
@@ -100,19 +95,6 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     void showAll() throws Exception {
         //given
-        int theNumberOfLines = 2;
-        LineRequestView requestView = LineRequestView.builder()
-                .name(LINE_NAME)
-                .startTime(START_TIME)
-                .endTime(END_TIME)
-                .interval(INTERVAL_TIME)
-                .build();
-        LineRequestView requestView2 = LineRequestView.builder()
-                .name(LINE_NAME_2)
-                .startTime(START_TIME)
-                .endTime(END_TIME)
-                .interval(INTERVAL_TIME)
-                .build();
         String inputJson = objectMapper.writeValueAsString(requestView);
         String inputJson2 = objectMapper.writeValueAsString(requestView2);
 
