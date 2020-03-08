@@ -3,6 +3,7 @@ package atdd.path.domain;
 import javax.persistence.Embeddable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -42,12 +43,11 @@ public class Edges {
         return firstStation;
     }
 
-    public Station findTargetStation(Station sourceStation) {
-        Station nextStation = edges.stream()
+    public Optional<Station> findTargetStation(Station sourceStation) {
+        Optional<Station> nextStation = edges.stream()
                 .filter(it -> it.getSource().equals(sourceStation))
                 .findFirst()
-                .map(Edge::getTarget)
-                .orElseThrow(RuntimeException::new);
+                .map(Edge::getTarget);
 
         return nextStation;
     }
@@ -63,12 +63,13 @@ public class Edges {
 
     public Station findLastStation() {
         Station firstStation = this.findFirstStation();
-        Station targetStation = findTargetStation(firstStation);
-        Station newSource = targetStation;
-        while (targetStation != null) {
+        Optional<Station> targetStation = findTargetStation(firstStation);
+        Optional<Station> newSource = targetStation;
+
+        while (targetStation.isPresent()) {
             newSource = targetStation;
-            targetStation = findTargetStation(targetStation);
+            targetStation = findTargetStation(targetStation.get());
         }
-        return newSource;
+        return newSource.get();
     }
 }

@@ -1,11 +1,10 @@
 package atdd.path.domain;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static atdd.path.TestConstant.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,7 +15,7 @@ public class EdgesTest {
     private Edges edges = new Edges(edgeList);
 
     @Test
-    void findFirstStationInEdgesTest(){
+    void findFirstStationInEdgesTest() {
         //when
         Station firstStationInEdges = edges.findFirstStation();
 
@@ -25,12 +24,12 @@ public class EdgesTest {
     }
 
     @Test
-    void findTargetStationTest(){
+    void findTargetStationTest() {
         //when
-        Station nextStation = edges.findTargetStation(TEST_STATION_3);
+        Optional<Station> nextStation = edges.findTargetStation(TEST_STATION_3);
 
         //then
-        assertThat(nextStation).isEqualTo(TEST_STATION_4);
+        assertThat(nextStation).isEqualTo(Optional.of(TEST_STATION_4));
     }
 
     @Test
@@ -40,5 +39,14 @@ public class EdgesTest {
 
         //then
         assertThat(sourceStation).isEqualTo(TEST_STATION_2);
+    }
+
+    @Test
+    void findLastStation() {
+        //when
+        Station lastStation = edges.findLastStation();
+
+        //then
+        assertThat(lastStation).isEqualTo(TEST_STATION_4);
     }
 }
