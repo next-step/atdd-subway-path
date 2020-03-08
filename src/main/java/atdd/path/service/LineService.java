@@ -1,7 +1,5 @@
 package atdd.path.service;
 
-import atdd.path.application.dto.EdgeResponseView;
-import atdd.path.application.dto.LineListResponseView;
 import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
 import atdd.path.domain.*;
@@ -9,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class LineService {
@@ -56,10 +53,10 @@ public class LineService {
         return LineResponseView.of(line.get());
     }
 
-    public LineListResponseView showAll() {
+    public List<LineResponseView> showAll() {
         List<Line> lines = lineRepository.findAll();
-        return LineListResponseView.builder()
-                .lines(lines)
-                .build();
+        return lines.stream()
+                .map(line -> LineResponseView.of(line))
+                .collect(Collectors.toList());
     }
 }

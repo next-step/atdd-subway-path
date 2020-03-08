@@ -1,11 +1,8 @@
 package atdd.path.service;
 
-import atdd.path.application.dto.LineListResponseView;
 import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
 import atdd.path.domain.*;
-import com.sun.tools.internal.ws.wsdl.framework.NoSuchEntityException;
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,7 +16,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.iterator;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -179,10 +175,10 @@ public class LineServiceTest {
         given(lineRepository.findAll()).willReturn(Arrays.asList(line, line2));
 
         //when
-        LineListResponseView responseView = lineService.showAll();
+        List<LineResponseView> responseView = lineService.showAll();
 
         //then
-        assertThat(responseView.getLines().size()).isEqualTo(theNumberOfLine);
+        assertThat(responseView.size()).isEqualTo(theNumberOfLine);
     }
 
 

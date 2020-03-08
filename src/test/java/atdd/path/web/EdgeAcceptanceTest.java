@@ -19,7 +19,6 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
     public static final String LINE_NAME = "2호선";
     private String STATION_NAME = "사당";
     private String STATION_NAME_2 = "방배";
-    private String STATION_NAME_3 = "서초";
     private StationHttpTest stationHttpTest;
     private LineHttpTest lineHttpTest;
     private EdgeHttpTest edgeHttpTest;

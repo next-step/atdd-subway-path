@@ -1,6 +1,5 @@
 package atdd.path.web;
 
-import atdd.path.application.dto.LineListResponseView;
 import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
 import atdd.path.service.EdgeService;
@@ -9,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/lines")
@@ -45,9 +45,9 @@ public class LineController {
     }
 
     @GetMapping
-    public ResponseEntity showAll(){
-        LineListResponseView responseView = lineService.showAll();
+    public ResponseEntity showAll() {
+        List<LineResponseView> responseView = lineService.showAll();
         return ResponseEntity
-                .ok(responseView.getLines());
+                .ok(responseView);
     }
 }

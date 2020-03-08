@@ -1,7 +1,6 @@
 package atdd.path.domain;
 
 import javax.persistence.Embeddable;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +38,7 @@ public class Edges {
         Station nextStation
                 = findTargetStation(firstStation).orElseThrow(RuntimeException::new);
 
-        while(!nextStation.equals(prevLastStation)){
+        while (!nextStation.equals(prevLastStation)) {
             stations.add(nextStation);
             nextStation
                     = findTargetStation(nextStation).orElseThrow(RuntimeException::new);
@@ -102,7 +101,7 @@ public class Edges {
         return new Edges(collect);
     }
 
-    public List<Long> findIdOfEdgesToDelete(Station stationToDelete){
+    public List<Long> findIdOfEdgesToDelete(Station stationToDelete) {
         List<Long> idToDelete = edges.stream()
                 .filter(it -> it.getSource().equals(stationToDelete))
                 .map(Edge::getId)
