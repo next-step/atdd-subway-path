@@ -127,6 +127,8 @@ public class EdgeServiceTest {
                 .willReturn(Optional.of(station2));
         given(lineRepository.findById(any()))
                 .willReturn(Optional.of(line));
+//        given(edgeRepository.findById(anyLong()))
+//                .willReturn(Optional.of(edge));
 
         //when
         edgeService.deleteEdgesByStationId(1L, station2.getId());

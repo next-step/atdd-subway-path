@@ -47,10 +47,10 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     void 지하철_노선에_구간_등록을_요청한다() throws Exception {
         //given
-        StationResponseView stationResponseView = stationHttpTest.create(STATION_NAME);
-        StationResponseView stationResponseView2 = stationHttpTest.create(STATION_NAME_2);
+        stationHttpTest.create(STATION_NAME);
+        stationHttpTest.create(STATION_NAME_2);
         String input = objectMapper.writeValueAsString(requestView);
-        LineResponseView lineResponseView = lineHttpTest.create(input);
+        lineHttpTest.create(input);
 
         //when
         EdgeResponseView edgeResponseView
@@ -71,10 +71,10 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
         StationResponseView stationResponseView3 = stationHttpTest.create(STATION_NAME_3);
         String input = objectMapper.writeValueAsString(requestView);
         LineResponseView lineResponseView = lineHttpTest.create(input);
-        EdgeResponseView edgeResponseView = edgeHttpTest.createEdge(1L, 1L, 2L,
+        EdgeResponseView edge = edgeHttpTest.createEdge(lineResponseView.getId(), stationResponseView.getId(), stationResponseView2.getId(),
                 DISTANCE_KM, INTERVAL_TIME, objectMapper);
-        EdgeResponseView edgeResponseView2 = edgeHttpTest.createEdge(1L, 2L, 3L,
-                DISTANCE_KM, INTERVAL_TIME, objectMapper);
+//        EdgeResponseView edge2 = edgeHttpTest.createEdge(lineResponseView.getId(), stationResponseView2.getId(), stationResponseView3.getId(),
+//                DISTANCE_KM, INTERVAL_TIME, objectMapper);
 
         //when, then
         webTestClient.delete()
@@ -82,7 +82,6 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
                         + "?stationId=" + stationResponseView2.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
-                .expectStatus().isNoContent()
-                .expectBody().isEmpty();
+                .expectStatus().isOk();
     }
 }

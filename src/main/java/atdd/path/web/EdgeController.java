@@ -46,10 +46,11 @@ public class EdgeController {
                 .body(edgeResponseView);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteStation(@PathVariable Long lineId, @RequestParam Long stationId){
-////        Long newEdgeId = edgeService.deleteEdgesByStationId(lineId, stationId);
-//        return ResponseEntity
-//                .ok(newEdgeId);
+    @DeleteMapping("/{lineId}")
+    public ResponseEntity deleteStation(@PathVariable("lineId") Long lineId, @RequestParam Long stationId){
+        edgeService.deleteEdgesByStationId(lineId, stationId);
+        return ResponseEntity
+                .ok()
+                .build();
     }
 }

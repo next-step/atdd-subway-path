@@ -2,6 +2,8 @@ package atdd.path.web;
 
 import atdd.path.application.dto.EdgeRequestViewFromClient;
 import atdd.path.application.dto.EdgeResponseView;
+import atdd.path.domain.Edge;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +23,7 @@ public class EdgeHttpTest {
 
     @Test
     public EdgeResponseView createEdge(Long lineId, Long sourceId, Long targetId,
-                                       int distance, int interval, ObjectMapper objectMapper)
-            throws Exception{
+                                       int distance, int interval, ObjectMapper objectMapper) throws JsonProcessingException {
         EdgeRequestViewFromClient edgeRequestViewFromClient
                 = EdgeRequestViewFromClient.builder()
                 .lineId(lineId)
@@ -36,13 +37,12 @@ public class EdgeHttpTest {
         return webTestClient.post().uri("/edges")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .body(Mono.just(edgeRequestViewFromClient), EdgeRequestViewFromClient.class)
+                .body(Mono.just(value), String.class)
                 .exchange()
                 .expectStatus().isCreated()
-                .expectBodyList(EdgeResponseView.class)
-                .returnResult()
+                .returnResult(EdgeResponseView.class)
                 .getResponseBody()
-                .stream()
+                .toStream()
                 .collect(Collectors.toList())
                 .get(0);
     }

@@ -1,9 +1,10 @@
 package atdd.path.domain;
 
 import atdd.path.application.dto.LineResponseView;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.jackson.JsonComponent;
 
 import javax.persistence.*;
 import java.time.LocalTime;
@@ -29,10 +30,12 @@ public class Line {
 
     private Integer intervalTime;
 
-    @JsonIgnore
-    @OneToMany
-    @JoinColumn(name = "edge_id")
+    @OneToMany(mappedBy = "line")
     private List<Edge> edges = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "station_id")
+    private Station station;
 
     public Line() {
     }
@@ -46,6 +49,34 @@ public class Line {
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.edges = edges;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public Integer getIntervalTime() {
+        return intervalTime;
+    }
+
+    public List<Edge> getEdges() {
+        return edges;
+    }
+
+    public Station getStation() {
+        return station;
     }
 
     public void changeStartTime(LocalTime startTime) {
@@ -64,6 +95,10 @@ public class Line {
                 .endTime(responseView.getEndTime())
                 .intervalTime(responseView.getInterval())
                 .build();
+    }
+
+    public List<Station> getStations() {
+        return getStations(this.edges);
     }
 
     private List<Station> getStations(List<Edge> edges) {
@@ -117,9 +152,5 @@ public class Line {
 
     private Integer sum(List<Edge> replaceEdge) {
         return replaceEdge.stream().map(it -> it.getDistance()).reduce(0, Integer::sum);
-    }
-
-    public List<Station> getStations() {
-        return getStations(this.edges);
     }
 }

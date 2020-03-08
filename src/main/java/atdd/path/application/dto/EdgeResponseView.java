@@ -3,15 +3,16 @@ package atdd.path.application.dto;
 import atdd.path.domain.Edge;
 import atdd.path.domain.Line;
 import atdd.path.domain.Station;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
 
-@Getter
 public class EdgeResponseView {
     private Long id;
 
+    @JsonIgnore
     private Line line;
 
     private Station source;
@@ -22,6 +23,7 @@ public class EdgeResponseView {
 
     private int timeToTake;
 
+    @JsonIgnore
     private List<Edge> edges;
 
     public EdgeResponseView() {
@@ -37,6 +39,34 @@ public class EdgeResponseView {
         this.distance = distance;
         this.timeToTake = timeToTake;
         this.edges = edges;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public Station getSource() {
+        return source;
+    }
+
+    public Station getTarget() {
+        return target;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public int getTimeToTake() {
+        return timeToTake;
+    }
+
+    public List<Edge> getEdges() {
+        return edges;
     }
 
     public static EdgeResponseView of(Edge edge) {

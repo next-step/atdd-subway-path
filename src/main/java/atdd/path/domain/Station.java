@@ -23,16 +23,13 @@ public class Station {
 
     private String name;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "source")
     private List<Edge> edgesAsSource = new ArrayList<>();
 
-    @JsonIgnore
     @OneToMany(mappedBy = "target")
     private List<Edge> edgesAsTarget = new ArrayList<>();
 
-    @JsonIgnore
-    @Transient
+    @OneToMany(mappedBy = "station")
     private List<Line> lines = new ArrayList<>();
 
     public Station() {

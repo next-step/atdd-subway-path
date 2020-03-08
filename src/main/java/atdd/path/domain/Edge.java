@@ -25,12 +25,12 @@ public class Edge {
 
     @JsonIgnore
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "station_id", updatable = false, insertable = false)
+    @JoinColumn(name = "station_id")
     private Station target;
 
     @JsonIgnore
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "line_id")
     private Line line;
 
     private int distance;
@@ -91,7 +91,7 @@ public class Edge {
     }
 
 
-    public static Edge of(EdgeRequestView requestView){
+    public static Edge of(EdgeRequestView requestView) {
         return Edge.builder()
                 .source(requestView.getSource())
                 .target(requestView.getTarget())
