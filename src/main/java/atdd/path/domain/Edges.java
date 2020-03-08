@@ -1,5 +1,7 @@
 package atdd.path.domain;
 
+import sun.rmi.runtime.Log;
+
 import javax.persistence.Embeddable;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +34,15 @@ public class Edges {
 
         List<Station> stations = new ArrayList<>();
         stations.add(firstStation);
-        Station nextStation = findTargetStation(firstStation).orElseThrow(RuntimeException::new);
+        Station nextStation
+                = findTargetStation(firstStation).orElseThrow(RuntimeException::new);
+
         while(!nextStation.equals(prevLastStation)){
             stations.add(nextStation);
-            nextStation = findTargetStation(nextStation).orElseThrow(RuntimeException::new);
+            nextStation
+                    = findTargetStation(nextStation).orElseThrow(RuntimeException::new);
         }
+
         stations.add(prevLastStation);
         stations.add(lastStation);
         return stations;
@@ -86,8 +92,25 @@ public class Edges {
         return newSource.get();
     }
 
-    public void removeStation(Station testStation) {
+    public Edges findNewEdges(Station stationToDelete) {
+        List<Edge> collect = edges.stream()
+                .filter(it -> !it.getTarget().equals(stationToDelete))
+                .filter(it -> !it.getSource().equals(stationToDelete))
+                .collect(Collectors.toList());
+        return new Edges(collect);
+    }
 
+    public List<Long> findIdOfEdgesToDelete(Station stationToDelete){
+        List<Long> idToDelete = edges.stream()
+                .filter(it -> it.getSource().equals(stationToDelete))
+                .map(Edge::getId)
+                .collect(Collectors.toList());
 
+        edges.stream()
+                .filter(it -> it.getTarget().equals(stationToDelete))
+                .map(Edge::getId)
+                .forEach(it -> idToDelete.add(it));
+
+        return idToDelete;
     }
 }

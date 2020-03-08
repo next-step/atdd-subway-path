@@ -52,4 +52,8 @@ public class Line {
     public List<Station> getStations() {
         return edges.getStations();
     }
+
+    public void changeEdges(Edges newEdges) {
+        this.edges = newEdges;
+    }
 }

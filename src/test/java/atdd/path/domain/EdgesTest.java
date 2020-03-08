@@ -62,12 +62,21 @@ public class EdgesTest {
     }
 
     @Test
-    void removeStationTest(){
+    void findNeWEdgesTest() {
         //when
-        edges.removeStation(TEST_STATION);
+        Edges newEdges = edges.findNewEdges(TEST_STATION);
 
         //then
-        assertThat(edges.getStations().size()).isEqualTo(3);
-        assertThat(edges.findFirstStation()).isEqualTo(TEST_STATION_2);
+        assertThat(newEdges.getStations().size()).isEqualTo(3);
+        assertThat(newEdges.findFirstStation()).isEqualTo(TEST_STATION_2);
+    }
+
+    @Test
+    void findIdOfEdgesToDeleteTest(){
+        //when
+        List<Long> idOfEdgesToDelete = edges.findIdOfEdgesToDelete(TEST_STATION_4);
+
+        //then
+        assertThat(idOfEdgesToDelete.size()).isEqualTo(1);
     }
 }
