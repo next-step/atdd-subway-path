@@ -45,9 +45,23 @@ public class EdgeServiceTest {
         Edge edge = edgeService.addEdge(LINE_ID, STATION_ID, STATION_ID_2, 10);
 
         //then
-        verify(edgeRepository, times(1)).save(any(Edge.class));
-        assertThat(edge.getId()).isEqualTo(1L);
-        assertThat(edge.getSource().getId()).isEqualTo(STATION_ID);
-        assertThat(edge.getTarget().getId()).isEqualTo(STATION_ID_2);
+        verify(edgeRepository, times(1))
+                .save(any(Edge.class));
+        assertThat(edge.getId())
+                .isEqualTo(1L);
+        assertThat(edge.getSource().getId())
+                .isEqualTo(STATION_ID);
+        assertThat(edge.getTarget().getId())
+                .isEqualTo(STATION_ID_2);
+    }
+
+    @Test
+    void 지하철역을_삭제하면_해당역을_포함한_엣지도_삭제한다(){
+        //when
+        edgeRepository.deleteById(EDGE_ID);
+
+        //then
+        verify(edgeRepository, times(1))
+                .deleteById(1L);
     }
 }
