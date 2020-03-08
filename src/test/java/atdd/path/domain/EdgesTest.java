@@ -60,4 +60,14 @@ public class EdgesTest {
         assertThat(stations.get(0)).isEqualTo(TEST_STATION);
         assertThat(stations.get(3)).isEqualTo(TEST_STATION_4);
     }
+
+    @Test
+    void removeStationTest(){
+        //when
+        edges.removeStation(TEST_STATION);
+
+        //then
+        assertThat(edges.getStations().size()).isEqualTo(3);
+        assertThat(edges.findFirstStation()).isEqualTo(TEST_STATION_2);
+    }
 }

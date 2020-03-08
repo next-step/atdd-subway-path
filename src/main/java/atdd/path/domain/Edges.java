@@ -85,4 +85,9 @@ public class Edges {
         }
         return newSource.get();
     }
+
+    public void removeStation(Station testStation) {
+
+
+    }
 }
