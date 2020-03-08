@@ -27,7 +27,6 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     public static final LocalTime START_TIME = LocalTime.of(5, 00);
     public static final LocalTime END_TIME = LocalTime.of(23, 50);
     public static final int INTERVAL_TIME = 10;
-    public static final int DISTANCE_KM = 5;
 
     @BeforeEach
     void setUp() {
@@ -133,5 +132,26 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
                 .hasSize(theNumberOfLines);
     }
 
+    @DisplayName("지하철 노선에 구간 등록을 요청한다.")
+    @Test
+    void addEdge() throws Exception {
+        //given
+        stationHttpTest.create(STATION_NAME);
+        stationHttpTest.create(STATION_NAME_2);
+        LineRequestView requestView = LineRequestView.builder()
+                .name(LINE_NAME)
+                .startTime(START_TIME)
+                .endTime(END_TIME)
+                .interval(INTERVAL_TIME)
+                .build();
+        String inputJson = objectMapper.writeValueAsString(requestView);
+        LineResponseView responseView = lineHttpTest.create(inputJson);
 
+        //when, then
+        webTestClient.post().uri("/lines/" + responseView.getId() + "/edges")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isCreated();
+    }
 }
