@@ -29,8 +29,8 @@ public class EdgeController {
                 .body(EdgeResponseView.of(edge));
     }
 
-    @DeleteMapping("/{lineId}")
-    public ResponseEntity deleteStation(@PathVariable("lineId") Long lineId,
+    @DeleteMapping
+    public ResponseEntity deleteStation(@RequestParam("lineId") Long lineId,
                                         @RequestParam("stationId") Long stationId) {
         edgeService.mergeEdgeByStationId(lineId, stationId);
         edgeService.deleteEdgeByStationId(lineId, stationId);

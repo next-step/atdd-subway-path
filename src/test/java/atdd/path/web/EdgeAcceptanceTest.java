@@ -79,7 +79,7 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
         edgeHttpTest.createEdge(lineId, startId, endId, DISTANCE_KM, INTERVAL_TIME);
 
         //when, then
-        webTestClient.delete().uri("/edges/" + lineId + "?stationId=" + startId)
+        webTestClient.delete().uri("/edges/" +"?lineId="+ lineId + "&stationId=" + startId)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk();

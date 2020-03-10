@@ -65,7 +65,7 @@ public class EdgeServiceTest {
         given(edgeRepository.findById(2L)).willReturn(Optional.of(TEST_EDGE_2));
 
         //when
-        Line line = edgeService.mergeEdgeByStationId(LINE_ID, STATION_ID_2);
+        edgeService.mergeEdgeByStationId(LINE_ID, STATION_ID_2);
 
         //then
         verify(edgeRepository, times(1)).save(any(Edge.class));

@@ -50,7 +50,7 @@ public class EdgeService {
         return edgesAfterRemovalStation;
     }
 
-    public Line mergeEdgeByStationId(Long lineId, Long stationId) {
+    public void mergeEdgeByStationId(Long lineId, Long stationId) {
         Line line = lineService.findById(lineId);
         Station stationToDelete = stationService.findById(stationId);
         Optional<Station> sourceStation = line.getEdges().findSourceStation(stationToDelete);
@@ -76,6 +76,5 @@ public class EdgeService {
             edgesAfterRemovalStation.getEdges().add(newEdge);
             line.addEdge(newEdge);
         }
-        return line;
     }
 }
