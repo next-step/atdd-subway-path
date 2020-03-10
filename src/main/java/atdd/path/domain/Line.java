@@ -68,7 +68,7 @@ public class Line {
     }
 
     public Edges findNewEdges(Station stationToDelete) {
-        Edges newEdges = edges.findNewEdges(stationToDelete);
+        Edges newEdges = edges.findEdgesAfterRemovalOfStation(stationToDelete);
         return newEdges;
     }
 }

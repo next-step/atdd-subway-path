@@ -4,6 +4,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -24,27 +25,20 @@ public class Edges {
     }
 
     public List<Station> getStations() {
-        return getStations(this.edges);
+        return getStationsOfEdges();
     }
 
-    private List<Station> getStations(List<Edge> edges) {
+    private List<Station> getStationsOfEdges() {
         Station firstStation = findFirstStation();
-        Station lastStation = findLastStation();
-        Station prevLastStation = findSourceStation(lastStation);
-
         List<Station> stations = new ArrayList<>();
         stations.add(firstStation);
-        Station nextStation
-                = findTargetStation(firstStation).orElseThrow(RuntimeException::new);
+        Optional<Station> nextStation
+                = findTargetStation(firstStation);
 
-        while (!nextStation.equals(prevLastStation)) {
-            stations.add(nextStation);
-            nextStation
-                    = findTargetStation(nextStation).orElseThrow(RuntimeException::new);
+        while (nextStation.isPresent()) {
+            stations.add(nextStation.get());
+            nextStation = findTargetStation(nextStation.get());
         }
-
-        stations.add(prevLastStation);
-        stations.add(lastStation);
         return stations;
     }
 
@@ -67,32 +61,31 @@ public class Edges {
                 .filter(it -> it.getSource().equals(sourceStation))
                 .findFirst()
                 .map(Edge::getTarget);
-
         return nextStation;
     }
 
-    public Station findSourceStation(Station targetStation) {
-        Station sourceStation = edges.stream()
+    public Optional<Station> findSourceStation(Station targetStation) {
+        Optional<Station> sourceStation = edges.stream()
                 .filter(it -> it.getTarget().equals(targetStation))
                 .findFirst()
-                .map(Edge::getSource)
-                .orElseThrow(RuntimeException::new);
+                .map(Edge::getSource);
         return sourceStation;
     }
 
     public Station findLastStation() {
         Station firstStation = this.findFirstStation();
         Optional<Station> targetStation = findTargetStation(firstStation);
-        Optional<Station> newSource = targetStation;
+        Station newSource = targetStation
+                .orElseThrow(() -> new NoSuchElementException(firstStation.getName() + "의 타깃 지하철역이 없습니다."));
 
         while (targetStation.isPresent()) {
-            newSource = targetStation;
+            newSource =targetStation.get();
             targetStation = findTargetStation(targetStation.get());
         }
-        return newSource.get();
+        return newSource;
     }
 
-    public Edges findNewEdges(Station stationToDelete) {
+    public Edges findEdgesAfterRemovalOfStation(Station stationToDelete) {
         List<Edge> collect = edges.stream()
                 .filter(it -> !it.getTarget().equals(stationToDelete))
                 .filter(it -> !it.getSource().equals(stationToDelete))

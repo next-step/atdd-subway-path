@@ -2,11 +2,14 @@ package atdd.path.service;
 
 import atdd.path.domain.Edge;
 import atdd.path.domain.EdgeRepository;
+import atdd.path.domain.Line;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
 
 import static atdd.path.TestConstant.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,5 +68,20 @@ public class EdgeServiceTest {
         //then
         verify(edgeRepository, times(2))
                 .deleteById(anyLong());
+    }
+
+    @Test
+    void 지하철역을_삭제하면_새로운_엣지가_생성된다(){
+        //given
+        given(lineService.findById(anyLong())).willReturn(TEST_LINE);
+        given(stationService.findById(anyLong())).willReturn(TEST_STATION_2);
+        given(edgeRepository.findById(1L)).willReturn(Optional.of(TEST_EDGE));
+        given(edgeRepository.findById(2L)).willReturn(Optional.of(TEST_EDGE_2));
+
+        //when
+        Line line = edgeService.mergeEdgeByStationId(LINE_ID, STATION_ID_2);
+
+        //then
+        assertThat(line.getStations().contains(TEST_STATION_2)).isFalse();
     }
 }

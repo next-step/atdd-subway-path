@@ -35,10 +35,10 @@ public class EdgesTest {
     @Test
     void findSourceStationTest() {
         //when
-        Station sourceStation = edges.findSourceStation(TEST_STATION_3);
+        Optional<Station> sourceStation = edges.findSourceStation(TEST_STATION_3);
 
         //then
-        assertThat(sourceStation).isEqualTo(TEST_STATION_2);
+        assertThat(sourceStation).isEqualTo(Optional.of(TEST_STATION_2));
     }
 
     @Test
@@ -64,7 +64,7 @@ public class EdgesTest {
     @Test
     void findNeWEdgesTest() {
         //when
-        Edges newEdges = edges.findNewEdges(TEST_STATION);
+        Edges newEdges = edges.findEdgesAfterRemovalOfStation(TEST_STATION);
 
         //then
         assertThat(newEdges.getStations().size()).isEqualTo(3);

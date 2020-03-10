@@ -32,6 +32,7 @@ public class EdgeController {
     public ResponseEntity deleteStation(@PathVariable("lineId") Long lineId,
                                         @RequestParam("stationId") Long stationId) {
         edgeService.deleteEdgeByStationId(lineId, stationId);
+        edgeService.mergeEdgeByStationId(lineId, stationId);
         return ResponseEntity
                 .ok()
                 .build();

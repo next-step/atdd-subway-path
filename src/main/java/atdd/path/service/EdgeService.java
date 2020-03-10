@@ -1,12 +1,10 @@
 package atdd.path.service;
 
-import atdd.path.application.dto.LineRequestView;
-import atdd.path.application.dto.LineResponseView;
 import atdd.path.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class EdgeService {
@@ -35,15 +33,46 @@ public class EdgeService {
         return save;
     }
 
-    public void deleteEdgeByStationId(Long lineId, Long stationId) {
+    public Edges deleteEdgeByStationId(Long lineId, Long stationId) {
         Line line = lineService.findById(lineId);
         Station stationToDelete = stationService.findById(stationId);
         List<Long> idOfEdgesToDelete = line.findIdOfEdgesToDelete(stationToDelete);
+        int newDistance = 0;
         for (Long id : idOfEdgesToDelete) {
             edgeRepository.deleteById(id);
+            Edge oldEdge = edgeRepository.findById(id).orElseThrow(RuntimeException::new);
+            newDistance= newDistance+oldEdge.getDistance();
+        }
+        Edges edgesAfterRemovalStation = line.findNewEdges(stationToDelete);
+        line.changeEdges(edgesAfterRemovalStation);
+        return edgesAfterRemovalStation;
+    }
+
+    public Line mergeEdgeByStationId(Long lineId, Long stationId) {
+        Line line = lineService.findById(lineId);
+        Station stationToDelete = stationService.findById(stationId);
+        Optional<Station> sourceStation = line.getEdges().findSourceStation(stationToDelete);
+        Optional<Station> targetStation = line.getEdges().findTargetStation(stationToDelete);
+        List<Long> idOfEdgesToDelete = line.findIdOfEdgesToDelete(stationToDelete);
+
+        int newDistance = 0;
+        for (Long id : idOfEdgesToDelete) {
+            edgeRepository.deleteById(id);
+            Edge oldEdge = edgeRepository.findById(id).orElseThrow(RuntimeException::new);
+            newDistance= newDistance+oldEdge.getDistance();
         }
 
-        Edges newEdges = line.findNewEdges(stationToDelete);
-        line.changeEdges(newEdges);
+        if(targetStation.isPresent() && sourceStation.isPresent()){
+            Edge newEdge = Edge.builder()
+                    .line(line)
+                    .source(sourceStation.get())
+                    .target(targetStation.get())
+                    .distance(newDistance)
+                    .build();
+            edgeRepository.save(newEdge);
+            Edges edgesAfterRemovalStation = line.findNewEdges(stationToDelete);
+            edgesAfterRemovalStation.getEdges().add(newEdge);
+        }
+        return line;
     }
 }
