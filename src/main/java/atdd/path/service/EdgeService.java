@@ -42,7 +42,6 @@ public class EdgeService {
 
         int newDistance = 0;
         for (Long id : idOfEdgesToDelete) {
-            edgeRepository.deleteById(id);
             Edge oldEdge = edgeRepository.findById(id).orElseThrow(RuntimeException::new);
             newDistance= newDistance+oldEdge.getDistance();
         }

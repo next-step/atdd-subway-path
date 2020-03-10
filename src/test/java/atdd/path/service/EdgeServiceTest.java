@@ -66,8 +66,11 @@ public class EdgeServiceTest {
     }
 
     @Test
-    void 삭제하려는_지하철역의_소스와_타깃_새로운_엣지_병합된다() {
+    void 삭제하려는_지하철역이_포함된_엣지의_소스와_타깃은_병합된다() {
         //given
+        Line TEST_LINE = new Line(LINE_ID, LINE_NAME,
+                Lists.list(TEST_EDGE_23, TEST_EDGE, TEST_EDGE_2, TEST_EDGE_3, TEST_EDGE_4),
+                LocalTime.of(5, 0), LocalTime.of(23, 30), 30);
         given(lineService.findById(anyLong())).willReturn(TEST_LINE);
         int size = TEST_LINE.getEdges().getEdges().size();
         given(stationService.findById(anyLong())).willReturn(TEST_STATION_2);
