@@ -35,7 +35,7 @@ public class GraphAcceptanceTest extends AbstractAcceptanceTest {
     }
 
     @Test
-    public void findPath() throws Exception {
+    public void findMinTimePath() throws Exception {
         StationResponseView station1 = stationHttpTest.create(STATION_NAME);
         StationResponseView station2 = stationHttpTest.create(STATION_NAME_2);
         StationResponseView station3 = stationHttpTest.create(STATION_NAME_2);
