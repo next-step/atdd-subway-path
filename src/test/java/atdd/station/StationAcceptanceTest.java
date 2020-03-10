@@ -1,158 +1,92 @@
 package atdd.station;
 
-import atdd.station.model.Station;
-import atdd.station.repository.StationRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Assert;
+import atdd.station.model.dto.StationDto;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 public class StationAcceptanceTest {
-    private static final Logger logger = LoggerFactory.getLogger(StationAcceptanceTest.class);
+    private final String STATION_NAME1 = "강남역";
+    private final String STATION_NAME2 = "역삼역";
+    private final String STATION_NAME3 = "선릉역";
 
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private StationTestHelper stationTestHelper;
 
     @Autowired
     private WebTestClient webTestClient;
 
-    @Autowired
-    private StationRepository repository;
-
-    @Test
-    public void createStation(){
-        //when
-        String stationName = "강남역";
-        String inputJson = "{\"name\":\"" + stationName + "\"}";
-
-        EntityExchangeResult result = webTestClient.post().uri("/stations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectHeader().exists("Location")
-                .expectBody(Station.class).returnResult();
-
-        // then
-        String location = result.getResponseHeaders().getLocation().getPath();
-
-        Station station = (Station) result.getResponseBody();
-
-        String expected = writeValueAsString(station);
-        String actual = writeValueAsString(repository.findById(station.getId()));
-
-        Assert.assertEquals(expected, actual);
-
-        logger.info("createStation location = {}", location);
+    @BeforeEach
+    void setUp() {
+        this.stationTestHelper = new StationTestHelper(webTestClient);
     }
 
     @Test
-    public void findAllStations(){
+    public void createStation() {
+        //when
+        StationDto station = stationTestHelper.createStation(STATION_NAME1);
+
+        // then
+        assertThat(station.getName()).isEqualTo(STATION_NAME1);
+    }
+
+    @Test
+    public void findAllStations() {
         // given
-        createStations();
+        StationDto stations1 = stationTestHelper.createStation(STATION_NAME1);
+        StationDto stations2 = stationTestHelper.createStation(STATION_NAME2);
+        StationDto stations3 = stationTestHelper.createStation(STATION_NAME3);
 
         // when
-        EntityExchangeResult result = webTestClient.get().uri("/stations")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(List.class).returnResult();
+        List<StationDto> stations = stationTestHelper.findAll();
 
         //then
-        String expected = writeValueAsString(result.getResponseBody());
-        String actual = writeValueAsString(repository.findAll());
-
-        Assert.assertEquals(expected, actual);
-
-        logger.info("findAllStations = {}", expected);
+        assertThat(stations.size()).isEqualTo(3);
+        assertThat(stations.get(0).getName()).isEqualTo(STATION_NAME1);
+        assertThat(stations.get(1).getName()).isEqualTo(STATION_NAME2);
+        assertThat(stations.get(2).getName()).isEqualTo(STATION_NAME3);
     }
 
     @Test
-    public void findStation(){
+    public void findStation() {
         // given
-        createStations();
+        StationDto stations1 = stationTestHelper.createStation(STATION_NAME1);
+        StationDto stations2 = stationTestHelper.createStation(STATION_NAME2);
+        StationDto stations3 = stationTestHelper.createStation(STATION_NAME3);
 
         // when
-        long stationId = 1;
-
-        EntityExchangeResult result = webTestClient.get().uri("/stations/" + stationId)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(Station.class).returnResult();
+        StationDto station = stationTestHelper.findById(stations1.getId());
 
         // then
-        String expected = writeValueAsString(result.getResponseBody());
-        String actual = writeValueAsString(repository.findById(stationId));
-
-        Assert.assertEquals(expected, actual);
-
-        logger.info("findStation = {}", expected);
+        assertThat(station.getId()).isEqualTo(stations1.getId());
+        assertThat(station.getName()).isEqualTo(STATION_NAME1);
     }
 
     @Test
-    public void deleteStation(){
+    public void deleteStation() {
         // given
-        createStations();
+        StationDto stations1 = stationTestHelper.createStation(STATION_NAME1);
+        StationDto stations2 = stationTestHelper.createStation(STATION_NAME2);
+        StationDto stations3 = stationTestHelper.createStation(STATION_NAME3);
 
         // when
-        long stationId = 1;
-
-        EntityExchangeResult result = webTestClient.delete().uri("/stations/" + stationId)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isNoContent()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody().returnResult();
+        stationTestHelper.deleteById(stations1.getId());
 
         // then
-        Station station = repository.findById(stationId);
+        List<StationDto> stations = stationTestHelper.findAll();
 
-        Assert.assertEquals(null, station);
-
-        logger.info("deleteStation = {}", station);
-    }
-
-    private void createStations() {
-        createStation("강남역");
-        createStation("삼성역");
-    }
-
-    private void createStation(String name) {
-
-        String inputJson = "{\"name\":\"" + name + "\"}";
-
-        webTestClient.post().uri("/stations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
-                .exchange();
-    }
-
-    private String writeValueAsString(Object object) {
-        String result = null;
-        try {
-            result = mapper.writeValueAsString(object);
-        }catch (JsonProcessingException e){
-            logger.error("JsonProcessingException", e);
-        }
-
-        return result;
+        assertThat(stations.size()).isEqualTo(2);
+        assertThat(stations.get(0).getName()).isNotEqualTo(STATION_NAME1);
+        assertThat(stations.get(1).getName()).isNotEqualTo(STATION_NAME1);
     }
 }

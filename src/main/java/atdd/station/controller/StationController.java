@@ -1,80 +1,91 @@
 package atdd.station.controller;
 
-import atdd.station.model.CreateStationRequestView;
-import atdd.station.model.Station;
+import atdd.station.model.dto.CreateStationRequestView;
+import atdd.station.model.dto.LineSimpleDto;
+import atdd.station.model.dto.StationDto;
+import atdd.station.model.entity.Station;
 import atdd.station.repository.StationRepository;
+import atdd.station.service.StationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
+@RequestMapping("/stations")
 public class StationController {
     private static final Logger logger = LoggerFactory.getLogger(StationController.class);
 
     @Autowired
     private StationRepository stationRepository;
 
-    @PostMapping(value = "/stations")
-    @ResponseBody
-    public ResponseEntity<Station> createStation(@RequestBody CreateStationRequestView view) {
-        Station station = stationRepository.save(view.toStation());
+    @Autowired
+    private StationService stationService;
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+    @PostMapping
+    public ResponseEntity<StationDto> createStation(@RequestBody CreateStationRequestView view) {
+        final Station station = stationRepository.save(view.toStation());
+
+        StationDto stationDto = StationDto.builder()
+                .id(station.getId())
+                .name(station.getName()).build();
 
         return ResponseEntity.created(URI.create("/stations/" + station.getId()))
-                .headers(httpHeaders)
-                .body(station);
+                .body(stationDto);
     }
 
-    @GetMapping(value = "/stations")
-    @ResponseBody
-    public ResponseEntity<List<Station>> findAllStations() {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+    @GetMapping
+    public ResponseEntity<List<StationDto>> findAllStations() {
+        final List<Station> stations = stationRepository.findAll();
 
-        List stations = stationRepository.findAll();
+        List<StationDto> stationDtos = new ArrayList<>();
 
-        return ResponseEntity.ok()
-                .headers(httpHeaders)
-                .body(stations);
+        for (Station station : stations) {
+            List<LineSimpleDto> lines = stationService.lineDtos(station.getLineIds());
+
+            StationDto stationDto = StationDto.builder()
+                    .id(station.getId())
+                    .name(station.getName())
+                    .lines(lines).build();
+
+            stationDtos.add(stationDto);
+        }
+
+        return ResponseEntity.ok(stationDtos);
     }
 
-    @GetMapping(value = "/stations/{id}")
-    @ResponseBody
-    public ResponseEntity<Station> findStation(@PathVariable long id) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+    @GetMapping("/{id}")
+    public ResponseEntity<StationDto> findStation(@PathVariable long id) {
+        final Optional<Station> optionalStation = stationRepository.findById(id);
+
+        if (optionalStation.isPresent()) {
+            Station station = optionalStation.get();
+
+            StationDto stationDto = StationDto.builder()
+                    .id(station.getId())
+                    .name(station.getName())
+                    .lines(stationService.lineDtos(station.getLineIds())).build();
+
+
+            return ResponseEntity.ok(stationDto);
+        }
 
         return ResponseEntity
-                .ok()
-                .headers(httpHeaders)
-                .body(stationRepository.findById(id));
+                .noContent().build();
     }
 
-    @DeleteMapping(value = "/stations/{id}")
-    @ResponseBody
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteStation(@PathVariable long id) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-
         stationRepository.deleteById(id);
 
         return ResponseEntity
                 .noContent()
-                .headers(httpHeaders)
                 .build();
     }
 }
