@@ -1,5 +1,6 @@
 package atdd.path.domain;
 
+import atdd.path.application.dto.LineResponseView;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
@@ -71,5 +72,16 @@ public class Line {
     public Edges findNewEdges(Station stationToDelete) {
         Edges newEdges = edges.findEdgesAfterRemovalOfStation(stationToDelete);
         return newEdges;
+    }
+
+    public static Line of(LineResponseView responseView){
+        return Line.builder()
+                .id(responseView.getId())
+                .name(responseView.getName())
+                .startTime(responseView.getStartTime())
+                .endTime(responseView.getEndTime())
+                .interval(responseView.getInterval())
+                .edges(responseView.getEdges())
+                .build();
     }
 }
