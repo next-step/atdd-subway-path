@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -59,5 +60,15 @@ public class Line {
 
     public void changeEdges(Edges newEdges) {
         this.edges = newEdges;
+    }
+
+    public List<Long> findIdOfEdgesToDelete(Station stationToDelete) {
+        List<Long> idToDelete = edges.findIdOfEdgesToDelete(stationToDelete);
+        return idToDelete;
+    }
+
+    public Edges findNewEdges(Station stationToDelete) {
+        Edges newEdges = edges.findNewEdges(stationToDelete);
+        return newEdges;
     }
 }

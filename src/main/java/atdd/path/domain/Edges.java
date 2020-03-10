@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Edges {
-
     @OneToMany(mappedBy = "line")
     private List<Edge> edges = new ArrayList<>();
 

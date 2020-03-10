@@ -38,12 +38,12 @@ public class EdgeService {
     public void deleteEdgeByStationId(Long lineId, Long stationId) {
         Line line = lineService.findById(lineId);
         Station stationToDelete = stationService.findById(stationId);
-        List<Long> idOfEdgesToDelete = line.getEdges().findIdOfEdgesToDelete(stationToDelete);
+        List<Long> idOfEdgesToDelete = line.findIdOfEdgesToDelete(stationToDelete);
         for (Long id : idOfEdgesToDelete) {
             edgeRepository.deleteById(id);
         }
 
-        Edges newEdges = line.getEdges().findNewEdges(stationToDelete);
+        Edges newEdges = line.findNewEdges(stationToDelete);
         line.changeEdges(newEdges);
     }
 }
