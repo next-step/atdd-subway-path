@@ -38,6 +38,7 @@ public class EdgeService {
         Line line = lineService.findById(lineId);
         Station stationToDelete = stationService.findById(stationId);
         List<Long> idOfEdgesToDelete = line.findIdOfEdgesToDelete(stationToDelete);
+
         int newDistance = 0;
         for (Long id : idOfEdgesToDelete) {
             Edge oldEdge = edgeRepository.findById(id).orElseThrow(RuntimeException::new);
@@ -46,7 +47,6 @@ public class EdgeService {
         }
         Edges edgesAfterRemovalStation = line.findNewEdges(stationToDelete);
         line.changeEdges(edgesAfterRemovalStation);
-        lineService.create(LineRequestView.of(line));
         return edgesAfterRemovalStation;
     }
 
@@ -74,7 +74,7 @@ public class EdgeService {
             edgeRepository.save(newEdge);
             Edges edgesAfterRemovalStation = line.findNewEdges(stationToDelete);
             edgesAfterRemovalStation.getEdges().add(newEdge);
-            lineService.create(LineRequestView.of(line));
+            line.addEdge(newEdge);
         }
         return line;
     }

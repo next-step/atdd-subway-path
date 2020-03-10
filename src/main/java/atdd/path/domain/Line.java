@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,5 +71,9 @@ public class Line {
     public Edges findNewEdges(Station stationToDelete) {
         Edges newEdges = edges.findEdgesAfterRemovalOfStation(stationToDelete);
         return newEdges;
+    }
+
+    public void addEdge(Edge edge){
+        this.getEdges().getEdges().add(edge);
     }
 }

@@ -64,7 +64,6 @@ public class EdgeServiceTest {
         given(edgeRepository.findById(1L)).willReturn(Optional.of(TEST_EDGE));
         given(edgeRepository.findById(2L)).willReturn(Optional.of(TEST_EDGE_2));
 
-
         //when
         Edges edges = edgeService.deleteEdgeByStationId(LINE_ID, STATION_ID_2);
 
@@ -72,6 +71,7 @@ public class EdgeServiceTest {
         verify(edgeRepository, times(2))
                 .deleteById(anyLong());
         assertThat(edges.findTargetStation(TEST_STATION)).isEmpty();
+        assertThat(edges.findSourceStation(TEST_STATION_3)).isEmpty();
     }
 
     @Test
@@ -88,5 +88,6 @@ public class EdgeServiceTest {
 
         //then
         assertThat(line.getEdges().findSourceStation(TEST_STATION_3)).isEqualTo(Optional.of(TEST_STATION));
+        assertThat(line.getEdges().findTargetStation(TEST_STATION)).isEqualTo(Optional.of(TEST_STATION_3));
     }
 }
