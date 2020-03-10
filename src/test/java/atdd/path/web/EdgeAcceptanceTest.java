@@ -1,10 +1,13 @@
 package atdd.path.web;
 
 import atdd.AbstractAcceptanceTest;
+import atdd.path.TestConstant;
 import atdd.path.application.dto.EdgeResponseView;
 import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
 import atdd.path.application.dto.StationResponseView;
+import atdd.path.domain.Edges;
+import atdd.path.domain.Station;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import java.time.LocalTime;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

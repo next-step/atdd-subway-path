@@ -3,6 +3,7 @@ package atdd.path.web;
 import atdd.path.application.dto.EdgeRequestViewFromClient;
 import atdd.path.application.dto.EdgeResponseView;
 import atdd.path.domain.Edge;
+import atdd.path.domain.Edges;
 import atdd.path.service.EdgeService;
 import atdd.path.service.LineService;
 import atdd.path.service.StationService;
@@ -31,8 +32,8 @@ public class EdgeController {
     @DeleteMapping("/{lineId}")
     public ResponseEntity deleteStation(@PathVariable("lineId") Long lineId,
                                         @RequestParam("stationId") Long stationId) {
-        edgeService.deleteEdgeByStationId(lineId, stationId);
         edgeService.mergeEdgeByStationId(lineId, stationId);
+        edgeService.deleteEdgeByStationId(lineId, stationId);
         return ResponseEntity
                 .ok()
                 .build();

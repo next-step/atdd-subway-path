@@ -1,5 +1,6 @@
 package atdd.path.domain;
 
+import atdd.path.application.dto.StationResponseView;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,5 +32,12 @@ public class Station {
         this.name = name;
     }
 
+
+    public static Station of(StationResponseView responseView){
+        return Station.builder()
+                .id(responseView.getId())
+                .name(responseView.getName())
+                .build();
+    }
 }
 
