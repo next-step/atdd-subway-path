@@ -1,5 +1,6 @@
 package atdd.path.service;
 
+import atdd.path.application.dto.LineRequestView;
 import atdd.path.domain.*;
 import org.springframework.stereotype.Service;
 
@@ -39,12 +40,13 @@ public class EdgeService {
         List<Long> idOfEdgesToDelete = line.findIdOfEdgesToDelete(stationToDelete);
         int newDistance = 0;
         for (Long id : idOfEdgesToDelete) {
-            edgeRepository.deleteById(id);
             Edge oldEdge = edgeRepository.findById(id).orElseThrow(RuntimeException::new);
             newDistance= newDistance+oldEdge.getDistance();
+            edgeRepository.deleteById(id);
         }
         Edges edgesAfterRemovalStation = line.findNewEdges(stationToDelete);
         line.changeEdges(edgesAfterRemovalStation);
+        lineService.create(LineRequestView.of(line));
         return edgesAfterRemovalStation;
     }
 
@@ -72,6 +74,7 @@ public class EdgeService {
             edgeRepository.save(newEdge);
             Edges edgesAfterRemovalStation = line.findNewEdges(stationToDelete);
             edgesAfterRemovalStation.getEdges().add(newEdge);
+            lineService.create(LineRequestView.of(line));
         }
         return line;
     }
