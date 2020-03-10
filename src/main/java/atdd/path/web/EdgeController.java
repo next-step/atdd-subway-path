@@ -12,15 +12,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value = "/edges")
 public class EdgeController {
-    private LineService lineService;
     private EdgeService edgeService;
-    private StationService stationService;
 
-    public EdgeController(LineService lineService, EdgeService edgeService,
-                          StationService stationService) {
-        this.lineService = lineService;
+    public EdgeController(EdgeService edgeService) {
         this.edgeService = edgeService;
-        this.stationService = stationService;
     }
 
     @PostMapping("/{lineId}")

@@ -2,7 +2,10 @@ package atdd.path.service;
 
 import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
-import atdd.path.domain.*;
+import atdd.path.domain.Edge;
+import atdd.path.domain.Line;
+import atdd.path.domain.LineRepository;
+import atdd.path.domain.Station;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -77,12 +80,6 @@ public class LineServiceTest {
     @Mock
     LineRepository lineRepository;
 
-    @Mock
-    EdgeRepository edgeRepository;
-
-    @Mock
-    StationRepository stationRepository;
-
     @Test
     void 지하철노선_등록하기() {
         //given
@@ -150,11 +147,11 @@ public class LineServiceTest {
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
         //when
-        LineResponseView responseView = lineService.retrieve(line.getId());
+        Line line2 = lineService.findById(line.getId());
 
         //then
-        assertThat(responseView.getId()).isEqualTo(line.getId());
-        assertThat(responseView.getName()).isEqualTo(line.getName());
+        assertThat(line2.getId()).isEqualTo(line.getId());
+        assertThat(line2.getName()).isEqualTo(line.getName());
     }
 
     @Test
@@ -164,7 +161,7 @@ public class LineServiceTest {
 
         //when, then
         assertThrows(NoSuchElementException.class, () -> {
-            lineService.retrieve(line.getId());
+            lineService.findById(line.getId());
         });
     }
 
@@ -180,6 +177,4 @@ public class LineServiceTest {
         //then
         assertThat(responseView.size()).isEqualTo(theNumberOfLine);
     }
-
-
 }

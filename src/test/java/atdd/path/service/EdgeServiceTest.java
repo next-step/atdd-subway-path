@@ -2,15 +2,11 @@ package atdd.path.service;
 
 import atdd.path.domain.Edge;
 import atdd.path.domain.EdgeRepository;
-import atdd.path.domain.LineRepository;
-import atdd.path.domain.StationRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Optional;
 
 import static atdd.path.TestConstant.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,17 +25,17 @@ public class EdgeServiceTest {
     EdgeRepository edgeRepository;
 
     @Mock
-    StationRepository stationRepository;
+    LineService lineService;
 
     @Mock
-    LineRepository lineRepository;
+    StationService stationService;
 
     @Test
-    void 엣지를_추가한다() throws Exception {
+    void 엣지를_추가한다() {
         //given
-        given(lineRepository.findById(any())).willReturn(Optional.of(TEST_LINE));
-        given(stationRepository.findById(STATION_ID)).willReturn(Optional.of(TEST_STATION));
-        given(stationRepository.findById(STATION_ID_2)).willReturn(Optional.of(TEST_STATION_2));
+        given(lineService.findById(any())).willReturn(TEST_LINE);
+        given(stationService.findById(STATION_ID)).willReturn(TEST_STATION);
+        given(stationService.findById(STATION_ID_2)).willReturn(TEST_STATION_2);
         given(edgeRepository.save(any(Edge.class))).willReturn(TEST_EDGE);
 
         //when
@@ -59,8 +55,8 @@ public class EdgeServiceTest {
     @Test
     void 지하철역을_삭제하면_해당역을_포함한_엣지도_삭제한다() {
         //given
-        given(lineRepository.findById(anyLong())).willReturn(Optional.of(TEST_LINE));
-        given(stationRepository.findById(anyLong())).willReturn(Optional.of(TEST_STATION_2));
+        given(lineService.findById(anyLong())).willReturn(TEST_LINE);
+        given(stationService.findById(anyLong())).willReturn(TEST_STATION_2);
 
 
         //when

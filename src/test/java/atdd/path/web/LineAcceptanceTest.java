@@ -43,17 +43,11 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
         this.lineHttpTest = new LineHttpTest(webTestClient);
     }
 
-    @Autowired
-    ObjectMapper objectMapper;
-
     @DisplayName("지하철 노선 등록을 요청한다.")
     @Test
     void create() throws Exception {
-        //given
-        String inputJson = objectMapper.writeValueAsString(requestView);
-
         //when
-        LineResponseView responseView = lineHttpTest.create(inputJson);
+        LineResponseView responseView = lineHttpTest.create(requestView);
 
         //then
         assertThat(responseView.getId()).isEqualTo(1L);
@@ -64,8 +58,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     void delete() throws Exception {
         //given
-        String inputJson = objectMapper.writeValueAsString(requestView);
-        LineResponseView responseView = lineHttpTest.create(inputJson);
+        LineResponseView responseView = lineHttpTest.create(requestView);
 
         //when, then
         webTestClient.delete().uri(LINE_BASE_URI + "/" + responseView.getId())
@@ -79,8 +72,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     void retrieve() throws Exception {
         //given
-        String inputJson = objectMapper.writeValueAsString(requestView);
-        LineResponseView responseView = lineHttpTest.create(inputJson);
+        LineResponseView responseView = lineHttpTest.create(requestView);
 
         //when, then
         webTestClient.get().uri(LINE_BASE_URI + "/" + responseView.getId())
@@ -94,13 +86,9 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @DisplayName("지하철 노선 목록 조회를 요청한다.")
     @Test
     void showAll() throws Exception {
-        //given
-        String inputJson = objectMapper.writeValueAsString(requestView);
-        String inputJson2 = objectMapper.writeValueAsString(requestView2);
-
         //when
-        lineHttpTest.create(inputJson);
-        lineHttpTest.create(inputJson2);
+        lineHttpTest.create(requestView);
+        lineHttpTest.create(requestView2);
 
         //then
         webTestClient.get().uri(LINE_BASE_URI)

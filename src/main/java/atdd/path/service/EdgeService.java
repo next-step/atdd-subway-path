@@ -1,5 +1,7 @@
 package atdd.path.service;
 
+import atdd.path.application.dto.LineRequestView;
+import atdd.path.application.dto.LineResponseView;
 import atdd.path.domain.*;
 import org.springframework.stereotype.Service;
 
@@ -8,23 +10,20 @@ import java.util.NoSuchElementException;
 
 @Service
 public class EdgeService {
-    private LineRepository lineRepository;
     private EdgeRepository edgeRepository;
-    private StationRepository stationRepository;
+    private LineService lineService;
+    private StationService stationService;
 
-    public EdgeService(LineRepository lineRepository, EdgeRepository edgeRepository, StationRepository stationRepository) {
-        this.lineRepository = lineRepository;
+    public EdgeService(EdgeRepository edgeRepository, LineService lineService, StationService stationService) {
         this.edgeRepository = edgeRepository;
-        this.stationRepository = stationRepository;
+        this.lineService = lineService;
+        this.stationService = stationService;
     }
 
     public Edge addEdge(Long lineId, Long sourceId, Long targetId, int distance) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(NoSuchElementException::new);
-        Station source = stationRepository.findById(sourceId)
-                .orElseThrow(NoSuchElementException::new);
-        Station target = stationRepository.findById(targetId)
-                .orElseThrow(NoSuchElementException::new);
+        Line line = lineService.findById(lineId);
+        Station source = stationService.findById(sourceId);
+        Station target = stationService.findById(targetId);
 
         Edge edge = Edge.builder()
                 .line(line)
@@ -37,11 +36,8 @@ public class EdgeService {
     }
 
     public void deleteEdgeByStationId(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(NoSuchElementException::new);
-        Station stationToDelete = stationRepository.findById(stationId)
-                .orElseThrow(NoSuchElementException::new);
-
+        Line line = lineService.findById(lineId);
+        Station stationToDelete = stationService.findById(stationId);
         List<Long> idOfEdgesToDelete = line.getEdges().findIdOfEdgesToDelete(stationToDelete);
         for (Long id : idOfEdgesToDelete) {
             edgeRepository.deleteById(id);
@@ -49,6 +45,5 @@ public class EdgeService {
 
         Edges newEdges = line.getEdges().findNewEdges(stationToDelete);
         line.changeEdges(newEdges);
-        lineRepository.save(line);
     }
 }

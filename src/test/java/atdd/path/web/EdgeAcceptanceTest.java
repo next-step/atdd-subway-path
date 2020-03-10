@@ -48,15 +48,14 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
         //given
         StationResponseView station1 = stationHttpTest.create(STATION_NAME);
         StationResponseView station2 = stationHttpTest.create(STATION_NAME_2);
-        String inputJson = objectMapper.writeValueAsString(requestView);
-        LineResponseView line = lineHttpTest.create(inputJson);
+        LineResponseView line = lineHttpTest.create(requestView);
         Long lineId = line.getId();
         Long startId = station1.getId();
         Long endId = station2.getId();
 
         //when
         EdgeResponseView response
-                = edgeHttpTest.createEdge(lineId, startId, endId, DISTANCE_KM, INTERVAL_TIME, objectMapper);
+                = edgeHttpTest.createEdge(lineId, startId, endId, DISTANCE_KM, INTERVAL_TIME);
 
         //then
         assertThat(response.getId()).isEqualTo(1L);
@@ -69,12 +68,11 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
         //given
         StationResponseView station1 = stationHttpTest.create(STATION_NAME);
         StationResponseView station2 = stationHttpTest.create(STATION_NAME_2);
-        String inputJson = objectMapper.writeValueAsString(requestView);
-        LineResponseView line = lineHttpTest.create(inputJson);
+        LineResponseView line = lineHttpTest.create(requestView);
         Long lineId = line.getId();
         Long startId = station1.getId();
         Long endId = station2.getId();
-        edgeHttpTest.createEdge(lineId, startId, endId, DISTANCE_KM, INTERVAL_TIME, objectMapper);
+        edgeHttpTest.createEdge(lineId, startId, endId, DISTANCE_KM, INTERVAL_TIME);
 
         //when, then
         webTestClient.delete().uri("/edges/" + lineId + "?stationId=" + startId)
