@@ -106,4 +106,8 @@ public class Edges {
 
         return idToDelete;
     }
+
+    public void addEdge(Edge edge){
+        edges.add(edge);
+    }
 }

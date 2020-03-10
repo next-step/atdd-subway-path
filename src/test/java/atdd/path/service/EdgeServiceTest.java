@@ -4,12 +4,21 @@ import atdd.path.domain.Edge;
 import atdd.path.domain.EdgeRepository;
 import atdd.path.domain.Edges;
 import atdd.path.domain.Line;
-import org.junit.jupiter.api.Test;
+import org.aspectj.lang.annotation.After;
+import org.assertj.core.util.Lists;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.event.annotation.AfterTestMethod;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
 import java.util.Optional;
 
 import static atdd.path.TestConstant.*;
@@ -57,18 +66,25 @@ public class EdgeServiceTest {
     }
 
     @Test
-    void 삭제하려는_지하철역의_소스와_타깃_새로운_엣지_병합된다(){
+    void 삭제하려는_지하철역의_소스와_타깃_새로운_엣지_병합된다() {
         //given
         given(lineService.findById(anyLong())).willReturn(TEST_LINE);
+        int size = TEST_LINE.getEdges().getEdges().size();
         given(stationService.findById(anyLong())).willReturn(TEST_STATION_2);
         given(edgeRepository.findById(1L)).willReturn(Optional.of(TEST_EDGE));
         given(edgeRepository.findById(2L)).willReturn(Optional.of(TEST_EDGE_2));
-
+        given(edgeRepository.save(any())).willReturn(Edge.builder()
+                .line(TEST_LINE)
+                .source(TEST_STATION)
+                .target(TEST_STATION_3)
+                .distance(20)
+                .build());
         //when
-        edgeService.mergeEdgeByStationId(LINE_ID, STATION_ID_2);
+        Line lineAfterMerge = edgeService.mergeEdgeByStationId(LINE_ID, STATION_ID_2);
 
         //then
-        verify(edgeRepository, times(1)).save(any(Edge.class));
+        verify(edgeRepository, times(1)).save(any());
+        assertThat(lineAfterMerge.getEdges().getEdges().size()).isEqualTo(size + 1);
     }
 
     @Test

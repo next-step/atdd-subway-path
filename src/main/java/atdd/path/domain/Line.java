@@ -72,8 +72,4 @@ public class Line {
         Edges newEdges = edges.findEdgesAfterRemovalOfStation(stationToDelete);
         return newEdges;
     }
-
-    public void addEdge(Edge edge){
-        this.getEdges().getEdges().add(edge);
-    }
 }
