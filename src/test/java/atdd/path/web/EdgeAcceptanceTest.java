@@ -61,6 +61,7 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
         assertThat(response.getSource().getName()).isEqualTo("사당");
         assertThat(response.getTarget().getName()).isEqualTo("방배");
 
+        //TODO **************************************여기입니다!!!!!!!!!
         StationResponseView persistStation1 = stationHttpTest.findById(start.getId());
         assertThat(persistStation1.getLines().size()).isEqualTo(1);
     }
