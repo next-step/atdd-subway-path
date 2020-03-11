@@ -1,8 +1,11 @@
 package atdd.path.service;
 
+import atdd.path.application.dto.LineRequestView;
 import atdd.path.domain.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +21,9 @@ public class EdgeService {
         this.stationService = stationService;
     }
 
+    @Autowired
+    LineRepository lineRepository;
+
     public Edge addEdge(Long lineId, Long sourceId, Long targetId, int distance) {
         Line line = lineService.findById(lineId);
         Station source = stationService.findById(sourceId);
@@ -29,15 +35,27 @@ public class EdgeService {
                 .target(target)
                 .distance(10)
                 .build();
+
         Edge save = edgeRepository.save(edge);
+        line.getEdges().add(save);
         return save;
     }
 
     public Line mergeEdgeByStationId(Long lineId, Long stationId) {
         Line line = lineService.findById(lineId);
         Station stationToDelete = stationService.findById(stationId);
-        Optional<Station> sourceStation = line.getEdges().findSourceStation(stationToDelete);
-        Optional<Station> targetStation = line.getEdges().findTargetStation(stationToDelete);
+        List<Edge> edges = line.getEdges();
+        Optional<Station> targetStation = line.getEdges()
+                .stream()
+                .filter(it -> stationToDelete.equals(it.getSource()))
+                .findFirst()
+                .map(Edge::getTarget);
+        Optional<Station> sourceStation = line.getEdges()
+                .stream()
+                .filter(it -> stationToDelete.equals(it.getTarget()))
+                .findFirst()
+                .map(Edge::getSource);
+
         List<Long> idOfEdgesToDelete = line.findIdOfEdgesToDelete(stationToDelete);
 
         int newDistance = 0;
@@ -54,7 +72,7 @@ public class EdgeService {
                     .distance(newDistance)
                     .build();
             Edge save = edgeRepository.save(newEdge);
-            line.getEdges().addEdge(save);
+
         }
         return line;
     }

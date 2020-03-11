@@ -41,7 +41,7 @@ public class LineResponseView {
                 .startTime(line.getStartTime())
                 .endTime(line.getEndTime())
                 .interval(line.getIntervalTime())
-                .edges(line.getEdges().getEdges())
+                .edges(line.getEdges())
                 .build();
     }
 }

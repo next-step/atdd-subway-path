@@ -2,18 +2,23 @@ package atdd.path.web;
 
 import atdd.path.application.dto.EdgeRequestViewFromClient;
 import atdd.path.application.dto.EdgeResponseView;
-import atdd.path.domain.Edge;
-import atdd.path.domain.Edges;
+import atdd.path.domain.*;
 import atdd.path.service.EdgeService;
 import atdd.path.service.LineService;
 import atdd.path.service.StationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/edges")
 public class EdgeController {
     private EdgeService edgeService;
+
+    @Autowired
+    LineRepository lineRepository;
 
     public EdgeController(EdgeService edgeService) {
         this.edgeService = edgeService;

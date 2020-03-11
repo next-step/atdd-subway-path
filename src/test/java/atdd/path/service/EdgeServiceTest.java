@@ -30,6 +30,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
+@Transactional
 public class EdgeServiceTest {
     @InjectMocks
     EdgeService edgeService;
@@ -55,14 +56,10 @@ public class EdgeServiceTest {
         Edge edge = edgeService.addEdge(LINE_ID, STATION_ID, STATION_ID_2, 10);
 
         //then
-        verify(edgeRepository, times(1))
-                .save(any(Edge.class));
-        assertThat(edge.getId())
-                .isEqualTo(1L);
-        assertThat(edge.getSource().getId())
-                .isEqualTo(STATION_ID);
-        assertThat(edge.getTarget().getId())
-                .isEqualTo(STATION_ID_2);
+        verify(edgeRepository, times(1)).save(any(Edge.class));
+        assertThat(edge.getId()).isEqualTo(1L);
+        assertThat(edge.getSource().getId()).isEqualTo(STATION_ID);
+        assertThat(edge.getTarget().getId()).isEqualTo(STATION_ID_2);
     }
 
     @Test
@@ -72,7 +69,6 @@ public class EdgeServiceTest {
                 Lists.list(TEST_EDGE_23, TEST_EDGE, TEST_EDGE_2, TEST_EDGE_3, TEST_EDGE_4),
                 LocalTime.of(5, 0), LocalTime.of(23, 30), 30);
         given(lineService.findById(anyLong())).willReturn(TEST_LINE);
-        int size = TEST_LINE.getEdges().getEdges().size();
         given(stationService.findById(anyLong())).willReturn(TEST_STATION_2);
         given(edgeRepository.findById(1L)).willReturn(Optional.of(TEST_EDGE));
         given(edgeRepository.findById(2L)).willReturn(Optional.of(TEST_EDGE_2));
@@ -87,7 +83,7 @@ public class EdgeServiceTest {
 
         //then
         verify(edgeRepository, times(1)).save(any());
-        assertThat(lineAfterMerge.getEdges().getEdges().size()).isEqualTo(size + 1);
+        assertThat(lineAfterMerge.getEdges().size()).isEqualTo(6);
     }
 
     @Test

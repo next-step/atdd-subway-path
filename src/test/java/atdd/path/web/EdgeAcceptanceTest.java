@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.util.stream.Collectors;
@@ -59,6 +60,9 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
         assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getSource().getName()).isEqualTo("사당");
         assertThat(response.getTarget().getName()).isEqualTo("방배");
+
+        StationResponseView persistStation1 = stationHttpTest.findById(start.getId());
+        assertThat(persistStation1.getLines().size()).isEqualTo(1);
     }
 
     @Test

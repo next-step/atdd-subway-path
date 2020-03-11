@@ -27,7 +27,6 @@ public class Line {
     private LocalTime endTime;
     private int intervalTime;
 
-    @JsonIgnore
     @Embedded
     private Edges edges = new Edges();
 
@@ -54,6 +53,10 @@ public class Line {
 
     public void changeInterval(int interval) {
         this.intervalTime = interval;
+    }
+
+    public List<Edge> getEdges() {
+        return edges.getEdges();
     }
 
     public List<Station> getStations() {

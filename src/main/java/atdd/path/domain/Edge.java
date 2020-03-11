@@ -41,6 +41,7 @@ public class Edge {
         this.source = source;
         this.target = target;
         this.line = line;
+        this.line.getEdges().add(this);
         this.distance = distance;
         this.timeToTake = timeToTake;
     }

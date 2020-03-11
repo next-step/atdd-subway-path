@@ -1,12 +1,14 @@
 package atdd.path.web;
 
 import atdd.AbstractAcceptanceTest;
+import atdd.path.application.dto.EdgeResponseView;
 import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
 import atdd.path.application.dto.StationResponseView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 
@@ -35,15 +37,14 @@ public class GraphAcceptanceTest extends AbstractAcceptanceTest {
     }
 
     @Test
-    public void findMinTimePath() throws Exception {
+    @Transactional
+    public void findPath() throws Exception {
         StationResponseView station1 = stationHttpTest.create(STATION_NAME);
         StationResponseView station2 = stationHttpTest.create(STATION_NAME_2);
-        StationResponseView station3 = stationHttpTest.create(STATION_NAME_2);
-        stationHttpTest.create(STATION_NAME_3);
+        StationResponseView station3 = stationHttpTest.create(STATION_NAME_3);
         LineResponseView line = lineHttpTest.create(lineRequestView);
         edgeHttpTest.createEdge(line.getId(), station1.getId(), station2.getId(), 10, 10);
         edgeHttpTest.createEdge(line.getId(), station2.getId(), station3.getId(), 10, 10);
-
 
         webTestClient.get().uri("/paths?startId=" + station1.getId() + "&endId=" + station3.getId())
                 .exchange()

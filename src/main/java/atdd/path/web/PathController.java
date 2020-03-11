@@ -23,7 +23,7 @@ public class PathController {
     @GetMapping
     public ResponseEntity findShortestPath(@RequestParam("startId") Long startId,
                                            @RequestParam("endId") Long endId) {
-        List<Station> path = graphService.findStationsInPath(startId, endId);
+        List<Station> path = graphService.findStationsInShortestPath(startId, endId);
         PathResponseView responseView = PathResponseView.builder()
                 .startId(startId)
                 .endId(endId)
