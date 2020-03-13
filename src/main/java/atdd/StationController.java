@@ -25,4 +25,13 @@ public class StationController {
                 .created(URI.create("/stations/"+station.getId()))
                 .body(StationResponseView.of(station));
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity findById(@PathVariable Long id){
+        Station station = stationService.findById(id);
+        StationResponseView responseView = StationResponseView.of(station);
+        return ResponseEntity
+                .ok()
+                .body(responseView);
+    }
 }
