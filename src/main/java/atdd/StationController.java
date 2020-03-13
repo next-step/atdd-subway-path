@@ -34,4 +34,12 @@ public class StationController {
                 .ok()
                 .body(responseView);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity delete(@PathVariable Long id){
+        stationService.delete(id);
+        return ResponseEntity
+                .noContent()
+                .build();
+    }
 }

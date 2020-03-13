@@ -33,23 +33,11 @@ public class StationHttpTest {
                 .get(0);
     }
 
-    public StationResponseView deleteStation(Long stationId) {
-        return webTestClient.delete().uri("/stations/"+stationId)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isNoContent()
-                .returnResult(StationResponseView.class)
-                .getResponseBody()
-                .toStream()
-                .collect(Collectors.toList())
-                .get(0);
-    }
-
     public Station findById(Long stationId) {
         StationResponseView responseView = webTestClient.get().uri("/stations/" + stationId)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
-                .expectStatus().isOk()
+                .expectStatus().isNoContent()
                 .returnResult(StationResponseView.class)
                 .getResponseBody()
                 .toStream()

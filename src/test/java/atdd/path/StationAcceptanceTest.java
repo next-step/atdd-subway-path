@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -48,11 +49,10 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         //given
         Long stationId = stationHttpTest.createStation("강남");
 
-        //when
-        stationHttpTest.deleteStation(stationId);
-
-        //then
-        assertThatThrownBy(() -> stationHttpTest.findById(stationId))
-                .isInstanceOf(NoSuchEntityException.class);
+        //when, then
+        webTestClient.delete().uri("/stations/"+stationId)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isNoContent();
     }
 }
