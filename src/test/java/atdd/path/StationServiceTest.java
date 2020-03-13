@@ -58,13 +58,9 @@ public class StationServiceTest {
         //given
         given(stationRepository.findById(1L)).willReturn(Optional.empty());
 
-        //when
-        stationService.delete(1L);
-
-        //then
-        assertThatExceptionOfType(NoSuchEntityException.class)
-                .isThrownBy(() -> {
-                    stationService.delete(1L);
-                });
+        //when, then
+        assertThatThrownBy(() -> stationService.delete(1L))
+                .isInstanceOf(NoSuchEntityException.class)
+                .hasMessageContaining("등록된 지하철역만 삭제 가능합니다.");
     }
 }

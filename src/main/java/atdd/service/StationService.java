@@ -2,6 +2,7 @@ package atdd.service;
 
 import atdd.domain.Station;
 import atdd.domain.repository.StationRepository;
+import com.sun.tools.internal.ws.wsdl.framework.NoSuchEntityException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,6 +19,8 @@ public class StationService {
     }
 
     public void delete(long id) {
+        stationRepository.findById(id)
+                .orElseThrow(() -> new NoSuchEntityException("등록된 지하철역만 삭제 가능합니다."));
         stationRepository.deleteById(id);
     }
 }
