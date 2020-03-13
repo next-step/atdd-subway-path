@@ -24,7 +24,9 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    public Station findById(long l) {
-        return null;
+    public Station findById(long id) {
+        Station station = stationRepository.findById(id)
+                .orElseThrow(() -> new NoSuchEntityException("등록된 지하철역만 조회 가능합니다."));
+        return station;
     }
 }
