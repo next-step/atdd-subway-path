@@ -3,12 +3,14 @@ package atdd.path;
 import atdd.BaseAcceptanceTest;
 import atdd.domain.Station;
 import atdd.dto.StationResponseView;
+import com.sun.tools.internal.ws.wsdl.framework.NoSuchEntityException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class StationAcceptanceTest extends BaseAcceptanceTest {
     private static final Logger logger = LoggerFactory.getLogger(StationAcceptanceTest.class);
@@ -41,15 +43,16 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         assertThat(station.getName()).isEqualTo("강남");
     }
 
-//    @Test
-////    void 인수테스트_지하철역_삭제하기(){
-////        //given
-////        Long stationId = stationHttpTest.createStation("강남");
-////
-////        //when
-////        stationHttpTest.deleteStation(stationId);
-////
-////        //then
-////        stationHttpTest.
-////    }
+    @Test
+    void 인수테스트_지하철역_삭제하기(){
+        //given
+        Long stationId = stationHttpTest.createStation("강남");
+
+        //when
+        stationHttpTest.deleteStation(stationId);
+
+        //then
+        assertThatThrownBy(() -> stationHttpTest.findById(stationId))
+                .isInstanceOf(NoSuchEntityException.class);
+    }
 }
