@@ -53,6 +53,9 @@ public class StationServiceTest {
 
     @Test
     void 지하철역_삭제하기() {
+        //given
+        given(stationRepository.findById(1L)).willReturn(Optional.of(station));
+
         //when
         stationService.delete(1L);
 

@@ -37,7 +37,7 @@ public class StationHttpTest {
         StationResponseView responseView = webTestClient.get().uri("/stations/" + stationId)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
-                .expectStatus().isNoContent()
+                .expectStatus().isOk()
                 .returnResult(StationResponseView.class)
                 .getResponseBody()
                 .toStream()
