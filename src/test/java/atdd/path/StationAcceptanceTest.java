@@ -55,4 +55,17 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
                 .exchange()
                 .expectStatus().isNoContent();
     }
+
+    @Test
+    void 인수테스트_지하철역_목록_조회하기(){
+        //given
+        stationHttpTest.createStation("강남");
+        stationHttpTest.createStation("역삼");
+
+        //when, then
+        webTestClient.get().uri("/stations")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(StationResponseView.class).hasSize(2);
+    }
 }
