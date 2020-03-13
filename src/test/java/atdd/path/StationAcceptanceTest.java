@@ -1,6 +1,8 @@
 package atdd.path;
 
 import atdd.BaseAcceptanceTest;
+import atdd.domain.Station;
+import atdd.dto.StationResponseView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -18,11 +20,36 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
     }
 
     @Test
-    void createStation() {
+    void 인수테스트_지하철역_등록하기() {
         //when
         Long stationId = stationHttpTest.createStation("강남");
 
         //then
         assertThat(stationId).isEqualTo(1L);
     }
+
+    @Test
+    void 인수테스트_지하철역_조회하기(){
+        //given
+        Long stationId = stationHttpTest.createStation("강남");
+
+        //when
+        Station station = stationHttpTest.findById(stationId);
+
+        //then
+        assertThat(station.getId()).isEqualTo(stationId);
+        assertThat(station.getName()).isEqualTo("강남");
+    }
+
+//    @Test
+////    void 인수테스트_지하철역_삭제하기(){
+////        //given
+////        Long stationId = stationHttpTest.createStation("강남");
+////
+////        //when
+////        stationHttpTest.deleteStation(stationId);
+////
+////        //then
+////        stationHttpTest.
+////    }
 }
