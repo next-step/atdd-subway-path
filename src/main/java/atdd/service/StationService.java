@@ -17,7 +17,7 @@ public class StationService {
         return savedStation;
     }
 
-    public void delete(long l) {
-
+    public void delete(long id) {
+        stationRepository.deleteById(id);
     }
 }
