@@ -9,7 +9,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 @AutoConfigureWebTestClient
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public abstract class BaseAcceptanceTest {
+public class BaseAcceptanceTest {
     @Autowired
-    WebTestClient webTestClient;
+    public WebTestClient webTestClient;
 }

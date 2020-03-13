@@ -1,5 +1,6 @@
 package atdd.domain;
 
+import atdd.dto.StationRequestView;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -22,5 +23,11 @@ public class Station {
     public Station(Long id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public static Station of(StationRequestView requestView){
+        return Station.builder()
+                .name(requestView.getName())
+                .build();
     }
 }
