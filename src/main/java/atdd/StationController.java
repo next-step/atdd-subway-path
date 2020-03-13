@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/stations")
@@ -41,5 +43,16 @@ public class StationController {
         return ResponseEntity
                 .noContent()
                 .build();
+    }
+
+    @GetMapping
+    public ResponseEntity findAll(){
+        List<Station> stations = stationService.findAll();
+        List<StationResponseView> responseViews = stations.stream()
+                .map(it -> StationResponseView.of(it))
+                .collect(Collectors.toList());
+        return ResponseEntity
+                .ok()
+                .body(responseViews);
     }
 }
