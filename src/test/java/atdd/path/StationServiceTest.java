@@ -99,9 +99,9 @@ public class StationServiceTest {
         given(stationRepository.findAll()).willReturn(Arrays.asList(station, station2));
 
         //when
-        List<Station> all = stationService.findAll();
+        List<Station> stations = stationService.findAll();
 
         //then
-        assertThat(all.size()).isEqualTo(2);
+        assertThat(stations.size()).isEqualTo(2);
     }
 }

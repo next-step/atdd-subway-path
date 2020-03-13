@@ -33,6 +33,7 @@ public class StationService {
     }
 
     public List<Station> findAll() {
-        return null;
+        List<Station> all = stationRepository.findAll();
+        return all;
     }
 }
