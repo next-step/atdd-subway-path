@@ -76,4 +76,15 @@ public class StationServiceTest {
         assertThat(stationById.getName()).isEqualTo(station.getName());
         verify(stationRepository, times(1)).findById(1L);
     }
+
+    @Test
+    void 등록된_지하철역만_조회가능하다(){
+        //given
+        given(stationRepository.findById(1L)).willReturn(Optional.empty());
+
+        //when, then
+        assertThatThrownBy(() -> stationService.findById(1L))
+                .isInstanceOf(NoSuchEntityException.class)
+                .hasMessageContaining("등록된 지하철역만 조회 가능합니다.");
+    }
 }
