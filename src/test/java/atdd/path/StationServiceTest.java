@@ -10,6 +10,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -23,6 +25,9 @@ import static org.mockito.Mockito.verify;
 public class StationServiceTest {
     private Station station = Station.builder()
             .name("강남")
+            .build();
+    private Station station2 = Station.builder()
+            .name("역삼")
             .build();
 
     @InjectMocks
@@ -86,5 +91,17 @@ public class StationServiceTest {
         assertThatThrownBy(() -> stationService.findById(1L))
                 .isInstanceOf(NoSuchEntityException.class)
                 .hasMessageContaining("등록된 지하철역만 조회 가능합니다.");
+    }
+
+    @Test
+    void 지하철역_목록_조회하기(){
+        //given
+        given(stationRepository.findAll()).willReturn(Arrays.asList(station, station2));
+
+        //when
+        List<Station> all = stationService.findAll();
+
+        //then
+        assertThat(all.size()).isEqualTo(2);
     }
 }

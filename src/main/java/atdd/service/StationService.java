@@ -5,6 +5,8 @@ import atdd.domain.repository.StationRepository;
 import com.sun.tools.internal.ws.wsdl.framework.NoSuchEntityException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class StationService {
     private StationRepository stationRepository;
@@ -28,5 +30,9 @@ public class StationService {
         Station station = stationRepository.findById(id)
                 .orElseThrow(() -> new NoSuchEntityException("등록된 지하철역만 조회 가능합니다."));
         return station;
+    }
+
+    public List<Station> findAll() {
+        return null;
     }
 }
