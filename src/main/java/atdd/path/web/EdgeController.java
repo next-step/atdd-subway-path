@@ -2,26 +2,25 @@ package atdd.path.web;
 
 import atdd.path.application.dto.EdgeRequestViewFromClient;
 import atdd.path.application.dto.EdgeResponseView;
-import atdd.path.domain.*;
+import atdd.path.domain.Edge;
 import atdd.path.service.EdgeService;
 import atdd.path.service.LineService;
 import atdd.path.service.StationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/edges")
 public class EdgeController {
+    private LineService lineService;
     private EdgeService edgeService;
+    private StationService stationService;
 
-    @Autowired
-    LineRepository lineRepository;
-
-    public EdgeController(EdgeService edgeService) {
+    public EdgeController(LineService lineService, EdgeService edgeService,
+                          StationService stationService) {
+        this.lineService = lineService;
         this.edgeService = edgeService;
+        this.stationService = stationService;
     }
 
     @PostMapping("/{lineId}")
@@ -34,10 +33,9 @@ public class EdgeController {
                 .body(EdgeResponseView.of(edge));
     }
 
-    @DeleteMapping
-    public ResponseEntity deleteStation(@RequestParam("lineId") Long lineId,
+    @DeleteMapping("/{lineId}")
+    public ResponseEntity deleteStation(@PathVariable("lineId") Long lineId,
                                         @RequestParam("stationId") Long stationId) {
-        edgeService.mergeEdgeByStationId(lineId, stationId);
         edgeService.deleteEdgeByStationId(lineId, stationId);
         return ResponseEntity
                 .ok()

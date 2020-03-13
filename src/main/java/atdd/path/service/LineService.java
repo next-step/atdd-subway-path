@@ -52,10 +52,10 @@ public class LineService {
         }
     }
 
-    public Line findById(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(NoSuchElementException::new);
-        return line;
+    public LineResponseView retrieve(Long id) {
+        Optional<Line> line = lineRepository.findById(id);
+        line.orElseThrow(NoSuchElementException::new);
+        return LineResponseView.of(line.get());
     }
 
     public List<LineResponseView> showAll() {

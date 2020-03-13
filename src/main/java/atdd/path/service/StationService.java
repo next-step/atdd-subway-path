@@ -39,8 +39,8 @@ public class StationService {
         return stationRepository.findAll();
     }
 
-    public Station findById(Long stationId) {
-        Optional<Station> stationById = stationRepository.findById(stationId);
+    public Station findById(StationRequestView requestView) {
+        Optional<Station> stationById = stationRepository.findById(requestView.getId());
         stationById.orElseThrow(NoSuchElementException::new);
         return stationById.get();
     }

@@ -2,7 +2,6 @@ package atdd.path.web;
 
 import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
-import atdd.path.domain.Line;
 import atdd.path.service.EdgeService;
 import atdd.path.service.LineService;
 import org.springframework.http.ResponseEntity;
@@ -39,10 +38,10 @@ public class LineController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity findById(@PathVariable Long id) {
-        Line line = lineService.findById(id);
+    public ResponseEntity retrieve(@PathVariable Long id) {
+        LineResponseView responseView = lineService.retrieve(id);
         return ResponseEntity
-                .ok(LineResponseView.of(line));
+                .ok(responseView);
     }
 
     @GetMapping

@@ -39,7 +39,9 @@ public class StationController {
 
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable Long id) throws Exception {
-        Station station = stationService.findById(id);
+        Station station = stationService.findById(StationRequestView.builder()
+                .id(id)
+                .build());
         return ResponseEntity
                 .ok(station);
     }

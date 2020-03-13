@@ -93,11 +93,12 @@ public class StationServiceTest {
     @Test
     void 지하철역을_한_개를_조회한다() {
         //given
-        Station station = new Station(1L, "사당");
+        StationRequestView requestView = new StationRequestView(1L, "사당");
+        Station station = requestView.toStation();
         given(stationRepository.findById(anyLong())).willReturn(Optional.of(station));
 
         //when
-        Station stationById = stationService.findById(1L);
+        Station stationById = stationService.findById(requestView);
 
         //then
         verify(stationRepository, times(1)).findById(anyLong());
@@ -108,7 +109,7 @@ public class StationServiceTest {
     void 등록되지_않은_지하철역을_조회하면_익셉션을_발생시킨다() {
         //when, then
         assertThrows(NoSuchElementException.class, () -> {
-            stationService.findById(1L);
+            stationService.findById(new StationRequestView());
         });
     }
 }

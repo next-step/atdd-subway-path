@@ -8,6 +8,7 @@ import java.time.LocalTime;
 
 @Getter
 public class LineRequestView {
+    private Long id;
     private String name;
     private LocalTime startTime;
     private LocalTime endTime;
@@ -17,7 +18,8 @@ public class LineRequestView {
     }
 
     @Builder
-    public LineRequestView(String name, LocalTime startTime, LocalTime endTime, int interval) {
+    public LineRequestView(Long id, String name, LocalTime startTime, LocalTime endTime, int interval) {
+        this.id = id;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
