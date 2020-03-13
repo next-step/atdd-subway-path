@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -103,5 +104,16 @@ public class StationServiceTest {
 
         //then
         assertThat(stations.size()).isEqualTo(2);
+    }
+
+    @Test
+    void 등록된_지하철역이_1개_이상이어야_목록을_조회할_수_있다(){
+        //given
+        given(stationRepository.findAll()).willReturn(Collections.EMPTY_LIST);
+
+        //when
+        assertThatThrownBy(() -> stationService.findAll())
+                .isInstanceOf(NoSuchEntityException.class)
+                .hasMessageContaining("등록된 지하철역이 1개 이상일 때만 목록 조회가 가능합니다.");
     }
 }
