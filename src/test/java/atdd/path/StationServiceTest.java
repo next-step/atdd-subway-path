@@ -15,7 +15,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -60,7 +61,7 @@ public class StationServiceTest {
     }
 
     @Test
-    void 등록된_지하철역만_삭제가능하다(){
+    void 등록된_지하철역만_삭제가능하다() {
         //given
         given(stationRepository.findById(1L)).willReturn(Optional.empty());
 
@@ -71,7 +72,7 @@ public class StationServiceTest {
     }
 
     @Test
-    void 지하철역_조회하기(){
+    void 지하철역_조회하기() {
         //given
         given(stationRepository.findById(1L)).willReturn(Optional.of(station));
 
@@ -84,7 +85,7 @@ public class StationServiceTest {
     }
 
     @Test
-    void 등록된_지하철역만_조회가능하다(){
+    void 등록된_지하철역만_조회가능하다() {
         //given
         given(stationRepository.findById(1L)).willReturn(Optional.empty());
 
@@ -95,7 +96,7 @@ public class StationServiceTest {
     }
 
     @Test
-    void 지하철역_목록_조회하기(){
+    void 지하철역_목록_조회하기() {
         //given
         given(stationRepository.findAll()).willReturn(Arrays.asList(station, station2));
 
@@ -107,7 +108,7 @@ public class StationServiceTest {
     }
 
     @Test
-    void 등록된_지하철역이_1개_이상이어야_목록을_조회할_수_있다(){
+    void 등록된_지하철역이_1개_이상이어야_목록을_조회할_수_있다() {
         //given
         given(stationRepository.findAll()).willReturn(Collections.EMPTY_LIST);
 

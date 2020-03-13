@@ -33,7 +33,12 @@ public class StationService {
     }
 
     public List<Station> findAll() {
-        List<Station> all = stationRepository.findAll();
-        return all;
+        List<Station> stations = stationRepository.findAll();
+
+        if (stations.isEmpty()) {
+            throw new NoSuchEntityException("등록된 지하철역이 1개 이상일 때만 목록 조회가 가능합니다.");
+        }
+
+        return stations;
     }
 }
