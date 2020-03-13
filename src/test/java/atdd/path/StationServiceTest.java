@@ -63,4 +63,17 @@ public class StationServiceTest {
                 .isInstanceOf(NoSuchEntityException.class)
                 .hasMessageContaining("등록된 지하철역만 삭제 가능합니다.");
     }
+
+    @Test
+    void 지하철역_조회하기(){
+        //given
+        given(stationRepository.findById(1L)).willReturn(Optional.of(station));
+
+        //when
+        Station stationById = stationService.findById(1L);
+
+        //then
+        assertThat(stationById.getName()).isEqualTo(station.getName());
+        verify(stationRepository, times(1)).findById(1L);
+    }
 }

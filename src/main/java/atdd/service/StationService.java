@@ -23,4 +23,8 @@ public class StationService {
                 .orElseThrow(() -> new NoSuchEntityException("등록된 지하철역만 삭제 가능합니다."));
         stationRepository.deleteById(id);
     }
+
+    public Station findById(long l) {
+        return null;
+    }
 }
