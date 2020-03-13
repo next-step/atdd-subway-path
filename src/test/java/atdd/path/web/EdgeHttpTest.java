@@ -19,8 +19,7 @@ public class EdgeHttpTest {
     }
 
     @Test
-    public EdgeResponseView createEdge(Long lineId, Long sourceId, Long targetId,
-                                       int distance, int interval, ObjectMapper objectMapper) throws JsonProcessingException {
+    public EdgeResponseView createEdge(Long lineId, Long sourceId, Long targetId, int distance, int interval) {
         EdgeRequestViewFromClient edgeRequestViewFromClient
                 = EdgeRequestViewFromClient.builder()
                 .lineId(lineId)
@@ -29,12 +28,11 @@ public class EdgeHttpTest {
                 .distance(distance)
                 .timeToTake(interval)
                 .build();
-        String value = objectMapper.writeValueAsString(edgeRequestViewFromClient);
 
         return webTestClient.post().uri("/edges/" + lineId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .body(Mono.just(value), String.class)
+                .bodyValue(edgeRequestViewFromClient)
                 .exchange()
                 .expectStatus().isOk()
                 .returnResult(EdgeResponseView.class)

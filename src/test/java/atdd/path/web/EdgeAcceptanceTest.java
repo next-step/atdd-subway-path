@@ -1,17 +1,22 @@
 package atdd.path.web;
 
 import atdd.AbstractAcceptanceTest;
+import atdd.path.TestConstant;
 import atdd.path.application.dto.EdgeResponseView;
 import atdd.path.application.dto.LineRequestView;
 import atdd.path.application.dto.LineResponseView;
 import atdd.path.application.dto.StationResponseView;
+import atdd.path.domain.Edges;
+import atdd.path.domain.Station;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,44 +45,37 @@ public class EdgeAcceptanceTest extends AbstractAcceptanceTest {
         this.edgeHttpTest = new EdgeHttpTest(webTestClient);
     }
 
-    @Autowired
-    ObjectMapper objectMapper;
-
     @Test
     void 지하철_노선에_구간_등록을_요청한다() throws Exception {
         //given
-        StationResponseView station1 = stationHttpTest.create(STATION_NAME);
-        StationResponseView station2 = stationHttpTest.create(STATION_NAME_2);
-        String inputJson = objectMapper.writeValueAsString(requestView);
-        LineResponseView line = lineHttpTest.create(inputJson);
-        Long lineId = line.getId();
-        Long startId = station1.getId();
-        Long endId = station2.getId();
+        StationResponseView start = stationHttpTest.create(STATION_NAME);
+        StationResponseView end = stationHttpTest.create(STATION_NAME_2);
+        LineResponseView line = lineHttpTest.create(requestView);
 
         //when
         EdgeResponseView response
-                = edgeHttpTest.createEdge(lineId, startId, endId, DISTANCE_KM, INTERVAL_TIME, objectMapper);
+                = edgeHttpTest.createEdge(line.getId(), start.getId(), end.getId(), DISTANCE_KM, INTERVAL_TIME);
 
         //then
         assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getSource().getName()).isEqualTo("사당");
         assertThat(response.getTarget().getName()).isEqualTo("방배");
+
+        //TODO **************************************여기입니다!!!!!!!!!
+        StationResponseView persistStation1 = stationHttpTest.findById(start.getId());
+        assertThat(persistStation1.getLines().size()).isEqualTo(1);
     }
 
     @Test
     void 지하철역_삭제를_하면_관련_엣지들도_삭제된다() throws Exception {
         //given
-        StationResponseView station1 = stationHttpTest.create(STATION_NAME);
-        StationResponseView station2 = stationHttpTest.create(STATION_NAME_2);
-        String inputJson = objectMapper.writeValueAsString(requestView);
-        LineResponseView line = lineHttpTest.create(inputJson);
-        Long lineId = line.getId();
-        Long startId = station1.getId();
-        Long endId = station2.getId();
-        edgeHttpTest.createEdge(lineId, startId, endId, DISTANCE_KM, INTERVAL_TIME, objectMapper);
+        StationResponseView start = stationHttpTest.create(STATION_NAME);
+        StationResponseView end = stationHttpTest.create(STATION_NAME_2);
+        LineResponseView line = lineHttpTest.create(requestView);
+        edgeHttpTest.createEdge(line.getId(), start.getId(), end.getId(), DISTANCE_KM, INTERVAL_TIME);
 
         //when, then
-        webTestClient.delete().uri("/edges/" + lineId + "?stationId=" + startId)
+        webTestClient.delete().uri("/edges/" +"?lineId="+ line.getId() + "&stationId=" + start.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk();
