@@ -16,4 +16,8 @@ public class StationService {
         Station savedStation = stationRepository.save(station);
         return savedStation;
     }
+
+    public void delete(long l) {
+
+    }
 }
