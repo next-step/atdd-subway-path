@@ -6,21 +6,21 @@ import atdd.station.model.entity.Edge;
 import atdd.station.model.entity.Line;
 import atdd.station.model.entity.Station;
 import atdd.station.repository.LineRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
 public class LineService {
-    @Autowired
     private LineRepository lineRepository;
-
-    @Autowired
     private StationService stationService;
-
-    @Autowired
     private EdgeService edgeService;
+
+    public LineService(LineRepository lineRepository, StationService stationService, EdgeService edgeService) {
+        this.lineRepository = lineRepository;
+        this.stationService = stationService;
+        this.edgeService = edgeService;
+    }
 
     public Line create(final Line line) {
         return lineRepository.save(line);
@@ -124,7 +124,6 @@ public class LineService {
             return;
 
         final List<Edge> sortEdges = new ArrayList<>();
-
         final Set<Long> deleteEdgeIds = deleteFirstEdgeOrLastEdge(legacyEdges, deleteStation.getId());
 
         int edgeIndex = 0;
