@@ -43,9 +43,9 @@ public class StationAcceptanceTest {
     @Test
     public void findAllStations() {
         // given
-        StationDto stations1 = stationTestHelper.createStation(STATION_NAME1);
-        StationDto stations2 = stationTestHelper.createStation(STATION_NAME2);
-        StationDto stations3 = stationTestHelper.createStation(STATION_NAME3);
+        stationTestHelper.createStation(STATION_NAME1);
+        stationTestHelper.createStation(STATION_NAME2);
+        stationTestHelper.createStation(STATION_NAME3);
 
         // when
         List<StationDto> stations = stationTestHelper.findAll();
@@ -61,8 +61,8 @@ public class StationAcceptanceTest {
     public void findStation() {
         // given
         StationDto stations1 = stationTestHelper.createStation(STATION_NAME1);
-        StationDto stations2 = stationTestHelper.createStation(STATION_NAME2);
-        StationDto stations3 = stationTestHelper.createStation(STATION_NAME3);
+        stationTestHelper.createStation(STATION_NAME2);
+        stationTestHelper.createStation(STATION_NAME3);
 
         // when
         StationDto station = stationTestHelper.findById(stations1.getId());
@@ -76,8 +76,8 @@ public class StationAcceptanceTest {
     public void deleteStation() {
         // given
         StationDto stations1 = stationTestHelper.createStation(STATION_NAME1);
-        StationDto stations2 = stationTestHelper.createStation(STATION_NAME2);
-        StationDto stations3 = stationTestHelper.createStation(STATION_NAME3);
+        stationTestHelper.createStation(STATION_NAME2);
+        stationTestHelper.createStation(STATION_NAME3);
 
         // when
         stationTestHelper.deleteById(stations1.getId());
