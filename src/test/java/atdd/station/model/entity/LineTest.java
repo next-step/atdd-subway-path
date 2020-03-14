@@ -10,7 +10,6 @@ import java.util.List;
 import static atdd.TestConstant.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
 public class LineTest {
     private Line line;
 
