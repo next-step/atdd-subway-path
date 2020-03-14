@@ -1,5 +1,7 @@
 package atdd.station.model.entity;
 
+import atdd.exception.ErrorType;
+import atdd.exception.SubwayException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,6 +51,13 @@ public class Edge extends BaseEntity {
             return true;
 
         return false;
+    }
+
+    public void connectedOf(List<Edge> legacyEdges) {
+        boolean isConnect = legacyEdges.stream().anyMatch(data -> data.connectedEdge(this));
+
+        if (!legacyEdges.isEmpty() && !isConnect)
+            throw new SubwayException(ErrorType.INVALID_EDGE);
     }
 
     public List<Long> getStationIds() {

@@ -42,7 +42,9 @@ public class LineService {
         final Line line = findById(id);
         final List<Edge> legacyEdges = edgeService.findAllById(line.getEdgeIds());
 
-        newEdge = edgeService.createEdge(legacyEdges, newEdge);
+        newEdge.connectedOf(legacyEdges);
+        newEdge = edgeService.save(newEdge);
+
         line.addNewLineEdges(legacyEdges, newEdge);
 
         // update station
