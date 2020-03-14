@@ -57,7 +57,7 @@ public class Line extends BaseEntity {
         this.intervalTime = intervalTime;
     }
 
-    public void setLineEdges(final List<Edge> legacyEdges, final Edge newEdge) {
+    public void addNewLineEdges(final List<Edge> legacyEdges, final Edge newEdge) {
         setEdges(sortEdge(legacyEdges, newEdge));
     }
 

@@ -43,7 +43,7 @@ public class LineService {
         final List<Edge> legacyEdges = edgeService.findAllById(line.getEdgeIds());
 
         newEdge = edgeService.createEdge(legacyEdges, newEdge);
-        line.setLineEdges(legacyEdges, newEdge);
+        line.addNewLineEdges(legacyEdges, newEdge);
 
         // update station
         final Set<Long> stationIds = stationIdsInEdges(line.getLineEdges());
