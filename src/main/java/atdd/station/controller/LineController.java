@@ -56,7 +56,7 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/edge")
+    @PostMapping("/{id}/edges")
     public ResponseEntity<LineResponseDto> addEdge(@PathVariable long id,
                                                    @RequestBody CreateEdgeRequestView view) throws SubwayException {
         Line line = lineService.addEdge(id, view.toEdge());
@@ -64,7 +64,7 @@ public class LineController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createLineResponseDto(line));
     }
 
-    @DeleteMapping("/{id}/edge")
+    @DeleteMapping("/{id}/edges")
     public ResponseEntity<LineResponseDto> deleteLine(@PathVariable long id,
                                                       @RequestParam Long stationId) {
         lineService.deleteEdge(id, stationId);

@@ -15,7 +15,7 @@ import java.util.List;
 
 public class LineTestHelper {
     private final String LINES_PATH = "/lines";
-    private final String EDGES_PATH = "/edge";
+    private final String EDGES_PATH = "/edges";
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
