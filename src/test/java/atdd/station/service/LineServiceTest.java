@@ -38,7 +38,7 @@ public class LineServiceTest {
 
         given(lineRepository.findById(any())).willReturn(Optional.of(LINE_1));
         given(edgeService.findAllById(any())).willReturn(legacyEdges);
-        given(edgeService.createEdge(legacyEdges, NEW_EDGE_1)).willReturn(NEW_EDGE_1);
+        given(edgeService.save(NEW_EDGE_1)).willReturn(NEW_EDGE_1);
         given(stationService.updateLine(new HashSet<>(), 1l)).willReturn(new ArrayList<>());
         given(lineRepository.save(any())).willReturn(any());
 
