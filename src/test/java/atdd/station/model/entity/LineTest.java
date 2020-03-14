@@ -25,7 +25,7 @@ public class LineTest {
         Edge newEdge = NEW_EDGE_1;
         newEdge.setId(STATION_ID_4);
 
-        line.setLineEdges(legacyEdges, newEdge);
+        line.addNewLineEdges(legacyEdges, newEdge);
 
         List<Edge> lineEdges = line.getLineEdges();
 
