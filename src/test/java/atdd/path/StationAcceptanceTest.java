@@ -27,7 +27,7 @@ public class StationAcceptanceTest extends AbstractAcceptanceTest {
     }
 
     @Test
-    void findByIdTest(){
+    void findByIdTest() {
         //given
         Long stationId = stationHttpTest.create("강남");
 
@@ -39,7 +39,7 @@ public class StationAcceptanceTest extends AbstractAcceptanceTest {
     }
 
     @Test
-    void findAllTest(){
+    void findAllTest() {
         //given
         stationHttpTest.create("강남");
         stationHttpTest.create("역삼");
@@ -55,12 +55,12 @@ public class StationAcceptanceTest extends AbstractAcceptanceTest {
     }
 
     @Test
-    void deleteByIdTest(){
+    void deleteByIdTest() {
         //given
         Long stationId = stationHttpTest.create("강남");
 
         //when, then
-        webTestClient.delete().uri("/stations/"+stationId)
+        webTestClient.delete().uri("/stations/" + stationId)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNoContent();
