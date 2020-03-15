@@ -31,7 +31,7 @@ public class StationHttpTest extends AbstractAcceptanceTest {
                 .get(0);
     }
 
-    public Long findById(Long stationId){
+    public StationResponseView findById(Long stationId){
         return webTestClient.get().uri("/stations/"+stationId)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -39,7 +39,6 @@ public class StationHttpTest extends AbstractAcceptanceTest {
                 .returnResult(StationResponseView.class)
                 .getResponseBody()
                 .toStream()
-                .map(StationResponseView::getId)
                 .collect(Collectors.toList())
                 .get(0);
     }

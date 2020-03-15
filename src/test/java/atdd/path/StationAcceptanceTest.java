@@ -32,10 +32,12 @@ public class StationAcceptanceTest extends AbstractAcceptanceTest {
         Long stationId = stationHttpTest.create("강남");
 
         //when
-        Long id = stationHttpTest.findById(stationId);
+        StationResponseView responseView = stationHttpTest.findById(stationId);
 
         //then
-        assertThat(stationId).isEqualTo(id);
+        assertThat(responseView.getId()).isEqualTo(stationId);
+        assertThat(responseView.getName()).isEqualTo("강남");
+        assertThat(responseView.getLines()).isNotEmpty();
     }
 
     @Test
