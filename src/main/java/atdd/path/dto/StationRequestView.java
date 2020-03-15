@@ -6,6 +6,9 @@ import lombok.Getter;
 public class StationRequestView {
     private String name;
 
+    public StationRequestView() {
+    }
+
     public StationRequestView(String name) {
         this.name = name;
     }

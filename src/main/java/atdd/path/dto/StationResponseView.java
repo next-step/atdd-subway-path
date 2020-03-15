@@ -11,6 +11,9 @@ public class StationResponseView {
     private String name;
     private List<Line> lines;
 
+    public StationResponseView() {
+    }
+
     public StationResponseView(Long id, String name, List<Line> lines) {
         this.id = id;
         this.name = name;
