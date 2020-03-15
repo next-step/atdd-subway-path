@@ -1,6 +1,7 @@
 package atdd.station.model.entity;
 
 import atdd.station.converter.LongListConverter;
+import atdd.station.model.dto.LineResponseDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
@@ -95,5 +96,13 @@ public class Line extends BaseEntity {
         }
 
         return sortedEdges;
+    }
+
+    public LineResponseDto toLineResponseDto(List<Edge> edges, List<Station> stations) {
+        return LineResponseDto.of(
+                this,
+                edges,
+                stations
+        );
     }
 }
