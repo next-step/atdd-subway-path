@@ -71,6 +71,6 @@ public class LineServiceTest {
         given(edgeService.save(any())).willReturn(NEW_EDGE);
         given(stationService.save(any())).willReturn(any());
 
-        lineService.deleteEdge(line.getId(), station.getId());
+        lineService.deleteStation(line.getId(), station.getId());
     }
 }
