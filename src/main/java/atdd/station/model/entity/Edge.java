@@ -2,7 +2,6 @@ package atdd.station.model.entity;
 
 import atdd.exception.ErrorType;
 import atdd.exception.SubwayException;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,13 +22,20 @@ public class Edge extends BaseEntity {
     @Column(nullable = false)
     private long targetStationId;
 
+    @Column(nullable = false)
+    private int elapsedTime;
+
+    @Column(nullable = false)
+    private int distance;
+
     public Edge() {
     }
 
-    @Builder
-    private Edge(final long sourceStationId, final long targetStationId) {
+    public Edge(long sourceStationId, long targetStationId, int elapsedTime, int distance) {
         this.sourceStationId = sourceStationId;
         this.targetStationId = targetStationId;
+        this.elapsedTime = elapsedTime;
+        this.distance = distance;
     }
 
     public boolean connectSourceStation(final long stationId) {

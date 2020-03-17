@@ -12,6 +12,10 @@ public class EdgeService {
     @Autowired
     private EdgeRepository edgeRepository;
 
+    public List<Edge> findAll() {
+        return edgeRepository.findAll();
+    }
+
     public List<Edge> findAllById(Iterable<Long> ids) {
         return edgeRepository.findAllById(ids);
     }
@@ -22,6 +26,10 @@ public class EdgeService {
 
     public Edge save(Edge edge) {
         return edgeRepository.save(edge);
+    }
+
+    public List<Edge> saveAll(List<Edge> edges) {
+        return edgeRepository.saveAll(edges);
     }
 }
 

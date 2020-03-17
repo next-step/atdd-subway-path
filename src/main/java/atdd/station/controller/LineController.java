@@ -70,9 +70,9 @@ public class LineController {
     }
 
     @DeleteMapping("/{id}/edges")
-    public ResponseEntity<LineResponseDto> deleteLine(@PathVariable long id,
+    public ResponseEntity<LineResponseDto> deleteStation(@PathVariable long id,
                                                       @RequestParam Long stationId) {
-        lineService.deleteEdge(id, stationId);
+        lineService.deleteStation(id, stationId);
 
         return ResponseEntity.noContent().build();
     }

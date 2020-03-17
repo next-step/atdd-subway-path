@@ -45,7 +45,8 @@ public class LineService {
         newEdge.connectedOf(legacyEdges);
         newEdge = edgeService.save(newEdge);
 
-        line.addNewLineEdges(legacyEdges, newEdge);
+        List<Edge> edges = line.sortEdge(legacyEdges, newEdge);
+        line.setEdges(edgeService.saveAll(edges));
 
         // update station
         final Set<Long> stationIds = stationIdsInEdges(line.getLineEdges());
@@ -66,12 +67,12 @@ public class LineService {
         return stationIds;
     }
 
-    public void deleteEdge(final long id, final long stationId) {
+    public void deleteStation(final long id, final long stationId) {
         final Line line = findById(id);
         final Station deleteStation = stationService.findById(stationId);
 
         // 노선에서 구간 삭제
-        deleteEdgeInLine(line, deleteStation);
+        deleteStationInLine(line, deleteStation);
         lineRepository.save(line);
 
         // 지하철역에서 라인 삭제
@@ -119,7 +120,7 @@ public class LineService {
         return stationService.save(station);
     }
 
-    private void deleteEdgeInLine(final Line line, final Station deleteStation) {
+    private void deleteStationInLine(final Line line, final Station deleteStation) {
         final List<Edge> legacyEdges = edgeService.findAllById(line.getEdgeIds());
 
         if (legacyEdges.isEmpty())
@@ -145,7 +146,9 @@ public class LineService {
                     deleteEdgeIds.add(legacyEdge.getId());
                     deleteEdgeIds.add(nextLegacyEdge.getId());
 
-                    Edge newEdge = createEdge(legacyEdge.getSourceStationId(), nextLegacyEdge.getTargetStationId());
+                    int newDistance = legacyEdge.getDistance() + nextLegacyEdge.getDistance();
+                    int newElapsedTime = legacyEdge.getElapsedTime() + nextLegacyEdge.getElapsedTime();
+                    Edge newEdge = createEdge(legacyEdge.getSourceStationId(), nextLegacyEdge.getTargetStationId(), newElapsedTime, newDistance);
                     sortEdges.add(newEdge);
 
                     continue;
@@ -164,10 +167,8 @@ public class LineService {
         line.setEdges(sortEdges);
     }
 
-    private Edge createEdge(final long sourceStationId, final long targetStationId) {
-        Edge newEdge = Edge.builder()
-                .sourceStationId(sourceStationId)
-                .targetStationId(targetStationId).build();
+    private Edge createEdge(final long sourceStationId, final long targetStationId, int elapsedTime, int distance) {
+        Edge newEdge = new Edge(sourceStationId, targetStationId, elapsedTime, distance);
 
         return edgeService.save(newEdge);
     }

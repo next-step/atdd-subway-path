@@ -9,11 +9,10 @@ import lombok.Setter;
 public class CreateEdgeRequestView {
     private long sourceStationId;
     private long targetStationId;
+    private int elapsedTime;
+    private int distance;
 
     public Edge toEdge() {
-        return Edge.builder()
-                .sourceStationId(this.sourceStationId)
-                .targetStationId(this.targetStationId)
-                .build();
+        return new Edge(sourceStationId, targetStationId, elapsedTime, distance);
     }
 }
