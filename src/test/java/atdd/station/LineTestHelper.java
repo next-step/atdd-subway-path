@@ -59,10 +59,12 @@ public class LineTestHelper {
         httpTestHelper.deleteRequest(LINES_PATH + "/" + id);
     }
 
-    public LineResponseDto addEdge(final long lineId, final long sourceStationId, final long targetStationId) {
+    public LineResponseDto addEdge(final long lineId, final long sourceStationId, final long targetStationId, final int elapsedTime, final int distance) {
         CreateEdgeRequestView createEdgeRequestView = new CreateEdgeRequestView();
         createEdgeRequestView.setSourceStationId(sourceStationId);
         createEdgeRequestView.setTargetStationId(targetStationId);
+        createEdgeRequestView.setElapsedTime(elapsedTime);
+        createEdgeRequestView.setDistance(distance);
 
         EntityExchangeResult result = httpTestHelper.postRequest(LINES_PATH + "/" + lineId + EDGES_PATH, writeValueAsString(createEdgeRequestView), LineResponseDto.class);
 

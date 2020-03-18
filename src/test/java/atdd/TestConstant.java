@@ -13,6 +13,11 @@ public class TestConstant {
     public static final long STATION_ID_3 = 3l;
     public static final long STATION_ID_4 = 4l;
     public static final long STATION_ID_5 = 5l;
+    public static final long STATION_ID_6 = 6l;
+    public static final long STATION_ID_7 = 7l;
+    public static final long STATION_ID_8 = 8l;
+    public static final long STATION_ID_9 = 9l;
+    public static final long STATION_ID_10 = 10l;
 
     public static final String STATION_NAME = "강남역";
     public static final String STATION_NAME_2 = "역삼역";
@@ -65,6 +70,8 @@ public class TestConstant {
     public static final Edge EDGE_51 = new Edge(STATION_ID_2, STATION_ID_3, 10, 10);
     public static final Edge EDGE_52 = new Edge(STATION_ID_3, STATION_ID_4, 10, 10);
     public static final Edge EDGE_53 = new Edge(STATION_ID_4, STATION_ID_5, 10, 10);
+    public static final Edge EDGE_54 = new Edge(STATION_ID_5, STATION_ID_6, 10, 10);
+    public static final Edge EDGE_55 = new Edge(STATION_ID_7, STATION_ID_3, 10, 10);
 
     public static final Edge NEW_EDGE = new Edge(STATION_ID_4, STATION_ID_5, 10, 10);
 }
