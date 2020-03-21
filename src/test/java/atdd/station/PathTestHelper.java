@@ -14,7 +14,14 @@ public class PathTestHelper {
     }
 
     public PathResponseView findPath(long startStationId, long endStationId) {
-        EntityExchangeResult result = httpTestHelper.getRequest(PATH_URL + "?startId=" + startStationId + "&endId=" + endStationId, new ParameterizedTypeReference<PathResponseView>() {
+        EntityExchangeResult result = httpTestHelper.getRequest(PATH_URL + "/short-path" + "?startId=" + startStationId + "&endId=" + endStationId, new ParameterizedTypeReference<PathResponseView>() {
+        });
+
+        return (PathResponseView) result.getResponseBody();
+    }
+
+    public PathResponseView findShortTimePath(long startStationId, long endStationId) {
+        EntityExchangeResult result = httpTestHelper.getRequest(PATH_URL + "/short-time" + "?startId=" + startStationId + "&endId=" + endStationId, new ParameterizedTypeReference<PathResponseView>() {
         });
 
         return (PathResponseView) result.getResponseBody();

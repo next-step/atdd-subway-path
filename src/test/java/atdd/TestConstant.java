@@ -72,6 +72,7 @@ public class TestConstant {
     public static final Edge EDGE_53 = new Edge(STATION_ID_4, STATION_ID_5, 10, 10);
     public static final Edge EDGE_54 = new Edge(STATION_ID_5, STATION_ID_6, 10, 10);
     public static final Edge EDGE_55 = new Edge(STATION_ID_7, STATION_ID_3, 10, 10);
+    public static final Edge EDGE_56 = new Edge(STATION_ID_7, STATION_ID_5, 10, 10);
 
     public static final Edge NEW_EDGE = new Edge(STATION_ID_4, STATION_ID_5, 10, 10);
 }

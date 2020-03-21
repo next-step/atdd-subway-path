@@ -46,17 +46,17 @@ public class PathAcceptanceTest {
         this.stationTestHelper = new StationTestHelper(webTestClient);
         this.lineTestHelper = new LineTestHelper(webTestClient);
 
-        stationDto = stationTestHelper.createStation(STATION_NAME); // 강남
-        stationDto2 = stationTestHelper.createStation(STATION_NAME_2);// 역삼
-        stationDto3 = stationTestHelper.createStation(STATION_NAME_3); //선릉
-        stationDto4 = stationTestHelper.createStation(STATION_NAME_4); // 삼성
-        stationDto5 = stationTestHelper.createStation(STATION_NAME_5); //종합운동장
+        stationDto = stationTestHelper.createStation(STATION_NAME);
+        stationDto2 = stationTestHelper.createStation(STATION_NAME_2);
+        stationDto3 = stationTestHelper.createStation(STATION_NAME_3);
+        stationDto4 = stationTestHelper.createStation(STATION_NAME_4);
+        stationDto5 = stationTestHelper.createStation(STATION_NAME_5);
 
-        stationDto11 = stationTestHelper.createStation(STATION_NAME_11); // 고속터미널
-        stationDto12 = stationTestHelper.createStation(STATION_NAME_12); // 교대
-        stationDto13 = stationTestHelper.createStation(STATION_NAME_13); // 남부터미
-        stationDto14 = stationTestHelper.createStation(STATION_NAME_14); // 매봉
-        stationDto15 = stationTestHelper.createStation(STATION_NAME_15); // 도곡
+        stationDto11 = stationTestHelper.createStation(STATION_NAME_11);
+        stationDto12 = stationTestHelper.createStation(STATION_NAME_12);
+        stationDto13 = stationTestHelper.createStation(STATION_NAME_13);
+        stationDto14 = stationTestHelper.createStation(STATION_NAME_14);
+        stationDto15 = stationTestHelper.createStation(STATION_NAME_15);
 
         long lineId = lineTestHelper.createLine(CREATE_LINE_REQUEST_VIEW_1).getId();
         long lineId2 = lineTestHelper.createLine(CREATE_LINE_REQUEST_VIEW_3).getId();
@@ -71,6 +71,7 @@ public class PathAcceptanceTest {
         lineTestHelper.addEdge(lineId2, stationDto12.getId(), stationDto13.getId(), 10, 10);
         lineTestHelper.addEdge(lineId2, stationDto13.getId(), stationDto14.getId(), 10, 10);
         lineTestHelper.addEdge(lineId2, stationDto14.getId(), stationDto15.getId(), 10, 10);
+        lineTestHelper.addEdge(lineId2, stationDto15.getId(), stationDto4.getId(), 10, 10);
     }
 
     @Test
@@ -86,5 +87,17 @@ public class PathAcceptanceTest {
         assertThat(responseView.getStations().get(3).getName()).isEqualTo(STATION_NAME_2);
         assertThat(responseView.getStations().get(4).getName()).isEqualTo(STATION_NAME_3);
         assertThat(responseView.getStations().get(5).getName()).isEqualTo(STATION_NAME_4);
+    }
+
+    @Test
+    public void findShortTimePath() {
+        //when
+        PathResponseView responseView = pathTestHelper.findShortTimePath(stationDto14.getId(), stationDto4.getId());
+
+        //then
+        assertThat(responseView.getStations().size()).isEqualTo(3);
+        assertThat(responseView.getStations().get(0).getName()).isEqualTo(STATION_NAME_14);
+        assertThat(responseView.getStations().get(1).getName()).isEqualTo(STATION_NAME_15);
+        assertThat(responseView.getStations().get(2).getName()).isEqualTo(STATION_NAME_4);
     }
 }
