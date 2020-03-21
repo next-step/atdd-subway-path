@@ -24,6 +24,18 @@ public class PathAcceptanceTest {
     private StationTestHelper stationTestHelper;
     private LineTestHelper lineTestHelper;
 
+    private StationDto stationDto;
+    private StationDto stationDto2;
+    private StationDto stationDto3;
+    private StationDto stationDto4;
+    private StationDto stationDto5;
+
+    private StationDto stationDto11;
+    private StationDto stationDto12;
+    private StationDto stationDto13;
+    private StationDto stationDto14;
+    private StationDto stationDto15;
+
     @Autowired
     private WebTestClient webTestClient;
 
@@ -33,22 +45,18 @@ public class PathAcceptanceTest {
         this.pathTestHelper = new PathTestHelper(httpTestHelper);
         this.stationTestHelper = new StationTestHelper(webTestClient);
         this.lineTestHelper = new LineTestHelper(webTestClient);
-    }
 
-    @Test
-    public void findPath() {
-        //given
-        StationDto stationDto = stationTestHelper.createStation(STATION_NAME); // 강남
-        StationDto stationDto2 = stationTestHelper.createStation(STATION_NAME_2);// 역삼
-        StationDto stationDto3 = stationTestHelper.createStation(STATION_NAME_3); //선릉
-        StationDto stationDto4 = stationTestHelper.createStation(STATION_NAME_4); // 삼성
-        StationDto stationDto5 = stationTestHelper.createStation(STATION_NAME_5); //종합운동장
+        stationDto = stationTestHelper.createStation(STATION_NAME); // 강남
+        stationDto2 = stationTestHelper.createStation(STATION_NAME_2);// 역삼
+        stationDto3 = stationTestHelper.createStation(STATION_NAME_3); //선릉
+        stationDto4 = stationTestHelper.createStation(STATION_NAME_4); // 삼성
+        stationDto5 = stationTestHelper.createStation(STATION_NAME_5); //종합운동장
 
-        StationDto stationDto11 = stationTestHelper.createStation(STATION_NAME_11); // 고속터미널
-        StationDto stationDto12 = stationTestHelper.createStation(STATION_NAME_12); // 교대
-        StationDto stationDto13 = stationTestHelper.createStation(STATION_NAME_13); // 남부터미
-        StationDto stationDto14 = stationTestHelper.createStation(STATION_NAME_14); // 매봉
-        StationDto stationDto15 = stationTestHelper.createStation(STATION_NAME_15); // 도곡
+        stationDto11 = stationTestHelper.createStation(STATION_NAME_11); // 고속터미널
+        stationDto12 = stationTestHelper.createStation(STATION_NAME_12); // 교대
+        stationDto13 = stationTestHelper.createStation(STATION_NAME_13); // 남부터미
+        stationDto14 = stationTestHelper.createStation(STATION_NAME_14); // 매봉
+        stationDto15 = stationTestHelper.createStation(STATION_NAME_15); // 도곡
 
         long lineId = lineTestHelper.createLine(CREATE_LINE_REQUEST_VIEW_1).getId();
         long lineId2 = lineTestHelper.createLine(CREATE_LINE_REQUEST_VIEW_3).getId();
@@ -63,7 +71,10 @@ public class PathAcceptanceTest {
         lineTestHelper.addEdge(lineId2, stationDto12.getId(), stationDto13.getId(), 10, 10);
         lineTestHelper.addEdge(lineId2, stationDto13.getId(), stationDto14.getId(), 10, 10);
         lineTestHelper.addEdge(lineId2, stationDto14.getId(), stationDto15.getId(), 10, 10);
+    }
 
+    @Test
+    public void findPath() {
         //when
         PathResponseView responseView = pathTestHelper.findPath(stationDto11.getId(), stationDto4.getId());
 
