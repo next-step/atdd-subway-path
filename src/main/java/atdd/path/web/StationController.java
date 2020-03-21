@@ -50,7 +50,7 @@ public class StationController {
                 .body(responseViews);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationService.deleteById();
         return ResponseEntity

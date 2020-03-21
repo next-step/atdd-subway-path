@@ -1,9 +1,11 @@
 package atdd.path.serivce;
 
 import atdd.path.domain.Station;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class StationService {
     public Station create(Station of) {
         return null;
