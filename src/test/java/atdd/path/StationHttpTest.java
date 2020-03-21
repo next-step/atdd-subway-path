@@ -30,7 +30,8 @@ public class StationHttpTest extends AbstractAcceptanceTest {
     }
 
     public StationResponseView findById(Long stationId) {
-        EntityExchangeResult<StationResponseView> result = webTestClient.get().uri("/stations/" + stationId)
+        EntityExchangeResult<StationResponseView> result
+                = webTestClient.get().uri("/stations/" + stationId)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()

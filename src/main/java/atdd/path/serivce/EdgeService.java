@@ -10,7 +10,6 @@ public class EdgeService {
     public Edge create(Edge edge) {
         return null;
     }
-
     public List<Edge> findEdgesByStationId(Long stationId) {
         return null;
     }
