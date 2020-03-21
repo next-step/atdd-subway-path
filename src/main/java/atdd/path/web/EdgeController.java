@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 import static atdd.path.PathConstant.BASE_URI_EDGE;
 
@@ -31,8 +32,9 @@ public class EdgeController {
     @DeleteMapping()
     public ResponseEntity deleteStation(@RequestParam("lineId") Long lineId,
                                         @RequestParam("stationId") Long stationId) {
-        edgeService.deleteEdgesByStationId(stationId);
-        Edge edgeAfterDeleteStation = edgeService.createEdgeAfterDeleteStation(lineId, stationId);
+        List<Edge> oldEdges = edgeService.findEdgesByStationId(stationId);
+        edgeService.deleteOldEdges(oldEdges);
+        Edge edgeAfterDeleteStation = edgeService.createEdgeForMerge(lineId, stationId, oldEdges);
         return ResponseEntity
                 .ok()
                 .body(EdgeResponseView.of(edgeAfterDeleteStation));

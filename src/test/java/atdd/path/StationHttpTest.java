@@ -7,8 +7,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import java.util.stream.Collectors;
-
 public class StationHttpTest extends AbstractAcceptanceTest {
     public WebTestClient webTestClient;
 
@@ -32,14 +30,13 @@ public class StationHttpTest extends AbstractAcceptanceTest {
     }
 
     public StationResponseView findById(Long stationId) {
-        return webTestClient.get().uri("/stations/" + stationId)
+        EntityExchangeResult<StationResponseView> result = webTestClient.get().uri("/stations/" + stationId)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
-                .returnResult(StationResponseView.class)
-                .getResponseBody()
-                .toStream()
-                .collect(Collectors.toList())
-                .get(0);
+                .expectBody(StationResponseView.class)
+                .returnResult();
+
+        return result.getResponseBody();
     }
 }
