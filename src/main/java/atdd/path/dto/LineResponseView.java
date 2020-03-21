@@ -1,5 +1,6 @@
 package atdd.path.dto;
 
+import atdd.path.domain.Line;
 import atdd.path.domain.Station;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,5 +30,14 @@ public class LineResponseView {
         this.endTime = endTime;
         this.intervalTime = intervalTime;
         this.stations = stations;
+    }
+
+    public static LineResponseView of(Line line){
+        return LineResponseView.builder()
+                .id(line.getId())
+                .startTime(line.getStartTime())
+                .endTime(line.getEndTime())
+                .intervalTime(line.getIntervalTime())
+                .build();
     }
 }
