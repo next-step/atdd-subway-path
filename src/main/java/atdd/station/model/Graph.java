@@ -21,6 +21,13 @@ public class Graph {
         return new DijkstraShortestPath(graph).getPath(startId, endId).getVertexList();
     }
 
+    public List<Long> shortestTimePath(long startId, long endId) {
+        WeightedMultigraph<Long, DefaultWeightedEdge> graph = makeGraph();
+        edges.forEach(it -> graph.setEdgeWeight(graph.addEdge(it.getSourceStationId(), it.getTargetStationId()), it.getElapsedTime()));
+
+        return new DijkstraShortestPath(graph).getPath(startId, endId).getVertexList();
+    }
+
     private WeightedMultigraph<Long, DefaultWeightedEdge> makeGraph() {
         WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
         edges.stream()

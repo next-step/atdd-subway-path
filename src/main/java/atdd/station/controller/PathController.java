@@ -18,9 +18,16 @@ public class PathController {
     @Autowired
     private PathService pathService;
 
-    @GetMapping
+    @GetMapping("/short-path")
     public ResponseEntity<PathResponseView> findPath(@RequestParam long startId, @RequestParam long endId) {
         List<Station> pathStations = pathService.findPath(startId, endId);
+
+        return ResponseEntity.ok(PathResponseView.of(startId, endId, pathStations));
+    }
+
+    @GetMapping("/short-time")
+    public ResponseEntity<PathResponseView> findShortTimePath(@RequestParam long startId, @RequestParam long endId) {
+        List<Station> pathStations = pathService.findShortTimePath(startId, endId);
 
         return ResponseEntity.ok(PathResponseView.of(startId, endId, pathStations));
     }

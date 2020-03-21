@@ -27,4 +27,16 @@ public class PathService {
 
         return stations;
     }
+
+    public List<Station> findShortTimePath(long startId, long endId) {
+        Graph graph = new Graph(edgeService.findAll());
+
+        List<Long> pathStationIds = graph.shortestTimePath(startId, endId);
+
+        List<Station> stations = pathStationIds.stream()
+                .map(it -> stationService.findById(it))
+                .collect(Collectors.toList());
+
+        return stations;
+    }
 }
