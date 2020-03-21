@@ -4,12 +4,14 @@ import atdd.path.domain.Line;
 import atdd.path.domain.Station;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
 public class LineResponseView {
     private Long id;
     private String name;
@@ -17,9 +19,6 @@ public class LineResponseView {
     private LocalTime endTime;
     private int intervalTime;
     private List<Station> stations = new ArrayList<>();
-
-    public LineResponseView() {
-    }
 
     @Builder
     public LineResponseView(Long id, String name, LocalTime startTime, LocalTime endTime,

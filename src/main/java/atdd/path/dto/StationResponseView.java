@@ -3,18 +3,17 @@ package atdd.path.dto;
 import atdd.path.domain.Station;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.sound.sampled.Line;
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
 public class StationResponseView {
     private Long id;
     private String name;
     private List<Line> lines;
-
-    public StationResponseView() {
-    }
 
     @Builder
     public StationResponseView(Long id, String name, List<Line> lines) {
