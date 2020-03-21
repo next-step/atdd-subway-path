@@ -2,7 +2,6 @@ package atdd.path;
 
 import atdd.path.dto.LineRequestView;
 import atdd.path.dto.LineResponseView;
-import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -16,7 +15,7 @@ public class LineHttpTest {
         this.webTestClient = webTestClient;
     }
 
-    public LineResponseView create(String name, LocalTime startTime, LocalTime endTIme, int intervalTime){
+    public LineResponseView create(String name, LocalTime startTime, LocalTime endTIme, int intervalTime) {
         LineRequestView requestView = LineRequestView.builder()
                 .name(name)
                 .startTime(startTime)
@@ -37,8 +36,8 @@ public class LineHttpTest {
                 .get(0);
     }
 
-    public LineResponseView findById(Long lineId){
-        return webTestClient.get().uri("/lines/"+lineId)
+    public LineResponseView findById(Long lineId) {
+        return webTestClient.get().uri("/lines/" + lineId)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()

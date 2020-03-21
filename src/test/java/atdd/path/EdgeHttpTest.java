@@ -14,7 +14,7 @@ public class EdgeHttpTest {
         this.webTestClient = webTestClient;
     }
 
-    public EdgeResponseView create( Long lineId, Long sourceId, Long targetId, int distance){
+    public EdgeResponseView create(Long lineId, Long sourceId, Long targetId, int distance) {
         EdgeRequestView requestView
                 = EdgeRequestView.builder()
                 .lineId(lineId)
