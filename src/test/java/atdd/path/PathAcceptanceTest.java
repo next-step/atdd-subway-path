@@ -25,7 +25,7 @@ public class PathAcceptanceTest extends AbstractAcceptanceTest {
     }
 
     @Test
-    void create() {
+    void findPathTest() {
         //given
         Long stationId1 = stationHttpTest.create("강남");
         Long stationId2 = stationHttpTest.create("역삼");
