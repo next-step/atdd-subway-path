@@ -50,11 +50,11 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     void findAll() {
         //given
-        Long lineId = lineHttpTest.create("2호선", LocalTime.of(05, 00),
+        lineHttpTest.create("2호선", LocalTime.of(05, 00),
                 LocalTime.of(23, 50), 10).getId();
-        Long lineId2 = lineHttpTest.create("3호선", LocalTime.of(05, 00),
+        lineHttpTest.create("3호선", LocalTime.of(05, 00),
                 LocalTime.of(23, 50), 10).getId();
-        Long lineId3 = lineHttpTest.create("4호선", LocalTime.of(05, 00),
+        lineHttpTest.create("4호선", LocalTime.of(05, 00),
                 LocalTime.of(23, 50), 10).getId();
 
         //when, then
