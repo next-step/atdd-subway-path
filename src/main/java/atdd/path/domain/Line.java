@@ -3,6 +3,7 @@ package atdd.path.domain;
 import atdd.path.dto.LineRequestView;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,6 +13,7 @@ import java.time.LocalTime;
 
 @Getter
 @Entity
+@NoArgsConstructor
 public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
