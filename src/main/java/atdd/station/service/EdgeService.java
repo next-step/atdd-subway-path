@@ -24,6 +24,10 @@ public class EdgeService {
         edgeRepository.deleteById(id);
     }
 
+    public void deleteAll(List<Edge> edges) {
+        edgeRepository.deleteAll(edges);
+    }
+
     public Edge save(Edge edge) {
         return edgeRepository.save(edge);
     }

@@ -9,6 +9,7 @@ import atdd.station.repository.LineRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class LineService {
@@ -70,13 +71,71 @@ public class LineService {
     public void deleteStation(final long id, final long stationId) {
         final Line line = findById(id);
         final Station deleteStation = stationService.findById(stationId);
+        final List<Edge> legacyEdges = edgeService.findAllById(line.getEdgeIds());
 
         // 노선에서 구간 삭제
-        deleteStationInLine(line, deleteStation);
+        List<Edge> deletedEdges = deleteEdges(legacyEdges, deleteStation);
+
+        Optional<Edge> combineEdgeOptional = combineEdge(deletedEdges);
+
+        List<Edge> newEdges = exceptEdge(legacyEdges, deletedEdges);
+
+        if (combineEdgeOptional.isPresent()) {
+            Edge newEdge = edgeService.save(combineEdgeOptional.get());
+            newEdges = line.sortEdge(newEdges, newEdge);
+        }
+
+        line.setEdges(newEdges);
         lineRepository.save(line);
 
         // 지하철역에서 라인 삭제
         deleteLineInStation(deleteStation, line.getId());
+    }
+
+    private List<Edge> deleteEdges(List<Edge> legacyEdges, Station deleteStation) {
+        List<Edge> deleteEdges = findConnectedEdge(legacyEdges, deleteStation);
+        edgeService.deleteAll(deleteEdges);
+
+        return deleteEdges;
+    }
+
+    private Optional<Edge> combineEdge(List<Edge> edges) {
+        if (edges.size() > 1) {
+            int distance = 0;
+            int elapsedTime = 0;
+
+            for (Edge edge : edges) {
+                distance += edge.getDistance();
+                elapsedTime += edge.getElapsedTime();
+            }
+
+            Edge newEdge = new Edge(edges.get(0).getSourceStationId(),
+                    edges.get(edges.size() - 1).getTargetStationId(),
+                    elapsedTime,
+                    distance);
+
+            return Optional.of(newEdge);
+        }
+
+        return Optional.empty();
+    }
+
+    private List<Edge> exceptEdge(List<Edge> edges, List<Edge> exceptEdges) {
+        List<Edge> result = new ArrayList<>();
+
+        for (Edge edge : edges) {
+            boolean isRemove = isFindEdge(exceptEdges, edge);
+
+            if (!isRemove) {
+                result.add(edge);
+            }
+        }
+
+        return result;
+    }
+
+    private boolean isFindEdge(List<Edge> edges, Edge edge) {
+        return edges.stream().anyMatch(it -> it.getId() == edge.getId());
     }
 
     public List<Edge> getLineEdges(Line line) {
@@ -120,73 +179,8 @@ public class LineService {
         return stationService.save(station);
     }
 
-    private void deleteStationInLine(final Line line, final Station deleteStation) {
-        final List<Edge> legacyEdges = edgeService.findAllById(line.getEdgeIds());
-
-        if (legacyEdges.isEmpty())
-            return;
-
-        final List<Edge> sortEdges = new ArrayList<>();
-        final Set<Long> deleteEdgeIds = deleteFirstEdgeOrLastEdge(legacyEdges, deleteStation.getId());
-
-        int edgeIndex = 0;
-        int deleteIndex = -1;
-
-        for (Edge legacyEdge : legacyEdges) {
-            if (deleteEdgeIds.isEmpty()) {
-                if (deleteIndex == edgeIndex) {
-                    continue;
-                }
-
-                if (legacyEdge.connectTargetStation(deleteStation.getId())) {
-                    deleteIndex = edgeIndex + 1;
-
-                    Edge nextLegacyEdge = legacyEdges.get(deleteIndex);
-
-                    deleteEdgeIds.add(legacyEdge.getId());
-                    deleteEdgeIds.add(nextLegacyEdge.getId());
-
-                    int newDistance = legacyEdge.getDistance() + nextLegacyEdge.getDistance();
-                    int newElapsedTime = legacyEdge.getElapsedTime() + nextLegacyEdge.getElapsedTime();
-                    Edge newEdge = createEdge(legacyEdge.getSourceStationId(), nextLegacyEdge.getTargetStationId(), newElapsedTime, newDistance);
-                    sortEdges.add(newEdge);
-
-                    continue;
-                }
-            }
-
-            sortEdges.add(legacyEdge);
-
-            edgeIndex++;
-        }
-
-        for (Long deleteEdgeId : deleteEdgeIds) {
-            edgeService.deleteById(deleteEdgeId);
-        }
-
-        line.setEdges(sortEdges);
-    }
-
-    private Edge createEdge(final long sourceStationId, final long targetStationId, int elapsedTime, int distance) {
-        Edge newEdge = new Edge(sourceStationId, targetStationId, elapsedTime, distance);
-
-        return edgeService.save(newEdge);
-    }
-
-    private Set<Long> deleteFirstEdgeOrLastEdge(final List<Edge> legacyEdges, final long deleteStationId) {
-        final Set<Long> deleteEdgeIds = new HashSet<>();
-
-        final Edge firstLegacyEdge = legacyEdges.get(0);
-        final Edge lastLegacyEdge = legacyEdges.get(legacyEdges.size() - 1);
-
-        if (firstLegacyEdge.connectSourceStation(deleteStationId)) {
-            deleteEdgeIds.add(firstLegacyEdge.getId());
-            legacyEdges.remove(0);
-        } else if (lastLegacyEdge.connectTargetStation(deleteStationId)) {
-            deleteEdgeIds.add(lastLegacyEdge.getId());
-            legacyEdges.remove(legacyEdges.size() - 1);
-        }
-
-        return deleteEdgeIds;
+    private List<Edge> findConnectedEdge(List<Edge> edges, final Station station) {
+        return edges.stream().filter(it -> it.connectSourceStation(station.getId()) || it.connectTargetStation(station.getId()))
+                .collect(Collectors.toList());
     }
 }
