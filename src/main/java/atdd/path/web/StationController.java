@@ -1,17 +1,20 @@
 package atdd.path.web;
 
-import atdd.path.application.dto.StationRequestView;
-import atdd.path.application.dto.StationResponseView;
 import atdd.path.domain.Station;
-import atdd.path.service.StationService;
+import atdd.path.dto.StationRequestView;
+import atdd.path.dto.StationResponseView;
+import atdd.path.serivce.StationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static atdd.path.PathConstant.BASE_URI_STATION;
 
 @RestController
-@RequestMapping(value = "/stations")
+@RequestMapping(value = BASE_URI_STATION)
 public class StationController {
     private StationService stationService;
 
@@ -20,36 +23,38 @@ public class StationController {
     }
 
     @PostMapping
-    public ResponseEntity create(@RequestBody StationRequestView requestView) {
-        StationResponseView responseView = stationService.create(requestView);
+    public ResponseEntity createStation(@RequestBody StationRequestView requestView) {
+        Station savedStation = stationService.create(Station.of(requestView));
         return ResponseEntity
-                .created(URI.create("/stations/" + responseView.getId()))
-                .body(responseView);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable Long id) throws Exception {
-        stationService.delete(StationRequestView.builder()
-                .id(id)
-                .build());
-        return ResponseEntity
-                .ok()
-                .build();
+                .created(URI.create(BASE_URI_STATION + savedStation.getId()))
+                .body(StationResponseView.of(savedStation));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity findById(@PathVariable Long id) throws Exception {
-        Station station = stationService.findById(StationRequestView.builder()
-                .id(id)
-                .build());
+    public ResponseEntity retrieveStation(@PathVariable Long id) {
+        Station station = StationService.findById(id);
         return ResponseEntity
-                .ok(station);
+                .ok()
+                .body(StationResponseView.of(station));
     }
 
     @GetMapping
-    public ResponseEntity showAll() throws Exception {
-        List<Station> responseViews = stationService.showAll();
+    public ResponseEntity showAllStations() {
+        List<Station> stations = StationService.findAll();
+        List<StationResponseView> responseViews
+                = stations.stream()
+                .map(it -> StationResponseView.of(it))
+                .collect(Collectors.toList());
         return ResponseEntity
-                .ok(responseViews);
+                .ok()
+                .body(responseViews);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteStation(@PathVariable Long id) {
+        stationService.deleteById();
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 }

@@ -1,22 +1,19 @@
-package atdd.path.application.dto;
+package atdd.path.dto;
 
-import atdd.path.domain.Line;
 import atdd.path.domain.Station;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.boot.jackson.JsonComponent;
+import lombok.NoArgsConstructor;
 
+import javax.sound.sampled.Line;
 import java.util.List;
 
-@JsonComponent
 @Getter
+@NoArgsConstructor
 public class StationResponseView {
     private Long id;
     private String name;
     private List<Line> lines;
-
-    public StationResponseView() {
-    }
 
     @Builder
     public StationResponseView(Long id, String name, List<Line> lines) {
@@ -25,7 +22,7 @@ public class StationResponseView {
         this.lines = lines;
     }
 
-    public static StationResponseView of(Station station) {
+    public static StationResponseView of(Station station){
         return StationResponseView.builder()
                 .id(station.getId())
                 .name(station.getName())

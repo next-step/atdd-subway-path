@@ -1,53 +1,59 @@
 package atdd.path.web;
 
-import atdd.path.application.dto.LineRequestView;
-import atdd.path.application.dto.LineResponseView;
-import atdd.path.service.EdgeService;
-import atdd.path.service.LineService;
+import atdd.path.domain.Line;
+import atdd.path.dto.LineRequestView;
+import atdd.path.dto.LineResponseView;
+import atdd.path.serivce.LineService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static atdd.path.PathConstant.BASE_URI_LINE;
 
 @RestController
-@RequestMapping("/lines")
+@RequestMapping(value = BASE_URI_LINE)
 public class LineController {
     private LineService lineService;
-    private EdgeService edgeService;
 
-    public LineController(LineService lineService, EdgeService edgeService) {
+    public LineController(LineService lineService) {
         this.lineService = lineService;
-        this.edgeService = edgeService;
     }
 
     @PostMapping
-    public ResponseEntity create(@RequestBody LineRequestView requestView) {
-        LineResponseView responseView = lineService.create(requestView);
+    public ResponseEntity createLine(@RequestBody LineRequestView requestView) {
+        Line savedLine = lineService.create(Line.of(requestView));
         return ResponseEntity
-                .created(URI.create("/lines/" + responseView.getId()))
-                .body(responseView);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
-        lineService.delete(id);
-        return ResponseEntity
-                .ok()
-                .build();
+                .created(URI.create(BASE_URI_LINE + savedLine.getId()))
+                .body(LineResponseView.of(savedLine));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity retrieve(@PathVariable Long id) {
-        LineResponseView responseView = lineService.retrieve(id);
+    public ResponseEntity retrieveLine(@PathVariable Long id) {
+        Line line = lineService.findById(id);
         return ResponseEntity
-                .ok(responseView);
+                .ok()
+                .body(LineResponseView.of(line));
     }
 
     @GetMapping
-    public ResponseEntity showAll() {
-        List<LineResponseView> responseView = lineService.showAll();
+    public ResponseEntity showAllLines() {
+        List<Line> lines = lineService.findAll();
+        List<LineResponseView> responseViews = lines.stream()
+                .map(it -> LineResponseView.of(it))
+                .collect(Collectors.toList());
         return ResponseEntity
-                .ok(responseView);
+                .ok()
+                .body(responseViews);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteLine(@PathVariable Long id) {
+        lineService.deleteById(id);
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 }

@@ -1,29 +1,18 @@
 package atdd.path.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import atdd.path.dto.StationRequestView;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 
-import static javax.persistence.GenerationType.IDENTITY;
-
-@Entity
 @Getter
+@Entity
+@NoArgsConstructor
 public class Station {
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
     private Long id;
     private String name;
-
-    public Station() {
-    }
-
-    public Station(String name) {
-        this.name = name;
-    }
 
     @Builder
     public Station(Long id, String name) {
@@ -31,5 +20,9 @@ public class Station {
         this.name = name;
     }
 
+    public static Station of(StationRequestView requestView){
+        return Station.builder()
+                .name(requestView.getName())
+                .build();
+    }
 }
-

@@ -1,44 +1,42 @@
 package atdd.path.web;
 
-import atdd.path.application.dto.EdgeRequestViewFromClient;
-import atdd.path.application.dto.EdgeResponseView;
 import atdd.path.domain.Edge;
-import atdd.path.service.EdgeService;
-import atdd.path.service.LineService;
-import atdd.path.service.StationService;
+import atdd.path.dto.EdgeRequestView;
+import atdd.path.dto.EdgeResponseView;
+import atdd.path.serivce.EdgeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.util.List;
+
+import static atdd.path.PathConstant.BASE_URI_EDGE;
+
 @RestController
-@RequestMapping(value = "/edges")
+@RequestMapping(value = BASE_URI_EDGE)
 public class EdgeController {
-    private LineService lineService;
     private EdgeService edgeService;
-    private StationService stationService;
 
-    public EdgeController(LineService lineService, EdgeService edgeService,
-                          StationService stationService) {
-        this.lineService = lineService;
+    public EdgeController(EdgeService edgeService) {
         this.edgeService = edgeService;
-        this.stationService = stationService;
     }
 
-    @PostMapping("/{lineId}")
-    public ResponseEntity addEdge(@PathVariable("lineId") Long lineId,
-                                  @RequestBody EdgeRequestViewFromClient request) throws Exception {
-
-        Edge edge = edgeService.addEdge(lineId, request.getSourceId(), request.getTargetId(), request.getDistance());
+    @PostMapping
+    public ResponseEntity createEdge(@RequestBody EdgeRequestView requestView) {
+        Edge savedEdge = edgeService.create(Edge.of(requestView));
         return ResponseEntity
-                .ok()
-                .body(EdgeResponseView.of(edge));
+                .created(URI.create(BASE_URI_EDGE + "/" + savedEdge.getId()))
+                .body(EdgeResponseView.of(savedEdge));
     }
 
-    @DeleteMapping("/{lineId}")
-    public ResponseEntity deleteStation(@PathVariable("lineId") Long lineId,
+    @DeleteMapping()
+    public ResponseEntity deleteStation(@RequestParam("lineId") Long lineId,
                                         @RequestParam("stationId") Long stationId) {
-        edgeService.deleteEdgeByStationId(lineId, stationId);
+        List<Edge> oldEdges = edgeService.findEdgesByStationId(stationId);
+        edgeService.deleteOldEdges(oldEdges);
+        Edge edgeAfterDeleteStation = edgeService.createEdgeForMerge(lineId, stationId, oldEdges);
         return ResponseEntity
                 .ok()
-                .build();
+                .body(EdgeResponseView.of(edgeAfterDeleteStation));
     }
 }
