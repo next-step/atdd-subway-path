@@ -8,7 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static atdd.TestConstant.*;
@@ -77,9 +79,12 @@ public class PathAcceptanceTest {
     @Test
     public void findPath() {
         //when
-        PathResponseView responseView = pathTestHelper.findPath(stationDto11.getId(), stationDto4.getId());
+        EntityExchangeResult result = pathTestHelper.findPath(stationDto11.getId(), stationDto4.getId());
+        PathResponseView responseView = (PathResponseView) result.getResponseBody();
 
         //then
+        assertThat(result.getResponseHeaders().getETag()).isNotNull();
+
         assertThat(responseView.getStations().size()).isEqualTo(6);
         assertThat(responseView.getStations().get(0).getName()).isEqualTo(STATION_NAME_11);
         assertThat(responseView.getStations().get(1).getName()).isEqualTo(STATION_NAME_12);
@@ -92,12 +97,28 @@ public class PathAcceptanceTest {
     @Test
     public void findShortTimePath() {
         //when
-        PathResponseView responseView = pathTestHelper.findShortTimePath(stationDto14.getId(), stationDto4.getId());
+        EntityExchangeResult result = pathTestHelper.findShortTimePath(stationDto14.getId(), stationDto4.getId());
+        PathResponseView responseView = (PathResponseView) result.getResponseBody();
 
         //then
+        assertThat(result.getResponseHeaders().getETag()).isNotNull();
+
         assertThat(responseView.getStations().size()).isEqualTo(3);
         assertThat(responseView.getStations().get(0).getName()).isEqualTo(STATION_NAME_14);
         assertThat(responseView.getStations().get(1).getName()).isEqualTo(STATION_NAME_15);
         assertThat(responseView.getStations().get(2).getName()).isEqualTo(STATION_NAME_4);
+    }
+
+    @Test
+    void findPathETag() {
+        // given
+        EntityExchangeResult result = pathTestHelper.findPath(stationDto11.getId(), stationDto4.getId());
+        String eTag = result.getResponseHeaders().getETag();
+
+        // when
+        EntityExchangeResult eTagResult = pathTestHelper.findPath(stationDto11.getId(), stationDto4.getId(), eTag);
+
+        //then
+        assertThat(eTagResult.getStatus()).isEqualTo(HttpStatus.NOT_MODIFIED);
     }
 }

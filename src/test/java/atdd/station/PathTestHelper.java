@@ -13,17 +13,18 @@ public class PathTestHelper {
         this.httpTestHelper = httpTestHelper;
     }
 
-    public PathResponseView findPath(long startStationId, long endStationId) {
-        EntityExchangeResult result = httpTestHelper.getRequest(PATH_URL + "/short-path" + "?startId=" + startStationId + "&endId=" + endStationId, new ParameterizedTypeReference<PathResponseView>() {
+    public EntityExchangeResult findPath(long startStationId, long endStationId, String eTag) {
+        return httpTestHelper.getRequestWithETag(PATH_URL + "/short-path" + "?startId=" + startStationId + "&endId=" + endStationId, eTag, new ParameterizedTypeReference<PathResponseView>() {
         });
-
-        return (PathResponseView) result.getResponseBody();
     }
 
-    public PathResponseView findShortTimePath(long startStationId, long endStationId) {
-        EntityExchangeResult result = httpTestHelper.getRequest(PATH_URL + "/short-time" + "?startId=" + startStationId + "&endId=" + endStationId, new ParameterizedTypeReference<PathResponseView>() {
+    public EntityExchangeResult findPath(long startStationId, long endStationId) {
+        return httpTestHelper.getRequest(PATH_URL + "/short-path" + "?startId=" + startStationId + "&endId=" + endStationId, new ParameterizedTypeReference<PathResponseView>() {
         });
+    }
 
-        return (PathResponseView) result.getResponseBody();
+    public EntityExchangeResult findShortTimePath(long startStationId, long endStationId) {
+        return httpTestHelper.getRequest(PATH_URL + "/short-time" + "?startId=" + startStationId + "&endId=" + endStationId, new ParameterizedTypeReference<PathResponseView>() {
+        });
     }
 }
