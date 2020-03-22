@@ -2,7 +2,6 @@ package atdd.station.service;
 
 import atdd.exception.ErrorType;
 import atdd.exception.SubwayException;
-import atdd.station.model.dto.LineSimpleDto;
 import atdd.station.model.entity.Station;
 import atdd.station.repository.LineRepository;
 import atdd.station.repository.StationRepository;
@@ -13,7 +12,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class StationService {
@@ -35,10 +33,6 @@ public class StationService {
         return stationRepository.save(station);
     }
 
-    public List<Station> saveAll(Iterable<Station> stations) {
-        return stationRepository.saveAll(stations);
-    }
-
     public List<Station> updateLine(final Set<Long> stationIds, final long lineId) {
         List<Station> stationList = stationRepository.findAllById(stationIds);
 
@@ -50,14 +44,5 @@ public class StationService {
         }
 
         return stationRepository.saveAll(stationList);
-    }
-
-    // TODO 수정
-    public List<LineSimpleDto> lineDtos(List<Long> lineIds) {
-        return lineRepository.findAllById(lineIds)
-                .stream().map(data -> LineSimpleDto.builder()
-                        .id(data.getId())
-                        .name(data.getName()).build())
-                .collect(Collectors.toList());
     }
 }

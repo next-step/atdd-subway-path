@@ -31,6 +31,10 @@ public class LineService {
         return lineRepository.findById(id).orElseThrow(() -> new SubwayException(ErrorType.NOT_FOUND_LINE));
     }
 
+    public List<Line> findAllById(List<Long> ids) {
+        return lineRepository.findAllById(ids);
+    }
+
     public List<Line> findAll() {
         return lineRepository.findAll();
     }
