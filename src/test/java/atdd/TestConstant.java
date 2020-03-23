@@ -13,6 +13,11 @@ public class TestConstant {
     public static final long STATION_ID_3 = 3l;
     public static final long STATION_ID_4 = 4l;
     public static final long STATION_ID_5 = 5l;
+    public static final long STATION_ID_6 = 6l;
+    public static final long STATION_ID_7 = 7l;
+    public static final long STATION_ID_8 = 8l;
+    public static final long STATION_ID_9 = 9l;
+    public static final long STATION_ID_10 = 10l;
 
     public static final String STATION_NAME = "강남역";
     public static final String STATION_NAME_2 = "역삼역";
@@ -52,21 +57,22 @@ public class TestConstant {
 
     public static final Line LINE_1 = Line.builder().name(STATION_NAME).startTime(LocalTime.of(5, 0)).endTime(LocalTime.of(23, 50)).intervalTime(10).build();
 
-    public static final Edge EDGE_1 = Edge.builder().sourceStationId(STATION_ID_1).targetStationId(STATION_ID_2).build();
-    public static final Edge EDGE_2 = Edge.builder().sourceStationId(STATION_ID_2).targetStationId(STATION_ID_3).build();
-    public static final Edge EDGE_3 = Edge.builder().sourceStationId(STATION_ID_3).targetStationId(STATION_ID_5).build();
+    public static final Edge EDGE_1 = new Edge(STATION_ID_1, STATION_ID_2, 10, 10);
+    public static final Edge EDGE_2 = new Edge(STATION_ID_2, STATION_ID_3, 10, 10);
+    public static final Edge EDGE_3 = new Edge(STATION_ID_3, STATION_ID_5, 10, 10);
 
-    public static final Edge NEW_EDGE_1 = Edge.builder().sourceStationId(STATION_ID_3).targetStationId(STATION_ID_4).build();
+    public static final Edge NEW_EDGE_1 = new Edge(STATION_ID_3, STATION_ID_4, 10, 10);
 
     // edge delete test
     public static final Station STATION_1 = Station.builder().name(STATION_NAME).build();
 
-    public static final Edge EDGE_50 = Edge.builder().sourceStationId(STATION_ID_1).targetStationId(STATION_ID_2).build();
-    public static final Edge EDGE_51 = Edge.builder().sourceStationId(STATION_ID_2).targetStationId(STATION_ID_3).build();
-    public static final Edge EDGE_52 = Edge.builder().sourceStationId(STATION_ID_3).targetStationId(STATION_ID_4).build();
-    public static final Edge EDGE_53 = Edge.builder().sourceStationId(STATION_ID_4).targetStationId(STATION_ID_5).build();
+    public static final Edge EDGE_50 = new Edge(STATION_ID_1, STATION_ID_2, 10, 10);
+    public static final Edge EDGE_51 = new Edge(STATION_ID_2, STATION_ID_3, 10, 10);
+    public static final Edge EDGE_52 = new Edge(STATION_ID_3, STATION_ID_4, 10, 10);
+    public static final Edge EDGE_53 = new Edge(STATION_ID_4, STATION_ID_5, 10, 10);
+    public static final Edge EDGE_54 = new Edge(STATION_ID_5, STATION_ID_6, 10, 10);
+    public static final Edge EDGE_55 = new Edge(STATION_ID_7, STATION_ID_3, 10, 10);
+    public static final Edge EDGE_56 = new Edge(STATION_ID_7, STATION_ID_5, 10, 10);
 
-    public static final Edge NEW_EDGE = Edge.builder().sourceStationId(STATION_ID_4).targetStationId(STATION_ID_5).build();
-
-
+    public static final Edge NEW_EDGE = new Edge(STATION_ID_4, STATION_ID_5, 10, 10);
 }

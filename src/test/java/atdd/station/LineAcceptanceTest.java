@@ -91,7 +91,7 @@ public class LineAcceptanceTest {
         LineResponseDto lineResponseDto = lineTestHelper.createLine(CREATE_LINE_REQUEST_VIEW_1);
 
         // when
-        LineResponseDto resultLine = lineTestHelper.addEdge(lineResponseDto.getId(), station1.getId(), station2.getId());
+        LineResponseDto resultLine = lineTestHelper.addEdge(lineResponseDto.getId(), station1.getId(), station2.getId(), 10, 10);
 
         // then
         assertThat(resultLine.getStations().size()).isEqualTo(2);
@@ -108,8 +108,8 @@ public class LineAcceptanceTest {
 
         LineResponseDto lineResponseDto = lineTestHelper.createLine(CREATE_LINE_REQUEST_VIEW_1);
 
-        lineTestHelper.addEdge(lineResponseDto.getId(), station1.getId(), station2.getId());
-        lineTestHelper.addEdge(lineResponseDto.getId(), station2.getId(), station3.getId());
+        lineTestHelper.addEdge(lineResponseDto.getId(), station1.getId(), station2.getId(), 10, 10);
+        lineTestHelper.addEdge(lineResponseDto.getId(), station2.getId(), station3.getId(), 10, 10);
 
         // when
         lineTestHelper.deleteEdge(lineResponseDto.getId(), station2.getId());

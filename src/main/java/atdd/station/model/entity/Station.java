@@ -35,8 +35,6 @@ public class Station extends BaseEntity {
     }
 
     public StationSimpleDto toSimpleDto() {
-        return StationSimpleDto.builder()
-                .id(this.getId())
-                .name(this.getName()).build();
+        return new StationSimpleDto(this.getId(), this.getName());
     }
 }

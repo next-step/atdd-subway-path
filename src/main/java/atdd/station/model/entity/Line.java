@@ -1,6 +1,7 @@
 package atdd.station.model.entity;
 
 import atdd.station.converter.LongListConverter;
+import atdd.station.model.dto.LineResponseDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
@@ -57,43 +58,63 @@ public class Line extends BaseEntity {
         this.intervalTime = intervalTime;
     }
 
-    public void setLineEdges(final List<Edge> legacyEdges, final Edge newEdge) {
-        setEdges(sortEdge(legacyEdges, newEdge));
-    }
-
     public void setEdges(final List<Edge> newEdges) {
         this.edgeIds = newEdges.stream().map(Edge::getId).collect(Collectors.toList());
-        this.lineEdges = newEdges;
     }
 
-    private List<Edge> sortEdge(final List<Edge> legacyEdges, final Edge newEdge) {
+    public List<Edge> sortEdge(final List<Edge> legacyEdges, final Edge newEdge) {
         final List<Edge> sortedEdges = new ArrayList<>();
-        if (legacyEdges.isEmpty())
+        if (legacyEdges.isEmpty()) {
             sortedEdges.add(newEdge);
 
+            return sortedEdges;
+        }
+
         int i = -1;
+        int deleteIndex = -1;
+        boolean addNewEdge = false;
         for (Edge legacyEdge : legacyEdges) {
             i++;
 
-            if (legacyEdge.connectTargetStation(newEdge.getSourceStationId())) {
-                sortedEdges.add(legacyEdge);
-                sortedEdges.add(newEdge);
-
-                continue;
-            } else if (legacyEdge.connectSourceStation(newEdge.getTargetStationId())) {
-                sortedEdges.add(newEdge);
-                sortedEdges.add(legacyEdge);
-
+            if (deleteIndex != -1 && i == deleteIndex) {
                 continue;
             }
 
-            if(i > 0) {
-                legacyEdge.setSourceStationId(sortedEdges.get(i).getTargetStationId());
+            if (!addNewEdge && legacyEdge.connectTargetStation(newEdge.getSourceStationId())) {
+                sortedEdges.add(legacyEdge);
+                sortedEdges.add(newEdge);
+
+                if (i != legacyEdges.size() - 1) {
+                    int elapsedTime = legacyEdge.getElapsedTime() - newEdge.getElapsedTime();
+                    int distance = legacyEdge.getDistance() - newEdge.getDistance();
+
+                    sortedEdges.add(new Edge(newEdge.getTargetStationId(), legacyEdges.get(i + 1).getTargetStationId(), elapsedTime, distance));
+                    deleteIndex = i + 1;
+                }
+
+                addNewEdge = true;
+
+                continue;
+            } else if (!addNewEdge && legacyEdge.connectSourceStation(newEdge.getTargetStationId())) {
+                sortedEdges.add(newEdge);
+                sortedEdges.add(legacyEdge);
+
+                addNewEdge = true;
+
+                continue;
             }
 
             sortedEdges.add(legacyEdge);
         }
 
         return sortedEdges;
+    }
+
+    public LineResponseDto toLineResponseDto(List<Edge> edges, List<Station> stations) {
+        return LineResponseDto.of(
+                this,
+                edges,
+                stations
+        );
     }
 }

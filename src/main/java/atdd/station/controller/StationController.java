@@ -5,6 +5,7 @@ import atdd.station.model.dto.LineSimpleDto;
 import atdd.station.model.dto.StationDto;
 import atdd.station.model.entity.Station;
 import atdd.station.repository.StationRepository;
+import atdd.station.service.LineService;
 import atdd.station.service.StationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,9 @@ public class StationController {
     @Autowired
     private StationService stationService;
 
+    @Autowired
+    private LineService lineService;
+
     @PostMapping
     public ResponseEntity<StationDto> createStation(@RequestBody CreateStationRequestView view) {
         final Station station = stationRepository.save(view.toStation());
@@ -47,7 +51,7 @@ public class StationController {
         List<StationDto> stationDtos = new ArrayList<>();
 
         for (Station station : stations) {
-            List<LineSimpleDto> lines = stationService.lineDtos(station.getLineIds());
+            List<LineSimpleDto> lines = LineSimpleDto.of(lineService.findAllById(station.getLineIds()));
 
             StationDto stationDto = StationDto.builder()
                     .id(station.getId())
@@ -70,8 +74,7 @@ public class StationController {
             StationDto stationDto = StationDto.builder()
                     .id(station.getId())
                     .name(station.getName())
-                    .lines(stationService.lineDtos(station.getLineIds())).build();
-
+                    .lines(LineSimpleDto.of(lineService.findAllById(station.getLineIds()))).build();
 
             return ResponseEntity.ok(stationDto);
         }

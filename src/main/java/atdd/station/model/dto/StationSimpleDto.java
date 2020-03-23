@@ -1,7 +1,10 @@
 package atdd.station.model.dto;
 
-import lombok.Builder;
+import atdd.station.model.entity.Station;
 import lombok.Getter;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public class StationSimpleDto {
@@ -11,9 +14,14 @@ public class StationSimpleDto {
     public StationSimpleDto() {
     }
 
-    @Builder
-    private StationSimpleDto(long id, String name) {
+    public StationSimpleDto(long id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public static List<StationSimpleDto> listOf(List<Station> stations) {
+        return stations.stream()
+                .map(it -> new StationSimpleDto(it.getId(), it.getName()))
+                .collect(Collectors.toList());
     }
 }

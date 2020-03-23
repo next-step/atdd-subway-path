@@ -23,6 +23,15 @@ public class HttpTestHelper {
                 .expectBody(bodyType).returnResult();
     }
 
+    public <T> EntityExchangeResult getRequestWithETag(final String uri, String eTag, ParameterizedTypeReference<T> bodyType) {
+        return webTestClient.get().uri(uri)
+                .header("If-None-Match", eTag)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isNotModified()
+                .expectBody(bodyType).returnResult();
+    }
+
     public <T> EntityExchangeResult getRequest(final String uri, ParameterizedTypeReference<T> bodyType) {
         return webTestClient.get().uri(uri)
                 .accept(MediaType.APPLICATION_JSON)

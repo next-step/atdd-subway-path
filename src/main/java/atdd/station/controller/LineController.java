@@ -25,9 +25,10 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineResponseDto> createLine(@RequestBody CreateLineRequestView view) {
         final Line line = lineService.create(view.toLine());
+        List<Edge> edges = lineService.getLineEdges(line);
 
         return ResponseEntity.created(URI.create("/lines/" + line.getId()))
-                .body(createLineResponseDto(line));
+                .body(line.toLineResponseDto(edges, lineService.getLineStations(line, edges)));
     }
 
     @GetMapping
@@ -36,8 +37,10 @@ public class LineController {
 
         List<LineResponseDto> lineResponseDtos = new ArrayList<>();
 
-        for (Line line : lines)
-            lineResponseDtos.add(createLineResponseDto(line));
+        for (Line line : lines) {
+            List<Edge> edges = lineService.getLineEdges(line);
+            lineResponseDtos.add(line.toLineResponseDto(edges, lineService.getLineStations(line, edges)));
+        }
 
         return ResponseEntity.ok(lineResponseDtos);
     }
@@ -45,8 +48,9 @@ public class LineController {
     @GetMapping("/{id}")
     public ResponseEntity<LineResponseDto> findLine(@PathVariable long id) throws SubwayException {
         final Line line = lineService.findById(id);
+        List<Edge> edges = lineService.getLineEdges(line);
 
-        return ResponseEntity.ok(createLineResponseDto(line));
+        return ResponseEntity.ok(line.toLineResponseDto(edges, lineService.getLineStations(line, edges)));
     }
 
     @DeleteMapping("/{id}")
@@ -56,28 +60,20 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/edge")
+    @PostMapping("/{id}/edges")
     public ResponseEntity<LineResponseDto> addEdge(@PathVariable long id,
                                                    @RequestBody CreateEdgeRequestView view) throws SubwayException {
         Line line = lineService.addEdge(id, view.toEdge());
+        List<Edge> edges = lineService.getLineEdges(line);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(createLineResponseDto(line));
+        return ResponseEntity.status(HttpStatus.CREATED).body(line.toLineResponseDto(edges, lineService.getLineStations(line, edges)));
     }
 
-    @DeleteMapping("/{id}/edge")
-    public ResponseEntity<LineResponseDto> deleteLine(@PathVariable long id,
+    @DeleteMapping("/{id}/edges")
+    public ResponseEntity<LineResponseDto> deleteStation(@PathVariable long id,
                                                       @RequestParam Long stationId) {
-        lineService.deleteEdge(id, stationId);
+        lineService.deleteStation(id, stationId);
 
         return ResponseEntity.noContent().build();
-    }
-
-    private LineResponseDto createLineResponseDto(Line line) {
-        final List<Edge> edges = lineService.getLineEdges(line);
-        return LineResponseDto.of(
-                line,
-                edges,
-                lineService.getLineStations(line, edges)
-        );
     }
 }

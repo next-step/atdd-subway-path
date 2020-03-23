@@ -1,7 +1,5 @@
 package atdd.station.service;
 
-import atdd.exception.ErrorType;
-import atdd.exception.SubwayException;
 import atdd.station.model.entity.Edge;
 import atdd.station.repository.EdgeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +12,10 @@ public class EdgeService {
     @Autowired
     private EdgeRepository edgeRepository;
 
+    public List<Edge> findAll() {
+        return edgeRepository.findAll();
+    }
+
     public List<Edge> findAllById(Iterable<Long> ids) {
         return edgeRepository.findAllById(ids);
     }
@@ -22,17 +24,16 @@ public class EdgeService {
         edgeRepository.deleteById(id);
     }
 
-    public Edge createEdge(final List<Edge> legacyEdges, final Edge newEdge) {
-        boolean isConnect = legacyEdges.stream().anyMatch(data -> data.connectedEdge(newEdge));
-
-        if (!legacyEdges.isEmpty() && !isConnect)
-            throw new SubwayException(ErrorType.INVALID_EDGE);
-
-        return edgeRepository.save(newEdge);
+    public void deleteAll(List<Edge> edges) {
+        edgeRepository.deleteAll(edges);
     }
 
     public Edge save(Edge edge) {
         return edgeRepository.save(edge);
+    }
+
+    public List<Edge> saveAll(List<Edge> edges) {
+        return edgeRepository.saveAll(edges);
     }
 }
 
