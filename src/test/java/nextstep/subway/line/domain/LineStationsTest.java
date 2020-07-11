@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,7 +10,6 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.InstanceOfAssertFactories.iterable;
 
 @DisplayName("지하철 노선 단위 테스트")
 public class LineStationsTest {
@@ -31,10 +31,14 @@ public class LineStationsTest {
         lineStations.add(new LineStation(4L, 3L, 10, 10));
 
         // then
+        assertStationIdsContainsExactly(lineStations, Lists.newArrayList(1L, 2L, 3L, 4L));
+    }
+
+    private void assertStationIdsContainsExactly(LineStations lineStations, List<Long> expectedIds) {
         List<Long> stationIds = lineStations.getStationsInOrder().stream()
-                .map(it -> it.getStationId())
+                .map(LineStation::getStationId)
                 .collect(Collectors.toList());
-        assertThat(stationIds).containsExactly(1L, 2L, 3L, 4L);
+        assertThat(stationIds).containsExactlyElementsOf(expectedIds);
     }
 
     @DisplayName("지하철 노선에 역을 중간에 등록한다.")
@@ -44,10 +48,7 @@ public class LineStationsTest {
         lineStations.add(new LineStation(4L, 2L, 10, 10));
 
         //then
-        List<Long> stationIds = lineStations.getStationsInOrder().stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
-        assertThat(stationIds).containsExactly(1L, 2L, 4L, 3L);
+        assertStationIdsContainsExactly(lineStations, Lists.newArrayList(1L, 2L, 4L, 3L));
     }
 
     @DisplayName("이미 등록되어 있던 역을 등록한다.")
@@ -65,10 +66,7 @@ public class LineStationsTest {
         lineStations.removeByStationId(3L);
 
         //then
-        List<Long> stationIds = lineStations.getStationsInOrder().stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
-        assertThat(stationIds).containsExactly(1L, 2L);
+        assertStationIdsContainsExactly(lineStations, Lists.newArrayList(1L, 2L));
     }
 
     @DisplayName("지하철 노선에 등록된 중간 지하철역을 제외한다.")
@@ -78,10 +76,7 @@ public class LineStationsTest {
         lineStations.removeByStationId(2L);
 
         //then
-        List<Long> stationIds = lineStations.getStationsInOrder().stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
-        assertThat(stationIds).containsExactly(1L, 3L);
+        assertStationIdsContainsExactly(lineStations, Lists.newArrayList(1L, 3L));
     }
 
     @DisplayName("지하철 노선의 출발점을 제외한다.")
@@ -91,10 +86,8 @@ public class LineStationsTest {
         lineStations.removeByStationId(1L);
 
         //then
-        List<Long> stationIds = lineStations.getStationsInOrder().stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
-        assertThat(stationIds).containsExactly(2L, 3L);
+        assertStationIdsContainsExactly(lineStations, Lists.newArrayList(2L, 3L));
+
     }
 
     @DisplayName("지하철 노선에서 등록되지 않는 역을 제외한다.")
