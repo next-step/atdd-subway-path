@@ -1,51 +1,66 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.config.BaseEntity;
+import nextstep.subway.station.domain.Station;
+import org.springframework.lang.Nullable;
+
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 @Table
-public class LineStation {
+public class LineStation extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToOne(optional = false)
+    @JoinColumn(name = "station_id")
+    private Station station;
+
+    @OneToOne
+    @JoinColumn(name = "pre_line_station_id")
+    @Nullable
+    private Station preStation;
+
     @Column(nullable = false)
-    private Long stationId;
-    private Long preStationId;
     private Integer distance;
+
+    @Column(nullable = false)
     private Integer duration;
 
-    public LineStation() {
+    protected LineStation() {
+        // no-op
     }
 
-    public LineStation(Long stationId, Long preStationId, Integer distance, Integer duration) {
-        this.stationId = stationId;
-        this.preStationId = preStationId;
+    public LineStation(Station station, @Nullable Station preStation, Integer distance, Integer duration) {
+        this.station = station;
         this.distance = distance;
         this.duration = duration;
+        this.preStation = preStation;
     }
 
-    public boolean isSame(LineStation newLineStation) {
-        return Objects.equals(this.stationId, newLineStation.stationId);
+    public Long getId() {
+        return id;
     }
 
-    public Long getStationId() {
-        return stationId;
+    public Station getStation() {
+        return this.station;
     }
 
-    public Long getPreStationId() {
-        return preStationId;
+    public Station getPreStation() {
+        return this.preStation;
     }
 
     public Integer getDistance() {
-        return distance;
+        return this.distance;
     }
 
     public Integer getDuration() {
         return duration;
     }
 
-    public void updatePreStationTo(Long newPreStationId) {
-        this.preStationId = newPreStationId;
+    public void changePreStation(Station newPreStation) {
+        this.preStation = newPreStation;
     }
 }

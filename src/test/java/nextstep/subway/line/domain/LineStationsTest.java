@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,27 +14,34 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DisplayName("지하철 노선 단위 테스트")
 public class LineStationsTest {
     private LineStations lineStations;
+    private Station station1;
+    private Station station2;
+    private Station station3;
 
     @BeforeEach
     void setUp() {
         // given
         lineStations = new LineStations();
-        lineStations.add(new LineStation(1L, null, 10, 10));
-        lineStations.add(new LineStation(2L, 1L, 10, 10));
-        lineStations.add(new LineStation(3L, 2L, 10, 10));
+        station1 = new Station("서울역");
+        station2 = new Station("홍대입구");
+        station3 = new Station("검암역");
+        lineStations.registerLineStation(new LineStation(station1, null, 10, 10));
+        lineStations.registerLineStation(new LineStation(station2, station1, 10, 10));
+        lineStations.registerLineStation(new LineStation(station3, station2, 10, 10));
     }
 
     @DisplayName("지하철 노선에 역을 마지막에 등록한다.")
     @Test
     void add1() {
         // when
-        lineStations.add(new LineStation(4L, 3L, 10, 10));
+        Station newStation = new Station("인천공항");
+        lineStations.registerLineStation(new LineStation(newStation, station3, 10, 10));
 
         // then
-        List<Long> stationIds = lineStations.getStationsInOrder().stream()
-                .map(it -> it.getStationId())
+        List<Station> stationIds = lineStations.getLineStationsInOrder().stream()
+                .map(LineStation::getStation)
                 .collect(Collectors.toList());
-        assertThat(stationIds).containsExactly(1L, 2L, 3L, 4L);
+        assertThat(stationIds).containsExactly(station1, station2, station3, newStation);
     }
 
     @DisplayName("지하철 노선에 역을 중간에 등록한다.")
@@ -45,7 +53,7 @@ public class LineStationsTest {
     @Test
     void add3() {
         // when
-        assertThatThrownBy(() -> lineStations.add(new LineStation(2L, 1L, 10, 10)))
+        assertThatThrownBy(() -> lineStations.registerLineStation(new LineStation(station2, station1, 10, 10)))
                 .isInstanceOf(RuntimeException.class);
     }
 

@@ -1,54 +1,72 @@
 package nextstep.subway.line.application;
 
-import com.google.common.collect.Lists;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.LineStation;
-import nextstep.subway.line.dto.LineStationCreateRequest;
+import nextstep.subway.line.dto.LineStationRequest;
+import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class LineStationService {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
     public LineStationService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
     }
 
-    public void addLineStation(Long lineId, LineStationCreateRequest request) {
-        checkAddLineStationValidation(request);
+    public List<LineStationResponse> findAll(Long lineId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new IllegalStateException("not found line : " + lineId));
 
-        Line line = findLineById(lineId);
-        LineStation lineStation = new LineStation(request.getStationId(), request.getPreStationId(), request.getDistance(), request.getDuration());
-        line.addLineStation(lineStation);
+        return LineStationResponse.from(line.getLineStationsInOrder());
     }
 
-    public void removeLineStation(Long lineId, Long stationId) {
-        Line line = findLineById(lineId);
-        line.removeLineStationById(stationId);
+    @Transactional
+    public LineStationResponse addLineStation(Long lineId, LineStationRequest createLineStationRequest) {
+
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new IllegalStateException("not found line : " + lineId));
+
+        LineStation lineStation = createNewLineStation(createLineStationRequest);
+
+        line.registerLineStation(lineStation);
+
+        return LineStationResponse.of(lineStation);
     }
 
-    private void checkAddLineStationValidation(LineStationCreateRequest request) {
-        List<Station> stations = stationRepository.findAllById(Lists.newArrayList(request.getPreStationId(), request.getStationId()));
-        List<Long> stationIds = stations.stream().map(it -> it.getId()).collect(Collectors.toList());
-        if (!stationIds.contains(request.getStationId())) {
-            throw new RuntimeException();
+    private LineStation createNewLineStation(LineStationRequest createLineStationRequest) {
+        Long stationId = createLineStationRequest.getStationId();
+        Station station = stationRepository.findById(stationId)
+                .orElseThrow(() -> new IllegalStateException("not found station : " + stationId));
+
+        Station preStation = null;
+        Long preStationId = createLineStationRequest.getPreStationId();
+        if (preStationId != null) {
+            preStation = stationRepository.findById(preStationId)
+                    .orElseThrow(() -> new IllegalStateException("not found pre-station : " + preStationId));
         }
-        if (request.getPreStationId() != null && !stationIds.contains(request.getPreStationId())) {
-            throw new RuntimeException();
-        }
+
+        return new LineStation(station, preStation, createLineStationRequest.getDistance(), createLineStationRequest.getDuration());
     }
 
-    private Line findLineById(Long lineId) {
-        return lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
+    @Transactional
+    public void excludeLineStation(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new IllegalStateException("not found line : " + lineId));
+
+        Station station = stationRepository.findById(stationId)
+                .orElseThrow(() -> new IllegalStateException("not found line : " + lineId));
+
+        line.excludeLineStation(station);
     }
 }

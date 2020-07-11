@@ -2,6 +2,7 @@ package nextstep.study.unit;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineStation;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -31,12 +32,13 @@ public class UnitTest {
     void addLineStation() {
         // given
         Line line = new Line("신분당선", "RED", LocalTime.now(), LocalTime.now(), 10);
-        LineStation lineStation = new LineStation(1L, null, 10, 10);
+        Station station = new Station();
+        LineStation lineStation = new LineStation(station, null, 10, 10);
 
         // when
-        line.addLineStation(lineStation);
+        line.registerLineStation(lineStation);
 
         // then
-        assertThat(line.getStationInOrder()).hasSize(1);
+        assertThat(line.getLineStationsInOrder()).hasSize(1);
     }
 }
