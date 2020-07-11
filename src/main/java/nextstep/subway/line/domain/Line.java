@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.config.BaseEntity;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.time.LocalTime;
@@ -17,6 +18,7 @@ public class Line extends BaseEntity {
     private LocalTime startTime;
     private LocalTime endTime;
     private int intervalTime;
+
     @Embedded
     private LineStations lineStations = new LineStations();
 
@@ -37,18 +39,6 @@ public class Line extends BaseEntity {
         this.endTime = line.getEndTime();
         this.intervalTime = line.getIntervalTime();
         this.color = line.getColor();
-    }
-
-    public void addLineStation(LineStation lineStation) {
-        lineStations.add(lineStation);
-    }
-
-    public void removeLineStationById(Long stationId) {
-        lineStations.removeByStationId(stationId);
-    }
-
-    public List<LineStation> getStationInOrder() {
-        return lineStations.getStationsInOrder();
     }
 
     public Long getId() {
@@ -75,7 +65,15 @@ public class Line extends BaseEntity {
         return intervalTime;
     }
 
-    public LineStations getLineStations() {
-        return lineStations;
+    public void registerLineStation(LineStation lineStation) {
+        this.lineStations.registerLineStation(lineStation);
+    }
+
+    public void excludeLineStation(Station station) {
+        this.lineStations.excludeLineStation(station);
+    }
+
+    public List<LineStation> getLineStationsInOrder() {
+        return this.lineStations.getLineStationsInOrder();
     }
 }
