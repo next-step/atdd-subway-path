@@ -1,7 +1,9 @@
 package nextstep.subway.line.application;
 
 import com.google.common.collect.Lists;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.dto.LineStationCreateRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -9,7 +11,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalTime;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,7 +48,7 @@ public class LineStationServiceTest {
         when(stationRepository.findAllById(Lists.newArrayList(null, stationId))).thenReturn(Lists.newArrayList());
 
         // when
-        final LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(stationId, null, 2, 2);
+        LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(stationId, null, 2, 2);
 
         // then
         assertThrows(RuntimeException.class, () -> lineStationService.addLineStation(1L, lineStationCreateRequest));
@@ -57,7 +64,7 @@ public class LineStationServiceTest {
         when(stationRepository.findAllById(Lists.newArrayList(preStationId, stationId))).thenReturn(Lists.newArrayList(station));
 
         // when
-        final LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(stationId, preStationId, 2, 2);
+        LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(stationId, preStationId, 2, 2);
 
         // then
         assertThrows(RuntimeException.class, () -> lineStationService.addLineStation(1L, lineStationCreateRequest));
@@ -66,6 +73,15 @@ public class LineStationServiceTest {
     @DisplayName("지하철 노선에 역을 제외한다.")
     @Test
     void removeLineStation() {
+        // given
+        Line line = new Line("2호선", "green", LocalTime.of(6, 0), LocalTime.of(23, 0), 5);
+        line.addLineStation(new LineStation(1L, null, 2, 2));
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
 
+        // when
+        lineStationService.removeLineStation(1L, 1L);
+
+        // then
+        assertThat(line.getLineStations().getLineStations()).isEmpty();
     }
 }
