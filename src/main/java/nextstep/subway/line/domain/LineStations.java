@@ -13,7 +13,7 @@ import java.util.Optional;
 public class LineStations {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "line_id")
+    @JoinColumn(name = "line_id", nullable = false)
     @OrderBy("preStation asc")
     private final List<LineStation> lineStations = new ArrayList<>();
 
@@ -81,7 +81,7 @@ public class LineStations {
         LineStation excludeTarget = this.lineStations.stream()
                 .filter(lineStation -> station.equals(lineStation.getStation()))
                 .findFirst()
-                .orElseThrow(() -> new NotRegisteredLineStationException("not registered line station : " + station.getId()));
+                .orElseThrow(NotRegisteredLineStationException::new);
 
         Station preStation = excludeTarget.getPreStation();
 

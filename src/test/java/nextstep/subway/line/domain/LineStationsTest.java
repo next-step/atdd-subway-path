@@ -64,21 +64,46 @@ public class LineStationsTest {
     @DisplayName("지하철 노선에 등록된 마지막 지하철역을 제외한다.")
     @Test
     void removeLineStation1() {
+
+        // when
+        lineStations.excludeLineStation(station3);
+
+        // then
+        assertThat(lineStations.getLineStationsInOrder())
+                .extracting(LineStation::getStation)
+                .containsExactly(station1, station2);
     }
 
     @DisplayName("지하철 노선에 등록된 중간 지하철역을 제외한다.")
     @Test
     void removeLineStation2() {
+        // when
+        lineStations.excludeLineStation(station2);
+
+        // then
+        assertThat(lineStations.getLineStationsInOrder())
+                .extracting(LineStation::getStation)
+                .containsExactly(station1, station3);
     }
 
     @DisplayName("지하철 노선의 출발점을 제외한다.")
     @Test
     void removeLineStation3() {
+        // when
+        lineStations.excludeLineStation(station1);
+
+        // then
+        assertThat(lineStations.getLineStationsInOrder())
+                .extracting(LineStation::getStation)
+                .containsExactly(station2, station3);
     }
 
     @DisplayName("지하철 노선에서 등록되지 않는 역을 제외한다.")
     @Test
     void removeLineStation4() {
+        // when, then
+        assertThatThrownBy(() -> lineStations.excludeLineStation(newStation))
+                .isInstanceOf(RuntimeException.class);
     }
 
     private void 지하철_노선에_역을_등록한다(Station newStation, Station preStation) {
