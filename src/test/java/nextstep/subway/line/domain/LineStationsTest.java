@@ -38,15 +38,22 @@ public class LineStationsTest {
         lineStations.registerLineStation(new LineStation(newStation, station3, 10, 10));
 
         // then
-        List<Station> stationIds = lineStations.getLineStationsInOrder().stream()
+        List<Station> stations = lineStations.getLineStationsInOrder().stream()
                 .map(LineStation::getStation)
                 .collect(Collectors.toList());
-        assertThat(stationIds).containsExactly(station1, station2, station3, newStation);
+        assertThat(stations).containsExactly(station1, station2, station3, newStation);
     }
 
     @DisplayName("지하철 노선에 역을 중간에 등록한다.")
     @Test
     void add2() {
+        // when
+        Station newStation = new Station("인천공함");
+        LineStation newLineStation = new LineStation(newStation, station2, 10, 10);
+        lineStations.registerLineStation(newLineStation);
+
+        assertThat(lineStations.getLineStationsInOrder()).extracting(LineStation::getStation)
+                .containsExactly(station1, station2, newStation, station3);
     }
 
     @DisplayName("이미 등록되어 있던 역을 등록한다.")
