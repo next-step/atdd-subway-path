@@ -38,6 +38,21 @@ public class LineStationServiceTest {
     @DisplayName("지하철 노선에 역을 등록한다.")
     @Test
     void addLineStation1() {
+        // given
+        Line line = new Line("2호선", "green", LocalTime.of(6, 0), LocalTime.of(23, 0), 5);
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
+
+        Long stationId = 1L;
+        Station station = new Station(stationId, "강남역");
+        when(stationRepository.findAllById(Lists.newArrayList(null, stationId))).thenReturn(Lists.newArrayList(station));
+
+        // when
+        LineStationCreateRequest lineStationCreateRequest = new LineStationCreateRequest(stationId, null, 2, 2);
+        lineStationService.addLineStation(anyLong(), lineStationCreateRequest);
+
+        // then
+        assertThat(line.getLineStations().getLineStations()).hasSize(1);
+        assertThat(line.getLineStations().getLineStations().get(0).getStationId()).isEqualTo(stationId);
     }
 
     @DisplayName("존재하지 않는 역을 등록한다.")
@@ -60,7 +75,7 @@ public class LineStationServiceTest {
         // given
         Long preStationId = 1L;
         Long stationId = 2L;
-        Station station = new Station("강남역");
+        Station station = new Station(stationId, "강남역");
         when(stationRepository.findAllById(Lists.newArrayList(preStationId, stationId))).thenReturn(Lists.newArrayList(station));
 
         // when
