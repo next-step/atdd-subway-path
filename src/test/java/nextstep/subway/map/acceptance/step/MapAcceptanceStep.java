@@ -43,8 +43,7 @@ public class MapAcceptanceStep {
     public static void 지하철_노선도에_노선별_지하철역_순서_정렬됨(ExtractableResponse<Response> response, Long lineId, List<Long> stationIds) {
         List<LineResponse> lines = response.as(MapResponse.class).getLines();
         LineResponse line = lines.stream().filter(it -> Objects.equals(it.getId(), lineId)).findFirst().orElseThrow(RuntimeException::new);
-        List<Long> lineStationsOfLine1 = line.getStations().stream().map(it -> it.getStation().getId()).collect(Collectors.toList());
-        assertThat(lineStationsOfLine1).containsExactlyElementsOf(stationIds);
+        assertThat(line.getStations()).extracting(it -> it.getStation().getId()).containsExactlyElementsOf(stationIds);
     }
 
     public static void 지하철_노선도_조회_시_ETag_포함됨(ExtractableResponse<Response> response) {
