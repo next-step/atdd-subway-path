@@ -6,19 +6,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MapResponse {
-    private final List<LineResponse> lines;
+    private final List<LineResponse> lineResponses;
 
     protected MapResponse() {
-        this.lines = new ArrayList<>();
+        this.lineResponses = new ArrayList<>();
     }
 
-    private MapResponse(List<LineResponse> lines) {
+    private MapResponse(List<LineResponse> lineResponses) {
 
-        this.lines = lines;
+        this.lineResponses = lineResponses;
     }
 
-    public List<LineResponse> getLines() {
-        return lines;
+    public List<LineResponse> getLineResponses() {
+        return lineResponses;
     }
 
     public static MapResponse with(List<LineResponse> allLines) {
