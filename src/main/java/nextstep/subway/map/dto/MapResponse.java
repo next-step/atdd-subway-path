@@ -14,6 +14,10 @@ public class MapResponse {
         this.lines = lines;
     }
 
+    public static MapResponse of(List<LineResponse> lines) {
+        return new MapResponse(lines);
+    }
+
     public List<LineResponse> getLines() {
         return lines;
     }
