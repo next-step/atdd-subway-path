@@ -2,13 +2,21 @@ package nextstep.subway.map.dto;
 
 import nextstep.subway.line.dto.LineResponse;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 public class MapResponse {
-    Map<String, LineResponse> lineMap = new HashMap<>();
+    private final List<LineResponse> lines;
 
-    public Map<String, LineResponse> getLineMap() {
-        return lineMap;
+    private MapResponse(List<LineResponse> lines) {
+
+        this.lines = lines;
+    }
+
+    public List<LineResponse> getLines() {
+        return lines;
+    }
+
+    public static MapResponse with(List<LineResponse> allLines) {
+        return new MapResponse(allLines);
     }
 }

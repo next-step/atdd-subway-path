@@ -35,9 +35,8 @@ public class MapAcceptanceStep {
 
     public static void 지하철_노선도에_노선별_지하철역_순서_정렬됨(ExtractableResponse<Response> response, Long lineId, List<Long> expectedStationIds) {
         MapResponse mapResponse = response.as(MapResponse.class);
-        Map<String, LineResponse> lineResponseMap = mapResponse.getLineMap();
-        Optional<LineResponse> lineResponseOptional = lineResponseMap.values()
-                .stream()
+        List<LineResponse> lines = mapResponse.getLines();
+        Optional<LineResponse> lineResponseOptional = lines.stream()
                 .filter(lineResponse -> lineId.equals(lineResponse.getId()))
                 .findFirst();
 

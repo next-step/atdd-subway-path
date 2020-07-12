@@ -1,4 +1,4 @@
-package nextstep.subway.map;
+package nextstep.subway.map.ui;
 
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.map.dto.MapResponse;
@@ -25,7 +25,7 @@ public class MapControllerTest {
         ResponseEntity<MapResponse> responseEntity = mapController.getLineMap();
 
         // then
-        assertThat(responseEntity).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         verify(lineService).findAllLines();
     }
 }
