@@ -74,14 +74,16 @@ public class LineStations {
     }
 
     public void excludeLineStation(Station station) {
-        if (this.lineStations.size() <= 1) {
-            this.lineStations.clear();
-        }
 
         LineStation excludeTarget = this.lineStations.stream()
                 .filter(lineStation -> station.equals(lineStation.getStation()))
                 .findFirst()
                 .orElseThrow(NotRegisteredLineStationException::new);
+
+        if (this.lineStations.size() == 1) {
+            this.lineStations.clear();
+            return;
+        }
 
         Station preStation = excludeTarget.getPreStation();
 
