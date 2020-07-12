@@ -38,7 +38,8 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStartTime(), line.getEndTime(), line.getIntervalTime(), Lists.newArrayList(), line.getCreatedDate(), line.getModifiedDate());
+        List<LineStationResponse> lineStationResponses = LineStationResponse.from(line.getLineStationsInOrder());
+        return of(line, lineStationResponses);
     }
 
     public Long getId() {

@@ -7,14 +7,18 @@ import org.springframework.lang.Nullable;
 import javax.persistence.*;
 
 @Entity
-@Table
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"line_id", "station_id"})
+        }
+)
 public class LineStation extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "station_id")
     private Station station;
 

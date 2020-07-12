@@ -2,10 +2,15 @@ package nextstep.subway.map.dto;
 
 import nextstep.subway.line.dto.LineResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapResponse {
     private final List<LineResponse> lines;
+
+    protected MapResponse() {
+        this.lines = new ArrayList<>();
+    }
 
     private MapResponse(List<LineResponse> lines) {
 
