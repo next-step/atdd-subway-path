@@ -62,7 +62,7 @@ public class MapAcceptanceTest extends AcceptanceTest {
     void loadMap() {
         // when
         ExtractableResponse<Response> mapResponse = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .get("/maps")
                 .then()
@@ -88,5 +88,29 @@ public class MapAcceptanceTest extends AcceptanceTest {
     @DisplayName("캐시 적용을 검증한다.")
     @Test
     void loadMapWithETag() {
+        // when
+        ExtractableResponse<Response> mapResponse = RestAssured.given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/maps")
+                .then()
+                .log().all()
+                .extract();
+
+        // then
+        // etag 응답됨
+        assertThat(mapResponse.header("ETag")).isNotNull();
+
+        // when
+        mapResponse = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .header("If-None-Match", mapResponse.header("ETag"))
+                .get("/maps")
+                .then()
+                .log().all()
+                .extract();
+
+        assertThat(mapResponse.statusCode()).isEqualTo(HttpStatus.NOT_MODIFIED.value());
     }
 }
