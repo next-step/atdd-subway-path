@@ -30,7 +30,7 @@ public class MapController {
     }
 
     @GetMapping
-    public ResponseEntity<MapResponse> hello() {
+    public ResponseEntity<MapResponse> loadMap() {
         List<Line> lines = this.lineRepository.findAll();
 
         final List<LineResponse> lineResponses = lines.parallelStream().map(line -> {
@@ -45,6 +45,7 @@ public class MapController {
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok()
+                .eTag("test")
                 .body(new MapResponse(lineResponses));
     }
 
