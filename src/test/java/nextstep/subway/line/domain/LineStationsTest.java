@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,15 +31,24 @@ public class LineStationsTest {
         lineStations.add(new LineStation(4L, 3L, 10, 10));
 
         // then
+        assertStationIdsContainsExactly(lineStations, Lists.newArrayList(1L, 2L, 3L, 4L));
+    }
+
+    private void assertStationIdsContainsExactly(LineStations lineStations, List<Long> expectedIds) {
         List<Long> stationIds = lineStations.getStationsInOrder().stream()
-                .map(it -> it.getStationId())
+                .map(LineStation::getStationId)
                 .collect(Collectors.toList());
-        assertThat(stationIds).containsExactly(1L, 2L, 3L, 4L);
+        assertThat(stationIds).containsExactlyElementsOf(expectedIds);
     }
 
     @DisplayName("지하철 노선에 역을 중간에 등록한다.")
     @Test
     void add2() {
+        //when
+        lineStations.add(new LineStation(4L, 2L, 10, 10));
+
+        //then
+        assertStationIdsContainsExactly(lineStations, Lists.newArrayList(1L, 2L, 4L, 3L));
     }
 
     @DisplayName("이미 등록되어 있던 역을 등록한다.")
@@ -52,20 +62,39 @@ public class LineStationsTest {
     @DisplayName("지하철 노선에 등록된 마지막 지하철역을 제외한다.")
     @Test
     void removeLineStation1() {
+        //when
+        lineStations.removeByStationId(3L);
+
+        //then
+        assertStationIdsContainsExactly(lineStations, Lists.newArrayList(1L, 2L));
     }
 
     @DisplayName("지하철 노선에 등록된 중간 지하철역을 제외한다.")
     @Test
     void removeLineStation2() {
+        //when
+        lineStations.removeByStationId(2L);
+
+        //then
+        assertStationIdsContainsExactly(lineStations, Lists.newArrayList(1L, 3L));
     }
 
     @DisplayName("지하철 노선의 출발점을 제외한다.")
     @Test
     void removeLineStation3() {
+        //when
+        lineStations.removeByStationId(1L);
+
+        //then
+        assertStationIdsContainsExactly(lineStations, Lists.newArrayList(2L, 3L));
+
     }
 
     @DisplayName("지하철 노선에서 등록되지 않는 역을 제외한다.")
     @Test
     void removeLineStation4() {
+        // when
+        assertThatThrownBy(() -> lineStations.removeByStationId(4L))
+                .isInstanceOf(RuntimeException.class);
     }
 }
