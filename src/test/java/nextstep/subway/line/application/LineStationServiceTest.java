@@ -73,5 +73,18 @@ public class LineStationServiceTest {
     @DisplayName("지하철 노선에 역을 제외한다.")
     @Test
     void removeLineStation() {
+        // given
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
+
+        Station station = new Station();
+        when(stationRepository.findById(anyLong())).thenReturn(Optional.of(station));
+
+        line.registerLineStation(new LineStation(station, null, 10, 10));
+
+        // when
+        lineStationService.excludeLineStation(1L, 1L);
+
+        // then
+        assertThat(line.getLineStationsInOrder()).isEmpty();
     }
 }
