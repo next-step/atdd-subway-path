@@ -2,7 +2,6 @@ package nextstep.subway.map.ui;
 
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.map.dto.MapResponse;
-import nextstep.subway.map.ui.MapController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

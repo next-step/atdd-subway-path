@@ -1,13 +1,21 @@
 package nextstep.subway.map.acceptance;
 
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.http.Headers;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
+import org.assertj.core.api.Assertions;
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
 
@@ -15,6 +23,7 @@ import static nextstep.subway.line.acceptance.step.LineAcceptanceStep.지하철_
 import static nextstep.subway.line.acceptance.step.LineStationAcceptanceStep.지하철_노선에_지하철역_등록되어_있음;
 import static nextstep.subway.map.acceptance.step.MapAcceptanceStep.*;
 import static nextstep.subway.station.acceptance.step.StationAcceptanceStep.지하철역_등록되어_있음;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선에 역 등록 관련 기능")
 public class MapAcceptanceTest extends AcceptanceTest {
@@ -83,5 +92,19 @@ public class MapAcceptanceTest extends AcceptanceTest {
     @DisplayName("캐시 적용을 검증한다.")
     @Test
     void loadMapWithETag() {
+        // given
+        ExtractableResponse<Response> response = 지하철_노선도를_조회한다();
+
+        // when, then
+        RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .header(HttpHeaders.IF_NONE_MATCH, response.header(HttpHeaders.ETAG))
+                .get("/maps")
+                .then()
+                .log()
+                .all()
+                .statusCode(HttpStatus.NOT_MODIFIED.value())
+                .header(HttpHeaders.ETAG, Matchers.notNullValue());
     }
 }
