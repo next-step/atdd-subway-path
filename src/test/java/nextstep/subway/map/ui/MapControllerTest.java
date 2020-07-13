@@ -8,12 +8,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 @DisplayName("지하철 노선도 컨트롤러 테스트")
 @ExtendWith(SpringExtension.class)
@@ -37,6 +39,17 @@ class MapControllerTest {
 
         //then
         assertThat(response.getStatusCode().isError()).isTrue();
+    }
+
+    @DisplayName("노선도 조회 요청시 200 코드 응답")
+    @Test
+    void getMaps() {
+        //when
+        ResponseEntity<MapResponse> response = mapController.getMaps();
+
+        //then
+        verify(mapService).getMaps();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
 
