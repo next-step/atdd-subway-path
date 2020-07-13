@@ -39,7 +39,7 @@ public class LineStationService {
 
     private void checkAddLineStationValidation(LineStationCreateRequest request) {
         List<Station> stations = stationRepository.findAllById(Lists.newArrayList(request.getPreStationId(), request.getStationId()));
-        List<Long> stationIds = stations.stream().map(it -> it.getId()).collect(Collectors.toList());
+        List<Long> stationIds = stations.stream().map(Station::getId).collect(Collectors.toList());
         if (!stationIds.contains(request.getStationId())) {
             throw new RuntimeException();
         }
