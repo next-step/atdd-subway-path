@@ -36,7 +36,7 @@ public class LineStations {
         checkValidation(lineStation);
 
         lineStations.stream()
-                .filter(it -> it.getPreStationId() == lineStation.getPreStationId())
+                .filter(it -> it.getPreStationId().equals(lineStation.getPreStationId()))
                 .findFirst()
                 .ifPresent(it -> it.updatePreStationTo(lineStation.getStationId()));
 
@@ -55,7 +55,7 @@ public class LineStations {
 
     public void removeByStationId(Long stationId) {
         LineStation lineStation = lineStations.stream()
-                .filter(it -> it.getStationId() == stationId)
+                .filter(it -> it.getStationId().equals(stationId))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
 
