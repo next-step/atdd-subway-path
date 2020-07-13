@@ -1,24 +1,25 @@
 package nextstep.subway.map.acceptance;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import static nextstep.subway.line.acceptance.step.LineAcceptanceStep.지하철_노선_등록되어_있음;
 import static nextstep.subway.line.acceptance.step.LineStationAcceptanceStep.지하철_노선에_지하철역_등록되어_있음;
+import static nextstep.subway.map.acceptance.step.MapAcceptanceStep.*;
 import static nextstep.subway.station.acceptance.step.StationAcceptanceStep.지하철역_등록되어_있음;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선에 역 등록 관련 기능")
 public class MapAcceptanceTest extends AcceptanceTest {
+    public static final String ETAG = "ETag";
     private Long lineId1;
     private Long lineId2;
     private Long stationId1;
@@ -32,7 +33,7 @@ public class MapAcceptanceTest extends AcceptanceTest {
 
         // given
         ExtractableResponse<Response> createLineResponse1 = 지하철_노선_등록되어_있음("2호선", "GREEN");
-        ExtractableResponse<Response> createLineResponse2 = 지하철_노선_등록되어_있음("신분당성", "RED");
+        ExtractableResponse<Response> createLineResponse2 = 지하철_노선_등록되어_있음("신분당선", "RED");
         ExtractableResponse<Response> createdStationResponse1 = 지하철역_등록되어_있음("강남역");
         ExtractableResponse<Response> createdStationResponse2 = 지하철역_등록되어_있음("역삼역");
         ExtractableResponse<Response> createdStationResponse3 = 지하철역_등록되어_있음("선릉역");
@@ -55,10 +56,30 @@ public class MapAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선도를 조회한다.")
     @Test
     void loadMap() {
+        //when
+        ExtractableResponse<Response> response = 지하철_노선도_조회_요청();
+
+        //then
+        지하철_노선도_응답됨(response);
+        지하철_노선도에_노선별_지하철역_순서_정렬됨(response, lineId1, Lists.newArrayList(stationId1, stationId2, stationId3));
+        지하철_노선도에_노선별_지하철역_순서_정렬됨(response, lineId2, Lists.newArrayList(stationId1, stationId4));
+
     }
+
 
     @DisplayName("캐시 적용을 검증한다.")
     @Test
     void loadMapWithETag() {
+        //when
+        ExtractableResponse<Response> response = 지하철_노선도_조회_요청();
+
+        //then
+        assertThat(response.headers().hasHeaderWithName(ETAG)).isTrue();
+
+        //when
+        ExtractableResponse<Response> eTagResponse = 지하철_노선도_조회_요청_캐시_적용(response.header("ETag"));
+
+        //then
+        assertThat(eTagResponse.statusCode()).isEqualTo(HttpStatus.NOT_MODIFIED.value());
     }
 }
