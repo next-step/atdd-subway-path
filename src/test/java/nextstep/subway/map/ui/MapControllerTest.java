@@ -1,11 +1,13 @@
 package nextstep.subway.map.ui;
 
+import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.map.application.MapService;
 import nextstep.subway.map.dto.MapResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("지하철 노선도 컨트롤러 테스트")
-@WebMvcTest
+@SpringBootTest
+@AutoConfigureMockMvc
 class MapControllerTest {
 
     @Autowired
@@ -36,7 +39,7 @@ class MapControllerTest {
     @Test
     void getMapsWithError() throws Exception {
         //given
-        given(mapService.getMaps()).willThrow(RuntimeException.class);
+        given(mapService.getMaps()).willThrow(NotFoundException.class);
 
         //when
         ResultActions result = mockMvc.perform(get("/maps"))
