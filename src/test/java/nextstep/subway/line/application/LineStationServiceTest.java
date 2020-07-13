@@ -3,6 +3,7 @@ package nextstep.subway.line.application;
 import com.google.common.collect.Lists;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.dto.LineStationCreateRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -84,6 +85,10 @@ public class LineStationServiceTest {
     @DisplayName("지하철 노선에 역을 제외한다.")
     @Test
     void removeLineStation() {
+
+        // given
+        given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
+        line.addLineStation(new LineStation(1L, null, 1, 1));
 
         // when
         lineStationService.removeLineStation(2L, 1L);
