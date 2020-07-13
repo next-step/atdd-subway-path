@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 
 @DisplayName("지하철 노선 서비스 테스트")
 @ExtendWith(MockitoExtension.class)
@@ -55,9 +54,9 @@ public class LineStationServiceTest {
     @DisplayName("지하철 노선에 역을 등록한다.")
     @Test
     void addLineStation1() {
-        when(lineRepository.findById(any())).thenReturn(Optional.of(line));
-        when(station.getId()).thenReturn(1L);
-        when(stationRepository.findAllById(anyList())).thenReturn(Lists.newArrayList(station));
+        given(lineRepository.findById(any())).willReturn(Optional.of(line));
+        given(station.getId()).willReturn(1L);
+        given(stationRepository.findAllById(anyList())).willReturn(Lists.newArrayList(station));
         request = new LineStationCreateRequest(1L, null, 5, 5);
 
         // when
