@@ -61,6 +61,12 @@ public class LineStationServiceTest {
     @DisplayName("존재하지 않는 역을 등록한다.")
     @Test
     void addLineStation2() {
+        // given
+        given(lineRepository.findById(any())).willReturn(null);
+
+        // when
+        assertThatThrownBy(() -> lineStationService.removeLineStation(1L, 1L))
+                .isInstanceOf(RuntimeException.class);
     }
 
     @DisplayName("지하철 노선에 역을 제외한다.")
@@ -69,10 +75,10 @@ public class LineStationServiceTest {
         // given
         given(lineRepository.findById(any())).willReturn(Optional.of(line));
 
-        //when
+        // when
         lineStationService.removeLineStation(1L, 1L);
 
-        //then
+        // then
         verify(line).removeLineStationById(1L);
     }
 }
