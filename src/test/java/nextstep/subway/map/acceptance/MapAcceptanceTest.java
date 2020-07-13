@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선에 역 등록 관련 기능")
 public class MapAcceptanceTest extends AcceptanceTest {
+    public static final String ETAG = "ETag";
     private Long lineId1;
     private Long lineId2;
     private Long stationId1;
@@ -73,7 +74,7 @@ public class MapAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선도_조회_요청();
 
         //then
-        assertThat(response.headers().hasHeaderWithName("ETag")).isTrue();
+        assertThat(response.headers().hasHeaderWithName(ETAG)).isTrue();
 
         //when
         ExtractableResponse<Response> eTagResponse = 지하철_노선도_조회_요청_캐시_적용(response.header("ETag"));
