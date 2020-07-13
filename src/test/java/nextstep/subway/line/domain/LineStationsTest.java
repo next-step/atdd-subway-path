@@ -60,11 +60,25 @@ public class LineStationsTest {
     @DisplayName("지하철 노선에 등록된 마지막 지하철역을 제외한다.")
     @Test
     void removeLineStation1() {
+        // when
+        lineStations.removeByStationId(3L);
+
+        List<Long> stationIds = lineStations.getStationsInOrder().stream()
+                .map(it -> it.getStationId())
+                .collect(Collectors.toList());
+        assertThat(stationIds).containsExactly(1L, 2L);
     }
 
     @DisplayName("지하철 노선에 등록된 중간 지하철역을 제외한다.")
     @Test
     void removeLineStation2() {
+        // when
+        lineStations.removeByStationId(2L);
+
+        List<Long> stationIds = lineStations.getStationsInOrder().stream()
+                .map(it -> it.getStationId())
+                .collect(Collectors.toList());
+        assertThat(stationIds).containsExactly(1L, 3L);
     }
 
     @DisplayName("지하철 노선의 출발점을 제외한다.")
