@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
@@ -24,8 +23,15 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @DisplayName("지하철 노선 서비스 테스트")
+@ExtendWith(MockitoExtension.class)
 public class LineStationServiceTest {
+    @Mock
+    private Station station;
+
+    @Mock
     private LineRepository lineRepository;
+
+    @Mock
     private StationRepository stationRepository;
 
     private LineStationService lineStationService;
@@ -38,15 +44,44 @@ public class LineStationServiceTest {
     @DisplayName("지하철 노선에 역을 등록한다.")
     @Test
     void addLineStation1() {
+        // given
+        Line line = new Line();
+        LineStationCreateRequest request = new LineStationCreateRequest(1L, null, 10, 10);
+
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
+        when(stationRepository.findAllById(anyList())).thenReturn(Lists.newArrayList(station));
+        when(station.getId()).thenReturn(1L);
+
+        // when
+        lineStationService.addLineStation(2L, request);
+
+        // then
+        assertThat(line.getStationInOrder().size()).isEqualTo(1);
     }
 
     @DisplayName("존재하지 않는 역을 등록한다.")
     @Test
     void addLineStation2() {
+        // given
+        LineStationCreateRequest request = new LineStationCreateRequest(1L, null, 10, 10);
+
+        // when
+        assertThatThrownBy(() -> lineStationService.addLineStation(2L, request))
+                .isInstanceOf(RuntimeException.class);
     }
 
     @DisplayName("지하철 노선에 역을 제외한다.")
     @Test
     void removeLineStation() {
+        // given
+        Line line = new Line();
+        line.addLineStation(new LineStation(2L, null, 10, 10));
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
+
+        // when
+        lineStationService.removeLineStation(1L, 2L);
+
+        // then
+        assertThat(line.getStationInOrder().size()).isEqualTo(0);
     }
 }
