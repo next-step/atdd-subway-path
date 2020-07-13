@@ -9,7 +9,7 @@ import java.util.Optional;
 public class LineStations {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_line_station_to_line"))
-    private List<LineStation> lineStations = new ArrayList<>();
+    private final List<LineStation> lineStations = new ArrayList<>();
 
     public List<LineStation> getLineStations() {
         return lineStations;
@@ -26,7 +26,7 @@ public class LineStations {
             LineStation preStationId = preLineStation.get();
             result.add(preStationId);
             preLineStation = lineStations.stream()
-                    .filter(it -> it.getPreStationId() == preStationId.getStationId())
+                    .filter(it -> it.getPreStationId().equals(preStationId.getStationId()))
                     .findFirst();
         }
         return result;
@@ -60,7 +60,7 @@ public class LineStations {
                 .orElseThrow(RuntimeException::new);
 
         lineStations.stream()
-                .filter(it -> it.getPreStationId() == stationId)
+                .filter(it -> it.getPreStationId().equals(stationId))
                 .findFirst()
                 .ifPresent(it -> it.updatePreStationTo(lineStation.getPreStationId()));
 
