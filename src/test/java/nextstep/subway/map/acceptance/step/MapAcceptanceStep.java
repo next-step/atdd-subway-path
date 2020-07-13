@@ -7,8 +7,9 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.map.dto.MapResponse;
 import nextstep.subway.station.dto.StationResponse;
-import org.assertj.core.util.Lists;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import java.util.List;
 import java.util.Objects;
@@ -31,6 +32,18 @@ public class MapAcceptanceStep {
 
     public static ExtractableResponse<Response> 지하철_노선도_조회_요청() {
         return RestAssured.given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get("/maps")
+                .then()
+                .log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선도_조회_요청_캐시_적용(String etag) {
+        return RestAssured.given().log().all()
+                .header(HttpHeaders.IF_NONE_MATCH, etag)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .get("/maps")
                 .then()
