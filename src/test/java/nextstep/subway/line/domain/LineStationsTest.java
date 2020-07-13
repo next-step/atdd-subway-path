@@ -96,5 +96,7 @@ public class LineStationsTest {
     @DisplayName("지하철 노선에서 등록되지 않는 역을 제외한다.")
     @Test
     void removeLineStation4() {
+        assertThatThrownBy(() ->   lineStations.removeByStationId(4L))
+                .isInstanceOf(RuntimeException.class);
     }
 }
