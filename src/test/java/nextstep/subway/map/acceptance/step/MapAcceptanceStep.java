@@ -1,0 +1,47 @@
+package nextstep.subway.map.acceptance.step;
+
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineStationResponse;
+import nextstep.subway.map.dto.MapResponse;
+import nextstep.subway.station.dto.StationResponse;
+import org.assertj.core.util.Lists;
+import org.springframework.http.HttpStatus;
+
+import java.util.List;
+import java.util.Objects;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class MapAcceptanceStep {
+
+    public static void 지하철_노선도에_노선별_지하철역_순서_정렬됨(ExtractableResponse<Response> response, Long lineId, List<Long> lineIdsInOrder) {
+        LineResponse lineResponse = extractLineResponseById(response, lineId);
+        assertThat(lineResponse.getStations())
+                .extracting(LineStationResponse::getStation)
+                .extracting(StationResponse::getId)
+                .containsExactlyElementsOf(lineIdsInOrder);
+    }
+
+    public static void 지하철_노선도_응답됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선도_조회_요청() {
+        return RestAssured.given().log().all()
+                .when()
+                .get("/maps")
+                .then()
+                .log().all()
+                .extract();
+    }
+
+    private static LineResponse extractLineResponseById(ExtractableResponse<Response> response, Long lineId1) {
+        return response.as(MapResponse.class).getData().stream()
+                .filter(line -> Objects.equals(line.getId(), lineId1))
+                .findAny()
+                .get();
+    }
+}
