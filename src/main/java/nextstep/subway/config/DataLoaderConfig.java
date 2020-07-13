@@ -7,11 +7,13 @@ import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
 
 @Component
+@Profile(value = "local")
 public class DataLoaderConfig implements CommandLineRunner {
     private StationRepository stationRepository;
     private LineRepository lineRepository;
