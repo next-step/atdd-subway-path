@@ -84,6 +84,13 @@ public class LineStationsTest {
     @DisplayName("지하철 노선의 출발점을 제외한다.")
     @Test
     void removeLineStation3() {
+        // when
+        lineStations.removeByStationId(1L);
+
+        List<Long> stationIds = lineStations.getStationsInOrder().stream()
+                .map(it -> it.getStationId())
+                .collect(Collectors.toList());
+        assertThat(stationIds).containsExactly(2L, 3L);
     }
 
     @DisplayName("지하철 노선에서 등록되지 않는 역을 제외한다.")
