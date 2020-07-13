@@ -6,19 +6,19 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
-import nextstep.subway.station.acceptance.step.StationAcceptanceStep;
+import nextstep.subway.map.dto.MapResponse;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+
+import java.util.Objects;
 
 import static nextstep.subway.line.acceptance.step.LineAcceptanceStep.지하철_노선_등록되어_있음;
 import static nextstep.subway.line.acceptance.step.LineStationAcceptanceStep.지하철_노선에_지하철역_등록되어_있음;
 import static nextstep.subway.station.acceptance.step.StationAcceptanceStep.지하철역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.notNullValue;
 
 @DisplayName("지하철 노선에 역 등록 관련 기능")
 public class MapAcceptanceTest extends AcceptanceTest {
@@ -68,12 +68,12 @@ public class MapAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        LineResponse lineResponse1 = response.as(MapResponse.class).getLines().stream()
-                .filter(line -> line.getId().equals(lineId1))
+        LineResponse lineResponse1 = response.as(MapResponse.class).getData().stream()
+                .filter(line -> Objects.equals(line.getId(), lineId1))
                 .findAny()
                 .get();
-        LineResponse lineResponse2 = response.as(MapResponse.class).getLines().stream()
-                .filter(line -> line.getId().equals(lineId2))
+        LineResponse lineResponse2 = response.as(MapResponse.class).getData().stream()
+                .filter(line -> Objects.equals(line.getId(), lineId2))
                 .findAny()
                 .get();
         assertThat(lineResponse1.getStations())
