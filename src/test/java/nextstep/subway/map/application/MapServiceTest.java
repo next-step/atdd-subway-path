@@ -34,24 +34,24 @@ class MapServiceTest {
 
     @BeforeEach
     void setUp() {
-        StationResponse stationResponse1 = new StationResponse(1L, "교대역", LocalDateTime.now(), LocalDateTime.now());
-        StationResponse stationResponse2 = new StationResponse(2L, "강남역", LocalDateTime.now(), LocalDateTime.now());
-        StationResponse stationResponse3 = new StationResponse(3L, "양재역", LocalDateTime.now(), LocalDateTime.now());
-        StationResponse stationResponse4 = new StationResponse(4L, "남부터미널역", LocalDateTime.now(), LocalDateTime.now());
+        StationResponse stationResponse1 = createStationResponse(1L, "교대역");
+        StationResponse stationResponse2 = createStationResponse(2L, "강남역");
+        StationResponse stationResponse3 = createStationResponse(3L, "양재역");
+        StationResponse stationResponse4 = createStationResponse(4L, "남부터미널역");
 
-        LineStationResponse lineStationResponse1 = new LineStationResponse(stationResponse1, null, 2, 2);
-        LineStationResponse lineStationResponse2 = new LineStationResponse(stationResponse2, 1L, 2, 2);
+        LineStationResponse lineStationResponse1 = createLineStationResponse(stationResponse1, null);
+        LineStationResponse lineStationResponse2 = createLineStationResponse(stationResponse2, 1L);
 
-        LineStationResponse lineStationResponse3 = new LineStationResponse(stationResponse2, null, 2, 2);
-        LineStationResponse lineStationResponse4 = new LineStationResponse(stationResponse3, 2L, 2, 1);
+        LineStationResponse lineStationResponse3 = createLineStationResponse(stationResponse2, null);
+        LineStationResponse lineStationResponse4 = createLineStationResponse(stationResponse3, 2L);
 
-        LineStationResponse lineStationResponse5 = new LineStationResponse(stationResponse1, null, 2, 2);
-        LineStationResponse lineStationResponse6 = new LineStationResponse(stationResponse4, 1L, 1, 2);
-        LineStationResponse lineStationResponse7 = new LineStationResponse(stationResponse3, 4L, 2, 2);
+        LineStationResponse lineStationResponse5 = createLineStationResponse(stationResponse1, null);
+        LineStationResponse lineStationResponse6 = createLineStationResponse(stationResponse4, 1L);
+        LineStationResponse lineStationResponse7 = createLineStationResponse(stationResponse3, 4L);
 
-        LineResponse lineResponse1 = new LineResponse(1L, "2호선", "GREEN", LocalTime.now(), LocalTime.now(), 5, Lists.newArrayList(lineStationResponse1, lineStationResponse2), LocalDateTime.now(), LocalDateTime.now());
-        LineResponse lineResponse2 = new LineResponse(2L, "신분당선", "RED", LocalTime.now(), LocalTime.now(), 5, Lists.newArrayList(lineStationResponse3, lineStationResponse4), LocalDateTime.now(), LocalDateTime.now());
-        LineResponse lineResponse3 = new LineResponse(3L, "3호선", "ORANGE", LocalTime.now(), LocalTime.now(), 5, Lists.newArrayList(lineStationResponse5, lineStationResponse6, lineStationResponse7), LocalDateTime.now(), LocalDateTime.now());
+        LineResponse lineResponse1 = createLineResponse(1L, "2호선", "GREEN", Lists.list(lineStationResponse1, lineStationResponse2));
+        LineResponse lineResponse2 = createLineResponse(2L, "신분당선", "RED", Lists.list(lineStationResponse3, lineStationResponse4));
+        LineResponse lineResponse3 = createLineResponse(3L, "3호선", "ORANGE", Lists.list(lineStationResponse5, lineStationResponse6, lineStationResponse7));
 
         lines = Lists.newArrayList(lineResponse1, lineResponse2, lineResponse3);
 
@@ -84,7 +84,18 @@ class MapServiceTest {
         //then
         assertThat(maps.getData()).hasSize(3)
                 .containsExactlyElementsOf(lines);
+    }
 
+    private LineResponse createLineResponse(long l, String s, String green, List<LineStationResponse> lineStationResponses) {
+        return new LineResponse(l, s, green, LocalTime.now(), LocalTime.now(), 5, lineStationResponses, LocalDateTime.now(), LocalDateTime.now());
+    }
+
+    private LineStationResponse createLineStationResponse(StationResponse stationResponse, Long preStationId) {
+        return new LineStationResponse(stationResponse, preStationId, 2, 2);
+    }
+
+    private StationResponse createStationResponse(long l, String 강남역) {
+        return new StationResponse(l, 강남역, LocalDateTime.now(), LocalDateTime.now());
     }
 
 }
