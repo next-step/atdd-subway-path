@@ -84,5 +84,11 @@ public class LineStationServiceTest {
     @DisplayName("지하철 노선에 역을 제외한다.")
     @Test
     void removeLineStation() {
+
+        // when
+        lineStationService.removeLineStation(2L, 1L);
+
+        // then
+        assertThat(line.getStationInOrder()).isEmpty();
     }
 }
