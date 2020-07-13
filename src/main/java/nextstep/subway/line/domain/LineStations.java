@@ -9,7 +9,7 @@ import java.util.Optional;
 public class LineStations {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_line_station_to_line"))
-    private List<LineStation> lineStations = new ArrayList<>();
+    private final List<LineStation> lineStations = new ArrayList<>();
 
     public List<LineStation> getLineStations() {
         return lineStations;
@@ -26,7 +26,7 @@ public class LineStations {
             LineStation preStationId = preLineStation.get();
             result.add(preStationId);
             preLineStation = lineStations.stream()
-                    .filter(it -> it.getPreStationId() == preStationId.getStationId())
+                    .filter(it -> it.getPreStationId().equals(preStationId.getStationId()))
                     .findFirst();
         }
         return result;
@@ -36,7 +36,7 @@ public class LineStations {
         checkValidation(lineStation);
 
         lineStations.stream()
-                .filter(it -> it.getPreStationId() == lineStation.getPreStationId())
+                .filter(it -> it.getPreStationId().equals(lineStation.getPreStationId()))
                 .findFirst()
                 .ifPresent(it -> it.updatePreStationTo(lineStation.getStationId()));
 
@@ -55,12 +55,12 @@ public class LineStations {
 
     public void removeByStationId(Long stationId) {
         LineStation lineStation = lineStations.stream()
-                .filter(it -> it.getStationId() == stationId)
+                .filter(it -> it.getStationId().equals(stationId))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
 
         lineStations.stream()
-                .filter(it -> it.getPreStationId() == stationId)
+                .filter(it -> it.getPreStationId().equals(stationId))
                 .findFirst()
                 .ifPresent(it -> it.updatePreStationTo(lineStation.getPreStationId()));
 
