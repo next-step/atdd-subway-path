@@ -13,16 +13,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.List;
+import java.time.LocalTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @DisplayName("지하철 노선 서비스 테스트")
@@ -37,35 +36,48 @@ public class LineStationServiceTest {
 
     private LineStationService lineStationService;
 
-    @Mock
     private Line line;
 
     @Mock
     private Station station;
 
-    @Mock
-    private Station preStation;
+    private LineStation lineStation;
+
+    private LineStationCreateRequest request;
 
     @BeforeEach
     void setUp() {
         lineStationService = new LineStationService(lineRepository, stationRepository);
-        station = new Station("강남역");
-        preStation = new Station("교대역");
+        line = new Line("2호선", "GREEN", LocalTime.of(5, 30), LocalTime.of(23, 30), 5);
+        lineStation = new LineStation(1L, null, 5, 5);
     }
 
     @DisplayName("지하철 노선에 역을 등록한다.")
     @Test
     void addLineStation1() {
+        when(lineRepository.findById(any())).thenReturn(Optional.of(line));
+        when(station.getId()).thenReturn(1L);
+        when(stationRepository.findAllById(anyList())).thenReturn(Lists.newArrayList(station));
+        request = new LineStationCreateRequest(1L, null, 5, 5);
+
+        // when
+        lineStationService.addLineStation(1L, request);
+
+        // then
+        assertAll(
+                () -> assertThat(line.getLineStations()).isNotNull(),
+                () -> assertThat(line.getStationInOrder()).hasSize(1)
+        );
     }
 
     @DisplayName("존재하지 않는 역을 등록한다.")
     @Test
     void addLineStation2() {
-        // given
-        given(lineRepository.findById(any())).willReturn(null);
+        given(stationRepository.findAllById(anyList())).willReturn(Lists.newArrayList());
+        request = new LineStationCreateRequest(1L, null, 5, 5);
 
-        // when
-        assertThatThrownBy(() -> lineStationService.removeLineStation(1L, 1L))
+        //when
+        assertThatThrownBy(() -> lineStationService.addLineStation(1L, request))
                 .isInstanceOf(RuntimeException.class);
     }
 
@@ -73,12 +85,13 @@ public class LineStationServiceTest {
     @Test
     void removeLineStation() {
         // given
-        given(lineRepository.findById(any())).willReturn(Optional.of(line));
+        given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
+        line.addLineStation(lineStation);
 
         // when
         lineStationService.removeLineStation(1L, 1L);
 
         // then
-        verify(line).removeLineStationById(1L);
+        assertThat(line.getStationInOrder()).isEmpty();
     }
 }
