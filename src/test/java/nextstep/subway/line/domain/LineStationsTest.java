@@ -39,6 +39,14 @@ public class LineStationsTest {
     @DisplayName("지하철 노선에 역을 중간에 등록한다.")
     @Test
     void add2() {
+        // when
+        lineStations.add(new LineStation(4L, 2L, 10, 10));
+
+        // then
+        List<Long> stationIds = lineStations.getStationsInOrder().stream()
+                .map(it -> it.getStationId())
+                .collect(Collectors.toList());
+        assertThat(stationIds).containsExactly(1L, 2L, 4L, 3L);
     }
 
     @DisplayName("이미 등록되어 있던 역을 등록한다.")
