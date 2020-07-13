@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import com.google.common.collect.Lists;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineStationCreateRequest;
@@ -68,12 +69,16 @@ public class LineStationServiceTest {
     @Test
     void addLineStation2() {
 
+        // stubbing
+        given(stationRepository.findAllById(anyList())).willReturn(Lists.newArrayList());
+
         // when
         final long stationId = 1L;
         final LineStationCreateRequest request = new LineStationCreateRequest(stationId, null, 5, 5);
 
         // then
-        assertThatThrownBy(() -> lineStationService.addLineStation(2L, request));
+        assertThatThrownBy(() -> lineStationService.addLineStation(2L, request))
+                .isInstanceOf(RuntimeException.class);
     }
 
     @DisplayName("지하철 노선에 역을 제외한다.")
