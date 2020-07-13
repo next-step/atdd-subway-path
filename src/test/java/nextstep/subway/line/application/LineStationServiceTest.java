@@ -15,24 +15,42 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @DisplayName("지하철 노선 서비스 테스트")
+@ExtendWith(MockitoExtension.class)
 public class LineStationServiceTest {
+
+    @Mock
     private LineRepository lineRepository;
+
+    @Mock
     private StationRepository stationRepository;
 
     private LineStationService lineStationService;
 
+    @Mock
+    private Line line;
+
+    @Mock
+    private Station station;
+
+    @Mock
+    private Station preStation;
+
     @BeforeEach
     void setUp() {
         lineStationService = new LineStationService(lineRepository, stationRepository);
+        station = new Station("강남역");
+        preStation = new Station("교대역");
     }
 
     @DisplayName("지하철 노선에 역을 등록한다.")
@@ -48,5 +66,13 @@ public class LineStationServiceTest {
     @DisplayName("지하철 노선에 역을 제외한다.")
     @Test
     void removeLineStation() {
+        // given
+        given(lineRepository.findById(any())).willReturn(Optional.of(line));
+
+        //when
+        lineStationService.removeLineStation(1L, 1L);
+
+        //then
+        verify(line).removeLineStationById(1L);
     }
 }
