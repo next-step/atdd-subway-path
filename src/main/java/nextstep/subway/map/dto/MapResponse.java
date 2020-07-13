@@ -19,4 +19,7 @@ public class MapResponse {
     public MapResponse(List<LineResponse> data) {
         this.data = data;
     }
+
+    public MapResponse() {
+    }
 }
