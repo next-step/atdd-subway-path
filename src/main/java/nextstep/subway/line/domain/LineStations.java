@@ -36,7 +36,7 @@ public class LineStations {
         checkValidation(lineStation);
 
         lineStations.stream()
-                .filter(it -> it.getPreStationId().equals(lineStation.getPreStationId()))
+                .filter(it -> it.getPreStationId() == lineStation.getPreStationId())
                 .findFirst()
                 .ifPresent(it -> it.updatePreStationTo(lineStation.getStationId()));
 
