@@ -68,7 +68,7 @@ class MapServiceTest {
         MapResponse maps = mapService.getMaps();
 
         //then
-        assertThat(maps.getLines()).isEmpty();
+        assertThat(maps.getLineResponses()).isEmpty();
     }
 
     @Test
@@ -82,7 +82,7 @@ class MapServiceTest {
         MapResponse maps = mapService.getMaps();
 
         //then
-        assertThat(maps.getLines()).hasSize(3)
+        assertThat(maps.getLineResponses()).hasSize(3)
                 .containsExactlyElementsOf(lines);
     }
 

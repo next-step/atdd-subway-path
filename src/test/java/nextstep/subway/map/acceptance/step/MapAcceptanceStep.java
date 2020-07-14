@@ -54,7 +54,7 @@ public class MapAcceptanceStep {
     }
 
     private static LineResponse extractLineResponseById(ExtractableResponse<Response> response, Long lineId) {
-        return response.as(MapResponse.class).getLines().stream()
+        return response.as(MapResponse.class).getLineResponses().stream()
                 .filter(line -> Objects.equals(line.getId(), lineId))
                 .findAny()
                 .get();
