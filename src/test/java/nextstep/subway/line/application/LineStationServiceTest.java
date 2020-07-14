@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -38,13 +39,15 @@ public class LineStationServiceTest {
 
     private Line line;
 
-    @Mock
     private Station station;
 
     @BeforeEach
     void setUp() {
         lineStationService = new LineStationService(lineRepository, stationRepository);
         line = new Line("2호선", "GREEN", LocalTime.of(5, 30), LocalTime.of(23, 30), 5);
+        station = new Station();
+        ReflectionTestUtils.setField(station, "id", 1L);
+        ReflectionTestUtils.setField(station, "name", "합정역");
     }
 
     @DisplayName("지하철 노선에 역을 등록한다.")
@@ -53,7 +56,6 @@ public class LineStationServiceTest {
 
         // stubbing
         final long stationId = 1L;
-        given(station.getId()).willReturn(stationId);
         given(stationRepository.findAllById(anyList())).willReturn(List.of(station));
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
