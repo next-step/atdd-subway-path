@@ -67,6 +67,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         //then
         //최단 거리 경로를 응답
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
         PathResponse pathResponse = response.as(PathResponse.class);
         List<StationResponse> stations = pathResponse.getStations();
         assertThat(stations).extracting(StationResponse::getId)
