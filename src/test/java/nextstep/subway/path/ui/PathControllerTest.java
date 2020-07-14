@@ -3,6 +3,7 @@ package nextstep.subway.path.ui;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.path.acceptance.PathAcceptanceTest;
 import nextstep.subway.path.application.PathService;
+import nextstep.subway.path.domain.PathFindType;
 import nextstep.subway.path.dto.PathResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -23,8 +25,8 @@ public class PathControllerTest {
     @Test
     public void findShortestPathTest() {
         // given
-        long startStationId = anyLong();
-        long endStationId = anyLong();
+        long startStationId = 1L;
+        long endStationId = 2L;
         PathService pathService = mock(PathService.class);
         PathController pathController = new PathController(pathService);
 
@@ -33,7 +35,7 @@ public class PathControllerTest {
 
         // then
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        verify(pathService).findShortestPath(startStationId, endStationId);
+        verify(pathService).findShortestPath(startStationId, endStationId, PathFindType.DISTANCE);
 
     }
 }

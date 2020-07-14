@@ -1,6 +1,7 @@
 package nextstep.subway.path.ui;
 
 import nextstep.subway.path.application.PathService;
+import nextstep.subway.path.domain.PathFindType;
 import nextstep.subway.path.dto.PathResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,7 +20,7 @@ public class PathController {
 
     @GetMapping
     public ResponseEntity<PathResponse> findShortestPath(long startStationId, long endStationId) {
-        PathResponse pathResponse = pathService.findShortestPath(startStationId, endStationId);
+        PathResponse pathResponse = pathService.findShortestPath(startStationId, endStationId, PathFindType.DISTANCE);
         return ResponseEntity.ok(pathResponse);
     }
 }

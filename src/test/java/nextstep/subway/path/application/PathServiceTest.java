@@ -1,11 +1,14 @@
 package nextstep.subway.path.application;
 
+import nextstep.subway.line.application.LineService;
+import nextstep.subway.path.domain.PathFindType;
 import nextstep.subway.path.domain.PathFinder;
+import nextstep.subway.path.domain.ShortestPathResult;
 import nextstep.subway.path.dto.PathResponse;
-import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,18 +30,22 @@ public class PathServiceTest {
         // given
         long startStationId = 1L;
         long endStationId = 2L;
+
         PathFinder pathFinder = mock(PathFinder.class);
+        ShortestPathResult shortestPathResult = ShortestPathResult.empty();
+        when(pathFinder.findShortestPath(anyList(), anyLong(), anyLong(), any(PathFindType.class)))
+                .thenReturn(shortestPathResult);
 
-        StationRepository stationRepository = mock(StationRepository.class);
-        when(stationRepository.findById(1L)).thenReturn(any());
+        LineService lineService = mock(LineService.class);
+        when(lineService.findAllLines()).thenReturn(Collections.emptyList());
 
-        PathService pathService = new PathService(pathFinder, stationRepository);
+        PathService pathService = new PathService(pathFinder, lineService);
 
         // when
-        PathResponse pathResponse = pathService.findShortestPath(startStationId, endStationId);
+        PathResponse pathResponse = pathService.findShortestPath(startStationId, endStationId, PathFindType.DISTANCE);
 
         // then
         assertThat(pathResponse).isNotNull();
-        verify(pathFinder).findShortestDistance(any(), any());
+        verify(pathFinder).findShortestPath(anyList(), anyLong(), anyLong(), any(PathFindType.class));
     }
 }
