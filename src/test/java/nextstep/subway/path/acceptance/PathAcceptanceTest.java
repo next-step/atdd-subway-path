@@ -1,4 +1,4 @@
-package nextstep.subway.path;
+package nextstep.subway.path.acceptance;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -66,8 +66,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
         // when
         // 출발역에서 도착역까지의 최단 거리 경로 조회를 요청
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .queryParam("source", 1)
-                .queryParam("target", 6)
+                .queryParam("source", stationId3)
+                .queryParam("target", stationId5)
                 .get("/paths")
                 .then()
                 .log()
@@ -81,7 +81,10 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(pathResponse.getStations()).isNotEmpty();
 
         // 총 거리와 소요 시간을 함께 응답함
-        assertThat(pathResponse.getDuration()).isNotNull();
         assertThat(pathResponse.getDistance()).isNotNull();
+        assertThat(pathResponse.getDuration()).isNotNull();
+        // 역간은 모두 distance : 2, duration : 5.
+        assertThat(pathResponse.getDistance()).isEqualTo(8);
+        assertThat(pathResponse.getDuration()).isEqualTo(20);
     }
 }
