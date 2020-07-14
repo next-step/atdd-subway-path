@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PathService {
 
+    @Transactional(readOnly = true)
     public PathResponse findShortestPath(Long startStationId, Long endStationId) {
         return null;
     }
