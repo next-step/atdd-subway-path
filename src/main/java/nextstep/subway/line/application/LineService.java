@@ -36,23 +36,27 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(line -> LineResponse.of(line))
+                .map(line -> LineResponse.of(line, extractLineStationResponses(line, extractStations(line))))
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLineById(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-        List<Long> stationIds = line.getStationInOrder().stream()
-                .map(it -> it.getStationId())
-                .collect(Collectors.toList());
-
-        Map<Long, Station> stations = stationRepository.findAllById(stationIds).stream()
-                .collect(Collectors.toMap(it -> it.getId(), Function.identity()));
+        final Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        final Map<Long, Station> stations = extractStations(line);
 
         List<LineStationResponse> lineStationResponses = extractLineStationResponses(line, stations);
 
         return LineResponse.of(line, lineStationResponses);
+    }
+
+    private Map<Long, Station> extractStations(Line line) {
+        List<Long> stationIds = line.getStationInOrder().stream()
+                .map(it -> it.getStationId())
+                .collect(Collectors.toList());
+
+        return stationRepository.findAllById(stationIds).stream()
+                .collect(Collectors.toMap(it -> it.getId(), Function.identity()));
     }
 
     public void updateLine(Long id, LineRequest lineUpdateRequest) {
