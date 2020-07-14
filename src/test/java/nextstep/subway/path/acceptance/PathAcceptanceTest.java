@@ -4,6 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.dto.StationResponse;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,7 +63,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     void getShortestPath() {
         //when
         ExtractableResponse<Response> response = 출발역에서_도착역까지의_최단_거리_경로_조회_요청(stationId1, stationId5);
-        
+
         //then
         //최단 거리 경로를 응답
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
