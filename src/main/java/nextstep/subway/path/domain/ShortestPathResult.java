@@ -1,12 +1,13 @@
 package nextstep.subway.path.domain;
 
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 import java.util.Collections;
 import java.util.List;
 
 public class ShortestPathResult {
-    private final List<Station> stations;
+    private final List<StationResponse> stations;
     private final Integer distance;
     private final Integer duration;
 
@@ -16,7 +17,7 @@ public class ShortestPathResult {
         this.duration = 0;
     }
 
-    private ShortestPathResult(List<Station> stations, Integer distance, Integer duration) {
+    private ShortestPathResult(List<StationResponse> stations, Integer distance, Integer duration) {
         this.stations = stations;
         this.distance = distance;
         this.duration = duration;
@@ -26,7 +27,7 @@ public class ShortestPathResult {
         return new ShortestPathResult();
     }
 
-    public List<Station> getStations() {
+    public List<StationResponse> getStations() {
         return stations;
     }
 

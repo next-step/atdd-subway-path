@@ -27,8 +27,7 @@ public class PathService {
 
         ShortestPathResult shortestPathResult = pathFinder.findShortestPath(allLines, startStationId, endStationId, type);
 
-        List<StationResponse> stationResponses = shortestPathResult.getStations().stream()
-                .map(StationResponse::of).collect(Collectors.toList());
+        List<StationResponse> stationResponses = shortestPathResult.getStations();
 
         return PathResponse.with(stationResponses, shortestPathResult.getDistance(), shortestPathResult.getDuration());
     }
