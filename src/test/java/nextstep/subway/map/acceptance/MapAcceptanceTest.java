@@ -13,6 +13,7 @@ import static nextstep.subway.line.acceptance.step.LineAcceptanceStep.지하철_
 import static nextstep.subway.line.acceptance.step.LineStationAcceptanceStep.지하철_노선에_지하철역_등록되어_있음;
 import static nextstep.subway.map.acceptance.step.MapAcceptanceStep.*;
 import static nextstep.subway.station.acceptance.step.StationAcceptanceStep.지하철역_등록되어_있음;
+import static nextstep.util.RestAssuredUtils.ETag를_검증한다;
 
 @DisplayName("지하철 노선에 역 등록 관련 기능")
 public class MapAcceptanceTest extends AcceptanceTest {
@@ -68,6 +69,6 @@ public class MapAcceptanceTest extends AcceptanceTest {
 
         // given
         final ExtractableResponse<Response> searchResponse = 지하철_노선도_조회_요청();
-
+        ETag를_검증한다("/maps", searchResponse);
     }
 }
