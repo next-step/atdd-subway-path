@@ -18,7 +18,8 @@ public class MapResponse {
         return lineResponses;
     }
 
-    public void setLineResponses(List<LineResponse> lineResponses) {
-        this.lineResponses = lineResponses;
+    public static MapResponse of(List<LineResponse> lineResponses) {
+        return new MapResponse(lineResponses);
     }
+
 }

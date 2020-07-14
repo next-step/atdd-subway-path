@@ -64,7 +64,6 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-
     private List<LineStationResponse> extractLineStationResponses(Line line, Map<Long, Station> stations) {
         return line.getStationInOrder().stream()
                 .map(it -> LineStationResponse.of(it, StationResponse.of(stations.get(it.getStationId()))))
