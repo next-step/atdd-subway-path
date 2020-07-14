@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -22,8 +23,8 @@ public class PathControllerTest {
     @Test
     public void findShortestPathTest() {
         // given
-        long startStationId = 1L;
-        long endStationId = 6L;
+        long startStationId = anyLong();
+        long endStationId = anyLong();
         PathService pathService = mock(PathService.class);
         PathController pathController = new PathController(pathService);
 
