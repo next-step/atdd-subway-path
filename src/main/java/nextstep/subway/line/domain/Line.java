@@ -1,10 +1,15 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.config.BaseEntity;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineStationResponse;
+import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 public class Line extends BaseEntity {
@@ -77,5 +82,15 @@ public class Line extends BaseEntity {
 
     public LineStations getLineStations() {
         return lineStations;
+    }
+
+    public Stream<Long> getStationIds() {
+        return lineStations.getLineStations().stream()
+            .map(LineStation::getStationId);
+    }
+
+    public LineResponse toLineResponse(AllStations stations) {
+        List<LineStationResponse> lineStationResponses = getLineStations().toLineStationResponses(stations);
+        return LineResponse.of(this, lineStationResponses);
     }
 }
