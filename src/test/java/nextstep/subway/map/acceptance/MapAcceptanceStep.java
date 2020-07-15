@@ -2,12 +2,15 @@ package nextstep.subway.map.acceptance;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.line.dto.LineResponse;
 
 public class MapAcceptanceStep {
 
@@ -44,5 +47,9 @@ public class MapAcceptanceStep {
 	public static void 지하철_노선도_응답시_캐시가_적용된다(ExtractableResponse<Response> response) {
 		int statusCode = response.statusCode();
 		assertThat(statusCode).isEqualTo(HttpStatus.NOT_MODIFIED.value());
+	}
+
+	public static void 지하철_노선도에_노선별로_지하철역_순서가_정렬된다(ExtractableResponse<Response> response, final Long lineId, final List<Long> stationIds) {
+		//
 	}
 }
