@@ -1,6 +1,7 @@
 package nextstep.subway.map.dto;
 
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.path.domain.PathMap;
 
 import java.util.List;
 
