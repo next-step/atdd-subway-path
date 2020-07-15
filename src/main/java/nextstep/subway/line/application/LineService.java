@@ -2,6 +2,7 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
@@ -11,6 +12,7 @@ import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -37,6 +39,23 @@ public class LineService {
 
         return lines.stream()
                 .map(line -> LineResponse.of(line))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<LineResponse> findAllLinesWithStations() {
+        List<Line> lines = lineRepository.findAll();
+
+        List<Long> stationIds = lines.stream()
+                .flatMap(line -> line.getStationInOrder().stream())
+                .map(LineStation::getStationId)
+                .collect(Collectors.toList());
+
+        Map<Long, Station> stations = stationRepository.findAllById(stationIds).stream()
+                .collect(Collectors.toMap(Station::getId, Function.identity()));
+
+        return lines.stream()
+                .map(line -> LineResponse.of(line, extractLineStationResponses(line, stations)))
                 .collect(Collectors.toList());
     }
 

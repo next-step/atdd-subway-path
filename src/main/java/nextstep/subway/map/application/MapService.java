@@ -1,9 +1,12 @@
 package nextstep.subway.map.application;
 
 import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.map.dto.MapResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class MapService {
@@ -16,6 +19,7 @@ public class MapService {
 
     @Transactional(readOnly = true)
     public MapResponse loadMap() {
-        return new MapResponse();
+        List<LineResponse> lineResponses = lineService.findAllLinesWithStations();
+        return new MapResponse(lineResponses);
     }
 }
