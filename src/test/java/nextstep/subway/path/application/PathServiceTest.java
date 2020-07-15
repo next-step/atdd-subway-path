@@ -7,6 +7,8 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.domain.LineStations;
+import nextstep.subway.path.dto.PathResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +20,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalTime;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -107,6 +110,28 @@ class PathServiceTest {
     @DisplayName("최단 경로 탐색하여 최단경로를 리턴한다.")
     @Test
     void findShortestPath() {
+        //given
+        given(lineStations1.getStationsInOrder())
+                .willReturn(Lists.list(lineStation1, lineStation2, lineStation3));
+        given(lineStations2.getStationsInOrder())
+                .willReturn(Lists.list(lineStation4, lineStation5));
+
+        Line line1 = reflectionLine(1L, "2호선", "GREEN", lineStations1);
+        Line line2 = reflectionLine(2L, "신분당선", "RED", lineStations2);
+
+        given(lineService.findAllLineEntities())
+                .willReturn(Lists.list(line1, line2));
+
+
+        //when
+        PathResponse shortestPath = pathService.findShortestPath(1L, 4L);
+
+        //then
+        assertThat(shortestPath.getStations()).hasSize(4)
+                .extracting(StationResponse::getId)
+                .containsExactly(1L, 2L, 3L, 4L);
+        assertThat(shortestPath.getDistance()).isEqualTo(20);
+        assertThat(shortestPath.getDuration()).isEqualTo(20);
     }
 
     @DisplayName("최단 경로 탐색하여 여러개의 최단 경로가 나와도 하나의 최단 경로만 리턴한다.")
