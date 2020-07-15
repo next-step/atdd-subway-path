@@ -1,6 +1,7 @@
 package nextstep.subway.path.ui;
 
 import com.google.common.collect.Lists;
+import nextstep.subway.path.application.PathService;
 import nextstep.subway.path.dto.PathRequest;
 import nextstep.subway.path.dto.PathResponse;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,11 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/paths")
 public class PathController {
+    private final PathService pathService;
+
+    public PathController(final PathService pathService) {
+        this.pathService = pathService;
+    }
 
     @GetMapping
     public ResponseEntity<PathResponse> searchPath(PathRequest pathRequest) {
@@ -21,6 +27,6 @@ public class PathController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        return ResponseEntity.ok(new PathResponse(Lists.newArrayList(), 10, 10));
+        return ResponseEntity.ok(this.pathService.findPath(pathRequest.getSource(), pathRequest.getTarget()));
     }
 }
