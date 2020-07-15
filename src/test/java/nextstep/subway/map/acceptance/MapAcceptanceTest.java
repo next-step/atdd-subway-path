@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -58,7 +59,8 @@ public class MapAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선도_응답됨(response);
-        지하철_노선도에_노선별_지하철역_순서_정렬됨(response);
+        지하철_노선도에_노선별_지하철역_순서_정렬됨(response, lineId1, Lists.newArrayList(stationId1, stationId2, stationId3));
+        지하철_노선도에_노선별_지하철역_순서_정렬됨(response, lineId2, Lists.newArrayList(stationId1, stationId4));
     }
 
     @DisplayName("캐시 적용을 검증한다.")
