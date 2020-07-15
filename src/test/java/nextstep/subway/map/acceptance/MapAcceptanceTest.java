@@ -67,6 +67,9 @@ public class MapAcceptanceTest extends AcceptanceTest {
     @Test
     void loadMapWithETag() {
         // when
-        캐시_적용_검증();
+        ExtractableResponse<Response> response = 지하철_노선도_조회_요청();
+        
+        // when
+        캐시_적용_검증(response);
     }
 }

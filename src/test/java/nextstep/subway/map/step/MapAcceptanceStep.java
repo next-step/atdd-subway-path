@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.map.dto.MapResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -43,6 +44,14 @@ public class MapAcceptanceStep {
         assertThat(stationIds).containsExactlyElementsOf(expectedStationIds);
     }
 
-    public static void 캐시_적용_검증() {
+
+    public static void 캐시_적용_검증(ExtractableResponse<Response> response) {
+        RestAssured.given().log().all()
+                .header("If-None-Match", response.header(HttpHeaders.ETAG)).
+                accept(MediaType.APPLICATION_JSON_VALUE)
+                .get("/maps")
+                .then()
+                .log().all()
+                .statusCode(HttpStatus.NOT_MODIFIED.value());
     }
 }
