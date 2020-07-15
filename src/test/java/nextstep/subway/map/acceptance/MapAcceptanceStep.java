@@ -43,7 +43,7 @@ public class MapAcceptanceStep {
 	}
 
 	public static void 지하철_노선도에_eTag가_명시된다(ExtractableResponse<Response> response) {
-		assertThat(response.headers().toString()).contains("eTag");
+		assertThat(response.header("eTag")).isNotNull();
 	}
 
 	public static void 지하철_노선도_응답시_캐시가_적용된다(ExtractableResponse<Response> response) {
