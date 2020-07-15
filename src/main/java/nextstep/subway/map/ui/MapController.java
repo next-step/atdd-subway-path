@@ -17,7 +17,7 @@ public class MapController {
     }
 
     @GetMapping(value = "/maps", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MapResponse> getLineMap() {
+    public ResponseEntity<MapResponse> loadMap() {
         MapResponse mapResponse = MapService.findAllLineAndStation();
         return ResponseEntity.ok().body(mapResponse);
     }
