@@ -14,8 +14,8 @@ public class MapController {
 		this.mapService = mapService;
 	}
 
-	public ResponseEntity<MapResponseDto> responseMap() {
-		MapResponseDto response = mapService.responseMap();
+	public ResponseEntity<MapResponse> responseMap() {
+		MapResponse response = mapService.responseMap();
 		return ResponseEntity.ok().body(response);
 	}
 }
