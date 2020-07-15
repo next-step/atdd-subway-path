@@ -11,6 +11,8 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineResponses;
+import nextstep.subway.map.MapResponse;
 
 public class MapAcceptanceStep {
 
@@ -49,7 +51,12 @@ public class MapAcceptanceStep {
 		assertThat(statusCode).isEqualTo(HttpStatus.NOT_MODIFIED.value());
 	}
 
-	public static void 지하철_노선도에_노선별로_지하철역_순서가_정렬된다(ExtractableResponse<Response> response, final Long lineId, final List<Long> stationIds) {
-		//
+	public static void 지하철_노선도에_노선별로_지하철역_순서가_정렬된다(ExtractableResponse<Response> response, final Long lineId,
+		final List<Long> stationIds) {
+		LineResponses lines = response.as(MapResponse.class).getLineResponses();
+		LineResponse line = lines.getLineResponseByLineId(lineId);
+		assertThat(line.getStations())
+			.extracting(it -> it.getStation().getId())
+			.containsExactlyElementsOf(stationIds);
 	}
 }

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.google.common.collect.Lists;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -59,7 +60,8 @@ public class MapAcceptanceTest extends AcceptanceTest {
 		MapAcceptanceStep.지하철_노선도가_응답된다(response);
 
 		// and: 지하철 노선도에 노선별 지하철역 순서가 정렬된다.
-		MapAcceptanceStep.지하철_노선도_응답시_캐시가_적용된다(response);
+		MapAcceptanceStep.지하철_노선도에_노선별로_지하철역_순서가_정렬된다(response, lineId1, Lists.newArrayList(stationId1, stationId2, stationId3));
+		MapAcceptanceStep.지하철_노선도에_노선별로_지하철역_순서가_정렬된다(response, lineId2, Lists.newArrayList(stationId1, stationId4));
 	}
 
 	@DisplayName("캐시 적용을 검증한다.")

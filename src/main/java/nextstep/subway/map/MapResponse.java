@@ -4,7 +4,9 @@ import nextstep.subway.line.dto.LineResponses;
 
 public class MapResponse {
 
-	private final LineResponses lineResponses;
+	protected MapResponse() {}
+
+	private LineResponses lineResponses;
 
 	public MapResponse(LineResponses lineResponses) {
 		this.lineResponses = lineResponses;
