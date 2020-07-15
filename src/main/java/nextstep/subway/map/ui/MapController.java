@@ -1,6 +1,5 @@
 package nextstep.subway.map.ui;
 
-import nextstep.subway.line.application.LineService;
 import nextstep.subway.map.application.MapService;
 import nextstep.subway.map.dto.MapResponse;
 import org.springframework.http.MediaType;
@@ -20,6 +19,6 @@ public class MapController {
     @GetMapping(value = "/maps", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MapResponse> getLineMap() {
         MapResponse mapResponse = MapService.findAllLineAndStation();
-        return ResponseEntity.ok(mapResponse);
+        return ResponseEntity.ok().body(mapResponse);
     }
 }

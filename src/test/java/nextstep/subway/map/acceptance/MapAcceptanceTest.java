@@ -9,6 +9,7 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -70,5 +71,17 @@ public class MapAcceptanceTest extends AcceptanceTest {
     @DisplayName("캐시 적용을 검증한다.")
     @Test
     void loadMapWithETag() {
+        ExtractableResponse<Response> response = 지하철_노선도를_조회_요청();
+        String eTag = response.header(HttpHeaders.ETAG);
+
+        RestAssured.given().log().all().
+                header("If-None-Match", eTag).
+                accept(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                get("/maps").
+                then().
+                header("ETag", notNullValue()).
+                log().all().
+                extract();
     }
 }
