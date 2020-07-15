@@ -4,6 +4,8 @@ import nextstep.subway.exception.NoPathExistsException;
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineStation;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineStationResponse;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -19,17 +21,17 @@ public class PathMap {
     private final WeightedMultigraph<Long, DefaultWeightedEdge> graph;
     private final DijkstraShortestPath<Long, DefaultWeightedEdge> dijkstraShortestPath;
 
-    private PathMap(List<Line> lines) {
+    private PathMap(List<LineResponse> lines) {
         graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-        final List<LineStation> lineStations = lines.stream()
-                .flatMap(line -> line.getStationInOrder().stream())
+        final List<LineStationResponse> lineStations = lines.stream()
+                .flatMap(line -> line.getStations().stream())
                 .collect(Collectors.toList());
 
 
-        for (LineStation lineStation : lineStations) {
+        for (LineStationResponse lineStation : lineStations) {
             graph.addVertex(lineStation.getStationId());
         }
-        for (LineStation lineStation : lineStations) {
+        for (LineStationResponse lineStation : lineStations) {
             if (Objects.isNull(lineStation.getPreStationId())) {
                 continue;
             }
@@ -39,7 +41,7 @@ public class PathMap {
         dijkstraShortestPath = new DijkstraShortestPath<>(graph);
     }
 
-    public static PathMap of(List<Line> lines) {
+    public static PathMap of(List<LineResponse> lines) {
         return new PathMap(lines);
     }
 

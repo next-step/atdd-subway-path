@@ -38,4 +38,8 @@ public class LineStationResponse {
     public Integer getDuration() {
         return duration;
     }
+
+    public Long getStationId() {
+        return this.station.getId();
+    }
 }
