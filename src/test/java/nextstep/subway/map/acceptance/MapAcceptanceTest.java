@@ -14,7 +14,7 @@ import org.springframework.http.MediaType;
 
 import static nextstep.subway.line.acceptance.step.LineAcceptanceStep.지하철_노선_등록되어_있음;
 import static nextstep.subway.line.acceptance.step.LineStationAcceptanceStep.지하철_노선에_지하철역_등록되어_있음;
-import static nextstep.subway.map.acceptance.step.MapAcceptanceStep.*
+import static nextstep.subway.map.acceptance.step.MapAcceptanceStep.*;
 import static nextstep.subway.station.acceptance.step.StationAcceptanceStep.지하철역_등록되어_있음;
 import static org.hamcrest.Matchers.notNullValue;
 
