@@ -3,16 +3,15 @@ package nextstep.subway.path.application;
 import nextstep.subway.exception.NotValidRequestException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LineStationResponse;
+import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.path.domain.PathMap;
 import nextstep.subway.path.dto.PathResponse;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
+import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -22,9 +21,11 @@ import java.util.stream.Collectors;
 public class PathService {
 
     private final LineService lineService;
+    private final StationService stationService;
 
-    public PathService(LineService lineService) {
+    public PathService(LineService lineService, StationService stationService) {
         this.lineService = lineService;
+        this.stationService = stationService;
     }
 
     @Transactional(readOnly = true)
@@ -36,7 +37,28 @@ public class PathService {
 
         List<Long> shortestPath = pathMap.findDijkstraShortestPath(startStationId, endStationId);
 
-        return null;
+        List<LineStation> lineStations = allLines.stream()
+                .flatMap(line -> line.getStationInOrder().stream())
+                .collect(Collectors.toList());
+
+        long distance = 0;
+        long duration = 0;
+
+        for (int i = 1; i < shortestPath.size(); i++) {
+            Long stationId = shortestPath.get(i);
+            Long preStationId = shortestPath.get(i - 1);
+
+            LineStation lineStation = lineStations.stream()
+                    .filter(station -> Objects.equals(station.getStationId(), stationId))
+                    .filter(station -> Objects.equals(preStationId, station.getPreStationId()))
+                    .findAny()
+                    .orElseThrow(RuntimeException::new);
+
+            distance += lineStation.getDistance();
+            duration += lineStation.getDuration();
+        }
+
+        return PathResponse.of(stationService.findAllById(shortestPath), distance, duration);
     }
 
     private void assertNotEqualsIds(Long startStationId, Long endStationId) {

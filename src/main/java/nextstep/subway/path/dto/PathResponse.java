@@ -6,31 +6,32 @@ import java.util.List;
 
 public class PathResponse {
     private List<StationResponse> stations;
-    private Integer distance;
-    private Integer duration;
+    private Long distance;
+    private Long duration;
 
-    public PathResponse(List<StationResponse> stations, Integer distance, Integer duration) {
+    public PathResponse(List<StationResponse> stations, Long distance, Long duration) {
         this.stations = stations;
         this.distance = distance;
         this.duration = duration;
     }
 
-    public static PathResponse of(List<StationResponse> stations, Integer distance, Integer duration) {
+    public static PathResponse of(List<StationResponse> stations, Long distance, Long duration) {
         return new PathResponse(stations, distance, duration);
     }
 
     public PathResponse() {
     }
 
+
     public List<StationResponse> getStations() {
         return stations;
     }
 
-    public Integer getDistance() {
+    public Long getDistance() {
         return distance;
     }
 
-    public Integer getDuration() {
+    public Long getDuration() {
         return duration;
     }
 }
