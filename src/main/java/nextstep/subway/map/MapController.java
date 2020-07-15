@@ -1,6 +1,7 @@
 package nextstep.subway.map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,6 +15,7 @@ public class MapController {
 		this.mapService = mapService;
 	}
 
+	@GetMapping
 	public ResponseEntity<MapResponse> responseMap() {
 		MapResponse response = mapService.responseMap();
 		return ResponseEntity.ok().body(response);
