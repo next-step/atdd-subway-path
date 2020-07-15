@@ -4,6 +4,10 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import nextstep.subway.line.dto.LineStationResponse;
+import nextstep.subway.station.dto.StationResponse;
 
 @Embeddable
 public class LineStations {
@@ -65,5 +69,11 @@ public class LineStations {
                 .ifPresent(it -> it.updatePreStationTo(lineStation.getPreStationId()));
 
         lineStations.remove(lineStation);
+    }
+
+    public List<LineStationResponse> toLineStationResponses(AllStations stations) {
+        return getStationsInOrder().stream()
+            .map(it -> LineStationResponse.of(it, StationResponse.of(stations.findByStationId(it.getStationId()))))
+            .collect(Collectors.toList());
     }
 }
