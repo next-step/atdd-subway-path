@@ -12,8 +12,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
+
 import static nextstep.subway.line.acceptance.step.LineAcceptanceStep.지하철_노선_등록되어_있음;
 import static nextstep.subway.line.acceptance.step.LineStationAcceptanceStep.지하철_노선에_지하철역_등록되어_있음;
+import static nextstep.subway.map.step.MapAcceptanceStep.*;
 import static nextstep.subway.station.acceptance.step.StationAcceptanceStep.지하철역_등록되어_있음;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -55,6 +58,13 @@ public class MapAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선도를 조회한다.")
     @Test
     void loadMap() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선도_조회_요청();
+
+        // then
+        지하철_노선도_응답됨(response);
+        지하철_노선도에_노선별_지하철역_순서_정렬됨(response, lineId1, Arrays.asList(stationId1, stationId2, stationId3));
+        지하철_노선도에_노선별_지하철역_순서_정렬됨(response, lineId2, Arrays.asList(stationId1, stationId4));
     }
 
     @DisplayName("캐시 적용을 검증한다.")
