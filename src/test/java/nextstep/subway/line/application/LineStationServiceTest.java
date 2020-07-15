@@ -3,12 +3,17 @@ package nextstep.subway.line.application;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalTime;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Lists;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.dto.LineStationCreateRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -54,5 +59,10 @@ public class LineStationServiceTest {
 	@DisplayName("지하철 노선에 역을 제외한다.")
 	@Test
 	void removeLineStation() {
+		Line line = new Line("line2", "green", LocalTime.of(5, 30), LocalTime.of(0, 0), 5);
+		line.addLineStation(new LineStation(1L, null, 2, 2));
+		when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
+		lineStationService.removeLineStation(1L, 1L);
+		assertThat(line.getLineStations().getLineStations()).isEmpty();
 	}
 }
