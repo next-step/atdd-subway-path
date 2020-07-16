@@ -1,6 +1,5 @@
 package nextstep.subway.path.ui;
 
-import com.google.common.collect.Lists;
 import nextstep.subway.path.application.PathService;
 import nextstep.subway.path.dto.PathRequest;
 import nextstep.subway.path.dto.PathResponse;
@@ -17,7 +16,7 @@ import java.util.Objects;
 public class PathController {
     private final PathService pathService;
 
-    public PathController(final PathService pathService) {
+    public PathController(PathService pathService) {
         this.pathService = pathService;
     }
 

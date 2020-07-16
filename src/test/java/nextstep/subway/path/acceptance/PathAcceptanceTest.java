@@ -61,7 +61,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("같은 노선의 지하철역 최단 경로를 검색한다.")
     @Test
-    void searchPathOnTheSameLine() {
+    void findPathOnTheSameLine() {
         // when
         HashMap<String, Long> params = new HashMap<>();
         params.put("source", stationId1);
@@ -88,9 +88,9 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("다른 노선의 지하철역 최단 경로를 검색한다.")
     @Test
-    void searchPathOnTheDifferentLines() {
+    void findPathOnTheDifferentLines() {
         HashMap<String, Long> params = new HashMap<>();
-        params.put("source", stationId1);
+        params.put("source", stationId3);
         params.put("target", stationId5);
 
         ExtractableResponse<Response> pathResponse = RestAssured.given().log().all()
@@ -109,6 +109,6 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(response.getDistance()).isEqualTo(5 * 4);
         assertThat(response.getDuration()).isEqualTo(2 * 4);
         assertThat(response.getStations()).extracting(PathStationResponse::getId)
-                .containsExactly(stationId1, stationId2, stationId3, stationId4, stationId5);
+                .containsExactly(stationId3, stationId2, stationId1, stationId4, stationId5);
     }
 }
