@@ -27,8 +27,8 @@ public class PathFinder {
         return paths.getPath(source, destination).getVertexList();
     }
 
-    public double getShortestPathWeight(long source, long destionation) {
-        return paths.getPathWeight(source, destionation);
+    public double getShortestPathWeight(long source, long destination) {
+        return paths.getPathWeight(source, destination);
     }
 
     private void setEdges(List<LineStation> stationsInOrder) {
