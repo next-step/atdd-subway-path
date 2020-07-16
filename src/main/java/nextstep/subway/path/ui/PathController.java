@@ -19,8 +19,8 @@ public class PathController {
     }
 
     @GetMapping
-    public ResponseEntity<PathResponse> findShortestPath(long startStationId, long endStationId) {
-        PathResponse pathResponse = pathService.findShortestPath(startStationId, endStationId, PathFindType.DISTANCE);
+    public ResponseEntity<PathResponse> findShortestPath(long startStationId, long endStationId, PathFindType pathFindType) {
+        PathResponse pathResponse = pathService.findShortestPath(startStationId, endStationId, pathFindType);
         return ResponseEntity.ok(pathResponse);
     }
 }

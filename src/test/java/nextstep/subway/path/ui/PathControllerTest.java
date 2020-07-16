@@ -30,12 +30,15 @@ public class PathControllerTest {
         PathService pathService = mock(PathService.class);
         PathController pathController = new PathController(pathService);
 
-        // when
-        ResponseEntity<PathResponse> responseEntity = pathController.findShortestPath(startStationId, endStationId);
+        for (PathFindType pathFindType : PathFindType.values()) {
+            // when
+            ResponseEntity<PathResponse> responseEntity = pathController.findShortestPath(startStationId, endStationId, pathFindType);
 
-        // then
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        verify(pathService).findShortestPath(startStationId, endStationId, PathFindType.DISTANCE);
+            // then
+            assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+            verify(pathService).findShortestPath(startStationId, endStationId, PathFindType.DISTANCE);
+
+        }
 
     }
 }
