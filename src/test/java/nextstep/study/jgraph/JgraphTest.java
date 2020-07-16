@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class JgraphTest {
     @Test
@@ -101,5 +102,19 @@ public class JgraphTest {
         List<GraphPath> paths = new KShortestPaths(graph, 1).getPaths(source, target);
 
         assertThat(paths).isEmpty();
+    }
+
+    @DisplayName("존재하지 않는 Vertex로 경로를 검색할 경우 IllegalArgumentException")
+    @Test
+    public void ifVertexNotExists() {
+        WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+        /**
+         * 1 - 2  3
+         */
+        graph.addVertex("v1");
+        graph.addVertex("v2");
+
+        assertThrows(IllegalArgumentException.class, () ->
+                new KShortestPaths(graph, 1).getPaths("v1", "v3"));
     }
 }
