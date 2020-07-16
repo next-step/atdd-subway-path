@@ -32,8 +32,17 @@ public class PathService {
 
         List<LineStationResponse> lineStationResponses = shortestPathResult.toLineStationResponse(allLine);
 
+        // ShortestPathResult 에서는 weight로만 반환하는게 맞을 것 같은데.......
+        // 그렇다고 과연 여기서 계산해서 주는게 맞을까
+        int totalDuration = lineStationResponses.stream()
+                .skip(1)
+                .mapToInt(LineStationResponse::getDuration).sum();
+        int totalDistance = lineStationResponses.stream()
+                .skip(1)
+                .mapToInt(LineStationResponse::getDistance).sum();
+
         return PathResponse.with(stationResponses, shortestPathResult.getWeight(),
-                lineStationResponses.stream().mapToInt(LineStationResponse::getDuration).sum(),
-                lineStationResponses.stream().mapToInt(LineStationResponse::getDistance).sum());
+                totalDuration,
+                totalDistance);
     }
 }
