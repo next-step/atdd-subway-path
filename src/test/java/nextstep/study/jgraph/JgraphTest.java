@@ -1,15 +1,15 @@
 package nextstep.study.jgraph;
 
+import static org.assertj.core.api.Assertions.*;
+
+import java.util.List;
+
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.alg.shortestpath.KShortestPaths;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class JgraphTest {
     @Test
@@ -47,9 +47,9 @@ public class JgraphTest {
 
         assertThat(paths).hasSize(2);
         paths.stream()
-                .forEach(it -> {
-                    assertThat(it.getVertexList()).startsWith(source);
-                    assertThat(it.getVertexList()).endsWith(target);
-                });
+            .forEach(it -> {
+                assertThat(it.getVertexList()).startsWith(source);
+                assertThat(it.getVertexList()).endsWith(target);
+            });
     }
 }

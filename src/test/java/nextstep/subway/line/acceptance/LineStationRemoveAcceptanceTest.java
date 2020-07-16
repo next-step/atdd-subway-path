@@ -1,20 +1,20 @@
 package nextstep.subway.line.acceptance;
 
+import static nextstep.subway.line.acceptance.step.LineAcceptanceStep.*;
+import static nextstep.subway.line.acceptance.step.LineStationAcceptanceStep.*;
+import static nextstep.subway.station.acceptance.step.StationAcceptanceStep.*;
+
+import java.util.Arrays;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-
-import static nextstep.subway.line.acceptance.step.LineAcceptanceStep.지하철_노선_등록되어_있음;
-import static nextstep.subway.line.acceptance.step.LineAcceptanceStep.지하철_노선_조회_요청;
-import static nextstep.subway.line.acceptance.step.LineStationAcceptanceStep.*;
-import static nextstep.subway.station.acceptance.step.StationAcceptanceStep.지하철역_등록되어_있음;
 
 @DisplayName("지하철 노선에 역 제외 관련 기능")
 public class LineStationRemoveAcceptanceTest extends AcceptanceTest {

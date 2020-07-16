@@ -1,8 +1,8 @@
 package nextstep.subway.line.dto;
 
-import nextstep.subway.line.domain.Line;
-
 import java.time.LocalTime;
+
+import nextstep.subway.line.domain.Line;
 
 public class LineRequest {
     private String name;
