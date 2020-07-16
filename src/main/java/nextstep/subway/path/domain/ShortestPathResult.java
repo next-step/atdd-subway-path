@@ -1,5 +1,7 @@
 package nextstep.subway.path.domain;
 
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.util.Collections;
@@ -33,5 +35,9 @@ public class ShortestPathResult {
 
     public Double getWeight() {
         return weight;
+    }
+
+    public List<LineStationResponse> toLineStationResponse(List<LineResponse> asList) {
+        return null;
     }
 }
