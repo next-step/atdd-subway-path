@@ -9,20 +9,23 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static nextstep.subway.line.acceptance.step.LineAcceptanceStep.지하철_노선_등록되어_있음;
 import static nextstep.subway.line.acceptance.step.LineStationAcceptanceStep.지하철_노선에_지하철역_등록되어_있음;
 import static nextstep.subway.map.acceptance.step.MapAcceptanceStep.*;
+import static nextstep.subway.map.acceptance.step.MapAcceptanceStep.지하철_노선도에_노선별_지하철역_순서_정렬됨;
 import static nextstep.subway.station.acceptance.step.StationAcceptanceStep.지하철역_등록되어_있음;
-import static org.hamcrest.Matchers.notNullValue;
 
-@DisplayName("지하철 노선에 역 등록 관련 기능")
-public class MapAcceptanceTest extends AcceptanceTest {
+@DisplayName("지하철 경로 검색")
+public class PathAcceptanceTest extends AcceptanceTest {
+
     private Long lineId1;
     private Long lineId2;
     private Long stationId1;
@@ -56,34 +59,22 @@ public class MapAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록되어_있음(lineId2, stationId1, stationId4);
     }
 
-    @DisplayName("지하철 노선도를 조회한다.")
+    @DisplayName("두 역의 최단 거리 경로를 조회")
     @Test
-    void loadMap() {
+    void shortestPath() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선도를_조회_요청();
-
-        // then
-        지하철_노선도_응답됨(response);
-        지하철_노선도에_노선별_지하철역_순서_정렬됨(response, lineId1, Arrays.asList(stationId1, stationId2, stationId3));
-        지하철_노선도에_노선별_지하철역_순서_정렬됨(response, lineId2, Arrays.asList(stationId1, stationId4));
+        ExtractableResponse<Response> response = 출발역에서_도착역까지의_최단거리_경로_조회를_요청(1L, 2L);
     }
 
-    @DisplayName("캐시 적용을 검증한다.")
-    @Test
-    void loadMapWithETag() {
-        ExtractableResponse<Response> response = 지하철_노선도를_조회_요청();
-        String eTag = response.header(HttpHeaders.ETAG);
-
-        RestAssured
+    private ExtractableResponse<Response> 출발역에서_도착역까지의_최단거리_경로_조회를_요청(Long sourceId, Long targetId) {
+        return RestAssured
                 .given()
-                    .header("If-None-Match", eTag)
-                    .accept(MediaType.APPLICATION_JSON_VALUE)
                     .log().all()
-                .when()
-                    .get("/maps")
-                .then()
-                    .header("ETag", notNullValue())
-                    .log().all()
-                    .extract();
+                    .accept(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                    get("/paths?source={sourceId}&target={targetId}", sourceId, targetId).
+                then().
+                    log().all().
+                extract();
     }
 }
