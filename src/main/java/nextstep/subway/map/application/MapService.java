@@ -50,7 +50,7 @@ public class MapService {
     }
 
     private LineResponse toLineResponse(Line line, Map<Long, Station> stations) {
-        List<LineStationResponse> lineStationResponses = line.getLineStations().getStationsInOrder().stream()
+        List<LineStationResponse> lineStationResponses = line.getStationInOrder().stream()
                 .map(it -> LineStationResponse.of(it, StationResponse.of(stations.get(it.getStationId()))))
                 .collect(Collectors.toList());
 
