@@ -1,6 +1,7 @@
 package nextstep.subway.path.application;
 
 import nextstep.subway.exception.NotValidRequestException;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.map.application.MapService;
 import nextstep.subway.map.dto.MapResponse;
@@ -27,16 +28,14 @@ public class PathService {
     public PathResponse findShortestPath(Long startStationId, Long endStationId) {
         assertNotEqualsIds(startStationId, endStationId);
 
-        MapResponse maps = mapService.getMaps();
-
-        PathMap pathMap = PathMap.of(maps.getLineResponses());
+        List<LineResponse> lineResponses = mapService.getMaps().getLineResponses();
+        PathMap pathMap = PathMap.of(lineResponses);
 
         List<Long> shortestPath = pathMap.findDijkstraShortestPath(startStationId, endStationId);
 
-        List<LineStationResponse> lineStations = maps.getLineResponses().stream()
+        List<LineStationResponse> lineStations = lineResponses.stream()
                 .flatMap(line -> line.getStations().stream())
                 .collect(Collectors.toList());
-
 
         return PathResponse.of(shortestPath, lineStations);
     }
