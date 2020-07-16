@@ -1,25 +1,19 @@
 package nextstep.subway.path.acceptance;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.path.dto.PathResponse;
-import nextstep.subway.path.dto.PathStationResponse;
 import nextstep.subway.station.dto.StationResponse;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-
-import java.util.HashMap;
 
 import static nextstep.subway.line.acceptance.step.LineAcceptanceStep.지하철_노선_등록되어_있음;
 import static nextstep.subway.line.acceptance.step.LineStationAcceptanceStep.지하철_노선에_지하철역_등록되어_있음;
+import static nextstep.subway.path.acceptance.step.PathAcceptanceStep.*;
 import static nextstep.subway.station.acceptance.step.StationAcceptanceStep.지하철역_등록되어_있음;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 경로 검색 기능")
 public class PathAcceptanceTest extends AcceptanceTest {
@@ -63,52 +57,23 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void findPathOnTheSameLine() {
         // when
-        HashMap<String, Long> params = new HashMap<>();
-        params.put("source", stationId1);
-        params.put("target", stationId3);
-
-        ExtractableResponse<Response> pathResponse = RestAssured.given().log().all()
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .queryParams(params)
-                .get("/paths")
-                .then()
-                .log().all()
-                .extract();
+        ExtractableResponse<Response> pathResponse = 최단_거리_경로_조회_요청(stationId1, stationId3);
 
         // then
-        assertThat(pathResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        PathResponse response = pathResponse.as(PathResponse.class);
-        assertThat(response.getDistance()).isEqualTo(5 * 2);
-        assertThat(response.getDuration()).isEqualTo(2 * 2);
-        assertThat(response.getStations()).extracting(PathStationResponse::getId)
-                .containsExactly(stationId1, stationId2, stationId3);
+        최단_거리_경로_조회_응답됨(pathResponse);
+        최단_거리_경로_조회됨(pathResponse, Lists.newArrayList(stationId1, stationId2, stationId3));
+        총_거리와_소요_시간을_함께_응답함(pathResponse);
     }
 
     @DisplayName("다른 노선의 지하철역 최단 경로를 검색한다.")
     @Test
     void findPathOnTheDifferentLines() {
-        HashMap<String, Long> params = new HashMap<>();
-        params.put("source", stationId3);
-        params.put("target", stationId5);
-
-        ExtractableResponse<Response> pathResponse = RestAssured.given().log().all()
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .queryParams(params)
-                .get("/paths")
-                .then()
-                .log().all()
-                .extract();
+        // when
+        ExtractableResponse<Response> pathResponse = 최단_거리_경로_조회_요청(stationId3, stationId5);
 
         // then
-        assertThat(pathResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        PathResponse response = pathResponse.as(PathResponse.class);
-        assertThat(response.getDistance()).isEqualTo(5 * 4);
-        assertThat(response.getDuration()).isEqualTo(2 * 4);
-        assertThat(response.getStations()).extracting(PathStationResponse::getId)
-                .containsExactly(stationId3, stationId2, stationId1, stationId4, stationId5);
+        최단_거리_경로_조회_응답됨(pathResponse);
+        최단_거리_경로_조회됨(pathResponse, Lists.newArrayList(stationId3, stationId2, stationId1, stationId4, stationId5));
+        총_거리와_소요_시간을_함께_응답함(pathResponse);
     }
 }
