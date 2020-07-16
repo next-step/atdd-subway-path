@@ -1,4 +1,4 @@
-package nextstep.subway.map;
+package nextstep.subway.map.application;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,6 +10,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Lines;
 import nextstep.subway.line.dto.LineResponses;
+import nextstep.subway.map.dto.MapResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 

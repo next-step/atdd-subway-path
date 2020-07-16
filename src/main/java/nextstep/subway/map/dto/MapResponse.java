@@ -1,4 +1,4 @@
-package nextstep.subway.map;
+package nextstep.subway.map.dto;
 
 import nextstep.subway.line.dto.LineResponses;
 

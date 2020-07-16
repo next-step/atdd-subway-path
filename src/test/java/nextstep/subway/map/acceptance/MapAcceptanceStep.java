@@ -12,7 +12,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineResponses;
-import nextstep.subway.map.MapResponse;
+import nextstep.subway.map.dto.MapResponse;
 
 public class MapAcceptanceStep {
 
