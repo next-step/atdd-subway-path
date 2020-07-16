@@ -29,26 +29,38 @@ public class PathService {
     public PathResponse findPath(Long sourceStationId, Long targetStationId) {
         List<Line> lines = this.lineRepository.findAll();
         List<LineStation> shortestPath = this.pathFinder.findShortestPath(lines, sourceStationId, targetStationId);
+        return this.toPathResponse(shortestPath);
+    }
 
-        List<Long> shortestPathStationIds = shortestPath.stream().map(it -> it.getStationId()).collect(Collectors.toList());
+    private PathResponse toPathResponse(List<LineStation> shortestPath) {
+        List<Long> shortestPathStationIds = shortestPath.stream()
+                .map(LineStation::getStationId)
+                .collect(Collectors.toList());
+
         Map<Long, Station> shortestPathStations = this.stationRepository.findAllById(shortestPathStationIds).stream()
                 .collect(Collectors.toMap(it -> it.getId(), it -> it));
 
-        List<PathStationResponse> pathStationResponses = shortestPathStationIds.stream().map(it -> {
-            Station station = shortestPathStations.get(it);
-            return new PathStationResponse(station.getId(), station.getName(), station.getCreatedDate());
-        }).collect(Collectors.toList());
+        return this.toPathResponse(shortestPath, shortestPathStationIds, shortestPathStations);
+    }
 
-        int totalDistance = 0;
-        int totalDuration = 0;
+    private PathResponse toPathResponse(final List<LineStation> shortestPath, final List<Long> shortestPathStationIds, final Map<Long, Station> shortestPathStations) {
+        List<PathStationResponse> pathStationResponses = shortestPathStationIds.stream()
+                .map(it -> {
+                    Station station = shortestPathStations.get(it);
+                    return new PathStationResponse(station.getId(), station.getName(), station.getCreatedDate());
+                })
+                .collect(Collectors.toList());
+
+        int distance = 0;
+        int duration = 0;
 
         int loop = shortestPath.size();
         for (int i = 1; i < loop; i++) {
             LineStation lineStation = shortestPath.get(i);
-            totalDistance += lineStation.getDistance();
-            totalDuration += lineStation.getDuration();
+            distance += lineStation.getDistance();
+            duration += lineStation.getDuration();
         }
 
-        return new PathResponse(pathStationResponses, totalDistance, totalDuration);
+        return new PathResponse(pathStationResponses, distance, duration);
     }
 }
