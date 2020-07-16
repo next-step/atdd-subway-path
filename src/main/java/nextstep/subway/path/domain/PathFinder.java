@@ -1,6 +1,7 @@
 package nextstep.subway.path.domain;
 
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.station.dto.StationResponse;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -18,7 +19,9 @@ public class PathFinder {
         WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
 
         List<StationResponse> stationResponses = lines.stream()
-                .flatMap(lineResponse -> lineResponse.getAllStation().stream())
+                .flatMap(lineResponse -> lineResponse.getStations().stream())
+                .map(LineStationResponse::getStation)
+                .distinct()
                 .collect(Collectors.toList());
 
         initGraph(graph, lines, stationResponses, type);
@@ -55,7 +58,7 @@ public class PathFinder {
                 .flatMap(lineResponse -> lineResponse.getStations().stream())
                 .filter(lineStationResponse -> lineStationResponse.getPreStationId() != null)
                 .forEach(lineStationResponse -> {
-                            int weight = type == PathFindType.DISTANCE ? lineStationResponse.getDistance() : lineStationResponse.getDuration();
+                            int weight = type.calculateWeight(lineStationResponse);
                             graph.setEdgeWeight(
                                     graph.addEdge(lineStationResponse.getPreStationId(), lineStationResponse.getStation().getId()), weight
                             );

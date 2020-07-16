@@ -79,11 +79,4 @@ public class LineResponse {
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
     }
-
-    public List<StationResponse> getAllStation() {
-        return this.getStations().stream()
-                .map(LineStationResponse::getStation)
-                .distinct()
-                .collect(Collectors.toList());
-    }
 }
