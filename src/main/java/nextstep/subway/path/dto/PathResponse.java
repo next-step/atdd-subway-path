@@ -43,7 +43,7 @@ public class PathResponse {
             Long preStationId = shortestPath.get(i - 1);
 
             LineStationResponse lineStation = lineStations.stream()
-                    .filter(station -> Objects.equals(station.getStationId(), stationId))
+                    .filter(station -> Objects.equals(station.getStation().getId(), stationId))
                     .filter(station -> Objects.equals(preStationId, station.getPreStationId()))
                     .findAny()
                     .orElseThrow(RuntimeException::new);

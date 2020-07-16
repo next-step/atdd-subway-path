@@ -1,5 +1,6 @@
 package nextstep.subway.line.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -37,9 +38,5 @@ public class LineStationResponse {
 
     public Integer getDuration() {
         return duration;
-    }
-
-    public Long getStationId() {
-        return this.station.getId();
     }
 }

@@ -2,8 +2,6 @@ package nextstep.subway.path.domain;
 
 import nextstep.subway.exception.NoPathExistsException;
 import nextstep.subway.exception.NotFoundException;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
 import org.jgrapht.GraphPath;
@@ -29,13 +27,13 @@ public class PathMap {
 
 
         for (LineStationResponse lineStation : lineStations) {
-            graph.addVertex(lineStation.getStationId());
+            graph.addVertex(lineStation.getStation().getId());
         }
         for (LineStationResponse lineStation : lineStations) {
             if (Objects.isNull(lineStation.getPreStationId())) {
                 continue;
             }
-            graph.setEdgeWeight(graph.addEdge(lineStation.getPreStationId(), lineStation.getStationId()), lineStation.getDistance());
+            graph.setEdgeWeight(graph.addEdge(lineStation.getPreStationId(), lineStation.getStation().getId()), lineStation.getDistance());
         }
 
         dijkstraShortestPath = new DijkstraShortestPath<>(graph);

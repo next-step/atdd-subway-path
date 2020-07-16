@@ -1,22 +1,15 @@
 package nextstep.subway.path.application;
 
 import nextstep.subway.exception.NotValidRequestException;
-import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.map.application.MapService;
 import nextstep.subway.map.dto.MapResponse;
 import nextstep.subway.path.domain.PathMap;
 import nextstep.subway.path.dto.PathResponse;
-import nextstep.subway.station.application.StationService;
-import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -43,7 +36,6 @@ public class PathService {
         List<LineStationResponse> lineStations = maps.getLineResponses().stream()
                 .flatMap(line -> line.getStations().stream())
                 .collect(Collectors.toList());
-
 
 
         return PathResponse.of(shortestPath, lineStations);
