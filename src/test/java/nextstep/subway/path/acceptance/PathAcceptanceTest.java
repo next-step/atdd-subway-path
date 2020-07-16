@@ -81,7 +81,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(pathResponse.getDuration()).isNotNull();
         assertThat(pathResponse.getDistance()).isNotNull();
         // 역간은 모두 distance : 5.
-        assertThat(pathResponse.getDuration()).isEqualTo(20);
+        assertThat(pathResponse.getDistance()).isEqualTo(20);
     }
 
     @DisplayName("두 역의 최단 시간 경로를 조회")
@@ -103,7 +103,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(pathResponse.getDuration()).isNotNull();
         assertThat(pathResponse.getDistance()).isNotNull();
         // 역간은 모두 duration : 2.
-        assertThat(pathResponse.getDuration()).isEqualTo(4);
+        assertThat(pathResponse.getDuration()).isEqualTo(8);
     }
 
     private ExtractableResponse<Response> 출발역에서_도착역까지의_최단_경로를_조회한다(PathFindType pathFindType) {
