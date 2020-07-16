@@ -5,7 +5,6 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.path.domain.PathFinder;
 import nextstep.subway.path.dto.PathResponse;
-import nextstep.subway.path.dto.PathStationResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -44,11 +43,8 @@ public class PathService {
     }
 
     private PathResponse toPathResponse(final List<LineStation> shortestPath, final List<Long> shortestPathStationIds, final Map<Long, Station> shortestPathStations) {
-        List<PathStationResponse> pathStationResponses = shortestPathStationIds.stream()
-                .map(it -> {
-                    Station station = shortestPathStations.get(it);
-                    return new PathStationResponse(station.getId(), station.getName(), station.getCreatedDate());
-                })
+        List<Station> stations = shortestPathStationIds.stream()
+                .map(it -> shortestPathStations.get(it))
                 .collect(Collectors.toList());
 
         int distance = 0;
@@ -61,6 +57,6 @@ public class PathService {
             duration += lineStation.getDuration();
         }
 
-        return new PathResponse(pathStationResponses, distance, duration);
+        return PathResponse.of(stations, distance, duration);
     }
 }

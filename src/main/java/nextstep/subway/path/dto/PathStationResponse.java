@@ -1,5 +1,7 @@
 package nextstep.subway.path.dto;
 
+import nextstep.subway.station.domain.Station;
+
 import java.time.LocalDateTime;
 
 public class PathStationResponse {
@@ -14,6 +16,10 @@ public class PathStationResponse {
         this.id = id;
         this.name = name;
         this.createdAt = createdAt;
+    }
+
+    static PathStationResponse of(Station station) {
+        return new PathStationResponse(station.getId(), station.getName(), station.getCreatedDate());
     }
 
     public Long getId() {
