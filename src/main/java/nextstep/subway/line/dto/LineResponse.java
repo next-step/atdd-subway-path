@@ -2,10 +2,12 @@ package nextstep.subway.line.dto;
 
 import com.google.common.collect.Lists;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
@@ -76,5 +78,12 @@ public class LineResponse {
 
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
+    }
+
+    public List<StationResponse> getAllStation() {
+        return this.getStations().stream()
+                .map(LineStationResponse::getStation)
+                .distinct()
+                .collect(Collectors.toList());
     }
 }
