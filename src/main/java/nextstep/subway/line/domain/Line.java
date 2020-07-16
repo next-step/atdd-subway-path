@@ -1,15 +1,19 @@
 package nextstep.subway.line.domain;
 
+import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Stream;
+
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 import nextstep.subway.config.BaseEntity;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
-import nextstep.subway.station.dto.StationResponse;
-
-import javax.persistence.*;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Entity
 public class Line extends BaseEntity {

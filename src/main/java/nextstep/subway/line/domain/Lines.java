@@ -9,22 +9,22 @@ import nextstep.subway.line.dto.LineResponses;
 
 public class Lines {
 
-	private final List<Line> lines;
+    private final List<Line> lines;
 
-	public Lines(List<Line> lines) {
-		this.lines = lines;
-	}
+    public Lines(List<Line> lines) {
+        this.lines = lines;
+    }
 
-	public List<Long> getAllStationIdsOfLines() {
-		return lines.stream()
-			.flatMap(Line::getStationIds)
-			.distinct()
-			.collect(Collectors.toList());
-	}
+    public List<Long> getAllStationIdsOfLines() {
+        return lines.stream()
+            .flatMap(Line::getStationIds)
+            .distinct()
+            .collect(Collectors.toList());
+    }
 
-	public LineResponses toLineResponses(AllStations stations) {
-		return lines.stream()
-			.map(line -> line.toLineResponse(stations))
-			.collect(collectingAndThen(Collectors.toList(), LineResponses::new));
-	}
+    public LineResponses toLineResponses(AllStations stations) {
+        return lines.stream()
+            .map(line -> line.toLineResponse(stations))
+            .collect(collectingAndThen(Collectors.toList(), LineResponses::new));
+    }
 }

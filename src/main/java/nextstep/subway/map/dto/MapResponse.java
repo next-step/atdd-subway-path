@@ -4,15 +4,16 @@ import nextstep.subway.line.dto.LineResponses;
 
 public class MapResponse {
 
-	protected MapResponse() {}
+    private LineResponses lineResponses;
 
-	private LineResponses lineResponses;
+    protected MapResponse() {
+    }
 
-	public MapResponse(LineResponses lineResponses) {
-		this.lineResponses = lineResponses;
-	}
+    public MapResponse(LineResponses lineResponses) {
+        this.lineResponses = lineResponses;
+    }
 
-	public LineResponses getLineResponses() {
-		return lineResponses;
-	}
+    public LineResponses getLineResponses() {
+        return lineResponses;
+    }
 }

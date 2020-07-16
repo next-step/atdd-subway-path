@@ -17,26 +17,26 @@ import nextstep.subway.station.domain.StationRepository;
 @Service
 public class MapService {
 
-	private final LineRepository lineRepository;
-	private final StationRepository stationRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-	public MapService(LineRepository lineRepository, StationRepository stationRepository) {
-		this.lineRepository = lineRepository;
-		this.stationRepository = stationRepository;
-	}
+    public MapService(LineRepository lineRepository, StationRepository stationRepository) {
+        this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
+    }
 
-	public MapResponse responseMap() {
-		List<Line> lineList = lineRepository.findAll();
-		Lines lines = new Lines(lineList);
-		AllStations stations = getAllLineStationsOfLines(lines);
-		LineResponses lineResponses = lines.toLineResponses(stations);
-		return new MapResponse(lineResponses);
-	}
+    public MapResponse responseMap() {
+        List<Line> lineList = lineRepository.findAll();
+        Lines lines = new Lines(lineList);
+        AllStations stations = getAllLineStationsOfLines(lines);
+        LineResponses lineResponses = lines.toLineResponses(stations);
+        return new MapResponse(lineResponses);
+    }
 
-	private AllStations getAllLineStationsOfLines(Lines lines) {
-		List<Long> allStationIdOfLines = lines.getAllStationIdsOfLines();
-		return stationRepository.findAllById(allStationIdOfLines).stream()
-			.collect(Collectors.collectingAndThen(Collectors.toMap(Station::getId, station -> station),
-				AllStations::new));
-	}
+    private AllStations getAllLineStationsOfLines(Lines lines) {
+        List<Long> allStationIdOfLines = lines.getAllStationIdsOfLines();
+        return stationRepository.findAllById(allStationIdOfLines).stream()
+            .collect(Collectors.collectingAndThen(Collectors.toMap(Station::getId, station -> station),
+                AllStations::new));
+    }
 }

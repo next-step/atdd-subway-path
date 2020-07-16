@@ -5,22 +5,23 @@ import java.util.Objects;
 
 public class LineResponses {
 
-	protected LineResponses() {}
+    private List<LineResponse> lineResponses;
 
-	private List<LineResponse> lineResponses;
+    protected LineResponses() {
+    }
 
-	public LineResponses(List<LineResponse> lineResponses) {
-		this.lineResponses = lineResponses;
-	}
+    public LineResponses(List<LineResponse> lineResponses) {
+        this.lineResponses = lineResponses;
+    }
 
-	public List<LineResponse> getLineResponses() {
-		return lineResponses;
-	}
+    public List<LineResponse> getLineResponses() {
+        return lineResponses;
+    }
 
-	public LineResponse getLineResponseByLineId(Long lineId) {
-		return lineResponses.stream()
-			.filter(it -> Objects.equals(it.getId(), lineId))
-			.findFirst()
-			.orElseThrow(RuntimeException::new);
-	}
+    public LineResponse getLineResponseByLineId(Long lineId) {
+        return lineResponses.stream()
+            .filter(it -> Objects.equals(it.getId(), lineId))
+            .findFirst()
+            .orElseThrow(RuntimeException::new);
+    }
 }

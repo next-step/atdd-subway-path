@@ -1,13 +1,14 @@
 package nextstep.study.unit;
 
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineStation;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalTime;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.LineStation;
 
 @DisplayName("단위 테스트")
 public class UnitTest {
