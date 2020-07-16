@@ -6,6 +6,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.path.domain.PathFindType;
 import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,29 +64,57 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("두 역의 최단 거리 경로를 조회")
     @Test
-    public void findShortestPath() {
+    public void findShortestPathByDistance() {
         // given
 
         // when
-        // 출발역에서 도착역까지의 최단 거리 경로 조회를 요청
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .queryParam("startStationId", stationId3)
-                .queryParam("endStationId", stationId5)
-                .get("/paths")
-                .then()
-                .log()
-                .all()
-                .extract();
+        // 출발역에서 도착역까지의 최단 경로 조회를 요청
+        ExtractableResponse<Response> response = 출발역에서_도착역까지의_최단_경로를_조회한다(PathFindType.DISTANCE);
 
         // then
-        // 최단 거리 경로를 응답
+        // 최단 경로를 응답
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         PathResponse pathResponse = response.as(PathResponse.class);
         assertThat(pathResponse.getStations()).isNotEmpty();
 
         // 총 거리와 소요 시간을 함께 응답함
-        assertThat(pathResponse.getWeight()).isNotNull();
-        // 역간은 모두 duration : 5.
-        assertThat(pathResponse.getWeight()).isEqualTo(20);
+        assertThat(pathResponse.getDuration()).isNotNull();
+        assertThat(pathResponse.getDistance()).isNotNull();
+        // 역간은 모두 distance : 5.
+        assertThat(pathResponse.getDuration()).isEqualTo(20);
+    }
+
+    @DisplayName("두 역의 최단 시간 경로를 조회")
+    @Test
+    public void findShortestPathByDuration() {
+        // given
+
+        // when
+        // 출발역에서 도착역까지의 최단 경로 조회를 요청
+        ExtractableResponse<Response> response = 출발역에서_도착역까지의_최단_경로를_조회한다(PathFindType.DURATION);
+
+        // then
+        // 최단 경로를 응답
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        PathResponse pathResponse = response.as(PathResponse.class);
+        assertThat(pathResponse.getStations()).isNotEmpty();
+
+        // 총 거리와 소요 시간을 함께 응답함
+        assertThat(pathResponse.getDuration()).isNotNull();
+        assertThat(pathResponse.getDistance()).isNotNull();
+        // 역간은 모두 duration : 2.
+        assertThat(pathResponse.getDuration()).isEqualTo(4);
+    }
+
+    private ExtractableResponse<Response> 출발역에서_도착역까지의_최단_경로를_조회한다(PathFindType pathFindType) {
+        return RestAssured.given().log().all()
+                .queryParam("startStationId", stationId3)
+                .queryParam("endStationId", stationId5)
+                .queryParam("pathFindType", pathFindType)
+                .get("/paths")
+                .then()
+                .log()
+                .all()
+                .extract();
     }
 }

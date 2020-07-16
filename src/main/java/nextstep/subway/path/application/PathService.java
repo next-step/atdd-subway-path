@@ -28,6 +28,6 @@ public class PathService {
 
         List<StationResponse> stationResponses = shortestPathResult.getStations();
 
-        return PathResponse.with(stationResponses, shortestPathResult.getWeight());
+        return PathResponse.with(stationResponses, shortestPathResult.getWeight(), 0, 0);
     }
 }
