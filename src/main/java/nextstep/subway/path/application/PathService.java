@@ -10,7 +10,6 @@ import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PathService {
@@ -29,6 +28,6 @@ public class PathService {
 
         List<StationResponse> stationResponses = shortestPathResult.getStations();
 
-        return PathResponse.with(stationResponses, shortestPathResult.getDistance(), shortestPathResult.getDuration());
+        return PathResponse.with(stationResponses, shortestPathResult.getWeight());
     }
 }

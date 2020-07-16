@@ -1,12 +1,14 @@
 package nextstep.subway.path.acceptance;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.dto.StationResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     private Long stationId4;
     private Long stationId5;
 
+    @BeforeEach
     public void setUp() {
         super.setUp();
 
@@ -38,7 +41,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createdStationResponse2 = 지하철역_등록되어_있음("역삼역");
         ExtractableResponse<Response> createdStationResponse3 = 지하철역_등록되어_있음("선릉역");
         ExtractableResponse<Response> createdStationResponse4 = 지하철역_등록되어_있음("양재역");
-        ExtractableResponse<Response> createdStationResponse5 = 지하철역_등록되어_있음("양재역");
+        ExtractableResponse<Response> createdStationResponse5 = 지하철역_등록되어_있음("양재시민의숲");
 
         lineId1 = createLineResponse1.as(LineResponse.class).getId();
         lineId2 = createLineResponse2.as(LineResponse.class).getId();
@@ -59,15 +62,15 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("두 역의 최단 거리 경로를 조회")
-   @Test
+    @Test
     public void findShortestPath() {
         // given
 
         // when
         // 출발역에서 도착역까지의 최단 거리 경로 조회를 요청
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .queryParam("source", stationId3)
-                .queryParam("target", stationId5)
+                .queryParam("startStationId", stationId3)
+                .queryParam("endStationId", stationId5)
                 .get("/paths")
                 .then()
                 .log()
@@ -81,10 +84,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(pathResponse.getStations()).isNotEmpty();
 
         // 총 거리와 소요 시간을 함께 응답함
-        assertThat(pathResponse.getDistance()).isNotNull();
-        assertThat(pathResponse.getDuration()).isNotNull();
-        // 역간은 모두 distance : 2, duration : 5.
-        assertThat(pathResponse.getDistance()).isEqualTo(8);
-        assertThat(pathResponse.getDuration()).isEqualTo(20);
+        assertThat(pathResponse.getWeight()).isNotNull();
+        // 역간은 모두 duration : 5.
+        assertThat(pathResponse.getWeight()).isEqualTo(20);
     }
 }

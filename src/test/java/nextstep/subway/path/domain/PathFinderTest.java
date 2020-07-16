@@ -3,13 +3,13 @@ package nextstep.subway.path.domain;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.station.dto.StationResponse;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,22 +51,23 @@ class PathFinderTest {
         LineStationResponse 공항철도_공덕역 = new LineStationResponse(공덕역, 홍대입구.getId(), 9, 9);
 
         // 지하철 5호선
-        LineStationResponse 지하철5오선_공덕역 = new LineStationResponse(공덕역, null, 10, 10);
-        LineStationResponse 지하철5오선_충정로 = new LineStationResponse(공덕역, 충정로.getId(), 10, 10);
+        LineStationResponse 지하철5호선_공덕역 = new LineStationResponse(공덕역, null, 10, 10);
+        LineStationResponse 지하철5호선_충정로 = new LineStationResponse(공덕역, 충정로.getId(), 10, 10);
 
         // 노선 등록
         LineResponse 지하철2호선 = new LineResponse(1L, "지하철2호선", "SKY_BLUE", LocalTime.now(), LocalTime.now(), 5, Arrays.asList(지하철2호선_홍대입구, 지하철2호선_신촌, 지하철2호선_이대, 지하철2호선_아현, 지하철2호선_충정로), LocalDateTime.now(), LocalDateTime.now());
         LineResponse 경의중앙선 = new LineResponse(2L, "경의중앙선", "SKY_BLUE", LocalTime.now(),LocalTime.now(), 5, Arrays.asList(경의중앙선_홍대입구, 경의중앙선_서강대, 경의중앙선_공덕역), LocalDateTime.now(), LocalDateTime.now());
         LineResponse 공항철도 = new LineResponse(3L, "공항철도", "SKY_BLUE", LocalTime.now(),LocalTime.now(), 5, Arrays.asList(공항철도_홍대입구, 공항철도_공덕역), LocalDateTime.now(), LocalDateTime.now());
-        LineResponse 지하철5호선 = new LineResponse(4L, "지하철5호선", "SKY_BLUE", LocalTime.now(),LocalTime.now(), 5, Arrays.asList(지하철5오선_공덕역, 지하철5오선_충정로), LocalDateTime.now(), LocalDateTime.now());
+        LineResponse 지하철5호선 = new LineResponse(4L, "지하철5호선", "SKY_BLUE", LocalTime.now(),LocalTime.now(), 5, Arrays.asList(지하철5호선_공덕역, 지하철5호선_충정로), LocalDateTime.now(), LocalDateTime.now());
 
 
         // when
         PathFinder pathfinder = new PathFinder();
-        ShortestPathResult shortestPathResult = pathfinder.findShortestPath(Arrays.asList(지하철2호선, 경의중앙선, 공항철도, 지하철5호선), 홍대입구.getId(), 충정로.getId(), PathFindType.DISTANCE);
+        List<LineResponse> allLines = Arrays.asList(지하철2호선, 경의중앙선, 공항철도, 지하철5호선);
+        ShortestPathResult shortestPathResult = pathfinder.findShortestPath(allLines, 홍대입구.getId(), 충정로.getId(), PathFindType.DISTANCE);
 
         // then
         assertThat(shortestPathResult.getStations()).containsExactly(홍대입구, 공덕역, 충정로);
-        assertThat(shortestPathResult.getDistance()).isEqualTo(9);
+        assertThat(shortestPathResult.getWeight()).isEqualTo(19);
     }
 }

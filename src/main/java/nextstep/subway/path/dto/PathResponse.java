@@ -7,34 +7,27 @@ import java.util.List;
 
 public class PathResponse {
     private final List<StationResponse> stations;
-    private final Integer distance;
-    private final Integer duration;
+    private final Double weight;
 
     protected PathResponse() {
         this.stations = Collections.emptyList();
-        this.duration = 0;
-        this.distance = 0;
+        this.weight = 0.0;
     }
 
-    private PathResponse(List<StationResponse> stations, Integer distance, Integer duration) {
+    private PathResponse(List<StationResponse> stations, Double weight) {
         this.stations = stations;
-        this.duration = duration;
-        this.distance = distance;
+        this.weight = weight;
     }
 
-    public static PathResponse with(List<StationResponse> stationResponses, Integer distance, Integer duration) {
-        return new PathResponse(stationResponses, distance, duration);
+    public static PathResponse with(List<StationResponse> stationResponses, Double distance) {
+        return new PathResponse(stationResponses, distance);
     }
 
     public List<StationResponse> getStations() {
         return stations;
     }
 
-    public Integer getDuration() {
-        return duration;
-    }
-
-    public Integer getDistance() {
-        return distance;
+    public Double getWeight() {
+        return weight;
     }
 }
