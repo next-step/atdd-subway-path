@@ -1,5 +1,6 @@
 package nextstep.subway.path.ui;
 
+import nextstep.subway.path.application.PathService;
 import nextstep.subway.path.dto.PathResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 
 @DisplayName("PathController 유닛 테스트")
@@ -42,6 +43,6 @@ class PathControllerTest {
         assertThat(pathResponse).isNotNull();
         assertThat(pathResponse.getStations()).isNotNull();
         assertThat(pathResponse.getDistance()).isNotNull();
-        verify(pathService).findShortestPath();
+        verify(pathService).findShortestPath(anyLong(), anyLong());
     }
 }
