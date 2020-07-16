@@ -6,6 +6,7 @@ import nextstep.subway.station.dto.StationResponse;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ShortestPathResult {
     private final List<StationResponse> stations;
@@ -37,7 +38,11 @@ public class ShortestPathResult {
         return weight;
     }
 
-    public List<LineStationResponse> toLineStationResponse(List<LineResponse> asList) {
-        return null;
+    public List<LineStationResponse> toLineStationResponse(List<LineResponse> allLines) {
+        return this.stations.stream().flatMap(stationResponse ->
+                allLines.stream()
+                        .flatMap(lineResponse -> lineResponse.getStations().stream())
+                        .filter(lineStationResponse ->
+                                lineStationResponse.getStation().equals(stationResponse))).collect(Collectors.toList());
     }
 }

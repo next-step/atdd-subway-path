@@ -36,6 +36,9 @@ class ShortestPathResultTest {
         LineStationResponse lineStation1 = new LineStationResponse(station1, null, 10, 10);
         LineStationResponse lineStation2 = new LineStationResponse(station2, station1.getId(), 10, 10);
         LineStationResponse lineStation3 = new LineStationResponse(station3, station2.getId(), 10, 10);
+        lineStationResponses.add(lineStation1);
+        lineStationResponses.add(lineStation2);
+        lineStationResponses.add(lineStation3);
 
         LineResponse line = new LineResponse(1L, "부산1호선", "BLUE", LocalTime.now(), LocalTime.now(), 10, lineStationResponses, LocalDateTime.now(), LocalDateTime.now());
 

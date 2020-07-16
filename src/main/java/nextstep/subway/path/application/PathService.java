@@ -24,20 +24,16 @@ public class PathService {
     }
 
     public PathResponse findShortestPath(Long startStationId, Long endStationId, PathFindType type) {
-        List<LineResponse> allLines = lineService.findAllLines();
+        List<LineResponse> allLine = lineService.findAllLines();
 
-        ShortestPathResult shortestPathResult = pathFinder.findShortestPath(allLines, startStationId, endStationId, type);
+        ShortestPathResult shortestPathResult = pathFinder.findShortestPath(allLine, startStationId, endStationId, type);
 
         List<StationResponse> stationResponses = shortestPathResult.getStations();
 
-        List<LineStationResponse> collect = stationResponses.stream().flatMap(stationResponse ->
-                allLines.stream()
-                        .flatMap(lineResponse -> lineResponse.getStations().stream())
-                        .filter(lineStationResponse ->
-                                lineStationResponse.getStation().equals(stationResponse))).collect(Collectors.toList());
+        List<LineStationResponse> lineStationResponses = shortestPathResult.toLineStationResponse(allLine);
 
         return PathResponse.with(stationResponses, shortestPathResult.getWeight(),
-                collect.stream().mapToInt(LineStationResponse::getDuration).sum(),
-                collect.stream().mapToInt(LineStationResponse::getDistance).sum());
+                lineStationResponses.stream().mapToInt(LineStationResponse::getDuration).sum(),
+                lineStationResponses.stream().mapToInt(LineStationResponse::getDistance).sum());
     }
 }
