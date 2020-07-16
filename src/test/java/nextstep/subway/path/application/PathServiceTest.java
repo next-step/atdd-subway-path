@@ -18,13 +18,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @DisplayName("지하철 경로 검색 서비스 테스트")
 @ExtendWith(MockitoExtension.class)
 class PathServiceTest {
+    private static int DISTANCE = 5;
+    private static int DURATION = 2;
+
     private PathService pathService;
     private LineRepository lineRepository;
     private StationRepository stationRepository;
@@ -43,14 +45,14 @@ class PathServiceTest {
         );
 
         Line line1 = new Line("2호선", "GREEN", LocalTime.of(5, 0), LocalTime.of(23, 30), 5);
-        line1.addLineStation(new LineStation(1L, null, 2, 3));
-        line1.addLineStation(new LineStation(2L, 1L, 2, 3));
-        line1.addLineStation(new LineStation(3L, 2L, 2, 3));
+        line1.addLineStation(new LineStation(1L, null, DISTANCE, DURATION));
+        line1.addLineStation(new LineStation(2L, 1L, DISTANCE, DURATION));
+        line1.addLineStation(new LineStation(3L, 2L, DISTANCE, DURATION));
 
         Line line2 = new Line("신분당선", "RED", LocalTime.of(5, 0), LocalTime.of(23, 30), 5);
-        line2.addLineStation(new LineStation(1L, null, 2, 3));
-        line2.addLineStation(new LineStation(4L, 1L, 2, 3));
-        line2.addLineStation(new LineStation(5L, 4L, 2, 3));
+        line2.addLineStation(new LineStation(1L, null, DISTANCE, DURATION));
+        line2.addLineStation(new LineStation(4L, 1L, DISTANCE, DURATION));
+        line2.addLineStation(new LineStation(5L, 4L, DISTANCE, DURATION));
 
         lines = Lists.newArrayList(line1, line2);
 
@@ -65,36 +67,38 @@ class PathServiceTest {
     @Test
     void findSameLinePath() {
         // given
-        when(stationRepository.findAllById(Lists.newArrayList(1L, 2L, 3L)))
+        List<Long> pathStationIds = Lists.newArrayList(1L, 2L, 3L);
+        when(stationRepository.findAllById(pathStationIds))
                 .thenReturn(Lists.newArrayList(stations.get(0), stations.get(1), stations.get(2)));
 
         // when
         PathResponse response = pathService.findPath(1L, 3L);
 
         // then
-        assertThat(response.getStations()).extracting(PathStationResponse::getId).containsExactly(1L, 2L, 3L);
-        assertThat(response.getDistance()).isEqualTo(2 * 2);
-        assertThat(response.getDuration()).isEqualTo(3 * 2);
+        assertThat(response.getStations()).extracting(PathStationResponse::getId).containsExactlyElementsOf(pathStationIds);
+        assertThat(response.getDistance()).isEqualTo(DISTANCE * (pathStationIds.size() - 1));
+        assertThat(response.getDuration()).isEqualTo(DURATION * (pathStationIds.size() - 1));
 
         verify(lineRepository).findAll();
-        verify(stationRepository).findAllById(Lists.newArrayList(1L, 2L, 3L));
+        verify(stationRepository).findAllById(pathStationIds);
     }
 
     @DisplayName("다른 노선의 지하철역 최단 경로를 검색한다.")
     @Test
     void findDifferentLinesPath() {
         // given
-        when(stationRepository.findAllById(Lists.newArrayList(3L, 2L, 1L, 4L, 5L)))
+        List<Long> pathStationIds = Lists.newArrayList(3L, 2L, 1L, 4L, 5L);
+        when(stationRepository.findAllById(pathStationIds))
                 .thenReturn(Lists.newArrayList(stations.get(2), stations.get(1), stations.get(0), stations.get(3), stations.get(4)));
 
         // when
         PathResponse response = pathService.findPath(3L, 5L);
 
-        assertThat(response.getStations()).extracting(PathStationResponse::getId).containsExactly(3L, 2L, 1L, 4L, 5L);
-        assertThat(response.getDistance()).isEqualTo(2 * 4);
-        assertThat(response.getDuration()).isEqualTo(3 * 4);
+        assertThat(response.getStations()).extracting(PathStationResponse::getId).containsExactlyElementsOf(pathStationIds);
+        assertThat(response.getDistance()).isEqualTo(DISTANCE * (pathStationIds.size() - 1));
+        assertThat(response.getDuration()).isEqualTo(DURATION * (pathStationIds.size() - 1));
 
         verify(lineRepository).findAll();
-        verify(stationRepository).findAllById(Lists.newArrayList(3L, 2L, 1L, 4L, 5L));
+        verify(stationRepository).findAllById(pathStationIds);
     }
 }
