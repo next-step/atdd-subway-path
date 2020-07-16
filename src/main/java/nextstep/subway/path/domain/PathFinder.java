@@ -36,7 +36,7 @@ public class PathFinder {
         stationsInOrder.stream()
                 .filter(lineStation -> lineStation.getPreStationId() != null)
                 .forEach(it -> {
-                    final DefaultWeightedEdge edge = subwayGraph.addEdge(it.getPreStationId(), it.getStationId());
+                    final DefaultWeightedEdge edge = subwayGraph.addEdge(it.getStationId(), it.getPreStationId());
                     subwayGraph.setEdgeWeight(edge, it.getDistance());
                 });
     }
