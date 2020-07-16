@@ -1,23 +1,23 @@
 package nextstep.subway.map.dto;
 
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.path.domain.PathMap;
 
 import java.util.List;
 
 public class MapResponse {
-    private List<LineResponse> data;
+    private List<LineResponse> lineResponses;
 
     public static MapResponse of(List<LineResponse> lines) {
         return new MapResponse(lines);
     }
 
-    public List<LineResponse> getData() {
-        return data;
+    public List<LineResponse> getLineResponses() {
+        return lineResponses;
     }
 
-    public MapResponse(List<LineResponse> data) {
-        this.data = data;
+    public MapResponse(List<LineResponse> lineResponses) {
+        this.lineResponses = lineResponses;
     }
 
     public MapResponse() {

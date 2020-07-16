@@ -68,7 +68,7 @@ class MapServiceTest {
         MapResponse maps = mapService.getMaps();
 
         //then
-        assertThat(maps.getData()).isEmpty();
+        assertThat(maps.getLineResponses()).isEmpty();
     }
 
     @Test
@@ -82,20 +82,20 @@ class MapServiceTest {
         MapResponse maps = mapService.getMaps();
 
         //then
-        assertThat(maps.getData()).hasSize(3)
+        assertThat(maps.getLineResponses()).hasSize(3)
                 .containsExactlyElementsOf(lines);
     }
 
-    private LineResponse createLineResponse(long l, String s, String green, List<LineStationResponse> lineStationResponses) {
-        return new LineResponse(l, s, green, LocalTime.now(), LocalTime.now(), 5, lineStationResponses, LocalDateTime.now(), LocalDateTime.now());
+    private LineResponse createLineResponse(long id, String name, String color, List<LineStationResponse> lineStationResponses) {
+        return new LineResponse(id, name, color, LocalTime.now(), LocalTime.now(), 5, lineStationResponses, LocalDateTime.now(), LocalDateTime.now());
     }
 
     private LineStationResponse createLineStationResponse(StationResponse stationResponse, Long preStationId) {
         return new LineStationResponse(stationResponse, preStationId, 2, 2);
     }
 
-    private StationResponse createStationResponse(long l, String 강남역) {
-        return new StationResponse(l, 강남역, LocalDateTime.now(), LocalDateTime.now());
+    private StationResponse createStationResponse(long id, String stationName) {
+        return new StationResponse(id, stationName, LocalDateTime.now(), LocalDateTime.now());
     }
 
 }

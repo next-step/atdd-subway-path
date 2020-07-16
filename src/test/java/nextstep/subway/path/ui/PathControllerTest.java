@@ -1,64 +1,64 @@
-package nextstep.subway.map.ui;
+package nextstep.subway.path.ui;
 
 import nextstep.subway.exception.NotFoundException;
-import nextstep.subway.map.application.MapService;
-import nextstep.subway.map.dto.MapResponse;
+import nextstep.subway.path.application.PathService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("지하철 노선도 컨트롤러 테스트")
+@DisplayName("경로 검색 컨트롤러 테스트")
 @SpringBootTest
 @AutoConfigureMockMvc
-class MapControllerTest {
+class PathControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private MapController mapController;
+    private PathController pathController;
 
     @MockBean
-    private MapService mapService;
+    private PathService pathService;
 
-    @DisplayName("노선도 조회 도중 에러 발생시 에러 코드 응답")
+    @DisplayName("경로 조회 도중 에러 발생시 에러 코드 응답")
     @Test
-    void getMapsWithError() throws Exception {
+    void findShortestPathWithError() throws Exception {
         //given
-        given(mapService.getMaps()).willThrow(NotFoundException.class);
+        given(pathService.findShortestPath(anyLong(), anyLong()))
+                .willThrow(NotFoundException.class);
 
         //when
-        ResultActions result = mockMvc.perform(get("/maps"))
+        ResultActions result = mockMvc.perform(
+                get("/paths/shortest")
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .param("startStationId", "1")
+                        .param("endStationId", "2"))
                 .andDo(print());
 
         //then
         result.andExpect(status().is4xxClientError());
     }
 
-    @DisplayName("노선도 조회 요청시 200 코드 응답")
+    @DisplayName("경로 조회 요청 시 찾은 최단 경로와 200 코드 응답")
     @Test
-    void getMaps() {
+    void findShortestPath() {
         //when
-        ResponseEntity<MapResponse> response = mapController.getMaps();
+        pathController.findShortestPath(1L, 2L);
 
         //then
-        verify(mapService).getMaps();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        verify(pathService).findShortestPath(1L, 2L);
     }
-
-
 }

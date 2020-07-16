@@ -19,10 +19,6 @@ public class MapController {
 
     @GetMapping
     public ResponseEntity<MapResponse> getMaps() {
-        try {
-            return ResponseEntity.ok(mapService.getMaps());
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(mapService.getMaps());
     }
 }

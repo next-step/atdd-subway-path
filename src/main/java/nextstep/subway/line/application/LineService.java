@@ -41,6 +41,11 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
+    public List<Line> findAllLineEntities() {
+        return lineRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
     public LineResponse findLineById(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         List<Long> stationIds = line.getStationInOrder().stream()
