@@ -3,8 +3,6 @@ package nextstep.subway.path.application;
 import nextstep.subway.exception.NoPathExistsException;
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.exception.NotValidRequestException;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineStations;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.map.application.MapService;
@@ -18,14 +16,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 

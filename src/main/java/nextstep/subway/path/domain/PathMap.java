@@ -2,8 +2,7 @@ package nextstep.subway.path.domain;
 
 import nextstep.subway.exception.NoPathExistsException;
 import nextstep.subway.exception.NotFoundException;
-import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LineStationResponse;
+import nextstep.subway.line.domain.LineStation;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -12,34 +11,29 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class PathMap {
 
     private final WeightedMultigraph<Long, DefaultWeightedEdge> graph;
     private final DijkstraShortestPath<Long, DefaultWeightedEdge> dijkstraShortestPath;
 
-    private PathMap(List<LineResponse> lines) {
+    private PathMap(List<LineStation> lineStations) {
         graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-        final List<LineStationResponse> lineStations = lines.stream()
-                .flatMap(line -> line.getStations().stream())
-                .collect(Collectors.toList());
 
-
-        for (LineStationResponse lineStation : lineStations) {
-            graph.addVertex(lineStation.getStation().getId());
+        for (LineStation lineStation : lineStations) {
+            graph.addVertex(lineStation.getStationId());
         }
-        for (LineStationResponse lineStation : lineStations) {
+        for (LineStation lineStation : lineStations) {
             if (Objects.isNull(lineStation.getPreStationId())) {
                 continue;
             }
-            graph.setEdgeWeight(graph.addEdge(lineStation.getPreStationId(), lineStation.getStation().getId()), lineStation.getDistance());
+            graph.setEdgeWeight(graph.addEdge(lineStation.getPreStationId(), lineStation.getStationId()), lineStation.getDistance());
         }
 
         dijkstraShortestPath = new DijkstraShortestPath<>(graph);
     }
 
-    public static PathMap of(List<LineResponse> lines) {
+    public static PathMap of(List<LineStation> lines) {
         return new PathMap(lines);
     }
 
