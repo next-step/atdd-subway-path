@@ -42,5 +42,27 @@ public class PathAcceptanceStep {
         assertThat(pathResponse.getDuration()).isNotNull();
     }
 
+    public static ExtractableResponse<Response> 출발역에서_도착역까지의_최소_시간_경로_조회_요청(Long startStationId, Long endStationId) {
+        return RestAssured.given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .param("startStationId", startStationId)
+                .param("endStationId", endStationId)
+                .get("/paths/shortest")
+                .then()
+                .log().all()
+                .extract();
+    }
+
+
+    public static void 최단_시간_경로를_응답함(ExtractableResponse<Response> response, List<Long> expectedPath) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        PathResponse pathResponse = response.as(PathResponse.class);
+        assertThat(pathResponse.getStations())
+                .extracting(StationResponse::getId)
+                .containsExactlyElementsOf(expectedPath);
+    }
+
 
 }
