@@ -33,26 +33,28 @@ public class PathService {
         assertNotEqualsIds(startStationId, endStationId);
 
         final List<LineResponse> lineResponses = mapService.getMaps().getLineResponses();
-        final List<LineStation> lineStations = lineResponses.stream()
-                .flatMap(line -> line.getStations().stream())
-                .map(this::mapToLineStation)
-                .collect(Collectors.toList());
+        final List<LineStation> lineStations = mapToLineStations(lineResponses);
 
         final PathMap pathMap = PathMap.of(lineStations);
 
         final List<Long> shortestPath = pathMap.findDijkstraShortestPath(startStationId, endStationId);
 
-        final List<StationResponse> shortestPathStations = extractStationResponsesOfShortestPath(shortestPath, lineResponses);
-        
-        final List<LineStation> shortestPathLineStations = extractLineStations(shortestPath, lineStations);
+        final List<LineStation> shortestPathLineStations = mapToLineStations(shortestPath, lineStations);
+
         final int distance = shortestPathLineStations.stream().mapToInt(LineStation::getDistance).sum();
         final int duration = shortestPathLineStations.stream().mapToInt(LineStation::getDuration).sum();
 
-        return PathResponse.of(shortestPathStations, distance, duration);
+        return PathResponse.of(mapToLineStationResponses(shortestPath, lineResponses), distance, duration);
     }
 
+    private List<LineStation> mapToLineStations(List<LineResponse> lineResponses) {
+        return lineResponses.stream()
+                .flatMap(line -> line.getStations().stream())
+                .map(this::mapToLineStation)
+                .collect(Collectors.toList());
+    }
 
-    private List<StationResponse> extractStationResponsesOfShortestPath(List<Long> shortestPath, List<LineResponse> lines) {
+    private List<StationResponse> mapToLineStationResponses(List<Long> shortestPath, List<LineResponse> lines) {
         Map<Long, StationResponse> stationResponses = lines.stream()
                 .flatMap(lineResponse -> lineResponse.getStations().stream())
                 .map(LineStationResponse::getStation)
@@ -64,7 +66,7 @@ public class PathService {
                 .collect(Collectors.toList());
     }
 
-    private List<LineStation> extractLineStations(List<Long> shortestPath, List<LineStation> lineStations) {
+    private List<LineStation> mapToLineStations(List<Long> shortestPath, List<LineStation> lineStations) {
         List<LineStation> shortestPathLineStations = new ArrayList<>();
         for (int i = 1; i < shortestPath.size(); i++) {
             Long stationId = shortestPath.get(i);
