@@ -69,8 +69,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         // when: 출발역에서 도착역까지의 최단거리 경로 조회를 요청한다.
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .queryParam("source", 1)
-            .queryParam("target", 6)
+            .queryParam("source", 아이디_안암역)
+            .queryParam("target", 아이디_월곡역)
             .get("/paths")
             .then().log().all().extract();
 
@@ -79,7 +79,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         // and: 총 거리와 소요 시간을 함께 응답한다.
         ShortestPathResponse pathResponse = response.as(ShortestPathResponse.class);
-        assertThat(pathResponse.getDuration()).isNotNull();
-        assertThat(pathResponse.getDistance()).isNotNull();
+        assertThat(pathResponse.getDuration()).isEqualTo(6);
+        assertThat(pathResponse.getDistance()).isEqualTo(15);
     }
 }
