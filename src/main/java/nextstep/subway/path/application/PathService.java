@@ -6,6 +6,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.map.application.MapService;
 import nextstep.subway.path.domain.PathMap;
+import nextstep.subway.path.domain.PathType;
 import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
@@ -29,13 +30,13 @@ public class PathService {
     }
 
     @Transactional(readOnly = true)
-    public PathResponse findShortestPath(Long startStationId, Long endStationId) {
+    public PathResponse findPath(Long startStationId, Long endStationId, PathType type) {
         assertNotEqualsIds(startStationId, endStationId);
 
         final List<LineResponse> lineResponses = mapService.getMaps().getLineResponses();
         final List<LineStation> lineStations = mapToLineStations(lineResponses);
 
-        final PathMap pathMap = PathMap.ofDistance(lineStations);
+        final PathMap pathMap = PathMap.of(lineStations, type);
 
         final List<Long> shortestPath = pathMap.findDijkstraShortestPath(startStationId, endStationId);
 
@@ -47,24 +48,6 @@ public class PathService {
         return PathResponse.of(mapToLineStationResponses(shortestPath, lineResponses), distance, duration);
     }
 
-    @Transactional(readOnly = true)
-    public PathResponse findFastestPath(Long startStationId, Long endStationId) {
-        assertNotEqualsIds(startStationId, endStationId);
-
-        final List<LineResponse> lineResponses = mapService.getMaps().getLineResponses();
-        final List<LineStation> lineStations = mapToLineStations(lineResponses);
-
-        final PathMap pathMap = PathMap.ofDuration(lineStations);
-
-        final List<Long> shortestPath = pathMap.findDijkstraShortestPath(startStationId, endStationId);
-
-        final List<LineStation> shortestPathLineStations = mapToLineStations(shortestPath, lineStations);
-
-        final int distance = shortestPathLineStations.stream().mapToInt(LineStation::getDistance).sum();
-        final int duration = shortestPathLineStations.stream().mapToInt(LineStation::getDuration).sum();
-
-        return PathResponse.of(mapToLineStationResponses(shortestPath, lineResponses), distance, duration);
-    }
 
     private List<LineStation> mapToLineStations(List<LineResponse> lineResponses) {
         return lineResponses.stream()

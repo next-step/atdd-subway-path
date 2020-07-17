@@ -3,6 +3,7 @@ package nextstep.subway.path.domain;
 import nextstep.subway.exception.NoPathExistsException;
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.line.domain.LineStation;
+import nextstep.subway.path.domain.PathType;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -22,32 +23,18 @@ public class PathMap {
         this.dijkstraShortestPath = dijkstraShortestPath;
     }
 
-    public static PathMap ofDistance(List<LineStation> lines) {
+    public static PathMap of(List<LineStation> lineStations, PathType type) {
         WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
 
-        for (LineStation lineStation : lines) {
+        for (LineStation lineStation : lineStations) {
             graph.addVertex(lineStation.getStationId());
         }
-        for (LineStation lineStation : lines) {
+        for (LineStation lineStation : lineStations) {
             if (Objects.isNull(lineStation.getPreStationId())) {
                 continue;
             }
-            graph.setEdgeWeight(graph.addEdge(lineStation.getPreStationId(), lineStation.getStationId()), lineStation.getDistance());
-        }
-        return new PathMap(graph, new DijkstraShortestPath<>(graph));
-    }
-
-    public static PathMap ofDuration(List<LineStation> lines) {
-        WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-
-        for (LineStation lineStation : lines) {
-            graph.addVertex(lineStation.getStationId());
-        }
-        for (LineStation lineStation : lines) {
-            if (Objects.isNull(lineStation.getPreStationId())) {
-                continue;
-            }
-            graph.setEdgeWeight(graph.addEdge(lineStation.getPreStationId(), lineStation.getStationId()), lineStation.getDuration());
+            DefaultWeightedEdge edge = graph.addEdge(lineStation.getPreStationId(), lineStation.getStationId());
+            graph.setEdgeWeight(edge, type.getWeight(lineStation));
         }
         return new PathMap(graph, new DijkstraShortestPath<>(graph));
     }

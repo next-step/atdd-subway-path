@@ -10,8 +10,8 @@ import org.springframework.http.MediaType;
 
 import java.util.List;
 
-import static nextstep.subway.path.dto.PathType.DISTANCE;
-import static nextstep.subway.path.dto.PathType.DURATION;
+import static nextstep.subway.path.domain.PathType.DISTANCE;
+import static nextstep.subway.path.domain.PathType.DURATION;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PathAcceptanceStep {

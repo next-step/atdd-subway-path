@@ -2,7 +2,7 @@ package nextstep.subway.path.ui;
 
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.path.application.PathService;
-import nextstep.subway.path.dto.PathType;
+import nextstep.subway.path.domain.PathType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -38,7 +39,7 @@ class PathControllerTest {
     @Test
     void findShortestPathWithError() throws Exception {
         //given
-        given(pathService.findShortestPath(anyLong(), anyLong()))
+        given(pathService.findPath(anyLong(), anyLong(), any(PathType.class)))
                 .willThrow(NotFoundException.class);
 
         //when
@@ -60,6 +61,6 @@ class PathControllerTest {
         pathController.findShortestPath(1L, 2L, PathType.DISTANCE);
 
         //then
-        verify(pathService).findShortestPath(1L, 2L);
+        verify(pathService).findPath(1L, 2L, PathType.DISTANCE);
     }
 }

@@ -1,9 +1,8 @@
 package nextstep.subway.path.ui;
 
-import nextstep.subway.path.application.PathFacade;
 import nextstep.subway.path.application.PathService;
+import nextstep.subway.path.domain.PathType;
 import nextstep.subway.path.dto.PathResponse;
-import nextstep.subway.path.dto.PathType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,16 +13,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/paths")
 public class PathController {
 
-    private final PathFacade pathFacade;
+    private final PathService pathService;
 
-    public PathController(PathFacade pathFacade) {
-        this.pathFacade = pathFacade;
+    public PathController(PathService pathService) {
+        this.pathService = pathService;
     }
 
     @GetMapping
     public ResponseEntity<PathResponse> findShortestPath(@RequestParam("source") Long startStationId, @RequestParam("target") Long endStationId,
                                                          @RequestParam("type") PathType type) {
-        return ResponseEntity.ok(pathFacade.findPath(startStationId, endStationId, type));
+        return ResponseEntity.ok(pathService.findPath(startStationId, endStationId, type));
     }
 
 

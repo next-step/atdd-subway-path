@@ -37,7 +37,7 @@ class PathMapTest {
     @DisplayName("최단 경로를 조회한다")
     void findDijkstraShortestPath() {
         //given
-        PathMap pathMap = PathMap.ofDistance(lineStations);
+        PathMap pathMap = PathMap.of(lineStations, PathType.DISTANCE);
 
         //when
         List<Long> shortestPath = pathMap.findDijkstraShortestPath(1L, 4L);
@@ -51,7 +51,7 @@ class PathMapTest {
     @DisplayName("최단 경로를 조회할 때 경로 지도에 존재하지 않는 지하철역으로 요청이 들어오면 에러를 던진다")
     void findDijkstraShortestPathWithNotFoundException() {
         //given
-        PathMap pathMap = PathMap.ofDistance(lineStations);
+        PathMap pathMap = PathMap.of(lineStations, PathType.DISTANCE);
 
         //when
         assertThatThrownBy(() -> pathMap.findDijkstraShortestPath(8L, 4L))
@@ -63,7 +63,7 @@ class PathMapTest {
     @DisplayName("최단 경로를 조회할 때 경로 지도에서 서로 이어지지 않은 지하철역으로 요청이 들어오면 에러를 던진다")
     void findDijkstraShortestPathWithNotConnectedStations() {
         //given
-        PathMap pathMap = PathMap.ofDistance(lineStations);
+        PathMap pathMap = PathMap.of(lineStations, PathType.DISTANCE);
 
         //when
         assertThatThrownBy(() -> pathMap.findDijkstraShortestPath(1L, 5L))

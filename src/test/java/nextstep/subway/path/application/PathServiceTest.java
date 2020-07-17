@@ -7,6 +7,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.map.application.MapService;
 import nextstep.subway.map.dto.MapResponse;
+import nextstep.subway.path.domain.PathType;
 import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.dto.StationResponse;
 import org.assertj.core.util.Lists;
@@ -68,22 +69,22 @@ class PathServiceTest {
 
     @DisplayName("최단 경로 탐색 요청 시, 출발역과 도착역이 같은 경우 에러가 발생한다.")
     @Test
-    void findShortestPathWithSameStartAndEndStation() {
+    void findPathWithSameStartAndEndStation() {
         //when
-        assertThatThrownBy(() -> pathService.findShortestPath(1L, 1L))
+        assertThatThrownBy(() -> pathService.findPath(1L, 1L, PathType.DISTANCE))
                 //then
                 .isInstanceOf(NotValidRequestException.class);
     }
 
     @DisplayName("최단 경로 탐색 요청 시, 출발역과 도착역이 연결이 되어 있지 않은 경우 에러가 발생한다.")
     @Test
-    void findShortestPathWithNotConnectedStations() {
+    void findPathWithNotConnectedStations() {
         //given
         given(mapService.getMaps())
                 .willReturn(MapResponse.of(Lists.list(lineResponse1, lineResponse2, lineResponse3)));
 
         //when
-        assertThatThrownBy(() -> pathService.findShortestPath(1L, 5L))
+        assertThatThrownBy(() -> pathService.findPath(1L, 5L, PathType.DISTANCE))
                 //then
                 .isInstanceOf(NoPathExistsException.class);
 
@@ -91,24 +92,24 @@ class PathServiceTest {
 
     @DisplayName("최단 경로 탐색 요청 시, 존재하지 않은 출발역이나 도착역을 조회 할 경우 에러가 발생한다.")
     @Test
-    void findShortestPathWithNotExistStations() {
+    void findPathWithNotExistStations() {
         //given
         given(mapService.getMaps())
                 .willReturn(MapResponse.of(Lists.list(lineResponse1, lineResponse2, lineResponse3)));
         //when
-        assertThatThrownBy(() -> pathService.findShortestPath(5L, 6L))
+        assertThatThrownBy(() -> pathService.findPath(5L, 6L, PathType.DISTANCE))
                 //then
                 .isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("최단 경로 탐색하여 최단경로를 리턴한다.")
     @Test
-    void findShortestPath() {
+    void findPath() {
         //given
         given(mapService.getMaps())
                 .willReturn(MapResponse.of(Lists.list(lineResponse1, lineResponse2, lineResponse3)));
         //when
-        PathResponse shortestPath = pathService.findShortestPath(1L, 4L);
+        PathResponse shortestPath = pathService.findPath(1L, 4L, PathType.DISTANCE);
 
         //then
         assertThat(shortestPath.getStations()).hasSize(4)
