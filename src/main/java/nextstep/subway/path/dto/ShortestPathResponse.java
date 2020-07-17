@@ -1,5 +1,6 @@
 package nextstep.subway.path.dto;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +15,12 @@ public class ShortestPathResponse {
         this.stationResponses = stationResponses;
         this.distance = distance;
         this.duration = duration;
+    }
+
+    public ShortestPathResponse(Long startId, long endId) {
+        this.stationResponses = Collections.emptyList();
+        this.distance = 0.0;
+        this.duration = 0.0;
     }
 
     public List<StationResponse> getStationResponses() {
