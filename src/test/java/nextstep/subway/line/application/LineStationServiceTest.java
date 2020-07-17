@@ -24,10 +24,12 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @DisplayName("지하철 노선 서비스 테스트")
+@ExtendWith(MockitoExtension.class)
 public class LineStationServiceTest {
+    @Mock
     private LineRepository lineRepository;
+    @Mock
     private StationRepository stationRepository;
-
     private LineStationService lineStationService;
 
     @BeforeEach
@@ -38,15 +40,48 @@ public class LineStationServiceTest {
     @DisplayName("지하철 노선에 역을 등록한다.")
     @Test
     void addLineStation1() {
+        // given
+        Station station = new Station();
+        ReflectionTestUtils.setField(station, "id", 1L);
+        when(stationRepository.findAllById(anyList())).thenReturn(Lists.newArrayList(station));
+
+        Line line = new Line();
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
+
+        // when
+        LineStationCreateRequest request = new LineStationCreateRequest(1L, null, 10, 10);
+        lineStationService.addLineStation(1L, request);
+
+        // then
+        assertThat(line.getStationInOrder()).hasSize(1);
     }
 
     @DisplayName("존재하지 않는 역을 등록한다.")
     @Test
     void addLineStation2() {
+        //given
+        when(stationRepository.findAllById(anyList())).thenReturn(Lists.newArrayList());        
+
+        //when
+        LineStationCreateRequest request = new LineStationCreateRequest(1L, null, 10, 10);
+        assertThatThrownBy(() -> lineStationService.addLineStation(1L, request))
+            .isInstanceOf(RuntimeException.class);
     }
 
     @DisplayName("지하철 노선에 역을 제외한다.")
     @Test
     void removeLineStation() {
+        //given
+        Line line = new Line();
+        ReflectionTestUtils.setField(line, "id", 1L);
+        line.addLineStation(new LineStation(1L, null, 10, 10));
+        line.addLineStation(new LineStation(2L, 1L, 10, 10));
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
+
+        //when
+        lineStationService.removeLineStation(1L, 1L);
+
+        //then
+        assertThat(line.getStationInOrder()).hasSize(1);
     }
 }
