@@ -17,24 +17,39 @@ public class PathMap {
     private final WeightedMultigraph<Long, DefaultWeightedEdge> graph;
     private final DijkstraShortestPath<Long, DefaultWeightedEdge> dijkstraShortestPath;
 
-    private PathMap(List<LineStation> lineStations) {
-        graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+    private PathMap(WeightedMultigraph<Long, DefaultWeightedEdge> graph, DijkstraShortestPath<Long, DefaultWeightedEdge> dijkstraShortestPath) {
+        this.graph = graph;
+        this.dijkstraShortestPath = dijkstraShortestPath;
+    }
 
-        for (LineStation lineStation : lineStations) {
+    public static PathMap ofDistance(List<LineStation> lines) {
+        WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+
+        for (LineStation lineStation : lines) {
             graph.addVertex(lineStation.getStationId());
         }
-        for (LineStation lineStation : lineStations) {
+        for (LineStation lineStation : lines) {
             if (Objects.isNull(lineStation.getPreStationId())) {
                 continue;
             }
             graph.setEdgeWeight(graph.addEdge(lineStation.getPreStationId(), lineStation.getStationId()), lineStation.getDistance());
         }
-
-        dijkstraShortestPath = new DijkstraShortestPath<>(graph);
+        return new PathMap(graph, new DijkstraShortestPath<>(graph));
     }
 
-    public static PathMap of(List<LineStation> lines) {
-        return new PathMap(lines);
+    public static PathMap ofDuration(List<LineStation> lines) {
+        WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+
+        for (LineStation lineStation : lines) {
+            graph.addVertex(lineStation.getStationId());
+        }
+        for (LineStation lineStation : lines) {
+            if (Objects.isNull(lineStation.getPreStationId())) {
+                continue;
+            }
+            graph.setEdgeWeight(graph.addEdge(lineStation.getPreStationId(), lineStation.getStationId()), lineStation.getDuration());
+        }
+        return new PathMap(graph, new DijkstraShortestPath<>(graph));
     }
 
     public List<Long> findDijkstraShortestPath(Long startStationId, Long endStationId) {

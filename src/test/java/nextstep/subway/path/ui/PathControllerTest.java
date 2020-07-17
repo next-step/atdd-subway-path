@@ -2,6 +2,7 @@ package nextstep.subway.path.ui;
 
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.path.application.PathService;
+import nextstep.subway.path.dto.PathType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,7 @@ class PathControllerTest {
     @Test
     void findShortestPath() {
         //when
-        pathController.findShortestPath(1L, 2L);
+        pathController.findShortestPath(1L, 2L, PathType.DISTANCE);
 
         //then
         verify(pathService).findShortestPath(1L, 2L);

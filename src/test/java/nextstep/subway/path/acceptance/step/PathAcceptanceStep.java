@@ -10,6 +10,8 @@ import org.springframework.http.MediaType;
 
 import java.util.List;
 
+import static nextstep.subway.path.dto.PathType.DISTANCE;
+import static nextstep.subway.path.dto.PathType.DURATION;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PathAcceptanceStep {
@@ -17,9 +19,10 @@ public class PathAcceptanceStep {
         return RestAssured.given().log().all()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .param("startStationId", startStationId)
-                .param("endStationId", endStationId)
-                .get("/paths/shortest")
+                .param("source", startStationId)
+                .param("target", endStationId)
+                .param("type", DISTANCE)
+                .get("/paths")
                 .then()
                 .log().all()
                 .extract();
@@ -46,9 +49,10 @@ public class PathAcceptanceStep {
         return RestAssured.given().log().all()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .param("startStationId", startStationId)
-                .param("endStationId", endStationId)
-                .get("/paths/shortest")
+                .param("source", startStationId)
+                .param("target", endStationId)
+                .param("type", DURATION)
+                .get("/paths")
                 .then()
                 .log().all()
                 .extract();

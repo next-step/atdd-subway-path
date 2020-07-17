@@ -35,7 +35,26 @@ public class PathService {
         final List<LineResponse> lineResponses = mapService.getMaps().getLineResponses();
         final List<LineStation> lineStations = mapToLineStations(lineResponses);
 
-        final PathMap pathMap = PathMap.of(lineStations);
+        final PathMap pathMap = PathMap.ofDistance(lineStations);
+
+        final List<Long> shortestPath = pathMap.findDijkstraShortestPath(startStationId, endStationId);
+
+        final List<LineStation> shortestPathLineStations = mapToLineStations(shortestPath, lineStations);
+
+        final int distance = shortestPathLineStations.stream().mapToInt(LineStation::getDistance).sum();
+        final int duration = shortestPathLineStations.stream().mapToInt(LineStation::getDuration).sum();
+
+        return PathResponse.of(mapToLineStationResponses(shortestPath, lineResponses), distance, duration);
+    }
+
+    @Transactional(readOnly = true)
+    public PathResponse findFastestPath(Long startStationId, Long endStationId) {
+        assertNotEqualsIds(startStationId, endStationId);
+
+        final List<LineResponse> lineResponses = mapService.getMaps().getLineResponses();
+        final List<LineStation> lineStations = mapToLineStations(lineResponses);
+
+        final PathMap pathMap = PathMap.ofDuration(lineStations);
 
         final List<Long> shortestPath = pathMap.findDijkstraShortestPath(startStationId, endStationId);
 
@@ -92,4 +111,6 @@ public class PathService {
             throw new NotValidRequestException("출발역과 도착역은 같을 수 없습니다.");
         }
     }
+
+
 }
