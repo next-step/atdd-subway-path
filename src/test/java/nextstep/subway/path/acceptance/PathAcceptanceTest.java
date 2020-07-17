@@ -21,44 +21,44 @@ import nextstep.subway.station.dto.StationResponse;
 @DisplayName("2단계 지하철 경로 조회 인수 테스트")
 public class PathAcceptanceTest extends AcceptanceTest {
 
-    private Long 아이디_우이신설선;
-    private Long 아이디_6호선;
-    private Long 아이디_창신역;
-    private Long 아이디_보문역;
-    private Long 아이디_안암역;
-    private Long 아이디_고려대역;
-    private Long 아이디_월곡역;
+    private Long 아이디_신분당선;
+    private Long 아이디_2호선;
+    private Long 아이디_강남역;
+    private Long 아이디_역삼역;
+    private Long 아이디_선릉역;
+    private Long 아이디_양재역;
+    private Long 아이디_양재시민의숲역;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
 
         // given
-        ExtractableResponse<Response> 등록응답_우이신설선 = 지하철_노선_등록되어_있음("우이신설선", "GREEN");
-        ExtractableResponse<Response> 등록응답_6호선 = 지하철_노선_등록되어_있음("6호선", "BROWN");
+        ExtractableResponse<Response> 등록응답_신분당선 = 지하철_노선_등록되어_있음("신분당선", "RED");
+        ExtractableResponse<Response> 등록응답_2호선 = 지하철_노선_등록되어_있음("2호선", "GREEN");
 
-        ExtractableResponse<Response> 등록응답_창신역 = 지하철역_등록되어_있음("창신역");
-        ExtractableResponse<Response> 등록응답_보문역 = 지하철역_등록되어_있음("보문역");
-        ExtractableResponse<Response> 등록응답_안암역 = 지하철역_등록되어_있음("안암역");
-        ExtractableResponse<Response> 등록응답_고려대역 = 지하철역_등록되어_있음("고려대역");
-        ExtractableResponse<Response> 등록응답_월곡역 = 지하철역_등록되어_있음("월곡역");
+        ExtractableResponse<Response> 등록응답_강남역 = 지하철역_등록되어_있음("강남역");
+        ExtractableResponse<Response> 등록응답_역삼역 = 지하철역_등록되어_있음("역삼역");
+        ExtractableResponse<Response> 등록응답_선릉역 = 지하철역_등록되어_있음("선릉역");
+        ExtractableResponse<Response> 등록응답_양재역 = 지하철역_등록되어_있음("양재역");
+        ExtractableResponse<Response> 등록응답_양재시민의숲역 = 지하철역_등록되어_있음("양재시민의숲역");
 
-        아이디_우이신설선 = 등록응답_우이신설선.as(LineResponse.class).getId();
-        아이디_6호선 = 등록응답_6호선.as(LineResponse.class).getId();
+        아이디_신분당선 = 등록응답_신분당선.as(LineResponse.class).getId();
+        아이디_2호선 = 등록응답_2호선.as(LineResponse.class).getId();
 
-        아이디_창신역 = 등록응답_창신역.as(StationResponse.class).getId();
-        아이디_보문역 = 등록응답_보문역.as(StationResponse.class).getId();
-        아이디_안암역 = 등록응답_안암역.as(StationResponse.class).getId();
-        아이디_고려대역 = 등록응답_고려대역.as(StationResponse.class).getId();
-        아이디_월곡역 = 등록응답_월곡역.as(StationResponse.class).getId();
+        아이디_강남역 = 등록응답_강남역.as(StationResponse.class).getId();
+        아이디_역삼역 = 등록응답_역삼역.as(StationResponse.class).getId();
+        아이디_선릉역 = 등록응답_선릉역.as(StationResponse.class).getId();
+        아이디_양재역 = 등록응답_양재역.as(StationResponse.class).getId();
+        아이디_양재시민의숲역 = 등록응답_양재시민의숲역.as(StationResponse.class).getId();
 
-        지하철_노선에_지하철역_등록되어_있음(아이디_우이신설선, null, 아이디_창신역);
-        지하철_노선에_지하철역_등록되어_있음(아이디_우이신설선, 아이디_창신역, 아이디_보문역);
-        지하철_노선에_지하철역_등록되어_있음(아이디_우이신설선, 아이디_보문역, 아이디_안암역);
+        지하철_노선에_지하철역_등록되어_있음(아이디_2호선, null, 아이디_강남역);
+        지하철_노선에_지하철역_등록되어_있음(아이디_2호선, 아이디_강남역, 아이디_역삼역);
+        지하철_노선에_지하철역_등록되어_있음(아이디_2호선, 아이디_역삼역, 아이디_선릉역);
 
-        지하철_노선에_지하철역_등록되어_있음(아이디_6호선, null, 아이디_창신역);
-        지하철_노선에_지하철역_등록되어_있음(아이디_6호선, 아이디_창신역, 아이디_고려대역);
-        지하철_노선에_지하철역_등록되어_있음(아이디_6호선, 아이디_고려대역, 아이디_월곡역);
+        지하철_노선에_지하철역_등록되어_있음(아이디_신분당선, null, 아이디_강남역);
+        지하철_노선에_지하철역_등록되어_있음(아이디_신분당선, 아이디_강남역, 아이디_양재역);
+        지하철_노선에_지하철역_등록되어_있음(아이디_신분당선, 아이디_양재역, 아이디_양재시민의숲역);
     }
 
     @DisplayName("두 역 간의 최단 거리 경로를 조회한다.")
@@ -69,8 +69,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         // when: 출발역에서 도착역까지의 최단거리 경로 조회를 요청한다.
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .queryParam("source", 아이디_안암역)
-            .queryParam("target", 아이디_월곡역)
+            .queryParam("source", 아이디_선릉역)
+            .queryParam("target", 아이디_양재시민의숲역)
             .get("/paths")
             .then().log().all().extract();
 
@@ -79,7 +79,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         // and: 총 거리와 소요 시간을 함께 응답한다.
         ShortestPathResponse pathResponse = response.as(ShortestPathResponse.class);
-        assertThat(pathResponse.getDuration()).isEqualTo(6);
-        assertThat(pathResponse.getDistance()).isEqualTo(15);
+        assertThat(pathResponse.getDuration()).isEqualTo(8);
+        assertThat(pathResponse.getDistance()).isEqualTo(20);
     }
 }
