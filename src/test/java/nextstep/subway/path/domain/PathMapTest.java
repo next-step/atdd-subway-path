@@ -3,7 +3,6 @@ package nextstep.subway.path.domain;
 import nextstep.subway.exception.NoPathExistsException;
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.line.domain.LineStation;
-import nextstep.subway.line.dto.LineResponse;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,7 +39,7 @@ class PathMapTest {
         PathMap pathMap = PathMap.of(lineStations, PathType.DURATION);
 
         //when
-        List<Long> shortestPath = pathMap.findDijkstraShortestPath(1L, 4L);
+        List<Long> shortestPath = pathMap.findDijkstraPath(1L, 4L);
 
         //then
         assertThat(shortestPath).hasSize(4)
@@ -54,7 +53,7 @@ class PathMapTest {
         PathMap pathMap = PathMap.of(lineStations, PathType.DISTANCE);
 
         //when
-        List<Long> shortestPath = pathMap.findDijkstraShortestPath(1L, 4L);
+        List<Long> shortestPath = pathMap.findDijkstraPath(1L, 4L);
 
         //then
         assertThat(shortestPath).hasSize(4)
@@ -69,7 +68,7 @@ class PathMapTest {
         PathMap pathMap = PathMap.of(lineStations, pathType);
 
         //when
-        assertThatThrownBy(() -> pathMap.findDijkstraShortestPath(8L, 4L))
+        assertThatThrownBy(() -> pathMap.findDijkstraPath(8L, 4L))
                 //then
                 .isInstanceOf(NotFoundException.class);
     }
@@ -82,7 +81,7 @@ class PathMapTest {
         PathMap pathMap = PathMap.of(lineStations, pathType);
 
         //when
-        assertThatThrownBy(() -> pathMap.findDijkstraShortestPath(1L, 5L))
+        assertThatThrownBy(() -> pathMap.findDijkstraPath(1L, 5L))
                 //then
                 .isInstanceOf(NoPathExistsException.class);
     }

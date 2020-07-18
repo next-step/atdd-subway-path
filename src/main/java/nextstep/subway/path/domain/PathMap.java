@@ -3,7 +3,6 @@ package nextstep.subway.path.domain;
 import nextstep.subway.exception.NoPathExistsException;
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.line.domain.LineStation;
-import nextstep.subway.path.domain.PathType;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -39,7 +38,7 @@ public class PathMap {
         return new PathMap(graph, new DijkstraShortestPath<>(graph));
     }
 
-    public List<Long> findDijkstraShortestPath(Long startStationId, Long endStationId) {
+    public List<Long> findDijkstraPath(Long startStationId, Long endStationId) {
         assertExistence(startStationId, endStationId);
         GraphPath<Long, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(startStationId, endStationId);
         assertConnected(path);
