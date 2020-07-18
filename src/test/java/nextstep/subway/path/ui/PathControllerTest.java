@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import nextstep.subway.path.application.PathService;
-import nextstep.subway.path.dto.ShortestPathResponse;
+import nextstep.subway.path.application.ShortestPathSearchType;
+import nextstep.subway.path.dto.PathResponse;
 
 public class PathControllerTest {
 
@@ -20,14 +21,15 @@ public class PathControllerTest {
     @Test
     public void 지하철역_최단경로_컨트롤러_테스트() {
         // given
-        Long startId = anyLong();
-        Long endId = anyLong();
+        Long startId = 1L;
+        Long endId = 2L;
 
         // when
-        ResponseEntity<ShortestPathResponse> response = mockPathController.findShortestPath(startId, endId);
+        ResponseEntity<PathResponse> response = mockPathController.findShortestPath(startId, endId,
+            ShortestPathSearchType.DURATION);
 
         // then
         assertThat(response.getStatusCodeValue()).isEqualTo(HttpStatus.OK.value());
-        verify(mockPathService).findShortestPath(startId, endId);
+        verify(mockPathService).findShortestPath(startId, endId, ShortestPathSearchType.DURATION);
     }
 }
