@@ -4,6 +4,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.station.dto.StationResponse;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,15 +47,20 @@ public class PathFinderResult {
     private Stream<LineStationResponse> getLineStationResponseStream(List<LineResponse> lines, List<StationResponse> list) {
         return lines.stream()
                 .flatMap(lineResponse -> lineResponse.getStations().stream())
-                .filter(lineStationResponse -> lineStationResponse.getStation().getId() == null)
-                .filter(lineStationResponse -> list.contains(lineStationResponse.getStation().getId()));
+                .filter(lineStationResponse -> lineStationResponse.getStation().getId() != null)
+                .filter(lineStationResponse -> list.contains(lineStationResponse.getStation()));
     }
 
     private Map<Long, StationResponse> extractStationResponseMap(List<LineResponse> lines) {
-        return lines.stream()
+        final Map<Long, StationResponse> map = new HashMap<>();
+        final List<StationResponse> list = lines.stream()
                 .flatMap(lineResponse -> lineResponse.getStations().stream())
                 .map(LineStationResponse::getStation)
                 .distinct()
-                .collect(Collectors.toMap(StationResponse::getId, stationResponse -> stationResponse));
+                .collect(Collectors.toList());
+        for (StationResponse stationResponse : list) {
+            map.put(stationResponse.getId(), stationResponse);
+        }
+        return map;
     }
 }
