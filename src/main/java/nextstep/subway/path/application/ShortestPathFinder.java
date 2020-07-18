@@ -1,19 +1,17 @@
 package nextstep.subway.path.application;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
+import java.util.List;
 
-import nextstep.subway.station.domain.Station;
+import org.springframework.stereotype.Service;
 
-@Component
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.path.dto.ShortestPathResult;
+
+@Service
 public class ShortestPathFinder {
 
-    @Bean
-    public ShortestPathFinder shortestPathFinder() {
-        return new ShortestPathFinder();
-    }
-
-    public void findShortestDistance(Station startStation, Station endStation) {
-        return;
+    public ShortestPathResult findShortestDistance(List<LineResponse> allLines, Long startId, Long endId,
+        ShortestPathSearchType type) {
+        return ShortestPathResult.empty();
     }
 }
