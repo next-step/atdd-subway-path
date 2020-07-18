@@ -38,7 +38,7 @@ class PathServiceTest {
 
     @DisplayName("경로를 잘 찾는지 검사한다.")
     @Test
-    void find_path() {
+    void findPath() {
 
         // stubbing
         final Line line = new Line("이호선", "GREEN", LocalTime.now(), LocalTime.now(), 5);
