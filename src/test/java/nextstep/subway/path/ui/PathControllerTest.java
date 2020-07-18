@@ -20,8 +20,8 @@ public class PathControllerTest {
     @Test
     public void 지하철역_최단경로_컨트롤러_테스트() {
         // given
-        Long startId = 1L;
-        Long endId = 5L;
+        Long startId = anyLong();
+        Long endId = anyLong();
 
         // when
         ResponseEntity<ShortestPathResponse> response = mockPathController.findShortestPath(startId, endId);
