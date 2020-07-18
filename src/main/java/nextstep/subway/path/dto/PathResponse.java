@@ -6,21 +6,25 @@ import java.util.Optional;
 
 import nextstep.subway.station.dto.StationResponse;
 
-public class ShortestPathResponse {
+public class PathResponse {
     private final List<StationResponse> stationResponses;
     private final Double distance;
     private final Double duration;
 
-    public ShortestPathResponse(List<StationResponse> stationResponses, Double distance, Double duration) {
+    public PathResponse(List<StationResponse> stationResponses, Double distance, Double duration) {
         this.stationResponses = stationResponses;
         this.distance = distance;
         this.duration = duration;
     }
 
-    public ShortestPathResponse(Long startId, long endId) {
+    private PathResponse() {
         this.stationResponses = Collections.emptyList();
         this.distance = 0.0;
         this.duration = 0.0;
+    }
+
+    public static PathResponse empty() {
+        return new PathResponse();
     }
 
     public List<StationResponse> getStationResponses() {
