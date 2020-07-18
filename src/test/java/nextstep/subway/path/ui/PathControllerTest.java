@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 
@@ -35,14 +36,10 @@ class PathControllerTest {
 
         // when
         final ResponseEntity<PathResponse> shortestPath =
-                pathController.getShortestPath(1L, 5L);
+                pathController.getShortestPath(1L, 5L, FindType.DURATION);
 
         // then
         assertThat(shortestPath.getStatusCode()).isEqualTo(HttpStatus.OK);
-        final PathResponse pathResponse = shortestPath.getBody();
-        assertThat(pathResponse).isNotNull();
-        assertThat(pathResponse.getStations()).isNotNull();
-        assertThat(pathResponse.getDistance()).isNotNull();
-        verify(pathService).findShortestPath(anyLong(), anyLong());
+        verify(pathService).findShortestPath(anyLong(), anyLong(), any(FindType.class));
     }
 }

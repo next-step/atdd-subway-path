@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/paths")
 public class PathController {
 
-    private PathService pathService;
+    private final PathService pathService;
 
     public PathController(PathService pathService) {
         this.pathService = pathService;
@@ -22,8 +22,9 @@ public class PathController {
     public ResponseEntity<PathResponse>
     getShortestPath(
             @RequestParam("source") Long sourceStationId,
-            @RequestParam("target") Long destinationStationId) {
-        final PathResponse response = pathService.findShortestPath(sourceStationId, destinationStationId);
+            @RequestParam("target") Long destinationStationId,
+            @RequestParam("type") FindType type) {
+        final PathResponse response = pathService.findShortestPath(sourceStationId, destinationStationId, type);
         return ResponseEntity.ok(response);
     }
 }

@@ -5,6 +5,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.path.dto.PathResponse;
+import nextstep.subway.path.ui.FindType;
 import org.springframework.http.HttpStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,11 +18,19 @@ public class PathSearchAcceptanceStep {
      * @return
      */
     public static ExtractableResponse<Response> 출발역에서_도착역까지의_최단_거리_경로_조회를_요청(Long src, Long dst) {
+        return 최단_경로_요청(src, dst, FindType.DISTANCE);
+    }
+
+    public static ExtractableResponse<Response> 출발역에서_도착역까지의_최단_시간_경로_조회를_요청(Long src, Long dst) {
+        return 최단_경로_요청(src, dst, FindType.DURATION);
+    }
+
+    private static ExtractableResponse<Response> 최단_경로_요청(Long src, Long dst, FindType type) {
         return RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .when()
-                .get("/paths?source={src}&target={dst}", src, dst)
+                .get("/paths?source={src}&target={dst}&type={type}", src, dst, type)
                 .then()
                 .log().all()
                 .extract();
