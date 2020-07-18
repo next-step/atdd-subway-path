@@ -29,7 +29,7 @@ public class PathFinder {
 
     private List<Long> getShortestPath(Map<Long, LineStation> lineStations, Long sourceStationId, Long targetStationId) {
         if (!lineStations.containsKey(sourceStationId) || !lineStations.containsKey(targetStationId)) {
-            throw new CannotFindPath();
+            throw new CannotFindPathException();
         }
 
         WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
@@ -43,7 +43,7 @@ public class PathFinder {
         List<GraphPath<Long, DefaultWeightedEdge>> paths = new KShortestPaths<>(graph, 1).getPaths(sourceStationId, targetStationId);
 
         if (paths.isEmpty()) {
-            throw new CannotFindPath();
+            throw new CannotFindPathException();
         }
 
         return paths.get(0).getVertexList();

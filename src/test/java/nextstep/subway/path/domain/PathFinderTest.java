@@ -45,18 +45,18 @@ class PathFinderTest {
         assertThat(shortestPath).extracting(it -> it.getStationId()).containsExactly(3L, 2L, 1L, 4L, 5L);
     }
 
-    @DisplayName("존재하지 않는 지하철 역에 대한 경로를 검색하면 CannotFindPath를 던진다")
+    @DisplayName("존재하지 않는 지하철 역에 대한 경로를 검색하면 CannotFindPathException을 던진다")
     @Test
     void whenLineStationNotExists() {
-        assertThrows(CannotFindPath.class, () ->
+        assertThrows(CannotFindPathException.class, () ->
             new PathFinder().findShortestPath(lines, 1L, 100L)
         );
     }
 
-    @DisplayName("서로 이어지지 않는 역에 대한 경로를 검색하면 CannotFindPath를 던진다")
+    @DisplayName("서로 이어지지 않는 역에 대한 경로를 검색하면 CannotFindPathException을 던진다")
     @Test
     void whenLineStationsAreNotConnected() {
-        assertThrows(CannotFindPath.class, () ->
+        assertThrows(CannotFindPathException.class, () ->
                 new PathFinder().findShortestPath(lines, 1L, 6L)
         );
     }
