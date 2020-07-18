@@ -22,7 +22,7 @@ public class PathService {
 
     public PathResponse findShortestPath(Long startId, Long endId, ShortestPathSearchType type) {
         List<LineResponse> allLines = lineService.findAllLines();
-        ShortestPathResult pathResponse = shortestPathFinder.findShortestDistance(allLines, startId, endId, type);
-        return PathResponse.empty();
+        ShortestPathResult pathResponse = shortestPathFinder.findShortestPath(allLines, startId, endId, type);
+        return PathResponse.of(pathResponse);
     }
 }
