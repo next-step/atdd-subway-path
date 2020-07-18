@@ -44,6 +44,9 @@ public class PathService {
     }
 
     public PathResponse findShortestPath(long srcStationId, long dstStationId, FindType type) {
-        return null;
+        final List<LineResponse> lines = lineService.findAllLines();
+        final PathFinder pathFinder = new PathFinder();
+        final PathFinderResult result = pathFinder.findPath(lines, srcStationId, dstStationId, type);
+        return result.toPathResponse(lines);
     }
 }
