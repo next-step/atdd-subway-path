@@ -15,5 +15,6 @@ TO-BE
     - 스프링의 관리를 받는 컴포넌트로 등록해서 해결
 - PathService
     - 레포지토리를 사용하지 않고 서비스를 의존하게 할 것
+    - 아 ㅇㅅㅇ 타입이 추가됐네
 - PathFinderResult
     - DTO 및 assembler 역할을 하는 친구 추가해보자.

@@ -1,9 +1,13 @@
 package nextstep.subway.path.application;
 
+import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.path.domain.PathFinder;
+import nextstep.subway.path.dto.PathFinderResult;
 import nextstep.subway.path.dto.PathResponse;
+import nextstep.subway.path.ui.FindType;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
@@ -17,6 +21,8 @@ public class PathService {
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+
+    private LineService lineService;
 
     public PathService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -35,5 +41,9 @@ public class PathService {
                 .collect(Collectors.toList());
         final double distance = pathFinder.getShortestPathWeight(sourceStationId, destinationStationId);
         return new PathResponse(stationResponses, (int) distance, 0);
+    }
+
+    public PathResponse findShortestPath(long srcStationId, long dstStationId, FindType type) {
+        return null;
     }
 }
