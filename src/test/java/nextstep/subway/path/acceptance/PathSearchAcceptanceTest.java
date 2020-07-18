@@ -59,11 +59,22 @@ public class PathSearchAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("두 역의 최단 거리 경로를 조회")
     @Test
-    void search_subway_path() {
+    void searchSubWayPathByDistance() {
 
         // when
         final ExtractableResponse<Response> pathSearchResponse =
                 출발역에서_도착역까지의_최단_거리_경로_조회를_요청(선릉역, 양재시민의숲역);
+
+        // then
+        최단_거리_경로를_응답(pathSearchResponse);
+        총_거리와_소요_시간을_함께_응답함(pathSearchResponse);
+    }
+
+    @DisplayName("두 역의 최소 시간 경로를 조회")
+    @Test
+    void searchSubWayPathByDuration() {
+        final ExtractableResponse<Response> pathSearchResponse =
+                출발역에서_도착역까지의_최단_시간_경로_조회를_요청(선릉역, 양재시민의숲역);
 
         // then
         최단_거리_경로를_응답(pathSearchResponse);
