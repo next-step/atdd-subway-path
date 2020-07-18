@@ -17,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DisplayName("경로 지도 도메인 테스트")
 class PathMapTest {
 
-    private List<LineResponse> lineResponses;
     private List<LineStation> lineStations;
 
     @BeforeEach

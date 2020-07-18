@@ -5,6 +5,8 @@ import nextstep.subway.path.application.PathService;
 import nextstep.subway.path.domain.PathType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -55,12 +57,13 @@ class PathControllerTest {
     }
 
     @DisplayName("경로 조회 요청 시 찾은 최단 경로와 200 코드 응답")
-    @Test
-    void findShortestPath() {
+    @ParameterizedTest
+    @EnumSource(value = PathType.class)
+    void findShortestPath(PathType pathType) {
         //when
-        pathController.findShortestPath(1L, 2L, PathType.DISTANCE);
+        pathController.findShortestPath(1L, 2L, pathType);
 
         //then
-        verify(pathService).findPath(1L, 2L, PathType.DISTANCE);
+        verify(pathService).findPath(1L, 2L, pathType);
     }
 }
