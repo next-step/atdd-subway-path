@@ -24,8 +24,8 @@ import static org.mockito.Mockito.*;
 @DisplayName("지하철 경로 검색 서비스 테스트")
 @ExtendWith(MockitoExtension.class)
 class PathServiceTest {
-    private static int DISTANCE = 5;
-    private static int DURATION = 2;
+    private static final int DISTANCE = 5;
+    private static final int DURATION = 2;
 
     private PathService pathService;
     private LineRepository lineRepository;
