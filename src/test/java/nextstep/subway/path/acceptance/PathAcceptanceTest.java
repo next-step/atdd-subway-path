@@ -15,7 +15,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.path.dto.ShortestPathResponse;
+import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.dto.StationResponse;
 
 @DisplayName("2단계 지하철 경로 조회 인수 테스트")
@@ -78,7 +78,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // and: 총 거리와 소요 시간을 함께 응답한다.
-        ShortestPathResponse pathResponse = response.as(ShortestPathResponse.class);
+        PathResponse pathResponse = response.as(PathResponse.class);
         assertThat(pathResponse.getDuration()).isEqualTo(8);
         assertThat(pathResponse.getDistance()).isEqualTo(20);
     }

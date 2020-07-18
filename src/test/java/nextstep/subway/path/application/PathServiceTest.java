@@ -7,8 +7,8 @@ import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.path.dto.ShortestPathResponse;
-import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.line.application.LineService;
+import nextstep.subway.path.dto.PathResponse;
 
 @DisplayName("최단 경로를 조회하는 서비스 레이어의 단위 테스트")
 public class PathServiceTest {
@@ -20,14 +20,15 @@ public class PathServiceTest {
         Long startId = 1L;
         Long endId = 2L;
         ShortestPathFinder shortestPathFinder = mock(ShortestPathFinder.class);
-        StationRepository stationRepository = mock(StationRepository.class);
-        PathService pathService = new PathService(shortestPathFinder, stationRepository);
+        LineService lineService = mock(LineService.class);
+        PathService pathService = new PathService(shortestPathFinder, lineService);
 
         // when
-        ShortestPathResponse response = pathService.findShortestPath(startId, endId);
+        PathResponse response = pathService.findShortestPath(startId, endId, ShortestPathSearchType.DURATION);
 
         // then
         assertThat(response).isNotNull();
-        verify(shortestPathFinder).findShortestDistance(any(), any());
+        verify(shortestPathFinder).findShortestDistance(anyList(), anyLong(), anyLong(),
+            any(ShortestPathSearchType.class));
     }
 }
