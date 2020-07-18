@@ -1,6 +1,7 @@
 package nextstep.subway.path.application;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,9 @@ public class PathService {
 
     public PathResponse findShortestPath(Long startId, Long endId, ShortestPathSearchType type) {
         List<LineResponse> allLines = lineService.findAllLines();
-        ShortestPathResult pathResponse = shortestPathFinder.findShortestPath(allLines, startId, endId, type);
+        ShortestPathResult pathResponse = Optional.ofNullable(
+            shortestPathFinder.findShortestPath(allLines, startId, endId, type))
+            .orElse(ShortestPathResult.empty());
         return PathResponse.of(pathResponse);
     }
 }
