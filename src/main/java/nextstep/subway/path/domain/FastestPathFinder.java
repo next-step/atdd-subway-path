@@ -17,7 +17,7 @@ public class FastestPathFinder extends PathFinder {
         lineStations.forEach((id, it) -> graph.addVertex(id));
         lineStations.forEach((id, it) -> {
             if (Objects.nonNull(it.getPreStationId())) {
-                graph.setEdgeWeight(graph.addEdge(it.getStationId(), it.getPreStationId()), it.getDuration()); // FIXME only diff with ShortestPathFinder
+                graph.setEdgeWeight(graph.addEdge(it.getStationId(), it.getPreStationId()), it.getDuration());
             }
         });
 
