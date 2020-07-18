@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,10 +30,11 @@ public class PathServiceTest {
         Long endId = 2L;
         ShortestPathFinder shortestPathFinder = mock(ShortestPathFinder.class);
         LineService lineService = mock(LineService.class);
+        when(lineService.findAllLines()).thenReturn(Collections.emptyList());
         PathService pathService = new PathService(shortestPathFinder, lineService);
 
         // when
-        PathResponse response = pathService.findShortestPath(startId, endId, ShortestPathSearchType.DURATION);
+        PathResponse response = pathService.findShortestPath(startId, endId, ShortestPathSearchType.DISTANCE);
 
         // then
         assertThat(response).isNotNull();
@@ -88,7 +90,6 @@ public class PathServiceTest {
 
         // then
         assertThat(shortestPathResult.getStations()).containsExactly(양재시민의숲역, 양재역, 강남역, 역삼역, 선릉역);
-        assertThat(shortestPathResult.getDistance()).isEqualTo(20);
-        assertThat(shortestPathResult.getDuration()).isEqualTo(20);
+        assertThat(shortestPathResult.getWeight()).isEqualTo(20);
     }
 }

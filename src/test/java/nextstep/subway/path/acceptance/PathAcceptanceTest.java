@@ -71,6 +71,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .queryParam("source", 아이디_선릉역)
             .queryParam("target", 아이디_양재시민의숲역)
+            .queryParam("type", "DURATION")
             .get("/paths")
             .then().log().all().extract();
 
@@ -79,7 +80,6 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         // and: 총 거리와 소요 시간을 함께 응답한다.
         PathResponse pathResponse = response.as(PathResponse.class);
-        assertThat(pathResponse.getDuration()).isEqualTo(8);
-        assertThat(pathResponse.getDistance()).isEqualTo(20);
+        assertThat(pathResponse.getWeight()).isEqualTo(20);
     }
 }

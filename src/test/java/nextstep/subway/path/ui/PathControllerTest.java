@@ -25,8 +25,7 @@ public class PathControllerTest {
         Long endId = 2L;
 
         // when
-        ResponseEntity<PathResponse> response = mockPathController.findShortestPath(startId, endId,
-            ShortestPathSearchType.DURATION);
+        ResponseEntity<PathResponse> response = mockPathController.findShortestPath(startId, endId, "DURATION");
 
         // then
         assertThat(response.getStatusCodeValue()).isEqualTo(HttpStatus.OK.value());
