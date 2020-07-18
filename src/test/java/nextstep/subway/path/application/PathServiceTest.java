@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.LineStation;
-import nextstep.subway.path.domain.PathFinder;
+import nextstep.subway.path.domain.PathType;
 import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.path.dto.PathStationResponse;
 import nextstep.subway.station.domain.Station;
@@ -60,19 +60,19 @@ class PathServiceTest {
         stationRepository = mock(StationRepository.class);
         when(lineRepository.findAll()).thenReturn(lines);
 
-        pathService = new PathService(lineRepository, stationRepository, new PathFinder());
+        pathService = new PathService(lineRepository, stationRepository);
     }
 
-    @DisplayName("같은 노선의 지하철역 최단 경로를 검색한다.")
+    @DisplayName("같은 노선의 지하철역 최단 거리 경로를 검색한다.")
     @Test
-    void findSameLinePath() {
+    void findShortestSameLinePath() {
         // given
         List<Long> pathStationIds = Lists.newArrayList(1L, 2L, 3L);
         when(stationRepository.findAllById(pathStationIds))
                 .thenReturn(Lists.newArrayList(stations.get(0), stations.get(1), stations.get(2)));
 
         // when
-        PathResponse response = pathService.findPath(1L, 3L);
+        PathResponse response = pathService.findPath(1L, 3L, PathType.DISTANCE);
 
         // then
         assertThat(response.getStations()).extracting(PathStationResponse::getId).containsExactlyElementsOf(pathStationIds);
@@ -83,16 +83,55 @@ class PathServiceTest {
         verify(stationRepository).findAllById(pathStationIds);
     }
 
-    @DisplayName("다른 노선의 지하철역 최단 경로를 검색한다.")
+    @DisplayName("다른 노선의 지하철역 최단 거리 경로를 검색한다.")
     @Test
-    void findDifferentLinesPath() {
+    void findShortestDifferentLinesPath() {
         // given
         List<Long> pathStationIds = Lists.newArrayList(3L, 2L, 1L, 4L, 5L);
         when(stationRepository.findAllById(pathStationIds))
                 .thenReturn(Lists.newArrayList(stations.get(2), stations.get(1), stations.get(0), stations.get(3), stations.get(4)));
 
         // when
-        PathResponse response = pathService.findPath(3L, 5L);
+        PathResponse response = pathService.findPath(3L, 5L, PathType.DISTANCE);
+
+        assertThat(response.getStations()).extracting(PathStationResponse::getId).containsExactlyElementsOf(pathStationIds);
+        assertThat(response.getDistance()).isEqualTo(DISTANCE * (pathStationIds.size() - 1));
+        assertThat(response.getDuration()).isEqualTo(DURATION * (pathStationIds.size() - 1));
+
+        verify(lineRepository).findAll();
+        verify(stationRepository).findAllById(pathStationIds);
+    }
+
+    @DisplayName("같은 노선의 지하철역 최소 시간 경로를 검색한다.")
+    @Test
+    void findFastestSameLinePath() {
+        // given
+        List<Long> pathStationIds = Lists.newArrayList(1L, 2L, 3L);
+        when(stationRepository.findAllById(pathStationIds))
+                .thenReturn(Lists.newArrayList(stations.get(0), stations.get(1), stations.get(2)));
+
+        // when
+        PathResponse response = pathService.findPath(1L, 3L, PathType.DURATION);
+
+        // then
+        assertThat(response.getStations()).extracting(PathStationResponse::getId).containsExactlyElementsOf(pathStationIds);
+        assertThat(response.getDistance()).isEqualTo(DISTANCE * (pathStationIds.size() - 1));
+        assertThat(response.getDuration()).isEqualTo(DURATION * (pathStationIds.size() - 1));
+
+        verify(lineRepository).findAll();
+        verify(stationRepository).findAllById(pathStationIds);
+    }
+
+    @DisplayName("다른 노선의 지하철역 최소 시간 경로를 검색한다.")
+    @Test
+    void findFastestDifferentLinesPath() {
+        // given
+        List<Long> pathStationIds = Lists.newArrayList(3L, 2L, 1L, 4L, 5L);
+        when(stationRepository.findAllById(pathStationIds))
+                .thenReturn(Lists.newArrayList(stations.get(2), stations.get(1), stations.get(0), stations.get(3), stations.get(4)));
+
+        // when
+        PathResponse response = pathService.findPath(3L, 5L, PathType.DURATION);
 
         assertThat(response.getStations()).extracting(PathStationResponse::getId).containsExactlyElementsOf(pathStationIds);
         assertThat(response.getDistance()).isEqualTo(DISTANCE * (pathStationIds.size() - 1));
