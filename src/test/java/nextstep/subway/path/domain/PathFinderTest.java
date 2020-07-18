@@ -101,7 +101,7 @@ class PathFinderTest {
 
         // then
         assertThat(pfr.getStationIds()).containsExactlyElementsOf(List.of(3L, 2L, 1L, 4L, 5L));
-        assertThat(pfr.getWeight()).isEqualTo(60);
+        assertThat(pfr.getWeight()).isEqualTo(40);
     }
 
     private StationResponse createStation(long id, String name) {
