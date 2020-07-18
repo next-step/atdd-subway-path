@@ -9,13 +9,9 @@ import java.util.Objects;
 
 public class LineStations {
     private final List<LineStation> lineStations;
-    private final Integer distance;
-    private final Integer duration;
 
     private LineStations(List<LineStation> lineStations) {
         this.lineStations = Collections.unmodifiableList(new ArrayList<>(lineStations));
-        this.distance = this.lineStations.stream().mapToInt(LineStation::getDistance).sum();
-        this.duration = this.lineStations.stream().mapToInt(LineStation::getDuration).sum();
     }
 
     public static LineStations from(List<Long> stationIds, List<LineStation> allLineStations) {
@@ -37,10 +33,10 @@ public class LineStations {
     }
 
     public Integer getDistance() {
-        return distance;
+        return this.lineStations.stream().mapToInt(LineStation::getDistance).sum();
     }
 
     public Integer getDuration() {
-        return duration;
+        return this.lineStations.stream().mapToInt(LineStation::getDuration).sum();
     }
 }
