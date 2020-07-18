@@ -8,19 +8,16 @@ import nextstep.subway.station.dto.StationResponse;
 
 public class PathResponse {
     private final List<StationResponse> stationResponses;
-    private final Integer distance;
-    private final Integer duration;
+    private final Double weight;
 
-    public PathResponse(List<StationResponse> stationResponses, Integer distance, Integer duration) {
+    public PathResponse(List<StationResponse> stationResponses, Double weight) {
         this.stationResponses = stationResponses;
-        this.distance = distance;
-        this.duration = duration;
+        this.weight = weight;
     }
 
     private PathResponse() {
         this.stationResponses = Collections.emptyList();
-        this.distance = 0;
-        this.duration = 0;
+        this.weight = 0.0;
     }
 
     public static PathResponse empty() {
@@ -28,18 +25,14 @@ public class PathResponse {
     }
 
     public static PathResponse of(ShortestPathResult pathResponse) {
-        return new PathResponse(pathResponse.getStations(), pathResponse.getDistance(), pathResponse.getDuration());
+        return new PathResponse(pathResponse.getStations(), pathResponse.getWeight());
     }
 
     public List<StationResponse> getStationResponses() {
         return Optional.ofNullable(stationResponses).orElseThrow(() -> new RuntimeException("not found response"));
     }
 
-    public Integer getDistance() {
-        return Optional.ofNullable(distance).orElse(0);
-    }
-
-    public Integer getDuration() {
-        return Optional.ofNullable(duration).orElse(0);
+    public Double getWeight() {
+        return Optional.ofNullable(weight).orElse(0.0);
     }
 }

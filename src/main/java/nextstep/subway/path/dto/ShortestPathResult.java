@@ -2,25 +2,30 @@ package nextstep.subway.path.dto;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import nextstep.subway.station.dto.StationResponse;
 
 public class ShortestPathResult {
 
     private final List<StationResponse> stations;
-    private final Integer distance;
-    private final Integer duration;
+    private final Double weight;
 
-    public ShortestPathResult() {
+    private ShortestPathResult() {
         this.stations = Collections.emptyList();
-        this.distance = 0;
-        this.duration = 0;
+        this.weight = 0.0;
     }
 
-    private ShortestPathResult(List<StationResponse> stationResponse, Integer distance, Integer duration) {
+    private ShortestPathResult(List<StationResponse> stationResponse, Double weight) {
         this.stations = stationResponse;
-        this.distance = distance;
-        this.duration = duration;
+        this.weight = weight;
+    }
+
+    public static ShortestPathResult ofResult(List<StationResponse> orderedStationResponse, Double weight) {
+        if (Objects.isNull(orderedStationResponse)) {
+            return ShortestPathResult.empty();
+        }
+        return new ShortestPathResult(orderedStationResponse, weight);
     }
 
     public static ShortestPathResult empty() {
@@ -28,14 +33,10 @@ public class ShortestPathResult {
     }
 
     public List<StationResponse> getStations() {
-        return stations;
+        return Collections.unmodifiableList(stations);
     }
 
-    public Integer getDistance() {
-        return distance;
-    }
-
-    public Integer getDuration() {
-        return duration;
+    public Double getWeight() {
+        return weight;
     }
 }
