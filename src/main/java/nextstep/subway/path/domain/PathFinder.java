@@ -28,7 +28,7 @@ public class PathFinder {
     }
 
     private List<Long> getShortestPath(Map<Long, LineStation> lineStations, Long sourceStationId, Long targetStationId) {
-        if (Objects.isNull(lineStations.get(sourceStationId)) || Objects.isNull(lineStations.get(targetStationId))) {
+        if (!lineStations.containsKey(sourceStationId) || !lineStations.containsKey(targetStationId)) {
             throw new CannotFindPath();
         }
 
