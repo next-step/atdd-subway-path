@@ -40,7 +40,7 @@ public class PathControllerTest {
     @Test
     void findShortestPathWithSameSourceAndTarget() {
         // given
-        PathRequest request = new PathRequest(1L, 3L);
+        PathRequest request = new PathRequest(1L, 1L);
 
         // when
         doThrow(new RuntimeException()).when(pathService).findShortestPath(request);
@@ -71,7 +71,6 @@ public class PathControllerTest {
         PathRequest request = new PathRequest(6L, 7L);
 
         // when
-        doThrow(new RuntimeException()).when(pathService).findShortestPath(request);
         ResponseEntity response = pathController.findShortestPath(request);
 
         //then

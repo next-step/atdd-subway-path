@@ -1,17 +1,21 @@
 package nextstep.subway.path.domain;
 
+import com.google.common.collect.Lists;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.domain.LineStations;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
+import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Component
 public class PathFinder {
     WeightedMultigraph graph;
 
@@ -35,11 +39,10 @@ public class PathFinder {
                 .map(Line::getLineStations)
                 .collect(Collectors.toList());
 
-        // line
         return lineStations
                 .stream()
                 .flatMap(it -> it.getLineStations().stream())
-                .collect(Collectors.toMap(LineStation::getStationId, Function.identity()));
+                .collect(Collectors.toMap(LineStation::getStationId, Function.identity(), (it1, it2) -> it1));
     }
 
     private void addVertexs(Map<Long, LineStation> lineStationsWithId, WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
@@ -58,7 +61,8 @@ public class PathFinder {
 
     private List<Long> getShortestPath(Long source, Long target) {
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-        return (List<Long>) dijkstraShortestPath.getPath(source, target).getVertexList();
+
+        return dijkstraShortestPath.getPath(source, target) == null ? new ArrayList<>() : (List<Long>) dijkstraShortestPath.getPath(source, target).getVertexList();
     }
 
     private List<LineStation> toLineStations(Map<Long, LineStation> lineStationsWithId, List<Long> shortestPathIds) {

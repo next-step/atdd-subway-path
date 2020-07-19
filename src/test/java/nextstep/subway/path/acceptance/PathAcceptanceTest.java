@@ -23,6 +23,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
     private Long stationId2;
     private Long stationId3;
     private Long stationId4;
+    private Long stationId5;
+
 
     @BeforeEach
     public void setUp() {
@@ -35,6 +37,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createdStationResponse2 = 지하철역_등록되어_있음("역삼역");
         ExtractableResponse<Response> createdStationResponse3 = 지하철역_등록되어_있음("선릉역");
         ExtractableResponse<Response> createdStationResponse4 = 지하철역_등록되어_있음("양재역");
+        ExtractableResponse<Response> createdStationResponse5 = 지하철역_등록되어_있음("판교역");
 
         lineId1 = createLineResponse1.as(LineResponse.class).getId();
         lineId2 = createLineResponse2.as(LineResponse.class).getId();
@@ -42,19 +45,20 @@ public class PathAcceptanceTest extends AcceptanceTest {
         stationId2 = createdStationResponse2.as(StationResponse.class).getId();
         stationId3 = createdStationResponse3.as(StationResponse.class).getId();
         stationId4 = createdStationResponse4.as(StationResponse.class).getId();
+        stationId5 = createdStationResponse5.as(StationResponse.class).getId();
 
         지하철_노선에_지하철역_등록되어_있음(lineId1, null, stationId1);
         지하철_노선에_지하철역_등록되어_있음(lineId1, stationId1, stationId2);
         지하철_노선에_지하철역_등록되어_있음(lineId1, stationId2, stationId3);
-        지하철_노선에_지하철역_등록되어_있음(lineId2, null, stationId1);
         지하철_노선에_지하철역_등록되어_있음(lineId2, stationId1, stationId4);
+        지하철_노선에_지하철역_등록되어_있음(lineId2, stationId4, stationId5);
     }
 
     @DisplayName("두 역의 최단 거리 경로를 조회")
     @Test
     void getShortestPath() {
         // when
-        ExtractableResponse<Response> response = 최단_거리_경로_조회_요청(1L, 3L);
+        ExtractableResponse<Response> response = 최단_거리_경로_조회_요청(1L, 5L);
 
         // then
         최단_거리_경로_응답됨(response);
