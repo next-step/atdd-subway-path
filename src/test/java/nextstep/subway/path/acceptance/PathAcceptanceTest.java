@@ -62,4 +62,15 @@ public class PathAcceptanceTest extends AcceptanceTest {
         총_거리와_소요_시간을_함께_응답함(response);
     }
 
+    @DisplayName("두 역의 최소 시간 경로를 조회")
+    @Test
+    void getFastestPath() {
+        //when
+        ExtractableResponse<Response> response = 출발역에서_도착역까지의_최소_시간_경로_조회_요청(stationId1, stationId5);
+
+        //then
+        최단_시간_경로를_응답함(response, Lists.list(stationId1, stationId2, stationId3, stationId4, stationId5));
+        총_거리와_소요_시간을_함께_응답함(response);
+    }
+
 }
