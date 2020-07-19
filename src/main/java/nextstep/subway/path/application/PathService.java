@@ -6,6 +6,7 @@ import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.path.domain.PathFinder;
 import nextstep.subway.path.dto.PathRequest;
 import nextstep.subway.path.dto.PathResponse;
+import nextstep.subway.path.exception.SameSourceAndTagetException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,8 +22,19 @@ public class PathService {
     }
 
     public PathResponse findShortestPath(PathRequest request) {
+        checkPath(request);
         List<Line> lines = lineRepository.findAll();
         List<LineStation> lineStations = pathFinder.findShortestPath(lines, request.getSource(),request.getTarget());
         return null;
+    }
+
+    private void checkPath(PathRequest request) {
+        if (isSameSourceAndTarget(request)) {
+            throw new SameSourceAndTagetException();
+        }
+    }
+
+    private boolean isSameSourceAndTarget(PathRequest request) {
+        return request.getSource().equals(request.getTarget());
     }
 }
