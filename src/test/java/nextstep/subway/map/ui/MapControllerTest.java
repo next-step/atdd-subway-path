@@ -17,7 +17,7 @@ public class MapControllerTest {
     void getMaps() {
         // given
         LineService lineService = mock(LineService.class);
-        MapController controller = new MapController();
+        MapController controller = new MapController(lineService);
 
         // when
         ResponseEntity entity = controller.getMaps();

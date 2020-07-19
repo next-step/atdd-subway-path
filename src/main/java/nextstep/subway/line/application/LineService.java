@@ -71,6 +71,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-	public void findAllLinesForMaps() {
+	public List<LineResponse> findAllLinesForMaps() {
+        return null;
 	}
 }
