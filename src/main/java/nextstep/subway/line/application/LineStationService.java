@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.dto.LineStationRequest;
 import nextstep.subway.line.dto.LineStationResponse;
+import nextstep.subway.station.domain.NotFoundStationException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -47,13 +48,13 @@ public class LineStationService {
     private LineStation createNewLineStation(LineStationRequest createLineStationRequest) {
         Long stationId = createLineStationRequest.getStationId();
         Station station = stationRepository.findById(stationId)
-                .orElseThrow(() -> new IllegalStateException("not found station : " + stationId));
+                .orElseThrow(NotFoundStationException::new);
 
         Station preStation = null;
         Long preStationId = createLineStationRequest.getPreStationId();
         if (preStationId != null) {
             preStation = stationRepository.findById(preStationId)
-                    .orElseThrow(() -> new IllegalStateException("not found pre-station : " + preStationId));
+                    .orElseThrow(NotFoundStationException::new);
         }
 
         return new LineStation(station, preStation, createLineStationRequest.getDistance(), createLineStationRequest.getDuration());

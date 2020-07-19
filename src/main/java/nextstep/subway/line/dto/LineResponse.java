@@ -1,6 +1,5 @@
 package nextstep.subway.line.dto;
 
-import com.google.common.collect.Lists;
 import nextstep.subway.line.domain.Line;
 
 import java.time.LocalDateTime;
