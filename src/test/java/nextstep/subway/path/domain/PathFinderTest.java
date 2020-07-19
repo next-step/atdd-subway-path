@@ -1,23 +1,14 @@
 package nextstep.subway.path.domain;
 
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineStation;
-import nextstep.subway.line.domain.LineStations;
-import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.station.dto.StationResponse;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
-import static nextstep.subway.line.acceptance.step.LineAcceptanceStep.지하철_노선_등록되어_있음;
-import static nextstep.subway.line.acceptance.step.LineStationAcceptanceStep.지하철_노선에_지하철역_등록되어_있음;
-import static nextstep.subway.station.acceptance.step.StationAcceptanceStep.지하철역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PathFinderTest {
@@ -47,7 +38,6 @@ public class PathFinderTest {
 
     @Test
     void findShortestPath() {
-
         // when
         List<LineStation> shortestPath = pathFinder.findShortestPath(lines, 1L, 4L);
 
