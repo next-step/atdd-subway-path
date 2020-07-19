@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.map.dto.MapResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,12 +16,13 @@ import org.springframework.http.MediaType;
 import static nextstep.subway.line.acceptance.step.LineAcceptanceStep.지하철_노선_등록되어_있음;
 import static nextstep.subway.line.acceptance.step.LineStationAcceptanceStep.지하철_노선에_지하철역_등록되어_있음;
 import static nextstep.subway.station.acceptance.step.StationAcceptanceStep.지하철역_등록되어_있음;
-import static org.hamcrest.Matchers.notNullValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -74,12 +76,21 @@ public class MapAcceptanceTest extends AcceptanceTest {
         //Then 
         지하철_노선도_응답됨(response);
         //And 
-        지하철_노선도에_노선별_지하철역_순서_정렬됨(response, maps);
+        //지하철_노선도에_노선별_지하철역_순서_정렬됨(response, maps);
     }
 
     private void 지하철_노선도에_노선별_지하철역_순서_정렬됨(ExtractableResponse<Response> response, Map<Long, ArrayList<Long>> expectedMaps) {
         Map<Long, ArrayList<Long>> maps = new HashMap<>();
-        //To do: declear MapResponse class
+
+        List <LineResponse> lines = response.as(MapResponse.class).getLineResponses();
+
+        for (final LineResponse line: lines) {
+            maps.put(
+                 line.getId()
+                , (ArrayList<Long>) line.getStations().stream().map(c -> c.getStation().getId())
+                            .collect(Collectors.toList())
+            );
+        }
         assertThat(maps).containsAllEntriesOf(expectedMaps);
     }
 
