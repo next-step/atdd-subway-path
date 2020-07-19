@@ -1,6 +1,7 @@
 package nextstep.subway.path.ui;
 
 import com.google.common.collect.Lists;
+import nextstep.subway.path.dto.PathRequest;
 import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ import java.util.List;
 public class PathController {
 
     @GetMapping
-    public ResponseEntity<PathResponse> findShortestPath() {
+    public ResponseEntity<PathResponse> findShortestPath(PathRequest request) {
 
         StationResponse stationResponse = new StationResponse(1L, "강남역", LocalDateTime.now(), LocalDateTime.now());
         List<StationResponse> stations = Lists.newArrayList(stationResponse);

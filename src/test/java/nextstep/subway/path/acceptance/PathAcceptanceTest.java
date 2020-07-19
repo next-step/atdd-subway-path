@@ -54,7 +54,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void getShortestPath() {
         // when
-        ExtractableResponse<Response> response = 최단_거리_경로_조회_요청(1, 3);
+        ExtractableResponse<Response> response = 최단_거리_경로_조회_요청(1L, 3L);
 
         // then
         최단_거리_경로_응답됨(response);

@@ -7,14 +7,23 @@ import nextstep.subway.path.dto.PathResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PathAcceptanceStep {
-    public static ExtractableResponse<Response> 최단_거리_경로_조회_요청(int source, int target) {
+    public static ExtractableResponse<Response> 최단_거리_경로_조회_요청(Long source, Long target) {
+        Map<String, Long> params = new HashMap<>();
+
+        params.put("source", source);
+        params.put("target", target);
+
         return RestAssured.given().log().all().
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                get("/paths?source="+source+"&target="+target).
+                queryParams(params).
+                get("/paths").
                 then().
                 log().all().
                 extract();
