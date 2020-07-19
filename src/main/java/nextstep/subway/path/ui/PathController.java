@@ -5,6 +5,7 @@ import nextstep.subway.path.application.PathService;
 import nextstep.subway.path.dto.PathRequest;
 import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.dto.StationResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,12 @@ public class PathController {
 
         StationResponse stationResponse = new StationResponse(1L, "강남역", LocalDateTime.now(), LocalDateTime.now());
         List<StationResponse> stations = Lists.newArrayList(stationResponse);
+
+        try {
+            pathService.findShortestPath(request);
+        } catch (Exception e) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
 
         return ResponseEntity.ok(new PathResponse(stations, 4, 4));
     }
