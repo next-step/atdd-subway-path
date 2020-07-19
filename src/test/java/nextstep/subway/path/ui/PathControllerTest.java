@@ -1,6 +1,7 @@
 package nextstep.subway.path.ui;
 
 import nextstep.subway.path.application.PathService;
+import nextstep.subway.path.domain.PathType;
 import nextstep.subway.path.dto.PathRequest;
 import nextstep.subway.path.dto.PathResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +32,7 @@ class PathControllerTest {
     @Test
     void returnsWithStatusCodeOK() {
         // when
-        ResponseEntity<PathResponse> responseEntity = pathController.searchPath(new PathRequest(1L, 3L));
+        ResponseEntity<PathResponse> responseEntity = pathController.searchPath(new PathRequest(1L, 3L, PathType.DISTANCE));
 
         // then
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -42,20 +43,20 @@ class PathControllerTest {
     @Test
     void usesPathService() {
         // given
-        PathRequest pathRequest = new PathRequest(1L, 3L);
+        PathRequest pathRequest = new PathRequest(1L, 3L, PathType.DISTANCE);
 
         // when
         pathController.searchPath(pathRequest);
 
         // then
-        verify(pathService).findPath(pathRequest.getSource(), pathRequest.getTarget());
+        verify(pathService).findPath(pathRequest.getSource(), pathRequest.getTarget(), pathRequest.getType());
     }
 
     @DisplayName("출발역과 도착역이 같은 경우 BadRequest를 응답한다")
     @Test
     void returnsWithStatusCodeBadRequest() {
         // when
-        ResponseEntity<PathResponse> responseEntity = pathController.searchPath(new PathRequest(1L, 1L));
+        ResponseEntity<PathResponse> responseEntity = pathController.searchPath(new PathRequest(1L, 1L, PathType.DISTANCE));
 
         // then
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);

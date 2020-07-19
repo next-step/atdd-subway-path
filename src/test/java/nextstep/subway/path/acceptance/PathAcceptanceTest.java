@@ -53,9 +53,9 @@ public class PathAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록되어_있음(lineId2, stationId4, stationId5);
     }
 
-    @DisplayName("같은 노선의 지하철역 최단 경로를 검색한다.")
+    @DisplayName("같은 노선의 지하철역 최단 거리 경로를 검색한다.")
     @Test
-    void findPathOnTheSameLine() {
+    void findShortestPathOnTheSameLine() {
         // when
         ExtractableResponse<Response> pathResponse = 최단_거리_경로_조회_요청(stationId1, stationId3);
 
@@ -65,15 +65,39 @@ public class PathAcceptanceTest extends AcceptanceTest {
         총_거리와_소요_시간을_함께_응답함(pathResponse);
     }
 
-    @DisplayName("다른 노선의 지하철역 최단 경로를 검색한다.")
+    @DisplayName("다른 노선의 지하철역 최단 거리 경로를 검색한다.")
     @Test
-    void findPathOnTheDifferentLines() {
+    void findShortestPathOnTheDifferentLines() {
         // when
         ExtractableResponse<Response> pathResponse = 최단_거리_경로_조회_요청(stationId3, stationId5);
 
         // then
         최단_거리_경로_조회_응답됨(pathResponse);
         최단_거리_경로_조회됨(pathResponse, Lists.newArrayList(stationId3, stationId2, stationId1, stationId4, stationId5));
+        총_거리와_소요_시간을_함께_응답함(pathResponse);
+    }
+
+    @DisplayName("같은 노선의 지하철역 최소 시간 경로를 검색한다.")
+    @Test
+    void findFastestPathOnTheSameLine() {
+        // when
+        ExtractableResponse<Response> pathResponse = 최소_시간_경로_조회_요청(stationId1, stationId3);
+
+        // then
+        최소_시간_경로_조회_응답됨(pathResponse);
+        최소_시간_경로_조회됨(pathResponse, Lists.newArrayList(stationId1, stationId2, stationId3));
+        총_거리와_소요_시간을_함께_응답함(pathResponse);
+    }
+
+    @DisplayName("다른 노선의 지하철역 최단 거리 경로를 검색한다.")
+    @Test
+    void findFastestPathOnTheDifferentLines() {
+        // when
+        ExtractableResponse<Response> pathResponse = 최소_시간_경로_조회_요청(stationId3, stationId5);
+
+        // then
+        최소_시간_경로_조회_응답됨(pathResponse);
+        최소_시간_경로_조회됨(pathResponse, Lists.newArrayList(stationId3, stationId2, stationId1, stationId4, stationId5));
         총_거리와_소요_시간을_함께_응답함(pathResponse);
     }
 }

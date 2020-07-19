@@ -26,6 +26,7 @@ public class PathController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        return ResponseEntity.ok(this.pathService.findPath(pathRequest.getSource(), pathRequest.getTarget()));
+        PathResponse pathResponse = this.pathService.findPath(pathRequest.getSource(), pathRequest.getTarget(), pathRequest.getType());
+        return ResponseEntity.ok(pathResponse);
     }
 }

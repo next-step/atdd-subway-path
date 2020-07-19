@@ -4,6 +4,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.path.domain.PathFinder;
+import nextstep.subway.path.domain.PathType;
 import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -17,18 +18,17 @@ import java.util.stream.Collectors;
 public class PathService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    private final PathFinder pathFinder;
 
-    public PathService(LineRepository lineRepository, StationRepository stationRepository, PathFinder pathFinder) {
+    public PathService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.pathFinder = pathFinder;
     }
 
-    public PathResponse findPath(Long sourceStationId, Long targetStationId) {
+    public PathResponse findPath(Long sourceStationId, Long targetStationId, PathType type) {
         List<Line> lines = this.lineRepository.findAll();
-        List<LineStation> shortestPath = this.pathFinder.findShortestPath(lines, sourceStationId, targetStationId);
-        return this.toPathResponse(shortestPath);
+        PathFinder pathFinder = PathFinder.getPathFinder(type);
+        List<LineStation> path = pathFinder.findPath(lines, sourceStationId, targetStationId);
+        return this.toPathResponse(path);
     }
 
     private PathResponse toPathResponse(List<LineStation> shortestPath) {
