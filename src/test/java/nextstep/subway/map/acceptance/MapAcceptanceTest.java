@@ -76,7 +76,7 @@ public class MapAcceptanceTest extends AcceptanceTest {
         //Then 
         지하철_노선도_응답됨(response);
         //And 
-        //지하철_노선도에_노선별_지하철역_순서_정렬됨(response, maps);
+        지하철_노선도에_노선별_지하철역_순서_정렬됨(response, maps);
     }
 
     private void 지하철_노선도에_노선별_지하철역_순서_정렬됨(ExtractableResponse<Response> response, Map<Long, ArrayList<Long>> expectedMaps) {
