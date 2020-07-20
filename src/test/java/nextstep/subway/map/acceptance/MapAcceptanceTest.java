@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.Matchers.notNullValue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선에 역 등록 관련 기능")
@@ -34,6 +35,7 @@ public class MapAcceptanceTest extends AcceptanceTest {
     private Long stationId2;
     private Long stationId3;
     private Long stationId4;
+    private Map<Long, ArrayList<Long>> maps;
 
     @BeforeEach
     public void setUp() {
@@ -60,16 +62,14 @@ public class MapAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록되어_있음(lineId2, null, stationId1);
         지하철_노선에_지하철역_등록되어_있음(lineId2, stationId1, stationId4);
 
+        maps = new HashMap<>();
+        maps.put(lineId1, new ArrayList<Long>(Arrays.asList(stationId1, stationId2, stationId3)));
+        maps.put(lineId2, new ArrayList<Long>(Arrays.asList(stationId1, stationId4)));
     }
 
     @DisplayName("지하철 노선도를 조회한다.")
     @Test
     void loadMap() {
-        //Given
-        Map<Long, ArrayList<Long>> maps = new HashMap<>();
-        maps.put(lineId1, new ArrayList<Long>(Arrays.asList(stationId1, stationId2, stationId3)));
-        maps.put(lineId2, new ArrayList<Long>(Arrays.asList(stationId1, stationId4)));
-
         //When 
         ExtractableResponse<Response> response = 지하철_노선도_조회_요청();
 
@@ -111,5 +111,19 @@ public class MapAcceptanceTest extends AcceptanceTest {
     @DisplayName("캐시 적용을 검증한다.")
     @Test
     void loadMapWithETag() {
+        //When 
+        ExtractableResponse<Response> response = 지하철_노선도_조회_요청();
+
+        String eTag = response.header("ETag");
+        RestAssured.given().log().all().
+                header("If-None-Match", eTag).
+                accept(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                get("/maps").
+                then().
+                statusCode(HttpStatus.NOT_MODIFIED.value()).
+                header("ETag", notNullValue()).
+                log().all().
+                extract();        
     }
 }
