@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class MapService {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
     public MapService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -28,32 +28,35 @@ public class MapService {
 
     public MapResponse findAllMaps() {
         List<LineResponse> lineResponses = new ArrayList<>();
-
         List<Line> lines = lineRepository.findAll();
 
         for (Line line : lines) {
             List<LineStation> lineStations = line.getStationInOrder();
+            List<Station> stations = stationRepository.findAllById(getStationIds(lineStations));
 
-            List<Long> stationIds = lineStations.stream()
-                    .map(LineStation::getStationId)
-                    .collect(Collectors.toList());
-
-            List<Station> stations = stationRepository.findAllById(stationIds);
-
-            // List<LineStationResponse> 생성
-            List<LineStationResponse> lineStationResponses = lineStations.stream()
-                    .map(it -> {
-                        Optional<Station> station = stations.stream()
-                                .filter(st-> st.getId() == it.getStationId())
-                                .findFirst();
-                        return LineStationResponse.of(it, StationResponse.of(station.orElseThrow(RuntimeException::new)));
-                    })
-                    .collect(Collectors.toList());
-
+            List<LineStationResponse> lineStationResponses = getLineStationResponses(lineStations, stations);
             lineResponses.add(LineResponse.of(line, lineStationResponses));
         }
 
-        // Line reponse 생성
         return new MapResponse(lineResponses);
+    }
+
+    private List<LineStationResponse> getLineStationResponses(List<LineStation> lineStations, List<Station> stations) {
+        return lineStations.stream()
+                .map(it -> getLineStationResponse(stations, it))
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> getStationIds(List<LineStation> lineStations) {
+        return lineStations.stream()
+                .map(LineStation::getStationId)
+                .collect(Collectors.toList());
+    }
+
+    private LineStationResponse getLineStationResponse(List<Station> stations, LineStation it) {
+        Optional<Station> station = stations.stream()
+                .filter(st-> st.getId() == it.getStationId())
+                .findFirst();
+        return LineStationResponse.of(it, StationResponse.of(station.orElseThrow(RuntimeException::new)));
     }
 }
