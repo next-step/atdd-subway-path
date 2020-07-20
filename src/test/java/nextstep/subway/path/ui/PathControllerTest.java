@@ -35,45 +35,4 @@ public class PathControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         verify(pathService).findShortestPath(request);
     }
-
-    @DisplayName("최단 경로 조회 출발역과 도착역이 같은 경우")
-    @Test
-    void findShortestPathWithSameSourceAndTarget() {
-        // given
-        PathRequest request = new PathRequest(1L, 1L);
-
-        // when
-        doThrow(new RuntimeException()).when(pathService).findShortestPath(request);
-        ResponseEntity response = pathController.findShortestPath(request);
-
-        //then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    }
-
-    @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우")
-    @Test
-    void findNotConnectedSourceAndTarget() {
-        // given
-        PathRequest request = new PathRequest(5L, 6L);
-
-        // when
-        doThrow(new RuntimeException()).when(pathService).findShortestPath(request);
-        ResponseEntity response = pathController.findShortestPath(request);
-
-        //then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    }
-
-    @DisplayName("존재하지 않은 출발역이나 도착역을 조회 할 경우")
-    @Test
-    void findNonExistSourceOrTarget() {
-        // given
-        PathRequest request = new PathRequest(6L, 7L);
-
-        // when
-        ResponseEntity response = pathController.findShortestPath(request);
-
-        //then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    }
 }
