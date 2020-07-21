@@ -7,12 +7,21 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class PathFinder {
 
+    private Map<Long, LineStation> lineStationByStationId;
     private WeightedMultigraph<Long, DefaultWeightedEdge> graph;
 
     public PathFinder(List<Line> lines) {
+        this.lineStationByStationId = lines.stream()
+                .map(Line::getLineStations)
+                .flatMap(lineStations -> lineStations.getLineStations().stream())
+                .collect(Collectors.toMap(LineStation::getStationId, Function.identity(), (id1, id2) -> id2));
+
         initGraph(lines);
     }
 
@@ -41,8 +50,12 @@ public class PathFinder {
                 });
     }
 
-    public List<Long> searchShortestPath(Long sourceStationId, Long targetStationId) {
+    public List<LineStation> searchShortestPath(Long sourceStationId, Long targetStationId) {
         DijkstraShortestPath<Long, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
-        return dijkstraShortestPath.getPath(sourceStationId, targetStationId).getVertexList();
+        List<Long> shortestStationIds = dijkstraShortestPath.getPath(sourceStationId, targetStationId).getVertexList();
+
+        return shortestStationIds.stream()
+                .map(stationId -> lineStationByStationId.get(stationId))
+                .collect(Collectors.toList());
     }
 }

@@ -34,7 +34,7 @@ class PathFinderTest {
         Long targetStationId = 4L;
 
         // when
-        List<Long> shortestPathStations = pathFinder.searchShortestPath(sourceStationId, targetStationId);
+        List<LineStation> shortestPathStations = pathFinder.searchShortestPath(sourceStationId, targetStationId);
 
         // then
         assertThat(shortestPathStations.size()).isEqualTo(4);
