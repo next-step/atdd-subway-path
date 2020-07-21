@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -59,25 +58,17 @@ public class PathServiceTest {
         LineStationResponse 지하철2호선_역삼역 = new LineStationResponse(역삼역, 강남역.getId(), 5, 5);
         LineStationResponse 지하철2호선_선릉역 = new LineStationResponse(선릉역, 역삼역.getId(), 5, 5);
 
-        LineResponse 지하철_2호선 = new LineResponse(1L, "지하철2호선", "GREEN", LocalTime.now(), LocalTime.now(), 5,
-            Arrays.asList(
-                지하철2호선_강남역,
-                지하철2호선_역삼역,
-                지하철2호선_선릉역
-            ),
-            LocalDateTime.now(),
-            LocalDateTime.now()
-        );
+        LineResponse 지하철_2호선 = PathServiceStep.테스트를_위해_시간을_고정한_LineResponse를_생성한다(1L, "지하철2호선", "GREEN", Arrays.asList(
+            지하철2호선_강남역,
+            지하철2호선_역삼역,
+            지하철2호선_선릉역
+        ));
 
-        LineResponse 신분당선 = new LineResponse(2L, "신분당선", "RED", LocalTime.now(), LocalTime.now(), 5,
-            Arrays.asList(
-                신분당선_양재시민의숲,
-                신분당선_양재역,
-                신분당선_강남역
-            ),
-            LocalDateTime.now(),
-            LocalDateTime.now()
-        );
+        LineResponse 신분당선 = PathServiceStep.테스트를_위해_시간을_고정한_LineResponse를_생성한다(2L, "신분당선", "RED", Arrays.asList(
+            신분당선_양재시민의숲,
+            신분당선_양재역,
+            신분당선_강남역
+        ));
 
         // when
         ShortestPathFinder shortestPathFinder = new ShortestPathFinder();
