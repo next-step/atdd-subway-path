@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import com.google.common.collect.Lists;
+import nextstep.subway.line.domain.AllStations;
 import nextstep.subway.line.domain.Line;
 
 public class LineResponse {
@@ -37,6 +38,12 @@ public class LineResponse {
     public static LineResponse of(Line line, List<LineStationResponse> stations) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStartTime(), line.getEndTime(),
             line.getIntervalTime(), stations, line.getCreatedDate(), line.getModifiedDate());
+    }
+
+    public static LineResponse of(Line line, AllStations stations) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStartTime(), line.getEndTime(),
+            line.getIntervalTime(), line.getLineStations().toLineStationResponses(stations), line.getCreatedDate(),
+            line.getModifiedDate());
     }
 
     public static LineResponse of(Line line) {

@@ -78,8 +78,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
         // then: 최단 거리 경로를 응답한다.
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        // and: 총 거리와 소요 시간을 함께 응답한다.
+        // and: 총 weight를 함께 응답한다.
         PathResponse pathResponse = response.as(PathResponse.class);
-        assertThat(pathResponse.getWeight()).isEqualTo(20);
+        assertThat(pathResponse.getWeight()).isEqualTo(8);
     }
 }

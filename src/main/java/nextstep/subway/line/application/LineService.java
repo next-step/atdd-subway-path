@@ -8,11 +8,14 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import nextstep.subway.line.domain.AllStations;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Lines;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
+import nextstep.subway.map.application.MapService;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
@@ -20,12 +23,15 @@ import nextstep.subway.station.dto.StationResponse;
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
+    private final MapService mapService;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository,
+        MapService mapService) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.mapService = mapService;
     }
 
     public Line saveLine(LineRequest request) {
@@ -35,9 +41,10 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
+        AllStations allStations = mapService.getAllLineStationsOfLines(new Lines(lines));
 
         return lines.stream()
-            .map(line -> LineResponse.of(line))
+            .map(line -> LineResponse.of(line, allStations))
             .collect(Collectors.toList());
     }
 
