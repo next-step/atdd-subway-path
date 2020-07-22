@@ -3,7 +3,10 @@ package nextstep.subway.path.dto;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.station.dto.StationResponse;
 
 public class ShortestPathResult {
@@ -38,5 +41,15 @@ public class ShortestPathResult {
 
     public Double getWeight() {
         return weight;
+    }
+
+    public List<LineStationResponse> toLineStationResponses(List<LineResponse> allLines) {
+        return stations.stream()
+            .flatMap(stationResponse ->
+                allLines.stream()
+                    .flatMap(lineResponse -> lineResponse.getStations().stream())
+                    .filter(lineStationResponse -> lineStationResponse.isMatchedStationResponse(stationResponse))
+            )
+            .collect(Collectors.toList());
     }
 }
