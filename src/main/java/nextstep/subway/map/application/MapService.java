@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.map.dto.MapResponse;
+import nextstep.subway.map.dto.PathResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
@@ -26,6 +27,10 @@ public class MapService {
     public MapService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+    }
+
+    private static Line toLine(LineResponse l) {
+        return new Line(l.getName(), l.getColor(), l.getStartTime(), l.getEndTime(), l.getIntervalTime());
     }
 
     public MapResponse findAllLineAndStation() {
@@ -61,4 +66,13 @@ public class MapService {
                 .map(it -> LineStationResponse.of(it, StationResponse.of(stations.get(it.getStationId()))))
                 .collect(Collectors.toList());
     }
+
+
+    public PathResponse findPath(Long source, Long target) {
+       return null;
+    }
+
+
+
+
 }

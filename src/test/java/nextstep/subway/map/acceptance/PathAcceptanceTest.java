@@ -5,7 +5,9 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.map.dto.PathResponse;
 import nextstep.subway.station.dto.StationResponse;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,13 +17,16 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static nextstep.subway.line.acceptance.step.LineAcceptanceStep.지하철_노선_등록되어_있음;
 import static nextstep.subway.line.acceptance.step.LineStationAcceptanceStep.지하철_노선에_지하철역_등록되어_있음;
 import static nextstep.subway.map.acceptance.step.MapAcceptanceStep.*;
 import static nextstep.subway.map.acceptance.step.MapAcceptanceStep.지하철_노선도에_노선별_지하철역_순서_정렬됨;
 import static nextstep.subway.station.acceptance.step.StationAcceptanceStep.지하철역_등록되어_있음;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 경로 검색")
 public class PathAcceptanceTest extends AcceptanceTest {
@@ -63,7 +68,12 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void shortestPath() {
         // when
-        ExtractableResponse<Response> response = 출발역에서_도착역까지의_최단거리_경로_조회를_요청(1L, 2L);
+        ExtractableResponse<Response> response = 출발역에서_도착역까지의_최단거리_경로_조회를_요청(1L, 3L);
+
+        // then
+        PathResponse pathResponse = response.as(PathResponse.class);
+
+        assertThat(pathResponse.getDistance()).isEqualTo(3);
     }
 
     private ExtractableResponse<Response> 출발역에서_도착역까지의_최단거리_경로_조회를_요청(Long sourceId, Long targetId) {
@@ -72,9 +82,10 @@ public class PathAcceptanceTest extends AcceptanceTest {
                     .log().all()
                     .accept(MediaType.APPLICATION_JSON_VALUE).
                 when().
-                    get("/paths?source={sourceId}&target={targetId}", sourceId, targetId).
+                        get("/paths?source={sourceId}&target={targetId}", sourceId, targetId).
                 then().
-                    log().all().
-                extract();
+                        log().all().
+                        extract();
     }
+
 }

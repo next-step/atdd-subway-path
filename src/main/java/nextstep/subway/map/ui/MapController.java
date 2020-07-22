@@ -12,20 +12,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class MapController {
 
-    private final MapService MapService;
+    private final MapService mapService;
 
-    public MapController(MapService MapService) {
-        this.MapService = MapService;
+    public MapController(MapService mapService) {
+        this.mapService = mapService;
     }
 
     @GetMapping(value = "/maps", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MapResponse> loadMap() {
-        MapResponse mapResponse = MapService.findAllLineAndStation();
+        MapResponse mapResponse = mapService.findAllLineAndStation();
         return ResponseEntity.ok().body(mapResponse);
     }
 
     @GetMapping("/paths")
     public ResponseEntity<PathResponse> findShortPath(@RequestParam Long source, @RequestParam Long target) {
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(mapService.findPath(source, target));
     }
 }
