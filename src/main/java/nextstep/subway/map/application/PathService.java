@@ -77,13 +77,15 @@ public class PathService {
         List<Station> stations = stationRepository.findAllById(stationIds);
 
         return shortestPath.stream()
-                    .map(it -> {
-                        Optional<Station> station = stations.stream()
-                                .filter(st -> st.getId() == it.getStationId())
-                                .findFirst();
-                        return StationResponse.of(station.orElseThrow(RuntimeException::new));
-                    })
+                    .map(it -> getStationResponse(stations, it))
                     .collect(Collectors.toList());
+    }
+
+    private StationResponse getStationResponse(List<Station> stations, LineStation it) {
+        Optional<Station> station = stations.stream()
+                .filter(st -> st.getId() == it.getStationId())
+                .findFirst();
+        return StationResponse.of(station.orElseThrow(RuntimeException::new));
     }
 
     private Integer sumDuration(List<LineStation> shortestPath) {
