@@ -67,12 +67,4 @@ public class MapService {
                 .collect(Collectors.toList());
     }
 
-
-    public PathResponse findPath(Long source, Long target) {
-       return null;
-    }
-
-
-
-
 }

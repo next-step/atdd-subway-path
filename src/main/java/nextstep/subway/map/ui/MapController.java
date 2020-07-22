@@ -24,8 +24,4 @@ public class MapController {
         return ResponseEntity.ok().body(mapResponse);
     }
 
-    @GetMapping("/paths")
-    public ResponseEntity<PathResponse> findShortPath(@RequestParam Long source, @RequestParam Long target) {
-        return ResponseEntity.ok(mapService.findPath(source, target));
-    }
 }
