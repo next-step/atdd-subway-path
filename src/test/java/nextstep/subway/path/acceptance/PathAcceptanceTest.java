@@ -4,13 +4,13 @@ import static nextstep.subway.line.acceptance.step.LineAcceptanceStep.*;
 import static nextstep.subway.line.acceptance.step.LineStationAcceptanceStep.*;
 import static nextstep.subway.station.acceptance.step.StationAcceptanceStep.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -68,18 +68,38 @@ public class PathAcceptanceTest extends AcceptanceTest {
         // given: 지하철 역, 지하철 노선, 지하철 노선에 지하철 역 등록 작업이 사전에 이루어진다.
 
         // when: 출발역에서 도착역까지의 최단거리 경로 조회를 요청한다.
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .queryParam("source", 아이디_선릉역)
-            .queryParam("target", 아이디_양재시민의숲역)
-            .queryParam("type", "DURATION")
-            .get("/paths")
-            .then().log().all().extract();
+        ExtractableResponse<Response> response =
+            PathAcceptanceStep.출발역에서_도착역까지_최단경로를_조회한다(아이디_선릉역, 아이디_양재시민의숲역, "DISTANCE");
 
         // then: 최단 거리 경로를 응답한다.
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        // and: 총 weight를 함께 응답한다.
+        // and: 총 거리와 소요 시간을 함께 응답한다.
         PathResponse pathResponse = response.as(PathResponse.class);
-        assertThat(pathResponse.getWeight()).isEqualTo(8);
+        assertThat(pathResponse.getDuration()).isNotNull();
+        assertThat(pathResponse.getDistance()).isNotNull();
+        assertThat(pathResponse.getDuration()).isEqualTo(8);
+    }
+
+    @DisplayName("출발역에서 도착역까지의 최소 시간 경로를 조회할 수 있다.")
+    @Test
+    void 출발역과_도착역_사이의_최소시간_경로를_조회한다() {
+        // given: 지하철역, 지하철 노선, 지하철 노선에 지하철 역 등록 작업이 사전에 이루어진다.
+
+        // when: 출발역에서 도착역까지의 최소시간 경로 조회를 요청한다.
+        ExtractableResponse<Response> response =
+            PathAcceptanceStep.출발역에서_도착역까지_최단경로를_조회한다(아이디_선릉역, 아이디_양재시민의숲역, "DURATION");
+
+        // then: 최소 시간 경로를 응답한다.
+        PathResponse pathResponse = response.as(PathResponse.class);
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(pathResponse.getStationResponses()).isNotEmpty()
+        );
+
+        // and: 총 거리와 소요 시간을 함께 응답한다.
+        assertThat(pathResponse.getDuration()).isNotNull();
+        assertThat(pathResponse.getDistance()).isNotNull();
+        assertThat(pathResponse.getDuration()).isEqualTo(8);
     }
 }
