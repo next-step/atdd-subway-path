@@ -33,7 +33,7 @@ public class PathService {
         checkPath(request);
         List<Line> lines = lineRepository.findAll();
 
-        List<LineStation> shortestPath = pathFinder.findShortestPath(lines, request.getSource(),request.getTarget());
+        List<LineStation> shortestPath = pathFinder.findShortestPath(lines, request);
 
         if (shortestPath.isEmpty()) {
             throw new NotConnectedSourceAndTargetException();

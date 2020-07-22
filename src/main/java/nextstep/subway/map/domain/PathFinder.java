@@ -3,6 +3,7 @@ package nextstep.subway.map.domain;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.domain.LineStations;
+import nextstep.subway.map.dto.PathRequest;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -17,14 +18,14 @@ import java.util.stream.Collectors;
 
 @Component
 public class PathFinder {
-    public List<LineStation> findShortestPath(List<Line> lines, Long source, Long target) {
-        WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+    public List<LineStation> findShortestPath(List<Line> lines, PathRequest request) {
+        WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
         Map<Long, LineStation> lineStationsWithId = getLineStationsWithId(lines);
 
         addVertexs(lineStationsWithId, graph);
-        addEdges(lineStationsWithId, graph);
+        addEdges(lineStationsWithId, graph, request.getType());
 
-        List<Long> shortestPathIds = getShortestPath(source, target, graph);
+        List<Long> shortestPathIds = getShortestPath(request.getSource(), request.getTarget(), graph);
 
         return toLineStations(lineStationsWithId, shortestPathIds);
     }
@@ -46,27 +47,31 @@ public class PathFinder {
         });
     }
 
-    private void addEdges(Map<Long, LineStation> lineStationsWithId, WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
+    private void addEdges(Map<Long, LineStation> lineStationsWithId, WeightedMultigraph<Long, DefaultWeightedEdge> graph, String type) {
         lineStationsWithId.forEach((id, it) -> {
             if (it.getPreStationId() != null) {
-                graph.setEdgeWeight(graph.addEdge(it.getStationId(), it.getPreStationId()), it.getDistance());
+                graph.setEdgeWeight(graph.addEdge(it.getPreStationId(), it.getStationId()), getWeightByType(it, type));
             }
         });
     }
 
-    private List<Long> getShortestPath(Long source, Long target, Graph<Long, DefaultWeightedEdge> graph) {
+    private double getWeightByType(LineStation it, String type) {
+        if (ShortestPathEnum.DURATION.getType().equals(type)) {
+            return it.getDuration();
+        }
+        return it.getDistance();
+    }
+
+    private List<Long> getShortestPath(Long source, Long target, WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
         DijkstraShortestPath<Long, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<Long, DefaultWeightedEdge>(graph);
 
-        return dijkstraShortestPath.getPath(source, target) == null ? new ArrayList<>() : dijkstraShortestPath.getPath(source, target).getVertexList();
+        List<Long> result = dijkstraShortestPath.getPath(source, target).getVertexList();
+        return result == null ? new ArrayList<>() : result;
     }
 
     private List<LineStation> toLineStations(Map<Long, LineStation> lineStationsWithId, List<Long> shortestPathIds) {
         return shortestPathIds.stream()
                 .map(lineStationsWithId::get)
                 .collect(Collectors.toList());
-    }
-
-    public Object findShortestDurationPath(List<Line> lines, Long source, Long target) {
-        return null;
     }
 }

@@ -68,14 +68,14 @@ public class PathServiceTest {
         when(lineRepository.findAll()).thenReturn(Lists.newArrayList(line));
         when(stationRepository.existsById(anyLong())).thenReturn(true);
         when(stationRepository.findAllById(anyList())).thenReturn(stations);
-        when(pathFinder.findShortestPath(anyList(), anyLong(), anyLong())).thenReturn(Lists.newArrayList(lineStation));
+        when(pathFinder.findShortestPath(anyList(), any(PathRequest.class))).thenReturn(Lists.newArrayList(lineStation));
 
         // when
         service.findShortestPath(request);
 
         // then
         verify(lineRepository).findAll();
-        verify(pathFinder).findShortestPath(anyList(), anyLong(), anyLong());
+        verify(pathFinder).findShortestPath(anyList(), any(PathRequest.class));
     }
 
     @DisplayName("최소 시간 경로 조회")
@@ -87,14 +87,14 @@ public class PathServiceTest {
         when(lineRepository.findAll()).thenReturn(Lists.newArrayList(line));
         when(stationRepository.existsById(anyLong())).thenReturn(true);
         when(stationRepository.findAllById(anyList())).thenReturn(stations);
-        when(pathFinder.findShortestPath(anyList(), anyLong(), anyLong())).thenReturn(Lists.newArrayList(lineStation));
+        when(pathFinder.findShortestPath(anyList(), any(PathRequest.class))).thenReturn(Lists.newArrayList(lineStation));
 
         // when
         service.findShortestPath(request);
 
         // then
         verify(lineRepository).findAll();
-        verify(pathFinder).findShortestPath(anyList(), anyLong(), anyLong());
+        verify(pathFinder).findShortestPath(anyList(), any(PathRequest.class));
     }
 
     @DisplayName("출발역과 도착역이 같은 경우")
@@ -114,7 +114,7 @@ public class PathServiceTest {
         // given
         PathRequest request = new PathRequest(1L, 3L, ShortestPathEnum.DISTANCE.getType());
         when(stationRepository.existsById(anyLong())).thenReturn(true);
-        when(pathFinder.findShortestPath(Lists.newArrayList(line), request.getSource(), request.getTarget())).thenReturn(Lists.emptyList());
+        when(pathFinder.findShortestPath(anyList(), any(PathRequest.class))).thenReturn(Lists.emptyList());
 
         // when
         assertThatThrownBy(() -> service.findShortestPath(request))

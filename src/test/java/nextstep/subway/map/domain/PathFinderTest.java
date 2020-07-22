@@ -2,6 +2,7 @@ package nextstep.subway.map.domain;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineStation;
+import nextstep.subway.map.dto.PathRequest;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,11 +26,10 @@ public class PathFinderTest {
 
         line1.addLineStation(new LineStation(1L, null, 10, 10));
         line1.addLineStation(new LineStation(2L, 1L, 10, 10));
-        line1.addLineStation(new LineStation(3L, 2L, 10, 10));
+        line1.addLineStation(new LineStation(3L, 1L, 100, 100));
 
-        line2.addLineStation(new LineStation(4L, 3L, 10, 10));
-        line2.addLineStation(new LineStation(5L, 4L, 10, 10));
-        line2.addLineStation(new LineStation(6L, 5L, 10, 10));
+        line2.addLineStation(new LineStation(2L, null, 10, 10));
+        line2.addLineStation(new LineStation(3L, 2L, 10, 10));
 
         line3.addLineStation(new LineStation(7L, null, 10, 10));
 
@@ -38,10 +38,27 @@ public class PathFinderTest {
 
     @Test
     void findShortestPath() {
+        // then
+        PathRequest request = new PathRequest(1L, 4L, ShortestPathEnum.DISTANCE.getType());
+
         // when
-        List<LineStation> shortestPath = pathFinder.findShortestPath(lines, 1L, 4L);
+        List<LineStation> shortestPath = pathFinder.findShortestPath(lines, request);
 
         // then
         assertThat(shortestPath).extracting(it -> it.getStationId()).containsExactly(1L, 2L, 3L, 4L);
+    }
+
+    @Test
+    void findShortestDurationPath() {
+        // then
+        PathRequest request = new PathRequest(1L, 3L, ShortestPathEnum.DURATION.getType());
+
+        // when
+        List<LineStation> shortestPath = pathFinder.findShortestPath(lines, request);
+        for(LineStation l : shortestPath) {
+            System.out.println(l.getStationId());
+        }
+        // then
+        assertThat(shortestPath).extracting(it -> it.getStationId()).containsExactly(1L, 2L, 3L);
     }
 }
