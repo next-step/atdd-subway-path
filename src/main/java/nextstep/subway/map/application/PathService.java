@@ -10,10 +10,12 @@ import nextstep.subway.map.dto.PathResponse;
 import nextstep.subway.map.exception.NonExistSourceOrTargetException;
 import nextstep.subway.map.exception.NotConnectedSourceAndTargetException;
 import nextstep.subway.map.exception.SameSourceAndTagetException;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PathService {
@@ -37,7 +39,12 @@ public class PathService {
             throw new NotConnectedSourceAndTargetException();
         }
 
-        return PathAssembler.toPathResponse(stationRepository, shortestPath);
+        List<Long> stationIds = shortestPath.stream()
+                .map(LineStation::getStationId)
+                .collect(Collectors.toList());
+        List<Station> stations = stationRepository.findAllById(stationIds);
+
+        return PathAssembler.toPathResponse(shortestPath, stations);
     }
 
     private void checkPath(PathRequest request) {

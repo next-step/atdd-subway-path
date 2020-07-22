@@ -2,7 +2,6 @@ package nextstep.subway.map.dto;
 
 import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.util.List;
@@ -10,15 +9,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class PathAssembler {
-    public static PathResponse toPathResponse(StationRepository stationRepository, List<LineStation> shortestPath) {
-        List<Long> stationIds = shortestPath.stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
-
+    public static PathResponse toPathResponse(List<LineStation> shortestPath, List<Station> stations) {
         Integer distance = sumDistance(shortestPath);
         Integer duration = sumDuration(shortestPath);
 
-        List<StationResponse> stationResponses = getStationResponses(stationRepository, shortestPath, stationIds);
+        List<StationResponse> stationResponses = getStationResponses(shortestPath, stations);
 
         return new PathResponse(stationResponses, distance, duration);
     }
@@ -35,9 +30,7 @@ public class PathAssembler {
                 .sum();
     }
 
-    private static List<StationResponse> getStationResponses(StationRepository stationRepository, List<LineStation> shortestPath, List<Long> stationIds) {
-        List<Station> stations = stationRepository.findAllById(stationIds);
-
+    private static List<StationResponse> getStationResponses(List<LineStation> shortestPath, List<Station> stations) {
         return shortestPath.stream()
                 .map(it -> getStationResponse(stations, it))
                 .collect(Collectors.toList());
