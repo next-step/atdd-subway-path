@@ -3,18 +3,17 @@ package nextstep.subway.map.application;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.LineStation;
+import nextstep.subway.map.domain.PathFinder;
+import nextstep.subway.map.dto.PathAssembler;
 import nextstep.subway.map.dto.PathRequest;
 import nextstep.subway.map.dto.PathResponse;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.map.exception.NonExistSourceOrTargetException;
+import nextstep.subway.map.exception.NotConnectedSourceAndTargetException;
+import nextstep.subway.map.exception.SameSourceAndTagetException;
 import nextstep.subway.station.domain.StationRepository;
-import nextstep.subway.station.dto.StationResponse;
-import nextstep.subway.map.domain.PathFinder;
-import nextstep.subway.map.exception.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class PathService {
@@ -38,7 +37,7 @@ public class PathService {
             throw new NotConnectedSourceAndTargetException();
         }
 
-        return toPathResponse(shortestPath);
+        return PathAssembler.toPathResponse(stationRepository, shortestPath);
     }
 
     private void checkPath(PathRequest request) {
@@ -57,45 +56,5 @@ public class PathService {
 
     private boolean isExistStation(PathRequest request) {
         return stationRepository.existsById(request.getSource()) && stationRepository.existsById(request.getTarget());
-    }
-
-    private PathResponse toPathResponse(List<LineStation> shortestPath) {
-        List<Long> stationIds = shortestPath.stream()
-                .map(LineStation::getStationId)
-                .collect(Collectors.toList());
-
-        Integer distance = sumDistance(shortestPath);
-        Integer duration = sumDuration(shortestPath);
-
-        List<StationResponse> stationResponses = getStationResponses(shortestPath, stationIds);
-
-        return new PathResponse(stationResponses, distance, duration);
-    }
-
-    private List<StationResponse> getStationResponses(List<LineStation> shortestPath, List<Long> stationIds) {
-        List<Station> stations = stationRepository.findAllById(stationIds);
-
-        return shortestPath.stream()
-                    .map(it -> getStationResponse(stations, it))
-                    .collect(Collectors.toList());
-    }
-
-    private StationResponse getStationResponse(List<Station> stations, LineStation it) {
-        Optional<Station> station = stations.stream()
-                .filter(st -> st.getId() == it.getStationId())
-                .findFirst();
-        return StationResponse.of(station.orElseThrow(RuntimeException::new));
-    }
-
-    private Integer sumDuration(List<LineStation> shortestPath) {
-        return shortestPath.stream()
-                    .mapToInt(it -> it.getDuration())
-                    .sum();
-    }
-
-    private Integer sumDistance(List<LineStation> shortestPath) {
-        return shortestPath.stream()
-                    .mapToInt(it -> it.getDistance())
-                    .sum();
     }
 }
