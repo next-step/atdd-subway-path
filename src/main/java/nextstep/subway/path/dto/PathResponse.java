@@ -9,10 +9,10 @@ import nextstep.subway.station.dto.StationResponse;
 public class PathResponse {
     private final List<StationResponse> stationResponses;
     private final Double weight;
-    private final int duration;
-    private final int distance;
+    private final Integer duration;
+    private final Integer distance;
 
-    public PathResponse(List<StationResponse> stationResponses, Double weight, int duration, int distance) {
+    public PathResponse(List<StationResponse> stationResponses, Double weight, Integer duration, Integer distance) {
         this.stationResponses = stationResponses;
         this.weight = weight;
         this.duration = duration;
@@ -42,11 +42,11 @@ public class PathResponse {
         return Optional.ofNullable(weight).orElse(0.0);
     }
 
-    public int getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 
-    public int getDistance() {
+    public Integer getDistance() {
         return distance;
     }
 }
