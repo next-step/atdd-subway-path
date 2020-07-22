@@ -65,4 +65,8 @@ public class PathFinder {
                 .map(lineStationsWithId::get)
                 .collect(Collectors.toList());
     }
+
+    public Object findShortestDurationPath(List<Line> lines, Long source, Long target) {
+        return null;
+    }
 }

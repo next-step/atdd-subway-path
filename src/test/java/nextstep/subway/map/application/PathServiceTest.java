@@ -4,6 +4,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.map.domain.PathFinder;
+import nextstep.subway.map.domain.ShortestPathEnum;
 import nextstep.subway.map.dto.PathRequest;
 import nextstep.subway.map.exception.*;
 import nextstep.subway.station.domain.Station;
@@ -52,10 +53,37 @@ public class PathServiceTest {
 
     @DisplayName("최단 경로 조회")
     @Test
-    void findShortestPath() {
+    void findShortestDistancePath() {
         // given
         PathService service = new PathService(pathFinder, lineRepository, stationRepository);
-        PathRequest request = new PathRequest(1L, 3L);
+        PathRequest request = new PathRequest(1L, 3L, ShortestPathEnum.DISTANCE.getType());
+
+        LineStation lineStation1 = new LineStation(1L, null, 2, 4);
+        LineStation lineStation2 = new LineStation(3L, 1L, 2, 4);
+
+        List<LineStation> lineStation = new ArrayList<>();
+        lineStation.add(lineStation1);
+        lineStation.add(lineStation2);
+
+        when(lineRepository.findAll()).thenReturn(Lists.newArrayList(line));
+        when(stationRepository.existsById(anyLong())).thenReturn(true);
+        when(stationRepository.findAllById(anyList())).thenReturn(stations);
+        when(pathFinder.findShortestPath(anyList(), anyLong(), anyLong())).thenReturn(Lists.newArrayList(lineStation));
+
+        // when
+        service.findShortestPath(request);
+
+        // then
+        verify(lineRepository).findAll();
+        verify(pathFinder).findShortestPath(anyList(), anyLong(), anyLong());
+    }
+
+    @DisplayName("최소 시간 경로 조회")
+    @Test
+    void findShortestDurationPath() {
+        // given
+        PathService service = new PathService(pathFinder, lineRepository, stationRepository);
+        PathRequest request = new PathRequest(1L, 3L, ShortestPathEnum.DURATION.getType());
 
         LineStation lineStation1 = new LineStation(1L, null, 2, 4);
         LineStation lineStation2 = new LineStation(3L, 1L, 2, 4);
@@ -82,7 +110,7 @@ public class PathServiceTest {
     void findShortestPathWithSameSourceAndTarget() {
         // given
         PathService service = new PathService(pathFinder, lineRepository, stationRepository);
-        PathRequest request = new PathRequest(1L, 1L);
+        PathRequest request = new PathRequest(1L, 1L, ShortestPathEnum.DISTANCE.getType());
 
         // when
         assertThatThrownBy(() -> service.findShortestPath(request))
@@ -94,7 +122,7 @@ public class PathServiceTest {
     void findShortestPathWithNotConnectedSourceAndTarget() {
         // given
         PathService service = new PathService(pathFinder, lineRepository, stationRepository);
-        PathRequest request = new PathRequest(1L, 3L);
+        PathRequest request = new PathRequest(1L, 3L, ShortestPathEnum.DISTANCE.getType());
         when(stationRepository.existsById(anyLong())).thenReturn(true);
 
         when(pathFinder.findShortestPath(Lists.newArrayList(line), request.getSource(), request.getTarget())).thenReturn(Lists.emptyList());
@@ -109,7 +137,7 @@ public class PathServiceTest {
     void findNonExistSourceOrTarget() {
         // given
         PathService service = new PathService(pathFinder, lineRepository, stationRepository);
-        PathRequest request = new PathRequest(3L, 5L);
+        PathRequest request = new PathRequest(3L, 5L, ShortestPathEnum.DISTANCE.getType());
 
         // when
         assertThatThrownBy(() -> service.findShortestPath(request))
