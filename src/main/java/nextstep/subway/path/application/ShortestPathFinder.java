@@ -22,7 +22,7 @@ public class ShortestPathFinder {
         ShortestPathSearchType type) {
         WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
 
-        List<StationResponse> stationResponses = extractStationResponseList(lines, graph);
+        List<StationResponse> stationResponses = extractStationResponseList(lines);
         initGraph(graph, lines, stationResponses, type);
 
         GraphPath<Long, DefaultWeightedEdge> graphPath = findPath(startId, endId, graph);
@@ -35,15 +35,12 @@ public class ShortestPathFinder {
         addEdges(lines, graph, type);
     }
 
-    private List<StationResponse> extractStationResponseList(List<LineResponse> allLines,
-        WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
-        List<StationResponse> stationResponses = allLines.stream()
+    private List<StationResponse> extractStationResponseList(List<LineResponse> allLines) {
+        return allLines.stream()
             .flatMap(lineResponse -> lineResponse.getStations().stream())
             .map(LineStationResponse::getStation)
             .distinct()
             .collect(Collectors.toList());
-        addVertices(graph, stationResponses);
-        return stationResponses;
     }
 
     private void addVertices(WeightedMultigraph<Long, DefaultWeightedEdge> graph,
