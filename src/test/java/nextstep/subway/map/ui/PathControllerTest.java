@@ -1,7 +1,7 @@
-package nextstep.subway.path.ui;
+package nextstep.subway.map.ui;
 
-import nextstep.subway.path.application.PathService;
-import nextstep.subway.path.dto.PathRequest;
+import nextstep.subway.map.application.PathService;
+import nextstep.subway.map.dto.PathRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

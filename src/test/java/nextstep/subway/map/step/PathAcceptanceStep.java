@@ -1,9 +1,9 @@
-package nextstep.subway.path.step;
+package nextstep.subway.map.step;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.path.dto.PathResponse;
+import nextstep.subway.map.dto.PathResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 

@@ -1,17 +1,15 @@
-package nextstep.subway.path.application;
+package nextstep.subway.map.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.LineStation;
-import nextstep.subway.path.domain.PathFinder;
-import nextstep.subway.path.dto.PathRequest;
-import nextstep.subway.path.dto.PathResponse;
-import nextstep.subway.path.exception.NonExistSourceOrTargetException;
-import nextstep.subway.path.exception.NotConnectedSourceAndTargetException;
-import nextstep.subway.path.exception.SameSourceAndTagetException;
+import nextstep.subway.map.dto.PathRequest;
+import nextstep.subway.map.dto.PathResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.map.domain.PathFinder;
+import nextstep.subway.map.exception.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

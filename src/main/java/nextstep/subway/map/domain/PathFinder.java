@@ -1,6 +1,5 @@
-package nextstep.subway.path.domain;
+package nextstep.subway.map.domain;
 
-import com.google.common.collect.Lists;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.domain.LineStations;

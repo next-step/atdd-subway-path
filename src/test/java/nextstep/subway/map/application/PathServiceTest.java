@@ -1,13 +1,14 @@
-package nextstep.subway.path.application;
+package nextstep.subway.map.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.LineStation;
-import nextstep.subway.path.domain.PathFinder;
-import nextstep.subway.path.dto.PathRequest;
-import nextstep.subway.path.exception.NonExistSourceOrTargetException;
-import nextstep.subway.path.exception.NotConnectedSourceAndTargetException;
-import nextstep.subway.path.exception.SameSourceAndTagetException;
+import nextstep.subway.map.application.PathService;
+import nextstep.subway.map.domain.PathFinder;
+import nextstep.subway.map.dto.PathRequest;
+import nextstep.subway.map.exception.NonExistSourceOrTargetException;
+import nextstep.subway.map.exception.NotConnectedSourceAndTargetException;
+import nextstep.subway.map.exception.SameSourceAndTagetException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.assertj.core.util.Lists;

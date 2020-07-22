@@ -1,4 +1,4 @@
-package nextstep.subway.path.exception;
+package nextstep.subway.map.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;

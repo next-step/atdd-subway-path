@@ -1,4 +1,4 @@
-package nextstep.subway.path.acceptance;
+package nextstep.subway.map.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import static nextstep.subway.line.acceptance.step.LineAcceptanceStep.지하철_노선_등록되어_있음;
 import static nextstep.subway.line.acceptance.step.LineStationAcceptanceStep.지하철_노선에_지하철역_등록되어_있음;
-import static nextstep.subway.path.step.PathAcceptanceStep.*;
+import static nextstep.subway.map.step.PathAcceptanceStep.*;
 import static nextstep.subway.station.acceptance.step.StationAcceptanceStep.지하철역_등록되어_있음;
 
 @DisplayName("지하철 경로 관련 기능")
