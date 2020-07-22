@@ -32,7 +32,7 @@ public class PathService {
         int totalDuration = totalDurationCalculator(result, allLines);
         int totalDistance = totalDistanceCalculator(result, allLines);
 
-        return PathResponse.of(stations, result.getWeight(), totalDuration, totalDistance);
+        return PathResponse.of(stations, totalDuration, totalDistance);
     }
 
     private int totalDurationCalculator(ShortestPathResult result, List<LineResponse> allLines) {
