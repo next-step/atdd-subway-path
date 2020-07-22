@@ -3,6 +3,7 @@ package nextstep.subway.map.domain;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.domain.LineStations;
+import org.jgrapht.Graph;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -16,19 +17,14 @@ import java.util.stream.Collectors;
 
 @Component
 public class PathFinder {
-    WeightedMultigraph graph;
-
-    public PathFinder() {
-        this.graph = new WeightedMultigraph(DefaultWeightedEdge.class);;
-    }
-
     public List<LineStation> findShortestPath(List<Line> lines, Long source, Long target) {
+        WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         Map<Long, LineStation> lineStationsWithId = getLineStationsWithId(lines);
 
         addVertexs(lineStationsWithId, graph);
         addEdges(lineStationsWithId, graph);
 
-        List<Long> shortestPathIds = getShortestPath(source, target);
+        List<Long> shortestPathIds = getShortestPath(source, target, graph);
 
         return toLineStations(lineStationsWithId, shortestPathIds);
     }
@@ -58,10 +54,10 @@ public class PathFinder {
         });
     }
 
-    private List<Long> getShortestPath(Long source, Long target) {
-        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
+    private List<Long> getShortestPath(Long source, Long target, Graph<Long, DefaultWeightedEdge> graph) {
+        DijkstraShortestPath<Long, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<Long, DefaultWeightedEdge>(graph);
 
-        return dijkstraShortestPath.getPath(source, target) == null ? new ArrayList<>() : (List<Long>) dijkstraShortestPath.getPath(source, target).getVertexList();
+        return dijkstraShortestPath.getPath(source, target) == null ? new ArrayList<>() : dijkstraShortestPath.getPath(source, target).getVertexList();
     }
 
     private List<LineStation> toLineStations(Map<Long, LineStation> lineStationsWithId, List<Long> shortestPathIds) {

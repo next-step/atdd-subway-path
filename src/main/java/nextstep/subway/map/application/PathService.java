@@ -67,7 +67,6 @@ public class PathService {
         Integer distance = sumDistance(shortestPath);
         Integer duration = sumDuration(shortestPath);
 
-
         List<StationResponse> stationResponses = getStationResponses(shortestPath, stationIds);
 
         return new PathResponse(stationResponses, distance, duration);

@@ -3,12 +3,9 @@ package nextstep.subway.map.application;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.LineStation;
-import nextstep.subway.map.application.PathService;
 import nextstep.subway.map.domain.PathFinder;
 import nextstep.subway.map.dto.PathRequest;
-import nextstep.subway.map.exception.NonExistSourceOrTargetException;
-import nextstep.subway.map.exception.NotConnectedSourceAndTargetException;
-import nextstep.subway.map.exception.SameSourceAndTagetException;
+import nextstep.subway.map.exception.*;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.assertj.core.util.Lists;
@@ -60,10 +57,14 @@ public class PathServiceTest {
         PathService service = new PathService(pathFinder, lineRepository, stationRepository);
         PathRequest request = new PathRequest(1L, 3L);
 
-        List<LineStation> lineStation = new ArrayList<>();
-        lineStation.add(new LineStation(1L, null, 2, 4));
-        lineStation.add(new LineStation(3L, 1L, 2, 4));
+        LineStation lineStation1 = new LineStation(1L, null, 2, 4);
+        LineStation lineStation2 = new LineStation(3L, 1L, 2, 4);
 
+        List<LineStation> lineStation = new ArrayList<>();
+        lineStation.add(lineStation1);
+        lineStation.add(lineStation2);
+
+        when(lineRepository.findAll()).thenReturn(Lists.newArrayList(line));
         when(stationRepository.existsById(anyLong())).thenReturn(true);
         when(stationRepository.findAllById(anyList())).thenReturn(stations);
         when(pathFinder.findShortestPath(anyList(), anyLong(), anyLong())).thenReturn(Lists.newArrayList(lineStation));
