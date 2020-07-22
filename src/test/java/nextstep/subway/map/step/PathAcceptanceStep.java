@@ -25,6 +25,7 @@ public class PathAcceptanceStep {
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 when().
                 queryParams(params).
+                queryParam("type", "DISTANCE").
                 get("/paths").
                 then().
                 log().all().

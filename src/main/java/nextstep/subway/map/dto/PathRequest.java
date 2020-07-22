@@ -3,13 +3,15 @@ package nextstep.subway.map.dto;
 public class PathRequest {
     Long source;
     Long target;
+    String type;
 
     public PathRequest() {
     }
 
-    public PathRequest(Long source, Long target) {
+    public PathRequest(Long source, Long target, String type) {
         this.source = source;
         this.target = target;
+        this.type = type;
     }
 
     public Long getSource() {
@@ -26,5 +28,13 @@ public class PathRequest {
 
     public void setTarget(Long target) {
         this.target = target;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
