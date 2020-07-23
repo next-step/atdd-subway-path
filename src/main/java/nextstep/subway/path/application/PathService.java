@@ -47,7 +47,7 @@ public class PathService {
         List<LineStationResponse> lineStationResponses = result.toLineStationResponses(allLines);
         return lineStationResponses.stream()
             .skip(1) // 자기 자신은 제외
-            .mapToInt(LineStationResponse::getDuration)
+            .mapToInt(LineStationResponse::getDistance)
             .sum();
     }
 }
