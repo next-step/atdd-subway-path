@@ -4,7 +4,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.domain.LineStations;
 import nextstep.subway.map.dto.PathRequest;
-import org.jgrapht.Graph;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -23,7 +22,7 @@ public class PathFinder {
         Map<Long, LineStation> lineStationsWithId = getLineStationsWithId(lines);
 
         addVertexs(lineStationsWithId, graph);
-        addEdges(lineStationsWithId, graph, request.getType());
+        addEdges(getEdges(lines), graph, request.getType());
 
         List<Long> shortestPathIds = getShortestPath(request.getSource(), request.getTarget(), graph);
 
@@ -38,7 +37,14 @@ public class PathFinder {
         return lineStations
                 .stream()
                 .flatMap(it -> it.getLineStations().stream())
-                .collect(Collectors.toMap(LineStation::getStationId, Function.identity(), (it1, it2) -> it1));
+                .collect(Collectors.toMap(LineStation::getStationId, Function.identity(), (it1, it2) -> (it1)));
+    }
+
+    private List<LineStation> getEdges(List<Line> lines) {
+        return lines.stream()
+                .map(Line::getLineStations)
+                .flatMap(it -> it.getLineStations().stream())
+                .collect(Collectors.toList());
     }
 
     private void addVertexs(Map<Long, LineStation> lineStationsWithId, WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
@@ -47,10 +53,10 @@ public class PathFinder {
         });
     }
 
-    private void addEdges(Map<Long, LineStation> lineStationsWithId, WeightedMultigraph<Long, DefaultWeightedEdge> graph, String type) {
-        lineStationsWithId.forEach((id, it) -> {
+    private void addEdges(List<LineStation> lineStations, WeightedMultigraph<Long, DefaultWeightedEdge> graph, String type) {
+        lineStations.forEach(it -> {
             if (it.getPreStationId() != null) {
-                graph.setEdgeWeight(graph.addEdge(it.getPreStationId(), it.getStationId()), getWeightByType(it, type));
+                graph.setEdgeWeight(graph.addEdge(it.getStationId(), it.getPreStationId()), getWeightByType(it, type));
             }
         });
     }
