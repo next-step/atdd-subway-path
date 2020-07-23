@@ -19,7 +19,7 @@ public class PathControllerTest {
 
     @DisplayName("지하철역 최단경로를 조회하는 컨트롤러 테스트를 수행한다.")
     @Test
-    public void 지하철역_최단경로_컨트롤러_테스트() {
+    void 지하철역_최단경로_컨트롤러_테스트() {
         // given
         Long startId = 1L;
         Long endId = 2L;
