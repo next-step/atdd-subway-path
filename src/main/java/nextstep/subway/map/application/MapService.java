@@ -33,7 +33,7 @@ public class MapService {
         return new MapResponse(lineResponses);
     }
 
-    private AllStations getAllLineStationsOfLines(Lines lines) {
+    public AllStations getAllLineStationsOfLines(Lines lines) {
         List<Long> allStationIdOfLines = lines.getAllStationIdsOfLines();
         return stationRepository.findAllById(allStationIdOfLines).stream()
             .collect(Collectors.collectingAndThen(Collectors.toMap(Station::getId, station -> station),

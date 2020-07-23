@@ -38,4 +38,8 @@ public class LineStationResponse {
     public Integer getDuration() {
         return duration;
     }
+
+    public boolean isMatchedStationResponse(StationResponse stationResponse) {
+        return station.equals(stationResponse);
+    }
 }
