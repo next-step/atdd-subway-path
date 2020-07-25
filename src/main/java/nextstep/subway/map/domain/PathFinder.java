@@ -52,11 +52,9 @@ public class PathFinder {
     }
 
     private void addEdges(List<LineStation> lineStations, WeightedMultigraph<Long, DefaultWeightedEdge> graph, ShortestPathEnum type) {
-        lineStations.forEach(it -> {
-            if (it.getPreStationId() != null) {
-                graph.setEdgeWeight(graph.addEdge(it.getStationId(), it.getPreStationId()), type.getWeight(it));
-            }
-        });
+        lineStations.stream()
+                .filter(it -> it.getPreStationId() != null)
+                .forEach(it -> graph.setEdgeWeight(graph.addEdge(it.getStationId(), it.getPreStationId()), type.getWeight(it)));
     }
 
     private List<Long> getShortestPath(Long source, Long target, WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
