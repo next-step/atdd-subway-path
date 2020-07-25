@@ -1,5 +1,7 @@
 package nextstep.subway.map.domain;
 
+import nextstep.subway.line.domain.LineStation;
+
 public enum ShortestPathEnum {
     DISTANCE("DISTANCE"),
     DURATION("DURATION");
@@ -12,5 +14,12 @@ public enum ShortestPathEnum {
 
     public String getType() {
         return type;
+    }
+
+    public double getWeight(LineStation it) {
+        if (this.getType().equals("DURATION")) {
+            return it.getDuration();
+        }
+        return it.getDistance();
     }
 }

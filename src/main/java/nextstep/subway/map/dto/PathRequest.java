@@ -1,14 +1,16 @@
 package nextstep.subway.map.dto;
 
+import nextstep.subway.map.domain.ShortestPathEnum;
+
 public class PathRequest {
     Long source;
     Long target;
-    String type;
+    ShortestPathEnum type;
 
     public PathRequest() {
     }
 
-    public PathRequest(Long source, Long target, String type) {
+    public PathRequest(Long source, Long target, ShortestPathEnum type) {
         this.source = source;
         this.target = target;
         this.type = type;
@@ -30,11 +32,11 @@ public class PathRequest {
         this.target = target;
     }
 
-    public String getType() {
+    public ShortestPathEnum getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(ShortestPathEnum type) {
         this.type = type;
     }
 }

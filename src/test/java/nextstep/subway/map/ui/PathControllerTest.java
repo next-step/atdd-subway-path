@@ -27,7 +27,7 @@ public class PathControllerTest {
     @Test
     void findShortestDistancePath() {
         // given
-        PathRequest request = new PathRequest(1L, 3L, ShortestPathEnum.DISTANCE.getType());
+        PathRequest request = new PathRequest(1L, 3L, ShortestPathEnum.DISTANCE);
 
         // when
         ResponseEntity response = pathController.findShortestPath(request);
@@ -41,7 +41,7 @@ public class PathControllerTest {
     @Test
     void findShortestDurationPath() {
         // given
-        PathRequest request = new PathRequest(1L, 3L, ShortestPathEnum.DURATION.getType());
+        PathRequest request = new PathRequest(1L, 3L, ShortestPathEnum.DURATION);
 
         // when
         ResponseEntity response = pathController.findShortestPath(request);

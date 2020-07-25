@@ -63,7 +63,7 @@ public class PathServiceTest {
     @Test
     void findShortestDistancePath() {
         // given
-        PathRequest request = new PathRequest(1L, 3L, ShortestPathEnum.DISTANCE.getType());
+        PathRequest request = new PathRequest(1L, 3L, ShortestPathEnum.DISTANCE);
 
         when(lineRepository.findAll()).thenReturn(Lists.newArrayList(line));
         when(stationRepository.existsById(anyLong())).thenReturn(true);
@@ -82,7 +82,7 @@ public class PathServiceTest {
     @Test
     void findShortestDurationPath() {
         // given
-        PathRequest request = new PathRequest(1L, 3L, ShortestPathEnum.DURATION.getType());
+        PathRequest request = new PathRequest(1L, 3L, ShortestPathEnum.DURATION);
 
         when(lineRepository.findAll()).thenReturn(Lists.newArrayList(line));
         when(stationRepository.existsById(anyLong())).thenReturn(true);
@@ -101,7 +101,7 @@ public class PathServiceTest {
     @Test
     void findShortestPathWithSameSourceAndTarget() {
         // given
-        PathRequest request = new PathRequest(1L, 1L, ShortestPathEnum.DISTANCE.getType());
+        PathRequest request = new PathRequest(1L, 1L, ShortestPathEnum.DISTANCE);
 
         // when
         assertThatThrownBy(() -> service.findShortestPath(request))
@@ -112,7 +112,7 @@ public class PathServiceTest {
     @Test
     void findShortestPathWithNotConnectedSourceAndTarget() {
         // given
-        PathRequest request = new PathRequest(1L, 3L, ShortestPathEnum.DISTANCE.getType());
+        PathRequest request = new PathRequest(1L, 3L, ShortestPathEnum.DISTANCE);
         when(stationRepository.existsById(anyLong())).thenReturn(true);
         when(pathFinder.findShortestPath(anyList(), any(PathRequest.class))).thenReturn(Lists.emptyList());
 
@@ -125,7 +125,7 @@ public class PathServiceTest {
     @Test
     void findNonExistSourceOrTarget() {
         // given
-        PathRequest request = new PathRequest(3L, 5L, ShortestPathEnum.DISTANCE.getType());
+        PathRequest request = new PathRequest(3L, 5L, ShortestPathEnum.DISTANCE);
 
         // when
         assertThatThrownBy(() -> service.findShortestPath(request))

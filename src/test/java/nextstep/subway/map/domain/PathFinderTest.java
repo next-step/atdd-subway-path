@@ -43,7 +43,7 @@ public class PathFinderTest {
     @Test
     void findShortestPath() {
         // then
-        PathRequest request = new PathRequest(1L, 5L, ShortestPathEnum.DISTANCE.getType());
+        PathRequest request = new PathRequest(1L, 5L, ShortestPathEnum.DISTANCE);
 
         // when
         List<LineStation> shortestPath = pathFinder.findShortestPath(lines, request);
@@ -55,7 +55,7 @@ public class PathFinderTest {
     @Test
     void findShortestDurationPath() {
         // then
-        PathRequest request = new PathRequest(1L, 5L, ShortestPathEnum.DURATION.getType());
+        PathRequest request = new PathRequest(1L, 5L, ShortestPathEnum.DURATION);
 
         // when
         List<LineStation> shortestPath = pathFinder.findShortestPath(lines, request);

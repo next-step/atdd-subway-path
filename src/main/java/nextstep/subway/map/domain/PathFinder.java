@@ -48,24 +48,15 @@ public class PathFinder {
     }
 
     private void addVertexs(Map<Long, LineStation> lineStationsWithId, WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
-        lineStationsWithId.forEach((id, it) -> {
-            graph.addVertex(id);
-        });
+        lineStationsWithId.forEach((id, it) -> graph.addVertex(id));
     }
 
-    private void addEdges(List<LineStation> lineStations, WeightedMultigraph<Long, DefaultWeightedEdge> graph, String type) {
+    private void addEdges(List<LineStation> lineStations, WeightedMultigraph<Long, DefaultWeightedEdge> graph, ShortestPathEnum type) {
         lineStations.forEach(it -> {
             if (it.getPreStationId() != null) {
-                graph.setEdgeWeight(graph.addEdge(it.getStationId(), it.getPreStationId()), getWeightByType(it, type));
+                graph.setEdgeWeight(graph.addEdge(it.getStationId(), it.getPreStationId()), type.getWeight(it));
             }
         });
-    }
-
-    private double getWeightByType(LineStation it, String type) {
-        if (ShortestPathEnum.DURATION.getType().equals(type)) {
-            return it.getDuration();
-        }
-        return it.getDistance();
     }
 
     private List<Long> getShortestPath(Long source, Long target, WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
