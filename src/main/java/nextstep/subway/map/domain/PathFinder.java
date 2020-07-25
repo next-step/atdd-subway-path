@@ -24,9 +24,9 @@ public class PathFinder {
         addVertexs(lineStationsWithId, graph);
         addEdges(getEdges(lines), graph, request.getType());
 
-        List<Long> shortestPathIds = getShortestPath(request.getSource(), request.getTarget(), graph);
+        ShortestPath shortestPath = new ShortestPath(getShortestPath(request.getSource(), request.getTarget(), graph));
 
-        return toLineStations(lineStationsWithId, shortestPathIds);
+        return shortestPath.toLineStations(lineStationsWithId);
     }
 
     private Map<Long, LineStation> getLineStationsWithId(List<Line> lines) {
