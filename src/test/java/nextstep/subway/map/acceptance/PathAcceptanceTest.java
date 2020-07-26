@@ -1,5 +1,6 @@
-package nextstep.subway.path.acceptance;
+package nextstep.subway.map.acceptance;
 
+import com.google.common.collect.Lists;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -11,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import static nextstep.subway.line.acceptance.step.LineAcceptanceStep.지하철_노선_등록되어_있음;
 import static nextstep.subway.line.acceptance.step.LineStationAcceptanceStep.지하철_노선에_지하철역_등록되어_있음;
-import static nextstep.subway.path.step.PathAcceptanceStep.*;
+import static nextstep.subway.map.step.PathAcceptanceStep.*;
 import static nextstep.subway.station.acceptance.step.StationAcceptanceStep.지하철역_등록되어_있음;
 
 @DisplayName("지하철 경로 관련 기능")
@@ -52,6 +53,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록되어_있음(lineId1, stationId2, stationId3);
         지하철_노선에_지하철역_등록되어_있음(lineId2, stationId1, stationId4);
         지하철_노선에_지하철역_등록되어_있음(lineId2, stationId4, stationId5);
+        지하철_노선에_지하철역_등록되어_있음(lineId2, stationId1, stationId5);
     }
 
     @DisplayName("두 역의 최단 거리 경로를 조회")
@@ -62,6 +64,17 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         // then
         최단_거리_경로_응답됨(response);
+        총_거리와_소요_시간_함께_응답됨(response);
+    }
+
+    @DisplayName("두 역의 최소 시간 경로를 조회")
+    @Test
+    void getShortestTime() {
+        // when
+        ExtractableResponse<Response> response = 최소_시간_경로_조회_요청(1L, 5L);
+
+        // then
+        최소_시간_경로_응답됨(response, Lists.newArrayList(stationId1, stationId5));
         총_거리와_소요_시간_함께_응답됨(response);
     }
 }

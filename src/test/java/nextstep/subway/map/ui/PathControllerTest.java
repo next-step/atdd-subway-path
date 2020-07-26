@@ -1,7 +1,8 @@
-package nextstep.subway.path.ui;
+package nextstep.subway.map.ui;
 
-import nextstep.subway.path.application.PathService;
-import nextstep.subway.path.dto.PathRequest;
+import nextstep.subway.map.application.PathService;
+import nextstep.subway.map.domain.ShortestPathEnum;
+import nextstep.subway.map.dto.PathRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,9 +25,23 @@ public class PathControllerTest {
 
     @DisplayName("최단 경로 조회 컨트롤러 테스트")
     @Test
-    void findShortestPath() {
+    void findShortestDistancePath() {
         // given
-        PathRequest request = new PathRequest(1L, 3L);
+        PathRequest request = new PathRequest(1L, 3L, ShortestPathEnum.DISTANCE);
+
+        // when
+        ResponseEntity response = pathController.findShortestPath(request);
+
+        //then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        verify(pathService).findShortestPath(request);
+    }
+
+    @DisplayName("최소 시간 경로 조회 컨트롤러 테스트")
+    @Test
+    void findShortestDurationPath() {
+        // given
+        PathRequest request = new PathRequest(1L, 3L, ShortestPathEnum.DURATION);
 
         // when
         ResponseEntity response = pathController.findShortestPath(request);

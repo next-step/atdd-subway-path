@@ -1,7 +1,8 @@
-package nextstep.subway.path.domain;
+package nextstep.subway.map.domain;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineStation;
+import nextstep.subway.map.dto.PathRequest;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,13 +24,16 @@ public class PathFinderTest {
         Line line2 = new Line("2호선", "GREEN", LocalTime.of(5, 30), LocalTime.of(23, 30), 10);
         Line line3 = new Line("신분당선", "RED", LocalTime.of(5, 30), LocalTime.of(23, 30), 10);
 
+        // 1호선: 1->2->3->4
+        // 2호선: 3->5->1
         line1.addLineStation(new LineStation(1L, null, 10, 10));
         line1.addLineStation(new LineStation(2L, 1L, 10, 10));
         line1.addLineStation(new LineStation(3L, 2L, 10, 10));
+        line1.addLineStation(new LineStation(4L, 3L, 10, 10));
 
-        line2.addLineStation(new LineStation(4L, 3L, 10, 10));
-        line2.addLineStation(new LineStation(5L, 4L, 10, 10));
-        line2.addLineStation(new LineStation(6L, 5L, 10, 10));
+        line2.addLineStation(new LineStation(3L, null, 10, 10));
+        line2.addLineStation(new LineStation(5L, 3L, 10, 10));
+        line2.addLineStation(new LineStation(1L, 5L, 1, 100));
 
         line3.addLineStation(new LineStation(7L, null, 10, 10));
 
@@ -38,10 +42,25 @@ public class PathFinderTest {
 
     @Test
     void findShortestPath() {
+        // then
+        PathRequest request = new PathRequest(1L, 5L, ShortestPathEnum.DISTANCE);
+
         // when
-        List<LineStation> shortestPath = pathFinder.findShortestPath(lines, 1L, 4L);
+        List<LineStation> shortestPath = pathFinder.findShortestPath(lines, request);
 
         // then
-        assertThat(shortestPath).extracting(it -> it.getStationId()).containsExactly(1L, 2L, 3L, 4L);
+        assertThat(shortestPath).extracting(it -> it.getStationId()).containsExactly(1L, 5L);
+    }
+
+    @Test
+    void findShortestDurationPath() {
+        // then
+        PathRequest request = new PathRequest(1L, 5L, ShortestPathEnum.DURATION);
+
+        // when
+        List<LineStation> shortestPath = pathFinder.findShortestPath(lines, request);
+
+        // then
+        assertThat(shortestPath).extracting(it -> it.getStationId()).containsExactly(1L, 2L, 3L, 5L);
     }
 }

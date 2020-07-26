@@ -1,4 +1,4 @@
-package nextstep.subway.path.exception;
+package nextstep.subway.map.exception;
 
 public class NonExistSourceOrTargetException extends RuntimeException {
     public NonExistSourceOrTargetException() {
