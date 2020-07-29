@@ -15,4 +15,7 @@ public class PathResult {
         return stationIds;
     }
 
+    public double getWeight() {
+        return weight;
+    }
 }
