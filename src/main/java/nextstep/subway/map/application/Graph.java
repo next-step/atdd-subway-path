@@ -17,21 +17,32 @@ public class Graph {
     public PathResult findPath(List<LineResponse> lineResponses, Long start, Long target) {
         WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
 
+        setVertex(lineResponses, graph);
+        setEdge(lineResponses, graph);
+
+        GraphPath shortestPath = getGraphPath(start, target, graph);
+
+        return new PathResult(shortestPath.getVertexList(), shortestPath.getWeight());
+    }
+
+    private GraphPath getGraphPath(Long start, Long target, WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
+        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
+        return dijkstraShortestPath.getPath(start, target);
+    }
+
+    private void setVertex(List<LineResponse> lineResponses, WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
         lineResponses.stream()
                 .flatMap(it -> it.getStations().stream())
                 .map(it -> it.getStation())
-                .collect(Collectors.toList())
+                .collect(Collectors.toSet())
                 .forEach(it -> graph.addVertex(it.getId()));
+    }
 
+    private void setEdge(List<LineResponse> lineResponses, WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
         lineResponses.stream()
                 .flatMap(it -> it.getStations().stream())
                 .filter(it -> it.getPreStationId() != null)
                 .forEach(it -> graph.setEdgeWeight(graph.addEdge(it.getPreStationId(), it.getStation().getId()), it.getDistance()));
-
-        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-        GraphPath result = dijkstraShortestPath.getPath(start, target);
-
-        return new PathResult(result.getVertexList(), result.getWeight());
     }
 
 }
