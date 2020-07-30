@@ -1,6 +1,6 @@
 package nextstep.subway.map.application;
 
-import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.map.dto.PathResult;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -14,11 +14,10 @@ import java.util.stream.Collectors;
 @Component
 public class Graph {
 
-    public PathResult findPath(List<LineResponse> lineResponses, Long start, Long target) {
+    public PathResult findPath(List<Line> lines, Long start, Long target) {
         WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-
-        setVertex(lineResponses, graph);
-        setEdge(lineResponses, graph);
+        setVertex(lines, graph);
+        setEdge(lines, graph);
 
         GraphPath shortestPath = getGraphPath(start, target, graph);
 
@@ -30,19 +29,19 @@ public class Graph {
         return dijkstraShortestPath.getPath(start, target);
     }
 
-    private void setVertex(List<LineResponse> lineResponses, WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
-        lineResponses.stream()
-                .flatMap(it -> it.getStations().stream())
-                .map(it -> it.getStation())
+    private void setVertex(List<Line> lines, WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
+        lines.stream()
+                .flatMap(it -> it.getStationInOrder().stream())
+                .map(it -> it.getStationId())
                 .collect(Collectors.toSet())
-                .forEach(it -> graph.addVertex(it.getId()));
+                .forEach(it -> graph.addVertex(it));
     }
 
-    private void setEdge(List<LineResponse> lineResponses, WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
-        lineResponses.stream()
-                .flatMap(it -> it.getStations().stream())
+    private void setEdge(List<Line> lines, WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
+        lines.stream()
+                .flatMap(it -> it.getStationInOrder().stream())
                 .filter(it -> it.getPreStationId() != null)
-                .forEach(it -> graph.setEdgeWeight(graph.addEdge(it.getPreStationId(), it.getStation().getId()), it.getDistance()));
+                .forEach(it -> graph.setEdgeWeight(graph.addEdge(it.getPreStationId(), it.getStationId()), it.getDistance()));
     }
 
 }
