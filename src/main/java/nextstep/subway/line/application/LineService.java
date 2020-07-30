@@ -69,4 +69,21 @@ public class LineService {
                 .map(it -> LineStationResponse.of(it, StationResponse.of(stations.get(it.getStationId()))))
                 .collect(Collectors.toList());
     }
+
+    public List<LineResponse> findAllAndLineAndStations() {
+        List<Line> lines = lineRepository.findAll();
+
+        List<Long> lineStationIds = lines.stream()
+                .flatMap(line -> line.getStationInOrder().stream())
+                .map(line -> line.getStationId())
+                .collect(Collectors.toList());
+
+        Map<Long, Station> stations = stationRepository.findAllById(lineStationIds).stream()
+                .collect(Collectors.toMap(it -> it.getId(), Function.identity()));
+
+        List<LineResponse> lineResponses = lines.stream()
+                .map(it -> LineResponse.of(it, extractLineStationResponses(it, stations)))
+                .collect(Collectors.toList());
+        return lineResponses;
+    }
 }

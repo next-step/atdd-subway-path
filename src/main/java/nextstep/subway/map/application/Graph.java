@@ -1,6 +1,6 @@
 package nextstep.subway.map.application;
 
-import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.map.dto.PathResult;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Component
 public class Graph {
 
-    public PathResult findPath(List<Line> lines, Long start, Long target) {
+    public PathResult findPath(List<LineResponse> lines, Long start, Long target) {
         WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
         setVertex(lines, graph);
         setEdge(lines, graph);
@@ -29,19 +29,18 @@ public class Graph {
         return dijkstraShortestPath.getPath(start, target);
     }
 
-    private void setVertex(List<Line> lines, WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
+    private void setVertex(List<LineResponse> lines, WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
         lines.stream()
-                .flatMap(it -> it.getStationInOrder().stream())
-                .map(it -> it.getStationId())
+                .flatMap(it -> it.getStations().stream())
+                .map(it -> it.getStation())
                 .collect(Collectors.toSet())
-                .forEach(it -> graph.addVertex(it));
+                .forEach(it -> graph.addVertex(it.getId()));
     }
 
-    private void setEdge(List<Line> lines, WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
+    private void setEdge(List<LineResponse> lines, WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
         lines.stream()
-                .flatMap(it -> it.getStationInOrder().stream())
+                .flatMap(it -> it.getStations().stream())
                 .filter(it -> it.getPreStationId() != null)
-                .forEach(it -> graph.setEdgeWeight(graph.addEdge(it.getPreStationId(), it.getStationId()), it.getDistance()));
+                .forEach(it -> graph.setEdgeWeight(graph.addEdge(it.getPreStationId(), it.getStation().getId()), it.getDistance()));
     }
-
 }
