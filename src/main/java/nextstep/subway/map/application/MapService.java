@@ -29,10 +29,6 @@ public class MapService {
         this.stationRepository = stationRepository;
     }
 
-    private static Line toLine(LineResponse l) {
-        return new Line(l.getName(), l.getColor(), l.getStartTime(), l.getEndTime(), l.getIntervalTime());
-    }
-
     public MapResponse findAllLineAndStation() {
         List<Line> lines = lineRepository.findAll();
         List<Long> stationIds = findStationIds(lines);
