@@ -2,7 +2,6 @@ package nextstep.subway.map.application;
 
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.map.dto.PathResponse;
 import nextstep.subway.map.dto.PathResult;
 import nextstep.subway.station.domain.StationRepository;
@@ -27,7 +26,7 @@ public class PathService {
     }
 
     public PathResponse findPath(Long source, Long target) {
-        List<LineResponse> lineResponses = lineService.findAllAndLineAndStations();
+        List<LineResponse> lineResponses = lineService.findAllLineAndStations();
         PathResult pathResult = graph.findPath(lineResponses, source, target);
 
         List<StationResponse> stationResponses = pathResult.getStationIds().stream()

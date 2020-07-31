@@ -74,7 +74,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public List<LineResponse> findAllAndLineAndStations() {
+    public List<LineResponse> findAllLineAndStations() {
         List<Line> lines = lineRepository.findAll();
 
         List<Long> lineStationIds = lines.stream()
