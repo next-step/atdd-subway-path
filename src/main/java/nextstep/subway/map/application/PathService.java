@@ -36,6 +36,6 @@ public class PathService {
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
 
-        return new PathResponse(stationResponses, (int) pathResult.getWeight());
+        return new PathResponse(stationResponses, (int) pathResult.getWeight(), 0);
     }
 }
