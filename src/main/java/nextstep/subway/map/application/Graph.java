@@ -41,6 +41,8 @@ public class Graph {
         lines.stream()
                 .flatMap(it -> it.getStations().stream())
                 .filter(it -> it.getPreStationId() != null)
-                .forEach(it -> graph.setEdgeWeight(graph.addEdge(it.getPreStationId(), it.getStation().getId()), it.getDistance()));
+                .forEach(it -> graph.setEdgeWeight(
+                    graph.addEdge(it.getPreStationId(), it.getStation().getId()), it.getDistance()
+                ));
     }
 }

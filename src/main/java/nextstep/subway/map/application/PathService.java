@@ -26,7 +26,11 @@ public class PathService {
     }
 
     public PathResponse findPath(Long source, Long target) {
+        if (source == null || target == null) {
+            throw new RuntimeException();
+        }
         List<LineResponse> lineResponses = lineService.findAllLineAndStations();
+
         PathResult pathResult = graph.findPath(lineResponses, source, target);
 
         List<StationResponse> stationResponses = pathResult.getStationIds().stream()
