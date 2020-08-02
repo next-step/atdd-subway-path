@@ -7,6 +7,8 @@ import nextstep.subway.map.dto.PathResult;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.exception.StationNotFoundException;
+import nextstep.subway.station.exception.StationSameExcepetion;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -46,14 +48,14 @@ public class PathService {
 
     private void checkStations(Long source, Long target) {
         if (source == null || target == null) {
-            throw new RuntimeException();
+            throw new StationNotFoundException("역이 존재하지않습니다.");
         }
 
         if (source == target) {
-            throw new RuntimeException();
+            throw new StationSameExcepetion("동일한 역을 조회하여 에러 발생");
         }
 
-        stationRepository.findById(source).orElseThrow(RuntimeException::new);
-        stationRepository.findById(target).orElseThrow(RuntimeException::new);
+        stationRepository.findById(source).orElseThrow(StationNotFoundException::new);
+        stationRepository.findById(target).orElseThrow(StationNotFoundException::new);
     }
 }

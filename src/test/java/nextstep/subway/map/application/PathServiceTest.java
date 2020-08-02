@@ -2,7 +2,6 @@ package nextstep.subway.map.application;
 
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineStation;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.map.dto.PathResponse;
@@ -10,27 +9,27 @@ import nextstep.subway.map.dto.PathResult;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.exception.StationNotFoundException;
+import nextstep.subway.station.exception.StationSameExcepetion;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 
@@ -48,21 +47,25 @@ class PathServiceTest {
 
     private List<LineResponse> lines;
     private PathResult pathResult;
+    private Station station1;
+    private Station station2;
+    private Station station3;
+    private Station station4;
 
     @BeforeEach
     void setUp() {
         pathService = new PathService(lineService, graph, stationRepository);
 
-        Station station1 = new Station("을지로4가");
+        station1 = new Station("을지로4가");
         ReflectionTestUtils.setField(station1, "id", 1L);
 
-        Station station2 = new Station("을지로3가");
+        station2 = new Station("을지로3가");
         ReflectionTestUtils.setField(station2, "id", 2L);
 
-        Station station3 = new Station("충무로역");
+        station3 = new Station("충무로역");
         ReflectionTestUtils.setField(station3, "id", 3L);
 
-        Station station4 = new Station("동대문역");
+        station4 = new Station("동대문역");
         ReflectionTestUtils.setField(station4, "id", 4L);
 
         StationResponse stationResponse1 = StationResponse.of(station1);
@@ -104,6 +107,8 @@ class PathServiceTest {
     @Test
     void findPath() {
         when(lineService.findAllLineAndStations()).thenReturn(lines);
+        when(stationRepository.findById(anyLong())).thenReturn(ofNullable(station1));
+        when(stationRepository.findById(anyLong())).thenReturn(ofNullable(station2));
         when(graph.findPath(anyList(), anyLong(), anyLong())).thenReturn(pathResult);
 
         PathResponse pathResponse = pathService.findPath(1L, 3L);
@@ -114,17 +119,17 @@ class PathServiceTest {
     @DisplayName("존재하지 않은 역 조회")
     @Test
     void findStationNull() {
-        assertThatExceptionOfType(RuntimeException.class)
+        assertThatExceptionOfType(StationNotFoundException.class)
                 .isThrownBy(() -> pathService.findPath(null, null));
     }
 
-    @DisplayName("같은 역 조회")
+    @DisplayName("동일한 역 조회")
     @Test
     void sameStation() {
         Long source = 1L;
         Long target = 1L;
 
-        assertThatExceptionOfType(RuntimeException.class)
+        assertThatExceptionOfType(StationSameExcepetion.class)
                 .isThrownBy(() -> pathService.findPath(source, target));
     }
 
