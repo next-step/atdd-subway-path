@@ -21,6 +21,10 @@ public class Graph {
 
         GraphPath shortestPath = getGraphPath(start, target, graph);
 
+        if (shortestPath == null) {
+            throw new RuntimeException();
+        }
+
         return new PathResult(shortestPath.getVertexList(), shortestPath.getWeight());
     }
 

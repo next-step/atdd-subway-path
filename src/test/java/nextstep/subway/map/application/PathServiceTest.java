@@ -12,6 +12,7 @@ import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -99,6 +100,7 @@ class PathServiceTest {
         pathResult = new PathResult(Lists.newArrayList(1L, 4L, 3L), 3);
     }
 
+    @DisplayName("최단거리 조회")
     @Test
     void findPath() {
         when(lineService.findAllLineAndStations()).thenReturn(lines);
@@ -109,11 +111,21 @@ class PathServiceTest {
         assertThat(pathResponse.getDistance()).isEqualTo(3);
     }
 
-    @ParameterizedTest
-    @NullSource
-    void findStationNull(Long source) {
+    @DisplayName("존재하지 않은 역 조회")
+    @Test
+    void findStationNull() {
         assertThatExceptionOfType(RuntimeException.class)
-                .isThrownBy(() -> pathService.findPath(source, source))
-        ;
+                .isThrownBy(() -> pathService.findPath(null, null));
     }
+
+    @DisplayName("같은 역 조회")
+    @Test
+    void sameStation() {
+        Long source = 1L;
+        Long target = 1L;
+
+        assertThatExceptionOfType(RuntimeException.class)
+                .isThrownBy(() -> pathService.findPath(source, target));
+    }
+
 }
