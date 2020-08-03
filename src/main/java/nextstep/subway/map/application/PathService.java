@@ -33,7 +33,7 @@ public class PathService {
 
         List<LineResponse> lineResponses = lineService.findAllLineAndStations();
 
-        PathResult pathResult = graph.findPath(lineResponses, source, target);
+        PathResult pathResult = graph.findPath(lineResponses, source, target, type);
 
         List<StationResponse> stationResponses = pathResult.getStationIds().stream()
                 .map(stationRepository::findById)

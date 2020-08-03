@@ -29,8 +29,7 @@ import java.util.List;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 
@@ -110,7 +109,7 @@ class PathServiceTest {
         when(lineService.findAllLineAndStations()).thenReturn(lines);
         when(stationRepository.findById(anyLong())).thenReturn(ofNullable(station1));
         when(stationRepository.findById(anyLong())).thenReturn(ofNullable(station2));
-        when(graph.findPath(anyList(), anyLong(), anyLong())).thenReturn(pathResult);
+        when(graph.findPath(anyList(), anyLong(), anyLong(), any())).thenReturn(pathResult);
 
         PathResponse pathResponse = pathService.findPath(1L, 3L, SearchType.DISTANCE);
 

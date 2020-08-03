@@ -4,6 +4,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.map.dto.PathResult;
+import nextstep.subway.map.dto.SearchType;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 import org.assertj.core.util.Lists;
@@ -65,7 +66,7 @@ class GraphTest {
     void findShortPath() {
         Graph graph = new Graph();
 
-        PathResult pathResult = graph.findPath(lines, 1L, 3L);
+        PathResult pathResult = graph.findPath(lines, 1L, 3L, SearchType.DISTANCE);
 
         assertThat(pathResult.getStationIds()).containsExactlyElementsOf(Lists.newArrayList(1L, 3L));
     }
