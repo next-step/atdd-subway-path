@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import static nextstep.subway.line.acceptance.step.LineAcceptanceStep.지하철_노선_등록되어_있음;
 import static nextstep.subway.line.acceptance.step.LineStationAcceptanceStep.지하철_노선에_지하철역_등록되어_있음;
 import static nextstep.subway.map.acceptance.step.PathAcceptanceStep.출발역에서_도착역까지의_최단거리_경로_조회를_요청;
+import static nextstep.subway.map.acceptance.step.PathAcceptanceStep.출발역에서_도착역까지의_최소_시간_경로_조회를_요청;
 import static nextstep.subway.station.acceptance.step.StationAcceptanceStep.지하철역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -68,7 +69,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("최단 거리 검색")
     @Test
-    void shortestPath() {
+    void shortestDistance() {
         // when
         ExtractableResponse<Response> response = 출발역에서_도착역까지의_최단거리_경로_조회를_요청(1L, 3L);
 
@@ -76,6 +77,19 @@ public class PathAcceptanceTest extends AcceptanceTest {
         PathResponse pathResponse = response.as(PathResponse.class);
         assertThat(pathResponse.getDistance()).isEqualTo(4);
     }
+
+
+    @DisplayName("최단 시간 검색")
+    @Test
+    void shortestDuration() {
+        // when
+        ExtractableResponse<Response> response = 출발역에서_도착역까지의_최소_시간_경로_조회를_요청(1L, 3L);
+
+        // then
+        PathResponse pathResponse = response.as(PathResponse.class);
+        assertThat(pathResponse.getDuration()).isEqualTo(4);
+    }
+
 
 
 }

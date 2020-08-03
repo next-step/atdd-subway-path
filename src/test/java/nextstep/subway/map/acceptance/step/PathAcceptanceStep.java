@@ -19,4 +19,16 @@ public class PathAcceptanceStep {
                         log().all().
                         extract();
     }
+
+    public static ExtractableResponse<Response> 출발역에서_도착역까지의_최소_시간_경로_조회를_요청(Long sourceId, Long targetId) {
+        return RestAssured.
+                given().
+                log().all().
+                accept(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                get("/paths?source={sourceId}&target={targetId}&type={type}", sourceId, targetId, SearchType.DURATION).
+                then().
+                log().all().
+                extract();
+    }
 }
