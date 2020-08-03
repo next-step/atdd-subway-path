@@ -105,7 +105,7 @@ class PathServiceTest {
 
     @DisplayName("최단거리 조회")
     @Test
-    void findPath() {
+    void findShortPath() {
         when(lineService.findAllLineAndStations()).thenReturn(lines);
         when(stationRepository.findById(anyLong())).thenReturn(ofNullable(station1));
         when(stationRepository.findById(anyLong())).thenReturn(ofNullable(station2));
@@ -114,6 +114,20 @@ class PathServiceTest {
         PathResponse pathResponse = pathService.findPath(1L, 3L, SearchType.DISTANCE);
 
         assertThat(pathResponse.getDistance()).isEqualTo(3);
+    }
+
+    @DisplayName("최단시간 조회")
+    @Test
+    void findShortDurationPath() {
+        when(lineService.findAllLineAndStations()).thenReturn(lines);
+        when(stationRepository.findById(anyLong())).thenReturn(ofNullable(station1));
+        when(stationRepository.findById(anyLong())).thenReturn(ofNullable(station2));
+        when(graph.findPath(anyList(), anyLong(), anyLong(), any())).thenReturn(pathResult);
+
+        PathResponse pathResponse = pathService.findPath(1L, 3L, SearchType.DURATION);
+
+        assertThat(pathResponse.getDistance()).isEqualTo(3);
+        assertThat(pathResponse.getDuration()).isEqualTo(3);
     }
 
     @DisplayName("존재하지 않은 역 조회")
