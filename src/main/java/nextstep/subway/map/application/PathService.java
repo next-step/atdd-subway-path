@@ -4,14 +4,13 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.map.dto.PathResponse;
 import nextstep.subway.map.dto.PathResult;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.map.dto.SearchType;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.exception.StationNotFoundException;
 import nextstep.subway.station.exception.StationSameExcepetion;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,7 +28,7 @@ public class PathService {
         this.stationRepository = stationRepository;
     }
 
-    public PathResponse findPath(Long source, Long target) {
+    public PathResponse findPath(Long source, Long target, SearchType type) {
         checkStations(source, target);
 
         List<LineResponse> lineResponses = lineService.findAllLineAndStations();

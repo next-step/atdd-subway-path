@@ -3,6 +3,7 @@ package nextstep.subway.map.acceptance.step;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.map.dto.SearchType;
 import org.springframework.http.MediaType;
 
 public class PathAcceptanceStep {
@@ -13,7 +14,7 @@ public class PathAcceptanceStep {
                 log().all().
                 accept(MediaType.APPLICATION_JSON_VALUE).
                         when().
-                        get("/paths?source={sourceId}&target={targetId}", sourceId, targetId).
+                        get("/paths?source={sourceId}&target={targetId}&type={type}", sourceId, targetId, SearchType.DISTANCE).
                         then().
                         log().all().
                         extract();
