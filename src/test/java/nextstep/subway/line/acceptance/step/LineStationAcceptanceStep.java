@@ -19,12 +19,33 @@ public class LineStationAcceptanceStep {
         지하철_노선에_지하철역_등록_요청(lineId, preStationId, stationId);
     }
 
+    public static void 지하철_노선에_지하철역_등록되어_있음(Long lineId, Long preStationId, Long stationId, int distance, int duration) {
+        지하철_노선에_지하철역_등록_요청(lineId, preStationId, stationId, distance, duration);
+    }
+
     public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(Long lineId, Long preStationId, Long stationId) {
         Map<String, String> params = new HashMap<>();
         params.put("preStationId", preStationId + "");
         params.put("stationId", stationId + "");
         params.put("distance", "5");
         params.put("duration", "2");
+
+        return RestAssured.given().log().all().
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                body(params).
+                when().
+                post("/lines/{lineId}/stations", lineId).
+                then().
+                log().all().
+                extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(Long lineId, Long preStationId, Long stationId, int distance, int duration) {
+        Map<String, String> params = new HashMap<>();
+        params.put("preStationId", preStationId + "");
+        params.put("stationId", stationId + "");
+        params.put("distance", distance + "");
+        params.put("duration", duration + "");
 
         return RestAssured.given().log().all().
                 contentType(MediaType.APPLICATION_JSON_VALUE).

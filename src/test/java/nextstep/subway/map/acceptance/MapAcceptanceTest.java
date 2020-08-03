@@ -74,14 +74,16 @@ public class MapAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선도를_조회_요청();
         String eTag = response.header(HttpHeaders.ETAG);
 
-        RestAssured.given().log().all().
-                header("If-None-Match", eTag).
-                accept(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                get("/maps").
-                then().
-                header("ETag", notNullValue()).
-                log().all().
-                extract();
+        RestAssured
+                .given()
+                    .header("If-None-Match", eTag)
+                    .accept(MediaType.APPLICATION_JSON_VALUE)
+                    .log().all()
+                .when()
+                    .get("/maps")
+                .then()
+                    .header("ETag", notNullValue())
+                    .log().all()
+                    .extract();
     }
 }

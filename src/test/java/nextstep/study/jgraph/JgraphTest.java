@@ -12,6 +12,14 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class JgraphTest {
+    /**
+     * v1 -> v2 -> v3 = 2 + 2
+     * v1 -> v3 -> 100 = 100
+     *
+     *       v2
+     *    v1 --  v3
+     */
+
     @Test
     public void getDijkstraShortestPath() {
         String source = "v3";
@@ -26,7 +34,8 @@ public class JgraphTest {
 
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
         List<String> shortestPath = dijkstraShortestPath.getPath(source, target).getVertexList();
-
+        double weight = dijkstraShortestPath.getPath(source, target).getWeight();
+        assertThat(weight).isEqualTo(3);
         assertThat(shortestPath.size()).isEqualTo(3);
     }
 

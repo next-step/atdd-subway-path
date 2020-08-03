@@ -47,12 +47,16 @@ public class LineService {
                 .map(it -> it.getStationId())
                 .collect(Collectors.toList());
 
-        Map<Long, Station> stations = stationRepository.findAllById(stationIds).stream()
-                .collect(Collectors.toMap(it -> it.getId(), Function.identity()));
+        Map<Long, Station> stations = getStationsByIds(stationIds);
 
         List<LineStationResponse> lineStationResponses = extractLineStationResponses(line, stations);
 
         return LineResponse.of(line, lineStationResponses);
+    }
+
+    private Map<Long, Station> getStationsByIds(List<Long> stationIds) {
+        return stationRepository.findAllById(stationIds).stream()
+                .collect(Collectors.toMap(it -> it.getId(), Function.identity()));
     }
 
     public void updateLine(Long id, LineRequest lineUpdateRequest) {
@@ -68,5 +72,21 @@ public class LineService {
         return line.getStationInOrder().stream()
                 .map(it -> LineStationResponse.of(it, StationResponse.of(stations.get(it.getStationId()))))
                 .collect(Collectors.toList());
+    }
+
+    public List<LineResponse> findAllLineAndStations() {
+        List<Line> lines = lineRepository.findAll();
+
+        List<Long> lineStationIds = lines.stream()
+                .flatMap(line -> line.getStationInOrder().stream())
+                .map(line -> line.getStationId())
+                .collect(Collectors.toList());
+
+        Map<Long, Station> stations = getStationsByIds(lineStationIds);
+
+        List<LineResponse> lineResponses = lines.stream()
+                .map(it -> LineResponse.of(it, extractLineStationResponses(it, stations)))
+                .collect(Collectors.toList());
+        return lineResponses;
     }
 }

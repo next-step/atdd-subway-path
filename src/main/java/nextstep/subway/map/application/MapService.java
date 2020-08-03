@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.map.dto.MapResponse;
+import nextstep.subway.map.dto.PathResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
@@ -61,4 +62,5 @@ public class MapService {
                 .map(it -> LineStationResponse.of(it, StationResponse.of(stations.get(it.getStationId()))))
                 .collect(Collectors.toList());
     }
+
 }
