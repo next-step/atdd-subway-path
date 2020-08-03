@@ -33,4 +33,14 @@ class PathControllerTest {
         assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
         verify(pathService).findPath(SOURCE, TARGET, SearchType.DISTANCE);
     }
+
+    @Test
+    void findShortDuration() {
+        // when
+        ResponseEntity entity = pathController.findShortPath(SOURCE, TARGET, SearchType.DURATION);
+
+        // then
+        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        verify(pathService).findPath(SOURCE, TARGET, SearchType.DURATION);
+    }
 }
