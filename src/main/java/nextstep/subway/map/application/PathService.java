@@ -2,6 +2,7 @@ package nextstep.subway.map.application;
 
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.map.dto.PathResponse;
 import nextstep.subway.map.dto.PathResult;
 import nextstep.subway.map.dto.SearchType;
@@ -42,7 +43,19 @@ public class PathService {
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
 
-        return new PathResponse(stationResponses, (int) pathResult.getWeight(), 0);
+        List<LineStationResponse> lineStationResponses = pathResult.getLineStationResponse(lineResponses.stream()
+                .flatMap(it -> it.getStations().stream())
+                .collect(Collectors.toList()));
+
+        return PathResponse.of(stationResponses, getDistances(lineStationResponses), getDurations(lineStationResponses));
+    }
+
+    private int getDistances(List<LineStationResponse> lineStationResponses) {
+        return lineStationResponses.stream().mapToInt(LineStationResponse::getDistance).sum();
+    }
+
+    private int getDurations(List<LineStationResponse> lineStationResponses) {
+        return lineStationResponses.stream().mapToInt(LineStationResponse::getDuration).sum();
     }
 
     private void checkStations(Long source, Long target) {
@@ -57,4 +70,5 @@ public class PathService {
         stationRepository.findById(source).orElseThrow(StationNotFoundException::new);
         stationRepository.findById(target).orElseThrow(StationNotFoundException::new);
     }
+
 }
