@@ -13,6 +13,7 @@ import nextstep.subway.station.exception.StationSameExcepetion;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -36,10 +37,9 @@ public class PathService {
 
         PathResult pathResult = graph.findPath(lineResponses, source, target, type);
 
-        List<StationResponse> stationResponses = pathResult.getStationIds().stream()
-                .map(stationRepository::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+        List<StationResponse> stationResponses = stationRepository.findAllById(pathResult.getStationIds())
+                .stream()
+                .distinct()
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
 
@@ -67,7 +67,7 @@ public class PathService {
             throw new StationSameExcepetion("동일한 역을 조회하여 에러 발생");
         }
 
-        if(!stationRepository.existsById(source) || !stationRepository.existsById(target)) {
+        if (!stationRepository.existsById(source) || !stationRepository.existsById(target)) {
             throw new StationNotFoundException();
         }
     }
