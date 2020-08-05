@@ -67,8 +67,9 @@ public class PathService {
             throw new StationSameExcepetion("동일한 역을 조회하여 에러 발생");
         }
 
-        stationRepository.findById(source).orElseThrow(StationNotFoundException::new);
-        stationRepository.findById(target).orElseThrow(StationNotFoundException::new);
+        if(!stationRepository.existsById(source) || !stationRepository.existsById(target)) {
+            throw new StationNotFoundException();
+        }
     }
 
 }

@@ -107,8 +107,7 @@ class PathServiceTest {
     @Test
     void findShortPath() {
         when(lineService.findAllLineAndStations()).thenReturn(lines);
-        when(stationRepository.findById(anyLong())).thenReturn(ofNullable(station1));
-        when(stationRepository.findById(anyLong())).thenReturn(ofNullable(station2));
+        when(stationRepository.existsById(anyLong())).thenReturn(true);
         when(graph.findPath(anyList(), anyLong(), anyLong(), any())).thenReturn(pathResult);
 
         PathResponse pathResponse = pathService.findPath(1L, 3L, SearchType.DISTANCE);
@@ -120,8 +119,7 @@ class PathServiceTest {
     @Test
     void findShortDurationPath() {
         when(lineService.findAllLineAndStations()).thenReturn(lines);
-        when(stationRepository.findById(anyLong())).thenReturn(ofNullable(station1));
-        when(stationRepository.findById(anyLong())).thenReturn(ofNullable(station2));
+        when(stationRepository.existsById(anyLong())).thenReturn(true);
         when(graph.findPath(anyList(), anyLong(), anyLong(), any())).thenReturn(pathResult);
 
         PathResponse pathResponse = pathService.findPath(1L, 3L, SearchType.DURATION);
