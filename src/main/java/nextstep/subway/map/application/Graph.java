@@ -51,7 +51,7 @@ public class Graph {
                 .flatMap(it -> it.getStations().stream())
                 .filter(it -> it.getPreStationId() != null)
                 .forEach(it -> graph.setEdgeWeight(
-                    graph.addEdge(it.getPreStationId(), it.getStation().getId()), type == SearchType.DISTANCE ? it.getDistance() : it.getDuration()
+                        graph.addEdge(it.getPreStationId(), it.getStation().getId()), type.match(it)
                 ));
     }
 }
