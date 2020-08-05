@@ -126,8 +126,7 @@ class PathServiceTest {
 
         PathResponse pathResponse = pathService.findPath(1L, 3L, SearchType.DURATION);
 
-        assertThat(pathResponse.getDistance()).isEqualTo(3);
-        assertThat(pathResponse.getDuration()).isEqualTo(3);
+        assertThat(pathResponse.getDuration()).isEqualTo(4);
     }
 
     @DisplayName("존재하지 않은 역 조회")
