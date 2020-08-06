@@ -47,7 +47,7 @@ public class PathService {
         LineStationResponses lineStationResponses = pathResult.getLineStationResponse(
                 extractLineStationResponse(lineResponses));
 
-        return PathResponse.of(stationResponses, getDistances(lineStationResponses.getLineStationResponses()), getDurations(lineStationResponses.getLineStationResponses()));
+        return PathResponse.of(stationResponses, lineStationResponses);
     }
 
     private LineStationResponses extractLineStationResponse(List<LineResponse> lineResponses) {
@@ -62,14 +62,6 @@ public class PathService {
             return StationResponse.of(findStation.get());
         }
         return new StationResponse();
-    }
-
-    private int getDistances(List<LineStationResponse> lineStationResponses) {
-        return lineStationResponses.stream().mapToInt(LineStationResponse::getDistance).sum();
-    }
-
-    private int getDurations(List<LineStationResponse> lineStationResponses) {
-        return lineStationResponses.stream().mapToInt(LineStationResponse::getDuration).sum();
     }
 
     private void checkStations(Long source, Long target) {

@@ -1,5 +1,6 @@
 package nextstep.subway.map.dto;
 
+import nextstep.subway.line.dto.LineStationResponses;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.util.List;
@@ -19,8 +20,8 @@ public class PathResponse {
         this.duration = duration;
     }
 
-    public static PathResponse of(List<StationResponse> stationResponses, int distances, int durations) {
-        return new PathResponse(stationResponses, distances, durations);
+    public static PathResponse of(List<StationResponse> stationResponses, LineStationResponses lineStationResponses) {
+        return new PathResponse(stationResponses, lineStationResponses.getDistances(), lineStationResponses.getDurations());
     }
 
     public List<StationResponse> getStationResponses() {

@@ -41,6 +41,14 @@ public class LineStationResponses {
         throw new RuntimeException();
     }
 
+    public int getDistances() {
+        return this.lineStationResponses.stream().mapToInt(LineStationResponse::getDistance).sum();
+    }
+
+    public int getDurations() {
+        return this.lineStationResponses.stream().mapToInt(LineStationResponse::getDuration).sum();
+    }
+
     private boolean isSameStation(Long stationId, Long preStationId, LineStationResponse it) {
         return (it.getPreStationId() == preStationId && it.getStation().getId() == stationId)
                 || (it.getPreStationId() == stationId && it.getStation().getId() == preStationId);
