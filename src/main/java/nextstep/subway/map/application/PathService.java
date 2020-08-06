@@ -6,12 +6,14 @@ import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.map.dto.PathResponse;
 import nextstep.subway.map.dto.PathResult;
 import nextstep.subway.map.dto.SearchType;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.exception.StationNotFoundException;
 import nextstep.subway.station.exception.StationSameExcepetion;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -37,10 +39,8 @@ public class PathService {
 
         PathResult pathResult = graph.findPath(lineResponses, source, target, type);
 
-        List<StationResponse> stationResponses = stationRepository.findAllById(pathResult.getStationIds())
-                .stream()
-                .distinct()
-                .map(StationResponse::of)
+        List<StationResponse> stationResponses = pathResult.getStationIds().stream()
+                .map(this::getStationResponse)
                 .collect(Collectors.toList());
 
         List<LineStationResponse> lineStationResponses = pathResult.getLineStationResponse(lineResponses.stream()
@@ -48,6 +48,14 @@ public class PathService {
                 .collect(Collectors.toList()));
 
         return PathResponse.of(stationResponses, getDistances(lineStationResponses), getDurations(lineStationResponses));
+    }
+
+    private StationResponse getStationResponse(Long stationId) {
+        Optional<Station> findStation = stationRepository.findById(stationId);
+        if (findStation.isPresent()) {
+            return StationResponse.of(findStation.get());
+        }
+        return new StationResponse();
     }
 
     private int getDistances(List<LineStationResponse> lineStationResponses) {

@@ -6,9 +6,13 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.map.dto.PathResponse;
 import nextstep.subway.station.dto.StationResponse;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static nextstep.subway.line.acceptance.step.LineAcceptanceStep.지하철_노선_등록되어_있음;
 import static nextstep.subway.line.acceptance.step.LineStationAcceptanceStep.지하철_노선에_지하철역_등록되어_있음;
@@ -75,9 +79,13 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         // then
         PathResponse pathResponse = response.as(PathResponse.class);
-        assertThat(pathResponse.getDistance()).isEqualTo(4);
-    }
 
+
+        List<Long> stationsIds = extractStationsIds(pathResponse);
+
+        assertThat(pathResponse.getDistance()).isEqualTo(4);
+        assertThat(stationsIds).containsExactlyElementsOf(Lists.newArrayList(1L, 2L, 3L));
+    }
 
     @DisplayName("최단 시간 검색")
     @Test
@@ -87,9 +95,19 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         // then
         PathResponse pathResponse = response.as(PathResponse.class);
+        List<Long> stationsIds = extractStationsIds(pathResponse);
+
         assertThat(pathResponse.getDuration()).isEqualTo(4);
+        assertThat(stationsIds).containsExactlyElementsOf(Lists.newArrayList(1L, 4L, 3L));
     }
 
+    private List<Long> extractStationsIds(PathResponse pathResponse) {
+        return pathResponse.getStationResponses()
+                .stream()
+                .map(s -> s.getId())
+                .distinct()
+                .collect(Collectors.toList());
+    }
 
 
 }
