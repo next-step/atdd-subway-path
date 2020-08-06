@@ -3,6 +3,7 @@ package nextstep.subway.map.application;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
+import nextstep.subway.line.dto.LineStationResponses;
 import nextstep.subway.map.dto.PathResponse;
 import nextstep.subway.map.dto.PathResult;
 import nextstep.subway.map.dto.SearchType;
@@ -43,11 +44,16 @@ public class PathService {
                 .map(this::getStationResponse)
                 .collect(Collectors.toList());
 
-        List<LineStationResponse> lineStationResponses = pathResult.getLineStationResponse(lineResponses.stream()
-                .flatMap(it -> it.getStations().stream())
-                .collect(Collectors.toList()));
+        LineStationResponses lineStationResponses = pathResult.getLineStationResponse(
+                extractLineStationResponse(lineResponses));
 
-        return PathResponse.of(stationResponses, getDistances(lineStationResponses), getDurations(lineStationResponses));
+        return PathResponse.of(stationResponses, getDistances(lineStationResponses.getLineStationResponses()), getDurations(lineStationResponses.getLineStationResponses()));
+    }
+
+    private LineStationResponses extractLineStationResponse(List<LineResponse> lineResponses) {
+        return new LineStationResponses(lineResponses.stream()
+                        .flatMap(it -> it.getStations().stream())
+                        .collect(Collectors.toList()));
     }
 
     private StationResponse getStationResponse(Long stationId) {

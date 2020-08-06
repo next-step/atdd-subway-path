@@ -1,8 +1,8 @@
 package nextstep.subway.map.dto;
 
 import nextstep.subway.line.dto.LineStationResponse;
+import nextstep.subway.line.dto.LineStationResponses;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PathResult {
@@ -22,8 +22,8 @@ public class PathResult {
         return weight;
     }
 
-    public List<LineStationResponse> getLineStationResponse(List<LineStationResponse> lineStations) {
-        List<LineStationResponse> lineStationResponses = new ArrayList<>();
+    public LineStationResponses getLineStationResponse(LineStationResponses lineStations) {
+        LineStationResponses lineStationResponses = new LineStationResponses();
         Long preStationId = stationIds.get(0);
 
         for (int i = 0; i < stationIds.size(); i++) {
@@ -31,7 +31,7 @@ public class PathResult {
 
             if (stationId == preStationId) continue;
 
-            LineStationResponse lineStationResponse = getLineStations(lineStations, preStationId, stationId);
+            LineStationResponse lineStationResponse = lineStations.getLineStationResponse(preStationId, stationId);
 
             lineStationResponses.add(lineStationResponse);
             preStationId = stationId;
@@ -39,21 +39,5 @@ public class PathResult {
 
         return lineStationResponses;
     }
-
-    private LineStationResponse getLineStations(List<LineStationResponse> lineStations, Long preStationId, Long stationId) {
-
-        for (LineStationResponse lineStationResponse : lineStations) {
-            if (isSameStation(stationId, preStationId, lineStationResponse)) {
-                return lineStationResponse;
-            }
-        }
-        throw new RuntimeException();
-    }
-
-    private boolean isSameStation(Long stationId, Long preStationId, LineStationResponse it) {
-        return (it.getPreStationId() == preStationId && it.getStation().getId() == stationId)
-                || (it.getPreStationId() == stationId && it.getStation().getId() == preStationId);
-    }
-
 
 }
