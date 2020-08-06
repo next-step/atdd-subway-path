@@ -26,7 +26,6 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.*;

@@ -12,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LineStationResponsesTest {
 
     private LineStationResponses lineStationResponses;
+
     @BeforeEach
     void setUp() {
         StationResponse stationResponse1 = new StationResponse(1L, "서울역", LocalDateTime.now(), LocalDateTime.now());
