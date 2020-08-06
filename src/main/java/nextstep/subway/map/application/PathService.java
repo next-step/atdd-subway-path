@@ -2,7 +2,6 @@ package nextstep.subway.map.application;
 
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.line.dto.LineStationResponses;
 import nextstep.subway.map.dto.PathResponse;
 import nextstep.subway.map.dto.PathResult;
@@ -14,9 +13,7 @@ import nextstep.subway.station.exception.StationNotFoundException;
 import nextstep.subway.station.exception.StationSameExcepetion;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -52,8 +49,8 @@ public class PathService {
 
     private LineStationResponses extractLineStationResponse(List<LineResponse> lineResponses) {
         return new LineStationResponses(lineResponses.stream()
-                        .flatMap(it -> it.getStations().stream())
-                        .collect(Collectors.toList()));
+                .flatMap(it -> it.getStations().stream())
+                .collect(Collectors.toList()));
     }
 
     private StationResponse getStationResponse(Long stationId) {
