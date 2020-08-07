@@ -6,6 +6,7 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.map.dto.PathResponse;
 import nextstep.subway.map.dto.PathResult;
+import nextstep.subway.map.dto.SearchType;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
@@ -25,11 +26,9 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 
@@ -105,22 +104,33 @@ class PathServiceTest {
 
     @DisplayName("최단거리 조회")
     @Test
-    void findPath() {
+    void findShortPath() {
         when(lineService.findAllLineAndStations()).thenReturn(lines);
-        when(stationRepository.findById(anyLong())).thenReturn(ofNullable(station1));
-        when(stationRepository.findById(anyLong())).thenReturn(ofNullable(station2));
-        when(graph.findPath(anyList(), anyLong(), anyLong())).thenReturn(pathResult);
+        when(stationRepository.existsById(anyLong())).thenReturn(true);
+        when(graph.findPath(anyList(), anyLong(), anyLong(), any())).thenReturn(pathResult);
 
-        PathResponse pathResponse = pathService.findPath(1L, 3L);
+        PathResponse pathResponse = pathService.findPath(1L, 3L, SearchType.DISTANCE);
 
         assertThat(pathResponse.getDistance()).isEqualTo(3);
+    }
+
+    @DisplayName("최단시간 조회")
+    @Test
+    void findShortDurationPath() {
+        when(lineService.findAllLineAndStations()).thenReturn(lines);
+        when(stationRepository.existsById(anyLong())).thenReturn(true);
+        when(graph.findPath(anyList(), anyLong(), anyLong(), any())).thenReturn(pathResult);
+
+        PathResponse pathResponse = pathService.findPath(1L, 3L, SearchType.DURATION);
+
+        assertThat(pathResponse.getDuration()).isEqualTo(4);
     }
 
     @DisplayName("존재하지 않은 역 조회")
     @Test
     void findStationNull() {
         assertThatExceptionOfType(StationNotFoundException.class)
-                .isThrownBy(() -> pathService.findPath(null, null));
+                .isThrownBy(() -> pathService.findPath(null, null, SearchType.DISTANCE));
     }
 
     @DisplayName("동일한 역 조회")
@@ -130,7 +140,7 @@ class PathServiceTest {
         Long target = 1L;
 
         assertThatExceptionOfType(StationSameExcepetion.class)
-                .isThrownBy(() -> pathService.findPath(source, target));
+                .isThrownBy(() -> pathService.findPath(source, target, SearchType.DISTANCE));
     }
 
 }

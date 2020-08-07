@@ -1,6 +1,7 @@
 package nextstep.subway.map.ui;
 
 import nextstep.subway.map.application.PathService;
+import nextstep.subway.map.dto.SearchType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -26,10 +27,20 @@ class PathControllerTest {
     @Test
     void findShortDistance() {
         // when
-        ResponseEntity entity = pathController.findShortPath(SOURCE, TARGET);
+        ResponseEntity entity = pathController.findShortPath(SOURCE, TARGET, SearchType.DISTANCE);
 
         // then
         assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        verify(pathService).findPath(SOURCE, TARGET);
+        verify(pathService).findPath(SOURCE, TARGET, SearchType.DISTANCE);
+    }
+
+    @Test
+    void findShortDuration() {
+        // when
+        ResponseEntity entity = pathController.findShortPath(SOURCE, TARGET, SearchType.DURATION);
+
+        // then
+        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        verify(pathService).findPath(SOURCE, TARGET, SearchType.DURATION);
     }
 }

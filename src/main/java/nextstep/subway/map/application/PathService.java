@@ -2,8 +2,10 @@ package nextstep.subway.map.application;
 
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineStationResponses;
 import nextstep.subway.map.dto.PathResponse;
 import nextstep.subway.map.dto.PathResult;
+import nextstep.subway.map.dto.SearchType;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
@@ -11,7 +13,6 @@ import nextstep.subway.station.exception.StationNotFoundException;
 import nextstep.subway.station.exception.StationSameExcepetion;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,21 +30,35 @@ public class PathService {
         this.stationRepository = stationRepository;
     }
 
-    public PathResponse findPath(Long source, Long target) {
+    public PathResponse findPath(Long source, Long target, SearchType type) {
         checkStations(source, target);
 
         List<LineResponse> lineResponses = lineService.findAllLineAndStations();
 
-        PathResult pathResult = graph.findPath(lineResponses, source, target);
+        PathResult pathResult = graph.findPath(lineResponses, source, target, type);
 
         List<StationResponse> stationResponses = pathResult.getStationIds().stream()
-                .map(stationRepository::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(StationResponse::of)
+                .map(this::getStationResponse)
                 .collect(Collectors.toList());
 
-        return new PathResponse(stationResponses, (int) pathResult.getWeight(), 0);
+        LineStationResponses lineStationResponses = pathResult.getLineStationResponse(
+                extractLineStationResponse(lineResponses));
+
+        return PathResponse.of(stationResponses, lineStationResponses);
+    }
+
+    private LineStationResponses extractLineStationResponse(List<LineResponse> lineResponses) {
+        return new LineStationResponses(lineResponses.stream()
+                .flatMap(it -> it.getStations().stream())
+                .collect(Collectors.toList()));
+    }
+
+    private StationResponse getStationResponse(Long stationId) {
+        Optional<Station> findStation = stationRepository.findById(stationId);
+        if (findStation.isPresent()) {
+            return StationResponse.of(findStation.get());
+        }
+        return new StationResponse();
     }
 
     private void checkStations(Long source, Long target) {
@@ -55,7 +70,9 @@ public class PathService {
             throw new StationSameExcepetion("동일한 역을 조회하여 에러 발생");
         }
 
-        stationRepository.findById(source).orElseThrow(StationNotFoundException::new);
-        stationRepository.findById(target).orElseThrow(StationNotFoundException::new);
+        if (!stationRepository.existsById(source) || !stationRepository.existsById(target)) {
+            throw new StationNotFoundException();
+        }
     }
+
 }

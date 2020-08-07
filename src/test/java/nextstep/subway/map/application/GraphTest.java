@@ -4,6 +4,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.map.dto.PathResult;
+import nextstep.subway.map.dto.SearchType;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 import org.assertj.core.util.Lists;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +20,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GraphTest {
-
     private List<LineResponse> lines;
 
     @BeforeEach
@@ -44,8 +45,8 @@ class GraphTest {
         StationResponse stationResponse3 = StationResponse.of(station3);
         StationResponse stationResponse4 = StationResponse.of(station4);
 
-        LineStationResponse lineStationResponse1 = new LineStationResponse(stationResponse1, null, 2, 3);
-        LineStationResponse lineStationResponse2 = new LineStationResponse(stationResponse3, 1L, 2, 4);
+        LineStationResponse lineStationResponse1 = new LineStationResponse(stationResponse1, null, 2, 2);
+        LineStationResponse lineStationResponse2 = new LineStationResponse(stationResponse2, 1L, 2, 2);
 
         LineStationResponse lineStationResponse3 = new LineStationResponse(stationResponse2, null, 2, 2);
         LineStationResponse lineStationResponse4 = new LineStationResponse(stationResponse3, 2L, 2, 1);
@@ -62,11 +63,20 @@ class GraphTest {
     }
 
     @Test
-    void findShortPath() {
+    void findShortDistancePath() {
         Graph graph = new Graph();
 
-        PathResult pathResult = graph.findPath(lines, 1L, 3L);
+        PathResult pathResult = graph.findPath(lines, 1L, 3L, SearchType.DISTANCE);
 
-        assertThat(pathResult.getStationIds()).containsExactlyElementsOf(Lists.newArrayList(1L, 3L));
+        assertThat(pathResult.getStationIds()).containsExactlyElementsOf(Lists.newArrayList(1L, 4L, 3L));
+    }
+
+    @Test
+    void findShortDurationPath() {
+        Graph graph = new Graph();
+
+        PathResult pathResult = graph.findPath(lines, 1L, 3L, SearchType.DURATION);
+
+        assertThat(pathResult.getStationIds()).containsExactlyElementsOf(Lists.newArrayList(1L, 2L, 3L));
     }
 }

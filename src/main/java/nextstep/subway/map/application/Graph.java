@@ -2,6 +2,7 @@ package nextstep.subway.map.application;
 
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.map.dto.PathResult;
+import nextstep.subway.map.dto.SearchType;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -14,10 +15,10 @@ import java.util.stream.Collectors;
 @Component
 public class Graph {
 
-    public PathResult findPath(List<LineResponse> lines, Long start, Long target) {
+    public PathResult findPath(List<LineResponse> lines, Long start, Long target, SearchType type) {
         WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
         setVertex(lines, graph);
-        setEdge(lines, graph);
+        setEdge(lines, graph, type);
 
         GraphPath shortestPath = getGraphPath(start, target, graph);
 
@@ -41,12 +42,16 @@ public class Graph {
                 .forEach(it -> graph.addVertex(it.getId()));
     }
 
-    private void setEdge(List<LineResponse> lines, WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
+    private void setEdge(List<LineResponse> lines, WeightedMultigraph<Long, DefaultWeightedEdge> graph, SearchType type) {
+        if (type == null) {
+            throw new RuntimeException();
+        }
+
         lines.stream()
                 .flatMap(it -> it.getStations().stream())
                 .filter(it -> it.getPreStationId() != null)
                 .forEach(it -> graph.setEdgeWeight(
-                    graph.addEdge(it.getPreStationId(), it.getStation().getId()), it.getDistance()
+                        graph.addEdge(it.getPreStationId(), it.getStation().getId()), type.match(it)
                 ));
     }
 }
