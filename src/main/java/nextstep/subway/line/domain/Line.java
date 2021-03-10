@@ -1,10 +1,13 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -15,8 +18,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections;
 
     public Line() {
     }
@@ -24,12 +27,20 @@ public class Line extends BaseEntity {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+        this.sections = new Sections();
+
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+    public Line(String  name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        sections.add(new Section(this, upStation, downStation, distance));
+        this.sections = Sections.of(this, new Section(this, upStation, downStation, distance));
+    }
+
+    public Line(String name, String color, Section section) {
+        this.name = name;
+        this.color = color;
+        this.sections = Sections.of(this, section);
     }
 
     public void update(Line line) {
@@ -49,7 +60,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return sections;
     }
 
@@ -64,5 +75,19 @@ public class Line extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, color);
+    }
+
+    public void addSection(Section section) {
+        sections.isValidSection(section);
+        sections.addSection(this, section);
+
+    }
+
+    public List<StationResponse> getStationsAll() {
+        return sections.getStationsAll();
+    }
+
+    public void deleteLastSection(Long stationId) {
+        sections.deleteLastSection(stationId);
     }
 }
