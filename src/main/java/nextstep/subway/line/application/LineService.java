@@ -66,6 +66,11 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    public List<StationResponse> getStations(Long id) {
+        LineResponse response = findLineResponseById(id);
+        return response.getStations();
+    }
+
     @Modifying
     public void updateLine(Long id, LineRequest lineUpdateRequest) {
         Line line = findLineById(id);
