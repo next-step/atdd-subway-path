@@ -74,42 +74,11 @@ public class LineService {
 
     public void removeSection(Long lineId, Long stationId) {
         Line line = findLineById(lineId);
-        removeSection(line, stationId);
+        line.removeSectionByStationId(stationId);
     }
 
     public void addSection(Line line, Station upStation, Station downStation, int distance) {
-        if (getStations(line).size() == 0) {
-            line.getSections().add(new Section(line, upStation, downStation, distance));
-            return;
-        }
-
-        boolean isNotValidUpStation = getStations(line).get(getStations(line).size() - 1) != upStation;
-        if (isNotValidUpStation) {
-            throw new RuntimeException("상행역은 하행 종점역이어야 합니다.");
-        }
-
-        boolean isDownStationExisted = getStations(line).stream().anyMatch(it -> it == downStation);
-        if (isDownStationExisted) {
-            throw new RuntimeException("하행역이 이미 등록되어 있습니다.");
-        }
-
-        line.getSections().add(new Section(line, upStation, downStation, distance));
-    }
-
-    public void removeSection(Line line, Long stationId) {
-        if (line.getSections().size() <= 1) {
-            throw new RuntimeException();
-        }
-
-        boolean isNotValidUpStation = getStations(line).get(getStations(line).size() - 1).getId() != stationId;
-        if (isNotValidUpStation) {
-            throw new RuntimeException("하행 종점역만 삭제가 가능합니다.");
-        }
-
-        line.getSections().stream()
-                .filter(it -> it.getDownStation().getId() == stationId)
-                .findFirst()
-                .ifPresent(it -> line.getSections().remove(it));
+        line.addSection(new Section(line, upStation, downStation, distance));
     }
 
     public List<Station> getStations(Line line) {

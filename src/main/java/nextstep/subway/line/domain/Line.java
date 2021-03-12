@@ -4,7 +4,10 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -64,5 +67,52 @@ public class Line extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, color);
+    }
+
+    public List<Station> getStations() {
+        return sections.stream()
+                .flatMap(section -> section.getStations().stream())
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public void addSection(Section section) {
+        if (sections.isEmpty()) {
+            sections.add(section);
+            return;
+        }
+
+        boolean isNotValidUpStation = getLastStation() != section.getUpStation();
+        if (isNotValidUpStation) {
+            throw new RuntimeException("상행역은 하행 종점역이어야 합니다.");
+        }
+
+        boolean isDownStationExisted = getStations().stream().anyMatch(it -> it == section.getDownStation());
+        if (isDownStationExisted) {
+            throw new RuntimeException("하행역이 이미 등록되어 있습니다.");
+        }
+
+        sections.add(section);
+    }
+
+    private Station getLastStation() {
+        List<Station> stations = getStations();
+        return stations.get(stations.size() - 1);
+    }
+
+    public void removeSectionByStationId(Long stationId) {
+        if (sections.size() <= 1) {
+            throw new RuntimeException();
+        }
+
+        boolean isNotValidUpStation = getLastStation().getId() != stationId;
+        if (isNotValidUpStation) {
+            throw new RuntimeException("하행 종점역만 삭제가 가능합니다.");
+        }
+
+        sections.stream()
+                .filter(it -> it.getDownStation().getId() == stationId)
+                .findFirst()
+                .ifPresent(it -> sections.remove(it));
     }
 }
