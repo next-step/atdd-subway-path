@@ -2,6 +2,9 @@ package nextstep.subway.line.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +28,18 @@ public class LineTest {
 
     @Test
     void getStations() {
+        // given
+        Station 판교역 = new Station("판교역");
+        신분당선.addSection(Section.of(신분당선, 역삼역, 판교역, 3));
+
+        // when
+        final List<Station> stations = 신분당선.getStations();
+
+        // then
+        assertThat(stations.size()).isEqualTo(3);
+        assertThat(stations)
+            .usingRecursiveFieldByFieldElementComparator()
+            .containsExactlyElementsOf(Arrays.asList(강남역, 역삼역, 판교역));
     }
 
     @Test
