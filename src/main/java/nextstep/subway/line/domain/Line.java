@@ -79,7 +79,7 @@ public class Line extends BaseEntity {
         sections.addSection(this, section);
     }
 
-    public List<StationResponse> getStationsAll() {
+    public List<Station> getStationsAll() {
         return sections.getStationsInOrder();
     }
 

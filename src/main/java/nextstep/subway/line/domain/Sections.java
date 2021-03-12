@@ -137,28 +137,28 @@ public class Sections {
         return sectionList.isEmpty();
     }
 
-    public List<StationResponse> getStationsInOrder() {
+    public List<Station> getStationsInOrder() {
         if (isEmpty()) {
             return Arrays.asList();
         }
-        List<StationResponse> responses = new ArrayList<>();
+        List<Station> stations = new ArrayList<>();
         Section firstSection = sectionList.stream()
                 .filter(section -> Objects.isNull(findSectionByDownStation(section.getUpStation())))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
 
 
-        responses.add(StationResponse.of(firstSection.getUpStation()));
-        getStations(responses, firstSection.getDownStation());
+        stations.add(firstSection.getUpStation());
+        getStations(stations, firstSection.getDownStation());
 
-        return responses;
+        return stations;
     }
 
-    private void getStations(List<StationResponse> responses, Station downStation) {
-        responses.add(StationResponse.of(downStation));
+    private void getStations(List<Station> stations, Station downStation) {
+        stations.add(downStation);
         Section section = findSectionByUpStation(downStation);
         if (Objects.nonNull(section)) {
-            getStations(responses, section.getDownStation());
+            getStations(stations, section.getDownStation());
         }
     }
 
