@@ -1,12 +1,10 @@
 package nextstep.subway.line.acceptance;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.Extractor;
-import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.Map;

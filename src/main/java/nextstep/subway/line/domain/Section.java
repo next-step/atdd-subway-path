@@ -46,11 +46,11 @@ public class Section {
         return new Builder();
     }
 
-    public void updateLine(Line line) {
-        if (!line.equals(this.line)) {
-            this.line = line;
-        }
+    public Section updateLine(Line line) {
+        this.line = line;
+        return this;
     }
+
 
     public Long getId() {
         return id;
