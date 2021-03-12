@@ -43,10 +43,10 @@ public class LineServiceTest {
                 .distance(6)
                 .build();
         lineService.addSection(lineResponse.getId(),sectionRequest);
-        LineResponse resultResponse = lineService.findLineResponseById(lineResponse.getId());
 
         // then
         // line.getSections 메서드를 통해 검증
+        LineResponse resultResponse = lineService.findLineResponseById(lineResponse.getId());
         assertThat(resultResponse.getStations()).hasSize(3);
     }
 }
