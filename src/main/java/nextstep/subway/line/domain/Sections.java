@@ -1,7 +1,7 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.exceptions.AlreadyExistsEntityException;
-import nextstep.subway.exceptions.NotEqualsStationException;
+import nextstep.subway.exceptions.InvalidSectionDistanceException;
+import nextstep.subway.exceptions.InvalidSectionException;
 import nextstep.subway.exceptions.OnlyOneSectionException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 @Embeddable
 public class Sections {
@@ -33,31 +34,97 @@ public class Sections {
     }
 
     public void addSection(Line line, Section section) {
-        boolean isPresent = sectionList.stream()
-                .anyMatch(section::equals);
-
-        if (!isPresent) {
+        if (isEmpty()) {
             sectionList.add(section);
             section.updateLine(line);
-        }
-    }
-
-    public void isValidSection(Section newSection) {
-        if (isEmpty()) {
             return;
         }
+        //신규 구간이 역사이에 포함되는지 판단한다.
+        boolean existsUpStation = existsByStation(section.getUpStation());
+        boolean existsDownStation = existsByStation(section.getDownStation());
 
-        Station downStation = getDownStation();
-        if (!newSection.getUpStation().equals(downStation)) {
-            throw new NotEqualsStationException();
+        checkExistsValdation(existsUpStation, existsDownStation);
+
+        if (existsUpStation) {
+            prependSection(line, section);
         }
 
-        if (isExistsDownStation(newSection.getDownStation())) {
-            throw new AlreadyExistsEntityException();
+        if (existsDownStation) {
+            appendSection(line, section);
         }
     }
 
-    private boolean isExistsDownStation(Station station) {
+    private void checkExistsValdation(boolean existsUpStation, boolean existsDownStation) {
+        if (existsUpStation && existsDownStation) {
+            throw new InvalidSectionException("상행역과 하행역이 이미 노선에 등록되어 있으면 추가할 수 없습니다.");
+        }
+
+        if (!existsUpStation && !existsDownStation) {
+            throw new InvalidSectionException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
+        }
+    }
+
+    private void appendSection(Line line, Section section) {
+        Section foundSection = findSectionByDownStation(section.getDownStation());
+        if (Objects.isNull(foundSection)) {
+            sectionList.add(section);
+            section.updateLine(line);
+            return ;
+        }
+
+        checkDistanceValidation(section, foundSection);
+
+        int index = sectionList.indexOf(foundSection);
+
+        Section prevSection = new Section(line, foundSection.getUpStation(), section.getUpStation(), Math.abs(section.getDistance() - foundSection.getDistance()));
+        section.updateLine(line);
+
+        sectionList.set(index, section);
+        sectionList.add(index, prevSection);
+
+    }
+
+    private void prependSection(Line line, Section section) {
+        Section foundSection = findSectionByUpStation(section.getUpStation());
+        if (Objects.isNull(foundSection)) {
+            sectionList.add(section);
+            section.updateLine(line);
+            return ;
+        }
+
+        checkDistanceValidation(section, foundSection);
+
+        int index = sectionList.indexOf(foundSection);
+
+        Section nextSection = new Section(line, section.getDownStation(), foundSection.getDownStation(), Math.abs(section.getDistance() - foundSection.getDistance()));
+        section.updateLine(line);
+
+        sectionList.set(index, section);
+        sectionList.add(index + 1, nextSection);
+    }
+
+    private void checkDistanceValidation(Section section, Section foundSection) {
+        if (foundSection.getDistance() <= section.getDistance()) {
+            throw new InvalidSectionDistanceException();
+        }
+    }
+
+    private Section findSectionByPredicate(Predicate<Section> predicate) {
+        return sectionList.stream()
+                .filter(predicate)
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Section findSectionByUpStation(Station upStation) {
+        return findSectionByPredicate(section -> section.getUpStation().equals(upStation));
+    }
+
+    private Section findSectionByDownStation(Station downStation) {
+        return findSectionByPredicate(section -> section.getDownStation().equals(downStation));
+    }
+
+    private boolean existsByStation(Station station) {
         return sectionList.stream()
                 .anyMatch(section -> isEqualDownAndUpStation(station, section));
     }
@@ -70,16 +137,29 @@ public class Sections {
         return sectionList.isEmpty();
     }
 
-    public List<StationResponse> getStationsAll() {
+    public List<StationResponse> getStationsInOrder() {
         if (isEmpty()) {
             return Arrays.asList();
         }
         List<StationResponse> responses = new ArrayList<>();
-        responses.add(StationResponse.of(sectionList.get(0).getUpStation()));
+        Section firstSection = sectionList.stream()
+                .filter(section -> Objects.isNull(findSectionByDownStation(section.getUpStation())))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
 
-        sectionList.forEach(section -> responses.add(StationResponse.of(section.getDownStation())));
+
+        responses.add(StationResponse.of(firstSection.getUpStation()));
+        getStations(responses, firstSection.getDownStation());
 
         return responses;
+    }
+
+    private void getStations(List<StationResponse> responses, Station downStation) {
+        responses.add(StationResponse.of(downStation));
+        Section section = findSectionByUpStation(downStation);
+        if (Objects.nonNull(section)) {
+            getStations(responses, section.getDownStation());
+        }
     }
 
 

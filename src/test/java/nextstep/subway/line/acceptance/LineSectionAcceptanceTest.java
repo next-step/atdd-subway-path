@@ -128,30 +128,57 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("역 사이에 새로운 구간을 추가한다.")
     @Test
     void addSectionBetweenStations() {
+        //when
+        ExtractableResponse<Response> response1 = 지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 정자역, 5);
+        ExtractableResponse<Response> response2 = 지하철_노선에_지하철역_등록_요청(신분당선, 광교역, 양재역, 2);
 
+        ExtractableResponse<Response> readResponse = 지하철_노선_조회_요청(신분당선);
+
+        //then
+        지하철_노선에_지하철역_등록됨(response1);
+        지하철_노선에_지하철역_등록됨(response2);
+        지하철_노선에_지하철역_순서_정렬됨(readResponse, Arrays.asList(강남역, 정자역, 광교역, 양재역));
     }
 
-    @DisplayName("새로운 역을 상행 종점역으로해 구간을 추가한다. ")
+    @DisplayName("새로운 역을 상행역으로하여 구간을 추가한다. ")
     @Test
     void addSectionPreviousUpStation() {
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 정자역, 강남역, 5);
+        ExtractableResponse<Response> readResponse = 지하철_노선_조회_요청(신분당선);
 
+        //then
+        지하철_노선에_지하철역_등록됨(response);
+        지하철_노선에_지하철역_순서_정렬됨(readResponse, Arrays.asList(정자역, 강남역, 양재역));
     }
 
     @DisplayName("역 사이에 기존 구간보다 길이가 긴 구간을 추가한다.")
     @Test
     void addSectionBetweenStationsWithInvalidDistance() {
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 정자역, 15);
 
+        //then
+        지하철_노선에_지하철역_등록_실패됨(response);
     }
 
     @DisplayName("이미 등록된 상행역과 하행역 구간을 등록한다.")
     @Test
     void addSectionDuplicateAllStation() {
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 양재역, 10);
 
+        //then
+        지하철_노선에_지하철역_등록_실패됨(response);
     }
 
     @DisplayName("상행역과 하행역에 모두 포함되지 않는 구간을 추가한다.")
     @Test
     void addSectionNotIncludeStations() {
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 정자역, 광교역, 10);
 
+        //then
+        지하철_노선에_지하철역_등록_실패됨(response);
     }
 }

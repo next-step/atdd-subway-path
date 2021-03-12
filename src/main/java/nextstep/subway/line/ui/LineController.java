@@ -62,6 +62,6 @@ public class LineController {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity handleIllegalArgsException(RuntimeException e) {
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
