@@ -10,7 +10,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import nextstep.subway.line.exception.AlreadyExistDownStationException;
+import nextstep.subway.line.exception.NotLastStationException;
 import nextstep.subway.line.exception.NotMatchedUpStationException;
+import nextstep.subway.line.exception.TooLowLengthSectionsException;
 import nextstep.subway.station.domain.Station;
 
 public class LineTest {
@@ -76,10 +78,34 @@ public class LineTest {
 
     @Test
     void removeSection() {
+        // given
+        Station 판교역 = new Station("판교역");
+        신분당선.addSection(Section.of(신분당선, 역삼역, 판교역, 3));
+
+        // when
+        신분당선.removeSection(판교역);
+
+        // then
+        assertThat(신분당선.getSections().size()).isEqualTo(1);
     }
 
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
     @Test
     void removeSectionNotEndOfList() {
+        // when, then
+        assertThatThrownBy(() -> 신분당선.removeSection(역삼역))
+            .isInstanceOf(TooLowLengthSectionsException.class);
+    }
+
+    @DisplayName("삭제하는 역이 마지막 역이 아니면 에러 발생")
+    @Test
+    void removeSectionNotMatchedLastStation() {
+        // given
+        Station 판교역 = new Station("판교역");
+        신분당선.addSection(Section.of(신분당선, 역삼역, 판교역, 3));
+
+        // when, then
+        assertThatThrownBy(() -> 신분당선.removeSection(강남역))
+            .isInstanceOf(NotLastStationException.class);
     }
 }

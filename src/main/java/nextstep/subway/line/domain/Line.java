@@ -2,7 +2,9 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.exception.AlreadyExistDownStationException;
+import nextstep.subway.line.exception.NotLastStationException;
 import nextstep.subway.line.exception.NotMatchedUpStationException;
+import nextstep.subway.line.exception.TooLowLengthSectionsException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -10,6 +12,7 @@ import java.util.*;
 
 @Entity
 public class Line extends BaseEntity {
+    public static final int SECTIONS_MIN_SIZE = 1;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -49,20 +52,15 @@ public class Line extends BaseEntity {
         sections.add(section);
     }
 
-    private void validateAddSection(Section section) {
-        boolean isNotValidUpStation = findLastStation() != section.getUpStation();
-        if (isNotValidUpStation) {
-            throw new NotMatchedUpStationException();
-        }
+    public void removeSection(Station station) {
+        validateDeleteSection(station);
 
-        boolean isDownStationExisted = getStations().contains(section.getDownStation());
-        if (isDownStationExisted) {
-            throw new AlreadyExistDownStationException();
-        }
-    }
+        final Section target = sections.stream()
+            .filter(section -> section.getDownStation().equals(station))
+            .findAny()
+            .orElseThrow(RuntimeException::new);
 
-    private Station findLastStation() {
-        return getStations().get(getStations().size() - 1);
+        sections.remove(target);
     }
 
     public List<Station> getStations() {
@@ -87,6 +85,36 @@ public class Line extends BaseEntity {
         }
 
         return stations;
+    }
+
+    private void validateAddSection(Section section) {
+        boolean isNotValidUpStation = findLastStation() != section.getUpStation();
+        if (isNotValidUpStation) {
+            throw new NotMatchedUpStationException();
+        }
+
+        boolean isDownStationExisted = getStations().contains(section.getDownStation());
+        if (isDownStationExisted) {
+            throw new AlreadyExistDownStationException();
+        }
+    }
+
+    private void validateDeleteSection(Station station) {
+        if (sections.size() <= SECTIONS_MIN_SIZE) {
+            throw new TooLowLengthSectionsException(SECTIONS_MIN_SIZE);
+        }
+
+        if (isNotLastStation(station)) {
+            throw new NotLastStationException(station.getName());
+        }
+    }
+
+    private boolean isNotLastStation(Station station) {
+        return !findLastStation().equals(station);
+    }
+
+    private Station findLastStation() {
+        return getStations().get(getStations().size() - 1);
     }
 
     private Station findUpStation() {
