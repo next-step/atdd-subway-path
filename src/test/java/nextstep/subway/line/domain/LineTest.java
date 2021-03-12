@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import nextstep.subway.line.exception.AlreadyExistDownStationException;
+import nextstep.subway.line.exception.NotMatchedUpStationException;
 import nextstep.subway.station.domain.Station;
 
 public class LineTest {
@@ -32,7 +34,7 @@ public class LineTest {
         int expectedSize = 신분당선.getSections().size() + 1;
 
         // when
-        신분당선.addSection(new Section(신분당선, 역삼역, 판교역, 3));
+        신분당선.addSection(Section.of(신분당선, 역삼역, 판교역, 3));
 
         // then
         assertThat(신분당선.getSections().size()).isEqualTo(expectedSize);
@@ -41,11 +43,20 @@ public class LineTest {
     @DisplayName("목록 중간에 추가할 경우 에러 발생")
     @Test
     void addSectionInMiddle() {
+        // given
+        Station 판교역 = new Station("판교역");
+
+        // when, then
+        assertThatThrownBy(() -> 신분당선.addSection(Section.of(신분당선, 강남역, 판교역, 3)))
+            .isInstanceOf(NotMatchedUpStationException.class);
     }
 
     @DisplayName("이미 존재하는 역 추가 시 에러 발생")
     @Test
     void addSectionAlreadyIncluded() {
+        // when, then
+        assertThatThrownBy(() -> 신분당선.addSection(Section.of(신분당선, 역삼역, 강남역, 4)))
+            .isInstanceOf(AlreadyExistDownStationException.class);
     }
 
     @Test
