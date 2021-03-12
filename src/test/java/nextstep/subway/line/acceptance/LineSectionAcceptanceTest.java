@@ -124,4 +124,34 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     public static void 지하철_노선에_지하철역_제외_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("역 사이에 새로운 구간을 추가한다.")
+    @Test
+    void addSectionBetweenStations() {
+
+    }
+
+    @DisplayName("새로운 역을 상행 종점역으로해 구간을 추가한다. ")
+    @Test
+    void addSectionPreviousUpStation() {
+
+    }
+
+    @DisplayName("역 사이에 기존 구간보다 길이가 긴 구간을 추가한다.")
+    @Test
+    void addSectionBetweenStationsWithInvalidDistance() {
+
+    }
+
+    @DisplayName("이미 등록된 상행역과 하행역 구간을 등록한다.")
+    @Test
+    void addSectionDuplicateAllStation() {
+
+    }
+
+    @DisplayName("상행역과 하행역에 모두 포함되지 않는 구간을 추가한다.")
+    @Test
+    void addSectionNotIncludeStations() {
+
+    }
 }
