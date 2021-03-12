@@ -183,7 +183,7 @@ public class Sections {
                 .equals(stationId);
 
         if (!isEqualDownStationAndTarget) {
-            throw new IllegalArgumentException(ONLY_DOWN_STATION_CAN_DELETED);
+            throw new InvalidSectionException();
         }
 
         if (sectionList.size() == 1) {
