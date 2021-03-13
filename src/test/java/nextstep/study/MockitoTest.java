@@ -27,7 +27,7 @@ public class MockitoTest {
         LineService lineService = new LineService(lineRepository, stationService);
 
         // when
-        List<LineResponse> responses = lineService.findLineResponses();
+        List<LineResponse> responses = lineService.findAllLines();
 
         // then
         assertThat(responses).hasSize(1);

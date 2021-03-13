@@ -37,18 +37,21 @@ public class LineServiceTest {
         Station 강남역 = stationRepository.save(new Station("강남역"));
         Station 역삼역 = stationRepository.save(new Station("역삼역"));
         Station 삼성역 = stationRepository.save(new Station("삼성역"));
-        Line 이호선 = new Line("2호선", "bg-green-600", 강남역, 역삼역, 10);
-        Line savedLine = lineRepository.save(이호선);
+        Line savedLine = lineRepository.save(new Line("2호선", "bg-green-600"));
 
-        SectionRequest sectionRequest = new SectionRequest(역삼역.getId(), 삼성역.getId(), 6);
+        lineService.addSectionToLine(savedLine.getId(), 구간_추가_요청(강남역, 역삼역, 10));
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(savedLine.getId(),sectionRequest);
+        lineService.addSectionToLine(savedLine.getId(), 구간_추가_요청(역삼역, 삼성역, 6));
 
         // then
         // line.getSections 메서드를 통해 검증
         Line line = lineService.findLineById(savedLine.getId());
-        assertThat(lineService.getStations(line)).containsExactlyElementsOf(Arrays.asList(강남역, 역삼역, 삼성역));
+        assertThat(line.getStations()).containsExactlyElementsOf(Arrays.asList(강남역, 역삼역, 삼성역));
+    }
+
+    private SectionRequest 구간_추가_요청(Station upStation, Station downStation, int distance) {
+        return new SectionRequest(upStation.getId(), downStation.getId(), distance);
     }
 }

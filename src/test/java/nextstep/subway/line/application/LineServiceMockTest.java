@@ -45,7 +45,7 @@ public class LineServiceMockTest {
         ReflectionTestUtils.setField(역삼역, "id", 2L);
         삼성역 = new Station("삼성역");
         ReflectionTestUtils.setField(삼성역, "id", 3L);
-        이호선 = new Line("2호선", "green", 강남역, 역삼역, 10);
+        이호선 = new Line("2호선", "green");
         ReflectionTestUtils.setField(이호선, "id", 1L);
     }
 
@@ -54,19 +54,24 @@ public class LineServiceMockTest {
     void addSection() {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
+        given(stationService.findStationById(1L)).willReturn(강남역);
         given(stationService.findStationById(2L)).willReturn(역삼역);
         given(stationService.findStationById(3L)).willReturn(삼성역);
         given(lineRepository.findById(1L)).willReturn(Optional.ofNullable(이호선));
 
-        SectionRequest sectionRequest = new SectionRequest(역삼역.getId(), 삼성역.getId(), 6);
+        lineService.addSectionToLine(이호선.getId(), 구간_추가_요청(강남역, 역삼역, 10));
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(이호선.getId(), sectionRequest);
+        lineService.addSectionToLine(이호선.getId(), 구간_추가_요청(역삼역, 삼성역, 6));
 
         // then
         // line.findLineById 메서드를 통해 검증
         Line line = lineService.findLineById(이호선.getId());
-        assertThat(lineService.getStations(line)).containsExactlyElementsOf(Arrays.asList(강남역, 역삼역, 삼성역));
+        assertThat(line.getStations()).containsExactlyElementsOf(Arrays.asList(강남역, 역삼역, 삼성역));
+    }
+
+    private SectionRequest 구간_추가_요청(Station upStation, Station downStation, int distance) {
+        return new SectionRequest(upStation.getId(), downStation.getId(), distance);
     }
 }
