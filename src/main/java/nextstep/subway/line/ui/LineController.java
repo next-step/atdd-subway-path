@@ -41,7 +41,7 @@ public class LineController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
-        LineResponse lineResponse = lineService.findLine(id);
+        LineResponse lineResponse = lineService.findLineResponseById(id);
         return ResponseEntity.ok()
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .body(lineResponse);
@@ -58,7 +58,7 @@ public class LineController {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        lineService.deleteLine(id);
+        lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }
 
