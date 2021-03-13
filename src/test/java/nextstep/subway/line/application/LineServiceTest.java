@@ -31,7 +31,7 @@ public class LineServiceTest {
         Station 양재역 = stationRepository.save(new Station("양재역"));
         Station 판교역 = stationRepository.save(new Station("판교역"));
         Line 신분당선 = lineRepository.save(new Line("신분당선", "red", 강남역, 양재역, 5));
-        int expectedSize = 신분당선.getSections().size() + 1;
+        int expectedSize = 신분당선.getStations().size() + 1;
 
         // when
         // lineService.addSection 호출
@@ -39,6 +39,6 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        assertThat(신분당선.getSections().size()).isEqualTo(expectedSize);
+        assertThat(신분당선.getStations().size()).isEqualTo(expectedSize);
     }
 }

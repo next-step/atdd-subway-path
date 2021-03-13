@@ -48,13 +48,13 @@ public class LineTest {
     void addSection() {
         // given
         Station 판교역 = new Station("판교역");
-        int expectedSize = 신분당선.getSections().size() + 1;
+        int expectedSize = 신분당선.getStations().size() + 1;
 
         // when
         신분당선.addSection(Section.of(신분당선, 역삼역, 판교역, 3));
 
         // then
-        assertThat(신분당선.getSections().size()).isEqualTo(expectedSize);
+        assertThat(신분당선.getStations().size()).isEqualTo(expectedSize);
     }
 
     @DisplayName("목록 중간에 추가할 경우 에러 발생")
@@ -86,7 +86,7 @@ public class LineTest {
         신분당선.removeSection(판교역);
 
         // then
-        assertThat(신분당선.getSections().size()).isEqualTo(1);
+        assertThat(신분당선.getStations().size()).isEqualTo(2);
     }
 
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")

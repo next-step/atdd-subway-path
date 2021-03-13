@@ -63,6 +63,6 @@ public class LineServiceMockTest {
         // then
         // line.findLineById 메서드를 통해 검증
         Line line = lineService.findLineById(이호선.getId());
-        assertThat(line.getSections().size()).isEqualTo(2);
+        assertThat(line.getStations().size()).isEqualTo(3);
     }
 }
