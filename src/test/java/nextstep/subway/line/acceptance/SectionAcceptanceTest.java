@@ -89,6 +89,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     노선_구간_등록실패됨(sectionResponse);
   }
 
+  @DisplayName("노선의 역사이에 새로운 역을 추가한다")
+  @Test
+  void insertSectionToLineSection(){
+    long 상현역 =  지하철역_생성_요청("상현역").body().jsonPath().getLong("id");
+    long 성복역 =  지하철역_생성_요청("성복역").body().jsonPath().getLong("id");
+    구간등록요청(신분당선,광교중앙역,성복역,30);
+    ExtractableResponse<Response> sectionResponse = 구간등록요청(신분당선,광교중앙역,상현역,30);
+    노선_구간_등록됨(sectionResponse);
+  }
+
+
 
   @DisplayName("노선의 구간을 삭제한다")
   @Test
