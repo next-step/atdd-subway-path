@@ -53,6 +53,10 @@ public class Line extends BaseEntity {
         return sections;
     }
 
+    public void addSection(Station upStation, Station downStation, int distance) {
+
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
