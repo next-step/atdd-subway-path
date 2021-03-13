@@ -5,22 +5,29 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
-public class LineServiceMockTest {
+class LineServiceMockTest {
+
     @Mock
     private LineRepository lineRepository;
+
     @Mock
     private StationService stationService;
 
-    @Autowired
     private LineService lineService;
+
     private Station 강남역;
     private Station 역삼역;
     private Station 삼성역;
@@ -41,14 +48,16 @@ public class LineServiceMockTest {
     }
 
     @Test
+    @DisplayName("지하철 노선에 지하철 구간을 추가 한다")
     void addSection() {
         // given
-        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
+        when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
         // when
-        // lineService.addSection 호출
+        lineService.addSection(이호선, 역삼역, 삼성역, 15);
 
         // then
-        // line.findLineById 메서드를 통해 검증
+        Line line = lineService.findLineById(이호선.getId());
+        assertThat(line.getSections()).hasSize(2);
     }
 }
