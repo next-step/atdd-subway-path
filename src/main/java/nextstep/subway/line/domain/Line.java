@@ -50,6 +50,10 @@ public class Line extends BaseEntity {
         sections.removeSection(station);
     }
 
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
     public Long getId() {
         return id;
     }
@@ -73,9 +77,5 @@ public class Line extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, color);
-    }
-
-    public List<Station> getStations() {
-        return sections.getStations();
     }
 }

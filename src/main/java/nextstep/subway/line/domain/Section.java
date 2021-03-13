@@ -1,5 +1,9 @@
 package nextstep.subway.line.domain;
 
+import java.util.Arrays;
+import java.util.List;
+
+import nextstep.subway.line.exception.NotExistSameStationException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -36,6 +40,48 @@ public class Section {
 
     public static Section of(Line line, Station upStation, Station downStation, int distance) {
         return new Section(line, upStation, downStation, distance);
+    }
+
+    public List<Section> divideSections(Section section) {
+        if (!hasSameUpStation(section) && !hasSameDownStation(section)) {
+            throw new NotExistSameStationException();
+        }
+
+        if (hasSameUpStation(section)) {
+            return Arrays.asList(
+                Section.of(getLine(), getUpStation(), section.getDownStation(), section.getDistance()),
+                Section.of(getLine(), section.getDownStation(), getDownStation(), calculateDistance(section))
+            );
+        }
+
+        return Arrays.asList(
+            Section.of(getLine(), getUpStation(), section.getUpStation(), calculateDistance(section)),
+            Section.of(getLine(), section.getUpStation(), section.getDownStation(), section.getDistance())
+        );
+    }
+
+    public boolean containsStation(Section section) {
+        return hasSameUpStation(section)
+            || upStation.equals(section.getDownStation())
+            || downStation.equals(section.getUpStation())
+            || hasSameDownStation(section);
+    }
+
+    private boolean hasSameDownStation(Section section) {
+        return downStation.equals(section.getDownStation());
+    }
+
+    public boolean isLastSection(Section section) {
+        return downStation.equals(section.getUpStation())
+            || upStation.equals(section.getDownStation());
+    }
+
+    private boolean hasSameUpStation(Section section) {
+        return upStation.equals(section.getUpStation());
+    }
+
+    private int calculateDistance(Section section) {
+        return getDistance() - section.getDistance();
     }
 
     public Long getId() {

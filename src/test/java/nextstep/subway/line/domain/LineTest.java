@@ -28,6 +28,7 @@ public class LineTest {
         신분당선 = new Line("신분당선", "red", 강남역, 역삼역, 5);
     }
 
+    @DisplayName("지하철 목록을 조회")
     @Test
     void getStations() {
         // given
@@ -44,6 +45,7 @@ public class LineTest {
             .containsExactlyElementsOf(Arrays.asList(강남역, 역삼역, 판교역));
     }
 
+    @DisplayName("지하철 노선 마지막 하행에 역을 추가")
     @Test
     void addSection() {
         // given
@@ -55,11 +57,51 @@ public class LineTest {
 
         // then
         assertThat(신분당선.getStations().size()).isEqualTo(expectedSize);
+        assertThat(신분당선.getStations())
+            .usingRecursiveFieldByFieldElementComparator()
+            .containsExactlyElementsOf(Arrays.asList(강남역, 역삼역, 판교역));
+    }
+
+    @DisplayName("지하철 노선 중간에 역을 추가")
+    @Test
+    void addSectionInMiddle() {
+        // given
+        Station 판교역 = new Station("판교역");
+        Station 삼성역 = new Station("삼성역");
+        int expectedSize = 신분당선.getStations().size() + 2;
+
+        // when
+        신분당선.addSection(Section.of(신분당선, 강남역, 판교역, 3));
+        신분당선.addSection(Section.of(신분당선, 삼성역, 역삼역, 1));
+
+        // then
+        assertThat(신분당선.getStations().size()).isEqualTo(expectedSize);
+        assertThat(신분당선.getStations())
+            .usingRecursiveFieldByFieldElementComparator()
+            .containsExactlyElementsOf(Arrays.asList(강남역, 판교역, 삼성역, 역삼역));
+    }
+
+    @DisplayName("지하철 노선 중간에 역 추가 시 구간의 길이가 기존의 길이보다 크거나 같으면 에러 발생")
+    @Test
+    void addSectionInMiddleTooLongDistance() {
+
+    }
+
+    @DisplayName("구간 등록 시 상행역과 하행역이 모두 등록되어 있으면 에러 발생")
+    @Test
+    void addSectionAlreadyIncludedAllStation() {
+
+    }
+
+    @DisplayName("구간 등록 시 상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 에러 발생")
+    @Test
+    void addSectionNotIncludedAllStation() {
+
     }
 
     @DisplayName("목록 중간에 추가할 경우 에러 발생")
     @Test
-    void addSectionInMiddle() {
+    void addSectionInMiddleException() {
         // given
         Station 판교역 = new Station("판교역");
 
@@ -67,6 +109,8 @@ public class LineTest {
         assertThatThrownBy(() -> 신분당선.addSection(Section.of(신분당선, 강남역, 판교역, 3)))
             .isInstanceOf(NotMatchedUpStationException.class);
     }
+
+
 
     @DisplayName("이미 존재하는 역 추가 시 에러 발생")
     @Test
@@ -76,6 +120,7 @@ public class LineTest {
             .isInstanceOf(AlreadyExistDownStationException.class);
     }
 
+    @DisplayName("지하철 노선의 역을 삭제")
     @Test
     void removeSection() {
         // given

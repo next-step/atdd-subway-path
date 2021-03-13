@@ -10,9 +10,8 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
-import nextstep.subway.line.exception.AlreadyExistDownStationException;
+import nextstep.subway.line.exception.NotExistStationException;
 import nextstep.subway.line.exception.NotLastStationException;
-import nextstep.subway.line.exception.NotMatchedUpStationException;
 import nextstep.subway.line.exception.TooLowLengthSectionsException;
 import nextstep.subway.station.domain.Station;
 
@@ -33,8 +32,19 @@ public class Sections {
 			return;
 		}
 
-		validateAddSection(section);
-		sections.add(section);
+		Section findSection = sections.stream()
+			.filter(s -> s.containsStation(section))
+			.findAny()
+			.orElseThrow(NotExistStationException::new);
+
+		if (findSection.isLastSection(section)) {
+			sections.add(section);
+			return;
+		}
+
+		List<Section> divideSections = findSection.divideSections(section);
+		sections.remove(findSection);
+		sections.addAll(divideSections);
 	}
 
 	public void removeSection(Station station) {
@@ -89,15 +99,7 @@ public class Sections {
 	}
 
 	private void validateAddSection(Section section) {
-		boolean isNotValidUpStation = findLastStation() != section.getUpStation();
-		if (isNotValidUpStation) {
-			throw new NotMatchedUpStationException();
-		}
 
-		boolean isDownStationExisted = getStations().contains(section.getDownStation());
-		if (isDownStationExisted) {
-			throw new AlreadyExistDownStationException();
-		}
 	}
 
 	private void validateDeleteSection(Station station) {
