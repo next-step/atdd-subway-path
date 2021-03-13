@@ -43,7 +43,7 @@ public class LineService {
     public List<LineResponse> findLineResponses() {
         List<Line> persistLines = lineRepository.findAll();
         return persistLines.stream()
-                .map(line -> createLineResponse(line))
+                .map(this::createLineResponse)
                 .collect(Collectors.toList());
     }
 
@@ -74,12 +74,9 @@ public class LineService {
 
     public void removeSection(Long lineId, Long stationId) {
         Line line = findLineById(lineId);
-        removeSection(line, stationId);
-    }
-
-    public void removeSection(Line line, Long stationId) {
         line.removeSection(stationId);
     }
+
 
     public LineResponse createLineResponse(Line line) {
         List<StationResponse> stations = line.getStations().stream()
