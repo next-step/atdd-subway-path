@@ -9,9 +9,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.line.exception.AlreadyExistDownStationException;
+import nextstep.subway.line.exception.AlreadyIncludedAllStationException;
+import nextstep.subway.line.exception.NotExistStationException;
 import nextstep.subway.line.exception.NotLastStationException;
-import nextstep.subway.line.exception.NotMatchedUpStationException;
+import nextstep.subway.line.exception.TooLongDistanceException;
 import nextstep.subway.line.exception.TooLowLengthSectionsException;
 import nextstep.subway.station.domain.Station;
 
@@ -84,40 +85,32 @@ public class LineTest {
     @DisplayName("지하철 노선 중간에 역 추가 시 구간의 길이가 기존의 길이보다 크거나 같으면 에러 발생")
     @Test
     void addSectionInMiddleTooLongDistance() {
+        // given
+        Station 판교역 = new Station("판교역");
 
+        // when, then
+        assertThatThrownBy(() -> 신분당선.addSection(Section.of(신분당선, 판교역, 역삼역, 5)))
+            .isInstanceOf(TooLongDistanceException.class);
     }
 
     @DisplayName("구간 등록 시 상행역과 하행역이 모두 등록되어 있으면 에러 발생")
     @Test
     void addSectionAlreadyIncludedAllStation() {
-
+        // when, then
+        assertThatThrownBy(() -> 신분당선.addSection(Section.of(신분당선, 강남역, 역삼역, 3)))
+            .isInstanceOf(AlreadyIncludedAllStationException.class);
     }
 
     @DisplayName("구간 등록 시 상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 에러 발생")
     @Test
     void addSectionNotIncludedAllStation() {
-
-    }
-
-    @DisplayName("목록 중간에 추가할 경우 에러 발생")
-    @Test
-    void addSectionInMiddleException() {
         // given
         Station 판교역 = new Station("판교역");
+        Station 삼성역 = new Station("삼성역");
 
         // when, then
-        assertThatThrownBy(() -> 신분당선.addSection(Section.of(신분당선, 강남역, 판교역, 3)))
-            .isInstanceOf(NotMatchedUpStationException.class);
-    }
-
-
-
-    @DisplayName("이미 존재하는 역 추가 시 에러 발생")
-    @Test
-    void addSectionAlreadyIncluded() {
-        // when, then
-        assertThatThrownBy(() -> 신분당선.addSection(Section.of(신분당선, 역삼역, 강남역, 4)))
-            .isInstanceOf(AlreadyExistDownStationException.class);
+        assertThatThrownBy(() -> 신분당선.addSection(Section.of(신분당선, 삼성역, 판교역, 3)))
+            .isInstanceOf(NotExistStationException.class);
     }
 
     @DisplayName("지하철 노선의 역을 삭제")

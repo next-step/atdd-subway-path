@@ -4,12 +4,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import nextstep.subway.line.exception.NotExistSameStationException;
+import nextstep.subway.line.exception.TooLongDistanceException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 
 @Entity
 public class Section {
+    private static final int MINIMUM_DISTANCE = 0;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,9 +46,7 @@ public class Section {
     }
 
     public List<Section> divideSections(Section section) {
-        if (!hasSameUpStation(section) && !hasSameDownStation(section)) {
-            throw new NotExistSameStationException();
-        }
+        validateDivideSections(section);
 
         if (hasSameUpStation(section)) {
             return Arrays.asList(
@@ -65,6 +66,16 @@ public class Section {
             || upStation.equals(section.getDownStation())
             || downStation.equals(section.getUpStation())
             || hasSameDownStation(section);
+    }
+
+    private void validateDivideSections(Section section) {
+        if (!hasSameUpStation(section) && !hasSameDownStation(section)) {
+            throw new NotExistSameStationException();
+        }
+
+        if (calculateDistance(section) == MINIMUM_DISTANCE) {
+            throw new TooLongDistanceException();
+        }
     }
 
     private boolean hasSameDownStation(Section section) {

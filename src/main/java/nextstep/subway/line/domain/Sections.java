@@ -10,6 +10,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.line.exception.AlreadyIncludedAllStationException;
 import nextstep.subway.line.exception.NotExistStationException;
 import nextstep.subway.line.exception.NotLastStationException;
 import nextstep.subway.line.exception.TooLowLengthSectionsException;
@@ -32,10 +33,8 @@ public class Sections {
 			return;
 		}
 
-		Section findSection = sections.stream()
-			.filter(s -> s.containsStation(section))
-			.findAny()
-			.orElseThrow(NotExistStationException::new);
+		validateAddSection(section);
+		Section findSection = findInsertLocation(section);
 
 		if (findSection.isLastSection(section)) {
 			sections.add(section);
@@ -82,6 +81,24 @@ public class Sections {
 		return stations;
 	}
 
+	private void validateAddSection(Section section) {
+		if (isAllContainsStation(section)) {
+			throw new AlreadyIncludedAllStationException();
+		}
+	}
+
+	private boolean isAllContainsStation(Section section) {
+		return getStations().contains(section.getUpStation())
+			&& getStations().contains(section.getDownStation());
+	}
+
+	private Section findInsertLocation(Section section) {
+		return sections.stream()
+			.filter(s -> s.containsStation(section))
+			.findAny()
+			.orElseThrow(NotExistStationException::new);
+	}
+
 	private Station findUpStation() {
 		Station downStation = sections.get(0).getUpStation();
 		while (downStation != null) {
@@ -96,10 +113,6 @@ public class Sections {
 		}
 
 		return downStation;
-	}
-
-	private void validateAddSection(Section section) {
-
 	}
 
 	private void validateDeleteSection(Station station) {
