@@ -19,6 +19,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
+@DisplayName("노선 비즈니스 로직 Mock 테스트")
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
 
@@ -49,7 +50,7 @@ public class LineServiceMockTest {
     }
 
     @Test
-    @DisplayName("addSection 단위 테스트")
+    @DisplayName("노선에 구간 추가 Mock 단위 테스트")
     void addSection() {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
