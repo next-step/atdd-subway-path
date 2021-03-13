@@ -49,9 +49,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
-        return sections;
-    }
+    public List<Section> getSections() { return sections; }
 
     @Override
     public boolean equals(Object o) {

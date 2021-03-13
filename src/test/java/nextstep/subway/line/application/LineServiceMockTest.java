@@ -9,8 +9,20 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
+
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.anyLong;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
@@ -44,11 +56,19 @@ public class LineServiceMockTest {
     void addSection() {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(이호선));
 
         // when
         // lineService.addSection 호출
+        lineService.addSection(이호선, 역삼역, 삼성역, 2);
 
         // then
         // line.findLineById 메서드를 통해 검증
+       final Line resultLine = lineService.findLineById(이호선.getId());
+       final Set<Station> stations = resultLine.getSections().stream()
+                .map(section -> Arrays.asList(section.getDownStation(), section.getUpStation()))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
+       assertThat(stations).contains(삼성역);
     }
 }
