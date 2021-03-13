@@ -16,12 +16,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.line.acceptance.LineSteps.*;
+import static nextstep.subway.line.acceptance.LineSteps.지하철_노선_등록되어_있음;
+import static nextstep.subway.line.acceptance.LineSteps.지하철_노선_조회_요청;
+import static nextstep.subway.line.acceptance.LineSteps.지하철_노선에_지하철역_등록_요청;
+import static nextstep.subway.line.acceptance.LineSteps.지하철_노선에_지하철역_제외_요청;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선에 역 등록 관련 기능")
-public class LineSectionAcceptanceTest extends AcceptanceTest {
+class LineSectionAcceptanceTest extends AcceptanceTest {
+
     private LineResponse 신분당선;
     private StationResponse 강남역;
     private StationResponse 양재역;

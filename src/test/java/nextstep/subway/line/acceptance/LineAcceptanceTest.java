@@ -16,12 +16,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.line.acceptance.LineSteps.*;
+import static nextstep.subway.line.acceptance.LineSteps.지하철_노선_등록되어_있음;
+import static nextstep.subway.line.acceptance.LineSteps.지하철_노선_목록_조회_요청;
+import static nextstep.subway.line.acceptance.LineSteps.지하철_노선_생성_요청;
+import static nextstep.subway.line.acceptance.LineSteps.지하철_노선_수정_요청;
+import static nextstep.subway.line.acceptance.LineSteps.지하철_노선_제거_요청;
+import static nextstep.subway.line.acceptance.LineSteps.지하철_노선_조회_요청;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
-public class LineAcceptanceTest extends AcceptanceTest {
+class LineAcceptanceTest extends AcceptanceTest {
+
     private StationResponse 강남역;
     private StationResponse 광교역;
     private Map<String, String> lineCreateParams;
@@ -42,8 +48,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         lineCreateParams.put("distance", 10 + "");
     }
 
-    @DisplayName("지하철 노선을 생성한다.")
     @Test
+    @DisplayName("지하철 노선을 생성한다.")
     void createLine() {
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineCreateParams);
@@ -52,8 +58,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성됨(response);
     }
 
-    @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
+    @DisplayName("지하철 노선 목록을 조회한다.")
     void getLines() {
         // given
         Map<String, String> params = new HashMap<>();
@@ -73,8 +79,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_목록_포함됨(response, Arrays.asList(createResponse1, createResponse2));
     }
 
-    @DisplayName("지하철 노선을 조회한다.")
     @Test
+    @DisplayName("지하철 노선을 조회한다.")
     void getLine() {
         // given
         ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(lineCreateParams);
@@ -86,8 +92,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_응답됨(response);
     }
 
-    @DisplayName("지하철 노선을 수정한다.")
     @Test
+    @DisplayName("지하철 노선을 수정한다.")
     void updateLine() {
         // given
         String name = "신분당선";
@@ -106,8 +112,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_수정됨(response);
     }
 
-    @DisplayName("지하철 노선을 제거한다.")
     @Test
+    @DisplayName("지하철 노선을 제거한다.")
     void deleteLine() {
         // given
         ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(lineCreateParams);
@@ -119,8 +125,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제됨(response);
     }
 
-    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
+    @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     void createLineWithDuplicateName() {
         // given
         지하철_노선_등록되어_있음(lineCreateParams);

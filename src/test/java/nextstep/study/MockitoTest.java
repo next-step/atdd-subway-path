@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 
 @DisplayName("단위 테스트 - mockito를 활용한 가짜 협력 객체 사용")
 public class MockitoTest {
+
     @Test
     void findAllLines() {
         // given
