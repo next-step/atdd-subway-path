@@ -11,6 +11,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
+import static nextstep.subway.line.acceptance.LineRequestSteps.*;
+import static nextstep.subway.line.acceptance.LineVerificationSteps.*;
+import static nextstep.subway.station.StationRequestSteps.지하철_역_등록_됨;
 
 
 @DisplayName("지하철 노선 관련 기능")

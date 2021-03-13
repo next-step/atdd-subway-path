@@ -9,9 +9,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static nextstep.subway.line.LineRequestSteps.지하철_노선_생성_요청;
-import static nextstep.subway.line.LineSectionRequestSteps.*;
-import static nextstep.subway.line.LineSectionVerificationSteps.*;
+import static nextstep.subway.line.acceptance.LineRequestSteps.지하철_노선_생성_요청;
+import static nextstep.subway.line.acceptance.LineSectionRequestSteps.*;
+import static nextstep.subway.line.acceptance.LineSectionVerificationSteps.*;
 import static nextstep.subway.station.StationRequestSteps.지하철_역_등록_됨;
 
 @DisplayName("지하철 노선에 역 등록 관련 기능")
