@@ -54,7 +54,7 @@ class LineServiceMockTest {
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
         // when
-        lineService.addSection(이호선, 역삼역, 삼성역, 15);
+        이호선.addSection(역삼역, 삼성역, 15);
 
         // then
         Line line = lineService.findLineById(이호선.getId());

@@ -35,7 +35,7 @@ class LineServiceTest {
         Line 이호선 = lineRepository.save(new Line("2호선", "green", 강남역, 역삼역, 10));
 
         // when
-        lineService.addSection(이호선, 역삼역, 삼성역, 15);
+        이호선.addSection(역삼역, 삼성역, 15);
 
         // then
         Line line = lineService.findLineById(이호선.getId());
