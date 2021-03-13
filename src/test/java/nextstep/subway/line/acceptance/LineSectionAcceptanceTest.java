@@ -96,6 +96,17 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_제외_실패됨(removeResponse);
     }
 
+    @DisplayName("지하철 노선에 등록되어 있는 구간 사이에 새로운 구간을 등록한다.")
+    @Test
+    void addLineSectionBetween() {
+        // given & when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 정자역, 6);
+
+        // then (강남역 - 6 - 정자역 - 4 - 양재역)
+        지하철_노선에_지하철역_등록됨(response);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 정자역, 양재역));
+    }
+
     public static void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
