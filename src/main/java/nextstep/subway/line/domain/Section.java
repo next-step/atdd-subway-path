@@ -34,6 +34,24 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section(Builder builder) {
+        id = builder.id;
+        line = builder.line;
+        upStation = builder.upStation;
+        downStation = builder.downStation;
+        distance = builder.distance;
+    }
+
+    public static Builder Builder() {
+        return new Builder();
+    }
+
+    public Section updateLine(Line line) {
+        this.line = line;
+        return this;
+    }
+
+
     public Long getId() {
         return id;
     }
@@ -52,5 +70,43 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public static class Builder{
+        private Long id;
+        private Line line;
+        private Station upStation;
+        private Station downStation;
+        private int distance;
+
+        public Builder id(Long val) {
+            this.id = val;
+            return this;
+        }
+
+        public Builder line(Line val) {
+            this.line = val;
+            return this;
+        }
+
+        public Builder upStation(Station val) {
+            this.upStation = val;
+            return this;
+        }
+
+        public Builder downStation(Station val) {
+            this.downStation = val;
+            return this;
+        }
+
+        public Builder distance(int val) {
+            this.distance = val;
+            return this;
+        }
+
+        public Section build() {
+            return new Section(this);
+        }
+
     }
 }

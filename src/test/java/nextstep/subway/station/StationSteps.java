@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.utils.Extractor;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
@@ -20,33 +21,16 @@ public class StationSteps {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
-        return RestAssured.given().log().all().
-                body(params).
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                post("/stations").
-                then().
-                log().all().
-                extract();
+        return Extractor.post("/stations", params);
     }
 
     public static ExtractableResponse<Response> 지하철역_목록_조회_요청() {
-        return RestAssured.given().log().all().
-                when().
-                get("/stations").
-                then().
-                log().all().
-                extract();
+        return Extractor.get("/stations");
     }
 
     public static ExtractableResponse<Response> 지하철역_제거_요청(ExtractableResponse<Response> response) {
         String uri = response.header("Location");
 
-        return RestAssured.given().log().all().
-                when().
-                delete(uri).
-                then().
-                log().all().
-                extract();
+        return Extractor.delete(uri);
     }
 }
