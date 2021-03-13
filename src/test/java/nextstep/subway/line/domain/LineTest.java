@@ -1,6 +1,5 @@
 package nextstep.subway.line.domain;
 
-import io.restassured.internal.assertion.Assertion;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +24,13 @@ public class LineTest {
     @DisplayName("목록 중간에 추가할 경우 에러 발생")
     @Test
     void addSectionInMiddle() {
+        Line line = new Line("2호선","green");
+        Station upStation = new Station("홍대입구역");
+        Station downStation = new Station("충정로역");
+        line.addSection(upStation, downStation, 5);
+        Station middleStation = new Station("이대역");
+        line.addSection(middleStation, downStation, 3);
+        assertThat(line.getSections().size()).isEqualTo(2);
 
     }
 
