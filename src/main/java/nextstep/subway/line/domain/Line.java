@@ -114,33 +114,13 @@ public class Line extends BaseEntity {
             return;
         }
 
-        boolean isNotValidUpStation = getStations().get(getStations().size() - 1) != upStation;
-        if (isNotValidUpStation) {
-            throw new NotValidUpStationException();
-        }
-
-        boolean isDownStationExisted = getStations().stream().anyMatch(it -> it == downStation);
-        if (isDownStationExisted) {
-            throw new DownStationExistedException();
-        }
-
+        validateAddSection(upStation, downStation);
         getSections().add(new Section(this, upStation, downStation, distance));
     }
 
     public void removeSection(Long stationId) {
-        if (getSections().size() <= 1) {
-            throw new HasNoneOrOneSectionException();
-        }
-
-        boolean isNotValidUpStation = !getStations().get(getStations().size() - 1).getId().equals(stationId);
-        if (isNotValidUpStation) {
-            throw new NotLastStationException();
-        }
-
-        getSections().stream()
-                .filter(it -> it.getDownStation().getId().equals(stationId))
-                .findFirst()
-                .ifPresent(it -> getSections().remove(it));
+        validateRemoveSection(stationId);
+        getSections().removeIf(it -> it.getDownStation().getId().equals(stationId));
     }
 
     private Station findUpStation() {
@@ -159,4 +139,41 @@ public class Line extends BaseEntity {
         return downStation;
     }
 
+    private void validateAddSection(Station upStation, Station downStation) {
+        boolean isNotValidUpStation = isNotValidUpStation(upStation);
+        if (isNotValidUpStation) {
+            throw new NotValidUpStationException();
+        }
+
+        boolean isDownStationExisted = isDownStationExisted(downStation);
+        if (isDownStationExisted) {
+            throw new DownStationExistedException();
+        }
+    }
+
+    private boolean isNotValidUpStation(Station upStation) {
+        return getStations().get(getStations().size() - 1) != upStation;
+    }
+
+    private boolean isDownStationExisted(Station downStation) {
+        return getStations().stream().anyMatch(it -> it == downStation);
+    }
+
+    private void validateRemoveSection(Long stationId) {
+        if (isHasNoneOrOneSection()) {
+            throw new HasNoneOrOneSectionException();
+        }
+
+        if (isNotValidUpStation(stationId)) {
+            throw new NotLastStationException();
+        }
+    }
+
+    private boolean isHasNoneOrOneSection() {
+        return getSections().size() <= 1;
+    }
+
+    private boolean isNotValidUpStation(Long stationId) {
+        return !getStations().get(getStations().size() - 1).getId().equals(stationId);
+    }
 }
