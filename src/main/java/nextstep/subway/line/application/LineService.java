@@ -2,7 +2,6 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.exceptions.AlreadyExistsEntityException;
 import nextstep.subway.exceptions.NotFoundLineException;
-import nextstep.subway.exceptions.NotFoundStationException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
@@ -16,10 +15,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
