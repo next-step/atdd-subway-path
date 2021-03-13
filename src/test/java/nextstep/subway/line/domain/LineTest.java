@@ -48,7 +48,7 @@ public class LineTest {
 
     @DisplayName("지하철 노선 마지막 하행에 역을 추가")
     @Test
-    void addSection() {
+    void addSectionLastDownStation() {
         // given
         Station 판교역 = new Station("판교역");
         int expectedSize = 신분당선.getStations().size() + 1;
@@ -61,6 +61,23 @@ public class LineTest {
         assertThat(신분당선.getStations())
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactlyElementsOf(Arrays.asList(강남역, 역삼역, 판교역));
+    }
+
+    @DisplayName("지하철 노선 제일 앞 상행에 역을 추가")
+    @Test
+    void addSectionFirstUpStation() {
+        // given
+        Station 판교역 = new Station("판교역");
+        int expectedSize = 신분당선.getStations().size() + 1;
+
+        // when
+        신분당선.addSection(Section.of(신분당선, 판교역, 강남역, 5));
+
+        // then
+        assertThat(신분당선.getStations().size()).isEqualTo(expectedSize);
+        assertThat(신분당선.getStations())
+            .usingRecursiveFieldByFieldElementComparator()
+            .containsExactlyElementsOf(Arrays.asList(판교역, 강남역, 역삼역));
     }
 
     @DisplayName("지하철 노선 중간에 역을 추가")
