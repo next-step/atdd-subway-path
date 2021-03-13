@@ -36,8 +36,5 @@ public class StationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().build();
-    }
+
 }
