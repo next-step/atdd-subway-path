@@ -2,6 +2,7 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,12 +53,31 @@ class LineServiceMockTest {
     void addSection() {
         // given
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
+        when(stationService.findStationById(역삼역.getId())).thenReturn(역삼역);
+        when(stationService.findStationById(삼성역.getId())).thenReturn(삼성역);
 
         // when
-        이호선.addSection(역삼역, 삼성역, 15);
+        lineService.addSection(이호선.getId(),new SectionRequest(역삼역.getId(), 삼성역.getId(),15));
 
         // then
         Line line = lineService.findLineById(이호선.getId());
         assertThat(line.getSections().size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("지하철 노선의 지하철 구간을 제거 한다")
+    void removeSection() {
+        // given
+        when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
+        when(stationService.findStationById(역삼역.getId())).thenReturn(역삼역);
+        when(stationService.findStationById(삼성역.getId())).thenReturn(삼성역);
+        lineService.addSection(이호선.getId(),new SectionRequest(역삼역.getId(), 삼성역.getId(),15));
+
+        // when
+        lineService.removeSection(이호선.getId(), 삼성역.getId());
+
+        // then
+        Line line = lineService.findLineById(이호선.getId());
+        assertThat(line.getSections().size()).isEqualTo(1);
     }
 }
