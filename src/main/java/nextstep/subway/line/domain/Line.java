@@ -15,8 +15,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -49,7 +49,43 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() { return sections; }
+    public void removeSection(Section section) { sections.remove(section); }
+
+    public void removeSection(Station station) {
+       sections.remove(station);
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public List<Section> getSections(){
+        return sections.getSections();
+    }
+
+    public Section findSectionByUpStation(Station station) {
+        return sections.findSectionByUpStation(station);
+    }
+
+    public boolean matchSectionWithUpStation(Station station) {
+        return (sections.findSectionByUpStation(station) != null);
+    }
+
+    public boolean matchSectionByDownStation(Station station) {
+        return (sections.findSectionByDownStation(station) != null);
+    }
+
+    public Section findSectionByDownStation(Station station) {
+        return sections.findSectionByDownStation(station);
+    }
+
+    public List<Station> getStations(){
+        return sections.getStations();
+    }
+
+    public boolean isInStation(Station station) {
+        return sections.getStations().stream().anyMatch(it -> it == station);
+    }
 
     @Override
     public boolean equals(Object o) {
