@@ -64,19 +64,6 @@ public class LineTest {
 
   }
 
-  @DisplayName("추가하는 구간의 상행역이 노선의 종점역이 아니면 Exception")
-  @Test
-  void addSectionWithoutLastSection() {
-    //given
-    Station 상현역 = new Station("상현역");
-    Station 성복역 = new Station("성복역");
-    //then
-    assertThrows(InvalidSectionException.class, () -> {
-      신분당선.addSection(상현역, 성복역, 5);
-    });
-
-  }
-
   @DisplayName("추가하는 구간의 상행역이나 하행역이 노선에 포함되어있으면 true")
   @Test
   void isRegisteredStationTest(){
@@ -140,11 +127,11 @@ public class LineTest {
     given(동천역.getId()).willReturn(8L);
     신분당선.addSection(광교중앙역, 상현역, 5);
     신분당선.addSection(상현역,수지구청역,3);
-    신분당선.addSection(상현역,성복역,4);
+    신분당선.addSection(상현역,성복역,2);
     List<Section> 신분당선_구간 = 신분당선.getSections().getSortedSection();
     신분당선.addSection(수지구청역,미금역,5);
     //when
-    신분당선.addSection(동천역,미금역,5);
+    신분당선.addSection(동천역,미금역,3);
     //then
     assertThat(신분당선.getSections().getSortedStations())
         .extracting(Station::getName).containsExactly("광교역", "광교중앙역", "상현역","성복역","수지구청역","동천역","미금역");
