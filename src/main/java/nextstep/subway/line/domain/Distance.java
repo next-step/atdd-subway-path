@@ -5,11 +5,13 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
 public class Distance {
 
+    @Column
     private int distance;
 
     public Distance() { }
@@ -24,6 +26,10 @@ public class Distance {
 
     private int checkDistance(int distance) {
         return distance > 0 ? 1 : 0;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     @Override
