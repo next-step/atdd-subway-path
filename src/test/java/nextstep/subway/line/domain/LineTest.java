@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.exception.InValidUpStationException;
 import nextstep.subway.station.domain.Station;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -9,17 +10,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class LineTest {
+
+    Station 강남역, 역삼역, 삼성역;
+    Line 이호선;
+
+    @BeforeEach
+    void setUp() {
+        강남역 = new Station("강남역");
+        역삼역 = new Station("역삼역");
+        삼성역 = new Station("삼성역");
+        이호선 = new Line("이호선", "green");
+    }
+
     @Test
     void getStations() {
     }
 
     @Test
     void addSection() {
-        // given
-        Station 강남역 = new Station("강남역");
-        Station 역삼역 = new Station("역삼역");
-        Line 이호선 = new Line("이호선", "green");
-
         // when
         이호선.addSection(강남역, 역삼역, 10);
 
@@ -31,10 +39,6 @@ public class LineTest {
     @Test
     void addSectionInMiddle() {
         // given
-        Station 강남역 = new Station("강남역");
-        Station 역삼역 = new Station("역삼역");
-        Station 삼성역 = new Station("삼성역");
-        Line 이호선 = new Line("이호선", "green");
         이호선.addSection(강남역, 역삼역, 10);
 
         // then
