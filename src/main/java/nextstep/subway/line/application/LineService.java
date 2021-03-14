@@ -68,6 +68,7 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
+    @Transactional
     public void addSection(Long lineId, SectionRequest request) {
         Line line = findLineById(lineId);
         Station upStation = stationService.findStationById(request.getUpStationId());
@@ -87,7 +88,6 @@ public class LineService {
         }
 
         validateStations(line, upStation, downStation);
-
         registerSection(line, upStation, downStation, distance);
     }
 
@@ -108,7 +108,7 @@ public class LineService {
         }
         line.getSections().remove(oldSection);
         line.getSections().add(newSection);
-        line.getSections().add(new Section(line, oldSection.getDownStation(), newSection.getDownStation(), oldSection.getDistance() - newSection.getDistance()));
+        line.getSections().add(new Section(line, oldSection.getUpStation(), newSection.getUpStation(), oldSection.getDistance() - newSection.getDistance()));
     }
 
     private void registerSection(Line line, Station upStation, Station downStation, int distance){
@@ -139,13 +139,13 @@ public class LineService {
     private Section getBelongingSectionInUpStation(Line line, Station station){
         return line.getSections().stream()
                 .filter(section -> section.getUpStation() == station)
-                .findFirst().orElseThrow(RuntimeException::new);
+                .findFirst().orElse(null);
     }
 
     private Section getBelongingSectionInDownStation(Line line, Station station){
         return line.getSections().stream()
                 .filter(section -> section.getDownStation() == station)
-                .findFirst().orElseThrow(RuntimeException::new);
+                .findFirst().orElse(null);
     }
 
     public void validateStations(Line line, Station upStation, Station downStation) {
