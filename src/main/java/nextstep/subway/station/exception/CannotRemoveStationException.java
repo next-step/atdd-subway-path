@@ -1,8 +1,8 @@
 package nextstep.subway.station.exception;
 
-import nextstep.subway.common.exception.NotRemoveResourceException;
+import nextstep.subway.common.exception.CannotRemoveResourceException;
 
-public class CannotRemoveStationException extends NotRemoveResourceException {
+public class CannotRemoveStationException extends CannotRemoveResourceException {
 
     public CannotRemoveStationException(String message) {
         super(message);

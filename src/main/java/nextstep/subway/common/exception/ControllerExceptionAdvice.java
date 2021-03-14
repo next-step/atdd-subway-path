@@ -1,6 +1,6 @@
 package nextstep.subway.common.exception;
 
-import nextstep.subway.station.exception.NotMatchingStationException;
+import nextstep.subway.station.exception.CannotMatchingStationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ControllerExceptionAdvice {
 
-    @ExceptionHandler({ExistResourceException.class, NotMatchingStationException.class, NotRemoveResourceException.class})
+    @ExceptionHandler({ExistResourceException.class, CannotMatchingStationException.class, CannotRemoveResourceException.class})
     public ResponseEntity<ErrorResponse> existResourceExceptionHandler(RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), HttpStatus.CONFLICT.value());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);

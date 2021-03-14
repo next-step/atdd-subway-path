@@ -2,7 +2,7 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.line.exception.CannotRemoveSectionException;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.exception.NotMatchingStationException;
+import nextstep.subway.station.exception.CannotMatchingStationException;
 import nextstep.subway.station.exception.CannotRemoveStationException;
 import nextstep.subway.station.exception.StationAlreadyExistException;
 
@@ -46,7 +46,7 @@ public class Sections {
 
     private void validateUpStationMatching(Station upStation) {
         if (!getLastDownStation().equals(upStation)) {
-            throw new NotMatchingStationException(EXCEPTION_MESSAGE_NOT_MATCHING_EXISTING_AND_NEW_STATION);
+            throw new CannotMatchingStationException(EXCEPTION_MESSAGE_NOT_MATCHING_EXISTING_AND_NEW_STATION);
         }
     }
 
@@ -67,7 +67,7 @@ public class Sections {
         return sections.get(sections.size() - 1);
     }
 
-    public Station getLastDownStation() {
+    private Station getLastDownStation() {
         Section section = getLastSection();
         return section.getDownStation();
     }
