@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.exception.*;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -64,5 +65,61 @@ public class Line extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, color);
+    }
+
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+
+        Station firstStation = sections.get(0).getUpStation();
+        stations.add(firstStation);
+
+        sections.stream().forEach(section -> {
+            stations.add(section.getDownStation());
+        });
+
+        return stations;
+    }
+
+    public void addSection(Section section) {
+        checkIfSectionIsValid(section);
+        sections.add(section);
+    }
+
+    private void checkIfSectionIsValid(Section section) {
+        if(sections.isEmpty()) {
+            return;
+        }
+
+        checkIfUpStationValid(section);
+        checkIfStationAlreadyExists(section);
+    }
+
+    private void checkIfUpStationValid(Section section) {
+        Station finalStation = sections.get(sections.size() - 1).getDownStation();
+        if(!finalStation.equals(section.getUpStation())) {
+            throw new FinalStationNeededException();
+        }
+
+    }
+
+    private void checkIfStationAlreadyExists(Section section) {
+        boolean isAlreadyExists = sections.stream().anyMatch(s -> section.getDownStation().equals(s.getUpStation()));
+
+        if(isAlreadyExists) {
+            throw new StationAlreadyExistsException();
+        }
+    }
+
+    public void removeSection(Long id) {
+        if(sections.size() <= 1) {
+            throw new OnlyOneSectionRemainingException();
+        }
+
+        Section targetSection = sections.stream()
+                .filter(section -> section.getDownStation().getId().equals(id))
+                .findAny()
+                .orElseThrow(NoStationToRemoveException::new);
+
+        sections.remove(targetSection);
     }
 }
