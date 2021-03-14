@@ -45,7 +45,7 @@ public class LineServiceMockTest {
         ReflectionTestUtils.setField(역삼역, "id", 2L);
         삼성역 = new Station("삼성역");
         ReflectionTestUtils.setField(삼성역, "id", 3L);
-        이호선 = new Line("2호선", "green", 강남역, 역삼역, 10);
+        이호선 = Line.of("2호선", "green", 강남역, 역삼역, 10);
         ReflectionTestUtils.setField(이호선, "id", 1L);
     }
 
@@ -58,7 +58,7 @@ public class LineServiceMockTest {
         LineService lineService = new LineService(lineRepository, stationService);
 
         // when
-        SectionRequest sectionRequest = new SectionRequest(역삼역.getId(), 삼성역.getId(), 10);
+        SectionRequest sectionRequest = SectionRequest.of(역삼역.getId(), 삼성역.getId(), 10);
         lineService.addSection(이호선.getId(), sectionRequest);
 
         //then

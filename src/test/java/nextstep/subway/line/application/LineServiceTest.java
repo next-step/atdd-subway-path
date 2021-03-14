@@ -45,12 +45,12 @@ public class LineServiceTest {
 
         // when
         // lineService.addSection 호출
-        SectionRequest sectionRequest = new SectionRequest(판교역.getId(), 광교역.getId(), 15);
+        SectionRequest sectionRequest = SectionRequest.of(판교역.getId(), 광교역.getId(), 15);
         lineService.addSection(신분당선.getId(), sectionRequest);
 
         // then
         // line.getSections 메서드를 통해 검증
         Line line = lineService.findLineById(신분당선.getId());
-        assertThat(line.getSections()).hasSize(2);
+        assertThat(line.getAllStations()).hasSize(3);
     }
 }
