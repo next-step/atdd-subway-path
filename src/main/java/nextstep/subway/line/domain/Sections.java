@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.CascadeType;
@@ -49,7 +50,6 @@ public class Sections {
   }
 
   public void add(Line line, Station upStation, Station downStation, int distance) {
-
     if (sections.isEmpty()) {
       insertLastSection(line, upStation, downStation, distance);
       return;
@@ -69,22 +69,20 @@ public class Sections {
 
   }
 
-  private Section findMatchedSectionByDownStation(Station downStation) {
+  private Optional<Section> findMatchedSectionByDownStation(Station downStation) {
     return sections.stream()
         .filter(section -> section.getDownStation().equals(downStation))
-        .findFirst()
-        .orElseGet(() -> null);
+        .findFirst();
   }
 
-  private Section findMatchedSectionByUpStation(Station upStation) {
+  private Optional<Section> findMatchedSectionByUpStation(Station upStation) {
     return sections.stream()
         .filter(section -> section.getUpStation().equals(upStation))
-        .findFirst()
-        .orElseGet(() -> null);
+        .findFirst();
   }
 
   private void append(Line line, Station upStation, Station downStation, int distance) {
-    Section target = findMatchedSectionByDownStation(downStation);
+    Section target = findMatchedSectionByDownStation(downStation).orElseGet(() -> null);
     if (Objects.isNull(target)) {
       insertLastSection(line, upStation, downStation, distance);
       return;
@@ -97,7 +95,7 @@ public class Sections {
   }
 
   private void prepend(Line line, Station upStation, Station downStation, int distance) {
-    Section target = findMatchedSectionByUpStation(upStation);
+    Section target = findMatchedSectionByUpStation(upStation).orElseGet(() -> null);
     if (Objects.isNull(target)) {
       insertLastSection(line, upStation, downStation, distance);
       return;
