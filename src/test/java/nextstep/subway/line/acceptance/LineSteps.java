@@ -107,4 +107,15 @@ public class LineSteps {
                 log().all().
                 extract();
     }
+
+    public static Map<String, String> 파라미터_생성(String name, String color, Long upStationId, Long downStationId, int distance){
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId + "");
+        params.put("downStationId", downStationId + "");
+        params.put("distance", distance + "");
+        return params;
+    }
+
 }
