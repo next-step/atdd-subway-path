@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
@@ -32,8 +33,8 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Station upStation = stationService.findById(request.getUpStationId());
         Station downStation = stationService.findById(request.getDownStationId());
-        Line line = lineRepository.save(Line.of(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
-        return createLineResponse(line);
+        Line persistLine = lineRepository.save(new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
+        return LineResponse.of(persistLine);
     }
 
     public List<Line> findLines() {
@@ -43,17 +44,13 @@ public class LineService {
     public List<LineResponse> findLineResponses() {
         List<Line> persistLines = lineRepository.findAll();
         return persistLines.stream()
-                .map(line -> createLineResponse(line))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
-    }
-
-    public Line findLineById(Long id) {
-        return lineRepository.findById(id).orElseThrow(RuntimeException::new);
     }
 
     public LineResponse findLineResponseById(Long id) {
         Line persistLine = findLineById(id);
-        return createLineResponse(persistLine);
+        return LineResponse.of(persistLine);
     }
 
     public void updateLine(Long id, LineRequest lineUpdateRequest) {
@@ -76,7 +73,9 @@ public class LineService {
         Line line = findLineById(lineId);
         line.deleteSection(stationId);
     }
-    public LineResponse createLineResponse(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getAllStations(), line.getCreatedDate(), line.getModifiedDate());
+
+    public Line findLineById(long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new NotFoundException("지하철 노선을 찾을 수 없습니다."));
     }
 }

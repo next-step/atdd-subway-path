@@ -71,4 +71,13 @@ public class Section {
     public long getDownStationId() {
         return downStation.getId();
     }
+
+    public long getUpStationId() {
+        return upStation.getId();
+    }
+
+    public Section update(Line line) {
+        this.line = line;
+        return this;
+    }
 }

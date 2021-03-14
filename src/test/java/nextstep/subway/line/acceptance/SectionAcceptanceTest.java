@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static nextstep.subway.line.acceptance.LineSteps.*;
 import static nextstep.subway.line.acceptance.SectionSteps.*;
@@ -32,7 +33,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         석촌역 = 지하철역_생성_요청("석촌역").as(StationResponse.class);
         남한산성입구역 = 지하철역_생성_요청("남한산성입구역").as(StationResponse.class);
         산성역 = 지하철역_생성_요청("산성역").as(StationResponse.class);
-
         lineRequest = new LineRequest("8호선", "pink", 석촌역.getId(), 남한산성입구역.getId(), distance);
     }
 
@@ -101,7 +101,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     ExtractableResponse<Response> stationInit(long lineId) {
-        SectionRequest sectionRequest = SectionRequest.of(남한산성입구역.getId(), 산성역.getId(), 3);
+        SectionRequest sectionRequest = SectionRequest.of(석촌역.getId(), 산성역.getId(), 3);
         ExtractableResponse<Response> response = 지하철_노선_구간_등록_요청(sectionRequest, lineId);
         return response;
     }

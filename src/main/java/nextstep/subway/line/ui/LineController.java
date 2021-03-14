@@ -1,5 +1,6 @@
 package nextstep.subway.line.ui;
 
+import nextstep.subway.exception.*;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
@@ -60,8 +61,16 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity handleIllegalArgsException(RuntimeException e) {
+    @ExceptionHandler({
+            NoOtherStationException.class,
+            NotEqualsNameException.class,
+            NotFoundException.class,
+            SubwayNameDuplicateException.class,
+            IllegalArgumentException.class,
+            StationDuplicateException.class,
+            DistanceMaximumException.class
+    })
+    public ResponseEntity subwayLineHandleException(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
