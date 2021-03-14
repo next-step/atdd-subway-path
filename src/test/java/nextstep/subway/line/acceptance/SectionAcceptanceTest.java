@@ -95,7 +95,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     long 상현역 =  지하철역_생성_요청("상현역").body().jsonPath().getLong("id");
     long 성복역 =  지하철역_생성_요청("성복역").body().jsonPath().getLong("id");
     구간등록요청(신분당선,광교중앙역,성복역,30);
-    ExtractableResponse<Response> sectionResponse = 구간등록요청(신분당선,광교중앙역,상현역,30);
+    ExtractableResponse<Response> sectionResponse = 구간등록요청(신분당선,광교중앙역,상현역,20);
     노선_구간_등록됨(sectionResponse);
   }
 
