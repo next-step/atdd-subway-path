@@ -19,7 +19,7 @@ public class LineTest {
         Line 이호선 = new Line("이호선", "green");
 
         // when
-        이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
+        이호선.addSection(강남역, 역삼역, 10);
 
         // then
         assertThat(이호선.getSections().size()).isEqualTo(1);
