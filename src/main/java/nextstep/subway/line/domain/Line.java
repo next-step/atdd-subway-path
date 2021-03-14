@@ -2,7 +2,6 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
 import java.util.*;
@@ -39,6 +38,13 @@ public class Line extends BaseEntity {
         this.name = name;
         this.color = color;
         this.sections = Sections.of(this, section);
+    }
+
+    public Line(long id, String name, String color, Sections sections) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.sections = sections;
     }
 
     public void update(Line line) {
@@ -83,7 +89,7 @@ public class Line extends BaseEntity {
         return sections.getStationsInOrder();
     }
 
-    public void deleteLastSection(Long stationId) {
-        sections.deleteLastSection(stationId);
+    public void deleteSection(Long stationId) {
+        sections.deleteSection(this, stationId);
     }
 }

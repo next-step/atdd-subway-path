@@ -1,39 +1,22 @@
 package nextstep.subway.line.domain;
 
+
 import nextstep.subway.exceptions.InvalidSectionException;
 import nextstep.subway.exceptions.OnlyOneSectionException;
-import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.SectionRequest;
-import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.when;
 
-
-@DisplayName("LineService 클래스")
-@ExtendWith(SpringExtension.class)
+@DisplayName("Line 클래스")
 public class LineTest {
-    @MockBean
-    private LineRepository lineRepository;
-
-    @MockBean
-    private StationService stationService;
-
-    private LineService lineService;
     private Station 강남역;
     private Station 역삼역;
     private Station 삼성역;
@@ -41,8 +24,6 @@ public class LineTest {
 
     @BeforeEach
     void setup() {
-        lineService = new LineService(lineRepository, stationService);
-
         강남역 = new Station("강남역");
         ReflectionTestUtils.setField(강남역, "id", 1L);
         역삼역 = new Station("역삼역");
@@ -53,120 +34,129 @@ public class LineTest {
         ReflectionTestUtils.setField(이호선, "id", 1L);
     }
 
-
-    @Nested
-    @DisplayName("getStations 메소드는")
-    class Describe_getStations {
-
-        @DisplayName("노선의 포함된 모든 전철역을 조회한다.")
-        @Test
-        void it_returns_stations_by_line() {
-            //given
-            when(lineRepository.findById(이호선.getId())).thenReturn(java.util.Optional.ofNullable(이호선));
-
-            //when
-            List<StationResponse> stations = lineService.getStations(이호선.getId());
-
-            //then
-            assertThat(stations).hasSize(2);
-        }
-    }
-
     @Nested
     @DisplayName("addSection 메소드는")
     class Describe_addSection {
-
+        @DisplayName("만약 새로운 구간의 상행역이나 하행역이 기존 구간의 하행역이거나 상행역이고")
         @Nested
-        @DisplayName("만약 추가할 구간의 상행역이 기존 구간의 하행역이고")
-        class Context_with_equal_station {
+        class Context_with_valid_UpStationOrDownSection {
 
+            @DisplayName("새로운 구간의 나머지 역이 등록되어 있지 않다면")
             @Nested
-            @DisplayName("하행역이 등록되어있지 않다면")
-            class Context_with_not_include_down_station {
-                @DisplayName("정상적으로 구간이 추가되어야 한다.")
+            class Context_with_valid_other_section {
+                @DisplayName("정상적으로 구간이 추가된다.")
                 @Test
-                void addSection() {
+                void addSectionWithValidSection() {
                     //given
-                    when(lineRepository.findById(이호선.getId())).thenReturn(java.util.Optional.ofNullable(이호선));
-                    when(stationService.findStationById(역삼역.getId())).thenReturn(역삼역);
-                    when(stationService.findStationById(삼성역.getId())).thenReturn(삼성역);
+                    Section section = new Section(이호선, 역삼역, 삼성역, 10);
 
                     //when
-                    SectionRequest sectionRequest = new SectionRequest(역삼역.getId(), 삼성역.getId(), 10);
-                    lineService.addSection(이호선.getId(), sectionRequest);
-                    LineResponse response = lineService.findLineResponseById(이호선.getId());
+                    이호선.addSection(section);
 
                     //then
-                    assertThat(response.getStations()).hasSize(3);
+                    assertThat(이호선.getStationsAll()).hasSize(3);
                 }
             }
 
+            @DisplayName("새로운 구간의 나머지 역이 등록되어 있다면")
+            @Nested
+            class Context_with_invalid_other_section {
+                @DisplayName("InvalidSectionException 에러가 발생해야 한다.")
+                @Test
+                void addSectionWithInValidSection() {
+                    //given
+                    Section section1 = new Section(이호선, 역삼역, 삼성역, 10);
+                    이호선.addSection(section1);
+
+                    //when, then
+                    Section section2 = new Section(이호선, 강남역, 삼성역, 10);
+
+                    assertThatThrownBy(() -> 이호선.addSection(section2)).isInstanceOf(InvalidSectionException.class);
+                }
+
+            }
+
+
         }
 
+        @DisplayName("만약 새로운 구간이 등록된 구간과 동일하다면")
         @Nested
-        @DisplayName("만약 추가할 구간이 이미 등록된 구간과 동일하다면")
         class Context_with_duplicate_section {
-
             @DisplayName("InvalidSectionException 에러가 발생해야 한다.")
             @Test
             void addSectionAlreadyIncluded() {
-                //given
-                when(lineRepository.findById(이호선.getId())).thenReturn(java.util.Optional.ofNullable(이호선));
-                when(stationService.findStationById(강남역.getId())).thenReturn(강남역);
-                when(stationService.findStationById(역삼역.getId())).thenReturn(역삼역);
-
                 //when, then
-                SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 역삼역.getId(), 10);
-                assertThatThrownBy(() -> lineService.addSection(이호선.getId(), sectionRequest))
-                        .isInstanceOf(InvalidSectionException.class);
+                assertThatThrownBy(() -> {
+                    Section section1 = new Section(이호선, 강남역, 역삼역, 10);
+                    이호선.addSection(section1);
+                }).isInstanceOf(InvalidSectionException.class);
 
             }
         }
+
     }
 
     @Nested
-    @DisplayName("removeSection 메소드는")
-    class Describe_removeSection {
+    @DisplayName("deleteSection 메소드는")
+    class Describe_deleteSection {
+        @DisplayName("만약 삭제하려는 역이 등록된 구간에 존재하는 역일 경우에")
         @Nested
-        @DisplayName("만약 구간이 하나 이상일때 마지막 구간을 삭제한다면")
-        class Context_with_valid_condition_of_remove_section {
-            @DisplayName("삭제는 정상적으로 되야한다.")
-            @Test
-            void removeSection() {
-                //given
-                when(lineRepository.findById(이호선.getId())).thenReturn(java.util.Optional.ofNullable(이호선));
-                when(stationService.findStationById(역삼역.getId())).thenReturn(역삼역);
-                when(stationService.findStationById(삼성역.getId())).thenReturn(삼성역);
-                SectionRequest sectionRequest = new SectionRequest(역삼역.getId(), 삼성역.getId(), 10);
-                lineService.addSection(이호선.getId(), sectionRequest);
+        class Context_with_delete_station_is_exists {
+            @DisplayName("구간이 2개 이상일 경우")
+            @Nested
+            class Context_with_section_more_than_two {
+                @DisplayName("삭제는 성공적으로 되며 삭제되는 역을 포함 두 구간이 서로 이어진 구간이 생성된다.")
+                @Test
+                void it_is_delete_and_created_new_section() {
+                    //given
+                    Section section = new Section(이호선, 역삼역, 삼성역, 10);
+                    이호선.addSection(section);
 
-                //when
-                lineService.removeSection(이호선.getId(), 삼성역.getId());
-                LineResponse response = lineService.findLineResponseById(이호선.getId());
+                    //when
+                    이호선.deleteSection(역삼역.getId());
 
-                //then
-                assertThat(response.getStations()).hasSize(2);
+                    //then
+                    assertThat(이호선.getStationsAll()).hasSize(2);
+                    assertThat(이호선.getStationsAll()).containsExactly(강남역, 삼성역);
+
+                }
+            }
+
+            @DisplayName("구간이 1개 이하일 경우")
+            @Nested
+            class Context_with_section_less_than_one {
+                @DisplayName("삭제는 실패한다.")
+                @Test
+                void is_is_deleted_failed() {
+                    //when,then
+                    assertThatThrownBy(() -> {
+                        이호선.deleteSection(역삼역.getId());
+                    }).isInstanceOf(OnlyOneSectionException.class);
+                }
             }
         }
-
-        @Nested
-        @DisplayName("만약 구간이 하나뿐일 때 삭제를 시도한다면")
-        class Context_with_delete_last_section {
-            @DisplayName("OnlyOneSectionException 에러가 발생해야 한다.")
-            @Test
-            void removeSectionNotEndOfList() {
-                //given
-                when(lineRepository.findById(이호선.getId())).thenReturn(java.util.Optional.ofNullable(이호선));
-
-                //when,then
-                assertThatThrownBy(() -> lineService.removeSection(이호선.getId(), 역삼역.getId()))
-                        .isInstanceOf(OnlyOneSectionException.class);
-
-            }
-        }
-
 
     }
 
+    @Nested
+    @DisplayName("getStationsAll 메소드는")
+    class Describe_getStationsAll {
+
+        @DisplayName("등록된 구간의 전철역을 순서를 맞춰 반환한다.")
+        @Test
+        void it_is_get_station_of_all_section_in_order() {
+            //given
+            Section section1 = new Section(이호선, 역삼역, 삼성역, 10);
+            이호선.addSection(section1);
+
+            //when
+            List<Station> stationsAll = 이호선.getStationsAll();
+
+            //then
+            assertThat(stationsAll).hasSize(3);
+            assertThat(stationsAll).containsExactly(강남역, 역삼역, 삼성역);
+        }
+
+    }
 
 }
