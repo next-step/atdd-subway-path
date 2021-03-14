@@ -27,6 +27,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     private StationResponse 양재역;
     private StationResponse 정자역;
     private StationResponse 광교역;
+    private StationResponse 양재시민의숲역;
 
     @BeforeEach
     public void setUp() {
@@ -36,6 +37,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         양재역 = 지하철역_등록되어_있음("양재역").as(StationResponse.class);
         정자역 = 지하철역_등록되어_있음("정자역").as(StationResponse.class);
         광교역 = 지하철역_등록되어_있음("광교역").as(StationResponse.class);
+        양재시민의숲역 = 지하철역_등록되어_있음("양재시민의숲역").as(StationResponse.class);
 
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
@@ -61,7 +63,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선에 이미 포함된 역을 구간으로 등록한다.")
     @Test
-    void addLineSectionAlreadyIncluded() {// given
+    void addLineSectionAlreadyIncluded() {
+        // given
         지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
 
         // when
@@ -95,6 +98,73 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선에_지하철역_제외_실패됨(removeResponse);
     }
+
+    @DisplayName("역 사이에 새로운 역 등록 성공")
+    @Test
+    void addStationInTheMiddleOfSection() {
+        // given
+        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 양재시민의숲역, 정자역, 2);
+
+        // then
+        지하철_노선에_지하철역_등록됨(response);
+    }
+
+    @DisplayName("역 사이에 새로운 역 등록 실패 - 기존 역 사이 길이와 같음")
+    @Test
+    void failToAddStationInTheMiddleOfSection_distance() {
+        // given
+        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 양재시민의숲역, 정자역, 6);
+
+        // then
+        지하철_노선에_지하철역_등록_실패됨(response);
+    }
+
+    @DisplayName("새로운 역을 상행 종점으로 등록")
+    @Test
+    void addNewUpStation() {
+        // when (광교역은 상행 종점이 아니지만..)
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 광교역, 강남역, 6);
+        // then
+        지하철_노선에_지하철역_등록됨(response);
+    }
+
+    @DisplayName("새로운 역을 하행 종점으로 등록")
+    @Test
+    void addNewDownStation() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 양재시민의숲역, 6);
+
+        // then
+        지하철_노선에_지하철역_등록됨(response);
+    }
+
+    @DisplayName("새로운 구간 등록 실패 - 두 역이 모두 등록되어 있음")
+    @Test
+    void failToAddSection_bothStationsAlreadyAdded() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 양재역, 7);
+
+        // then
+        지하철_노선에_지하철역_등록_실패됨(response);
+    }
+
+    @DisplayName("새로운 구간 등록 실패 - 어느 역도 등록되어 있지 않음")
+    @Test
+    void failToAddSection_bothStationsNotAdded() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 정자역, 광교역, 7);
+
+        // then
+        지하철_노선에_지하철역_등록_실패됨(response);
+
+    }
+
 
     public static void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());

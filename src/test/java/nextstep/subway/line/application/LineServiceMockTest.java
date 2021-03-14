@@ -2,6 +2,7 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
@@ -44,11 +51,18 @@ public class LineServiceMockTest {
     void addSection() {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
+        when(lineRepository.findById(1L)).thenReturn(Optional.of(이호선));
+        lenient().when(stationService.findStationById(1L)).thenReturn(강남역);
+        lenient().when(stationService.findStationById(2L)).thenReturn(역삼역);
+        lenient().when(stationService.findStationById(3L)).thenReturn(삼성역);
 
         // when
         // lineService.addSection 호출
+        SectionRequest sectionRequest = new SectionRequest(역삼역.getId(), 삼성역.getId(), 5);
+        lineService.addSection(이호선.getId(), sectionRequest);
 
         // then
         // line.findLineById 메서드를 통해 검증
+        assertThat(lineService.findLineById(이호선.getId()).getSections().size()).isEqualTo(2);
     }
 }
