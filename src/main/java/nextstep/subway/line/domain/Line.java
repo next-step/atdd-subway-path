@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.exception.AlreadyExistDownStation;
 import nextstep.subway.exception.InValidUpStationException;
 import nextstep.subway.station.domain.Station;
 
@@ -90,7 +91,7 @@ public class Line extends BaseEntity {
     private void checkValidDownStation(Station downStation) {
         boolean isDownStationExisted = getStations().contains(downStation);
         if (isDownStationExisted) {
-            throw new RuntimeException("하행역이 이미 등록되어 있습니다.");
+            throw new AlreadyExistDownStation();
         }
     }
 
