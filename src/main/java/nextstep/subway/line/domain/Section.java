@@ -6,25 +6,27 @@ import javax.persistence.*;
 
 @Entity
 public class Section {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "line_id")
     private Line line;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
     private int distance;
 
     public Section() {
+
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
@@ -34,7 +36,11 @@ public class Section {
         this.distance = distance;
     }
 
-    public Long getId() {
+    public static Section of(Line line, Station upStation, Station downStation, int distance) {
+        return new Section(line, upStation, downStation, distance);
+    }
+
+    public long getId() {
         return id;
     }
 
@@ -52,5 +58,17 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public String getUpStationName() {
+        return upStation.getName();
+    }
+
+    public String getDownStationName() {
+        return downStation.getName();
+    }
+
+    public long getDownStationId() {
+        return downStation.getId();
     }
 }
