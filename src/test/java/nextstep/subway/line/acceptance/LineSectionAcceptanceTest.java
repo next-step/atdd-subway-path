@@ -9,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 import static nextstep.subway.line.acceptance.LineRequestSteps.지하철_노선_생성_요청;
 import static nextstep.subway.line.acceptance.LineSectionRequestSteps.*;
 import static nextstep.subway.line.acceptance.LineSectionVerificationSteps.*;
@@ -18,6 +20,7 @@ import static nextstep.subway.station.StationRequestSteps.지하철_역_등록_�
 public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     private StationResponse 양재역;
+    private StationResponse 양재시민의숲역;
     private StationResponse 청계산입구역;
     private StationResponse 판교역;
     private LineResponse 신분당선_양재_청계산입구_노선;
@@ -28,6 +31,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // given
         양재역 = 지하철_역_등록_됨("양재역").as(StationResponse.class);
+        양재시민의숲역 = 지하철_역_등록_됨("양재시민의숲역").as(StationResponse.class);
         청계산입구역 = 지하철_역_등록_됨("청계산입구역").as(StationResponse.class);
         판교역 = 지하철_역_등록_됨("판교역").as(StationResponse.class);
 
@@ -43,6 +47,17 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_구간_등록_됨(response);
+    }
+
+    @Test
+    @DisplayName("지하철 노선에 등록된 구간 사이에 역을 등록한다.")
+    void addBetweenLineSection() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선_양재_청계산입구_노선.getId(), 양재역.getId(), 양재시민의숲역.getId(), 4);
+
+        // then
+        지하철_노선에_구간_등록_됨(response);
+        지하철_노선에_포함된_구간_역(response, Arrays.asList(양재역, 양재시민의숲역, 청계산입구역));
     }
 
     @Test
