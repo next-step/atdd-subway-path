@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.exception.InValidUpStationException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -96,7 +97,7 @@ public class Line extends BaseEntity {
     private void checkValidUpStation(Station upStation) {
         boolean isNotValidUpStation = getLastStation() != upStation;
         if (isNotValidUpStation) {
-            throw new RuntimeException("상행역은 하행 종점역이어야 합니다.");
+            throw new InValidUpStationException();
         }
     }
 
