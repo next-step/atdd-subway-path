@@ -77,6 +77,108 @@ public class LineTest {
 
   }
 
+  @DisplayName("추가하는 구간의 상행역이나 하행역이 노선에 포함되어있으면 true")
+  @Test
+  void isRegisteredStationTest(){
+    boolean result = 신분당선.getSections().isRegisteredStation(광교역);
+    assertThat(true).isEqualTo(result);
+  }
+
+  @DisplayName("추가하는 구간의 상행역이나 하행역이 노선에 포함되어있지않으면 false")
+  @Test
+  void isNotRegisteredStationTest(){
+    //given
+    Station 수지구청역 = mock(Station.class);
+    given(수지구청역.getName()).willReturn("수지구청역");
+    given(수지구청역.getId()).willReturn(6L);
+    //when
+    boolean result = 신분당선.getSections().isRegisteredStation(수지구청역);
+    //then
+    assertThat(false).isEqualTo(result);
+  }
+
+  @DisplayName("노선 중간에 역을 삽입하면 원래 구간의 길이에서 새로운 구간의 길이를 뺀값이다.")
+  @Test
+  void calculateNewDistance(){
+    //given
+    Station 수지구청역 = mock(Station.class);
+    Station 성복역 = mock(Station.class);
+    Station 상현역 = mock(Station.class);
+    given(수지구청역.getName()).willReturn("수지구청역");
+    given(수지구청역.getId()).willReturn(6L);
+    given(성복역.getName()).willReturn("성복역");
+    given(성복역.getId()).willReturn(5L);
+    given(상현역.getName()).willReturn("상현역");
+    given(상현역.getId()).willReturn(4L);
+    신분당선.addSection(광교중앙역, 상현역, 5);
+    신분당선.addSection(상현역,수지구청역,7);
+    //when
+    신분당선.addSection(상현역,성복역,3);
+    List<Section> 신분당선_구간 = 신분당선.getSections().getSortedSection();
+    //then
+    assertThat(신분당선_구간.get(신분당선_구간.size() - 1).getDistance()).isEqualTo(4);
+  }
+
+  @DisplayName("노선의 중간에 역을 삽입한다")
+  @Test
+  void insertSectionToSections(){
+    //given
+    Station 수지구청역 = mock(Station.class);
+    Station 성복역 = mock(Station.class);
+    Station 상현역 = mock(Station.class);
+    Station 미금역 = mock(Station.class);
+    Station 동천역 = mock(Station.class);
+    given(수지구청역.getName()).willReturn("수지구청역");
+    given(수지구청역.getId()).willReturn(6L);
+    given(성복역.getName()).willReturn("성복역");
+    given(성복역.getId()).willReturn(5L);
+    given(상현역.getName()).willReturn("상현역");
+    given(상현역.getId()).willReturn(4L);
+    given(미금역.getName()).willReturn("미금역");
+    given(미금역.getId()).willReturn(7L);
+    given(동천역.getName()).willReturn("동천역");
+    given(동천역.getId()).willReturn(8L);
+    신분당선.addSection(광교중앙역, 상현역, 5);
+    신분당선.addSection(상현역,수지구청역,3);
+    신분당선.addSection(상현역,성복역,4);
+    신분당선.addSection(수지구청역,미금역,5);
+    //when
+    신분당선.addSection(동천역,미금역,5);
+    //then
+    assertThat(신분당선.getSections().getSortedStations())
+        .extracting(Station::getName).containsExactly("광교역", "광교중앙역", "상현역","성복역","수지구청역","동천역","미금역");
+  }
+
+  @DisplayName("노선의 중간에 기존 구간의 길이보다 길이가 같거나 긴 역을 삽입하면 Exception")
+  @Test
+  void insertSectionToSectionsWithExceedLength(){
+    //given
+    Station 수지구청역 = mock(Station.class);
+    Station 성복역 = mock(Station.class);
+    Station 상현역 = mock(Station.class);
+    Station 미금역 = mock(Station.class);
+    Station 동천역 = mock(Station.class);
+    given(수지구청역.getName()).willReturn("수지구청역");
+    given(수지구청역.getId()).willReturn(6L);
+    given(성복역.getName()).willReturn("성복역");
+    given(성복역.getId()).willReturn(5L);
+    given(상현역.getName()).willReturn("상현역");
+    given(상현역.getId()).willReturn(4L);
+    given(미금역.getName()).willReturn("미금역");
+    given(미금역.getId()).willReturn(7L);
+    given(동천역.getName()).willReturn("동천역");
+    given(동천역.getId()).willReturn(8L);
+    신분당선.addSection(광교중앙역, 상현역, 5);
+    신분당선.addSection(상현역,수지구청역,3);
+    신분당선.addSection(상현역,성복역,4);
+    신분당선.addSection(수지구청역,미금역,5);
+
+    //when then
+    assertThrows(RuntimeException.class, ()-> {
+      신분당선.addSection(동천역,미금역,5);
+    });
+  }
+
   @DisplayName("노선에 역을 삭제")
   @Test
   void removeSection() {
