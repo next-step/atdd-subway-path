@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -25,6 +27,15 @@ public class LineTest {
 
     @Test
     void getStations() {
+        // given
+        이호선.addSection(강남역, 역삼역, 10);
+
+        // when
+        List<Station> stations = 이호선.getStations();
+
+        // then
+        assertThat(stations.size()).isEqualTo(2);
+        assertThat(stations).contains(강남역, 역삼역);
     }
 
     @Test
