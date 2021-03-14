@@ -1,7 +1,10 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineTest {
     @Test
@@ -10,6 +13,16 @@ public class LineTest {
 
     @Test
     void addSection() {
+        // given
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+        Line 이호선 = new Line("이호선", "green");
+
+        // when
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
+
+        // then
+        assertThat(이호선.getSections().size()).isEqualTo(1);
     }
 
     @DisplayName("목록 중간에 추가할 경우 에러 발생")
