@@ -1,5 +1,7 @@
 package nextstep.study;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import nextstep.subway.SubwayApplication;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
@@ -12,8 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = SubwayApplication.class)
 @Transactional
@@ -35,7 +35,7 @@ public class SpringBootTestSample {
 
         lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 삼성역.getId(), 10));
 
-        LineResponse lineResponse = lineService.findLineById(이호선.getId());
+        LineResponse lineResponse = lineService.findLine(이호선.getId());
 
         assertThat(lineResponse.getStations().size()).isEqualTo(2);
     }

@@ -112,7 +112,7 @@ public class LineServiceMockTest {
     given(lineRepository.findById(any())).willReturn(Optional.of(신분당선));
 
     //when
-    LineResponse lineResponse = lineService.findLineById(신분당선ID);
+    LineResponse lineResponse = lineService.findLine(신분당선ID);
 
     //then
 
@@ -129,7 +129,7 @@ public class LineServiceMockTest {
     //given
     given(lineRepository.findById(any())).willReturn(Optional.empty());
     //then
-    assertThrows(NoResourceException.class, () -> lineService.findLineById(신분당선ID));
+    assertThrows(NoResourceException.class, () -> lineService.findLine(신분당선ID));
   }
 
   @DisplayName("등록된 지하철 노선을 수정한다")
@@ -199,7 +199,7 @@ public class LineServiceMockTest {
     //when
     lineService.addSection(신분당선ID,new SectionRequest(상현역ID,성복역ID,2));
     //then
-    assertThat(lineService.findLineById(신분당선ID).getStations()).extracting(StationResponse::getName)
+    assertThat(lineService.findLine(신분당선ID).getStations()).extracting(StationResponse::getName)
         .containsExactly("광교역","광교중앙역","상현역","성복역");
 
   }

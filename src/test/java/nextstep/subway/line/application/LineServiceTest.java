@@ -74,7 +74,7 @@ public class LineServiceTest {
   @Test
   void findLineById() {
     //when
-    LineResponse lineResponse = lineService.findLineById(신분당선.getId());
+    LineResponse lineResponse = lineService.findLine(신분당선.getId());
 
     //then
     assertAll(
@@ -90,7 +90,7 @@ public class LineServiceTest {
   void findLineByIdWithException() {
     //then
     assertThrows(NoResourceException.class, () -> {
-      lineService.findLineById(2L);
+      lineService.findLine(2L);
     });
   }
 
@@ -111,7 +111,7 @@ public class LineServiceTest {
 
     //then
     assertThrows(NoResourceException.class, () -> {
-      lineService.findLineById(신분당선.getId());
+      lineService.findLine(신분당선.getId());
     });
   }
 
@@ -122,7 +122,7 @@ public class LineServiceTest {
     StationResponse 상현역 = stationService.saveStation(new StationRequest("상현역"));
     //when
     lineService.addSection(신분당선.getId(), new SectionRequest(광교중앙역.getId(), 상현역.getId(), 5));
-    LineResponse lineResponse = lineService.findLineById(신분당선.getId());
+    LineResponse lineResponse = lineService.findLine(신분당선.getId());
     //then
     assertAll(
         () -> assertThat(lineResponse.getStations()).hasSize(3),
@@ -141,7 +141,7 @@ public class LineServiceTest {
 
     //when
     lineService.addSection(신분당선.getId(), new SectionRequest(상현역.getId(), 성복역.getId(), 3));
-    LineResponse lineResponse = lineService.findLineById(신분당선.getId());
+    LineResponse lineResponse = lineService.findLine(신분당선.getId());
     //then
     assertAll(
         () -> assertThat(lineResponse.getStations()).hasSize(4),
@@ -176,7 +176,7 @@ public class LineServiceTest {
 
     //when
     lineService.removeSection(신분당선.getId(), 상현역.getId());
-    LineResponse lineResponse = lineService.findLineById(신분당선.getId());
+    LineResponse lineResponse = lineService.findLine(신분당선.getId());
 
     //then
     assertThat(lineResponse.getStations()).extracting(StationResponse::getName)
