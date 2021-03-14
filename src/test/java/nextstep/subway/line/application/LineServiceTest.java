@@ -48,6 +48,20 @@ public class LineServiceTest {
     }
 
     @Test
+    void addSectionBetweenStations() {
+        // given
+        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
+        삼성역 = stationRepository.save(new Station("삼성역"));
+        Line line = lineRepository.save(new Line("이호선", "green", 강남역, 교대역, 10));
+        // when
+        // lineService.addSection 호출
+        lineService.addSection(line, 삼성역.getId(), 교대역.getId(), 5);
+        // then
+        // line.getSections 메서드를 통해 검증
+        assertThat(line.getSections().getSections()).hasSize(2);
+    }
+
+    @Test
     void removeSection() {
         // given
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
