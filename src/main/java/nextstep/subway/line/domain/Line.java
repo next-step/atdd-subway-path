@@ -145,4 +145,27 @@ public class Line extends BaseEntity {
 
         return downStation;
     }
+
+    public void removeSection(Station station) {
+        checkSectionSize();
+        checkRemoveSection(station);
+
+        getSections().stream()
+                .filter(it -> it.getDownStation().equals(station))
+                .findFirst()
+                .ifPresent(it -> getSections().remove(it));
+    }
+
+    private void checkRemoveSection(Station station) {
+        boolean isNotValidUpStation = !getStations().get(getStations().size() - 1).equals(station);
+        if (isNotValidUpStation) {
+            throw new RuntimeException("하행 종점역만 삭제가 가능합니다.");
+        }
+    }
+
+    private void checkSectionSize() {
+        if (getSections().size() <= 1) {
+            throw new RuntimeException();
+        }
+    }
 }

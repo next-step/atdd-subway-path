@@ -71,6 +71,15 @@ public class LineTest {
 
     @Test
     void removeSection() {
+        // given
+        이호선.addSection(강남역, 역삼역, 10);
+        이호선.addSection(역삼역, 삼성역, 10);
+
+        // when
+        이호선.removeSection(삼성역);
+
+        // then
+        assertThat(이호선.getSections().size()).isEqualTo(1);
     }
 
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
