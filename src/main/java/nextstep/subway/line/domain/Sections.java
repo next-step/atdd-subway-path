@@ -2,9 +2,9 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.exceptions.InvalidSectionDistanceException;
 import nextstep.subway.exceptions.InvalidSectionException;
+import nextstep.subway.exceptions.NotFoundStationException;
 import nextstep.subway.exceptions.OnlyOneSectionException;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -69,7 +70,7 @@ public class Sections {
         if (Objects.isNull(foundSection)) {
             sectionList.add(section);
             section.updateLine(line);
-            return ;
+            return;
         }
 
         checkDistanceValidation(section, foundSection);
@@ -89,7 +90,7 @@ public class Sections {
         if (Objects.isNull(foundSection)) {
             sectionList.add(section);
             section.updateLine(line);
-            return ;
+            return;
         }
 
         checkDistanceValidation(section, foundSection);
@@ -162,30 +163,54 @@ public class Sections {
         }
     }
 
+    public void deleteSection(Line line, Long stationId) {
+        checkDeleteAble();
 
-    public Section getLastSection() {
-        return sectionList.get(sectionList.size() - 1);
-    }
+        List<Section> sections = findAllByUpStationOrDownStation(stationId);
+        int resultCount = sections.size();
 
-    public Station getDownStation() {
-        return sectionList.get(sectionList.size() - 1).getDownStation();
-    }
+        if (resultCount == 2) {
+            Section firstSection = sections.get(0);
+            Section secondSection = sections.get(1);
 
-    public void deleteLastSection(Long stationId) {
-        isValidDeleteSection(stationId);
-        sectionList.remove(getLastSection());
-    }
+            Section newSection = createNewSectionFromPrevSections(line, stationId, firstSection, secondSection);
 
-    private void isValidDeleteSection(Long stationId) {
-        Section lastSection = getLastSection();
-        boolean isEqualDownStationAndTarget = lastSection.getDownStation()
-                .getId()
-                .equals(stationId);
-
-        if (!isEqualDownStationAndTarget) {
-            throw new InvalidSectionException(ONLY_DOWN_STATION_CAN_DELETED);
+            sectionList.removeAll(sections);
+            sectionList.add(newSection);
         }
 
+        if (resultCount == 1) {
+            sectionList.remove(sections.get(0));
+            return;
+        }
+
+        if (resultCount == 0) {
+            throw new NotFoundStationException();
+        }
+    }
+
+    private Section createNewSectionFromPrevSections(Line line, Long stationId, Section firstSection, Section secondSection) {
+        int distance = firstSection.getDistance() + secondSection.getDistance();
+
+        if (firstSection.getUpStation().getId().equals(stationId)) {
+            return new Section(line, secondSection.getUpStation(), firstSection.getDownStation(), distance);
+        }
+
+        if (firstSection.getDownStation().getId().equals(stationId)) {
+            return new Section(line, firstSection.getUpStation(), secondSection.getDownStation(), distance);
+        }
+
+        throw new InvalidSectionException();
+    }
+
+    private List<Section> findAllByUpStationOrDownStation(Long stationId) {
+        return sectionList.stream()
+                .filter(section -> section.getUpStation().getId().equals(stationId)
+                        || section.getDownStation().getId().equals(stationId))
+                .collect(Collectors.toList());
+    }
+
+    private void checkDeleteAble() {
         if (sectionList.size() == 1) {
             throw new OnlyOneSectionException();
         }
