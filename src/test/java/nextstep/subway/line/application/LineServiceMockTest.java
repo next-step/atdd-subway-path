@@ -58,6 +58,6 @@ class LineServiceMockTest {
 
         // then
         Line line = lineService.findLineById(이호선.getId());
-        assertThat(line.getSections()).hasSize(2);
+        assertThat(line.getSections().size()).isEqualTo(2);
     }
 }
