@@ -1,6 +1,10 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.exception.HaveOnlyOneSectionException;
+import nextstep.subway.line.exception.IsDownStationExistedException;
+import nextstep.subway.line.exception.IsNotLastDownStationException;
+import nextstep.subway.line.exception.IsNotValidUpStationException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -64,15 +68,15 @@ public class Line extends BaseEntity {
 
         boolean isNotValidUpStation = stations.get(stations.size() - 1) != upStation;
         if (isNotValidUpStation) {
-            throw new RuntimeException("상행역은 하행 종점역이어야 합니다.");
+            throw new IsNotValidUpStationException();
         }
 
         boolean isDownStationExisted = stations.stream().anyMatch(it -> it == downStation);
         if (isDownStationExisted) {
-            throw new RuntimeException("하행역이 이미 등록되어 있습니다.");
+            throw new IsDownStationExistedException();
         }
 
-        this.getSections().add(new Section(this, upStation, downStation, distance));
+        sections.add(new Section(this, upStation, downStation, distance));
     }
 
 
@@ -118,14 +122,14 @@ public class Line extends BaseEntity {
 
     public void removeSection(Long stationId) {
         if (sections.size() <= 1) {
-            throw new RuntimeException();
+            throw new HaveOnlyOneSectionException();
         }
 
         List<Station> stations = getStations();
 
         boolean isNotValidUpStation = stations.get(stations.size() - 1).getId() != stationId;
         if (isNotValidUpStation) {
-            throw new RuntimeException("하행 종점역만 삭제가 가능합니다.");
+            throw new IsNotLastDownStationException();
         }
 
         sections.stream()
