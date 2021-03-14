@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 
@@ -35,7 +36,7 @@ public class LineServiceTest {
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(신분당선, 양재역, 판교역, 5);
+        lineService.addSection(신분당선.getId(), new SectionRequest(양재역.getId(), 판교역.getId(), 5));
 
         // then
         // line.getSections 메서드를 통해 검증
