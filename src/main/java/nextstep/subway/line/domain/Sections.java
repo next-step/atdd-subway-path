@@ -69,12 +69,22 @@ public class Sections {
 
   }
 
-  private void append(Line line, Station upStation, Station downStation, int distance) {
-    Section target = sections.stream()
+  private Section findMatchedSectionByDownStation(Station downStation) {
+    return sections.stream()
         .filter(section -> section.getDownStation().equals(downStation))
         .findFirst()
         .orElseGet(() -> null);
+  }
 
+  private Section findMatchedSectionByUpStation(Station upStation) {
+    return sections.stream()
+        .filter(section -> section.getUpStation().equals(upStation))
+        .findFirst()
+        .orElseGet(() -> null);
+  }
+
+  private void append(Line line, Station upStation, Station downStation, int distance) {
+    Section target = findMatchedSectionByDownStation(downStation);
     if (Objects.isNull(target)) {
       insertLastSection(line, upStation, downStation, distance);
       return;
@@ -87,10 +97,7 @@ public class Sections {
   }
 
   private void prepend(Line line, Station upStation, Station downStation, int distance) {
-    Section target = sections.stream()
-        .filter(section -> section.getUpStation().equals(upStation))
-        .findFirst()
-        .orElseGet(() -> null);
+    Section target = findMatchedSectionByUpStation(upStation);
     if (Objects.isNull(target)) {
       insertLastSection(line, upStation, downStation, distance);
       return;
