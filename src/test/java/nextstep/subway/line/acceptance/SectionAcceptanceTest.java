@@ -58,4 +58,36 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 정자역, 양재역));
 	}
 
+	@DisplayName("지하철 노선의 중간에 위치한 역을 삭제한다.")
+	@Test
+	void removeSectionInMiddle() {
+		// given
+		지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 정자역, 6);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선에_지하철역_제외_요청(신분당선, 정자역);
+
+		// then
+		지하철_노선에_지하철역_제외됨(response);
+	}
+
+	@DisplayName("지하철 노선에 포함되지 않은 역을 삭제한다.")
+	@Test
+	void removeSectionNotIncluded() {
+		// given
+
+		// when
+
+		// then
+	}
+
+	@DisplayName("지하철 노선에서 마지막 구간을 제거한다.")
+	@Test
+	void removeSectionLast() {
+		// given
+
+		// when
+
+		// then
+	}
 }

@@ -51,21 +51,24 @@ public class Section {
         if (hasSameUpStation(section)) {
             return Arrays.asList(
                 Section.of(getLine(), getUpStation(), section.getDownStation(), section.getDistance()),
-                Section.of(getLine(), section.getDownStation(), getDownStation(), calculateDistance(section))
+                Section.of(getLine(), section.getDownStation(), getDownStation(), subtractDistance(section))
             );
         }
 
         return Arrays.asList(
-            Section.of(getLine(), getUpStation(), section.getUpStation(), calculateDistance(section)),
+            Section.of(getLine(), getUpStation(), section.getUpStation(), subtractDistance(section)),
             Section.of(getLine(), section.getUpStation(), section.getDownStation(), section.getDistance())
         );
     }
 
+    public boolean containsStation(Station station) {
+        return upStation.equals(station)
+            || downStation.equals(station);
+    }
+
     public boolean containsStation(Section section) {
-        return hasSameUpStation(section)
-            || upStation.equals(section.getDownStation())
-            || downStation.equals(section.getUpStation())
-            || hasSameDownStation(section);
+        return containsStation(section.getUpStation())
+            || containsStation(section.getDownStation());
     }
 
     private void validateDivideSections(Section section) {
@@ -73,7 +76,7 @@ public class Section {
             throw new NotExistSameStationException();
         }
 
-        if (calculateDistance(section) == MINIMUM_DISTANCE) {
+        if (subtractDistance(section) == MINIMUM_DISTANCE) {
             throw new TooLongDistanceException();
         }
     }
@@ -91,7 +94,7 @@ public class Section {
         return upStation.equals(section.getUpStation());
     }
 
-    private int calculateDistance(Section section) {
+    private int subtractDistance(Section section) {
         return getDistance() - section.getDistance();
     }
 

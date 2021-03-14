@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 
 import nextstep.subway.line.exception.AlreadyIncludedAllStationException;
 import nextstep.subway.line.exception.NotExistStationException;
-import nextstep.subway.line.exception.NotLastStationException;
 import nextstep.subway.line.exception.TooLongDistanceException;
 import nextstep.subway.line.exception.TooLowLengthSectionsException;
 import nextstep.subway.station.domain.Station;
@@ -130,9 +129,23 @@ public class LineTest {
             .isInstanceOf(NotExistStationException.class);
     }
 
-    @DisplayName("지하철 노선의 역을 삭제")
+    @DisplayName("지하철 노선의 제일 앞 상행역을 삭제")
     @Test
-    void removeSection() {
+    void removeSectionFirstUpStation() {
+        // given
+        Station 판교역 = new Station("판교역");
+        신분당선.addSection(Section.of(신분당선, 역삼역, 판교역, 3));
+
+        // when
+        신분당선.removeSection(강남역);
+
+        // then
+        assertThat(신분당선.getStations().size()).isEqualTo(2);
+    }
+
+    @DisplayName("지하철 노선의 종착역을 삭제")
+    @Test
+    void removeSectionLastDownStation() {
         // given
         Station 판교역 = new Station("판교역");
         신분당선.addSection(Section.of(신분당선, 역삼역, 판교역, 3));
@@ -144,23 +157,32 @@ public class LineTest {
         assertThat(신분당선.getStations().size()).isEqualTo(2);
     }
 
+    @DisplayName("지하철 노선의 중간에 위치한 역을 삭제")
+    @Test
+    void removeSectionInMiddle() {
+        // given
+        Station 판교역 = new Station("판교역");
+        Station 삼성역 = new Station("삼성역");
+        int expectedSize = 신분당선.getStations().size() + 1;
+
+        신분당선.addSection(Section.of(신분당선, 강남역, 판교역, 3));
+        신분당선.addSection(Section.of(신분당선, 삼성역, 역삼역, 1));
+
+        // when
+        신분당선.removeSection(판교역);
+
+        // then
+        assertThat(신분당선.getStations().size()).isEqualTo(expectedSize);
+        assertThat(신분당선.getStations())
+            .usingRecursiveFieldByFieldElementComparator()
+            .containsExactlyElementsOf(Arrays.asList(강남역, 삼성역, 역삼역));
+    }
+
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
     @Test
     void removeSectionNotEndOfList() {
         // when, then
         assertThatThrownBy(() -> 신분당선.removeSection(역삼역))
             .isInstanceOf(TooLowLengthSectionsException.class);
-    }
-
-    @DisplayName("삭제하는 역이 마지막 역이 아니면 에러 발생")
-    @Test
-    void removeSectionNotMatchedLastStation() {
-        // given
-        Station 판교역 = new Station("판교역");
-        신분당선.addSection(Section.of(신분당선, 역삼역, 판교역, 3));
-
-        // when, then
-        assertThatThrownBy(() -> 신분당선.removeSection(강남역))
-            .isInstanceOf(NotLastStationException.class);
     }
 }

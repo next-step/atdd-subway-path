@@ -34,10 +34,6 @@ public class LineService {
         return createLineResponse(persistLine);
     }
 
-    public List<Line> findLines() {
-        return lineRepository.findAll();
-    }
-
     public List<LineResponse> findLineResponses() {
         List<Line> persistLines = lineRepository.findAll();
         return persistLines.stream()
@@ -72,10 +68,6 @@ public class LineService {
 
     public void removeSection(Long lineId, Long stationId) {
         Line line = findLineById(lineId);
-        removeSection(line, stationId);
-    }
-
-    public void removeSection(Line line, Long stationId) {
         Station station = stationService.findStationById(stationId);
         line.removeSection(station);
     }

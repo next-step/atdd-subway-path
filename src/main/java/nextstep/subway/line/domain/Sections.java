@@ -1,9 +1,12 @@
 package nextstep.subway.line.domain;
 
+import static java.util.stream.Collectors.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -12,14 +15,17 @@ import javax.persistence.OneToMany;
 
 import nextstep.subway.line.exception.AlreadyIncludedAllStationException;
 import nextstep.subway.line.exception.NotExistStationException;
-import nextstep.subway.line.exception.NotLastStationException;
 import nextstep.subway.line.exception.TooLowLengthSectionsException;
+import nextstep.subway.line.exception.TooManyFindSectionsException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
 
 	private static final int SECTIONS_MIN_SIZE = 1;
+	private static final int ZERO = 0;
+	private static final int ONE = 1;
+	private static final int FIND_MAX_SIZE = 2;
 
 	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
 	private List<Section> sections = new ArrayList<>();
@@ -47,14 +53,19 @@ public class Sections {
 	}
 
 	public void removeSection(Station station) {
-		validateDeleteSection(station);
+		List<Section> targets = filterTargets(
+			sec -> sec.stream()
+				.filter(s -> s.containsStation(station))
+				.collect(toList())
+		);
 
-		final Section target = sections.stream()
-			.filter(section -> section.getDownStation().equals(station))
-			.findAny()
-			.orElseThrow(RuntimeException::new);
+		if (isLastSection(targets)) {
+			sections.remove(targets.get(ZERO));
+			return;
+		}
 
-		sections.remove(target);
+		sections.removeAll(targets);
+		sections.add(concatSection(targets));
 	}
 
 	public List<Station> getStations() {
@@ -79,6 +90,53 @@ public class Sections {
 		}
 
 		return stations;
+	}
+
+	private List<Section> filterTargets(Function<List<Section>, List<Section>> func) {
+		validateFilterBefore();
+
+		List<Section> targets = func.apply(this.sections);
+
+		validateFilterAfter(targets);
+
+		return targets;
+	}
+
+	private boolean isLastSection(List<Section> targets) {
+		return targets.size() == ONE;
+	}
+
+	private void validateFilterAfter(List<Section> targets) {
+		if (targets.size() == ZERO) {
+			throw new NotExistStationException();
+		}
+
+		if (targets.size() > FIND_MAX_SIZE) {
+			throw new TooManyFindSectionsException(FIND_MAX_SIZE);
+		}
+	}
+
+	private void validateFilterBefore() {
+		if (sections.size() <= SECTIONS_MIN_SIZE) {
+			throw new TooLowLengthSectionsException(SECTIONS_MIN_SIZE);
+		}
+	}
+
+	private Section concatSection(List<Section> targets) {
+		Section firstTarget = targets.get(ZERO);
+		Section secondTarget = targets.get(ONE);
+
+		if (secondTarget.getUpStation().equals(firstTarget.getDownStation())) {
+			return Section.of(firstTarget.getLine(), firstTarget.getUpStation(),
+				secondTarget.getDownStation(), addDistance(firstTarget, secondTarget));
+		}
+
+		return Section.of(firstTarget.getLine(), secondTarget.getUpStation(),
+			firstTarget.getDownStation(), addDistance(firstTarget, secondTarget));
+	}
+
+	private int addDistance(Section firstTarget, Section secondTarget) {
+		return firstTarget.getDistance() + secondTarget.getDistance();
 	}
 
 	private void validateAddSection(Section section) {
@@ -113,23 +171,5 @@ public class Sections {
 		}
 
 		return downStation;
-	}
-
-	private void validateDeleteSection(Station station) {
-		if (sections.size() <= SECTIONS_MIN_SIZE) {
-			throw new TooLowLengthSectionsException(SECTIONS_MIN_SIZE);
-		}
-
-		if (isNotLastStation(station)) {
-			throw new NotLastStationException(station.getName());
-		}
-	}
-
-	private boolean isNotLastStation(Station station) {
-		return !findLastStation().equals(station);
-	}
-
-	private Station findLastStation() {
-		return getStations().get(getStations().size() - 1);
 	}
 }
