@@ -25,7 +25,11 @@ public class LineTest {
 
   @BeforeEach
   void init() {
+    역생성();
+    노선생성();
+  }
 
+  void 역생성() {
     광교역 = new Station("광교역");
     ReflectionTestUtils.setField(광교역, "id", 1L);
 
@@ -46,9 +50,10 @@ public class LineTest {
 
     동천역 = new Station("동천역");
     ReflectionTestUtils.setField(동천역, "id", 8L);
+  }
 
+  void 노선생성() {
     신분당선 = new Line("신분당선", LineColor.RED.toString(), 광교역, 광교중앙역, 5);
-
   }
 
   @DisplayName("노선에 포함된 역을 조회")
