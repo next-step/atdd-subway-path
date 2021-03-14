@@ -4,7 +4,6 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.*;
 
 @Entity
 public class Line extends BaseEntity {
@@ -15,8 +14,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = new Sections();
 
     public Line() {
     }
@@ -29,7 +28,22 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        sections.add(new Section(this, upStation, downStation, distance));
+        this.addSection(upStation, downStation, distance);
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        Section section = Section.Builder.aSection()
+                .upStation(upStation)
+                .downStation(downStation)
+                .line(this)
+                .distance(new Distance(distance))
+                .build();
+
+        sections.addSection(section);
+    }
+
+    public void removeSection(Station lastStation) {
+        sections.removeSection(lastStation);
     }
 
     public void update(Line line) {
@@ -49,20 +63,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return sections;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Line line = (Line) o;
-        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, color);
     }
 }

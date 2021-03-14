@@ -33,7 +33,7 @@ public class MockitoExtensionTest {
         LineService lineService = new LineService(lineRepository, stationService);
 
         // when
-        List<LineResponse> responses = lineService.findLineResponses();
+        List<LineResponse> responses = lineService.findAllLine();
 
         // then
         assertThat(responses).hasSize(1);
