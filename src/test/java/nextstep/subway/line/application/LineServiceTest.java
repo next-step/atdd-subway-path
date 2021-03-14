@@ -106,7 +106,7 @@ public class LineServiceTest {
         lineService.saveLine(line2Request);
 
         Station savedStationYangJae = stationRepository.save(new Station("양재역"));
-        LineRequest lineNewBundangRequest = new LineRequest("1호선", "bg-blue-600", savedStationGangnam.getId(), savedStationYangJae.getId(), 4);
+        LineRequest lineNewBundangRequest = new LineRequest("신분당선", "bg-red-600", savedStationGangnam.getId(), savedStationYangJae.getId(), 4);
         lineService.saveLine(lineNewBundangRequest);
 
         // when
@@ -123,7 +123,7 @@ public class LineServiceTest {
         LineResponse savedLineResponse = lineService.saveLine(line2Request);
 
         // when
-        lineService.addSectionToLine(savedLineResponse.getId(), addSectionToLine(savedStationYeoksam, savedStationSamseong, 6));
+        lineService.addSectionToLine(savedLineResponse.getId(), createSectionRequest(savedStationYeoksam, savedStationSamseong, 6));
 
         // then
         Line line = lineService.findLineById(savedLineResponse.getId());
@@ -136,7 +136,7 @@ public class LineServiceTest {
         // given
         LineResponse savedLineResponse = lineService.saveLine(line2Request);
 
-        savedLineResponse = lineService.addSectionToLine(savedLineResponse.getId(), addSectionToLine(savedStationYeoksam, savedStationSamseong, 6));
+        savedLineResponse = lineService.addSectionToLine(savedLineResponse.getId(), createSectionRequest(savedStationYeoksam, savedStationSamseong, 6));
 
         // when
         lineService.deleteSectionToLine(savedLineResponse.getId(), savedStationSamseong.getId());
@@ -151,7 +151,7 @@ public class LineServiceTest {
     void validateDownStationToDeleteSection() {
         // given
         LineResponse savedLineResponse = lineService.saveLine(line2Request);
-        lineService.addSectionToLine(savedLineResponse.getId(), addSectionToLine(savedStationYeoksam, savedStationSamseong, 6));
+        lineService.addSectionToLine(savedLineResponse.getId(), createSectionRequest(savedStationYeoksam, savedStationSamseong, 6));
 
         // when & then
         assertThatExceptionOfType(CannotRemoveStationException.class)
@@ -171,7 +171,7 @@ public class LineServiceTest {
                 .isThrownBy(() -> lineService.deleteSectionToLine(savedLineResponse.getId(), savedStationYeoksam.getId()));
     }
 
-    private SectionRequest addSectionToLine(Station upStation, Station downStation, int distance) {
+    private SectionRequest createSectionRequest(Station upStation, Station downStation, int distance) {
         return new SectionRequest(upStation.getId(), downStation.getId(), distance);
     }
 }
