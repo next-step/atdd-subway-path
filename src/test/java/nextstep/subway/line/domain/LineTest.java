@@ -2,16 +2,16 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.line.exception.HaveOnlyOneSectionException;
 import nextstep.subway.line.exception.IsDownStationExistedException;
-import nextstep.subway.line.exception.IsNotLastDownStationException;
-import nextstep.subway.line.exception.IsNotValidUpStationException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+@DisplayName("Line Entity에 대한 단위 테스트")
 public class LineTest {
 
     private Station 태평역 = new Station("태평역");
@@ -27,6 +27,7 @@ public class LineTest {
         ReflectionTestUtils.setField(수서역, "id", 4L);
     }
 
+    @DisplayName("노선의 역 목록을 가져온다.")
     @Test
     void getStations() {
         // when
@@ -36,6 +37,7 @@ public class LineTest {
         assertThat(분당선.getStations()).contains(태평역, 가천대역);
     }
 
+    @DisplayName("노선에 구간을 등록한다.")
     @Test
     void addSection() {
         // given
@@ -72,6 +74,7 @@ public class LineTest {
             .isThrownBy(() -> 분당선.addSection(가천대역, 태평역, 3));
     }
 
+    @DisplayName("노선에서 구간을 삭제한다.")
     @Test
     void removeSection() {
         // given

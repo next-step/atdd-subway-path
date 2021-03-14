@@ -3,6 +3,7 @@ package nextstep.subway.line.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineAcceptanceTest extends AcceptanceTest {
     private StationResponse 강남역;
     private StationResponse 광교역;
-    private Map<String, String> lineCreateParams;
+    private LineRequest lineRequest;
 
     @BeforeEach
     public void setUp() {
@@ -34,19 +35,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
         강남역 = 지하철역_등록되어_있음("강남역").as(StationResponse.class);
         광교역 = 지하철역_등록되어_있음("광교역").as(StationResponse.class);
 
-        lineCreateParams = new HashMap<>();
-        lineCreateParams.put("name", "신분당선");
-        lineCreateParams.put("color", "bg-red-600");
-        lineCreateParams.put("upStationId", 강남역.getId() + "");
-        lineCreateParams.put("downStationId", 광교역.getId() + "");
-        lineCreateParams.put("distance", 10 + "");
+        lineRequest = new LineRequest(
+            "신분당선",
+            "bg-red-600",
+            강남역.getId(),
+            광교역.getId(),
+            10
+        );
     }
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineCreateParams);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
 
         // then
         지하철_노선_생성됨(response);
@@ -56,14 +58,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "구분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", 강남역.getId() + "");
-        params.put("downStationId", 광교역.getId() + "");
-        params.put("distance", 15 + "");
-        ExtractableResponse<Response> createResponse1 = 지하철_노선_등록되어_있음(params);
-        ExtractableResponse<Response> createResponse2 = 지하철_노선_등록되어_있음(lineCreateParams);
+        ExtractableResponse<Response> createResponse1 = 지하철_노선_등록되어_있음(
+            new LineRequest(
+                "구분당선",
+                "bg-red-600",
+                강남역.getId(),
+                광교역.getId(),
+                15
+            )
+        );
+        ExtractableResponse<Response> createResponse2 = 지하철_노선_등록되어_있음(lineRequest);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -77,7 +81,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(lineCreateParams);
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(lineRequest);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
@@ -91,7 +95,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         String name = "신분당선";
-        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(lineCreateParams);
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(lineRequest);
 
         // when
         Map<String, String> params = new HashMap<>();
@@ -110,7 +114,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(lineCreateParams);
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(lineRequest);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_제거_요청(createResponse);
@@ -123,10 +127,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        지하철_노선_등록되어_있음(lineCreateParams);
+        지하철_노선_등록되어_있음(lineRequest);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineCreateParams);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(lineRequest);
 
         // then
         지하철_노선_생성_실패됨(response);
