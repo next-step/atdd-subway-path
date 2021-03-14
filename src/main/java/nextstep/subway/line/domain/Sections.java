@@ -24,6 +24,7 @@ public class Sections {
 
     public List<Station> getStations() {
         return this.sections.stream()
+                .sorted()
                 .flatMap(section -> section.getStations().stream())
                 .distinct()
                 .collect(Collectors.toList());
@@ -36,7 +37,6 @@ public class Sections {
     public void addSection(Section section) {
 
         List<Station> stations = this.getStations();
-
         sameStationValidate(section);
 
         if (stations.isEmpty()) {
@@ -44,11 +44,56 @@ public class Sections {
             return;
         }
 
-        lastStationMatchValidate(section);
         upAndDownExistsValidate(stations, section);
-        downExistsValidate(stations, section);
+        upAndDownNotExistsValidate(stations, section);
 
-        this.sections.add(section);
+        if (firstStationMatch(section)) {
+            this.sections.add(section);
+            return;
+        }
+
+        if (findLastStation().equals(section.getUpStation())) {
+            this.sections.add(section);
+            return;
+        }
+
+        Section preSection = findSection(section.getUpStation(), section.getDownStation());
+        List<Section> newSections = addProcess(preSection, section);
+        this.sections.remove(preSection);
+        this.sections.addAll(newSections);
+    }
+
+    private List<Section> addProcess(Section preSection, Section section) {
+        int preDistance = preSection.getDistance().getDistance();
+        List<Section> addSections = new ArrayList<>();
+        Section newSection;
+
+        int newDistance = distanceDivide(preDistance, section.getDistance().getDistance());
+
+        if (preSection.getUpStation().equals(section.getUpStation())) {
+            newSection = new Section(preSection.getLine(), section.getDownStation(), preSection.getDownStation(), new Distance(newDistance));
+            addSections.add(section);
+            addSections.add(newSection);
+            return addSections;
+        }
+
+        newSection = new Section(preSection.getLine(), preSection.getUpStation(), section.getUpStation(), new Distance(newDistance));
+        addSections.add(newSection);
+        addSections.add(section);
+        return addSections;
+    }
+
+    private Section findSection(Station upStation, Station downStation) {
+        Section upSection = getSections().stream().filter(it -> it.getUpStation().equals(upStation))
+                .findFirst().orElse(null);
+        Section downSection = getSections().stream().filter(it -> it.getDownStation().equals(downStation))
+                .findFirst().orElse(null);
+
+        if (upSection == null) {
+            return downSection;
+        }
+
+        return upSection;
     }
 
     public void removeSection(Station station) {
@@ -57,11 +102,16 @@ public class Sections {
         sections.remove(sections.size() - 1);
     }
 
-
-    private void lastStationMatchValidate(Section section) {
-        if (!findLastStation().equals(section.getUpStation())) {
-            throw new RuntimeException("추가하는 구간의 상행역이 잘못되었습니다.");
+    private int distanceDivide(int preDistance, int distance) {
+        if (distance >= preDistance) {
+            throw new RuntimeException("추가하는 구간의 거리가 잘못되었습니다.");
         }
+
+        return preDistance - distance;
+    }
+
+    private boolean firstStationMatch(Section section) {
+        return section.getDownStation().equals(this.getStations().get(0));
     }
 
     private void upAndDownExistsValidate(List<Station> stations, Section section) {
@@ -70,9 +120,9 @@ public class Sections {
         }
     }
 
-    private void downExistsValidate(List<Station> stations, Section section) {
-        if (stations.contains(section.getDownStation())) {
-            throw new RuntimeException("하행역이 이미 노선에 포함되어 있습니다.");
+    private void upAndDownNotExistsValidate(List<Station> stations, Section section) {
+        if (!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
+            throw new RuntimeException("일치하는 역이 없습니다.");
         }
     }
 
