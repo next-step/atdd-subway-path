@@ -87,16 +87,6 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 양재역));
     }
 
-    @DisplayName("지하철 노선에 구간이 하나일 때 지하철역을 제외한다.")
-    @Test
-    void removeLineSectionOnlyOneSection() {
-        // when
-        ExtractableResponse<Response> removeResponse = 지하철_노선에_지하철역_제외_요청(신분당선, 양재역);
-
-        // then
-        지하철_노선에_지하철역_제외_실패됨(removeResponse);
-    }
-
     public static void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }

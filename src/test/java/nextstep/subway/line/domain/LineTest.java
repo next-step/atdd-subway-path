@@ -178,6 +178,19 @@ public class LineTest {
             .containsExactlyElementsOf(Arrays.asList(강남역, 삼성역, 역삼역));
     }
 
+    @DisplayName("구간에 등록되지 않은 역을 삭제 시 에러 발생")
+    @Test
+    void removeSectionNotIncluded() {
+        // given
+        Station 판교역 = new Station("판교역");
+        Station 삼성역 = new Station("삼성역");
+        신분당선.addSection(Section.of(신분당선, 강남역, 판교역, 3));
+
+        // when, then
+        assertThatThrownBy(() -> 신분당선.removeSection(삼성역))
+            .isInstanceOf(NotExistStationException.class);
+    }
+
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
     @Test
     void removeSectionNotEndOfList() {

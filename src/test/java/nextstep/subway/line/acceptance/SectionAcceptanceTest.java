@@ -75,19 +75,22 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void removeSectionNotIncluded() {
 		// given
+		지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 정자역, 6);
 
 		// when
+		ExtractableResponse<Response> response = 지하철_노선에_지하철역_제외_요청(신분당선, 광교역);
 
 		// then
+		지하철_노선에_지하철역_제외_실패됨(response);
 	}
 
-	@DisplayName("지하철 노선에서 마지막 구간을 제거한다.")
+	@DisplayName("지하철 노선에 구간이 하나일 때 지하철역을 제외한다.")
 	@Test
-	void removeSectionLast() {
-		// given
-
+	void removeLineSectionOnlyOneSection() {
 		// when
+		ExtractableResponse<Response> removeResponse = 지하철_노선에_지하철역_제외_요청(신분당선, 양재역);
 
 		// then
+		지하철_노선에_지하철역_제외_실패됨(removeResponse);
 	}
 }
