@@ -1,20 +1,24 @@
 package nextstep.subway.station;
 
+import static nextstep.subway.station.StationRequestBuilder.지하철역_목록조회_요청;
+import static nextstep.subway.station.StationRequestBuilder.지하철역_삭제_요청;
+import static nextstep.subway.station.StationRequestBuilder.지하철역_삭제됨;
+import static nextstep.subway.station.StationRequestBuilder.지하철역_생성_요청;
+import static nextstep.subway.station.StationRequestBuilder.지하철역_생성됨;
+import static nextstep.subway.station.StationRequestBuilder.지하철역_생성실패됨;
+import static nextstep.subway.station.StationRequestBuilder.지하철역_조회됨;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static nextstep.subway.station.StationRequestBuilder.*;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
@@ -63,10 +67,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     List<Long> expectedLineIds = Arrays.asList(강남역, 역삼역).stream()
         .map(it -> Long.parseLong(it.header("Location").split("/")[2]))
         .collect(Collectors.toList());
-    List<Long> resultLineIds = response.jsonPath().getList(".", StationResponse.class).stream()
-        .map(it -> it.getId())
-        .collect(Collectors.toList());
-    assertThat(resultLineIds).containsAll(expectedLineIds);
+    지하철역_조회됨(Arrays.asList(강남역, 역삼역), response);
   }
 
   @DisplayName("지하철역을 제거한다.")
