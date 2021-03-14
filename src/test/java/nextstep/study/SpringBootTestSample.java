@@ -1,9 +1,12 @@
 package nextstep.study;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import nextstep.subway.SubwayApplication;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -11,8 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = SubwayApplication.class)
 @Transactional
@@ -34,8 +35,8 @@ public class SpringBootTestSample {
 
         lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 삼성역.getId(), 10));
 
-        Line line = lineService.findLineById(이호선.getId());
+        LineResponse lineResponse = lineService.findLine(이호선.getId());
 
-        assertThat(line.getSections().size()).isEqualTo(2);
+        assertThat(lineResponse.getStations().size()).isEqualTo(2);
     }
 }
