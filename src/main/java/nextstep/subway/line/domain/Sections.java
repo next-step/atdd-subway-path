@@ -3,7 +3,7 @@ package nextstep.subway.line.domain;
 import nextstep.subway.line.exception.CannotRemoveSectionException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.exception.NotMatchingStationException;
-import nextstep.subway.station.exception.NotRemoveStationException;
+import nextstep.subway.station.exception.CannotRemoveStationException;
 import nextstep.subway.station.exception.StationAlreadyExistException;
 
 import javax.persistence.CascadeType;
@@ -51,27 +51,32 @@ public class Sections {
     }
 
     private void validateExistDownStation(Station downStation) {
-        if (sections.contains(downStation)) {
+        if (getLastDownStation().equals(downStation)) {
             throw new StationAlreadyExistException(EXCEPTION_MESSAGE_EXIST_DOWN_STATION);
         }
     }
 
-    public void deleteLastDownStation(Long downStation) {
+    public void deleteLastDownStation(Long downStationId) {
         Station lastDownStation = getLastDownStation();
-        validateDeletableStation(downStation, lastDownStation.getId());
-        sections.remove(lastDownStation);
+        validateDeletableStation(downStationId, lastDownStation.getId());
+
+        sections.remove(getLastSection());
+    }
+
+    private Section getLastSection() {
+        return sections.get(sections.size() - 1);
     }
 
     public Station getLastDownStation() {
-        Section section = sections.get(sections.size() - 1);
+        Section section = getLastSection();
         return section.getDownStation();
     }
 
-    private void validateDeletableStation(Long downStation, Long lastDownStationId) {
-        boolean isEqualStation = lastDownStationId.equals(downStation);
+    private void validateDeletableStation(Long downStationId, Long lastDownStationId) {
+        boolean isEqualStation = lastDownStationId.equals(downStationId);
 
         if (!isEqualStation) {
-            throw new NotRemoveStationException(EXCEPTION_MESSAGE_NOT_DELETABLE_STATION);
+            throw new CannotRemoveStationException(EXCEPTION_MESSAGE_NOT_DELETABLE_STATION);
         }
         if (sections.size() == 1) {
             throw new CannotRemoveSectionException(EXCEPTION_MESSAGE_NOT_DELETABLE_SECTION);

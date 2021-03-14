@@ -60,7 +60,9 @@ public class LineService {
 
     public void deleteSectionToLine(Long lineId, Long stationId) {
         Line line = findLineById(lineId);
-        line.deleteLastDownStation(stationId);
+        Long deleteStationId = stationService.findStationById(stationId).getId();
+
+        line.deleteLastDownStation(deleteStationId);
     }
 
     public LineResponse updateLine(Long lineId, LineRequest lineRequest) {
