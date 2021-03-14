@@ -98,9 +98,12 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_제외_실패됨(removeResponse);
     }
 
-    @DisplayName("지하철 노선에 등록되어 있는 구간 사이에 새로운 구간을 등록한다.")
+    /**
+     * Step1 - 인수테스트 추가
+     */
+    @DisplayName("지하철 노선에 등록되어 있는 구간 사이에 새로운 구간을 등록한다. (상행기준)")
     @Test
-    void addLineSectionBetween() {
+    void addLineSectionBetweenToUpStation() {
         // given (강남역 - 10 - 양재역 - 20 - 광교역)
         지하철_노선에_지하철역_등록_요청(신라인_1, 양재역, 광교역, 20);
 
@@ -111,6 +114,51 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선에_지하철역_등록됨(response1);
         지하철_노선에_지하철역_순서_정렬됨(response2, Arrays.asList(강남역, 양재역, 정자역, 광교역));
+    }
+
+    @DisplayName("지하철 노선에 등록되어 있는 구간 사이에 새로운 구간을 등록한다. (하행기준)")
+    @Test
+    void addLineSectionBetweenToDownStation() {
+        // given (강남역 - 10 - 양재역 - 20 - 광교역)
+        지하철_노선에_지하철역_등록_요청(신라인_1, 양재역, 광교역, 20);
+
+        // when (양재역 - 7 - 정자역)
+        ExtractableResponse<Response> response1 = 지하철_노선에_지하철역_등록_요청(신라인_1, 정자역, 광교역, 7);
+        ExtractableResponse<Response> response2 = 지하철_노선_조회_요청(신라인_1);
+
+        // then
+        지하철_노선에_지하철역_등록됨(response1);
+        지하철_노선에_지하철역_순서_정렬됨(response2, Arrays.asList(강남역, 양재역, 정자역, 광교역));
+    }
+
+    @DisplayName("지하철 노선에 등록되어 있는 구간 상행에 새로운 구간을 등록한다.")
+    @Test
+    void addLineSectionToUpStation() {
+        // given (강남역 - 10 - 양재역 - 20 - 광교역)
+        지하철_노선에_지하철역_등록_요청(신라인_1, 양재역, 광교역, 20);
+
+        // when (정자역 - 7 - 강남역)
+        ExtractableResponse<Response> response1 = 지하철_노선에_지하철역_등록_요청(신라인_1, 정자역, 강남역, 7);
+        ExtractableResponse<Response> response2 = 지하철_노선_조회_요청(신라인_1);
+
+        // then
+        지하철_노선에_지하철역_등록됨(response1);
+        지하철_노선에_지하철역_순서_정렬됨(response2, Arrays.asList(정자역, 강남역, 양재역, 광교역));
+    }
+
+    @DisplayName("지하철 노선에 등록되어 있는 구간 하행에 새로운 구간을 등록한다.")
+    @Test
+    void addLineSectionToDownStation() {
+        // given (강남역 - 10 - 양재역 - 20 - 광교역)
+        지하철_노선에_지하철역_등록_요청(신라인_1, 양재역, 광교역, 20);
+
+        // when (정자역 - 7 - 강남역)
+        ExtractableResponse<Response> response1 = 지하철_노선에_지하철역_등록_요청(신라인_1, 광교역, 정자역, 7);
+        ExtractableResponse<Response> response2 = 지하철_노선_조회_요청(신라인_1);
+
+        // then
+        지하철_노선에_지하철역_등록됨(response1);
+        지하철_노선에_지하철역_순서_정렬됨(response2, Arrays.asList(강남역, 양재역, 광교역, 정자역));
     }
 
     public static void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
