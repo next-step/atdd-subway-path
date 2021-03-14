@@ -1,10 +1,6 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.exception.HaveOnlyOneSectionException;
-import nextstep.subway.line.exception.IsDownStationExistedException;
-import nextstep.subway.line.exception.IsNotLastDownStationException;
-import nextstep.subway.line.exception.IsNotValidUpStationException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -19,8 +15,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -33,7 +29,7 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        sections.add(new Section(this, upStation, downStation, distance));
+        addSection(upStation, downStation, distance);
     }
 
     public void update(Line line) {
@@ -53,89 +49,17 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
-        return sections;
-    }
-
     public void addSection(Station upStation, Station downStation, int distance) {
-
-        List<Station> stations = getStations();
-
-        if (stations.size() == 0) {
-            this.getSections().add(new Section(this, upStation, downStation, distance));
-            return;
-        }
-
-        boolean isNotValidUpStation = stations.get(stations.size() - 1) != upStation;
-        if (isNotValidUpStation) {
-            throw new IsNotValidUpStationException();
-        }
-
-        boolean isDownStationExisted = stations.stream().anyMatch(it -> it == downStation);
-        if (isDownStationExisted) {
-            throw new IsDownStationExistedException();
-        }
-
-        sections.add(new Section(this, upStation, downStation, distance));
+        sections.addSection(this, upStation, downStation, distance);
     }
 
 
     public List<Station> getStations() {
-        if (sections.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Station> stations = new ArrayList<>();
-        Station downStation = findUpStation();
-        stations.add(downStation);
-
-        while (downStation != null) {
-            Station finalDownStation = downStation;
-            Optional<Section> nextLineStation = sections.stream()
-                .filter(it -> it.getUpStation() == finalDownStation)
-                .findFirst();
-            if (!nextLineStation.isPresent()) {
-                break;
-            }
-            downStation = nextLineStation.get().getDownStation();
-            stations.add(downStation);
-        }
-
-        return stations;
-    }
-
-    private Station findUpStation() {
-        Station downStation = sections.get(0).getUpStation();
-        while (downStation != null) {
-            Station finalDownStation = downStation;
-            Optional<Section> nextLineStation = sections.stream()
-                .filter(it -> it.getDownStation() == finalDownStation)
-                .findFirst();
-            if (!nextLineStation.isPresent()) {
-                break;
-            }
-            downStation = nextLineStation.get().getUpStation();
-        }
-
-        return downStation;
+        return sections.getStations();
     }
 
     public void removeSection(Long stationId) {
-        if (sections.size() <= 1) {
-            throw new HaveOnlyOneSectionException();
-        }
-
-        List<Station> stations = getStations();
-
-        boolean isNotValidUpStation = stations.get(stations.size() - 1).getId() != stationId;
-        if (isNotValidUpStation) {
-            throw new IsNotLastDownStationException();
-        }
-
-        sections.stream()
-            .filter(it -> it.getDownStation().getId() == stationId)
-            .findFirst()
-            .ifPresent(it -> sections.remove(it));
+        sections.remove(stationId);
     }
 
     @Override

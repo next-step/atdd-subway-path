@@ -36,6 +36,6 @@ public class SpringBootTestSample {
 
         Line line = lineService.findLineById(이호선.getId());
 
-        assertThat(line.getSections().size()).isEqualTo(2);
+        assertThat(line.getStations()).contains(강남역, 역삼역, 삼성역);
     }
 }

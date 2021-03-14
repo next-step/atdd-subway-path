@@ -1,7 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.line.exception.HaveOnlyOneSectionException;
-import nextstep.subway.line.exception.IsDownStationExistedException;
+import nextstep.subway.line.exception.IsExistedSectionException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -70,7 +70,7 @@ public class LineTest {
         Line 분당선 = new Line("분당선", "yellow", 태평역, 가천대역, 3);
 
         // when - then
-        assertThatExceptionOfType(IsDownStationExistedException.class)
+        assertThatExceptionOfType(IsExistedSectionException.class)
             .isThrownBy(() -> 분당선.addSection(가천대역, 태평역, 3));
     }
 

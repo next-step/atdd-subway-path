@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -66,14 +64,6 @@ public class LineServiceMockTest {
 
         // then
         Line line = lineService.findLineById(이호선.getId());
-        assertThat(
-            line.getSections()
-                .stream()
-                .flatMap(section ->
-                    Stream.of(section.getUpStation(), section.getDownStation())
-                )
-                .distinct()
-                .collect(Collectors.toList())
-        ).contains(강남역, 역삼역, 삼성역);
+        assertThat(line.getStations()).contains(강남역, 역삼역, 삼성역);
     }
 }

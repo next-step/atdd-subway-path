@@ -49,14 +49,6 @@ public class LineServiceTest {
         // then
         // line.getSections 메서드를 통해 검증
         Line line = lineService.findLineById(분당선.getId());
-        assertThat(
-            line.getSections()
-                .stream()
-                .flatMap(section ->
-                    Stream.of(section.getUpStation(), section.getDownStation())
-                )
-                .distinct()
-                .collect(Collectors.toList())
-        ).contains(태평역, 가천대역, 복정역);
+        assertThat(line.getStations()).contains(태평역, 가천대역, 복정역);
     }
 }
