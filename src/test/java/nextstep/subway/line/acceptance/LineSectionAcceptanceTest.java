@@ -28,6 +28,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     private StationResponse STATION_1;
     private StationResponse STATION_2;
     private StationResponse STATION_3;
+    private StationResponse STATION_4;
 
     private final int DISTANCE = 10;
 
@@ -38,6 +39,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         STATION_1 = 지하철역_생성_요청("강남역");
         STATION_2 = 지하철역_생성_요청("신촌역");
         STATION_3 = 지하철역_생성_요청("신림역");
+        STATION_4 = 지하철역_생성_요청("삼성역");
 
         String COLOR_1 = "blue";
         String LINE_NAME_1 = "1호선";
@@ -57,15 +59,58 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_순서_정렬됨(mockLine, Arrays.asList(STATION_1, STATION_2, STATION_3));
     }
 
-    @DisplayName("지하철 노선에 이미 포함된 역을 구간으로 등록한다.")
+    @DisplayName("역 사이에 새로운 구간을 추가한다.")
     @Test
-    void addLineSectionAlreadyIncluded() {// given
-        노선에_지하철역_등록_요청(MOCK_LINE, STATION_2.getId(), STATION_3.getId(), DISTANCE);
+    void addSectionBetweenStations() {
+        //when
+        ExtractableResponse<Response> response = 노선에_지하철역_등록_요청(MOCK_LINE, STATION_1.getId(), STATION_3.getId(), 5);
 
-        // when
-        ExtractableResponse<Response> response = 노선에_지하철역_등록_요청(MOCK_LINE, STATION_2.getId(), STATION_3.getId(), DISTANCE);
+        //then
+        지하철_노선에_지하철역_등록됨(response);
 
-        // then
+        LineResponse mockLine = 노선_조회_요청(response);
+        지하철_노선에_지하철역_순서_정렬됨(mockLine, Arrays.asList(STATION_1, STATION_3, STATION_2));
+    }
+
+    @DisplayName("새로운 역을 상행역으로하여 구간을 추가한다.")
+    @Test
+    void addSectionPreviousUpStation() {
+        //when
+        ExtractableResponse<Response> response = 노선에_지하철역_등록_요청(MOCK_LINE, STATION_3.getId(), STATION_1.getId(), 5);
+        지하철_노선에_지하철역_등록됨(response);
+
+        LineResponse mockLine = 노선_조회_요청(response);
+        //then
+        지하철_노선에_지하철역_순서_정렬됨(mockLine, Arrays.asList(STATION_3, STATION_1, STATION_2));
+    }
+
+    @DisplayName("이미 등록된 상행역과 하행역 구간을 등록한다.")
+    @Test
+    void addSectionDuplicateAllStation() {
+        //when
+        ExtractableResponse<Response> response = 노선에_지하철역_등록_요청(MOCK_LINE, STATION_1.getId(), STATION_2.getId(), 10);
+
+        //then
+        지하철_노선에_지하철역_등록_실패됨(response);
+    }
+
+    @DisplayName("역 사이에 기존 구간보다 길이가 긴 구간을 추가한다.")
+    @Test
+    void addSectionBetweenStationsWithInvalidDistance() {
+        //when
+        ExtractableResponse<Response> response = 노선에_지하철역_등록_요청(MOCK_LINE, STATION_1.getId(), STATION_3.getId(), 15);
+
+        //then
+        지하철_노선에_지하철역_등록_실패됨(response);
+    }
+
+    @DisplayName("상행역과 하행역에 모두 포함되지 않는 구간을 추가한다.")
+    @Test
+    void addSectionNotIncludeStations() {
+        //when
+        ExtractableResponse<Response> response = 노선에_지하철역_등록_요청(MOCK_LINE, STATION_3.getId(), STATION_4.getId(), 10);
+
+        //then
         지하철_노선에_지하철역_등록_실패됨(response);
     }
 
@@ -95,7 +140,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 노선에_지하철역_등록_요청(LineResponse line, Long upStationId, Long downStationId, int distance) {
-        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, DISTANCE);
+        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
         return RestAssured.given().log().all().
                 contentType(MediaType.APPLICATION_JSON_VALUE).
