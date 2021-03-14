@@ -24,7 +24,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.given;
 
 @DisplayName("노선 비즈니스 로직 Mock 테스트")
 @ExtendWith(MockitoExtension.class)
@@ -50,23 +51,13 @@ public class LineServiceMockTest {
     void setUp() {
         lineService = new LineService(lineRepository, stationService);
 
-        savedStationGangnam = new Station("강남역");
-        ReflectionTestUtils.setField(savedStationGangnam, "id", 1L);
+        savedStationGangnam = createMockStation("강남역", 1L);
+        savedStationYeoksam = createMockStation("역삼역", 2L);
+        savedStationSamseong = createMockStation("삼성역", 3L);
+        savedStationYangJae = createMockStation("약재역", 4L);
 
-        savedStationYeoksam = new Station("역삼역");
-        ReflectionTestUtils.setField(savedStationYeoksam, "id", 2L);
-
-        savedStationSamseong = new Station("삼성역");
-        ReflectionTestUtils.setField(savedStationSamseong, "id", 3L);
-
-        savedStationYangJae = new Station("양재역");
-        ReflectionTestUtils.setField(savedStationYangJae, "id", 4L);
-
-        line2 = new Line("2호선", "bg-green-600");
-        ReflectionTestUtils.setField(line2, "id", 1L);
-
-        lineNewBunDang = new Line("신분당선", "bg-red-600");
-        ReflectionTestUtils.setField(lineNewBunDang, "id", 2L);
+        line2 = createMockLine("2호선", "bg-green-600", 1L);
+        lineNewBunDang = createMockLine("신분당선", "bg-red-600", 2L);
 
         line2Request = new LineRequest("2호선", "bg-green-600", savedStationGangnam.getId(), savedStationYeoksam.getId(), 10);
     }
@@ -75,9 +66,7 @@ public class LineServiceMockTest {
     @DisplayName("노선 저장")
     void saveLine() {
         // given
-        given(stationService.findStationById(1L)).willReturn(savedStationGangnam);
-        given(stationService.findStationById(2L)).willReturn(savedStationYeoksam);
-        given(lineRepository.save(any(Line.class))).willReturn(line2);
+        createMockSaveLine2();
 
         // when
         LineResponse lineResponse = lineService.saveLine(line2Request);
@@ -102,9 +91,7 @@ public class LineServiceMockTest {
     @DisplayName("노선 수정")
     void updateLine() {
         // given
-        given(stationService.findStationById(1L)).willReturn(savedStationGangnam);
-        given(stationService.findStationById(2L)).willReturn(savedStationYeoksam);
-        given(lineRepository.save(any(Line.class))).willReturn(line2);
+        createMockSaveLine2();
         LineResponse lineResponse = lineService.saveLine(line2Request);
 
         given(lineRepository.findById(lineResponse.getId())).willReturn(Optional.ofNullable(line2));
@@ -120,9 +107,7 @@ public class LineServiceMockTest {
     @DisplayName("노선 삭제")
     void deleteLine() {
         // given
-        given(stationService.findStationById(1L)).willReturn(savedStationGangnam);
-        given(stationService.findStationById(2L)).willReturn(savedStationYeoksam);
-        given(lineRepository.save(any(Line.class))).willReturn(line2);
+        createMockSaveLine2();
         LineResponse lineResponse = lineService.saveLine(line2Request);
 
         given(lineRepository.findById(lineResponse.getId())).willReturn(Optional.ofNullable(line2));
@@ -138,13 +123,10 @@ public class LineServiceMockTest {
     @DisplayName("모든 노선 조회")
     void findAllLines() {
         // given
-        given(stationService.findStationById(1L)).willReturn(savedStationGangnam);
-        given(stationService.findStationById(2L)).willReturn(savedStationYeoksam);
-        given(lineRepository.save(any(Line.class))).willReturn(line2);
+        createMockSaveLine2();
         lineService.saveLine(line2Request);
 
-        given(stationService.findStationById(4L)).willReturn(savedStationYangJae);
-        given(lineRepository.save(any(Line.class))).willReturn(lineNewBunDang);
+        createMockSaveLineNewBunDang();
         LineRequest lineNewBunDangRequest = new LineRequest("신분당선", "bg-red-600", savedStationGangnam.getId(), savedStationYangJae.getId(), 4);
         lineService.saveLine(lineNewBunDangRequest);
 
@@ -157,13 +139,11 @@ public class LineServiceMockTest {
         assertThat(savedLineAllResponses).hasSize(2);
     }
 
-        @Test
+    @Test
     @DisplayName("노선에 구간 추가")
     void addSection() {
         // given
-        given(stationService.findStationById(1L)).willReturn(savedStationGangnam);
-        given(stationService.findStationById(2L)).willReturn(savedStationYeoksam);
-        given(lineRepository.findById(1L)).willReturn(Optional.ofNullable(line2));
+        createMockAddSectionToLine();
 
         lineService.addSectionToLine(line2.getId(), createSectionRequest(savedStationGangnam, savedStationYeoksam, 10));
 
@@ -181,9 +161,7 @@ public class LineServiceMockTest {
     @DisplayName("노선에 구간 삭제")
     void deleteSection() {
         // given
-        given(stationService.findStationById(1L)).willReturn(savedStationGangnam);
-        given(stationService.findStationById(2L)).willReturn(savedStationYeoksam);
-        given(lineRepository.findById(1L)).willReturn(Optional.ofNullable(line2));
+        createMockAddSectionToLine();
 
         lineService.addSectionToLine(line2.getId(), createSectionRequest(savedStationGangnam, savedStationYeoksam, 10));
 
@@ -201,9 +179,7 @@ public class LineServiceMockTest {
     @DisplayName("노선에 구간 삭제 시 하행 종점역이 아니면 에러 발생")
     void validateDownStationToDeleteSection() {
         // given
-        given(stationService.findStationById(1L)).willReturn(savedStationGangnam);
-        given(stationService.findStationById(2L)).willReturn(savedStationYeoksam);
-        given(lineRepository.findById(1L)).willReturn(Optional.ofNullable(line2));
+        createMockAddSectionToLine();
 
         lineService.addSectionToLine(line2.getId(), createSectionRequest(savedStationGangnam, savedStationYeoksam, 10));
 
@@ -219,15 +195,42 @@ public class LineServiceMockTest {
     @DisplayName("노선에 구간 삭제 시 구간이 1개만 있을 경우 에러 발생")
     void validateSectionSizeToDeleteSection() {
         // given
-        given(stationService.findStationById(1L)).willReturn(savedStationGangnam);
-        given(stationService.findStationById(2L)).willReturn(savedStationYeoksam);
-        given(lineRepository.findById(1L)).willReturn(Optional.ofNullable(line2));
+        createMockAddSectionToLine();
 
         lineService.addSectionToLine(line2.getId(), createSectionRequest(savedStationGangnam, savedStationYeoksam, 10));
 
         // when & then
         assertThatExceptionOfType(CannotRemoveSectionException.class)
                 .isThrownBy(() -> lineService.deleteSectionToLine(line2.getId(), savedStationYeoksam.getId()));
+    }
+
+    private void createMockSaveLineNewBunDang() {
+        given(stationService.findStationById(4L)).willReturn(savedStationYangJae);
+        given(lineRepository.save(any(Line.class))).willReturn(lineNewBunDang);
+    }
+
+    private void createMockSaveLine2() {
+        given(stationService.findStationById(1L)).willReturn(savedStationGangnam);
+        given(stationService.findStationById(2L)).willReturn(savedStationYeoksam);
+        given(lineRepository.save(any(Line.class))).willReturn(line2);
+    }
+
+    private void createMockAddSectionToLine() {
+        given(stationService.findStationById(1L)).willReturn(savedStationGangnam);
+        given(stationService.findStationById(2L)).willReturn(savedStationYeoksam);
+        given(lineRepository.findById(1L)).willReturn(Optional.ofNullable(line2));
+    }
+
+    private static Station createMockStation(String stationName, Long stationId) {
+        Station station = new Station(stationName);
+        ReflectionTestUtils.setField(station, "id", stationId);
+        return station;
+    }
+
+    private static Line createMockLine(String lineName, String lineColor, Long lineId) {
+        Line line = new Line(lineName, lineColor);
+        ReflectionTestUtils.setField(line, "id", lineId);
+        return line;
     }
 
     private SectionRequest createSectionRequest(Station upStation, Station downStation, int distance) {
