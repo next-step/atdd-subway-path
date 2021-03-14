@@ -2,9 +2,7 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.exception.DistanceMaximumException;
 import nextstep.subway.exception.NotFoundException;
-import nextstep.subway.exception.StationDuplicateException;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
