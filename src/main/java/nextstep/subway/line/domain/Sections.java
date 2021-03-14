@@ -41,7 +41,7 @@ public class Sections {
     return oldDistance - newDistance;
   }
   private void validateDistance(int newDistance, int oldDistance) {
-    if(newDistance >= oldDistance) throw new RuntimeException("기존 구간의 길이보다 길거나 같습니다.");
+    if(newDistance >= oldDistance) throw new InvalidSectionException("기존 구간의 길이보다 길거나 같습니다.");
   }
 
   public void add(Line line, Station upStation, Station downStation, int distance) {

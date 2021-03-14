@@ -175,7 +175,7 @@ public class LineTest {
     신분당선.addSection(수지구청역,미금역,5);
 
     //when then
-    assertThrows(RuntimeException.class, ()-> {
+    assertThrows(InvalidSectionException.class, ()-> {
       신분당선.addSection(동천역,미금역,5);
     });
   }
