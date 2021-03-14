@@ -22,7 +22,16 @@ public class Sections {
         final boolean matchedUpStation = stations.contains(upStation);
         final boolean matchedDownStation = stations.contains(downStation);
 
-        if (stations.size() == 0 || stations.get(stations.size() - 1) == upStation) {
+        if (stations.size() == 0) {
+            add(section);
+            return;
+        }
+
+        if (matchedUpStation && matchedDownStation) {
+            throw new IsExistedSectionException();
+        }
+
+        if (stations.get(stations.size() - 1) == upStation) {
             add(section);
             return;
         }
@@ -30,10 +39,6 @@ public class Sections {
         if (stations.get(0) == downStation){
             unshift(section);
             return;
-        }
-
-        if (matchedUpStation && matchedDownStation) {
-            throw new IsExistedSectionException();
         }
 
         if (matchedUpStation) {
