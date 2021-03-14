@@ -164,16 +164,13 @@ public class Sections {
     }
 
     public void deleteSection(Line line, Long stationId) {
-        checkDeleteAble();
+        checkDeletable();
 
         List<Section> sections = findAllByUpStationOrDownStation(stationId);
         int resultCount = sections.size();
 
         if (resultCount == 2) {
-            Section firstSection = sections.get(0);
-            Section secondSection = sections.get(1);
-
-            Section newSection = createNewSectionFromPrevSections(line, stationId, firstSection, secondSection);
+            Section newSection = createNewSectionFromPrevSections(line, stationId, sections);
 
             sectionList.removeAll(sections);
             sectionList.add(newSection);
@@ -189,7 +186,9 @@ public class Sections {
         }
     }
 
-    private Section createNewSectionFromPrevSections(Line line, Long stationId, Section firstSection, Section secondSection) {
+    private Section createNewSectionFromPrevSections(Line line, Long stationId, List<Section> sections) {
+        Section firstSection = sections.get(0);
+        Section secondSection = sections.get(1);
         int distance = firstSection.getDistance() + secondSection.getDistance();
 
         if (firstSection.getUpStation().getId().equals(stationId)) {
@@ -205,12 +204,16 @@ public class Sections {
 
     private List<Section> findAllByUpStationOrDownStation(Long stationId) {
         return sectionList.stream()
-                .filter(section -> section.getUpStation().getId().equals(stationId)
-                        || section.getDownStation().getId().equals(stationId))
+                .filter(section -> section.getUpStation()
+                        .getId()
+                        .equals(stationId)
+                        || section.getDownStation()
+                        .getId()
+                        .equals(stationId))
                 .collect(Collectors.toList());
     }
 
-    private void checkDeleteAble() {
+    private void checkDeletable() {
         if (sectionList.size() == 1) {
             throw new OnlyOneSectionException();
         }
