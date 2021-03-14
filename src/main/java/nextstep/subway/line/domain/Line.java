@@ -11,11 +11,15 @@ import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
+
     @Column(unique = true)
     private String name;
+
     private String color;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
@@ -82,17 +86,113 @@ public class Line extends BaseEntity {
             return;
         }
 
-        boolean isNotValidUpStation = getLastStation() != section.getUpStation();
-        if (isNotValidUpStation) {
-            throw new RuntimeException("상행역은 하행 종점역이어야 합니다.");
+        validateToAddSectionStationsAlreadyAdded(section);
+        validateToAddSectionStationNone(section);
+
+        if (addSectionBetween(section)) return;
+        if (addSectionToUpStation(section)) return;
+        if (addSectionToDownStation(section)) return;
+    }
+
+    private boolean addSectionBetween(Section section) {
+        if (addSectionBetweenToUpStation(section)) return true;
+        if (addSectionBetweenToDownStation(section)) return true;
+
+        return false;
+    }
+
+    private boolean addSectionBetweenToUpStation(Section section) {
+        Section toBeAfterSection = sections.stream()
+                .filter(it -> it.getUpStation().equals(section.getUpStation()))
+                .findFirst()
+                .orElse(null);
+
+        if (toBeAfterSection != null) {
+            validateToAddSectionDistance(toBeAfterSection, section);
+
+            int position = sections.indexOf(toBeAfterSection);
+
+            toBeAfterSection.setUpStation(section.getDownStation());
+            toBeAfterSection.setDistance(toBeAfterSection.getDistance() - section.getDistance());
+
+            sections.set(position, toBeAfterSection);
+            sections.add(position, section);
+
+            return true;
         }
 
-        boolean isDownStationExisted = getStations().stream().anyMatch(it -> it == section.getDownStation());
-        if (isDownStationExisted) {
-            throw new RuntimeException("하행역이 이미 등록되어 있습니다.");
+        return false;
+    }
+
+    private boolean addSectionBetweenToDownStation(Section section) {
+        Section toBeBeforeSection = sections.stream()
+                .filter(it -> it.getDownStation().equals(section.getDownStation()))
+                .findFirst()
+                .orElse(null);
+
+        if (toBeBeforeSection != null) {
+            validateToAddSectionDistance(toBeBeforeSection, section);
+
+            int position = sections.indexOf(toBeBeforeSection);
+
+            toBeBeforeSection.setDownStation(section.getUpStation());
+            toBeBeforeSection.setDistance(toBeBeforeSection.getDistance() - section.getDistance());
+
+            sections.set(position, toBeBeforeSection);
+            sections.add(position + 1, section);
+
+            return true;
         }
 
-        sections.add(section);
+        return false;
+    }
+
+    private boolean addSectionToUpStation(Section section) {
+        Section firstSection = sections.get(0);
+
+        if (firstSection.getUpStation().equals(section.getDownStation())) {
+            sections.add(0, section);
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean addSectionToDownStation(Section section) {
+        Section lastSection = sections.get(sections.size() - 1);
+
+        if (lastSection.getDownStation().equals(section.getUpStation())) {
+            sections.add(section);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void validateToAddSectionDistance(Section section, Section toAddSection) {
+        if (toAddSection.getDistance() >= section.getDistance()) {
+            throw new RuntimeException();
+        }
+    }
+
+    private void validateToAddSectionStationsAlreadyAdded(Section toAddSection) {
+        if (getStations().containsAll(toAddSection.getStations())) {
+            throw new RuntimeException();
+        }
+    }
+
+    private void validateToAddSectionStationNone(Section toAddSection) {
+        if (!getStations().contains(toAddSection.getUpStation()) &&
+                !getStations().contains(toAddSection.getDownStation())) {
+
+            throw new RuntimeException();
+        }
+    }
+
+
+    private Station getFirstStation() {
+        List<Station> stations = getStations();
+        return stations.get(0);
     }
 
     private Station getLastStation() {

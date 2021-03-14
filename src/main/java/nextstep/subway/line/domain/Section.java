@@ -60,4 +60,16 @@ public class Section {
     public List<Station> getStations() {
         return Stream.of(getUpStation(), getDownStation()).collect(Collectors.toList());
     }
+
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
 }
