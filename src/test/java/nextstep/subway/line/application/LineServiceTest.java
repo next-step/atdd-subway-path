@@ -35,7 +35,7 @@ public class LineServiceTest {
         Station 서현역 = stationRepository.save(new Station("서현역"));
 
         Long lineId = lineService.saveLine(
-                new LineRequest("분당선", "YELLOW", 야탑역.getId(), 이매역.getId(), 10)
+                new LineRequest("라인_1", "YELLOW", 야탑역.getId(), 이매역.getId(), 10)
         ).getId();
 
         // when
