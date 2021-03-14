@@ -1,7 +1,6 @@
 package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
@@ -32,9 +31,6 @@ public class LineServiceTest {
     private StationRepository stationRepository;
 
     @Autowired
-    private LineRepository lineRepository;
-
-    @Autowired
     private LineService lineService;
 
     private Station savedStationGangnam;
@@ -49,15 +45,12 @@ public class LineServiceTest {
         savedStationYeoksam = stationRepository.save(new Station("역삼역"));
         savedStationSamseong = stationRepository.save(new Station("삼성역"));
 
-        line2Request = new LineRequest("2호선", "bg-green-600");
+        line2Request = new LineRequest("2호선", "bg-green-600", savedStationGangnam.getId(), savedStationYeoksam.getId(), 10);
     }
 
     @Test
     @DisplayName("노선 저장")
     void saveLine() {
-        // given
-        line2Request = new LineRequest("2호선", "bg-green-600", savedStationGangnam.getId(), savedStationYeoksam.getId(), 10);
-
         // when
         LineResponse savedLineResponse = lineService.saveLine(line2Request);
 
@@ -70,7 +63,6 @@ public class LineServiceTest {
     @DisplayName("노선 저장 시 존재하는 이름이 있으면 에러 발생")
     void validateNameToSaveLine() {
         // given
-        line2Request = new LineRequest("2호선", "bg-green-600", savedStationGangnam.getId(), savedStationYeoksam.getId(), 10);
         lineService.saveLine(line2Request);
 
         // when & then
@@ -85,7 +77,6 @@ public class LineServiceTest {
     @DisplayName("노선 수정")
     void updateLine() {
         // given
-        line2Request = new LineRequest("2호선", "bg-green-600", savedStationGangnam.getId(), savedStationYeoksam.getId(), 10);
         LineResponse savedLine2Response = lineService.saveLine(line2Request);
 
         // when
@@ -99,7 +90,6 @@ public class LineServiceTest {
     @DisplayName("노선 삭제")
     void deleteLine() {
         // given
-        line2Request = new LineRequest("2호선", "bg-green-600", savedStationGangnam.getId(), savedStationYeoksam.getId(), 10);
         LineResponse savedLine2Response = lineService.saveLine(line2Request);
 
         // when
@@ -113,7 +103,6 @@ public class LineServiceTest {
     @DisplayName("모든 노선 조회")
     void findAllLines() {
         // given
-        line2Request = new LineRequest("2호선", "bg-green-600", savedStationGangnam.getId(), savedStationYeoksam.getId(), 10);
         lineService.saveLine(line2Request);
 
         Station savedStationYangJae = stationRepository.save(new Station("양재역"));
@@ -131,7 +120,6 @@ public class LineServiceTest {
     @DisplayName("노선에 구간 추가")
     void addSection() {
         // given
-        line2Request = new LineRequest("2호선", "bg-green-600", savedStationGangnam.getId(), savedStationYeoksam.getId(), 10);
         LineResponse savedLineResponse = lineService.saveLine(line2Request);
 
         // when
@@ -146,7 +134,6 @@ public class LineServiceTest {
     @DisplayName("노선에 구간 삭제")
     void deleteSection() {
         // given
-        line2Request = new LineRequest("2호선", "bg-green-600", savedStationGangnam.getId(), savedStationYeoksam.getId(), 10);
         LineResponse savedLineResponse = lineService.saveLine(line2Request);
 
         savedLineResponse = lineService.addSectionToLine(savedLineResponse.getId(), addSectionToLine(savedStationYeoksam, savedStationSamseong, 6));
@@ -163,7 +150,6 @@ public class LineServiceTest {
     @DisplayName("노선에 구간 삭제 시 하행 종점역이 아니면 에러 발생")
     void validateDownStationToDeleteSection() {
         // given
-        line2Request = new LineRequest("2호선", "bg-green-600", savedStationGangnam.getId(), savedStationYeoksam.getId(), 10);
         LineResponse savedLineResponse = lineService.saveLine(line2Request);
         lineService.addSectionToLine(savedLineResponse.getId(), addSectionToLine(savedStationYeoksam, savedStationSamseong, 6));
 
@@ -178,14 +164,11 @@ public class LineServiceTest {
     @DisplayName("노선에 구간 삭제 시 구간이 1개만 있을 경우 에러 발생")
     void validateSectionSizeToDeleteSection() {
         // given
-        line2Request = new LineRequest("2호선", "bg-green-600", savedStationGangnam.getId(), savedStationYeoksam.getId(), 10);
         LineResponse savedLineResponse = lineService.saveLine(line2Request);
 
         // when & then
         assertThatExceptionOfType(CannotRemoveSectionException.class)
-                .isThrownBy(() -> {
-                    lineService.deleteSectionToLine(savedLineResponse.getId(), savedStationYeoksam.getId());
-                });
+                .isThrownBy(() -> lineService.deleteSectionToLine(savedLineResponse.getId(), savedStationYeoksam.getId()));
     }
 
     private SectionRequest addSectionToLine(Station upStation, Station downStation, int distance) {
