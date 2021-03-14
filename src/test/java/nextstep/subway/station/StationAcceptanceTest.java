@@ -35,7 +35,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
   @DisplayName("지하철역을 생성한다.")
   @Test
   void createStation() {
-
     // then
     지하철역_생성됨(강남역);
   }
@@ -45,10 +44,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
   void createStationWithDuplicateName() {
     // given
     지하철역_생성됨(강남역);
-
     // when
     ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
-
     // then
     지하철역_생성실패됨(response);
   }
@@ -58,10 +55,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
   void getStations() {
     /// given
     지하철역_생성됨(강남역);
-
     // when
     ExtractableResponse<Response> response = 지하철역_목록조회_요청();
-
     // then
     assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     List<Long> expectedLineIds = Arrays.asList(강남역, 역삼역).stream()
@@ -75,11 +70,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
   void deleteStation() {
     // given
     지하철역_생성됨(강남역);
-
     // when
     String uri = 강남역.header("Location");
     ExtractableResponse<Response> response = 지하철역_삭제_요청(uri);
-
     // then
     지하철역_삭제됨(response);
   }

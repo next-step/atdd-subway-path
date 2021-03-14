@@ -74,11 +74,9 @@ public class LineServiceMockTest {
     given(stationService.findStation(광교역ID)).willReturn(광교역);
     given(stationService.findStation(광교중앙역ID)).willReturn(광교중앙역);
     given(lineRepository.save(any(Line.class))).willReturn(신분당선);
-
     //when
     LineRequest request = new LineRequest("신분당선", LineColor.RED.toString(), 광교역ID, 광교중앙역ID, 5);
     LineResponse lineResponse = lineService.saveLine(request);
-
     //then
     assertThat(lineResponse.getStations()).hasSize(2);
 
@@ -90,11 +88,9 @@ public class LineServiceMockTest {
 
     //given
     given(lineRepository.findAll()).willReturn(Arrays.asList(신분당선));
-
     //when
     List<LineResponse> 전체노선목록 = lineService.getLines();
     LineResponse lineResponse = 전체노선목록.stream().findFirst().get();
-
     //then
     assertAll(
         () -> assertThat(전체노선목록).hasSize(1),
@@ -110,12 +106,9 @@ public class LineServiceMockTest {
 
     //given
     given(lineRepository.findById(any())).willReturn(Optional.of(신분당선));
-
     //when
     LineResponse lineResponse = lineService.findLine(신분당선ID);
-
     //then
-
     assertAll(
         () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
         () -> assertThat(lineResponse.getStations()).extracting(StationResponse::getName)
@@ -156,10 +149,8 @@ public class LineServiceMockTest {
     given(lineRepository.save(any(Line.class))).willReturn(신분당선);
     LineRequest request = new LineRequest("신분당선", LineColor.RED.toString(), 광교역ID, 광교중앙역ID, 5);
     lineService.saveLine(request);
-
     //when
     lineService.removeLine(신분당선ID);
-
     //then
     verify(lineRepository, times(1)).deleteById(신분당선ID);
   }
@@ -174,10 +165,8 @@ public class LineServiceMockTest {
     given(stationService.findStation(광교중앙역ID)).willReturn(광교중앙역);
     given(stationService.findStation(상현역ID)).willReturn(상현역);
     given(lineRepository.findById(any())).willReturn(Optional.of(신분당선));
-
     //when
     lineService.addSection(신분당선ID,new SectionRequest(광교중앙역ID,상현역ID,5));
-
     //then
     assertThat(신분당선.getSections().getSortedStations()).hasSize(3);
 
@@ -211,7 +200,6 @@ public class LineServiceMockTest {
     given(stationService.findStation(광교역ID)).willReturn(광교역);
     given(stationService.findStation(광교중앙역ID)).willReturn(광교중앙역);
     given(lineRepository.findById(any())).willReturn(Optional.of(신분당선));
-
     //then
     assertThrows(InvalidSectionException.class,
         ()-> lineService.addSection(신분당선ID,new SectionRequest(광교역ID,광교중앙역ID,5)));
@@ -222,7 +210,6 @@ public class LineServiceMockTest {
   void removeSectionIncludedOneSection(){
     //given
     given(lineRepository.findById(any())).willReturn(Optional.of(신분당선));
-
     //then
     assertThrows(InvalidSectionException.class,
         ()-> lineService.removeSection(신분당선ID,광교중앙역ID));
@@ -235,7 +222,6 @@ public class LineServiceMockTest {
     given(lineRepository.findById(any())).willReturn(Optional.of(신분당선));
     given(상현역.getId()).willReturn(상현역ID);
     신분당선.addSection(광교중앙역,상현역,5);
-
     //then
     assertThrows(InvalidSectionException.class,
         ()-> lineService.removeSection(신분당선ID,광교역ID));
@@ -248,10 +234,8 @@ public class LineServiceMockTest {
     given(lineRepository.findById(any())).willReturn(Optional.of(신분당선));
     given(상현역.getId()).willReturn(상현역ID);
     신분당선.addSection(광교중앙역,상현역,5);
-
     //when
     lineService.removeSection(신분당선ID,상현역ID);
-
     //then
     assertThat(신분당선.getSections().getSize()).isEqualTo(1);
   }

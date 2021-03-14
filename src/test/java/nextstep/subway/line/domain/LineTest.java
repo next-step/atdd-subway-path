@@ -136,7 +136,6 @@ public class LineTest {
     신분당선.addSection(상현역, 수지구청역, 3);
     신분당선.addSection(상현역, 성복역, 1);
     신분당선.addSection(수지구청역, 미금역, 5);
-
     //when then
     assertThrows(InvalidSectionException.class, () -> {
       신분당선.addSection(동천역, 미금역, 5);
@@ -159,7 +158,6 @@ public class LineTest {
   void removeSectionWithoutLastSection() {
     //given
     신분당선.addSection(광교중앙역, 상현역, 5);
-
     //when then
     assertThrows(InvalidSectionException.class, () -> {
       신분당선.removeSection(광교중앙역.getId());

@@ -75,7 +75,6 @@ public class LineServiceTest {
   void findLineById() {
     //when
     LineResponse lineResponse = lineService.findLine(신분당선.getId());
-
     //then
     assertAll(
         () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
@@ -97,6 +96,7 @@ public class LineServiceTest {
   @DisplayName("등록된 지하철 노선을 수정한다")
   @Test
   void modifyLine() {
+    //when then
     LineResponse lineResponse = lineService
         .modifyLine(신분당선.getId(),
             new LineRequest("신분당선", LineColor.YELLOW.toString(), 광교역.getId(), 광교중앙역.getId(), 5));
@@ -108,7 +108,6 @@ public class LineServiceTest {
   void removeLine() {
     //given
     lineService.removeLine(신분당선.getId());
-
     //then
     assertThrows(NoResourceException.class, () -> {
       lineService.findLine(신분당선.getId());
@@ -138,7 +137,6 @@ public class LineServiceTest {
     StationResponse 상현역 = stationService.saveStation(new StationRequest("상현역"));
     StationResponse 성복역 = stationService.saveStation(new StationRequest("성복역"));
     lineService.addSection(신분당선.getId(), new SectionRequest(광교중앙역.getId(), 성복역.getId(), 5));
-
     //when
     lineService.addSection(신분당선.getId(), new SectionRequest(상현역.getId(), 성복역.getId(), 3));
     LineResponse lineResponse = lineService.findLine(신분당선.getId());
@@ -153,6 +151,7 @@ public class LineServiceTest {
   @DisplayName("노선에서 구간이 1개남아있으면 역을 삭제하지못한다")
   @Test
   void removeSectionIncludedOneSection() {
+    //when then
     assertThrows(InvalidSectionException.class, () -> {
       lineService.removeSection(신분당선.getId(), 광교중앙역.getId());
     });
@@ -161,7 +160,7 @@ public class LineServiceTest {
   @DisplayName("노선에서 삭제하려는 역이 종점이 아니면 삭제하지 못한다")
   @Test
   void removeSectionWithoutLastStation() {
-
+    //when then
     assertThrows(InvalidSectionException.class, () -> {
       lineService.removeSection(신분당선.getId(), 광교역.getId());
     });
@@ -173,11 +172,9 @@ public class LineServiceTest {
     //given
     StationResponse 상현역 = stationService.saveStation(new StationRequest("상현역"));
     lineService.addSection(신분당선.getId(), new SectionRequest(광교중앙역.getId(), 상현역.getId(), 5));
-
     //when
     lineService.removeSection(신분당선.getId(), 상현역.getId());
     LineResponse lineResponse = lineService.findLine(신분당선.getId());
-
     //then
     assertThat(lineResponse.getStations()).extracting(StationResponse::getName)
         .containsExactly("광교역", "광교중앙역");
