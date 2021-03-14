@@ -2,9 +2,12 @@ package nextstep.subway.line.ui;
 
 import nextstep.subway.line.exception.DownStationExistedException;
 import nextstep.subway.line.exception.HasNoneOrOneSectionException;
+import nextstep.subway.line.exception.InvalidSectionDistanceException;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.line.exception.NotLastStationException;
 import nextstep.subway.line.exception.NotValidUpStationException;
+import nextstep.subway.line.exception.SectionDuplicatedException;
+import nextstep.subway.line.exception.SectionNotConnectedException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,6 +18,11 @@ import java.io.IOException;
 
 @RestControllerAdvice
 public class LineExceptionHandler {
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public void handle(HttpServletResponse response, DataIntegrityViolationException e) throws IOException {
+        response.sendError(HttpStatus.BAD_REQUEST.value());
+    }
 
     @ExceptionHandler(LineNotFoundException.class)
     public void handle(HttpServletResponse response, LineNotFoundException e) throws IOException {
@@ -41,8 +49,19 @@ public class LineExceptionHandler {
         response.sendError(HttpStatus.BAD_REQUEST.value());
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public void handle(HttpServletResponse response, DataIntegrityViolationException e) throws IOException {
+    @ExceptionHandler(InvalidSectionDistanceException.class)
+    public void handle(HttpServletResponse response, InvalidSectionDistanceException e) throws IOException {
         response.sendError(HttpStatus.BAD_REQUEST.value());
     }
+
+    @ExceptionHandler(SectionDuplicatedException.class)
+    public void handle(HttpServletResponse response, SectionDuplicatedException e) throws IOException {
+        response.sendError(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @ExceptionHandler(SectionNotConnectedException.class)
+    public void handle(HttpServletResponse response, SectionNotConnectedException e) throws IOException {
+        response.sendError(HttpStatus.BAD_REQUEST.value());
+    }
+
 }

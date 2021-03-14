@@ -51,9 +51,9 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         신분당선 = 지하철_노선_등록되어_있음(lineCreateParams).as(LineResponse.class);
     }
 
-    @DisplayName("지하철 노선에 구간을 등록한다.")
+    @DisplayName("지하철 노선의 끝에 구간을 등록한다.")
     @Test
-    void addLineSection() {
+    void addLineSectionInLast() {
         // when
         지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
 
@@ -63,16 +63,28 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 양재역, 정자역));
     }
 
-    @DisplayName("지하철 노선에 이미 포함된 역을 구간으로 등록한다.")
+    @DisplayName("지하철 노선의 앞에 구간을 등록한다.")
     @Test
-    void addLineSectionAlreadyIncluded() {// given
-        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
-
+    void addLineSectionInFirst() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
+        지하철_노선에_지하철역_등록_요청(신분당선, 정자역, 강남역, 6);
 
         // then
-        지하철_노선에_지하철역_등록_실패됨(response);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_노선에_지하철역_등록됨(response);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(정자역, 강남역, 양재역));
+    }
+
+    @DisplayName("지하철 노선의 역 사이에 구간을 등록한다.")
+    @Test
+    void addLineSectionInMiddle() {
+        // when
+        지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 정자역, 6);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_노선에_지하철역_등록됨(response);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 정자역, 양재역));
     }
 
     @DisplayName("지하철 노선에 등록된 지하철역을 제외한다.")

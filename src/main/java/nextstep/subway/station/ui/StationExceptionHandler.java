@@ -12,13 +12,13 @@ import java.io.IOException;
 @RestControllerAdvice
 public class StationExceptionHandler {
 
-    @ExceptionHandler(StationNotFoundException.class)
-    public void handle(HttpServletResponse response, StationNotFoundException e) throws IOException {
-        response.sendError(HttpStatus.NOT_FOUND.value());
-    }
-
     @ExceptionHandler(DataIntegrityViolationException.class)
     public void handle(HttpServletResponse response, DataIntegrityViolationException e) throws IOException {
         response.sendError(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @ExceptionHandler(StationNotFoundException.class)
+    public void handle(HttpServletResponse response, StationNotFoundException e) throws IOException {
+        response.sendError(HttpStatus.NOT_FOUND.value());
     }
 }
