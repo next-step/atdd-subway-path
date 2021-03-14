@@ -53,4 +53,9 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public void changeDownStationAndDistance(final Station downStation, final int distance) {
+        this.downStation = downStation;
+        this.distance = distance;
+    }
 }

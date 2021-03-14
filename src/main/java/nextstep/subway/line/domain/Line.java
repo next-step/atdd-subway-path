@@ -82,7 +82,46 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section) {
         checkIfSectionIsValid(section);
+
+        if(isUpStationExists(section)) {
+            Section oldSection = sections.stream()
+                    .filter(s -> s.getUpStation().equals(section.getUpStation()))
+                    .findAny()
+                    .get();
+
+            Station oldDownStation = oldSection.getDownStation();
+            int oldDistance = oldSection.getDistance();
+
+            oldSection.changeDownStationAndDistance(section.getDownStation(), section.getDistance());
+            addSection(new Section(this, section.getDownStation(), oldDownStation,oldDistance - section.getDistance()));
+            return;
+        }
+
+        if(isDownStationExists(section)) {
+            Section oldSection = sections.stream()
+                    .filter(s -> s.getDownStation().equals(section.getDownStation()))
+                    .findAny()
+                    .get();
+
+            Station oldDownStation = oldSection.getDownStation();
+            int oldDistance = oldSection.getDistance();
+
+            oldSection.changeDownStationAndDistance(section.getUpStation(), oldDistance - section.getDistance());
+            addSection(new Section(this, section.getUpStation(), oldDownStation, section.getDistance()));
+            return;
+        }
+
         sections.add(section);
+    }
+
+    private boolean isUpStationExists(Section section) {
+        return sections.stream()
+                .anyMatch(s -> s.getUpStation().equals(section.getUpStation()));
+    }
+
+    private boolean isDownStationExists(Section section) {
+        return sections.stream()
+                .anyMatch(s -> s.getDownStation().equals(section.getDownStation()));
     }
 
     private void checkIfSectionIsValid(Section section) {
@@ -90,16 +129,7 @@ public class Line extends BaseEntity {
             return;
         }
 
-        checkIfUpStationValid(section);
         checkIfStationAlreadyExists(section);
-    }
-
-    private void checkIfUpStationValid(Section section) {
-        Station finalStation = sections.get(sections.size() - 1).getDownStation();
-        if(!finalStation.equals(section.getUpStation())) {
-            throw new FinalStationNeededException();
-        }
-
     }
 
     private void checkIfStationAlreadyExists(Section section) {
