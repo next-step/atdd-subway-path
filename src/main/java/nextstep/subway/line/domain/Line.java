@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.exception.AlreadyExistDownStation;
+import nextstep.subway.exception.InValidSectionSizeException;
 import nextstep.subway.exception.InValidUpStationException;
 import nextstep.subway.station.domain.Station;
 
@@ -10,6 +11,9 @@ import java.util.*;
 
 @Entity
 public class Line extends BaseEntity {
+
+    private static final int SECTION_SIZE_LIMIT = 1;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -157,15 +161,15 @@ public class Line extends BaseEntity {
     }
 
     private void checkRemoveSection(Station station) {
-        boolean isNotValidUpStation = !getStations().get(getStations().size() - 1).equals(station);
+        boolean isNotValidUpStation = !getLastStation().equals(station);
         if (isNotValidUpStation) {
             throw new RuntimeException("하행 종점역만 삭제가 가능합니다.");
         }
     }
 
     private void checkSectionSize() {
-        if (getSections().size() <= 1) {
-            throw new RuntimeException();
+        if (getSections().size() <= SECTION_SIZE_LIMIT) {
+            throw new InValidSectionSizeException();
         }
     }
 }

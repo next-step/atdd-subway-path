@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.exception.AlreadyExistDownStation;
+import nextstep.subway.exception.InValidSectionSizeException;
 import nextstep.subway.exception.InValidUpStationException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
@@ -85,5 +86,11 @@ public class LineTest {
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
     @Test
     void removeSectionNotEndOfList() {
+        // given
+        이호선.addSection(강남역, 역삼역, 10);
+
+        // then
+        assertThatThrownBy(() -> 이호선.removeSection(삼성역))
+                .isInstanceOf(InValidSectionSizeException.class);
     }
 }
