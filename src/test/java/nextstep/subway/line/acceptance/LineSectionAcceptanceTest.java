@@ -181,4 +181,35 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         //then
         지하철_노선에_지하철역_등록_실패됨(response);
     }
+
+    @DisplayName("지하철 노선 구간의 중간에 있는 역을 삭제한다.")
+    @Test
+    void deleteSectionBetweenStations() {
+        //given
+        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 10);
+        지하철_노선에_지하철역_등록_요청(신분당선, 정자역, 광교역, 10);
+
+
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_제외_요청(신분당선, 양재역);
+
+        //then
+        ExtractableResponse<Response> lineResponse = 지하철_노선_조회_요청(신분당선);
+        지하철_노선에_지하철역_제외됨(response);
+        지하철_노선에_지하철역_순서_정렬됨(lineResponse, Arrays.asList(강남역, 정자역, 광교역));
+    }
+
+    @DisplayName("지하철 노선 구간에 등록되지 않은 역을 삭제한다.")
+    @Test
+    void deleteSectionNotIncludeStation() {
+        //given
+        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 10);
+
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_제외_요청(신분당선, 광교역);
+
+        //then
+        지하철_노선에_지하철역_제외_실패됨(response);
+
+    }
 }
