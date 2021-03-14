@@ -77,23 +77,8 @@ public class LineService {
         removeSection(line, stationId);
     }
 
-    public void addSection(Line line, Station upStation, Station downStation, int distance) {
-        if (getStations(line).size() == 0) {
-            line.getSections().add(new Section(line, upStation, downStation, distance));
-            return;
-        }
-
-        boolean isNotValidUpStation = getStations(line).get(getStations(line).size() - 1) != upStation;
-        if (isNotValidUpStation) {
-            throw new RuntimeException("상행역은 하행 종점역이어야 합니다.");
-        }
-
-        boolean isDownStationExisted = getStations(line).stream().anyMatch(it -> it == downStation);
-        if (isDownStationExisted) {
-            throw new RuntimeException("하행역이 이미 등록되어 있습니다.");
-        }
-
-        line.getSections().add(new Section(line, upStation, downStation, distance));
+    private void addSection(Line line, Station upStation, Station downStation, int distance) {
+        line.addSection(new Section(line, upStation, downStation, distance));
     }
 
     public void removeSection(Line line, Long stationId) {
@@ -113,27 +98,7 @@ public class LineService {
     }
 
     public List<Station> getStations(Line line) {
-        if (line.getSections().isEmpty()) {
-            return Arrays.asList();
-        }
-
-        List<Station> stations = new ArrayList<>();
-        Station downStation = findUpStation(line);
-        stations.add(downStation);
-
-        while (downStation != null) {
-            Station finalDownStation = downStation;
-            Optional<Section> nextLineStation = line.getSections().stream()
-                    .filter(it -> it.getUpStation() == finalDownStation)
-                    .findFirst();
-            if (!nextLineStation.isPresent()) {
-                break;
-            }
-            downStation = nextLineStation.get().getDownStation();
-            stations.add(downStation);
-        }
-
-        return stations;
+        return line.getStations();
     }
 
     private Station findUpStation(Line line) {
