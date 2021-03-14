@@ -60,7 +60,7 @@ class LineTest {
     class Describe_addSection {
         @Nested
         @DisplayName("지하철 구간의 가장 마지막에 추가한다면")
-        class Context_add_last {
+        class Context_with_last_section {
             @Test
             @DisplayName("지하철 구간을 추가한다")
             void it_add_a_section() {
@@ -74,7 +74,7 @@ class LineTest {
 
         @Nested
         @DisplayName("지하철 구간의 가장 앞에 추가한다면")
-        class Context_add_first {
+        class Context_with_first_section {
             @Test
             @DisplayName("지하철 구간을 추가한다")
             void it_add_a_section() {
@@ -88,7 +88,7 @@ class LineTest {
 
         @Nested
         @DisplayName("지하철 구간의 중간에 추가(상행역이 존재)한다면")
-        class Context_add_in_middle_1 {
+        class Context_with_middle_section_and_exist_up_station {
             @Test
             @DisplayName("지하철 구간을 추가한다")
             void it_add_a_section() {
@@ -106,7 +106,7 @@ class LineTest {
 
         @Nested
         @DisplayName("지하철 구간의 중간에 추가(하행역이 존재)한다면")
-        class Context_add_in_middle_2 {
+        class Context_with_middle_section_and_exist_down_station {
             @Test
             @DisplayName("지하철 구간을 추가한다")
             void it_add_a_section() {
@@ -124,7 +124,7 @@ class LineTest {
 
         @Nested
         @DisplayName("지하철 구간의 중간에 추가(상행역이 존재)하면서 기존 역 사이 길이보다 크거나 같으면")
-        class Context_add_already_included_with_greater_or_equal_distance_1 {
+        class Context_with_middle_section_and_exist_up_station_and_greater_or_equal_distance {
             @Test
             @DisplayName("예외를 발생시킨다")
             void it_throw_exception() {
@@ -136,7 +136,7 @@ class LineTest {
 
         @Nested
         @DisplayName("지하철 구간의 중간에 추가(하행역이 존재)하면서 기존 역 사이 길이보다 크거나 같으면")
-        class Context_add_already_included_with_greater_or_equal_distance_2 {
+        class Context_with_middle_section_and_exist_down_station_and_greater_or_equal_distance {
             @Test
             @DisplayName("예외를 발생시킨다")
             void it_throw_exception() {
@@ -176,7 +176,7 @@ class LineTest {
     class Describe_removeSection {
         @Nested
         @DisplayName("지하철 구간이 2개 이상일 때 마지막 역을 제거한다면")
-        class Context_line_has_sections_and_remove_last {
+        class Context_with_last_station {
             @Test
             @DisplayName("지하철 구간을 제거한다")
             void it_remove_a_section() {
@@ -193,7 +193,7 @@ class LineTest {
 
         @Nested
         @DisplayName("지하철 구간이 1개일 때 역을 제거한다면")
-        class Context_line_has_a_section {
+        class Context_with_only_one_section {
             @Test
             @DisplayName("예외를 발생시킨다")
             void it_throw_exception() {
@@ -208,7 +208,7 @@ class LineTest {
 
         @Nested
         @DisplayName("하행 종점역이 아닌 역을 제거한다면")
-        class Context_delete_not_last_station {
+        class Context_with_not_last_station {
             @Test
             @DisplayName("예외를 발생시킨다")
             void it_throw_exception() {
