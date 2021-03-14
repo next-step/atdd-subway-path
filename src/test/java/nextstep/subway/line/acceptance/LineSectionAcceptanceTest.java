@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.line.acceptance.LineSteps.*;
+import static nextstep.subway.line.acceptance.LineSteps.지하철_노선_조회_요청;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -61,7 +62,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선에 이미 포함된 역을 구간으로 등록한다.")
     @Test
-    void addLineSectionAlreadyIncluded() {// given
+    void addLineSectionAlreadyIncluded() {
+        // given
         지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
 
         // when
@@ -70,6 +72,33 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선에_지하철역_등록_실패됨(response);
     }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정한다.")
+    @Test
+    void addLineSectionInMiddle(){
+        //given
+        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 광교역, 20);
+
+        //when
+        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 8);
+
+        //then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_노선에_지하철역_등록됨(response);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 양재역, 정자역, 광교역));
+    }
+
+
+
+
+/*
+    @DisplayName("새로운 역을 상행 종점으로 등록한다.")
+    @DisplayName("새로운 역을 하행 종점으로 등록한다.")
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음.")
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음.")
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+*/
+
 
     @DisplayName("지하철 노선에 등록된 지하철역을 제외한다.")
     @Test
