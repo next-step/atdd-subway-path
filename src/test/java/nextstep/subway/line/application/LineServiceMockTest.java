@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyByte;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -41,11 +42,14 @@ public class LineServiceMockTest {
   private Station 광교중앙역;
   @Mock
   private Station 상현역;
+  @Mock
+  private Station 성복역;
   private Line 신분당선;
   private long 신분당선ID;
   private long 광교역ID;
   private long 광교중앙역ID;
   private long 상현역ID;
+  private long 성복역ID;
   private LineService lineService;
 
   @BeforeEach
@@ -180,19 +184,25 @@ public class LineServiceMockTest {
 
   }
 
-  @DisplayName("등록하는 구간의 상행역이 노선의 종점이아닌경우 구간 등록할 수 없다.")
+  @DisplayName("노선의 구간 중간에 새로운 역을 추가한다.")
   @Test
-  void addSectionWithInvalidUpStation(){
+  void insertSection(){
     //given
     상현역ID = 3L;
     상현역 = new Station("상현역");
+    성복역ID = 4L;
+    성복역 = new Station("성복역");
     given(stationService.findStation(광교중앙역ID)).willReturn(광교중앙역);
     given(stationService.findStation(상현역ID)).willReturn(상현역);
+    given(stationService.findStation(성복역ID)).willReturn(성복역);
     given(lineRepository.findById(any())).willReturn(Optional.of(신분당선));
-
+    lineService.addSection(신분당선ID,new SectionRequest(광교중앙역ID,성복역ID,5));
+    //when
+    lineService.addSection(신분당선ID,new SectionRequest(상현역ID,성복역ID,2));
     //then
-    assertThrows(InvalidSectionException.class,
-        ()-> lineService.addSection(신분당선ID,new SectionRequest(상현역ID,광교중앙역ID,5)));
+    assertThat(lineService.findLineById(신분당선ID).getStations()).extracting(StationResponse::getName)
+        .containsExactly("광교역","광교중앙역","상현역","성복역");
+
   }
 
   @DisplayName("등록하는 구간의 하행역이 노선에 이미 등록되어있으면 구간을 등록할 수 없다.")

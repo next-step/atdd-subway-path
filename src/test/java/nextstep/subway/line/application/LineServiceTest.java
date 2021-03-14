@@ -131,30 +131,23 @@ public class LineServiceTest {
     );
   }
 
-  @DisplayName("등록하는 구간의 상행역이 노선의 종점이아닌경우 구간 등록할 수 없다.")
+  @DisplayName("노선의 구간 중간에 새로운 역을 추가한다.")
   @Test
-  void addSectionWithInvalidUpStation() {
+  void insertSection(){
     //given
     StationResponse 상현역 = stationService.saveStation(new StationRequest("상현역"));
+    StationResponse 성복역 = stationService.saveStation(new StationRequest("성복역"));
+    lineService.addSection(신분당선.getId(), new SectionRequest(광교중앙역.getId(), 성복역.getId(), 5));
 
+    //when
+    lineService.addSection(신분당선.getId(), new SectionRequest(상현역.getId(), 성복역.getId(), 3));
+    LineResponse lineResponse = lineService.findLineById(신분당선.getId());
     //then
-    assertThrows(InvalidSectionException.class, () -> {
-      lineService.addSection(신분당선.getId(), new SectionRequest(광교역.getId(), 상현역.getId(), 5));
-    });
-  }
-
-  @DisplayName("등록하는 구간의 하행역이 노선에 이미 등록되어있으면 구간을 등록할 수 없다.")
-  @Test
-  void addSectionWithInvalidDownStationSection() {
-    //given
-    StationResponse 상현역 = stationService.saveStation(new StationRequest("상현역"));
-    lineService.addSection(신분당선.getId(), new SectionRequest(광교중앙역.getId(), 상현역.getId(), 5));
-
-    //then
-    assertThrows(InvalidSectionException.class, () -> {
-      lineService.addSection(신분당선.getId(), new SectionRequest(상현역.getId(), 광교중앙역.getId(), 5));
-    });
-
+    assertAll(
+        () -> assertThat(lineResponse.getStations()).hasSize(4),
+        () -> assertThat(lineResponse.getStations()).extracting(StationResponse::getName)
+            .containsExactly("광교역", "광교중앙역", "상현역","성복역")
+    );
   }
 
   @DisplayName("노선에서 구간이 1개남아있으면 역을 삭제하지못한다")
