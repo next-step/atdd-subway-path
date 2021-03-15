@@ -69,15 +69,15 @@ public class Sections {
     }
 
     private void checkAddSection(Section section) {
-        boolean isNotValidUpStation = getLastStation() != section.getUpStation();
-        if (isNotValidUpStation) {
-            throw new InValidUpStationException();
-        }
+//        boolean isNotValidUpStation = getLastStation() != section.getUpStation();
+//        if (isNotValidUpStation) {
+//            throw new InValidUpStationException();
+//        }
 
-        boolean isDownStationExisted = getStations().contains(section.getDownStation());
-        if (isDownStationExisted) {
-            throw new AlreadyExistDownStation();
-        }
+//        boolean isDownStationExisted = getStations().contains(section.getDownStation());
+//        if (isDownStationExisted) {
+//            throw new AlreadyExistDownStation();
+//        }
     }
 
     private boolean isEmptyStations() {
