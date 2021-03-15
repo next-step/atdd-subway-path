@@ -52,7 +52,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSection() {
         // when
-        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
+        지하철_노선에_지하철역_등록되어_있음(신분당선, 양재역, 정자역, 6);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
@@ -63,10 +63,10 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선에 이미 포함된 역을 구간으로 등록한다.")
     @Test
     void addLineSectionAlreadyIncluded() {// given
-        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
+        지하철_노선에_지하철역_등록되어_있음(신분당선, 양재역, 정자역, 6);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록되어_있음(신분당선, 양재역, 정자역, 6);
 
         // then
         지하철_노선에_지하철역_등록_실패됨(response);
@@ -76,7 +76,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeLineSection() {
         // given
-        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
+        지하철_노선에_지하철역_등록되어_있음(신분당선, 양재역, 정자역, 6);
 
         // when
         ExtractableResponse<Response> removeResponse = 지하철_노선에_지하철역_제외_요청(신분당선, 정자역);

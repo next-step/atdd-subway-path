@@ -16,6 +16,17 @@ public class LineSteps {
         return 지하철_노선_생성_요청(params);
     }
 
+    public static LineResponse 지하철_노선_등록되어_있음(String lineName, String color,
+        StationResponse upStation, StationResponse downStation, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", lineName);
+        params.put("color", color);
+        params.put("upStationId", upStation.getId() + "");
+        params.put("downStationId", downStation.getId() + "");
+        params.put("distance", distance + "");
+        return 지하철_노선_생성_요청(params).as(LineResponse.class);
+    }
+
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
         return RestAssured.given().log().all().
                 contentType(MediaType.APPLICATION_JSON_VALUE).
@@ -83,7 +94,7 @@ public class LineSteps {
                 extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(LineResponse line, StationResponse upStation, StationResponse downStation, int distance) {
+    public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록되어_있음(LineResponse line, StationResponse upStation, StationResponse downStation, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStation.getId() + "");
         params.put("downStationId", downStation.getId() + "");
