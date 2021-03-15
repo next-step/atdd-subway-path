@@ -237,11 +237,7 @@ public class Line extends BaseEntity {
     }
 
     public void removeStationById(Long stationId) {
-        if (sections.size() <= 1) {
-            throw new RuntimeException();
-        }
-
-        validateToRemoveStation();
+        validateToRemoveStation(stationId);
 
         if (removeStationUpStation(stationId)) {
             return;
@@ -256,8 +252,16 @@ public class Line extends BaseEntity {
         }
     }
 
-    private void validateToRemoveStation() {
+    private void validateToRemoveStation(Long stationId) {
+        if (sections.size() <= 1) {
+            throw new RuntimeException();
+        }
 
+        getStations().stream()
+                .map(it -> it.getId())
+                .filter(it -> it == stationId)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException());
     }
 
     private boolean removeStationUpStation(Long stationId) {
