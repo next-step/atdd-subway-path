@@ -83,6 +83,12 @@ public class Line extends BaseEntity {
     public void addSection(Section section) {
         checkIfSectionIsValid(section);
 
+
+        if(section.getDownStation().equals(getFirstStation())){
+            sections.add(0, section);
+            return;
+        }
+
         if(isUpStationExists(section)) {
             Section oldSection = sections.stream()
                     .filter(s -> s.getUpStation().equals(section.getUpStation()))
@@ -117,6 +123,10 @@ public class Line extends BaseEntity {
         }
 
         sections.add(section);
+    }
+
+    private Station getFirstStation() {
+        return sections.get(0).getUpStation();
     }
 
     private void checkIfDistanceValid(Section section, int oldDistance) {
