@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.line.acceptance.LineSteps.*;
-import static nextstep.subway.line.acceptance.LineSteps.지하철_노선_조회_요청;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,6 +27,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     private StationResponse 양재역;
     private StationResponse 정자역;
     private StationResponse 광교역;
+    private StationResponse 고속터미널역;
 
     @BeforeEach
     public void setUp() {
@@ -37,6 +37,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         양재역 = 지하철역_등록되어_있음("양재역").as(StationResponse.class);
         정자역 = 지하철역_등록되어_있음("정자역").as(StationResponse.class);
         광교역 = 지하철역_등록되어_있음("광교역").as(StationResponse.class);
+        고속터미널역 = 지하철역_등록되어_있음("고속터미널역").as(StationResponse.class);
 
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
@@ -93,19 +94,16 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addNewStationAsFirst() {
         //given
-        //강남-----양재--------------------광교
-        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 광교역, 20);
+        //강남-----양재
 
         //when
-        //고속터미널-----강남-----양재--------------------광교
-        StationResponse 고속터미널역 = 지하철역_등록되어_있음("고속터미널역").as(StationResponse.class);
+        //고속터미널-----강남-----양재
         지하철_노선에_지하철역_등록_요청(신분당선, 고속터미널역, 강남역, 5);
 
         //then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(고속터미널역, 강남역, 양재역, 광교역));
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(고속터미널역, 강남역, 양재역));
     }
-
 
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
     @Test
@@ -124,6 +122,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음.")
+    @Test
     void whenAddLineSectionInMiddleWithBiggerDistance_thenReturnError() {
         //given
         //강남----------양재-----광교
@@ -134,10 +133,10 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 5);
 
         지하철_노선에_지하철역_등록_실패됨(response);
-
     }
 
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음.")
+    @Test
     void whenAddLineSectionWithStationAlreadyExists_thenFail() {
         //given
         //강남----------양재-----광교
@@ -151,6 +150,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 추가할 수 없음")
+    @Test
     void whenAddLineSectionWithNoStationIncludedAtAll_thenFail() {
         //given
         //강남----------양재

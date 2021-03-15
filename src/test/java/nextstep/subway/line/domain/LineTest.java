@@ -1,11 +1,15 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.exception.*;
+import nextstep.subway.line.exception.BothStationExistsException;
+import nextstep.subway.line.exception.BothStationNotExistsException;
+import nextstep.subway.line.exception.InvalidDistanceException;
+import nextstep.subway.line.exception.OnlyOneSectionRemainingException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
+
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -89,7 +93,6 @@ public class LineTest {
         //신분당선 역 이름 확인
         assertThat(신분당선.getStations()).isEqualTo(Arrays.asList(강남역, 정자역, 미금역));
     }
-
 
     @DisplayName("역과 역 사이에 길이가 더 긴 새로운 역 추가")
     @Test
