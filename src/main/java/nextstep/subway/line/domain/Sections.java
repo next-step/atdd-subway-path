@@ -24,27 +24,69 @@ public class Sections {
             sections.add(section);
             return;
         }
-        checkUpStation(section);
-        checkDownStation(section);
+
+        boolean isUpStationExisted = getStations().stream().anyMatch(it -> it == section.getUpStation());
+        boolean isDownStationExisted = getStations().stream().anyMatch(it -> it == section.getDownStation());
+        checkEqualUpAndDownStations(isUpStationExisted, isDownStationExisted);
+        checkNotIncludedStations(isUpStationExisted, isDownStationExisted);
+
+        addEqualUpStation(section);
+        addEqualDownStation(section);
         sections.add(section);
+    }
+
+    private void checkEqualUpAndDownStations(boolean isUpStationExisted, boolean isDownStationExisted) {
+        if (isUpStationExisted && isDownStationExisted) {
+            throw new RuntimeException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
+        }
+    }
+
+    private void checkNotIncludedStations(boolean isUpStationExisted, boolean isDownStationExisted) {
+        if (!isUpStationExisted && !isDownStationExisted) {
+            throw new RuntimeException("일치하는 상행역 혹은 하행역이 구간에 없습니다.");
+        }
+    }
+
+    private void addEqualUpStation(Section section) {
+        sections.stream()
+                .filter(oldSection -> oldSection.getUpStation() == section.getUpStation())
+                .findFirst()
+                .ifPresent(oldSection -> {
+                    checkEqualDistance(section, oldSection);
+                    sections.add(makeNewAfterSection(section, oldSection));
+                    sections.remove(oldSection);
+                });
+    }
+
+    private void addEqualDownStation(Section section) {
+        sections.stream()
+                .filter(oldSection -> oldSection.getDownStation() == section.getDownStation())
+                .findFirst()
+                .ifPresent(oldSection -> {
+                    checkEqualDistance(section, oldSection);
+                    sections.add(makeNewBeforeSection(section, oldSection));
+                    sections.remove(oldSection);
+                });
+    }
+
+    private void checkEqualDistance(Section newSection, Section oldSection) {
+        if (oldSection.getDistance() - newSection.getDistance() <= 0) {
+            throw new RuntimeException("새로운 구간의 길이가 너무 길어서 등록할 수 없습니다.");
+        }
+    }
+
+    private Section makeNewBeforeSection(Section section, Section oldSection) {
+        return new Section(oldSection.getLine(), oldSection.getUpStation(), section.getUpStation(),
+                oldSection.getDistance() - section.getDistance());
+    }
+
+    private Section makeNewAfterSection(Section section, Section oldSection) {
+        return new Section(oldSection.getLine(), section.getDownStation(), oldSection.getDownStation(),
+                oldSection.getDistance() - section.getDistance());
     }
 
     private boolean isFirstSection() {
         return getStations().size() == 0;
-    }
-
-    private void checkDownStation(Section section) {
-        boolean isDownStationExisted = getStations().stream().anyMatch(it -> it == section.getDownStation());
-        if (isDownStationExisted) {
-            throw new RuntimeException("하행역이 이미 등록되어 있습니다.");
-        }
-    }
-
-    private void checkUpStation(Section section) {
-        boolean isNotValidUpStation = getStations().get(getStations().size() - 1) != section.getUpStation();
-        if (isNotValidUpStation) {
-            throw new RuntimeException("상행역은 하행 종점역이어야 합니다.");
-        }
     }
 
     public List<Station> getStations() {
