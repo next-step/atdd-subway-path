@@ -86,6 +86,10 @@ public class Line extends BaseEntity {
         boolean isUpStationExists = isUpStationExists(section);
         boolean isDownStationExists = isDownStationExists(section);
 
+        if(!isUpStationExists && !isDownStationExists) {
+            throw new BothStationNotExistsException();
+        }
+
         if(isUpStationExists && isDownStationExists) {
             throw new BothStationExistsException();
         }
