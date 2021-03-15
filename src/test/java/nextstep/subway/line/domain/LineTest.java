@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.exception.DistanceMaximumException;
+import nextstep.subway.exception.NoOtherStationException;
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +35,7 @@ public class LineTest {
         ReflectionTestUtils.setField(산성역, "id", 4L);
         단대오거리역 = new Station("산성역");
         ReflectionTestUtils.setField(단대오거리역, "id", 5L);
-        pinkLine = Line.of("8호선", "pink-001", 석촌역, 송파역, 5);
+        pinkLine = Line.of("8호선", "pink-001", 석촌역, 송파역, 10);
         ReflectionTestUtils.setField(pinkLine, "id", 1L);
     }
 
@@ -48,7 +49,7 @@ public class LineTest {
     @DisplayName("노선을 등록한다.")
     @Test
     void addSection() {
-        pinkLine.addSection(석촌역, 남한산성입구역,4);
+        pinkLine.addSection(석촌역, 남한산성입구역, 4);
         assertEquals(pinkLine.getAllStations().size(), 3);
     }
 
@@ -76,13 +77,30 @@ public class LineTest {
                 .isThrownBy(() -> pinkLine.addSection(단대오거리역, 송파역, 10));
     }
 
+    @DisplayName("등록한 중간 구간의 역을 제거한다.")
     @Test
     void removeSection() {
+        pinkLine.addSection(석촌역, 남한산성입구역, 4);
+
+        pinkLine.deleteSection(남한산성입구역.getId());
+
+        assertEquals(pinkLine.getAllStations().size(), 2);
+    }
+
+    @DisplayName("등록한 구간의 종점역을 제거한다.")
+    @Test
+    void removeFinishSection() {
+        pinkLine.addSection(석촌역, 남한산성입구역, 4);
+
+        pinkLine.deleteSection(송파역.getId());
+
+        assertEquals(pinkLine.getAllStations().size(), 2);
     }
 
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
     @Test
     void removeSectionNotEndOfList() {
-
+        assertThatExceptionOfType(NoOtherStationException.class)
+                .isThrownBy(() -> pinkLine.deleteSection(석촌역.getId()));
     }
 }
