@@ -119,7 +119,7 @@ public class Line extends BaseEntity {
         validateToAddSectionStationsAlreadyAdded(section);
         validateToAddSectionStationNone(section);
 
-        if (addSectionBetween(section)) {
+        if (addSectionInTheMiddle(section)) {
             return;
         }
 
@@ -132,15 +132,15 @@ public class Line extends BaseEntity {
         }
     }
 
-    private boolean addSectionBetween(Section section) {
-        if (addSectionBetweenToUpStation(section)) {
+    private boolean addSectionInTheMiddle(Section section) {
+        if (addSectionInTheMiddleToUpStation(section)) {
             return true;
         }
 
-        return addSectionBetweenToDownStation(section);
+        return addSectionInTheMiddleToDownStation(section);
     }
 
-    private boolean addSectionBetweenToUpStation(Section section) {
+    private boolean addSectionInTheMiddleToUpStation(Section section) {
         Section upStationMatchedSection = sections.stream()
                 .filter(it -> it.getUpStation().equals(section.getUpStation()))
                 .findFirst()
@@ -167,7 +167,7 @@ public class Line extends BaseEntity {
         return false;
     }
 
-    private boolean addSectionBetweenToDownStation(Section section) {
+    private boolean addSectionInTheMiddleToDownStation(Section section) {
         Section downStationMatchedSection = sections.stream()
                 .filter(it -> it.getDownStation().equals(section.getDownStation()))
                 .findFirst()
@@ -236,11 +236,6 @@ public class Line extends BaseEntity {
         }
     }
 
-    private Station getLastStation() {
-        List<Station> stations = getStations();
-        return stations.get(stations.size() - 1);
-    }
-
     public void removeStationById(Long stationId) {
         if (sections.size() <= 1) {
             throw new RuntimeException();
@@ -248,7 +243,7 @@ public class Line extends BaseEntity {
 
         validateToRemoveStation();
 
-        if (removeStationBetween(stationId)) {
+        if (removeStationInTheMiddle(stationId)) {
             return;
         }
     }
@@ -257,7 +252,7 @@ public class Line extends BaseEntity {
 
     }
 
-    private boolean removeStationBetween(Long stationId) {
+    private boolean removeStationInTheMiddle(Long stationId) {
         Section upSection = sections.stream()
                 .filter(it -> it.getDownStation().getId() == stationId)
                 .findFirst()
