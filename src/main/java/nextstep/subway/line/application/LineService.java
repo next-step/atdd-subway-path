@@ -49,11 +49,10 @@ public class LineService {
     }
 
     public LineResponse addSectionToLine(Long lineId, SectionRequest sectionRequest) {
-        Line line = findLineById(lineId);
-
         Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
         Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
 
+        Line line = findLineById(lineId);
         line.addSection(upStation, downStation, sectionRequest.getDistance());
         return LineResponse.of(line);
     }
