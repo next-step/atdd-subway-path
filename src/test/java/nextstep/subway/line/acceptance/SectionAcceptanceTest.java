@@ -60,7 +60,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     public void stationOnlyOneSectionRemoveFail() {
         // given
         long lineId = createPinkLine();
-
         // when
         ExtractableResponse<Response> response = 지하철_구간_제거_요청(lineId, 남한산성입구역.getId());
 
@@ -68,19 +67,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선_구간_응답_확인(response.statusCode(), HttpStatus.BAD_REQUEST);
     }
 
-    @DisplayName("지하철 노선 마지막역(하행 종점역)만 아닌경우 삭제 불가능")
+    @DisplayName("지하철 노선 구간의 중간에 있는 역을 삭제한다.")
     @Test
-    public void notFinishedStationRemoveFail() {
-        // given
+    void deleteSectionBetweenStations() {
+        //given
         long lineId = createPinkLine();
-        SectionRequest sectionRequest = SectionRequest.of(남한산성입구역.getId(), 산성역.getId(), 3);
+        stationInit(lineId);
 
-        지하철_노선_구간_등록_요청(sectionRequest, lineId);
+        //when
+        ExtractableResponse<Response> response = 지하철_구간_제거_요청(lineId, 산성역.getId());
 
-        // when
-        ExtractableResponse<Response> response1 = 지하철_구간_제거_요청(lineId, 석촌역.getId());
-
-        지하철_노선_구간_응답_확인(response1.statusCode(), HttpStatus.BAD_REQUEST);
+        //then
+        지하철_노선_구간_응답_확인(response.statusCode(), HttpStatus.OK);
     }
 
     @DisplayName("지하철 노선 구간 역 목록을 조회한다.")
