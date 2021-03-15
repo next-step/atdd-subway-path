@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.error.NotFoundException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -8,6 +9,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -30,6 +32,12 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    public List<Integer> getDistances() {
+        return this.sections.stream()
+                .map(x -> x.getDistance().getDistance())
+                .collect(Collectors.toList());
+    }
+
     public int size() {
         return getSections().size();
     }
@@ -47,7 +55,7 @@ public class Sections {
         upAndDownExistsValidate(stations, section);
         upAndDownNotExistsValidate(stations, section);
 
-        if (firstStationMatch(section)) {
+        if (firstSectionMatch(section)) {
             this.sections.add(section);
             return;
         }
@@ -64,22 +72,26 @@ public class Sections {
     }
 
     private List<Section> addProcess(Section preSection, Section section) {
-        int preDistance = preSection.getDistance().getDistance();
-        List<Section> addSections = new ArrayList<>();
+        int newDistance = section.getDistance().getDistance();
         Section newSection;
 
-        int newDistance = distanceDivide(preDistance, section.getDistance().getDistance());
+        int nextDistance = preSection.getDistance().distanceDivide(newDistance);
 
         if (preSection.getUpStation().equals(section.getUpStation())) {
-            newSection = new Section(preSection.getLine(), section.getDownStation(), preSection.getDownStation(), new Distance(newDistance));
-            addSections.add(section);
-            addSections.add(newSection);
-            return addSections;
+            newSection = new Section(preSection.getLine(), section.getDownStation(), preSection.getDownStation(), new Distance(nextDistance));
+
+            return addSectionList(newSection, section);
         }
 
-        newSection = new Section(preSection.getLine(), preSection.getUpStation(), section.getUpStation(), new Distance(newDistance));
-        addSections.add(newSection);
+        newSection = new Section(preSection.getLine(), preSection.getUpStation(), section.getUpStation(), new Distance(nextDistance));
+
+        return addSectionList(section, newSection);
+    }
+
+    private List<Section> addSectionList(Section newSection, Section section) {
+        List<Section> addSections = new ArrayList<>();
         addSections.add(section);
+        addSections.add(newSection);
         return addSections;
     }
 
@@ -98,19 +110,52 @@ public class Sections {
 
     public void removeSection(Station station) {
         sizeValidate();
-        removeLastStationValidate(station);
-        sections.remove(sections.size() - 1);
-    }
 
-    private int distanceDivide(int preDistance, int distance) {
-        if (distance >= preDistance) {
-            throw new RuntimeException("추가하는 구간의 거리가 잘못되었습니다.");
+        if (firstStationMatch(station)) {
+            this.sections.remove(0);
+            return;
         }
 
-        return preDistance - distance;
+        if (findLastStation().equals(station)) {
+            this.sections.remove(sections.size() - 1);
+            return;
+        }
+
+        removeProcess(station);
     }
 
-    private boolean firstStationMatch(Section section) {
+    private void removeProcess(Station station) {
+        Section prevSection = this.sections.stream()
+                .filter(it -> it.getDownStation().equals(station))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(station));
+
+        Section nextSection = this.sections.stream()
+                .filter(it -> it.getUpStation().equals(station))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(station));
+
+        Station newUpStation = prevSection.getUpStation();
+        Station newDownStation = nextSection.getDownStation();
+        int newDistance = prevSection.getDistance().sumDistance(nextSection);
+
+        Section newSection = Section.Builder.aSection()
+                .upStation(newUpStation)
+                .downStation(newDownStation)
+                .distance(new Distance(newDistance))
+                .line(prevSection.getLine())
+                .build();
+
+        this.sections.add(newSection);
+        this.sections.remove(prevSection);
+        this.sections.remove(nextSection);
+    }
+
+    private boolean firstStationMatch(Station station) {
+        return this.sections.get(0).getUpStation().equals(station);
+    }
+
+    private boolean firstSectionMatch(Section section) {
         return section.getDownStation().equals(this.getStations().get(0));
     }
 

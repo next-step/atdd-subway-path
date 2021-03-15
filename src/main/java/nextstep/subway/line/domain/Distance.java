@@ -32,6 +32,18 @@ public class Distance {
         return distance;
     }
 
+    public int distanceDivide(int newDistance) {
+        if (newDistance >= this.distance) {
+            throw new RuntimeException("추가하는 구간의 거리가 잘못되었습니다.");
+        }
+
+        return this.distance - newDistance;
+    }
+
+    public int sumDistance(Section nextSection) {
+        return this.distance + nextSection.getDistance().distance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
