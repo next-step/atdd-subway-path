@@ -13,6 +13,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@DisplayName("지하철 노선에 역 등록 관련 기능 도메인 테스트")
 public class LineTest {
 
     Station 강남역, 역삼역, 삼성역;
@@ -39,8 +40,9 @@ public class LineTest {
         assertThat(stations).contains(강남역, 역삼역);
     }
 
+    @DisplayName("새로운 역을 하행 종점으로 등록한다.")
     @Test
-    void addSection() {
+    void addSectionToEnd() {
         // when
         이호선.addSection(강남역, 역삼역, 10);
 
