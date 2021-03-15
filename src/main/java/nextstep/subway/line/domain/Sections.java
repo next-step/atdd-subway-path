@@ -4,6 +4,7 @@ import nextstep.subway.line.exception.HasNoneOrOneSectionException;
 import nextstep.subway.line.exception.InvalidSectionDistanceException;
 import nextstep.subway.line.exception.SectionDuplicatedException;
 import nextstep.subway.line.exception.SectionNotConnectedException;
+import nextstep.subway.line.exception.StationNotRegisteredException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -64,7 +66,7 @@ public class Sections {
         Station firstUpStation = sections.get(0).getUpStation();
         for (int i = 1; i < sections.size(); i++) {
             if (sections.get(i).getDownStation() == firstUpStation) {
-                firstUpStation = sections.get(i).getDownStation();
+                firstUpStation = sections.get(i).getUpStation();
             }
         }
         return firstUpStation;
@@ -78,7 +80,7 @@ public class Sections {
         Station lastDownStation = sections.get(0).getDownStation();
         for (int i = 1; i < sections.size(); i++) {
             if (sections.get(i).getUpStation() == lastDownStation) {
-                lastDownStation = sections.get(i).getUpStation();
+                lastDownStation = sections.get(i).getDownStation();
             }
         }
         return lastDownStation;
@@ -118,21 +120,19 @@ public class Sections {
     }
 
     public void removeSection(Long stationId) {
-        validateRemoveSection();
+        validateRemoveSection(stationId);
 
-        // 맨 처음 역일 경우
         if (isFirstUpStationId(stationId)) {
             sections.removeIf(it -> it.isUpStationId(stationId));
+            return;
         }
 
-        // 맨 마지막 역일 경우
         if (isLastDownStationId(stationId)) {
             sections.removeIf(it -> it.isDownStationId(stationId));
+            return;
         }
 
-        // 중간 역일 경우
-
-        sections.removeIf(it -> it.isDownStationId(stationId));
+        removeSectionInMiddle(stationId);
     }
 
     public void add(Section section) {
@@ -195,6 +195,26 @@ public class Sections {
         sections.add(new Section(line, upStation, downStation, distance));
     }
 
+    private void removeSectionInMiddle(Long stationId) {
+        Section upSection = sections.stream()
+                .filter(it -> it.isDownStationId(stationId))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+        Section downSection = sections.stream()
+                .filter(it -> it.isUpStationId(stationId))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+
+        Line line = upSection.getLine();
+        Station upStation = upSection.getUpStation();
+        Station downStation = downSection.getDownStation();
+        int distance = upSection.getDistance() + downSection.getDistance();
+
+        sections.removeIf(it -> it.isDownStationId(stationId));
+        sections.removeIf(it -> it.isUpStationId(stationId));
+        sections.add(new Section(line, upStation, downStation, distance));
+    }
+
     private void validateAddSection(Station upStation, Station downStation) {
         if (isExistSection(upStation, downStation)) {
             throw new SectionDuplicatedException();
@@ -205,7 +225,11 @@ public class Sections {
         }
     }
 
-    private void validateRemoveSection() {
+    private void validateRemoveSection(Long stationId) {
+        if (isNotRegisteredStation(stationId)) {
+            throw new StationNotRegisteredException();
+        }
+
         if (isHasNoneOrOneSection()) {
             throw new HasNoneOrOneSectionException();
         }
@@ -222,6 +246,13 @@ public class Sections {
 
     private boolean isHasNoneOrOneSection() {
         return sections.size() <= 1;
+    }
+
+    private boolean isNotRegisteredStation(Long stationId) {
+       return !getStations().stream()
+               .map(Station::getId)
+               .collect(Collectors.toList())
+               .contains(stationId);
     }
 
     private boolean isExistUpStationAndNotLastDownStation(Station upStation) {

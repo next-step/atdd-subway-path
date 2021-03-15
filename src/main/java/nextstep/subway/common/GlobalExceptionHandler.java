@@ -8,6 +8,7 @@ import nextstep.subway.line.exception.NotLastStationException;
 import nextstep.subway.line.exception.NotValidUpStationException;
 import nextstep.subway.line.exception.SectionDuplicatedException;
 import nextstep.subway.line.exception.SectionNotConnectedException;
+import nextstep.subway.line.exception.StationNotRegisteredException;
 import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -70,4 +71,8 @@ public class GlobalExceptionHandler {
         response.sendError(HttpStatus.BAD_REQUEST.value());
     }
 
+    @ExceptionHandler(StationNotRegisteredException.class)
+    public void handle(HttpServletResponse response, StationNotRegisteredException e) throws IOException {
+        response.sendError(HttpStatus.BAD_REQUEST.value());
+    }
 }
