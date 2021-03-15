@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -33,13 +32,8 @@ public class Sections {
             throw new IsExistedSectionException();
         }
 
-        if (stations.get(stations.size() - 1) == upStation) {
+        if (stations.get(stations.size() - 1) == upStation || stations.get(0) == downStation) {
             add(section);
-            return;
-        }
-
-        if (stations.get(0) == downStation){
-            unshift(section);
             return;
         }
 
@@ -60,30 +54,22 @@ public class Sections {
         sections.add(section);
     }
 
-    private void unshift(Section section) {
-        sections.add(0, section);
-    }
-
     private void addBetweenUpStation(Section frontSection) {
         Section backSection = sections.stream()
                                       .filter(it -> it.getUpStation().equals(frontSection.getUpStation()))
                                       .findFirst()
                                       .orElseThrow(RuntimeException::new);
 
-        int backIndex = sections.indexOf(backSection);
-        int subDistance = backSection.getDistance() - frontSection.getDistance();
+        int distance = backSection.getDistance() - frontSection.getDistance();
+        validateDistance(distance);
 
-        if (subDistance <= 0) {
-            throw new IsMoreThanDistanceException();
-        }
-
-        sections.add(backIndex, frontSection);
+        sections.add(frontSection);
 
         backSection.update(new Section(
             backSection.getLine(),
             frontSection.getDownStation(),
             backSection.getDownStation(),
-            subDistance
+            distance
         ));
     }
 
@@ -93,31 +79,60 @@ public class Sections {
                                   .findFirst()
                                   .orElseThrow(RuntimeException::new);
 
-        int frontIndex = sections.indexOf(frontSection);
-        int subDistance = frontSection.getDistance() - backSection.getDistance();
+        int distance = frontSection.getDistance() - backSection.getDistance();
+        validateDistance(distance);
 
-        if (subDistance <= 0) {
-            throw new IsMoreThanDistanceException();
-        }
-
-        sections.add(frontIndex + 1, backSection);
+        sections.add(backSection);
 
         frontSection.update(new Section(
             frontSection.getLine(),
             frontSection.getUpStation(),
             backSection.getUpStation(),
-            subDistance
+            distance
         ));
     }
 
+    private void validateDistance(int distance) {
+        if (distance <= 0) {
+            throw new IsMoreThanDistanceException();
+        }
+    }
+
     public List<Station> getStations() {
-        return sections.stream()
-                .flatMap(section -> Stream.of(
-                    section.getUpStation(),
-                    section.getDownStation()
-                ))
-                .distinct()
-                .collect(Collectors.toList());
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Station> stations = new ArrayList<>();
+        Station downStation = findUpStation();
+        Station nextStation = downStation;
+
+        while (nextStation != null) {
+            Station finalDownStation = downStation = nextStation;
+            stations.add(downStation);
+
+            nextStation = sections.stream()
+                .filter(it -> it.getUpStation() == finalDownStation)
+                .findFirst()
+                .map(Section::getDownStation)
+                .orElse(null);
+        }
+
+        return stations;
+    }
+
+    private Station findUpStation() {
+        Station upStation = sections.get(0).getUpStation();
+        Station nextStation = upStation;
+        while (nextStation != null) {
+            Station finalDownStation = upStation = nextStation;
+            nextStation = sections.stream()
+                .filter(it -> it.getDownStation() == finalDownStation)
+                .findFirst()
+                .map(Section::getUpStation)
+                .orElse(null);
+        }
+        return upStation;
     }
 
     public void remove(Long stationId) {
@@ -125,16 +140,39 @@ public class Sections {
             throw new HaveOnlyOneSectionException();
         }
 
-        List<Station> stations = getStations();
+        List<Section> willRemoveSections = sections.stream()
+                                                   .filter(it -> (
+                                                       it.getUpStation().getId().equals(stationId) ||
+                                                       it.getDownStation().getId().equals(stationId)
+                                                   ))
+                                                   .collect(Collectors.toList());
 
-        boolean isNotValidUpStation = !stations.get(stations.size() - 1).getId().equals(stationId);
-        if (isNotValidUpStation) {
-            throw new IsNotLastDownStationException();
+        if (willRemoveSections.size() == 0) {
+            throw new DoseNotExistStationOfSectionException("노선에 없는 역은 삭제할 수 없습니다.");
         }
 
-        sections.stream()
-            .filter(it -> it.getDownStation().getId().equals(stationId))
-            .findFirst()
-            .ifPresent(sections::remove);
+        willRemoveSections.forEach(sections::remove);
+
+        if (willRemoveSections.size() == 1) {
+            return;
+        }
+
+        List<Section> sortedSections = willRemoveSections.stream()
+            .sorted((front, back) -> (
+                front.getDownStation().getId().equals(stationId) &&
+                back.getUpStation().getId().equals(stationId)
+            ) ? 1 : 0)
+            .collect(Collectors.toList());
+
+        sections.add(
+            new Section(
+                willRemoveSections.get(0).getLine(),
+                willRemoveSections.get(0).getUpStation(),
+                willRemoveSections.get(1).getDownStation(),
+                sortedSections.stream()
+                    .map(Section::getDistance)
+                    .reduce(0, Math::addExact)
+            )
+        );
     }
 }
