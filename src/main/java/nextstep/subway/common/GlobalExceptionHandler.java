@@ -1,4 +1,4 @@
-package nextstep.subway.line.ui;
+package nextstep.subway.common;
 
 import nextstep.subway.line.exception.DownStationExistedException;
 import nextstep.subway.line.exception.HasNoneOrOneSectionException;
@@ -8,6 +8,7 @@ import nextstep.subway.line.exception.NotLastStationException;
 import nextstep.subway.line.exception.NotValidUpStationException;
 import nextstep.subway.line.exception.SectionDuplicatedException;
 import nextstep.subway.line.exception.SectionNotConnectedException;
+import nextstep.subway.station.exception.StationNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,11 +18,16 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @RestControllerAdvice
-public class LineExceptionHandler {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public void handle(HttpServletResponse response, DataIntegrityViolationException e) throws IOException {
         response.sendError(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @ExceptionHandler(StationNotFoundException.class)
+    public void handle(HttpServletResponse response, StationNotFoundException e) throws IOException {
+        response.sendError(HttpStatus.NOT_FOUND.value());
     }
 
     @ExceptionHandler(LineNotFoundException.class)
