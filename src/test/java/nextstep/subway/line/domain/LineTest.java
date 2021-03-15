@@ -1,9 +1,6 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.exception.BothStationExistsException;
-import nextstep.subway.line.exception.InvalidDistanceException;
-import nextstep.subway.line.exception.OnlyOneSectionRemainingException;
-import nextstep.subway.line.exception.StationAlreadyExistsException;
+import nextstep.subway.line.exception.*;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -117,9 +114,26 @@ public class LineTest {
 
         //when
         //강남----------정자 추가 시도
+        //then
+        //BothStationExistsException
         assertThatThrownBy(() -> {
             신분당선.addSection(new Section(신분당선, 강남역, 정자역, 10));
         }).isInstanceOf(BothStationExistsException.class);
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void addSection_WhenBothStationDoesNotExists_ThenFail() {
+        //given
+        //강남----------정자
+
+        //when
+        //양재------------청계산입구 추가
+        //then
+        //BothStationNotExistsException
+        assertThatThrownBy(() -> {
+            신분당선.addSection(new Section(신분당선, 양재역, 청계산입구역,12));
+        }).isInstanceOf(BothStationNotExistsException.class);
     }
 
     @Test
