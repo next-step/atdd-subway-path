@@ -61,30 +61,6 @@ public class LineTest {
         assertThat(노선.getSections()).hasSize(2);
     }
 
-    @Test
-    void removeSection() {
-        // given
-        노선 = new Line("노선", "YELLOW", 역_A, 역_B, 10);
-        Section section = new Section(노선, 역_B, 역_C, 10);
-        노선.addSection(section);
-
-        // when (역을 삭제한다)
-        노선.removeStationById(역_C.getId());
-
-        // then (구간 개수를 확인한다)
-        assertThat(노선.getSections()).hasSize(1);
-    }
-
-    @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
-    @Test
-    void removeSectionNotEndOfList() {
-        // given
-        노선 = new Line("노선", "YELLOW", 역_A, 역_B, 10);
-
-        // when (구간을 1개만 추가 후 삭제 요청한다) & then (익셉션 발생)
-        assertThatThrownBy(() -> 노선.removeStationById(역_B.getId())).isInstanceOf(RuntimeException.class);
-    }
-
     /**
      * TDD_Step1 - 유닛테스트 추가
      */
@@ -324,5 +300,26 @@ public class LineTest {
         // then (구간 개수를 확인한다)
         assertThat(노선.getStations()).hasSize(2);
         assertThat(노선.getStations()).containsExactlyElementsOf(Arrays.asList(역_A, 역_B));
+    }
+
+    @DisplayName("노선에 없는 역 삭제 에러")
+    @Test
+    void removeStationNoneOfLine() {
+        // given
+        노선 = new Line("노선", "YELLOW", 역_A, 역_B, 10);
+        노선.addSection(new Section(노선, 역_B, 역_C, 10));
+
+        // when (없는 역 삭제요청) & then (에러 발생)
+        assertThatThrownBy(() -> 노선.removeStationById(역_D.getId())).isInstanceOf(RuntimeException.class);
+    }
+
+    @DisplayName("노선에 구간이 1개인 경우 역 삭제 에러")
+    @Test
+    void removeStationNotEndOfList() {
+        // given
+        노선 = new Line("노선", "YELLOW", 역_A, 역_B, 10);
+
+        // when (구간이 1개일때 삭제 요청) & then (에러 발생)
+        assertThatThrownBy(() -> 노선.removeStationById(역_B.getId())).isInstanceOf(RuntimeException.class);
     }
 }
