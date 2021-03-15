@@ -175,4 +175,10 @@ public class Sections {
             )
         );
     }
+
+    public int sumDistance() {
+        return sections.stream()
+            .map(Section::getDistance)
+            .reduce(0, Math::addExact);
+    }
 }

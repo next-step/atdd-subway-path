@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -144,6 +145,7 @@ public class LineTest {
 
         // then
         assertThat(분당선.getStations()).doesNotContain(태평역);
+        assertThat(분당선.getDistance()).isEqualTo(3);
 
     }
 
@@ -159,6 +161,7 @@ public class LineTest {
 
         // then
         assertThat(분당선.getStations()).doesNotContain(복정역);
+        assertThat(분당선.getDistance()).isEqualTo(3);
 
     }
 
@@ -173,7 +176,9 @@ public class LineTest {
         분당선.removeSection(가천대역.getId());
 
         // then
+        List<Station> stations = 분당선.getStations();
         assertThat(분당선.getStations()).doesNotContain(가천대역);
+        assertThat(분당선.getDistance()).isEqualTo(6);
 
     }
 
