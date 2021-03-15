@@ -57,8 +57,9 @@ public class LineTest {
                 .hasMessageContaining("상행역과 하행역이 이미 존재합니다.");
     }
 
+    @DisplayName("지하철 노선의 마지막 역 제거")
     @Test
-    void removeSection() {
+    void removeLastSection() {
         // given
         Station newDownStation = new Station("삼성역");
 
@@ -69,6 +70,22 @@ public class LineTest {
 
         // then
         assertThat(line.getSections().size()).isEqualTo(1);
+    }
+
+    @DisplayName("지하철 노선의 중간 역 제거")
+    @Test
+    void removeMiddleSection() {
+        // given
+        Station newMiddleStation = new Station("삼성역");
+
+        line.addSection(newMiddleStation, downStation, 5);
+
+        // when
+        line.removeSection(newMiddleStation);
+
+        // then
+        assertThat(line.getSections().size()).isEqualTo(1);
+        assertThat(line.getSections().getDistances().get(0)).isEqualTo(10);
     }
 
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
