@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class LineTest {
     private Station 강남역 = new Station("강남역");
     private Station 양재역 = new Station("양재역");
+    private Station 청계산입구역 = new Station("청계산입구역");
     private Station 정자역 = new Station("정자역");
     private Station 미금역 = new Station("미금역");
     private Line 신분당선 = new Line("신분당선", "bg-red-600", 강남역, 정자역, 10);
@@ -56,10 +57,20 @@ public class LineTest {
     @DisplayName("역과 역 사이에 새로운 역 추가")
     @Test
     void addSectionInMiddle() {
-        신분당선.addSection(new Section(신분당선, 양재역, 정자역, 9));
+        //given
+        //강남----------정자
 
-        assertThat(신분당선.getStations()).isEqualTo(Arrays.asList(강남역, 양재역, 정자역));
+        //when
+        //강남-양재----청계산입구-----정자
+        신분당선.addSection(new Section(신분당선, 양재역, 정자역, 9));
+        신분당선.addSection(new Section(신분당선, 양재역, 청계산입구역,4));
+
+        //then
+        //신분당선 역 이름 확인
+        assertThat(신분당선.getStations()).isEqualTo(Arrays.asList(강남역, 양재역, 청계산입구역, 정자역));
     }
+
+        
 
     @Test
     void removeSection() {
