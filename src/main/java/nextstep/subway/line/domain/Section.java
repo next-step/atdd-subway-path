@@ -37,7 +37,7 @@ public class Section {
 
     private void validate() {
         if (this.distance <= 0){
-            throw new RuntimeException("새롭게 추가되는 구간의 길이가 잘못 되었습니다.");
+            throw new InvalidSectionDistanceException("구간의 길이가 잘못 되었습니다.");
         }
     }
 

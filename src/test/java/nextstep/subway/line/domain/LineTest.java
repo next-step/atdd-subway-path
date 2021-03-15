@@ -89,7 +89,7 @@ public class LineTest {
         assertThatThrownBy(() -> {
             // when
             신분당선.addSection(종착역, 정자역, 10);
-        }).isInstanceOf(RuntimeException.class);
+        }).isInstanceOf(InvalidStationException.class);
     }
 
     @DisplayName("구간 삭제하기")
@@ -116,6 +116,6 @@ public class LineTest {
         // when
         assertThatThrownBy(()->{
             신분당선.removeSection(종착역);
-        }).isInstanceOf(RuntimeException.class);
+        }).isInstanceOf(InvalidSectionOperationException.class);
     }
 }

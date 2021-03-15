@@ -31,12 +31,12 @@ public class Sections {
 
     public void remove(Station station){
         if (sections.size() <= 1) {
-            throw new RuntimeException();
+            throw new InvalidSectionOperationException("마지막 섹션은 삭제할 수 없습니다.");
         }
 
         boolean isNotValidUpStation = getStations().get(getStations().size() - 1) != station;
         if (isNotValidUpStation) {
-            throw new RuntimeException("하행 종점역만 삭제가 가능합니다.");
+            throw new InvalidSectionOperationException("하행 종점역만 삭제가 가능합니다.");
         }
 
         sections.stream()
@@ -45,18 +45,16 @@ public class Sections {
                 .ifPresent(it -> sections.remove(it));
     }
 
-    public Section findSectionByUpStation(Station station){
+    public Optional<Section> findSectionByUpStation(Station station){
         return sections.stream()
                 .filter(it -> (it.getUpStation() == station))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
-    public Section findSectionByDownStation(Station station){
+    public Optional<Section> findSectionByDownStation(Station station){
         return sections.stream()
                 .filter(it -> (it.getDownStation() == station))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
     public List<Station> getStations() {

@@ -40,7 +40,7 @@ public class SectionsTest {
         신분당선_섹션집합.add(new Section(신분당선, 양재역, 정자역, 8));
 
         // when
-        final Section resultSection = 신분당선_섹션집합.findSectionByUpStation(양재역);
+        final Section resultSection = 신분당선_섹션집합.findSectionByUpStation(양재역).get();
 
         // then
         assertThat(resultSection).isNotNull();
@@ -56,7 +56,7 @@ public class SectionsTest {
         신분당선_섹션집합.add(new Section(신분당선, 양재역, 정자역, 8));
 
         // when
-        final Section resultSection = 신분당선_섹션집합.findSectionByDownStation(정자역);
+        final Section resultSection = 신분당선_섹션집합.findSectionByDownStation(정자역).get();
 
         // then
         assertThat(resultSection).isNotNull();
