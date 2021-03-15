@@ -12,10 +12,7 @@ import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -72,9 +69,9 @@ public class LineService {
         addSection(line, upStation, downStation, request.getDistance());
     }
 
-    public void removeSection(Long lineId, Long stationId) {
+    public void removeStation(Long lineId, Long stationId) {
         Line line = findLineById(lineId);
-        line.removeSectionByStationId(stationId);
+        line.removeStationById(stationId);
     }
 
     public void addSection(Line line, Station upStation, Station downStation, int distance) {

@@ -4,6 +4,7 @@ import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +29,12 @@ public class LineTest {
         역_C = new Station("역_C");
         역_D = new Station("역_D");
         역_E = new Station("역_E");
+
+        ReflectionTestUtils.setField(역_A, "id", 1L);
+        ReflectionTestUtils.setField(역_B, "id", 2L);
+        ReflectionTestUtils.setField(역_C, "id", 3L);
+        ReflectionTestUtils.setField(역_D, "id", 4L);
+        ReflectionTestUtils.setField(역_E, "id", 5L);
     }
 
     @Test
@@ -62,7 +69,7 @@ public class LineTest {
         노선.addSection(section);
 
         // when (역을 삭제한다)
-        노선.removeSectionByStationId(역_C.getId());
+        노선.removeStationById(역_C.getId());
 
         // then (구간 개수를 확인한다)
         assertThat(노선.getSections()).hasSize(1);
@@ -75,11 +82,11 @@ public class LineTest {
         노선 = new Line("노선", "YELLOW", 역_A, 역_B, 10);
 
         // when (구간을 1개만 추가 후 삭제 요청한다) & then (익셉션 발생)
-        assertThatThrownBy(() -> 노선.removeSectionByStationId(역_B.getId())).isInstanceOf(RuntimeException.class);
+        assertThatThrownBy(() -> 노선.removeStationById(역_B.getId())).isInstanceOf(RuntimeException.class);
     }
 
     /**
-     * TDD Step1 - 유닛테스트 추가
+     * TDD_Step1 - 유닛테스트 추가
      */
     @DisplayName("기존 1개 노선 중간에 구간을 추가한다. (상행기준)")
     @Test
@@ -231,5 +238,22 @@ public class LineTest {
 
         // when & then (익셉션 발생)
         assertThatThrownBy(() -> 노선.addSection(new Section(노선, 역_D, 역_E, 2))).isInstanceOf(RuntimeException.class);
+    }
+
+    /**
+     * TDD_Step2 - 유닛테스트 추가
+     */
+    @DisplayName("기존 노선 중간역 삭제")
+    @Test
+    void removeStationInTheMiddle() {
+        // given (역_A - 역_B - 역_C)
+        노선 = new Line("노선", "YELLOW", 역_A, 역_B, 10);
+        노선.addSection(new Section(노선, 역_B, 역_C, 10));
+
+        // when (중간역을 삭제한다)
+        노선.removeStationById(역_B.getId());
+
+        // then (구간 개수를 확인한다)
+        assertThat(노선.getStations()).hasSize(2);
     }
 }

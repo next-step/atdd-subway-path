@@ -241,7 +241,7 @@ public class Line extends BaseEntity {
         return stations.get(stations.size() - 1);
     }
 
-    public void removeSectionByStationId(Long stationId) {
+    public void removeStationById(Long stationId) {
         if (sections.size() <= 1) {
             throw new RuntimeException();
         }
