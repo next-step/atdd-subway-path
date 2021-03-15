@@ -4,10 +4,7 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Entity
 public class Line extends BaseEntity {
@@ -23,7 +20,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Section> sections = new ArrayList<>();
+    private final List<Section> sections = new ArrayList<>();
 
     public Line() {
     }
@@ -74,10 +71,43 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return sections.stream()
-                .flatMap(section -> section.getStations().stream())
-                .distinct()
-                .collect(Collectors.toList());
+        if (getSections().isEmpty()) {
+            return Arrays.asList();
+        }
+
+        List<Station> stations = new ArrayList<>();
+        Station downStation = findUpStation(this);
+        stations.add(downStation);
+
+        while (downStation != null) {
+            Station finalDownStation = downStation;
+            Optional<Section> nextLineStation = getSections().stream()
+                    .filter(it -> it.getUpStation() == finalDownStation)
+                    .findFirst();
+            if (!nextLineStation.isPresent()) {
+                break;
+            }
+            downStation = nextLineStation.get().getDownStation();
+            stations.add(downStation);
+        }
+
+        return stations;
+    }
+
+    private Station findUpStation(Line line) {
+        Station downStation = line.getSections().get(0).getUpStation();
+        while (downStation != null) {
+            Station finalDownStation = downStation;
+            Optional<Section> nextLineStation = line.getSections().stream()
+                    .filter(it -> it.getDownStation() == finalDownStation)
+                    .findFirst();
+            if (!nextLineStation.isPresent()) {
+                break;
+            }
+            downStation = nextLineStation.get().getUpStation();
+        }
+
+        return downStation;
     }
 
     public void addSection(Section section) {
@@ -89,34 +119,47 @@ public class Line extends BaseEntity {
         validateToAddSectionStationsAlreadyAdded(section);
         validateToAddSectionStationNone(section);
 
-        if (addSectionBetween(section)) return;
-        if (addSectionToUpStation(section)) return;
-        if (addSectionToDownStation(section)) return;
+        if (addSectionBetween(section)) {
+            return;
+        }
+
+        if (addSectionToUpStation(section)) {
+            return;
+        }
+
+        if (addSectionToDownStation(section)) {
+            return;
+        }
     }
 
     private boolean addSectionBetween(Section section) {
-        if (addSectionBetweenToUpStation(section)) return true;
-        if (addSectionBetweenToDownStation(section)) return true;
+        if (addSectionBetweenToUpStation(section)) {
+            return true;
+        }
 
-        return false;
+        return addSectionBetweenToDownStation(section);
     }
 
     private boolean addSectionBetweenToUpStation(Section section) {
-        Section toBeAfterSection = sections.stream()
+        Section upStationMatchedSection = sections.stream()
                 .filter(it -> it.getUpStation().equals(section.getUpStation()))
                 .findFirst()
                 .orElse(null);
 
-        if (toBeAfterSection != null) {
-            validateToAddSectionDistance(toBeAfterSection, section);
+        if (upStationMatchedSection != null) {
+            validateToAddSectionDistance(upStationMatchedSection, section);
 
-            int position = sections.indexOf(toBeAfterSection);
+            int position = sections.indexOf(upStationMatchedSection);
+            Section afterSection = new Section(
+                    this,
+                    section.getDownStation(),
+                    upStationMatchedSection.getDownStation(),
+                    upStationMatchedSection.getDistance() - section.getDistance()
+            );
 
-            toBeAfterSection.setUpStation(section.getDownStation());
-            toBeAfterSection.setDistance(toBeAfterSection.getDistance() - section.getDistance());
-
-            sections.set(position, toBeAfterSection);
+            sections.remove(position);
             sections.add(position, section);
+            sections.add(position + 1, afterSection);
 
             return true;
         }
@@ -125,20 +168,24 @@ public class Line extends BaseEntity {
     }
 
     private boolean addSectionBetweenToDownStation(Section section) {
-        Section toBeBeforeSection = sections.stream()
+        Section downStationMatchedSection = sections.stream()
                 .filter(it -> it.getDownStation().equals(section.getDownStation()))
                 .findFirst()
                 .orElse(null);
 
-        if (toBeBeforeSection != null) {
-            validateToAddSectionDistance(toBeBeforeSection, section);
+        if (downStationMatchedSection != null) {
+            validateToAddSectionDistance(downStationMatchedSection, section);
 
-            int position = sections.indexOf(toBeBeforeSection);
+            int position = sections.indexOf(downStationMatchedSection);
+            Section beforeSection = new Section(
+                    this,
+                    downStationMatchedSection.getUpStation(),
+                    section.getUpStation(),
+                    downStationMatchedSection.getDistance() - section.getDistance()
+            );
 
-            toBeBeforeSection.setDownStation(section.getUpStation());
-            toBeBeforeSection.setDistance(toBeBeforeSection.getDistance() - section.getDistance());
-
-            sections.set(position, toBeBeforeSection);
+            sections.remove(position);
+            sections.add(position, beforeSection);
             sections.add(position + 1, section);
 
             return true;
@@ -187,12 +234,6 @@ public class Line extends BaseEntity {
 
             throw new RuntimeException();
         }
-    }
-
-
-    private Station getFirstStation() {
-        List<Station> stations = getStations();
-        return stations.get(0);
     }
 
     private Station getLastStation() {

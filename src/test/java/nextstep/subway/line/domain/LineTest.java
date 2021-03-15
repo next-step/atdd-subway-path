@@ -232,5 +232,4 @@ public class LineTest {
         // when & then (익셉션 발생)
         assertThatThrownBy(() -> 노선.addSection(new Section(노선, 역_D, 역_E, 2))).isInstanceOf(RuntimeException.class);
     }
-
 }

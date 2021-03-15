@@ -99,7 +99,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Step1 - 인수테스트 추가
+     * TDD Step1 - 인수테스트 추가
      */
     @DisplayName("지하철 노선에 등록되어 있는 구간 사이에 새로운 구간을 등록한다. (상행기준)")
     @Test
