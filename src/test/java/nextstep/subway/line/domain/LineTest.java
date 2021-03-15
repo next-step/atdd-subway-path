@@ -255,5 +255,21 @@ public class LineTest {
 
         // then (구간 개수를 확인한다)
         assertThat(노선.getStations()).hasSize(2);
+        assertThat(노선.getStations()).containsExactlyElementsOf(Arrays.asList(역_A, 역_C));
+    }
+
+    @DisplayName("기존 노선 중간역 삭제시 변경된 길이 확인")
+    @Test
+    void removeStationInTheMiddleCheckDistance() {
+        // given (역_A - 10 - 역_B - 10 - 역_C)
+        노선 = new Line("노선", "YELLOW", 역_A, 역_B, 10);
+        노선.addSection(new Section(노선, 역_B, 역_C, 10));
+
+        // when (중간역을 삭제한다)
+        노선.removeStationById(역_B.getId());
+
+        // then (구간 길이를 확인한다)
+        assertThat(노선.getSections()).hasSize(1);
+        assertThat(노선.getSections().get(0).getDistance()).isEqualTo(20); // (역_A - 20 - 역_C)
     }
 }
