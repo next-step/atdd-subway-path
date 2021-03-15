@@ -10,6 +10,7 @@ import nextstep.subway.station.dto.StationResponse;
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Sections {
 
@@ -44,8 +45,28 @@ public class Sections {
     }
 
     public void deleteLastSection(Long stationId) {
-        isValidDeleteSection(stationId);
-        sections.remove(getFinishSection());
+        boolean isExistedUpStationId = sections.stream().anyMatch(it -> isEqualsUpStationId(it, stationId));
+        boolean isExistedDownStationId = sections.stream().anyMatch(it -> isEqualsDownStationId(it, stationId));
+
+        if (isNotOtherStation()) {
+            throw new NoOtherStationException();
+        }
+
+        if (isExistedUpStationId && isExistedDownStationId) {
+            Line line = getFirstSection().getLine();
+
+            List<Section> removeTargetSections = findAllStation(stationId);
+
+            int totalSectionDistance = firstSectionDistance() + finishSectionDistance();
+            Section section = Section.of(line, upStation(), downStation(), totalSectionDistance);
+
+            sections.removeAll(removeTargetSections);
+            sections.add(section);
+        }
+
+        if (!isExistedUpStationId && isExistedDownStationId) {
+            sections.remove(getFinishSection());
+        }
     }
 
     public List<StationResponse> getAllStation() {
@@ -64,30 +85,32 @@ public class Sections {
         return sections.size();
     }
 
+    private Station upStation() {
+        return getFirstSection().getUpStation();
+    }
+
+    private Station downStation() {
+        return getFinishSection().getDownStation();
+    }
+
+    private int firstSectionDistance() {
+        return getFirstSection().getDistance();
+    }
+
+    private int finishSectionDistance() {
+        return getFinishSection().getDistance();
+    }
+
+    private Section getFirstSection() {
+        return sections.get(0);
+    }
+
     private Section getFinishSection() {
         return sections.get(size() - LIST_MINIMUM_SIZE);
     }
 
-    private Station getDownStation() {
-        return sections.get(size() - LIST_MINIMUM_SIZE).getDownStation();
-    }
-
     private boolean isNotOtherStation() {
         return size() == LIST_MINIMUM_SIZE;
-    }
-
-    private boolean isTarget(long stationId) {
-        return Objects.equals(getDownStation().getId(), stationId);
-    }
-
-    private void isValidDeleteSection(long stationId) {
-        if (!isTarget(stationId)) {
-            throw new IllegalArgumentException("종점역만 삭제가 가능합니다.");
-        }
-
-        if (isNotOtherStation()) {
-            throw new NoOtherStationException();
-        }
     }
 
     private void checkExistedStation(boolean isExistedUpStation, boolean isExistedDownStation) {
@@ -128,7 +151,7 @@ public class Sections {
         Line line = section.getLine();
         section.update(line);
 
-        int sectionDistance = section.getDistance() - findSection.getDistance();
+        int sectionDistance = findSection.getDistance() - section.getDistance();
         Section nextSection = Section.of(line, section.getDownStation(), findSection.getDownStation(), sectionDistance);
         sections.set(index, section);
         sections.add(index + 1, nextSection);
@@ -142,9 +165,24 @@ public class Sections {
         Line line = section.getLine();
         section.update(line);
 
-        int sectionDistance = section.getDistance() - findSection.getDistance();
+        int sectionDistance = findSection.getDistance() - section.getDistance();
         Section prevSection = Section.of(line, findSection.getUpStation(), section.getUpStation(), sectionDistance);
         sections.set(index, prevSection);
         sections.add(index + 1, section);
+    }
+
+    private boolean isEqualsUpStationId(Section section, long stationId) {
+        return section.getUpStation().getId().equals(stationId);
+    }
+
+    private boolean isEqualsDownStationId(Section section, long stationId) {
+        return section.getDownStation().getId().equals(stationId);
+    }
+
+    private List<Section> findAllStation(Long stationId) {
+        return sections.stream()
+                .filter(section -> isEqualsUpStationId(section, stationId)
+                        || isEqualsDownStationId(section, stationId))
+                .collect(Collectors.toList());
     }
 }
