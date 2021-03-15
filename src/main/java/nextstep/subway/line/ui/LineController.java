@@ -1,6 +1,9 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.domain.InvalidSectionDistanceException;
+import nextstep.subway.line.domain.InvalidSectionOperationException;
+import nextstep.subway.line.domain.InvalidStationException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
@@ -9,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -64,4 +68,26 @@ public class LineController {
     public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
     }
+
+    @ExceptionHandler(InvalidSectionOperationException.class)
+    public ResponseEntity handleInvalidSectionOperationException(InvalidSectionOperationException e) {
+        HashMap<String, String> responseBody = new HashMap();
+        responseBody.put("message", e.getMessage());
+        return ResponseEntity.badRequest().body(responseBody);
+    }
+
+    @ExceptionHandler(InvalidSectionDistanceException.class)
+    public ResponseEntity handleInvalidSectionDistanceException(InvalidSectionDistanceException e) {
+        HashMap<String, String> responseBody = new HashMap();
+        responseBody.put("message", e.getMessage());
+        return ResponseEntity.badRequest().body(responseBody);
+    }
+
+    @ExceptionHandler(InvalidStationException.class)
+    public ResponseEntity handleInvalidStationException(InvalidStationException e) {
+        HashMap<String, String> responseBody = new HashMap();
+        responseBody.put("message", e.getMessage());
+        return ResponseEntity.badRequest().body(responseBody);
+    }
+
 }

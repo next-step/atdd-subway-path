@@ -32,6 +32,13 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+        this.validate();
+    }
+
+    private void validate() {
+        if (this.distance <= 0){
+            throw new InvalidSectionDistanceException("구간의 길이가 잘못 되었습니다.");
+        }
     }
 
     public Long getId() {
