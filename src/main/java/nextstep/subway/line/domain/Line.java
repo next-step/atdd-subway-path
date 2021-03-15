@@ -83,8 +83,6 @@ public class Line extends BaseEntity {
     public void addSection(Section section) {
         checkIfSectionIsValid(section);
 
-
-
         if(isUpStationExists(section)) {
             Section oldSection = sections.stream()
                     .filter(s -> s.getUpStation().equals(section.getUpStation()))
@@ -93,6 +91,9 @@ public class Line extends BaseEntity {
 
             Station oldDownStation = oldSection.getDownStation();
             int oldDistance = oldSection.getDistance();
+
+            checkIfDistanceValid(section, oldDistance);
+
 
             oldSection.changeDownStationAndDistance(section.getDownStation(), section.getDistance());
             addSection(new Section(this, section.getDownStation(), oldDownStation,oldDistance - section.getDistance()));
@@ -108,12 +109,20 @@ public class Line extends BaseEntity {
             Station oldDownStation = oldSection.getDownStation();
             int oldDistance = oldSection.getDistance();
 
+            checkIfDistanceValid(section, oldDistance);
+
             oldSection.changeDownStationAndDistance(section.getUpStation(), oldDistance - section.getDistance());
             addSection(new Section(this, section.getUpStation(), oldDownStation, section.getDistance()));
             return;
         }
 
         sections.add(section);
+    }
+
+    private void checkIfDistanceValid(Section section, int oldDistance) {
+        if (oldDistance <= section.getDistance()) {
+            throw new InvalidDistanceException();
+        }
     }
 
     private boolean isUpStationExists(Section section) {

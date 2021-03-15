@@ -74,7 +74,6 @@ public class LineTest {
         assertThatThrownBy(() -> {
             신분당선.addSection(new Section(신분당선, 강남역, 청계산입구역,12));
         }).isInstanceOf(InvalidDistanceException.class);
-
     }
 
     @Test
