@@ -99,7 +99,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * TDD Step1 - 인수테스트 추가
+     * TDD_Step1 - 인수테스트 추가
      */
     @DisplayName("지하철 노선에 등록되어 있는 구간 사이에 새로운 구간을 등록한다. (상행기준)")
     @Test
@@ -159,6 +159,32 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선에_지하철역_등록됨(response1);
         지하철_노선에_지하철역_순서_정렬됨(response2, Arrays.asList(강남역, 양재역, 광교역, 정자역));
+    }
+
+    /**
+     * TDD_Step2 - 인수테스트 추가
+     *
+     * 위치에 상관없이 역 삭제 가능함
+     * 종점이 제거되면 다음(제거된 역이 상행) or 이전(제거된 역이 하행)역이 종점이 됨
+     * 중간역이 제거되면 양 옆의 역이 하나의 구간으로 재배치 되고 길이는 두 구간의 합이 됨
+     *
+     * (예외 케이스)
+     * 노선에 등록되어 있지 않은 역을 제거
+     * 구간이 하나인 경우 역 제거
+     */
+    @DisplayName("지하철 노선에 등록된 중간역을 삭제한다.")
+    @Test
+    void removeLineStation() {
+        // given (강남역 - 양재역 - 정자역)
+        지하철_노선에_지하철역_등록_요청(신라인_1, 양재역, 정자역, 6);
+
+        // when
+        ExtractableResponse<Response> removeResponse = 지하철_노선에_지하철역_제외_요청(신라인_1, 양재역);
+
+        // then
+        지하철_노선에_지하철역_제외됨(removeResponse);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신라인_1);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 정자역));
     }
 
     public static void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
