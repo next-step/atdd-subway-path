@@ -32,10 +32,10 @@ public class SpringBootTestSample {
         Station 삼성역 = stationRepository.save(new Station("삼성역"));
         Line 이호선 = lineRepository.save(new Line("2호선", "green", 강남역, 역삼역, 10));
 
-        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 삼성역.getId(), 10));
+        lineService.addSection(이호선.getId(), SectionRequest.of(역삼역.getId(), 삼성역.getId(), 10));
 
         Line line = lineService.findLineById(이호선.getId());
 
-        assertThat(line.getSections().size()).isEqualTo(2);
+        assertThat(line.getSections()).isEqualTo(2);
     }
 }
