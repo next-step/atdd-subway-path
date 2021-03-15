@@ -241,7 +241,30 @@ public class LineTest {
     }
 
     /**
-     * TDD_Step2 - 유닛테스트 추가
+     * TDD_Step2
+     *
+     * [요구사항]
+     *
+     * 위치에 상관없이 역 삭제 가능함
+     * 종점이 제거되면 다음(제거된 역이 상행) or 이전(제거된 역이 하행)역이 종점이 됨
+     * 중간역이 제거되면 양 옆의 역이 하나의 구간으로 재배치 되고 길이는 두 구간의 합이 됨
+     *
+     * (예외 케이스)
+     *
+     * 노선에 등록되어 있지 않은 역을 제거
+     * 구간이 하나인 경우 역 제거
+     */
+
+    /**
+     * [단위테스트]
+     *
+     * 노선 중간역 삭제
+     * 노선 중간역 삭제 후 길이 검증
+     * 노선 상행역 삭제
+     * 노선 하행역 삭제
+     * 노선에 없는 역 삭제 에러
+     * 노선에 구간이 1개인 경우 역 삭제 에러
+     *
      */
     @DisplayName("기존 노선 중간역 삭제")
     @Test
@@ -258,7 +281,7 @@ public class LineTest {
         assertThat(노선.getStations()).containsExactlyElementsOf(Arrays.asList(역_A, 역_C));
     }
 
-    @DisplayName("기존 노선 중간역 삭제시 변경된 길이 확인")
+    @DisplayName("노선 중간역 삭제 후 길이 검증")
     @Test
     void removeStationInTheMiddleCheckDistance() {
         // given (역_A - 10 - 역_B - 10 - 역_C)
