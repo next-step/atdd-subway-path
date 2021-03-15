@@ -40,6 +40,10 @@ public class Distance {
         return this.distance - newDistance;
     }
 
+    public int sumDistance(Section nextSection) {
+        return this.distance + nextSection.getDistance().distance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

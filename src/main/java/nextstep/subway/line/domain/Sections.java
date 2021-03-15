@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.error.NotFoundException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -8,6 +9,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -30,6 +32,12 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    public List<Integer> getDistances() {
+        return this.sections.stream()
+                .map(x -> x.getDistance().getDistance())
+                .collect(Collectors.toList());
+    }
+
     public int size() {
         return getSections().size();
     }
@@ -47,7 +55,7 @@ public class Sections {
         upAndDownExistsValidate(stations, section);
         upAndDownNotExistsValidate(stations, section);
 
-        if (firstStationMatch(section)) {
+        if (firstSectionMatch(section)) {
             this.sections.add(section);
             return;
         }
@@ -102,11 +110,52 @@ public class Sections {
 
     public void removeSection(Station station) {
         sizeValidate();
-        removeLastStationValidate(station);
-        sections.remove(sections.size() - 1);
+
+        if (firstStationMatch(station)) {
+            this.sections.remove(0);
+            return;
+        }
+
+        if (findLastStation().equals(station)) {
+            this.sections.remove(sections.size() - 1);
+            return;
+        }
+
+        removeProcess(station);
     }
 
-    private boolean firstStationMatch(Section section) {
+    private void removeProcess(Station station) {
+        Section prevSection = this.sections.stream()
+                .filter(it -> it.getDownStation().equals(station))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(station));
+
+        Section nextSection = this.sections.stream()
+                .filter(it -> it.getUpStation().equals(station))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(station));
+
+        Station newUpStation = prevSection.getUpStation();
+        Station newDownStation = nextSection.getDownStation();
+        int newDistance = prevSection.getDistance().sumDistance(nextSection);
+
+        Section newSection = Section.Builder.aSection()
+                .upStation(newUpStation)
+                .downStation(newDownStation)
+                .distance(new Distance(newDistance))
+                .line(prevSection.getLine())
+                .build();
+
+        this.sections.add(newSection);
+        this.sections.remove(prevSection);
+        this.sections.remove(nextSection);
+    }
+
+    private boolean firstStationMatch(Station station) {
+        return this.sections.get(0).getUpStation().equals(station);
+    }
+
+    private boolean firstSectionMatch(Section section) {
         return section.getDownStation().equals(this.getStations().get(0));
     }
 
