@@ -5,6 +5,8 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -98,7 +100,7 @@ public class Line extends BaseEntity {
         if (getStations().get(0).getId() == downStation.getId()) {
             return true;
         }
-        if (getStations().get(getStations().size()-1).getId() == upStation.getId()) {
+        if (getStations().get(getStations().size() - 1).getId() == upStation.getId()) {
             return true;
         }
         return false;
@@ -151,18 +153,33 @@ public class Line extends BaseEntity {
 
     public void removeSection(Long stationId) {
         checkSectionRemoveValidity(stationId);
+        List<Section> sectionsToRemove = getSectionToRemove(stationId);
+        if (sectionsToRemove.size() > 1) {
+            for (Section section : sectionsToRemove) { // stream 을 사용해서...?
+                getSections().remove(section);
+            }
+            int newDistance = sectionsToRemove.stream().mapToInt(it -> it.getDistance()).sum();
+            getSections().add(new Section(this, sectionsToRemove.get(0).getUpStation(), sectionsToRemove.get(1).getDownStation(), newDistance));
+            return;
+        }
         getSections().stream()
                 .filter(it -> it.getDownStation().getId() == stationId)
                 .findFirst()
                 .ifPresent(it -> getSections().remove(it));
     }
 
+    private List<Section> getSectionToRemove(Long stationId) {
+        return getSections().stream()
+                .filter(it -> it.getUpStation().getId() == stationId || it.getDownStation().getId() == stationId)
+                .collect(Collectors.toList());
+    }
+
     private void checkSectionRemoveValidity(Long stationId) {
         if (getSections().size() <= 1) {
-            throw new RuntimeException();
+            throw new RuntimeException("마지막 남은 구간은 삭제할 수 없습니다.");
         }
-        if (getStations().get(getStations().size() - 1).getId() != stationId) {
-            throw new RuntimeException("하행 종점역만 삭제가 가능합니다.");
+        if (getSections().stream().noneMatch(it -> it.getDownStation().getId() == stationId || it.getUpStation().getId() == stationId)) {
+            throw new RuntimeException("등록되지 않은 역은 삭제할 수 없습니다.");
         }
     }
 
