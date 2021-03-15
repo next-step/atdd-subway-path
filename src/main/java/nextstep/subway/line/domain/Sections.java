@@ -40,7 +40,7 @@ public class Sections {
 
         validateAddableSection(existUpStation, existDownStation);
 
-        if (existDownStation) {
+        if (existUpStation) {
             addForwardSection(section);
         }
         if (existDownStation) {
