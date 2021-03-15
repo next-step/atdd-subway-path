@@ -246,14 +246,44 @@ public class Line extends BaseEntity {
             throw new RuntimeException();
         }
 
-        boolean isNotValidUpStation = getLastStation().getId() != stationId;
-        if (isNotValidUpStation) {
-            throw new RuntimeException("하행 종점역만 삭제가 가능합니다.");
-        }
+        validateToRemoveStation();
 
-        sections.stream()
+        if (removeStationBetween(stationId)) {
+            return;
+        }
+    }
+
+    private void validateToRemoveStation() {
+
+    }
+
+    private boolean removeStationBetween(Long stationId) {
+        Section upSection = sections.stream()
                 .filter(it -> it.getDownStation().getId() == stationId)
                 .findFirst()
-                .ifPresent(it -> sections.remove(it));
+                .orElse(null);
+
+        Section downSection = sections.stream()
+                .filter(it -> it.getUpStation().getId() == stationId)
+                .findFirst()
+                .orElse(null);
+
+        if (upSection == null && downSection == null) {
+            return false;
+        }
+
+        int position = sections.indexOf(upSection);
+        Section mergedSection = new Section(
+                this,
+                upSection.getUpStation(),
+                downSection.getDownStation(),
+                upSection.getDistance() + downSection.getDistance()
+        );
+
+        sections.remove(upSection);
+        sections.remove(downSection);
+        sections.add(position, mergedSection);
+
+        return true;
     }
 }
