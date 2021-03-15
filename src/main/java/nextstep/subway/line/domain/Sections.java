@@ -65,21 +65,25 @@ public class Sections {
 
     private List<Section> addProcess(Section preSection, Section section) {
         int newDistance = section.getDistance().getDistance();
-        List<Section> addSections = new ArrayList<>();
         Section newSection;
 
         int nextDistance = preSection.getDistance().distanceDivide(newDistance);
 
         if (preSection.getUpStation().equals(section.getUpStation())) {
             newSection = new Section(preSection.getLine(), section.getDownStation(), preSection.getDownStation(), new Distance(nextDistance));
-            addSections.add(section);
-            addSections.add(newSection);
-            return addSections;
+
+            return addSectionList(newSection, section);
         }
 
         newSection = new Section(preSection.getLine(), preSection.getUpStation(), section.getUpStation(), new Distance(nextDistance));
-        addSections.add(newSection);
+
+        return addSectionList(section, newSection);
+    }
+
+    private List<Section> addSectionList(Section newSection, Section section) {
+        List<Section> addSections = new ArrayList<>();
         addSections.add(section);
+        addSections.add(newSection);
         return addSections;
     }
 
