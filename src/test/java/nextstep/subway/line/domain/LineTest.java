@@ -14,7 +14,7 @@ public class LineTest {
 
     @Test
     void addSection() {
-        Line line = new Line("2호선","green");
+        Line line = new Line("2호선", "green");
         Station upStation = new Station("홍대입구역");
         Station downStation = new Station("신촌역");
         line.addSection(upStation, downStation, 5);
@@ -24,7 +24,7 @@ public class LineTest {
     @DisplayName("목록 중간에 추가할 경우 에러 발생")
     @Test
     void addSectionInMiddle() {
-        Line line = new Line("2호선","green");
+        Line line = new Line("2호선", "green");
         Station upStation = new Station("홍대입구역");
         Station downStation = new Station("충정로역");
         line.addSection(upStation, downStation, 5);
@@ -37,7 +37,7 @@ public class LineTest {
     @DisplayName("이미 존재하는 역 추가 시 에러 발생")
     @Test
     void addSectionAlreadyIncluded() {
-        Line line = new Line("2호선","green");
+        Line line = new Line("2호선", "green");
         Station upStation = new Station("홍대입구역");
         Station downStation = new Station("신촌역");
         line.addSection(upStation, downStation, 5);
@@ -47,7 +47,7 @@ public class LineTest {
     @Test
     void removeSection() {
         // given
-        Line line = new Line("2호선","green");
+        Line line = new Line("2호선", "green");
         Station upStation = new Station("홍대입구역");
         Station downStation = new Station("신촌역");
         line.addSection(upStation, downStation, 5);
@@ -66,7 +66,7 @@ public class LineTest {
     @Test
     void removeSectionNotEndOfList() {
         // given
-        Line line = new Line("2호선","green");
+        Line line = new Line("2호선", "green");
         Station upStation = new Station("홍대입구역");
         Station downStation = new Station("신촌역");
         line.addSection(upStation, downStation, 5);

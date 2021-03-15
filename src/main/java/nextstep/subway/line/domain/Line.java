@@ -63,6 +63,10 @@ public class Line extends BaseEntity {
             sections.add(new Section(this, upStation, downStation, distance));
             return;
         }
+        addNewSectionsFromOldSection(upStation, downStation, distance);
+    }
+
+    private void addNewSectionsFromOldSection(Station upStation, Station downStation, int distance) {
         Section oldSection = findSection(upStation, downStation);
         int oldDistance = oldSection.getDistance();
         checkSectionDistanceValidty(oldDistance, distance);
@@ -82,12 +86,12 @@ public class Line extends BaseEntity {
     }
 
     private Section findSection(Station upStation, Station downStation) {
-        Section section1 = getSections().stream().filter(it -> it.getUpStation().getId() == upStation.getId()).findFirst().orElse(null);
-        Section section2 = getSections().stream().filter(it -> it.getDownStation().getId() == downStation.getId()).findFirst().orElse(null);
-        if (section1 == null) {
-            return section2;
+        Section sectionWithUpStation = getSections().stream().filter(it -> it.getUpStation().getId() == upStation.getId()).findFirst().orElse(null);
+        Section sectionWithDownStation = getSections().stream().filter(it -> it.getDownStation().getId() == downStation.getId()).findFirst().orElse(null);
+        if (sectionWithUpStation == null) {
+            return sectionWithDownStation;
         }
-        return section1;
+        return sectionWithUpStation;
     }
 
     private boolean newUpDownStationIsLastStation(Station upStation, Station downStation) {

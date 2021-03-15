@@ -28,9 +28,6 @@ public class LineServiceTest {
     void addSection() {
         // given
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
-        StationService stationService = new StationService(stationRepository);
-        lineService = new LineService(lineRepository, stationService);
-
         Line line = new Line("2호선", "green");
         Station station1 = new Station("홍대입구역");
         Station station2 = new Station("신촌역");
