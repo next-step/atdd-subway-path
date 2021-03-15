@@ -1,4 +1,4 @@
-package nextstep.subway.station.application;
+package nextstep.subway.station.exception;
 
 public class NoSuchStationException extends RuntimeException{
     public NoSuchStationException(String msg){
