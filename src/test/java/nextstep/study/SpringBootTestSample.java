@@ -16,9 +16,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = SubwayApplication.class)
 @Transactional
-public class SpringBootTestSample {
+class SpringBootTestSample {
+
     @Autowired
     private StationRepository stationRepository;
+
     @Autowired
     private LineRepository lineRepository;
 

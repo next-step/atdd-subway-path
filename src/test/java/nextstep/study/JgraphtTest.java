@@ -12,9 +12,10 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class JgraphtTest {
+class JgraphtTest {
+
     @Test
-    public void getDijkstraShortestPath() {
+    void getDijkstraShortestPath() {
         String source = "v3";
         String target = "v1";
 
@@ -33,7 +34,7 @@ public class JgraphtTest {
     }
 
     @Test
-    public void getKShortestPaths() {
+    void getKShortestPaths() {
         String source = "v3";
         String target = "v1";
 
