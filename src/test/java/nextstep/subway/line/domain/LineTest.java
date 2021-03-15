@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.exception.BothStationExistsException;
 import nextstep.subway.line.exception.InvalidDistanceException;
 import nextstep.subway.line.exception.OnlyOneSectionRemainingException;
 import nextstep.subway.line.exception.StationAlreadyExistsException;
@@ -106,6 +107,19 @@ public class LineTest {
         assertThatThrownBy(() -> {
             신분당선.addSection(new Section(신분당선, 강남역, 청계산입구역,12));
         }).isInstanceOf(InvalidDistanceException.class);
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void addSection_WhenBothStationAlreadyExists_ThenFail() {
+        //given
+        //강남----------정자
+
+        //when
+        //강남----------정자 추가 시도
+        assertThatThrownBy(() -> {
+            신분당선.addSection(new Section(신분당선, 강남역, 정자역, 10));
+        }).isInstanceOf(BothStationExistsException.class);
     }
 
     @Test

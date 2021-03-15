@@ -83,13 +83,19 @@ public class Line extends BaseEntity {
     public void addSection(Section section) {
         checkIfSectionIsValid(section);
 
+        boolean isUpStationExists = isUpStationExists(section);
+        boolean isDownStationExists = isDownStationExists(section);
+
+        if(isUpStationExists && isDownStationExists) {
+            throw new BothStationExistsException();
+        }
 
         if(section.getDownStation().equals(getFirstStation())){
             sections.add(0, section);
             return;
         }
 
-        if(isUpStationExists(section)) {
+        if(isUpStationExists) {
             Section oldSection = sections.stream()
                     .filter(s -> s.getUpStation().equals(section.getUpStation()))
                     .findAny()
@@ -106,7 +112,7 @@ public class Line extends BaseEntity {
             return;
         }
 
-        if(isDownStationExists(section)) {
+        if(isDownStationExists) {
             Section oldSection = sections.stream()
                     .filter(s -> s.getDownStation().equals(section.getDownStation()))
                     .findAny()
