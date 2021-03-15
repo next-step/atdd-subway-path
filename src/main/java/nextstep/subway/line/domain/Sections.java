@@ -23,6 +23,8 @@ import static nextstep.subway.station.exception.StationExceptionMessage.*;
 @Embeddable
 public class Sections {
 
+    private static final int NUMBER_ONE = 1;
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Section> sections = new ArrayList<>();
 
@@ -147,7 +149,7 @@ public class Sections {
     }
 
     private Section getLastSection() {
-        return sections.get(sections.size() - 1);
+        return sections.get(sections.size() - NUMBER_ONE);
     }
 
     private void validateDeletableStation(Long downStationId, Long lastDownStationId) {
@@ -156,7 +158,7 @@ public class Sections {
         if (!isEqualStation) {
             throw new CannotRemoveStationException(EXCEPTION_MESSAGE_NOT_DELETABLE_STATION);
         }
-        if (sections.size() == 1 || sections.isEmpty()) {
+        if (sections.size() == NUMBER_ONE || sections.isEmpty()) {
             throw new CannotRemoveSectionException(EXCEPTION_MESSAGE_NOT_DELETABLE_SECTION);
         }
     }

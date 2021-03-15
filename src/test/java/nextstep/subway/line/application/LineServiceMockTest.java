@@ -80,7 +80,7 @@ public class LineServiceMockTest {
     @DisplayName("노선 저장 시 존재하는 이름이 있으면 에러 발생")
     void validateNameToSaveLine() {
         // given
-        given(lineRepository.existsByName("2호선")).willThrow(LineAlreadyExistException.class);
+        given(lineRepository.existsByName("2호선")).willReturn(true);
 
         // when & then
         assertThatExceptionOfType(LineAlreadyExistException.class)
