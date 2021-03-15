@@ -37,7 +37,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         정자역 = 지하철역_등록되어_있음("정자역").as(StationResponse.class);
         광교역 = 지하철역_등록되어_있음("광교역").as(StationResponse.class);
 
-        Map<String, String> lineCreateParams;
+        Map<String, Object> lineCreateParams;
         lineCreateParams = new HashMap<>();
         lineCreateParams.put("name", "신분당선");
         lineCreateParams.put("color", "bg-red-600");
