@@ -33,13 +33,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         강남역 = 지하철역_등록되어_있음("강남역").as(StationResponse.class);
         광교역 = 지하철역_등록되어_있음("광교역").as(StationResponse.class);
-
-        lineCreateParams = new HashMap<>();
-        lineCreateParams.put("name", "신분당선");
-        lineCreateParams.put("color", "bg-red-600");
-        lineCreateParams.put("upStationId", 강남역.getId() + "");
-        lineCreateParams.put("downStationId", 광교역.getId() + "");
-        lineCreateParams.put("distance", 10 + "");
+        lineCreateParams = 파라미터_생성("신분당선", "green", 강남역.getId(), 광교역.getId(), 10);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -56,12 +50,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "구분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", 강남역.getId() + "");
-        params.put("downStationId", 광교역.getId() + "");
-        params.put("distance", 15 + "");
+        Map<String, String> params = 파라미터_생성("2호선", "red", 강남역.getId(), 광교역.getId(), 10);
         ExtractableResponse<Response> createResponse1 = 지하철_노선_등록되어_있음(params);
         ExtractableResponse<Response> createResponse2 = 지하철_노선_등록되어_있음(lineCreateParams);
 

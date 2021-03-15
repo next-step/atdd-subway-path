@@ -37,13 +37,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         정자역 = 지하철역_등록되어_있음("정자역").as(StationResponse.class);
         광교역 = 지하철역_등록되어_있음("광교역").as(StationResponse.class);
 
-        Map<String, String> lineCreateParams;
-        lineCreateParams = new HashMap<>();
-        lineCreateParams.put("name", "신분당선");
-        lineCreateParams.put("color", "bg-red-600");
-        lineCreateParams.put("upStationId", 강남역.getId() + "");
-        lineCreateParams.put("downStationId", 양재역.getId() + "");
-        lineCreateParams.put("distance", 10 + "");
+        Map<String, String> lineCreateParams = 파라미터_생성("신분당선", "red", 강남역.getId(), 양재역.getId(), 10);
         신분당선 = 지하철_노선_등록되어_있음(lineCreateParams).as(LineResponse.class);
     }
 
@@ -57,6 +51,16 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         지하철_노선에_지하철역_등록됨(response);
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 양재역, 정자역));
+    }
+
+    @DisplayName("지하철역_추가시_중간에_끼워넣기")
+    @Test
+    void 지하철역_추가시_중간에_끼워넣기(){
+        지하철_노선에_지하철역_등록_요청(신분당선, 광교역, 양재역, 3);
+
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_노선에_지하철역_등록됨(response);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 광교역, 양재역));
     }
 
     @DisplayName("지하철 노선에 이미 포함된 역을 구간으로 등록한다.")
