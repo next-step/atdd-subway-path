@@ -175,8 +175,25 @@ class LineTest {
     @DisplayName("removeSection 메소드는")
     class Describe_removeSection {
         @Nested
-        @DisplayName("지하철 구간이 2개 이상일 때 마지막 역을 제거한다면")
-        class Context_with_last_station {
+        @DisplayName("지하철 구간이 2개 이상이면서 상행 종점역일 경우")
+        class Context_with_not_only_one_section_and_first_station {
+            @Test
+            @DisplayName("지하철 구간을 제거한다")
+            void it_remove_a_section() {
+                // given
+                이호선.addSection(역삼역, 삼성역, 15);
+
+                // when
+                이호선.removeSection(강남역.getId());
+
+                //then
+                assertThat(이호선.getStations()).containsExactly(Arrays.array(역삼역, 삼성역));
+            }
+        }
+
+        @Nested
+        @DisplayName("지하철 구간이 2개 이상이면서 하행 종점 역일 경우")
+        class Context_with_not_only_one_section_and_last_station {
             @Test
             @DisplayName("지하철 구간을 제거한다")
             void it_remove_a_section() {
