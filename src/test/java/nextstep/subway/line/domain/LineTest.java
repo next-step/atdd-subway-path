@@ -46,14 +46,20 @@ public class LineTest {
     @Test
     @DisplayName("노선에 하행역 추가")
     void addSection() {
+        // when
         line2.addSection(savedStationYeoksam, savedStationSamseong, 6);
+
+        // then
         assertThat(line2.getStations()).containsExactlyElementsOf(Arrays.asList(savedStationGangnam, savedStationYeoksam, savedStationSamseong));
     }
 
     @Test
     @DisplayName("노선에 상행역 추가")
     void addSectionInMiddle() {
+        // when
         line2.addSection(savedStationGyoDae, savedStationGangnam, 5);
+
+        // then
         assertThat(line2.getStations()).containsExactlyElementsOf(Arrays.asList(savedStationGyoDae, savedStationGangnam, savedStationYeoksam));
     }
 
@@ -67,8 +73,13 @@ public class LineTest {
     @Test
     @DisplayName("노선에 있는 하행 종점역 구간 삭제")
     void removeSection() {
+        // given
         line2.addSection(savedStationYeoksam, savedStationSamseong, 6);
+
+        // when
         line2.deleteLastDownStation(savedStationSamseong.getId());
+
+        // then
         assertThat(line2.getSections()).hasSize(1);
     }
 
