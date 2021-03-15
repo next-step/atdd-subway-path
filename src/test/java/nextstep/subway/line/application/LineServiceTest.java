@@ -53,7 +53,7 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        Assertions.assertThat(이호선.getSections()).hasSize(2);
-        Assertions.assertThat(이호선.getSections().get(0).getDownStation()).isEqualTo(삼성역);
+        Assertions.assertThat(이호선.getSections().getSections()).hasSize(2);
+        Assertions.assertThat(이호선.getSections().getSections().get(0).getDownStation()).isEqualTo(삼성역);
     }
 }

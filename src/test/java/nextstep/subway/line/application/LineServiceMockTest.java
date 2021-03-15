@@ -64,6 +64,6 @@ public class LineServiceMockTest {
         // line.findLineById 메서드를 통해 검증
         Line 구간생성된_이호선 = lineService.findLineById(이호선.getId());
         assertThat(구간생성된_이호선).isNotNull();
-        assertThat(구간생성된_이호선.getSections()).hasSize(2);
+        assertThat(구간생성된_이호선.getSections().getSections()).hasSize(2);
     }
 }

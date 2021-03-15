@@ -34,7 +34,7 @@ public class LineTest {
     @Test
     void getStations() {
         // when
-        List<Station> stations = 이호선.getStations();
+        List<Station> stations = 이호선.getSections().getStations();
 
         // then
         assertThat(stations).containsExactly(Arrays.array(강남역, 역삼역));
@@ -46,8 +46,8 @@ public class LineTest {
         이호선.addSection(역삼역, 교대역, 20);
 
         // then
-        assertThat(이호선.getSections()).hasSize(2);
-        assertThat(이호선.getSections().get(1).getDownStation()).isEqualTo(교대역);
+        assertThat(이호선.getSections().getSections()).hasSize(2);
+        assertThat(이호선.getSections().getSections().get(1).getDownStation()).isEqualTo(교대역);
     }
 
     @DisplayName("목록 중간에 추가할 경우 에러 발생")
@@ -77,8 +77,8 @@ public class LineTest {
         이호선.removeSection(교대역.getId());
 
         // then
-        assertThat(이호선.getSections()).hasSize(1);
-        assertThat(이호선.getSections().get(0).getDownStation()).isEqualTo(역삼역);
+        assertThat(이호선.getSections().getSections()).hasSize(1);
+        assertThat(이호선.getSections().getSections().get(0).getDownStation()).isEqualTo(역삼역);
     }
 
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
