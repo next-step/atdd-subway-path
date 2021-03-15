@@ -61,6 +61,23 @@ public class LineTest {
         assertThat(신분당선.getStations()).isEqualTo(Arrays.asList(강남역, 양재역, 청계산입구역, 정자역));
     }
 
+    @DisplayName("새로운 역을 상행 종점으로 추가")
+    @Test
+    void addStationAsFirst() {
+        //given
+        //강남----------정자
+
+        //when
+        //고속터미널-----강남
+        Station 고속터미널역 = new Station("고속터미널역");
+        신분당선.addSection(new Section(신분당선, 고속터미널역, 강남역, 5));
+
+        //then
+        //신분당선 역 이름 확인
+        assertThat(신분당선.getStations()).isEqualTo(Arrays.asList(고속터미널역, 강남역, 정자역));
+    }
+
+
     @DisplayName("역과 역 사이에 길이가 더 긴 새로운 역 추가")
     @Test
     void addSectionInMiddle_WithBiggerDistance() {
