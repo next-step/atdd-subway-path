@@ -64,20 +64,20 @@ public class Sections {
     }
 
     private List<Section> addProcess(Section preSection, Section section) {
-        int preDistance = preSection.getDistance().getDistance();
+        int newDistance = section.getDistance().getDistance();
         List<Section> addSections = new ArrayList<>();
         Section newSection;
 
-        int newDistance = distanceDivide(preDistance, section.getDistance().getDistance());
+        int nextDistance = preSection.getDistance().distanceDivide(newDistance);
 
         if (preSection.getUpStation().equals(section.getUpStation())) {
-            newSection = new Section(preSection.getLine(), section.getDownStation(), preSection.getDownStation(), new Distance(newDistance));
+            newSection = new Section(preSection.getLine(), section.getDownStation(), preSection.getDownStation(), new Distance(nextDistance));
             addSections.add(section);
             addSections.add(newSection);
             return addSections;
         }
 
-        newSection = new Section(preSection.getLine(), preSection.getUpStation(), section.getUpStation(), new Distance(newDistance));
+        newSection = new Section(preSection.getLine(), preSection.getUpStation(), section.getUpStation(), new Distance(nextDistance));
         addSections.add(newSection);
         addSections.add(section);
         return addSections;
@@ -100,14 +100,6 @@ public class Sections {
         sizeValidate();
         removeLastStationValidate(station);
         sections.remove(sections.size() - 1);
-    }
-
-    private int distanceDivide(int preDistance, int distance) {
-        if (distance >= preDistance) {
-            throw new RuntimeException("추가하는 구간의 거리가 잘못되었습니다.");
-        }
-
-        return preDistance - distance;
     }
 
     private boolean firstStationMatch(Section section) {
