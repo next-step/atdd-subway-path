@@ -21,7 +21,7 @@ public class LineTest {
         assertThat(line.getSections().size()).isEqualTo(1);
     }
 
-    @DisplayName("목록 중간에 추가할 경우 에러 발생")
+    @DisplayName("목록 중간에 추가할 경우 새로운 구간으로 추가")
     @Test
     void addSectionInMiddle() {
         Line line = new Line("2호선", "green");
@@ -44,8 +44,9 @@ public class LineTest {
         assertThatThrownBy(() -> line.addSection(upStation, downStation, 3)).isInstanceOf(RuntimeException.class);
     }
 
+    @DisplayName("하행 종점역 삭제")
     @Test
-    void removeSection() {
+    void removeLastStation() {
         // given
         Line line = new Line("2호선", "green");
         Station upStation = new Station("홍대입구역");
@@ -61,6 +62,28 @@ public class LineTest {
         // then
         assertThat(line.getSections().size()).isEqualTo(1);
     }
+
+    @DisplayName("중간역 삭제")
+    @Test
+    void removeMiddleStation() {
+        // given
+        Line line = new Line("2호선", "green");
+        Station upStation = new Station("홍대입구역");
+        Station downStation = new Station("신촌역");
+        line.addSection(upStation, downStation, 5);
+        Station newDownStation = new Station("이대역");
+        line.addSection(downStation, newDownStation, 3);
+        assertThat(line.getSections().size()).isEqualTo(2);
+
+        // when
+        line.removeSection(downStation.getId());
+
+        // then
+        assertThat(line.getSections().size()).isEqualTo(1);
+        assertThat(line.getSections().get(0).getDistance()).isEqualTo(8);
+    }
+
+
 
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
     @Test

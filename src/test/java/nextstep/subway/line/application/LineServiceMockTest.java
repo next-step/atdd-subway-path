@@ -52,9 +52,9 @@ public class LineServiceMockTest {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         when(lineRepository.findById(1L)).thenReturn(Optional.of(이호선));
-//        lenient().when(stationService.findStationById(1L)).thenReturn(강남역);
-//        lenient().when(stationService.findStationById(2L)).thenReturn(역삼역);
-//        lenient().when(stationService.findStationById(3L)).thenReturn(삼성역);
+        lenient().when(stationService.findStationById(1L)).thenReturn(강남역);
+        lenient().when(stationService.findStationById(2L)).thenReturn(역삼역);
+        lenient().when(stationService.findStationById(3L)).thenReturn(삼성역);
 
         // when
         // lineService.addSection 호출
