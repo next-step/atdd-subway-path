@@ -114,7 +114,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록_실패됨(response);
     }
 
-    @DisplayName("지하철 노선에 등록된 지하철역을 제외한다.")
+    @DisplayName("지하철 노선에 등록된 마지막 지하철역을 제외한다.")
     @Test
     void removeLineSection() {
         // given
@@ -127,6 +127,21 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_제외됨(removeResponse);
         LineResponse response = 노선_조회_요청(removeResponse);
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(STATION_1, STATION_2));
+    }
+
+    @DisplayName("지하철 노선에 등록된 가운데 지하철역을 제외한다.")
+    @Test
+    void removeMiddleLineSection() {
+        // given
+        노선에_지하철역_등록_요청(line, STATION_2.getId(), STATION_3.getId(), DISTANCE);
+
+        // when
+        ExtractableResponse<Response> removeResponse = 노선에_지하철역_제외_요청(line, STATION_2);
+
+        // then
+        지하철_노선에_지하철역_제외됨(removeResponse);
+        LineResponse response = 노선_조회_요청(removeResponse);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(STATION_1, STATION_3));
     }
 
     @DisplayName("지하철 노선에 구간이 하나일 때 지하철역을 제외한다.")
