@@ -55,9 +55,7 @@ public class Sections {
     Section targetSection = findMatchedSectionByDownStation(station).orElseGet(()->null);
     Section nextSection = findMatchedSectionByUpStation(station).orElseGet(()->null);
     if(targetSection != null && nextSection != null) {
-      int index = sections.indexOf(targetSection);
-      sections.set(index,new Section(targetSection.getLine(),targetSection.getUpStation(),nextSection.getDownStation(),targetSection.getDistance()+nextSection.getDistance()));
-      sections.remove(index+1);
+      removeMiddleSection(targetSection,nextSection);
     }
     else if(targetSection != null){
       sections.remove(targetSection);
@@ -160,5 +158,11 @@ public class Sections {
 
   private int lastIndex() {
     return getSize() - 1;
+  }
+
+  private void removeMiddleSection(Section targetSection, Section nextSection){
+    int index = sections.indexOf(targetSection);
+    sections.set(index,new Section(targetSection.getLine(),targetSection.getUpStation(),nextSection.getDownStation(),targetSection.getDistance()+nextSection.getDistance()));
+    sections.remove(index+1);
   }
 }
