@@ -59,7 +59,7 @@ public class Sections {
 
     public List<Station> getStations() {
         if (sections.isEmpty()) {
-            return Arrays.asList();
+            return new ArrayList<>();
         }
 
         List<Station> stations = new ArrayList<>();

@@ -65,10 +65,7 @@ public class LineServiceMockTest {
         // then
         // line.findLineById 메서드를 통해 검증
        final Line resultLine = lineService.findLineById(이호선.getId());
-       final Set<Station> stations = resultLine.getSections().stream()
-                .map(section -> Arrays.asList(section.getDownStation(), section.getUpStation()))
-                .flatMap(Collection::stream)
-                .collect(Collectors.toSet());
+       final Set<Station> stations = resultLine.getStations().stream().collect(Collectors.toSet());
        assertThat(stations).contains(삼성역);
     }
 }
