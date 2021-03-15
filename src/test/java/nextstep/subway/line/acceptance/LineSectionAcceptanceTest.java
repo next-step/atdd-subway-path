@@ -77,9 +77,11 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSectionInMiddle(){
         //given
+        //강남----------양재--------------------광교
         지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 광교역, 20);
 
         //when
+        //강남----------양재-------정자-------------광교
         지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 8);
 
         //then
@@ -91,16 +93,17 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addNewStationAsFirst() {
         //given
-        //양재--------------------광교
+        //강남-----양재--------------------광교
         지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 광교역, 20);
 
         //when
-        //강남-----양재--------------------광교
-        지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 양재역, 5);
+        //고속터미널-----강남-----양재--------------------광교
+        StationResponse 고속터미널역 = 지하철역_등록되어_있음("고속터미널역").as(StationResponse.class);
+        지하철_노선에_지하철역_등록_요청(신분당선, 고속터미널역, 강남역, 5);
 
         //then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 양재역, 광교역));
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(고속터미널역, 강남역, 양재역, 광교역));
     }
 
 
@@ -119,11 +122,45 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 양재역, 정자역, 광교역));
     }
-    /*
+
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음.")
+    void whenAddLineSectionInMiddleWithBiggerDistance_thenReturnError() {
+        //given
+        //강남----------양재-----광교
+        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 광교역, 5);
+
+        //when
+        //양재-----정자 추가 시도
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 5);
+
+        지하철_노선에_지하철역_등록_실패됨(response);
+
+    }
+
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음.")
-    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
-*/
+    void whenAddLineSectionWithStationAlreadyExists_thenFail() {
+        //given
+        //강남----------양재-----광교
+        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 광교역, 5);
+
+        //when
+        //양재-------광교 추가 시도
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 광교역, 7);
+        지하철_노선에_지하철역_등록_실패됨(response);
+    }
+
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 추가할 수 없음")
+    void whenAddLineSectionWithNoStationIncludedAtAll_thenFail() {
+        //given
+        //강남----------양재
+
+        //when
+        //정자-----광교 추가 시도
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 정자역, 광교역, 5);
+        지하철_노선에_지하철역_등록_실패됨(response);
+    }
+
 
 
     @DisplayName("지하철 노선에 등록된 지하철역을 제외한다.")

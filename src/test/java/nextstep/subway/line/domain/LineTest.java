@@ -44,19 +44,25 @@ public class LineTest {
         assertThat(after).isEqualTo(before + 1);
     }
 
-
-    @DisplayName("이미 존재하는 역 추가 시 에러 발생")
+    @DisplayName("역과 역 사이에 새로운 역 추가")
     @Test
-    void addSectionAlreadyIncluded() {
-        신분당선.addSection(new Section(신분당선, 정자역, 미금역, 7));
-        Section section = new Section(신분당선, 미금역, 강남역, 3);
+    void addSectionInMiddle() {
+        //given
+        //강남----------정자
 
-        assertThatThrownBy( () -> 신분당선.addSection(section)).isInstanceOf(StationAlreadyExistsException.class);
+        //when
+        //강남-양재----청계산입구-----정자
+        신분당선.addSection(new Section(신분당선, 양재역, 정자역, 9));
+        신분당선.addSection(new Section(신분당선, 양재역, 청계산입구역,4));
+
+        //then
+        //신분당선 역 이름 확인
+        assertThat(신분당선.getStations()).isEqualTo(Arrays.asList(강남역, 양재역, 청계산입구역, 정자역));
     }
 
     @DisplayName("역과 역 사이에 새로운 역 추가")
     @Test
-    void addSectionInMiddle() {
+    void addSectionInMiddle_WithBiggerDistance() {
         //given
         //강남----------정자
 

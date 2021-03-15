@@ -83,6 +83,8 @@ public class Line extends BaseEntity {
     public void addSection(Section section) {
         checkIfSectionIsValid(section);
 
+
+
         if(isUpStationExists(section)) {
             Section oldSection = sections.stream()
                     .filter(s -> s.getUpStation().equals(section.getUpStation()))
@@ -127,16 +129,6 @@ public class Line extends BaseEntity {
     private void checkIfSectionIsValid(Section section) {
         if(sections.isEmpty()) {
             return;
-        }
-
-        checkIfStationAlreadyExists(section);
-    }
-
-    private void checkIfStationAlreadyExists(Section section) {
-        boolean isAlreadyExists = sections.stream().anyMatch(s -> section.getDownStation().equals(s.getUpStation()));
-
-        if(isAlreadyExists) {
-            throw new StationAlreadyExistsException();
         }
     }
 
