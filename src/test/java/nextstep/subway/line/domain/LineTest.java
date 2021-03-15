@@ -158,15 +158,15 @@ public class LineTest {
     assertThat(신분당선.getSections().getSortedStations()).contains(광교역, 광교중앙역);
   }
 
-  @DisplayName("노선의 종점이 아닌역을 삭제하면 Exception")
+  @DisplayName("노선의 종점이 아닌역을 삭제한다.")
   @Test
   void removeSectionWithoutLastSection() {
     //given
     신분당선.addSection(광교중앙역, 상현역, 5);
-    //when then
-    assertThrows(InvalidSectionException.class, () -> {
-      신분당선.removeSection(광교중앙역.getId());
-    });
+    //when
+    신분당선.removeSection(광교중앙역.getId());
+    //then
+    assertThat(신분당선.getSections().getSortedStations()).contains(광교역, 상현역);
   }
 
   @DisplayName("노선의 구간이 1개만 있을때 삭제하면 Exception")

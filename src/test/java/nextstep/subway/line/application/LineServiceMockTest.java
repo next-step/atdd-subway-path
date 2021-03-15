@@ -225,15 +225,18 @@ public class LineServiceMockTest {
         () -> lineService.removeSection(신분당선.getId(), 광교중앙역.getId()));
   }
 
-  @DisplayName("노선에서 삭제하려는 역이 종점이 아니면 삭제하지 못한다")
+  @DisplayName("노선에서 종점이 아닌 중간역을 삭제한다")
   @Test
   void removeSectionWithoutLastStation(){
     //given
     given(lineRepository.findById(any())).willReturn(Optional.of(신분당선));
     신분당선.addSection(광교중앙역,상현역,5);
+    //when
+    lineService.removeSection(신분당선.getId(), 광교역.getId());
     //then
-    assertThrows(InvalidSectionException.class,
-        () -> lineService.removeSection(신분당선.getId(), 광교역.getId()));
+    assertThat(lineService.findLine(신분당선.getId()).getStations())
+        .extracting(StationResponse::getName)
+        .containsExactly("광교중앙역", "상현역");
   }
 
   @DisplayName("노선에서 구간을 삭제한다.")

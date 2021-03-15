@@ -132,7 +132,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     //when
     ExtractableResponse<Response> removeResponse =  구간삭제요청(신분당선,상현역);
     //then
-    노선_구간_삭제실패됨(removeResponse);
+    노선_구간_삭제됨(removeResponse);
   }
 
   @DisplayName("1개남은 노선의 구간을 삭제한다")
