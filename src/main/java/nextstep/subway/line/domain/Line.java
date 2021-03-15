@@ -243,6 +243,10 @@ public class Line extends BaseEntity {
 
         validateToRemoveStation();
 
+        if (removeStationUpStation(stationId)) {
+            return;
+        }
+
         if (removeStationInTheMiddle(stationId)) {
             return;
         }
@@ -250,6 +254,20 @@ public class Line extends BaseEntity {
 
     private void validateToRemoveStation() {
 
+    }
+
+    private boolean removeStationUpStation(Long stationId) {
+        if (getFirstStation().getId() == stationId) {
+            sections.remove(0);
+            return true;
+        }
+
+        return false;
+    }
+
+    private Station getFirstStation() {
+        List<Station> stations = getStations();
+        return stations.get(0);
     }
 
     private boolean removeStationInTheMiddle(Long stationId) {
