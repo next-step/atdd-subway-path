@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyByte;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -230,6 +231,7 @@ public class LineServiceMockTest {
   void removeSectionWithoutLastStation(){
     //given
     given(lineRepository.findById(any())).willReturn(Optional.of(신분당선));
+    given(stationService.findStation(광교역.getId())).willReturn(광교역);
     신분당선.addSection(광교중앙역,상현역,5);
     //when
     lineService.removeSection(신분당선.getId(), 광교역.getId());

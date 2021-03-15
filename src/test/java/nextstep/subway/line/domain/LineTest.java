@@ -153,7 +153,7 @@ public class LineTest {
     //given
     신분당선.addSection(광교중앙역, 상현역, 5);
     //when
-    신분당선.removeSection(상현역.getId());
+    신분당선.removeSection(상현역);
     //then
     assertThat(신분당선.getSections().getSortedStations()).contains(광교역, 광교중앙역);
   }
@@ -164,7 +164,7 @@ public class LineTest {
     //given
     신분당선.addSection(광교중앙역, 상현역, 5);
     //when
-    신분당선.removeSection(광교중앙역.getId());
+    신분당선.removeSection(광교중앙역);
     //then
     assertThat(신분당선.getSections().getSortedStations()).contains(광교역, 상현역);
   }
@@ -174,7 +174,7 @@ public class LineTest {
   void removeSectionIncludedOneSection() {
     //when then
     assertThrows(InvalidSectionException.class, () -> {
-      신분당선.removeSection(광교중앙역.getId());
+      신분당선.removeSection(광교중앙역);
     });
   }
 }

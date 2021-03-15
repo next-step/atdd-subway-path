@@ -45,17 +45,26 @@ public class Sections {
 
   }
 
-  public void remove(long stationId) {
+  public void remove(Station station) {
     if (getSize() == EMPTY) {
       throw new InvalidSectionException("삭제할 구간이 없습니다.");
     }
     if (getSize() == MIN) {
       throw new InvalidSectionException("구간이 1개남은경우 삭제할 수 없습니다.");
     }
-    if (!isLastStation(stationId)) {
-      throw new InvalidSectionException("노선의 종점이 아닌경우 삭제할 수 없습니다.");
+    Section targetSection = findMatchedSectionByDownStation(station).orElseGet(()->null);
+    Section nextSection = findMatchedSectionByUpStation(station).orElseGet(()->null);
+    if(targetSection != null && nextSection != null) {
+      int index = sections.indexOf(targetSection);
+      sections.set(index,new Section(targetSection.getLine(),targetSection.getUpStation(),nextSection.getDownStation(),targetSection.getDistance()+nextSection.getDistance()));
+      sections.remove(index+1);
     }
-    sections.remove(lastIndex());
+    else if(targetSection != null){
+      sections.remove(targetSection);
+    }
+    else if(nextSection != null){
+      sections.remove(nextSection);
+    }
   }
 
   public int getSize() {
