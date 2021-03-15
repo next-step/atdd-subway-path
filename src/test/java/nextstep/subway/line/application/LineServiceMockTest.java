@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyByte;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -225,15 +226,19 @@ public class LineServiceMockTest {
         () -> lineService.removeSection(신분당선.getId(), 광교중앙역.getId()));
   }
 
-  @DisplayName("노선에서 삭제하려는 역이 종점이 아니면 삭제하지 못한다")
+  @DisplayName("노선에서 종점이 아닌 중간역을 삭제한다")
   @Test
   void removeSectionWithoutLastStation(){
     //given
     given(lineRepository.findById(any())).willReturn(Optional.of(신분당선));
+    given(stationService.findStation(광교역.getId())).willReturn(광교역);
     신분당선.addSection(광교중앙역,상현역,5);
+    //when
+    lineService.removeSection(신분당선.getId(), 광교역.getId());
     //then
-    assertThrows(InvalidSectionException.class,
-        () -> lineService.removeSection(신분당선.getId(), 광교역.getId()));
+    assertThat(lineService.findLine(신분당선.getId()).getStations())
+        .extracting(StationResponse::getName)
+        .containsExactly("광교중앙역", "상현역");
   }
 
   @DisplayName("노선에서 구간을 삭제한다.")
@@ -241,10 +246,13 @@ public class LineServiceMockTest {
   void removeSection(){
     //given
     given(lineRepository.findById(any())).willReturn(Optional.of(신분당선));
+    given(stationService.findStation(상현역.getId())).willReturn(상현역);
     신분당선.addSection(광교중앙역,상현역,5);
     //when
     lineService.removeSection(신분당선.getId(), 상현역.getId());
     //then
-    assertThat(신분당선.getSections().getSize()).isEqualTo(1);
+    assertThat(lineService.findLine(신분당선.getId()).getStations())
+        .extracting(StationResponse::getName)
+        .containsExactly("광교역", "광교중앙역");
   }
 }
