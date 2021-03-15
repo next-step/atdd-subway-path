@@ -13,6 +13,8 @@ import java.util.*;
 
 public class Sections {
 
+    private static final int LIST_MINIMUM_SIZE = 1;
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -20,20 +22,58 @@ public class Sections {
 
     }
 
+    public void addSection(Section section) {
+        List<StationResponse> stations = getAllStation();
+        if (stations.size() == 0) {
+            sections.add(section);
+            section.update(section.getLine());
+            return;
+        }
+
+        boolean isExistedUpStation = sections.stream().anyMatch(it -> it.getUpStation().equals(section.getUpStation()));
+        boolean isExistedDownStation = sections.stream().anyMatch(it -> it.getDownStation().equals(section.getDownStation()));
+        checkExistedStation(isExistedUpStation, isExistedDownStation);
+
+        if (isExistedUpStation) {
+            addBeginStation(section);
+        }
+
+        if (isExistedDownStation) {
+            addLastStation(section);
+        }
+    }
+
+    public void deleteLastSection(Long stationId) {
+        isValidDeleteSection(stationId);
+        sections.remove(getFinishSection());
+    }
+
+    public List<StationResponse> getAllStation() {
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<StationResponse> responses = new ArrayList<>();
+        responses.add(StationResponse.of(sections.get(0).getUpStation()));
+
+        sections.stream().map(section -> StationResponse.of(section.getDownStation())).forEach(responses::add);
+        return responses;
+    }
+
     private int size() {
         return sections.size();
     }
 
     private Section getFinishSection() {
-        return sections.get(size() - 1);
+        return sections.get(size() - LIST_MINIMUM_SIZE);
     }
 
     private Station getDownStation() {
-        return sections.get(size() - 1).getDownStation();
+        return sections.get(size() - LIST_MINIMUM_SIZE).getDownStation();
     }
 
     private boolean isNotOtherStation() {
-        return size() == 1;
+        return size() == LIST_MINIMUM_SIZE;
     }
 
     private boolean isTarget(long stationId) {
@@ -106,43 +146,5 @@ public class Sections {
         Section prevSection = Section.of(line, findSection.getUpStation(), section.getUpStation(), sectionDistance);
         sections.set(index, prevSection);
         sections.add(index + 1, section);
-    }
-
-    public void addSection(Section section) {
-        List<StationResponse> stations = getAllStation();
-        if (stations.size() == 0) {
-            sections.add(section);
-            section.update(section.getLine());
-            return;
-        }
-
-        boolean isExistedUpStation = sections.stream().anyMatch(i -> i.getUpStation().equals(section.getUpStation()));
-        boolean isExistedDownStation = sections.stream().anyMatch(i -> i.getDownStation().equals(section.getDownStation()));
-        checkExistedStation(isExistedUpStation, isExistedDownStation);
-
-        if (isExistedUpStation) {
-            addBeginStation(section);
-        }
-
-        if (isExistedDownStation) {
-            addLastStation(section);
-        }
-    }
-
-    public void deleteLastSection(Long stationId) {
-        isValidDeleteSection(stationId);
-        sections.remove(getFinishSection());
-    }
-
-    public List<StationResponse> getAllStation() {
-        if (sections.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<StationResponse> responses = new ArrayList<>();
-        responses.add(StationResponse.of(sections.get(0).getUpStation()));
-
-        sections.stream().map(section -> StationResponse.of(section.getDownStation())).forEach(responses::add);
-        return responses;
     }
 }
