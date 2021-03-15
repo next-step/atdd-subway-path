@@ -27,7 +27,6 @@ public class StationService {
     @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
-
         return stations.stream()
                 .map(station -> StationResponse.of(station))
                 .collect(Collectors.toList());
@@ -38,10 +37,12 @@ public class StationService {
     }
 
     public Station findStationById(Long id) {
-        return stationRepository.findById(id).orElseThrow(RuntimeException::new);
+        return stationRepository.findById(id)
+                .orElseThrow(()->new NoSuchStationException("해당하는 역은 존재하지 않습니다"));
     }
 
     public Station findById(Long id) {
-        return stationRepository.findById(id).orElseThrow(RuntimeException::new);
+        return stationRepository.findById(id)
+                .orElseThrow(()->new NoSuchStationException("해당하는 역은 존재하지 않습니다"));
     }
 }
