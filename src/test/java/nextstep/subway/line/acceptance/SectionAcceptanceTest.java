@@ -59,7 +59,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 양재역, 정자역));
     }
 
-    @DisplayName("라인 출발역 앞에 새로운 역을 등록할 경우")
+    @DisplayName("노선 출발역 앞에 새로운 역을 등록할 경우")
     @Test
     void addSectionBeforeLineUpStation() {// given
         지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 광교역, 15);
@@ -74,7 +74,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_순서_정렬됨(response_stations, Arrays.asList(정자역, 강남역, 양재역, 광교역));
     }
 
-    @DisplayName("라인 종점역 뒤로 새로운 역을 등록할 경우")
+    @DisplayName("노선 종점역 뒤로 새로운 역을 등록할 경우")
     @Test
     void addSectionAfterLineDownStation() {// given
         지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 15);

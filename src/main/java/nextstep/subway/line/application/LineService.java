@@ -30,9 +30,9 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = stationService.findById(request.getUpStationId());
-        Station downStation = stationService.findById(request.getDownStationId());
-        Line persistLine = lineRepository.save(new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
+        final Station upStation = stationService.findById(request.getUpStationId());
+        final Station downStation = stationService.findById(request.getDownStationId());
+        final Line persistLine = lineRepository.save(new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
         return createLineResponse(persistLine);
     }
 
@@ -41,7 +41,7 @@ public class LineService {
     }
 
     public List<LineResponse> findLineResponses() {
-        List<Line> persistLines = lineRepository.findAll();
+        final List<Line> persistLines = lineRepository.findAll();
         return persistLines.stream()
                 .map(line -> createLineResponse(line))
                 .collect(Collectors.toList());
@@ -52,12 +52,12 @@ public class LineService {
     }
 
     public LineResponse findLineResponseById(Long id) {
-        Line persistLine = findLineById(id);
+        final Line persistLine = findLineById(id);
         return createLineResponse(persistLine);
     }
 
     public void updateLine(Long id, LineRequest lineUpdateRequest) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        final Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         persistLine.update(new Line(lineUpdateRequest.getName(), lineUpdateRequest.getColor()));
     }
 
@@ -67,58 +67,19 @@ public class LineService {
 
     @Transactional
     public void addSection(Long lineId, SectionRequest request) {
-        Line line = findLineById(lineId);
-        Station upStation = stationService.findStationById(request.getUpStationId());
-        Station downStation = stationService.findStationById(request.getDownStationId());
+        final Line line = findLineById(lineId);
+        final Station upStation = stationService.findStationById(request.getUpStationId());
+        final Station downStation = stationService.findStationById(request.getDownStationId());
         addSection(line, upStation, downStation, request.getDistance());
     }
 
+    public void addSection(Line line, Station upStation, Station downStation, int distance){
+        line.addSection(upStation, downStation, distance);
+    }
+
     public void removeSection(Long lineId, Long stationId) {
-        Line line = findLineById(lineId);
+        final Line line = findLineById(lineId);
         removeSection(line, stationId);
-    }
-
-    public void addSection(Line line, Station upStation, Station downStation, int distance) {
-        final Section newSection = new Section(line, upStation, downStation, distance);
-        if (line.getStations().size() == 0) {
-            line.getSections().add(newSection);
-            return;
-        }
-
-        validateStations(line, upStation, downStation);
-        if (line.matchSectionWithUpStation(upStation)){
-            addUpfrontSection(line, line.findSectionByUpStation(upStation), newSection);
-            return;
-        }
-
-        if (line.matchSectionByDownStation(downStation)){
-            addDownBehindSection(line, line.findSectionByDownStation(downStation), newSection);
-            return;
-        }
-        line.getSections().add(newSection);
-    }
-
-    private void addUpfrontSection(Line line, Section oldSection, Section newSection) {
-        line.removeSection(oldSection);
-        line.addSection(newSection);
-        line.addSection(new Section(line, newSection.getDownStation(), oldSection.getDownStation(), oldSection.getDistance() - newSection.getDistance()));
-    }
-
-    private void addDownBehindSection(Line line, Section oldSection, Section newSection) {
-        line.removeSection(oldSection);
-        line.addSection(newSection);
-        line.addSection(new Section(line, oldSection.getUpStation(), newSection.getUpStation(), oldSection.getDistance() - newSection.getDistance()));
-    }
-
-    public void validateStations(Line line, Station upStation, Station downStation) {
-        final boolean existUpStation = line.isInStation(upStation);
-        final boolean existDownStation = line.isInStation(downStation);
-        if (existUpStation && existDownStation) {
-            throw new RuntimeException("이미 두 역은 등록되어 있습니다.");
-        }
-        if (!existUpStation && !existDownStation) {
-            throw new RuntimeException("이미 두 역 중 한 역은 등록되어 있어야 합니다.");
-        }
     }
 
     public void removeSection(Line line, Long stationId) {
@@ -127,7 +88,7 @@ public class LineService {
     }
 
     public LineResponse createLineResponse(Line line) {
-        List<StationResponse> stations = line.getStations().stream()
+        final List<StationResponse> stations = line.getStations().stream()
                 .map(it -> StationResponse.of(it))
                 .collect(Collectors.toList());
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stations, line.getCreatedDate(), line.getModifiedDate());
