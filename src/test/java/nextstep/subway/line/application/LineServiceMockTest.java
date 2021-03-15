@@ -246,10 +246,13 @@ public class LineServiceMockTest {
   void removeSection(){
     //given
     given(lineRepository.findById(any())).willReturn(Optional.of(신분당선));
+    given(stationService.findStation(상현역.getId())).willReturn(상현역);
     신분당선.addSection(광교중앙역,상현역,5);
     //when
     lineService.removeSection(신분당선.getId(), 상현역.getId());
     //then
-    assertThat(신분당선.getSections().getSize()).isEqualTo(1);
+    assertThat(lineService.findLine(신분당선.getId()).getStations())
+        .extracting(StationResponse::getName)
+        .containsExactly("광교역", "광교중앙역");
   }
 }
