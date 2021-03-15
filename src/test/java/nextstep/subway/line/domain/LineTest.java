@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.exception.InvalidDistanceException;
 import nextstep.subway.line.exception.OnlyOneSectionRemainingException;
 import nextstep.subway.line.exception.StationAlreadyExistsException;
 import nextstep.subway.station.domain.Station;
@@ -60,23 +61,21 @@ public class LineTest {
         assertThat(신분당선.getStations()).isEqualTo(Arrays.asList(강남역, 양재역, 청계산입구역, 정자역));
     }
 
-    @DisplayName("역과 역 사이에 새로운 역 추가")
+    @DisplayName("역과 역 사이에 길이가 더 긴 새로운 역 추가")
     @Test
     void addSectionInMiddle_WithBiggerDistance() {
         //given
         //강남----------정자
 
         //when
-        //강남-양재----청계산입구-----정자
-        신분당선.addSection(new Section(신분당선, 양재역, 정자역, 9));
-        신분당선.addSection(new Section(신분당선, 양재역, 청계산입구역,4));
-
+        //강남------------청계산입구 추가
         //then
-        //신분당선 역 이름 확인
-        assertThat(신분당선.getStations()).isEqualTo(Arrays.asList(강남역, 양재역, 청계산입구역, 정자역));
-    }
+        //InvalidDistanceException
+        assertThatThrownBy(() -> {
+            신분당선.addSection(new Section(신분당선, 강남역, 청계산입구역,12));
+        }).isInstanceOf(InvalidDistanceException.class);
 
-        
+    }
 
     @Test
     void removeSection() {
