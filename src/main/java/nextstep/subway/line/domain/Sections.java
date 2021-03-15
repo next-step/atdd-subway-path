@@ -73,7 +73,7 @@ public class Sections {
 
     public void removeSection(Long stationId) {
         validateRemoveSection(stationId);
-        sections.removeIf(it -> it.getDownStation().getId().equals(stationId));
+        sections.removeIf(it -> it.isDownStationId(stationId));
     }
 
     public Optional<Station> getNextDownStation(Station finalDownStation) {
@@ -199,7 +199,7 @@ public class Sections {
         Station prevDownStation = section.getDownStation();
         int prevDistance = section.getDistance();
 
-        sections.removeIf(it -> it.getDownStation().getId().equals(prevDownStation.getId()));
+        sections.removeIf(it -> it.isDownStationId(prevDownStation.getId()));
 
         sections.add(new Section(line, upStation, downStation, distance));
         sections.add(new Section(line, downStation, prevDownStation,prevDistance - distance));
@@ -222,7 +222,7 @@ public class Sections {
         Station prevUpStation = section.getUpStation();
         int prevDistance = section.getDistance();
 
-        sections.removeIf(it -> it.getUpStation().getId().equals(prevUpStation.getId()));
+        sections.removeIf(it -> it.isUpStationId(prevUpStation.getId()));
 
         sections.add(new Section(line, prevUpStation, upStation,prevDistance - distance));
         sections.add(new Section(line, upStation, downStation, distance));
