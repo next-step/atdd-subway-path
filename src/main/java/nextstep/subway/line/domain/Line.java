@@ -52,8 +52,8 @@ public class Line extends BaseEntity {
 
     public void addSection(Station upStation, Station downStation, int distance) {
         final Section newSection = new Section(this, upStation, downStation, distance);
-        if (getStations().size() == 0) {
-            getSections().add(newSection);
+        if (sections.getSectionSize() == 0) {
+            sections.add(newSection);
             return;
         }
 
@@ -69,7 +69,7 @@ public class Line extends BaseEntity {
             addDownBehindSection(optionalDownStationSection.get(), newSection);
             return;
         }
-        getSections().add(newSection);
+        sections.add(newSection);
     }
 
     private void addUpfrontSection(Section oldSection, Section newSection) {
@@ -99,8 +99,8 @@ public class Line extends BaseEntity {
        sections.remove(station);
     }
 
-    public List<Section> getSections(){
-        return sections.getSections();
+    public int getSectionSize(){
+        return sections.getSectionSize();
     }
 
     public List<Station> getStations(){
