@@ -35,14 +35,14 @@ public class LineTest {
 
     @Test
     void getStations() {
-        assertThat(line.getStations().size()).isEqualTo(2);
+        assertThat(line.getSections().getStations().size()).isEqualTo(2);
     }
 
     @Test
     void addSection() {
         line.addSection(선릉역2, 역삼역3, 10);
         line.addSection(역삼역3, 잠실역4, 10);
-        List<String> resultList = line.getStations().stream().map(station -> station.getName()).collect(Collectors.toList());
+        List<String> resultList = line.getSections().getStations().stream().map(station -> station.getName()).collect(Collectors.toList());
         assertThat(resultList).containsExactlyElementsOf(Arrays.asList("강남역1", "선릉역2", "역삼역3", "잠실역4"));
     }
 
@@ -50,9 +50,9 @@ public class LineTest {
     @Test
     void addSectionInMiddleWhenUpStationMatch() {
         line.addSection(강남역1, 잠실역4, 3);
-        List<String> resultList = line.getStations().stream().map(station -> station.getName()).collect(Collectors.toList());
+        List<String> resultList = line.getSections().getStations().stream().map(station -> station.getName()).collect(Collectors.toList());
         assertThat(resultList).containsExactlyElementsOf(Arrays.asList("강남역1", "잠실역4", "선릉역2"));
-        assertThat(line.getSections().get(1).getDistance()).isEqualTo(7);
+        assertThat(line.getSections().getSectionList().get(1).getDistance()).isEqualTo(7);
     }
 
     @DisplayName("목록 중간에 추가 가능(downStation 매칭시)")
@@ -60,9 +60,9 @@ public class LineTest {
     void addSectionInMiddleWhenDownStationMatch() {
         line.addSection(선릉역2, 역삼역3, 10);
         line.addSection(잠실역4, 선릉역2, 4);
-        List<String> resultList = line.getStations().stream().map(station -> station.getName()).collect(Collectors.toList());
+        List<String> resultList = line.getSections().getStations().stream().map(station -> station.getName()).collect(Collectors.toList());
         assertThat(resultList).containsExactlyElementsOf(Arrays.asList("강남역1", "잠실역4", "선릉역2", "역삼역3"));
-        assertThat(line.getSections().get(0).getDistance()).isEqualTo(6);
+        assertThat(line.getSections().getSectionList().get(0).getDistance()).isEqualTo(6);
     }
 
     @DisplayName("추가하는 섹션에 따른 수정되는 섹션의 거리가 잘못된 경우")

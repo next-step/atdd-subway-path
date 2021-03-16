@@ -36,6 +36,6 @@ public class SpringBootTestSample {
 
         Line line = lineService.findLineById(이호선.getId());
 
-        assertThat(line.getSections().size()).isEqualTo(2);
+        assertThat(line.getSections().getSectionList().size()).isEqualTo(2);
     }
 }
