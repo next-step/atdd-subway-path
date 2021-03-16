@@ -204,7 +204,7 @@ public class Sections {
 
     private Section getBackSection(Station deleteStation) {
         return sections.stream()
-                .filter(section -> section.getDownStation().equals(deleteStation))
+                .filter(section -> section.getUpStation().equals(deleteStation))
                 .findFirst()
                 .orElseThrow(() -> new SectionNonExistException(EXCEPTION_MESSAGE_NON_EXIST_FRONT_SECTION));
     }
