@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.domain.exception.InvalidDistanceException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -13,35 +14,45 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public Sections(){}
+    public Sections() {
+    }
 
     public void addSection(Section section) {
-        validateAddSection(section);
+        validateSection(section);
         sections.add(section);
     }
 
-    private void validateAddSection(Section section){
-        List<Station> stations = getStations();
-        if (getStations().size() == 0) {
+    private void validateSection(Section section) {
+        if (sections.size() == 0) {
             return;
         }
-        if (isNotValidUpStation(stations, section)) {
-            throw new RuntimeException("상행역은 하행 종점역이어야 합니다.");
+
+        if(isUpStationAddable(getStations(), section) || isDownStationAddable(getStations(), section)) {
+            return;
         }
 
-        if (isDownStationExisted(stations, section)) {
-            throw new RuntimeException("하행역이 이미 등록되어 있습니다.");
+        Section find = sections.stream()
+                .filter(i -> isContainStation(i, section))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("등록된 역이 없습니다."));
+
+        if (section.getDistance() >= find.getDistance()) {
+            throw new InvalidDistanceException("기존에 등록된 구간보다 큽니다.");
         }
+
     }
 
-    private boolean isDownStationExisted(List<Station> stations, Section section) {
-        return stations.stream().anyMatch(it -> it.equals(section.getDownStation()));
+    private boolean isUpStationAddable(List<Station> stations, Section section) {
+        return stations.get(stations.size() -1).equals(section.getUpStation());
     }
 
-    private boolean isNotValidUpStation(List<Station> stations, Section section) {
-        return !stations.get(stations.size() - 1).equals(section.getUpStation());
+    private boolean isDownStationAddable(List<Station> stations, Section section) {
+        return stations.get(0).equals(section.getDownStation());
     }
 
+    private boolean isContainStation(Section section, Section targetSection) {
+     return section.containsStation(targetSection.getUpStation()) || section.containsStation(targetSection.getDownStation());
+    }
 
     public void removeSection(Line line, Long stationId) {
         if (line.getSections().size() <= 1) {
@@ -106,5 +117,11 @@ public class Sections {
 
     public void add(Section section) {
         sections.add(section);
+    }
+
+    public int countTotalDistance() {
+        return sections.stream()
+                .mapToInt(section -> section.getDistance())
+                .sum();
     }
 }
