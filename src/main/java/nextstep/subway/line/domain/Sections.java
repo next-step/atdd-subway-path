@@ -3,7 +3,6 @@ package nextstep.subway.line.domain;
 import nextstep.subway.line.exception.CannotAddSectionException;
 import nextstep.subway.line.exception.CannotRemoveSectionException;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.exception.CannotRemoveStationException;
 import nextstep.subway.station.exception.StationAlreadyExistException;
 import nextstep.subway.station.exception.StationNonExistException;
 
@@ -135,10 +134,9 @@ public class Sections {
     private int calculateAdjustedDistance(int findSectionDistance, int newSectionDistance) {
         return findSectionDistance - newSectionDistance;
     }
-
-    public void deleteLastDownStation(Long downStationId) {
-        Station lastDownStation = getLastDownStation();
-        validateDeletableStation(downStationId, lastDownStation.getId());
+    // TODO : 구간 삭제 기능 변경
+    public void deleteLastDownStation() {
+        validateDeletableCurrentSections();
 
         sections.remove(getLastSection());
     }
@@ -152,12 +150,7 @@ public class Sections {
         return sections.get(sections.size() - NUMBER_ONE);
     }
 
-    private void validateDeletableStation(Long downStationId, Long lastDownStationId) {
-        boolean isEqualStation = lastDownStationId.equals(downStationId);
-
-        if (!isEqualStation) {
-            throw new CannotRemoveStationException(EXCEPTION_MESSAGE_NOT_DELETABLE_STATION);
-        }
+    private void validateDeletableCurrentSections() {
         if (sections.size() == NUMBER_ONE || sections.isEmpty()) {
             throw new CannotRemoveSectionException(EXCEPTION_MESSAGE_NOT_DELETABLE_SECTION);
         }

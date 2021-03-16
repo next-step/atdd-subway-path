@@ -159,7 +159,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("지하철 노선에 구간이 하나일 때 지하철역을 제거 할 수 없다.")
+    @DisplayName("지하철 노선에 구간이 하나혹은 없을때 지하철역을 제거 할 수 없다.")
     void removeLineSectionOnlyOneSection() {
         // when
         ExtractableResponse<Response> deleteResponse = 지하철_노선에_등록된_구간_제거_요청(신분당선.getId(), 청계산입구역.getId());
