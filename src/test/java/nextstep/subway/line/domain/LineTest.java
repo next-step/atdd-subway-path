@@ -26,16 +26,11 @@ public class LineTest {
     @BeforeEach
     void setUp() {
         // given
-        강남역 = new Station("강남역");
-        ReflectionTestUtils.setField(강남역, "id", 1L);
-        역삼역 = new Station("역삼역");
-        ReflectionTestUtils.setField(역삼역, "id", 2L);
-        교대역 = new Station("교대역");
-        ReflectionTestUtils.setField(교대역, "id", 3L);
-        잠실역 = new Station("잠실역");
-        ReflectionTestUtils.setField(잠실역, "id", 4L);
-        강변역 = new Station("강변역");
-        ReflectionTestUtils.setField(강변역, "id", 5L);
+        강남역 = initStation(강남역, "강남역", 1L);
+        역삼역 = initStation(역삼역,"역삼역", 2L);
+        교대역 = initStation(교대역,"교대역", 3L);
+        잠실역 = initStation(잠실역,"잠실역", 4L);
+        강변역 = initStation(강변역,"강변역", 5L);
         이호선 = new Line("2호선", "green", 강남역, 역삼역, 10);
     }
 
@@ -139,5 +134,11 @@ public class LineTest {
         assertThatThrownBy(()->{
             이호선.removeSection(역삼역.getId());
         }).isInstanceOf(RuntimeException.class);
+    }
+
+    private Station initStation(Station station, String stationName, Long id) {
+        station = new Station(stationName);
+        ReflectionTestUtils.setField(station, "id", id);
+        return station;
     }
 }
