@@ -4,7 +4,8 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Line extends BaseEntity {
@@ -19,8 +20,8 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
-    private final List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = new Sections();
 
     public Line() {
     }
@@ -33,6 +34,7 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
+
         sections.add(new Section(this, upStation, downStation, distance));
     }
 
@@ -53,10 +55,6 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
-        return sections;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -70,254 +68,19 @@ public class Line extends BaseEntity {
         return Objects.hash(id, name, color);
     }
 
-    public List<Station> getStations() {
-        if (getSections().isEmpty()) {
-            return Arrays.asList();
-        }
-
-        List<Station> stations = new ArrayList<>();
-        Station downStation = findUpStation(this);
-        stations.add(downStation);
-
-        while (downStation != null) {
-            Station finalDownStation = downStation;
-            Optional<Section> nextLineStation = getSections().stream()
-                    .filter(it -> it.getUpStation() == finalDownStation)
-                    .findFirst();
-            if (!nextLineStation.isPresent()) {
-                break;
-            }
-            downStation = nextLineStation.get().getDownStation();
-            stations.add(downStation);
-        }
-
-        return stations;
-    }
-
-    private Station findUpStation(Line line) {
-        Station downStation = line.getSections().get(0).getUpStation();
-        while (downStation != null) {
-            Station finalDownStation = downStation;
-            Optional<Section> nextLineStation = line.getSections().stream()
-                    .filter(it -> it.getDownStation() == finalDownStation)
-                    .findFirst();
-            if (!nextLineStation.isPresent()) {
-                break;
-            }
-            downStation = nextLineStation.get().getUpStation();
-        }
-
-        return downStation;
-    }
-
     public void addSection(Section section) {
-        if (sections.isEmpty()) {
-            sections.add(section);
-            return;
-        }
-
-        validateToAddSectionStationsAlreadyAdded(section);
-        validateToAddSectionStationNone(section);
-
-        if (addSectionInTheMiddle(section)) {
-            return;
-        }
-
-        if (addSectionToUpStation(section)) {
-            return;
-        }
-
-        if (addSectionToDownStation(section)) {
-            return;
-        }
+        sections.add(section);
     }
 
-    private boolean addSectionInTheMiddle(Section section) {
-        if (addSectionInTheMiddleToUpStation(section)) {
-            return true;
-        }
-
-        return addSectionInTheMiddleToDownStation(section);
+    public List<Section> getSections() {
+        return sections.getAll();
     }
 
-    private boolean addSectionInTheMiddleToUpStation(Section section) {
-        Section upStationMatchedSection = sections.stream()
-                .filter(it -> it.getUpStation() == section.getUpStation())
-                .findFirst()
-                .orElse(null);
-
-        if (upStationMatchedSection != null) {
-            validateToAddSectionDistance(upStationMatchedSection, section);
-
-            int position = sections.indexOf(upStationMatchedSection);
-            Section afterSection = new Section(
-                    this,
-                    section.getDownStation(),
-                    upStationMatchedSection.getDownStation(),
-                    upStationMatchedSection.getDistance() - section.getDistance()
-            );
-
-            sections.remove(position);
-            sections.add(position, section);
-            sections.add(position + 1, afterSection);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean addSectionInTheMiddleToDownStation(Section section) {
-        Section downStationMatchedSection = sections.stream()
-                .filter(it -> it.getDownStation() == section.getDownStation())
-                .findFirst()
-                .orElse(null);
-
-        if (downStationMatchedSection != null) {
-            validateToAddSectionDistance(downStationMatchedSection, section);
-
-            int position = sections.indexOf(downStationMatchedSection);
-            Section beforeSection = new Section(
-                    this,
-                    downStationMatchedSection.getUpStation(),
-                    section.getUpStation(),
-                    downStationMatchedSection.getDistance() - section.getDistance()
-            );
-
-            sections.remove(position);
-            sections.add(position, beforeSection);
-            sections.add(position + 1, section);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean addSectionToUpStation(Section section) {
-        Section firstSection = sections.get(0);
-
-        if (firstSection.getUpStation() == section.getDownStation()) {
-            sections.add(0, section);
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean addSectionToDownStation(Section section) {
-        Section lastSection = sections.get(sections.size() - 1);
-
-        if (lastSection.getDownStation() == section.getUpStation()) {
-            sections.add(section);
-            return true;
-        }
-
-        return false;
-    }
-
-    private void validateToAddSectionDistance(Section section, Section toAddSection) {
-        if (toAddSection.getDistance() >= section.getDistance()) {
-            throw new RuntimeException();
-        }
-    }
-
-    private void validateToAddSectionStationsAlreadyAdded(Section toAddSection) {
-        if (getStations().containsAll(toAddSection.getStations())) {
-            throw new RuntimeException();
-        }
-    }
-
-    private void validateToAddSectionStationNone(Section toAddSection) {
-        if (!getStations().contains(toAddSection.getUpStation()) &&
-                !getStations().contains(toAddSection.getDownStation())) {
-
-            throw new RuntimeException();
-        }
+    public List<Station> getStations() {
+        return sections.getStations();
     }
 
     public void removeStation(Station station) {
-        validateToRemoveStation(station);
-
-        if (removeStationUpStation(station)) {
-            return;
-        }
-
-        if (removeStationDownStation(station)) {
-            return;
-        }
-
-        if (removeStationInTheMiddle(station)) {
-            return;
-        }
-    }
-
-    private void validateToRemoveStation(Station station) {
-        if (sections.size() <= 1) {
-            throw new RuntimeException();
-        }
-
-        getStations().stream()
-                .filter(it -> it == station)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException());
-    }
-
-    private boolean removeStationUpStation(Station station) {
-        if (getFirstStation() == station) {
-            sections.remove(0);
-            return true;
-        }
-
-        return false;
-    }
-
-    private Station getFirstStation() {
-        List<Station> stations = getStations();
-        return stations.get(0);
-    }
-
-    private boolean removeStationDownStation(Station station) {
-        if (getLastStation() == station) {
-            sections.remove(sections.size() - 1);
-            return true;
-        }
-
-        return false;
-    }
-
-    private Station getLastStation() {
-        List<Station> stations = getStations();
-        return stations.get(stations.size() - 1);
-    }
-
-    private boolean removeStationInTheMiddle(Station station) {
-        Section upSection = sections.stream()
-                .filter(it -> it.getDownStation() == station)
-                .findFirst()
-                .orElse(null);
-
-        Section downSection = sections.stream()
-                .filter(it -> it.getUpStation() == station)
-                .findFirst()
-                .orElse(null);
-
-        if (upSection == null && downSection == null) {
-            return false;
-        }
-
-        int position = sections.indexOf(upSection);
-        Section mergedSection = new Section(
-                this,
-                upSection.getUpStation(),
-                downSection.getDownStation(),
-                upSection.getDistance() + downSection.getDistance()
-        );
-
-        sections.add(position, mergedSection);
-        sections.remove(upSection);
-        sections.remove(downSection);
-
-        return true;
+        sections.remove(station);
     }
 }
