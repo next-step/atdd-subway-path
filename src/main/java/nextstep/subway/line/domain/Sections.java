@@ -31,11 +31,18 @@ public class Sections {
             sections.add(section);
             return;
         }
-        checkAddSection(section);
+
+        if(getFirstStation().equals(section.getDownStation())) {
+            sections.add(0, section);
+        }
 
         if(getLastStation().equals(section.getUpStation())) {
             sections.add(section);
         }
+    }
+
+    private Station getFirstStation() {
+        return getStations().get(0);
     }
 
     private boolean isLastSection(Section section) {
@@ -77,9 +84,6 @@ public class Sections {
                 .filter(it -> it.getDownStation().equals(station))
                 .findFirst()
                 .ifPresent(it -> sections.remove(it));
-    }
-
-    private void checkAddSection(Section section) {
     }
 
     private boolean isEmptyStations() {
