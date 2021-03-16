@@ -51,7 +51,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("지하철 노선에 등록된 구간 사이에 하행 역을 추가 등록한다.")
+    @DisplayName("지하철 노선에 등록된 구간 사이에 역을 추가 등록한다.")
     void addBetweenLineSection() {
         // when
         ExtractableResponse<Response> response = 지하철_노선에_구간_등록_요청(신분당선.getId(), 양재역.getId(), 양재시민의숲역.getId(), 4);
@@ -115,10 +115,39 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선에_구간_등록_실패_됨(response);
     }
-
+    // TODO : 노선 삭제 인수 테스트 작성 -> 상행 삭제
+    //  양재 - 양재시민의숲 - 청계산입구
     @Test
-    @DisplayName("지하철 노선에 등록된 구간을 제거한다.")
-    void removeLineSection() {
+    @DisplayName("지하철 노선에 등록된 상행 종점역을 제거한다.")
+    void removeUpStationLineSection() {
+        // given
+        지하철_노선에_구간_등록_요청(신분당선.getId(), 양재역.getId(), 양재시민의숲역.getId(), 4);
+
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_노선에_등록된_구간_제거_요청(신분당선.getId(), 양재역.getId());
+
+        // then
+        지하철_노선에_등록된_구간_제거_됨(deleteResponse);
+    }
+    // TODO : 노선 삭제 인수 테스트 작성 -> 중간 역 삭제
+    //  양재 - 청계산입구 - 판교
+    @Test
+    @DisplayName("지하철 노선에 등록된 중간 노선 역을 제거한다.")
+    void removeMiddleStationLineSection() {
+        // given
+        지하철_노선에_구간_등록_요청(신분당선.getId(), 청계산입구역.getId(), 판교역.getId(), 10);
+
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_노선에_등록된_구간_제거_요청(신분당선.getId(), 청계산입구역.getId());
+
+        // then
+        지하철_노선에_등록된_구간_제거_됨(deleteResponse);
+    }
+    // TODO : 노선 삭제 인수 테스트 작성 -> 하행 삭제
+    //  양재 - 청계산입구 - 판교
+    @Test
+    @DisplayName("지하철 노선에 등록된 하행 종점역을 제거한다.")
+    void removeDownStationLineSection() {
         // given
         지하철_노선에_구간_등록_요청(신분당선.getId(), 청계산입구역.getId(), 판교역.getId(), 10).as(LineResponse.class);
 
@@ -127,19 +156,6 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선에_등록된_구간_제거_됨(deleteResponse);
-    }
-
-    @Test
-    @DisplayName("지하철 노선에 등록된 하행 종점역이 아닌 역을 제거할 수 없다.")
-    void removeLineSectionNotLastDownStation() {
-        // given
-        지하철_노선에_구간_등록_요청(신분당선.getId(), 청계산입구역.getId(), 판교역.getId(), 7).as(LineResponse.class);
-
-        // when
-        ExtractableResponse<Response> deleteResponse = 지하철_노선에_등록된_구간_제거_요청(신분당선.getId(), 청계산입구역.getId());
-
-        // then
-        지하철_노선에_등록된_구간_제거_실패_됨(deleteResponse);
     }
 
     @Test
