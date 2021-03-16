@@ -46,7 +46,7 @@ public class LineTest {
     }
 
     @Test
-    @DisplayName("노선에 새로운 상행역 추가. 교대 - 강남 - 역삼")
+    @DisplayName("노선에 신규 상행역 구간 추가. 교대 - 강남 - 역삼")
     void addSectionInUp() {
         // when
         line2.addSection(savedStationGyoDae, savedStationGangnam, 5);
@@ -56,7 +56,7 @@ public class LineTest {
     }
 
     @Test
-    @DisplayName("노선 중간에 신규 노선 추가. 강남 - 역삼 - 선릉 - 삼성")
+    @DisplayName("노선 중간에 신규 구간 추가. 강남 - 역삼 - 선릉 - 삼성")
     void addSectionInMiddle() {
         // given
         line2.addSection(savedStationYeoksam, savedStationSamseong, 6);
@@ -69,7 +69,7 @@ public class LineTest {
     }
 
     @Test
-    @DisplayName("노선의 하행역에 신규 노선 추가. 강남 - 역삼 - 삼성")
+    @DisplayName("노선의 하행역에 신규 구간 추가. 강남 - 역삼 - 삼성")
     void addSectionInDown() {
         // when
         line2.addSection(savedStationYeoksam, savedStationSamseong, 6);
