@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.station.domain.Station;
+import org.springframework.data.annotation.ReadOnlyProperty;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -21,8 +22,8 @@ public class Sections {
         sections.add(section);
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public int  getSectionSize() {
+        return sections.size();
     }
 
     public void remove(Section section){
