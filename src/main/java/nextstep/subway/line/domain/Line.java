@@ -315,9 +315,9 @@ public class Line extends BaseEntity {
                 upSection.getDistance() + downSection.getDistance()
         );
 
+        sections.add(position, mergedSection);
         sections.remove(upSection);
         sections.remove(downSection);
-        sections.add(position, mergedSection);
 
         return true;
     }
