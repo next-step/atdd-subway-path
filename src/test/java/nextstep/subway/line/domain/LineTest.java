@@ -1,13 +1,18 @@
 package nextstep.subway.line.domain;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.exception.InValidSectionSizeException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
+import static nextstep.subway.line.acceptance.LineSteps.지하철_노선_조회_요청;
+import static nextstep.subway.line.acceptance.LineSteps.지하철_노선에_지하철역_등록_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -64,6 +69,21 @@ public class LineTest {
         assertThat(이호선.getSections().size()).isEqualTo(2);
         assertThat(이호선.getStations()).containsExactly(삼성역, 강남역, 역삼역);
     }
+
+    @DisplayName("역 사이에 새로운 역을 등록한다.")
+    @Test
+    void addLineSectionBetween() {
+        // given
+        이호선.addSection(강남역, 역삼역, 10);
+
+        // when
+        이호선.addSection(강남역, 삼성역, 6);
+
+        // then
+        assertThat(이호선.getSections().size()).isEqualTo(2);
+        assertThat(이호선.getStations()).containsExactly(강남역, 삼성역, 역삼역);
+    }
+
 
     @Test
     void removeSection() {
