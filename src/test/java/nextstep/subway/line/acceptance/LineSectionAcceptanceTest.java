@@ -56,9 +56,10 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역_추가시_중간에_끼워넣기")
     @Test
     void 지하철역_추가시_중간에_끼워넣기(){
+        //when
         지하철_노선에_지하철역_등록_요청(신분당선, 광교역4, 양재역2, 3);
-
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        //then
         지하철_노선에_지하철역_등록됨(response);
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역1, 광교역4, 양재역2));
     }
@@ -101,10 +102,12 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     public static void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
+        //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     public static void 지하철_노선에_지하철역_등록_실패됨(ExtractableResponse<Response> response) {
+        //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
