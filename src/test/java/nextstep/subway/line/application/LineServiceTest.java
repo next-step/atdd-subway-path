@@ -8,7 +8,6 @@ import nextstep.subway.line.exception.CannotRemoveSectionException;
 import nextstep.subway.line.exception.LineAlreadyExistException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
-import nextstep.subway.station.exception.CannotRemoveStationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,16 +32,20 @@ public class LineServiceTest {
     @Autowired
     private LineService lineService;
 
+    private Station savedStationGyoDae;
     private Station savedStationGangnam;
     private Station savedStationYeoksam;
+    private Station savedStationSeolleung;
     private Station savedStationSamseong;
 
     private LineRequest line2Request;
 
     @BeforeEach
     void setUp() {
+        savedStationGyoDae = stationRepository.save(new Station("교대역"));
         savedStationGangnam = stationRepository.save(new Station("강남역"));
         savedStationYeoksam = stationRepository.save(new Station("역삼역"));
+        savedStationSeolleung = stationRepository.save(new Station("선릉역"));
         savedStationSamseong = stationRepository.save(new Station("삼성역"));
 
         line2Request = new LineRequest("2호선", "bg-green-600", savedStationGangnam.getId(), savedStationYeoksam.getId(), 10);
@@ -117,8 +120,37 @@ public class LineServiceTest {
     }
 
     @Test
-    @DisplayName("노선에 구간 추가")
-    void addSection() {
+    @DisplayName("노선에 신규 상행역 구간 추가")
+    void addSectionInUp() {
+        // given
+        LineResponse savedLineResponse = lineService.saveLine(line2Request);
+
+        // when
+        lineService.addSectionToLine(savedLineResponse.getId(), createSectionRequest(savedStationGyoDae, savedStationGangnam, 5));
+
+        // then
+        Line line = lineService.findLineById(savedLineResponse.getId());
+        assertThat(line.getStations()).containsExactlyElementsOf(Arrays.asList(savedStationGyoDae, savedStationGangnam, savedStationYeoksam));
+    }
+
+    @Test
+    @DisplayName("노선 중간에 신규 구간 추가")
+    void addSectionInMiddle() {
+        // given
+        LineResponse savedLineResponse = lineService.saveLine(line2Request);
+        lineService.addSectionToLine(savedLineResponse.getId(), createSectionRequest(savedStationYeoksam, savedStationSamseong, 6));
+
+        // when
+        lineService.addSectionToLine(savedLineResponse.getId(), createSectionRequest(savedStationYeoksam, savedStationSeolleung, 3));
+
+        // then
+        Line line = lineService.findLineById(savedLineResponse.getId());
+        assertThat(line.getStations()).containsExactlyElementsOf(Arrays.asList(savedStationGangnam, savedStationYeoksam, savedStationSeolleung, savedStationSamseong));
+    }
+
+    @Test
+    @DisplayName("노선의 하행역에 신규 구간 추가")
+    void addSectionInDown() {
         // given
         LineResponse savedLineResponse = lineService.saveLine(line2Request);
 
@@ -131,8 +163,39 @@ public class LineServiceTest {
     }
 
     @Test
-    @DisplayName("노선에 구간 삭제")
-    void deleteSection() {
+    @DisplayName("노선에 있는 상행 종점역 구간 제거")
+    void removeUpStationSection() {
+        // given
+        LineResponse savedLineResponse = lineService.saveLine(line2Request);
+        savedLineResponse = lineService.addSectionToLine(savedLineResponse.getId(), createSectionRequest(savedStationYeoksam, savedStationSamseong, 6));
+
+        // when
+        lineService.deleteSectionToLine(savedLineResponse.getId(), savedStationGangnam.getId());
+
+        // then
+        Line resultLine = lineService.findLineById(savedLineResponse.getId());
+        assertThat(resultLine.getSections()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("노선에 있는 중간 구간 제거")
+    void removeMiddleSection() {
+        // given
+        LineResponse savedLineResponse = lineService.saveLine(line2Request);
+        savedLineResponse = lineService.addSectionToLine(savedLineResponse.getId(), createSectionRequest(savedStationYeoksam, savedStationSamseong, 6));
+        savedLineResponse = lineService.addSectionToLine(savedLineResponse.getId(), createSectionRequest(savedStationYeoksam, savedStationSeolleung, 3));
+
+        // when
+        lineService.deleteSectionToLine(savedLineResponse.getId(), savedStationYeoksam.getId());
+
+        // then
+        Line resultLine = lineService.findLineById(savedLineResponse.getId());
+        assertThat(resultLine.getSections()).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("노선에 있는 하행 종점역 구간 제거")
+    void removeDownStationSection() {
         // given
         LineResponse savedLineResponse = lineService.saveLine(line2Request);
 
@@ -144,20 +207,6 @@ public class LineServiceTest {
         // then
         Line resultLine = lineService.findLineById(savedLineResponse.getId());
         assertThat(resultLine.getSections()).hasSize(1);
-    }
-
-    @Test
-    @DisplayName("노선에 구간 삭제 시 하행 종점역이 아니면 에러 발생")
-    void validateDownStationToDeleteSection() {
-        // given
-        LineResponse savedLineResponse = lineService.saveLine(line2Request);
-        lineService.addSectionToLine(savedLineResponse.getId(), createSectionRequest(savedStationYeoksam, savedStationSamseong, 6));
-
-        // when & then
-        assertThatExceptionOfType(CannotRemoveStationException.class)
-                .isThrownBy(() -> {
-                    lineService.deleteSectionToLine(savedLineResponse.getId(), savedStationYeoksam.getId());
-                });
     }
 
     @Test

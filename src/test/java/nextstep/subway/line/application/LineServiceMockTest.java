@@ -38,8 +38,10 @@ public class LineServiceMockTest {
 
     private LineService lineService;
 
+    private Station savedStationGyoDae;
     private Station savedStationGangnam;
     private Station savedStationYeoksam;
+    private Station savedStationSeolleung;
     private Station savedStationSamseong;
     private Station savedStationYangJae;
 
@@ -51,8 +53,10 @@ public class LineServiceMockTest {
     void setUp() {
         lineService = new LineService(lineRepository, stationService);
 
+        savedStationGyoDae = createMockStation("교대역", 5L);
         savedStationGangnam = createMockStation("강남역", 1L);
         savedStationYeoksam = createMockStation("역삼역", 2L);
+        savedStationSeolleung = createMockStation("선릉역", 6L);
         savedStationSamseong = createMockStation("삼성역", 3L);
         savedStationYangJae = createMockStation("약재역", 4L);
 
@@ -80,7 +84,7 @@ public class LineServiceMockTest {
     @DisplayName("노선 저장 시 존재하는 이름이 있으면 에러 발생")
     void validateNameToSaveLine() {
         // given
-        given(lineRepository.existsByName("2호선")).willThrow(LineAlreadyExistException.class);
+        given(lineRepository.existsByName("2호선")).willReturn(true);
 
         // when & then
         assertThatExceptionOfType(LineAlreadyExistException.class)
@@ -140,8 +144,45 @@ public class LineServiceMockTest {
     }
 
     @Test
-    @DisplayName("노선에 구간 추가")
-    void addSection() {
+    @DisplayName("노선에 신규 상행역 구간 추가")
+    void addSectionInUp() {
+        // given
+        createMockAddSectionToLine();
+        lineService.addSectionToLine(line2.getId(), createSectionRequest(savedStationGangnam, savedStationYeoksam, 10));
+
+        given(stationService.findStationById(5L)).willReturn(savedStationGyoDae);
+
+        // when
+        lineService.addSectionToLine(line2.getId(), createSectionRequest(savedStationGyoDae, savedStationGangnam, 5));
+
+        // then
+        Line line = lineService.findLineById(line2.getId());
+        assertThat(line.getStations()).containsExactlyElementsOf(Arrays.asList(savedStationGyoDae, savedStationGangnam, savedStationYeoksam));
+    }
+
+    @Test
+    @DisplayName("노선 중간에 신규 구간 추가")
+    void addSectionInMiddle() {
+        // given
+        createMockAddSectionToLine();
+        lineService.addSectionToLine(line2.getId(), createSectionRequest(savedStationGangnam, savedStationYeoksam, 10));
+
+        given(stationService.findStationById(3L)).willReturn(savedStationSamseong);
+        lineService.addSectionToLine(line2.getId(), createSectionRequest(savedStationYeoksam, savedStationSamseong, 6));
+
+        given(stationService.findStationById(6L)).willReturn(savedStationSeolleung);
+
+        // when
+        lineService.addSectionToLine(line2.getId(), createSectionRequest(savedStationYeoksam, savedStationSeolleung, 3));
+
+        // then
+        Line line = lineService.findLineById(line2.getId());
+        assertThat(line.getStations()).containsExactlyElementsOf(Arrays.asList(savedStationGangnam, savedStationYeoksam, savedStationSeolleung, savedStationSamseong));
+    }
+
+    @Test
+    @DisplayName("노선의 하행역에 신규 구간 추가")
+    void addSectionInDown() {
         // given
         createMockAddSectionToLine();
 
@@ -157,9 +198,46 @@ public class LineServiceMockTest {
         assertThat(line.getStations()).containsExactlyElementsOf(Arrays.asList(savedStationGangnam, savedStationYeoksam, savedStationSamseong));
     }
 
+
     @Test
-    @DisplayName("노선에 구간 삭제")
-    void deleteSection() {
+    @DisplayName("노선에 있는 상행 종점역 구간 제거")
+    void removeUpStationSection() {
+        // given
+        createMockAddSectionToLine();
+        lineService.addSectionToLine(line2.getId(), createSectionRequest(savedStationGangnam, savedStationYeoksam, 10));
+
+        given(stationService.findStationById(3L)).willReturn(savedStationSamseong);
+        lineService.addSectionToLine(line2.getId(), createSectionRequest(savedStationYeoksam, savedStationSamseong, 6));
+
+        // when
+        lineService.deleteSectionToLine(line2.getId(), savedStationGangnam.getId());
+
+        // then
+        assertThat(line2.getSections()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("노선에 있는 중간 구간 제거")
+    void removeMiddleSection() {
+        // given
+        createMockAddSectionToLine();
+        lineService.addSectionToLine(line2.getId(), createSectionRequest(savedStationGangnam, savedStationYeoksam, 10));
+
+        given(stationService.findStationById(3L)).willReturn(savedStationSamseong);
+        lineService.addSectionToLine(line2.getId(), createSectionRequest(savedStationYeoksam, savedStationSamseong, 6));
+
+        given(stationService.findStationById(6L)).willReturn(savedStationSeolleung);
+        lineService.addSectionToLine(line2.getId(), createSectionRequest(savedStationYeoksam, savedStationSeolleung, 3));
+
+        // when
+        lineService.deleteSectionToLine(line2.getId(), savedStationYeoksam.getId());
+
+        // then
+        assertThat(line2.getSections()).hasSize(2);
+    }
+    @Test
+    @DisplayName("노선에 있는 하행 종점역 구간 제거")
+    void removeDownStationSection() {
         // given
         createMockAddSectionToLine();
 
@@ -173,22 +251,6 @@ public class LineServiceMockTest {
 
         // then
         assertThat(line2.getSections()).hasSize(1);
-    }
-
-    @Test
-    @DisplayName("노선에 구간 삭제 시 하행 종점역이 아니면 에러 발생")
-    void validateDownStationToDeleteSection() {
-        // given
-        createMockAddSectionToLine();
-
-        lineService.addSectionToLine(line2.getId(), createSectionRequest(savedStationGangnam, savedStationYeoksam, 10));
-
-        given(stationService.findStationById(3L)).willReturn(savedStationSamseong);
-        lineService.addSectionToLine(line2.getId(), createSectionRequest(savedStationYeoksam, savedStationSamseong, 6));
-
-        // when & then
-        assertThatExceptionOfType(CannotRemoveStationException.class)
-                .isThrownBy(() -> lineService.deleteSectionToLine(line2.getId(), savedStationYeoksam.getId()));
     }
 
     @Test
@@ -219,6 +281,7 @@ public class LineServiceMockTest {
         given(stationService.findStationById(1L)).willReturn(savedStationGangnam);
         given(stationService.findStationById(2L)).willReturn(savedStationYeoksam);
         given(lineRepository.findById(1L)).willReturn(Optional.ofNullable(line2));
+        given(lineRepository.save(any(Line.class))).willReturn(line2);
     }
 
     private static Station createMockStation(String stationName, Long stationId) {

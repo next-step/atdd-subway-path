@@ -2,8 +2,8 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.line.exception.CannotAddSectionException;
 import nextstep.subway.line.exception.CannotRemoveSectionException;
+import nextstep.subway.line.exception.SectionNonExistException;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.exception.CannotRemoveStationException;
 import nextstep.subway.station.exception.StationAlreadyExistException;
 import nextstep.subway.station.exception.StationNonExistException;
 
@@ -16,12 +16,14 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static nextstep.subway.line.exception.LineExceptionMessage.EXCEPTION_MESSAGE_INVALID_SECTION_DISTANCE;
-import static nextstep.subway.line.exception.LineExceptionMessage.EXCEPTION_MESSAGE_NOT_DELETABLE_SECTION;
+import static nextstep.subway.line.exception.LineExceptionMessage.*;
 import static nextstep.subway.station.exception.StationExceptionMessage.*;
 
 @Embeddable
 public class Sections {
+
+    private static final int NUMBER_ONE = 1;
+    private static final int FIRST_INDEX = 0;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Section> sections = new ArrayList<>();
@@ -41,10 +43,10 @@ public class Sections {
         validateAddableSection(existUpStation, existDownStation);
 
         if (existUpStation) {
-            addForwardSection(section);
+            addBackwardSection(section);
         }
         if (existDownStation) {
-            addBackwardSection(section);
+            addForwardSection(section);
         }
     }
 
@@ -66,48 +68,54 @@ public class Sections {
         }
     }
 
-    private void addForwardSection(Section section) {
-        Section findSection = findSectionByUpStation(section.getUpStation())
+    private void addBackwardSection(Section section) {
+        Section existingSection = findSectionByUpStation(section.getUpStation())
                 .orElseGet(() -> null);
 
-        if (Objects.isNull(findSection)) {
+        if (Objects.isNull(existingSection)) {
             sections.add(section);
             return;
         }
 
-        int findSectionDistance = findSection.getDistance();
+        int existingDistance = existingSection.getDistance();
         int newSectionDistance = section.getDistance();
 
-        validateSectionDistance(findSectionDistance, newSectionDistance);
+        validateSectionDistance(existingDistance, newSectionDistance);
 
-        int findSectionIndex = sections.indexOf(findSection);
-        int adjustedDistance = calculateAdjustedDistance(findSectionDistance, newSectionDistance);
+        int existingSectionIndex = sections.indexOf(existingSection);
+        int adjustedDistance = calculateNewDistance(existingDistance, newSectionDistance);
 
-        sections.set(findSectionIndex, section);
-        sections.add(findSectionIndex + 1,
-                new Section(section.getLine(), section.getDownStation(), findSection.getDownStation(), adjustedDistance));
+        Line existingLine = section.getLine();
+        Station existingUpStation = existingSection.getUpStation();
+        Station existingDownStation = existingSection.getDownStation();
+        Station newDownStation = section.getDownStation();
+
+        sections.set(existingSectionIndex, new Section(existingLine, existingUpStation, newDownStation, newSectionDistance));
+        sections.add(existingSectionIndex + NUMBER_ONE, new Section(existingLine, newDownStation, existingDownStation, adjustedDistance));
     }
 
-    private void addBackwardSection(Section section) {
-        Section findSection = findSectionByDownStation(section.getDownStation())
+    private void addForwardSection(Section section) {
+        Section existingSection = findSectionByDownStation(section.getDownStation())
                 .orElseGet(() -> null);
 
-        if (Objects.isNull(findSection)) {
+        if (Objects.isNull(existingSection)) {
             sections.add(section);
             return;
         }
 
-        int findSectionDistance = findSection.getDistance();
+        int existingDistance = existingSection.getDistance();
         int newSectionDistance = section.getDistance();
 
-        validateSectionDistance(findSectionDistance, newSectionDistance);
+        validateSectionDistance(existingDistance, newSectionDistance);
 
-        int findSectionIndex = sections.indexOf(findSection);
-        int adjustedDistance = calculateAdjustedDistance(findSectionDistance, newSectionDistance);
+        int existingSectionIndex = sections.indexOf(existingSection);
+        int adjustedDistance = calculateNewDistance(existingDistance, newSectionDistance);
 
-        sections.set(findSectionIndex, section);
-        sections.add(findSectionIndex,
-                new Section(section.getLine(), findSection.getUpStation(), section.getUpStation(), adjustedDistance));
+        Station existingUpStation = existingSection.getUpStation();
+        Station newUpStation = section.getUpStation();
+
+        sections.set(existingSectionIndex, section);
+        sections.add(existingSectionIndex, new Section(section.getLine(), existingUpStation, newUpStation, adjustedDistance));
     }
 
     private Optional<Section> findSectionBy(Predicate<Section> predicate) {
@@ -130,15 +138,38 @@ public class Sections {
         }
     }
 
-    private int calculateAdjustedDistance(int findSectionDistance, int newSectionDistance) {
+    private int calculateNewDistance(int findSectionDistance, int newSectionDistance) {
         return findSectionDistance - newSectionDistance;
     }
 
-    public void deleteLastDownStation(Long downStationId) {
-        Station lastDownStation = getLastDownStation();
-        validateDeletableStation(downStationId, lastDownStation.getId());
+    public void deleteSection(Station deleteStation) {
+        validateDeletableCurrentSections();
 
-        sections.remove(getLastSection());
+        if (getFirstUpStation().equals(deleteStation)) {
+            sections.remove(getFirstSection());
+            return;
+        }
+        if (getLastDownStation().equals(deleteStation)) {
+            sections.remove(getLastSection());
+            return;
+        }
+
+        deleteMiddleSection(deleteStation);
+    }
+
+    private void validateDeletableCurrentSections() {
+        if (sections.size() == NUMBER_ONE || sections.isEmpty()) {
+            throw new CannotRemoveSectionException(EXCEPTION_MESSAGE_NOT_DELETABLE_SECTION);
+        }
+    }
+
+    private Station getFirstUpStation() {
+        Section section = getFirstSection();
+        return section.getUpStation();
+    }
+
+    private Section getFirstSection() {
+        return sections.get(FIRST_INDEX);
     }
 
     private Station getLastDownStation() {
@@ -147,22 +178,41 @@ public class Sections {
     }
 
     private Section getLastSection() {
-        return sections.get(sections.size() - 1);
+        return sections.get(sections.size() - NUMBER_ONE);
     }
 
-    private void validateDeletableStation(Long downStationId, Long lastDownStationId) {
-        boolean isEqualStation = lastDownStationId.equals(downStationId);
+    private void deleteMiddleSection(Station deleteStation) {
+        Section frontSection = getFrontSection(deleteStation);
+        Section backSection = getBackSection(deleteStation);
 
-        if (!isEqualStation) {
-            throw new CannotRemoveStationException(EXCEPTION_MESSAGE_NOT_DELETABLE_STATION);
-        }
-        if (sections.size() == 1 || sections.isEmpty()) {
-            throw new CannotRemoveSectionException(EXCEPTION_MESSAGE_NOT_DELETABLE_SECTION);
-        }
+        Station newUpStation = frontSection.getUpStation();
+        Station newDownStation = backSection.getDownStation();
+        int newDistance = frontSection.getDistance() + backSection.getDistance();
+
+        Line existingLine = frontSection.getLine();
+        Section newSection = new Section(existingLine, newUpStation, newDownStation, newDistance);
+
+        sections.remove(frontSection);
+        sections.remove(backSection);
+        sections.add(newSection);
+    }
+
+    private Section getFrontSection(Station deleteStation) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(deleteStation))
+                .findFirst()
+                .orElseThrow(() -> new SectionNonExistException(EXCEPTION_MESSAGE_NON_EXIST_BACK_SECTION));
+    }
+
+    private Section getBackSection(Station deleteStation) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(deleteStation))
+                .findFirst()
+                .orElseThrow(() -> new SectionNonExistException(EXCEPTION_MESSAGE_NON_EXIST_FRONT_SECTION));
     }
 
     public List<Section> getSections() {
-        return Collections.unmodifiableList(sections);
+        return sections;
     }
 
     public List<Station> getStations() {
