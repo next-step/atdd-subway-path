@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -11,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -153,12 +151,6 @@ public class Sections {
                 .filter(it -> it.getDownStation().getId() == stationId)
                 .findFirst()
                 .ifPresent(it -> sections.remove(it));
-    }
-
-    public List<StationResponse> toStationResponses() {
-        return getStations().stream()
-                .map(it -> StationResponse.of(it))
-                .collect(Collectors.toList());
     }
 
     public List<Section> getSections() {
