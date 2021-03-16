@@ -41,12 +41,16 @@ public class LineTest {
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
     @Test
     void addSectionToEnd() {
-        // when
+        // given
         이호선.addSection(강남역, 역삼역, 10);
 
+        // when
+        이호선.addSection(역삼역, 삼성역, 10);
+
         // then
-        assertThat(이호선.getSections().size()).isEqualTo(1);
+        assertThat(이호선.getSections().size()).isEqualTo(2);
     }
+
 
     @Test
     void removeSection() {

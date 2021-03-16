@@ -32,7 +32,18 @@ public class Sections {
             return;
         }
         checkAddSection(section);
-        sections.add(section);
+
+        if(getLastStation().equals(section.getUpStation())) {
+            sections.add(section);
+        }
+    }
+
+    private boolean isLastSection(Section section) {
+        return getLastSection().equals(section);
+    }
+
+    private Section getLastSection() {
+        return sections.get(sections.size() - 1);
     }
 
     public List<Station> getStations() {
@@ -69,15 +80,6 @@ public class Sections {
     }
 
     private void checkAddSection(Section section) {
-//        boolean isNotValidUpStation = getLastStation() != section.getUpStation();
-//        if (isNotValidUpStation) {
-//            throw new InValidUpStationException();
-//        }
-
-//        boolean isDownStationExisted = getStations().contains(section.getDownStation());
-//        if (isDownStationExisted) {
-//            throw new AlreadyExistDownStation();
-//        }
     }
 
     private boolean isEmptyStations() {
