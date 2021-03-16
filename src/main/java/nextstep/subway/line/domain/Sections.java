@@ -96,9 +96,9 @@ public class Sections {
         checkSectionRemoveValidity(station);
         List<Section> sectionsToRemove = getSectionToRemove(station);
         if (sectionsToRemove.size() > 1) {
-            getSections().removeAll(sectionsToRemove);
+            sections.removeAll(sectionsToRemove);
             int newDistance = sectionsToRemove.stream().mapToInt(it -> it.getDistance()).sum();
-            getSections().add(new Section(line, sectionsToRemove.get(0).getUpStation(), sectionsToRemove.get(1).getDownStation(), newDistance));
+            sections.add(new Section(line, sectionsToRemove.get(0).getUpStation(), sectionsToRemove.get(1).getDownStation(), newDistance));
             return;
         }
         getSections().stream()
@@ -108,16 +108,16 @@ public class Sections {
     }
 
     private void checkSectionRemoveValidity(Station station) {
-        if (getSections().size() <= 1) {
+        if (sections.size() <= 1) {
             throw new RuntimeException("마지막 남은 구간은 삭제할 수 없습니다.");
         }
-        if (getSections().stream().noneMatch(it -> it.getDownStation().equals(station) || it.getUpStation().equals(station))) {
+        if (sections.stream().noneMatch(it -> it.getDownStation().equals(station) || it.getUpStation().equals(station))) {
             throw new RuntimeException("등록되지 않은 역은 삭제할 수 없습니다.");
         }
     }
 
     private List<Section> getSectionToRemove(Station station) {
-        return getSections().stream()
+        return sections.stream()
                 .filter(it -> it.getUpStation().equals(station) || it.getDownStation().equals(station))
                 .collect(Collectors.toList());
     }

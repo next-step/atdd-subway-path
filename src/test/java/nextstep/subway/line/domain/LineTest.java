@@ -3,7 +3,6 @@ package nextstep.subway.line.domain;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -40,9 +39,7 @@ public class LineTest {
     void addSectionAlreadyIncluded() {
         Line line = new Line("2호선", "green");
         Station upStation = new Station("홍대입구역");
-//        ReflectionTestUtils.setField(upStation, "id", 1L);
         Station downStation = new Station("신촌역");
-//        ReflectionTestUtils.setField(upStation, "id", 2L);
         line.addSection(upStation, downStation, 5);
         assertThatThrownBy(() -> line.addSection(upStation, downStation, 3)).isInstanceOf(RuntimeException.class);
     }
@@ -53,17 +50,11 @@ public class LineTest {
         // given
         Line line = new Line("2호선", "green");
         Station upStation = new Station("홍대입구역");
-        ReflectionTestUtils.setField(upStation, "id", 1L);
-
         Station downStation = new Station("신촌역");
-        ReflectionTestUtils.setField(downStation, "id", 2L);
-
         line.addSection(upStation, downStation, 5);
 
         Station newDownStation = new Station("이대역");
-        ReflectionTestUtils.setField(newDownStation, "id", 3L);
         line.addSection(downStation, newDownStation, 3);
-
         assertThat(line.getSections().size()).isEqualTo(2);
 
         // when
@@ -79,15 +70,12 @@ public class LineTest {
         // given
         Line line = new Line("2호선", "green");
         Station upStation = new Station("홍대입구역");
-        ReflectionTestUtils.setField(upStation, "id", 1L);
 
         Station downStation = new Station("신촌역");
-        ReflectionTestUtils.setField(downStation, "id", 2L);
 
         line.addSection(upStation, downStation, 5);
 
         Station newDownStation = new Station("이대역");
-        ReflectionTestUtils.setField(newDownStation, "id", 3L);
         line.addSection(downStation, newDownStation, 3);
         assertThat(line.getSections().size()).isEqualTo(2);
 
