@@ -115,8 +115,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선에_구간_등록_실패_됨(response);
     }
-    // TODO : 노선 삭제 인수 테스트 작성 -> 상행 삭제
-    //  양재 - 양재시민의숲 - 청계산입구
+
     @Test
     @DisplayName("지하철 노선에 등록된 상행 종점역을 제거한다.")
     void removeUpStationLineSection() {
@@ -129,8 +128,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선에_등록된_구간_제거_됨(deleteResponse);
     }
-    // TODO : 노선 삭제 인수 테스트 작성 -> 중간 역 삭제
-    //  양재 - 청계산입구 - 판교
+
     @Test
     @DisplayName("지하철 노선에 등록된 중간 노선 역을 제거한다.")
     void removeMiddleStationLineSection() {
@@ -143,8 +141,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선에_등록된_구간_제거_됨(deleteResponse);
     }
-    // TODO : 노선 삭제 인수 테스트 작성 -> 하행 삭제
-    //  양재 - 청계산입구 - 판교
+
     @Test
     @DisplayName("지하철 노선에 등록된 하행 종점역을 제거한다.")
     void removeDownStationLineSection() {
