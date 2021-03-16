@@ -63,7 +63,7 @@ public class LineService {
         Line line = findLineById(lineId);
         Station deleteStation = stationService.findStationById(stationId);
 
-        line.deleteLastDownStation(deleteStation);
+        line.deleteSection(deleteStation);
     }
 
     public LineResponse updateLine(Long lineId, LineRequest lineRequest) {
