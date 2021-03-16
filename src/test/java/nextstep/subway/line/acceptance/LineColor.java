@@ -2,7 +2,7 @@ package nextstep.subway.line.acceptance;
 
 public enum LineColor {
 
-  RED("RED"),YELLOW("YELLOW"),GREEN("GREEN");
+  RED("RED"),YELLOW("YELLOW"),GREEN("GREEN"),BLUE("BLUE");
 
   private String color;
 
