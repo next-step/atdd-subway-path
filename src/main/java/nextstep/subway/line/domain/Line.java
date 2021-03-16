@@ -142,7 +142,7 @@ public class Line extends BaseEntity {
 
     private boolean addSectionInTheMiddleToUpStation(Section section) {
         Section upStationMatchedSection = sections.stream()
-                .filter(it -> it.getUpStation().equals(section.getUpStation()))
+                .filter(it -> it.getUpStation() == section.getUpStation())
                 .findFirst()
                 .orElse(null);
 
@@ -169,7 +169,7 @@ public class Line extends BaseEntity {
 
     private boolean addSectionInTheMiddleToDownStation(Section section) {
         Section downStationMatchedSection = sections.stream()
-                .filter(it -> it.getDownStation().equals(section.getDownStation()))
+                .filter(it -> it.getDownStation() == section.getDownStation())
                 .findFirst()
                 .orElse(null);
 
@@ -197,7 +197,7 @@ public class Line extends BaseEntity {
     private boolean addSectionToUpStation(Section section) {
         Section firstSection = sections.get(0);
 
-        if (firstSection.getUpStation().equals(section.getDownStation())) {
+        if (firstSection.getUpStation() == section.getDownStation()) {
             sections.add(0, section);
             return true;
         }
@@ -208,7 +208,7 @@ public class Line extends BaseEntity {
     private boolean addSectionToDownStation(Section section) {
         Section lastSection = sections.get(sections.size() - 1);
 
-        if (lastSection.getDownStation().equals(section.getUpStation())) {
+        if (lastSection.getDownStation() == section.getUpStation()) {
             sections.add(section);
             return true;
         }
@@ -236,36 +236,35 @@ public class Line extends BaseEntity {
         }
     }
 
-    public void removeStationById(Long stationId) {
-        validateToRemoveStation(stationId);
+    public void removeStation(Station station) {
+        validateToRemoveStation(station);
 
-        if (removeStationUpStation(stationId)) {
+        if (removeStationUpStation(station)) {
             return;
         }
 
-        if (removeStationDownStation(stationId)) {
+        if (removeStationDownStation(station)) {
             return;
         }
 
-        if (removeStationInTheMiddle(stationId)) {
+        if (removeStationInTheMiddle(station)) {
             return;
         }
     }
 
-    private void validateToRemoveStation(Long stationId) {
+    private void validateToRemoveStation(Station station) {
         if (sections.size() <= 1) {
             throw new RuntimeException();
         }
 
         getStations().stream()
-                .map(it -> it.getId())
-                .filter(it -> it == stationId)
+                .filter(it -> it == station)
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException());
     }
 
-    private boolean removeStationUpStation(Long stationId) {
-        if (getFirstStation().getId() == stationId) {
+    private boolean removeStationUpStation(Station station) {
+        if (getFirstStation() == station) {
             sections.remove(0);
             return true;
         }
@@ -278,8 +277,8 @@ public class Line extends BaseEntity {
         return stations.get(0);
     }
 
-    private boolean removeStationDownStation(Long stationId) {
-        if (getLastStation().getId() == stationId) {
+    private boolean removeStationDownStation(Station station) {
+        if (getLastStation() == station) {
             sections.remove(sections.size() - 1);
             return true;
         }
@@ -292,14 +291,14 @@ public class Line extends BaseEntity {
         return stations.get(stations.size() - 1);
     }
 
-    private boolean removeStationInTheMiddle(Long stationId) {
+    private boolean removeStationInTheMiddle(Station station) {
         Section upSection = sections.stream()
-                .filter(it -> it.getDownStation().getId() == stationId)
+                .filter(it -> it.getDownStation() == station)
                 .findFirst()
                 .orElse(null);
 
         Section downSection = sections.stream()
-                .filter(it -> it.getUpStation().getId() == stationId)
+                .filter(it -> it.getUpStation() == station)
                 .findFirst()
                 .orElse(null);
 

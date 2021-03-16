@@ -4,7 +4,6 @@ import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,12 +28,6 @@ public class LineTest {
         역_C = new Station("역_C");
         역_D = new Station("역_D");
         역_E = new Station("역_E");
-
-        ReflectionTestUtils.setField(역_A, "id", 1L);
-        ReflectionTestUtils.setField(역_B, "id", 2L);
-        ReflectionTestUtils.setField(역_C, "id", 3L);
-        ReflectionTestUtils.setField(역_D, "id", 4L);
-        ReflectionTestUtils.setField(역_E, "id", 5L);
     }
 
     @Test
@@ -250,7 +243,7 @@ public class LineTest {
         노선.addSection(new Section(노선, 역_B, 역_C, 10));
 
         // when (중간역을 삭제한다)
-        노선.removeStationById(역_B.getId());
+        노선.removeStation(역_B);
 
         // then (구간 개수를 확인한다)
         assertThat(노선.getStations()).hasSize(2);
@@ -265,7 +258,7 @@ public class LineTest {
         노선.addSection(new Section(노선, 역_A, 역_B, 5));
 
         // when (중간역을 삭제한다)
-        노선.removeStationById(역_B.getId());
+        노선.removeStation(역_B);
 
         // then (구간 개수를 확인한다)
         assertThat(노선.getStations()).hasSize(2);
@@ -280,7 +273,7 @@ public class LineTest {
         노선.addSection(new Section(노선, 역_B, 역_C, 10));
 
         // when (중간역을 삭제한다)
-        노선.removeStationById(역_B.getId());
+        노선.removeStation(역_B);
 
         // then (구간 길이를 확인한다)
         assertThat(노선.getSections()).hasSize(1);
@@ -295,7 +288,7 @@ public class LineTest {
         노선.addSection(new Section(노선, 역_B, 역_C, 10));
 
         // when (중간역을 삭제한다)
-        노선.removeStationById(역_A.getId());
+        노선.removeStation(역_A);
 
         // then (구간 개수를 확인한다)
         assertThat(노선.getStations()).hasSize(2);
@@ -310,7 +303,7 @@ public class LineTest {
         노선.addSection(new Section(노선, 역_B, 역_C, 10));
 
         // when (중간역을 삭제한다)
-        노선.removeStationById(역_C.getId());
+        노선.removeStation(역_C);
 
         // then (구간 개수를 확인한다)
         assertThat(노선.getStations()).hasSize(2);
@@ -325,7 +318,7 @@ public class LineTest {
         노선.addSection(new Section(노선, 역_B, 역_C, 10));
 
         // when (없는 역 삭제요청) & then (에러 발생)
-        assertThatThrownBy(() -> 노선.removeStationById(역_D.getId())).isInstanceOf(RuntimeException.class);
+        assertThatThrownBy(() -> 노선.removeStation(역_D)).isInstanceOf(RuntimeException.class);
     }
 
     @DisplayName("노선에 구간이 1개인 경우 역 삭제 에러")
@@ -335,6 +328,6 @@ public class LineTest {
         노선 = new Line("노선", "YELLOW", 역_A, 역_B, 10);
 
         // when (구간이 1개일때 삭제 요청) & then (에러 발생)
-        assertThatThrownBy(() -> 노선.removeStationById(역_B.getId())).isInstanceOf(RuntimeException.class);
+        assertThatThrownBy(() -> 노선.removeStation(역_B)).isInstanceOf(RuntimeException.class);
     }
 }
