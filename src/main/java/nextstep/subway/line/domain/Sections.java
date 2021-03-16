@@ -13,17 +13,10 @@ import java.util.Optional;
 @Embeddable
 public class Sections {
 
-    @Transient
-    private Line line;
-
     @OneToMany(mappedBy = "line", cascade = {javax.persistence.CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Section> sections = new ArrayList<>();
 
     public Sections(){ }
-
-    public Sections(Line line){
-        this.line = line;
-    }
 
 
     public void add(Section section){
@@ -59,7 +52,7 @@ public class Sections {
         final Section downSection = optionalDownSection.get();
         sections.remove(optionalUpSection.get());
         sections.remove(optionalDownSection.get());
-        sections.add(new Section(this.line, downSection.getUpStation(), upSection.getDownStation(), downSection.getDistance() + upSection.getDistance()));
+        sections.add(new Section(downSection.getLine(), downSection.getUpStation(), upSection.getDownStation(), downSection.getDistance() + upSection.getDistance()));
     }
 
     public Optional<Section> findSectionByUpStation(Station station){
