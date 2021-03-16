@@ -86,7 +86,7 @@ public class LineTest {
     }
 
     @Test
-    @DisplayName("노선에 있는 상행 종점역 구간 삭제")
+    @DisplayName("노선에 있는 상행 종점역 구간 제거")
     void removeUpStationSection() {
         // given
         line2.addSection(savedStationYeoksam, savedStationSamseong, 6);
@@ -100,7 +100,7 @@ public class LineTest {
     }
 
     @Test
-    @DisplayName("노선에 있는 중간 구간 삭제")
+    @DisplayName("노선에 있는 중간 구간 제거")
     void removeMiddleSection() {
         // given
         line2.addSection(savedStationYeoksam, savedStationSamseong, 6);
@@ -112,10 +112,11 @@ public class LineTest {
         // then
         assertThat(line2.getSections()).hasSize(2);
         assertThat(line2.getStations()).containsExactlyElementsOf(Arrays.asList(savedStationGangnam, savedStationSeolleung, savedStationSamseong));
+        assertThat(line2.findSection(savedStationGangnam, savedStationSeolleung).getDistance()).isEqualTo(13);
     }
 
     @Test
-    @DisplayName("노선에 있는 하행 종점역 구간 삭제")
+    @DisplayName("노선에 있는 하행 종점역 구간 제거")
     void removeDownStationSection() {
         // given
         line2.addSection(savedStationYeoksam, savedStationSamseong, 6);

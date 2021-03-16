@@ -1,10 +1,13 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.exception.SectionNonExistException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.*;
+
+import static nextstep.subway.line.exception.LineExceptionMessage.EXCEPTION_MESSAGE_NOT_FOUND_SECTION;
 
 @Entity
 public class Line extends BaseEntity {
@@ -47,6 +50,13 @@ public class Line extends BaseEntity {
 
     public void deleteSection(Station deleteStation) {
         sections.deleteSection(deleteStation);
+    }
+
+    public Section findSection(Station upStation, Station downStation) {
+        return sections.getSections().stream()
+                .filter(section -> section.getUpStation().equals(upStation) && section.getDownStation().equals(downStation))
+                .findFirst()
+                .orElseThrow(() -> new SectionNonExistException(EXCEPTION_MESSAGE_NOT_FOUND_SECTION));
     }
 
     public List<Section> getSections() {
