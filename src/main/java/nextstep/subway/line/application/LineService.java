@@ -66,6 +66,11 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<Line> findAll() {
+        return lineRepository.findAll();
+    }
+
     public void updateLineById(LineRequest lineRequest, Long lineId) {
         Line persistLine = findLine(lineId);
 
