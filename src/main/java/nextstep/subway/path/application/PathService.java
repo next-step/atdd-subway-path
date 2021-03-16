@@ -2,23 +2,14 @@ package nextstep.subway.path.application;
 
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.application.SectionService;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.Section;
-import nextstep.subway.line.exception.DoseNotExistStationOfSectionException;
 import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.path.exception.DoseNotConnectedException;
 import nextstep.subway.path.exception.EqualsStationsException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.jgrapht.GraphPath;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static nextstep.subway.path.domain.PathFinder.getShortedPath;
 
