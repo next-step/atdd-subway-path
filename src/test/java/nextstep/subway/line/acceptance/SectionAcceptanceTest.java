@@ -13,8 +13,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static nextstep.subway.line.acceptance.LineSectionAcceptanceTest.지하철_노선에_지하철역_등록됨;
-import static nextstep.subway.line.acceptance.LineSectionAcceptanceTest.지하철_노선에_지하철역_순서_정렬됨;
+import static nextstep.subway.line.acceptance.LineSectionAcceptanceTest.*;
 import static nextstep.subway.line.acceptance.LineSteps.*;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
 
@@ -28,6 +27,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private StationResponse 시청역;
     private StationResponse 충정로역;
 
+    private static final int DEFAULT_LINE_DISTANCE = 10;
+    private static final int DEFAULT_SECTION_DISTANCE = 4;
+
     @BeforeEach
     public void setUp() {
         super.setUp();
@@ -38,7 +40,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         시청역 = 지하철역_등록되어_있음("시청역").as(StationResponse.class);
         충정로역 = 지하철역_등록되어_있음("충정로역").as(StationResponse.class);
 
-        Map<String, Object> lineRequestParam = createLineParams("이호선", "green", 을지로3가역.getId(), 시청역.getId(), 10);
+        Map<String, Object> lineRequestParam = createLineParams("이호선", "green", 을지로3가역.getId(), 시청역.getId(), DEFAULT_LINE_DISTANCE);
         이호선 = 지하철_노선_등록되어_있음(lineRequestParam).as(LineResponse.class);
     }
 
@@ -72,13 +74,82 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionWithDownStationAsUpStation() {
         //when
-        //지하철 구간 등록
         지하철_노선에_지하철역_등록_요청(이호선, 시청역, 충정로역, 2);
 
         //then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(이호선);
         지하철_노선에_지하철역_등록됨(response);
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(을지로3가역, 을지로입구역, 시청역));
+    }
+
+    @DisplayName("구간 사이에 새로울 역을 등록하는데 기존 구간 길이와 같으면 등록 불가.")
+    @Test
+    void addSectionWithSameDistance(){
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(이호선, 을지로입구역, 시청역, DEFAULT_LINE_DISTANCE);
+
+        //then
+        지하철_노선에_지하철역_등록_실패됨(response);
+    }
+
+    @DisplayName("구간 사이에 새로울 역을 등록하는데 기존 구간 보다 길면 등록 불가.")
+    @Test
+    void addSectionWithLongerDistance(){
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(이호선, 을지로입구역, 시청역, DEFAULT_LINE_DISTANCE+2);
+
+        //then
+        지하철_노선에_지하철역_등록_실패됨(response);
+    }
+
+    @DisplayName("구간 사이에 새로울 역을 등록하는데 기존 구간 보다 짧으면 정상 등록.")
+    @Test
+    void addSectionWithShorterDistance(){
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(이호선, 을지로입구역, 시청역, DEFAULT_LINE_DISTANCE-2);
+
+        //then
+        지하철_노선에_지하철역_등록됨(response);
+    }
+
+    @DisplayName("상행역과 하행역이 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void addSectionWithDuplicateBothUpAndDownStations() {
+        //given
+        지하철_노선에_지하철역_등록_요청(이호선, 시청역, 충정로역, DEFAULT_SECTION_DISTANCE);
+
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(이호선, 시청역, 충정로역, 2);
+
+        //then
+        지하철_노선에_지하철역_등록_실패됨(response);
+    }
+
+
+    @DisplayName("상행역과 하행역이 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void addSectionWithDuplicateBothUpAndDownStations2() {
+        //given
+        지하철_노선에_지하철역_등록_요청(이호선, 시청역, 충정로역, DEFAULT_SECTION_DISTANCE);
+
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(이호선, 을지로3가역, 충정로역, 4);
+
+        //then
+        지하철_노선에_지하철역_등록_실패됨(response);
+    }
+
+    @DisplayName("상행역과 하행역이 노선에 모두 등록되어 있지 않으면 추가할 수 없음")
+    @Test
+    void addSectionWithNotRegistedBothUpAndDownStations2() {
+        //given
+        지하철_노선에_지하철역_등록_요청(이호선, 을지로입구역, 시청역, DEFAULT_SECTION_DISTANCE);
+
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(이호선, 을지로4가역, 충정로역, 4);
+
+        //then
+        지하철_노선에_지하철역_등록_실패됨(response);
     }
 
     private Map<String, Object> createLineParams(String lineName, String color, Long upStationId, Long downStationId, int distance) {
