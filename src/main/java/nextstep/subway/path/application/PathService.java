@@ -27,16 +27,20 @@ public class PathService {
     }
 
     public PathResponse findPaths(Long source, Long target) {
-        List<Line> allLine = lineService.findAll();
-        List<Section> sections = allLine.stream()
-                .map(line -> line.getSections().getSections())
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+        List<Section> allSection = findAllSection();
 
         Station sourceStation = stationService.findByStation(source);
         Station targetStation = stationService.findByStation(target);
 
-        PathFinder paths = new PathFinder(sections);
+        PathFinder paths = new PathFinder(allSection);
         return paths.getPath(sourceStation, targetStation);
+    }
+
+    private List<Section> findAllSection() {
+        List<Line> allLine = lineService.findAll();
+         return allLine.stream()
+                .map(line -> line.getSections().getSections())
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 }

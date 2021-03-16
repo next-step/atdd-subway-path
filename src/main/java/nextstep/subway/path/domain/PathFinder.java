@@ -28,7 +28,8 @@ public class PathFinder {
     }
 
     public PathResponse getPath(Station source, Station target) {
-        validate(source, target);
+        validateNotFoundStation(source, target);
+        validateSameStation(source, target);
 
         GraphPath graphPath = dijkstraShortestPath.getPath(source, target);
         if (graphPath == null) {
@@ -44,19 +45,21 @@ public class PathFinder {
         return new PathResponse(paths, distance);
     }
 
-    private void validate(Station source, Station target) {
-        if (!stations.contains(source) || !stations.contains(target)) {
-            throw new RuntimeException("구간정보에 등록된 출발역(도착역)이 없습니다.");
-        }
-
+    private void validateSameStation(Station source, Station target) {
         if (source.equals(target)) {
             throw new RuntimeException("출발역과 도착역이 같습니다.");
         }
     }
 
+    private void validateNotFoundStation(Station source, Station target) {
+        if (!stations.contains(source) || !stations.contains(target)) {
+            throw new RuntimeException("구간정보에 등록된 출발역(도착역)이 없습니다.");
+        }
+    }
+
     private void validateSections(List<Section> sections) {
         if (sections == null || sections.isEmpty()) {
-            throw new RuntimeException(" 구간 정보가 존재하지 않습니다.");
+            throw new RuntimeException("구간 정보가 존재하지 않습니다.");
         }
     }
 
