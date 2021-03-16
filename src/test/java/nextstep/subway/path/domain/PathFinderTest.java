@@ -2,9 +2,12 @@ package nextstep.subway.path.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import nextstep.subway.line.acceptance.LineColor;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -82,18 +85,21 @@ public class PathFinderTest {
     신분당선.addSection(동천역, 미금역, 5);
     신분당선.addSection(미금역, 강남역, 5);
 
-    이호선.addSection(강남역,역삼역,5);
+    이호선.addSection(강남역,역삼역,4);
   }
 
 
   @DisplayName("두 역간의 경로를 탐색한다")
   @Test
   void findPath(){
-    //
-    int totalDistance = 40;
+    //given
+    Sections 신분당선_구간 = 신분당선.getSections();
+    Sections 이호선_구간 =이호선.getSections();
     //when
-    StationPath stationPath = pathFinder.findPath(광교역,역삼역);
+    StationPath stationPath = pathFinder.findPath(Arrays.asList(신분당선_구간,이호선_구간),광교역,역삼역);
     //then
+    int totalDistance = 39;
+    assertThat(stationPath.getStations()).containsExactly(광교역,광교중앙역,상현역,성복역,수지구청역,동천역,미금역,강남역,역삼역);
     assertThat(stationPath.getDistance()).isEqualTo(totalDistance);
   }
 }
