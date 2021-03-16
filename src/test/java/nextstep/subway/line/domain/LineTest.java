@@ -40,9 +40,9 @@ public class LineTest {
     void addSectionAlreadyIncluded() {
         Line line = new Line("2호선", "green");
         Station upStation = new Station("홍대입구역");
-        ReflectionTestUtils.setField(upStation, "id", 1L);
+//        ReflectionTestUtils.setField(upStation, "id", 1L);
         Station downStation = new Station("신촌역");
-        ReflectionTestUtils.setField(upStation, "id", 2L);
+//        ReflectionTestUtils.setField(upStation, "id", 2L);
         line.addSection(upStation, downStation, 5);
         assertThatThrownBy(() -> line.addSection(upStation, downStation, 3)).isInstanceOf(RuntimeException.class);
     }
@@ -67,7 +67,7 @@ public class LineTest {
         assertThat(line.getSections().size()).isEqualTo(2);
 
         // when
-        line.removeSection(newDownStation.getId());
+        line.removeSection(newDownStation);
 
         // then
         assertThat(line.getSections().size()).isEqualTo(1);
@@ -92,7 +92,7 @@ public class LineTest {
         assertThat(line.getSections().size()).isEqualTo(2);
 
         // when
-        line.removeSection(downStation.getId());
+        line.removeSection(downStation);
 
         // then
         assertThat(line.getSections().size()).isEqualTo(1);
@@ -111,6 +111,6 @@ public class LineTest {
         line.addSection(upStation, downStation, 5);
 
         // when, then
-        assertThatThrownBy(() -> line.removeSection(downStation.getId())).isInstanceOf(RuntimeException.class);
+        assertThatThrownBy(() -> line.removeSection(downStation)).isInstanceOf(RuntimeException.class);
     }
 }

@@ -57,7 +57,6 @@ public class Line extends BaseEntity {
 
     public void addSection(Station upStation, Station downStation, int distance) {
         sections.addSection(this, upStation, downStation, distance);
-
     }
 
     public List<Station> getStations() {
@@ -98,34 +97,8 @@ public class Line extends BaseEntity {
         return downStation;
     }
 
-    public void removeSection(Long stationId) {
-        checkSectionRemoveValidity(stationId);
-        List<Section> sectionsToRemove = getSectionToRemove(stationId);
-        if (sectionsToRemove.size() > 1) {
-            getSections().removeAll(sectionsToRemove);
-            int newDistance = sectionsToRemove.stream().mapToInt(it -> it.getDistance()).sum();
-            getSections().add(new Section(this, sectionsToRemove.get(0).getUpStation(), sectionsToRemove.get(1).getDownStation(), newDistance));
-            return;
-        }
-        getSections().stream()
-                .filter(it -> it.getDownStation().getId() == stationId)
-                .findFirst()
-                .ifPresent(it -> getSections().remove(it));
-    }
-
-    private List<Section> getSectionToRemove(Long stationId) {
-        return getSections().stream()
-                .filter(it -> it.getUpStation().getId() == stationId || it.getDownStation().getId() == stationId)
-                .collect(Collectors.toList());
-    }
-
-    private void checkSectionRemoveValidity(Long stationId) {
-        if (getSections().size() <= 1) {
-            throw new RuntimeException("마지막 남은 구간은 삭제할 수 없습니다.");
-        }
-        if (getSections().stream().noneMatch(it -> it.getDownStation().getId() == stationId || it.getUpStation().getId() == stationId)) {
-            throw new RuntimeException("등록되지 않은 역은 삭제할 수 없습니다.");
-        }
+    public void removeSection(Station station) {
+        sections.remove(this, station);
     }
 
     @Override
