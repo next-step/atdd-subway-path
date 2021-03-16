@@ -183,12 +183,6 @@ public class Sections {
         }
     }
 
-    private void removeLastStationValidate(Station station) {
-        if (!findLastStation().equals(station)) {
-            throw new RuntimeException("해당 구간의 마지막 역이 아닙니다.");
-        }
-    }
-
     private Station findLastStation() {
         Section lastSection = this.getSections().get(sections.size() - 1);
         return lastSection.getDownStation();

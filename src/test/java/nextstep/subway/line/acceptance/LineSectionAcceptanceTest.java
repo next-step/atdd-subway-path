@@ -114,6 +114,21 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록_실패됨(response);
     }
 
+    @DisplayName("지하철 노선에 등록된 첫번째 지하철역을 제외한다.")
+    @Test
+    void removeFirstLineSection() {
+        // given
+        노선에_지하철역_등록_요청(line, STATION_2.getId(), STATION_3.getId(), DISTANCE);
+
+        // when
+        ExtractableResponse<Response> removeResponse = 노선에_지하철역_제외_요청(line, STATION_1);
+
+        // then
+        지하철_노선에_지하철역_제외됨(removeResponse);
+        LineResponse response = 노선_조회_요청(removeResponse);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(STATION_2, STATION_3));
+    }
+
     @DisplayName("지하철 노선에 등록된 마지막 지하철역을 제외한다.")
     @Test
     void removeLineSection() {
@@ -154,7 +169,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_제외_실패됨(removeResponse);
     }
 
-    private ExtractableResponse<Response> 노선에_지하철역_등록_요청(LineResponse line, Long upStationId, Long downStationId, int distance) {
+    public static ExtractableResponse<Response> 노선에_지하철역_등록_요청(LineResponse line, Long upStationId, Long downStationId, int distance) {
         SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
         return RestAssured.given().log().all().
