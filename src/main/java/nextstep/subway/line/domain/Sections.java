@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 @Embeddable
 public class Sections {
@@ -38,6 +39,23 @@ public class Sections {
 
         if(getLastStation().equals(section.getUpStation())) {
             sections.add(section);
+        }
+
+        Station upStation = getStations().stream()
+                .filter(station -> station.equals(section.getUpStation())) // 상행선과 일치하는 경우
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("일치하는 상행역이 존재하지 않습니다."));
+
+        int index = IntStream.range(0, sections.size())
+                .filter(i -> sections.get(i).getUpStation().equals(upStation))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("해당 상행역을 가진 구간이 존재하지 않습니다."));
+
+        Section target = sections.get(index);
+        if(target.getDistance() > section.getDistance()) {
+            final int newDistance = target.getDistance() - section.getDistance();
+            target.update(section.getDownStation(), newDistance);
+            sections.add(index, section);
         }
     }
 
