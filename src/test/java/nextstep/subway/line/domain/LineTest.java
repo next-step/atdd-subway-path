@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -132,9 +133,25 @@ public class LineTest {
             .isThrownBy(() -> 분당선.addSection(가천대역, 복정역, 3));
     }
 
-    @DisplayName("노선에서 구간을 삭제한다.")
+    @DisplayName("구간 삭제: 기점 제거")
     @Test
-    void removeSection() {
+    void removeSectionThatFirst() {
+        // given
+        Line 분당선 = new Line("분당선", "yellow", 태평역, 가천대역, 3);
+        분당선.addSection(가천대역, 복정역, 3);
+
+        // when
+        분당선.removeSection(태평역.getId());
+
+        // then
+        assertThat(분당선.getStations()).doesNotContain(태평역);
+        assertThat(분당선.getDistance()).isEqualTo(3);
+
+    }
+
+    @DisplayName("구간 삭제: 종점 제거")
+    @Test
+    void removeSectionThatLast() {
         // given
         Line 분당선 = new Line("분당선", "yellow", 태평역, 가천대역, 3);
         분당선.addSection(가천대역, 복정역, 3);
@@ -144,17 +161,47 @@ public class LineTest {
 
         // then
         assertThat(분당선.getStations()).doesNotContain(복정역);
+        assertThat(분당선.getDistance()).isEqualTo(3);
 
     }
 
-    @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
+    @DisplayName("구간 삭제: 사이역 제거")
     @Test
-    void removeSectionNotEndOfList() {
+    void removeSectionThatMiddle() {
+        // given
+        Line 분당선 = new Line("분당선", "yellow", 태평역, 가천대역, 3);
+        분당선.addSection(가천대역, 복정역, 3);
+
+        // when
+        분당선.removeSection(가천대역.getId());
+
+        // then
+        List<Station> stations = 분당선.getStations();
+        assertThat(분당선.getStations()).doesNotContain(가천대역);
+        assertThat(분당선.getDistance()).isEqualTo(6);
+
+    }
+
+    @DisplayName("구간 삭제 예외: 구간이 하나인 노선에서 역 삭제 시 에러 발생")
+    @Test
+    void removeSectionExceptionThatIsOnlyOne() {
         // given
         Line 분당선 = new Line("분당선", "yellow", 태평역, 가천대역, 3);
 
         // when - then
         assertThatExceptionOfType(HaveOnlyOneSectionException.class)
             .isThrownBy(() -> 분당선.removeSection(가천대역.getId()));
+    }
+
+    @DisplayName("구간 삭제 예외: 노선에 없는 역을 삭제 시 에러 발생")
+    @Test
+    void removeSectionExceptionThatDoesNotExist() {
+        // given
+        Line 분당선 = new Line("분당선", "yellow", 태평역, 가천대역, 3);
+        분당선.addSection(가천대역, 복정역, 3);
+
+        // when - then
+        assertThatExceptionOfType(DoseNotExistStationOfSectionException.class)
+            .isThrownBy(() -> 분당선.removeSection(수서역.getId()));
     }
 }

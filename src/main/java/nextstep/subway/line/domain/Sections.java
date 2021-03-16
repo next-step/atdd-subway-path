@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -31,13 +32,8 @@ public class Sections {
             throw new IsExistedSectionException();
         }
 
-        if (stations.get(stations.size() - 1) == upStation) {
+        if (stations.get(stations.size() - 1) == upStation || stations.get(0) == downStation) {
             add(section);
-            return;
-        }
-
-        if (stations.get(0) == downStation){
-            unshift(section);
             return;
         }
 
@@ -58,30 +54,22 @@ public class Sections {
         sections.add(section);
     }
 
-    private void unshift(Section section) {
-        sections.add(0, section);
-    }
-
     private void addBetweenUpStation(Section frontSection) {
         Section backSection = sections.stream()
                                       .filter(it -> it.getUpStation().equals(frontSection.getUpStation()))
                                       .findFirst()
                                       .orElseThrow(RuntimeException::new);
 
-        int backIndex = sections.indexOf(backSection);
-        int subDistance = backSection.getDistance() - frontSection.getDistance();
+        int distance = backSection.getDistance() - frontSection.getDistance();
+        validateDistance(distance);
 
-        if (subDistance <= 0) {
-            throw new IsMoreThanDistanceException();
-        }
-
-        sections.add(backIndex, frontSection);
+        sections.add(frontSection);
 
         backSection.update(new Section(
             backSection.getLine(),
             frontSection.getDownStation(),
             backSection.getDownStation(),
-            subDistance
+            distance
         ));
     }
 
@@ -91,21 +79,23 @@ public class Sections {
                                   .findFirst()
                                   .orElseThrow(RuntimeException::new);
 
-        int frontIndex = sections.indexOf(frontSection);
-        int subDistance = frontSection.getDistance() - backSection.getDistance();
+        int distance = frontSection.getDistance() - backSection.getDistance();
+        validateDistance(distance);
 
-        if (subDistance <= 0) {
-            throw new IsMoreThanDistanceException();
-        }
-
-        sections.add(frontIndex + 1, backSection);
+        sections.add(backSection);
 
         frontSection.update(new Section(
             frontSection.getLine(),
             frontSection.getUpStation(),
             backSection.getUpStation(),
-            subDistance
+            distance
         ));
+    }
+
+    private void validateDistance(int distance) {
+        if (distance <= 0) {
+            throw new IsMoreThanDistanceException();
+        }
     }
 
     public List<Station> getStations() {
@@ -115,37 +105,34 @@ public class Sections {
 
         List<Station> stations = new ArrayList<>();
         Station downStation = findUpStation();
-        stations.add(downStation);
+        Station nextStation = downStation;
 
-        while (downStation != null) {
-            Station finalDownStation = downStation;
-            Optional<Section> nextLineStation = sections.stream()
-                .filter(it -> it.getUpStation() == finalDownStation)
-                .findFirst();
-            if (!nextLineStation.isPresent()) {
-                break;
-            }
-            downStation = nextLineStation.get().getDownStation();
+        while (nextStation != null) {
+            Station finalDownStation = downStation = nextStation;
             stations.add(downStation);
+
+            nextStation = sections.stream()
+                .filter(it -> it.getUpStation() == finalDownStation)
+                .findFirst()
+                .map(Section::getDownStation)
+                .orElse(null);
         }
 
         return stations;
     }
 
     private Station findUpStation() {
-        Station downStation = sections.get(0).getUpStation();
-        while (downStation != null) {
-            Station finalDownStation = downStation;
-            Optional<Section> nextLineStation = sections.stream()
+        Station upStation = sections.get(0).getUpStation();
+        Station nextStation = upStation;
+        while (nextStation != null) {
+            Station finalDownStation = upStation = nextStation;
+            nextStation = sections.stream()
                 .filter(it -> it.getDownStation() == finalDownStation)
-                .findFirst();
-            if (!nextLineStation.isPresent()) {
-                break;
-            }
-            downStation = nextLineStation.get().getUpStation();
+                .findFirst()
+                .map(Section::getUpStation)
+                .orElse(null);
         }
-
-        return downStation;
+        return upStation;
     }
 
     public void remove(Long stationId) {
@@ -153,16 +140,45 @@ public class Sections {
             throw new HaveOnlyOneSectionException();
         }
 
-        List<Station> stations = getStations();
+        List<Section> willRemoveSections = sections.stream()
+                                                   .filter(it -> (
+                                                       it.getUpStation().getId().equals(stationId) ||
+                                                       it.getDownStation().getId().equals(stationId)
+                                                   ))
+                                                   .collect(Collectors.toList());
 
-        boolean isNotValidUpStation = !stations.get(stations.size() - 1).getId().equals(stationId);
-        if (isNotValidUpStation) {
-            throw new IsNotLastDownStationException();
+        if (willRemoveSections.size() == 0) {
+            throw new DoseNotExistStationOfSectionException("노선에 없는 역은 삭제할 수 없습니다.");
         }
 
-        sections.stream()
-            .filter(it -> it.getDownStation().getId().equals(stationId))
-            .findFirst()
-            .ifPresent(sections::remove);
+        willRemoveSections.forEach(sections::remove);
+
+        if (willRemoveSections.size() == 1) {
+            return;
+        }
+
+        List<Section> sortedSections = willRemoveSections.stream()
+            .sorted((front, back) -> (
+                front.getDownStation().getId().equals(stationId) &&
+                back.getUpStation().getId().equals(stationId)
+            ) ? 1 : 0)
+            .collect(Collectors.toList());
+
+        sections.add(
+            new Section(
+                willRemoveSections.get(0).getLine(),
+                willRemoveSections.get(0).getUpStation(),
+                willRemoveSections.get(1).getDownStation(),
+                sortedSections.stream()
+                    .map(Section::getDistance)
+                    .reduce(0, Math::addExact)
+            )
+        );
+    }
+
+    public int sumDistance() {
+        return sections.stream()
+            .map(Section::getDistance)
+            .reduce(0, Math::addExact);
     }
 }
