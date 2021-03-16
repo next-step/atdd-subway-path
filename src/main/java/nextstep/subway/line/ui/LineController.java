@@ -1,9 +1,9 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.domain.InvalidSectionDistanceException;
-import nextstep.subway.line.domain.InvalidSectionOperationException;
-import nextstep.subway.line.domain.InvalidStationException;
+import nextstep.subway.line.exception.InvalidSectionDistanceException;
+import nextstep.subway.line.exception.InvalidSectionOperationException;
+import nextstep.subway.line.exception.InvalidStationException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;

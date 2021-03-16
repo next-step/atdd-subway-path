@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.exception.InvalidSectionDistanceException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;

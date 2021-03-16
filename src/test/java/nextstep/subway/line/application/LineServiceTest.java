@@ -48,11 +48,7 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        List<Section> sections = line.getSections();
-        final Set<Station> stations = sections.stream()
-                .map(section -> Arrays.asList(section.getDownStation(), section.getUpStation()))
-                .flatMap(Collection::stream)
-                .collect(Collectors.toSet());
+        final Set<Station> stations = line.getStations().stream().collect(Collectors.toSet());
         assertThat(stations).contains(방배역);
     }
 }

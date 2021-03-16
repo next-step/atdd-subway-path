@@ -1,11 +1,9 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.exception.InvalidSectionOperationException;
 import nextstep.subway.station.domain.Station;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,12 +15,14 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {javax.persistence.CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Section> sections = new ArrayList<>();
 
+    public Sections(){ }
+
     public void add(Section section){
         sections.add(section);
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public int  getSectionSize() {
+        return sections.size();
     }
 
     public void remove(Section section){
@@ -34,15 +34,23 @@ public class Sections {
             throw new InvalidSectionOperationException("마지막 섹션은 삭제할 수 없습니다.");
         }
 
-        boolean isNotValidUpStation = getStations().get(getStations().size() - 1) != station;
-        if (isNotValidUpStation) {
-            throw new InvalidSectionOperationException("하행 종점역만 삭제가 가능합니다.");
+        final Optional<Section> optionalUpSection = findSectionByUpStation(station);
+        final Optional<Section> optionalDownSection = findSectionByDownStation(station);
+        if (optionalUpSection.isPresent() && !optionalDownSection.isPresent()) {
+            sections.remove(optionalUpSection.get());
+            return;
         }
 
-        sections.stream()
-                .filter(it -> it.getDownStation() == station)
-                .findFirst()
-                .ifPresent(it -> sections.remove(it));
+        if (!optionalUpSection.isPresent() && optionalDownSection.isPresent()) {
+            sections.remove(optionalDownSection.get());
+            return;
+        }
+
+        final Section upSection = optionalUpSection.get();
+        final Section downSection = optionalDownSection.get();
+        sections.remove(optionalUpSection.get());
+        sections.remove(optionalDownSection.get());
+        sections.add(new Section(downSection.getLine(), downSection.getUpStation(), upSection.getDownStation(), downSection.getDistance() + upSection.getDistance()));
     }
 
     public Optional<Section> findSectionByUpStation(Station station){
