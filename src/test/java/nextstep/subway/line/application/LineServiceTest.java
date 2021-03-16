@@ -57,7 +57,21 @@ public class LineServiceTest {
     }
 
     @Test
-    void removeLateSection() {
+    void removeFirstSection() {
+        // given
+        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
+        lineService.addSection(line, 교대역.getId(), 삼성역.getId(), 10);
+
+        // when
+        lineService.removeSection(line.getId(), 강남역.getId());
+
+        // then
+        // line.getSections 메서드를 통해 검증
+        assertThat(line.getSections().getSections()).hasSize(1);
+    }
+
+    @Test
+    void removeLastSection() {
         // given
         lineService.addSection(line, 교대역.getId(), 삼성역.getId(), 20);
 
