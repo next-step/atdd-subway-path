@@ -54,14 +54,16 @@ public class LineService {
 
         Line line = findLineById(lineId);
         line.addSection(upStation, downStation, sectionRequest.getDistance());
-        return LineResponse.of(line);
+
+        Line savedLine = lineRepository.save(line);
+        return LineResponse.of(savedLine);
     }
 
     public void deleteSectionToLine(Long lineId, Long stationId) {
         Line line = findLineById(lineId);
-        Long deleteStationId = stationService.findStationById(stationId).getId();
+        Station deleteStation = stationService.findStationById(stationId);
 
-        line.deleteLastDownStation(deleteStationId);
+        line.deleteLastDownStation(deleteStation);
     }
 
     public LineResponse updateLine(Long lineId, LineRequest lineRequest) {

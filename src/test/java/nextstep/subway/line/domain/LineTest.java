@@ -77,7 +77,7 @@ public class LineTest {
         line2.addSection(savedStationYeoksam, savedStationSamseong, 6);
 
         // when
-        line2.deleteLastDownStation(savedStationSamseong.getId());
+        line2.deleteLastDownStation(savedStationSamseong);
 
         // then
         assertThat(line2.getSections()).hasSize(1);
@@ -87,6 +87,6 @@ public class LineTest {
     @DisplayName("구간이 하나인 노선에서 역(하행 종점역) 삭제 시 에러 발생")
     void removeSectionNotEndOfList() {
         assertThatExceptionOfType(CannotRemoveSectionException.class)
-                .isThrownBy(() -> line2.deleteLastDownStation(savedStationYeoksam.getId()));
+                .isThrownBy(() -> line2.deleteLastDownStation(savedStationYeoksam));
     }
 }

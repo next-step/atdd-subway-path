@@ -147,20 +147,6 @@ public class LineServiceTest {
     }
 
     @Test
-    @DisplayName("노선에 구간 삭제 시 하행 종점역이 아니면 에러 발생")
-    void validateDownStationToDeleteSection() {
-        // given
-        LineResponse savedLineResponse = lineService.saveLine(line2Request);
-        lineService.addSectionToLine(savedLineResponse.getId(), createSectionRequest(savedStationYeoksam, savedStationSamseong, 6));
-
-        // when & then
-        assertThatExceptionOfType(CannotRemoveStationException.class)
-                .isThrownBy(() -> {
-                    lineService.deleteSectionToLine(savedLineResponse.getId(), savedStationYeoksam.getId());
-                });
-    }
-
-    @Test
     @DisplayName("노선에 구간 삭제 시 구간이 1개만 있을 경우 에러 발생")
     void validateSectionSizeToDeleteSection() {
         // given

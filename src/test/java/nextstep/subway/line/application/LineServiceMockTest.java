@@ -176,22 +176,6 @@ public class LineServiceMockTest {
     }
 
     @Test
-    @DisplayName("노선에 구간 삭제 시 하행 종점역이 아니면 에러 발생")
-    void validateDownStationToDeleteSection() {
-        // given
-        createMockAddSectionToLine();
-
-        lineService.addSectionToLine(line2.getId(), createSectionRequest(savedStationGangnam, savedStationYeoksam, 10));
-
-        given(stationService.findStationById(3L)).willReturn(savedStationSamseong);
-        lineService.addSectionToLine(line2.getId(), createSectionRequest(savedStationYeoksam, savedStationSamseong, 6));
-
-        // when & then
-        assertThatExceptionOfType(CannotRemoveStationException.class)
-                .isThrownBy(() -> lineService.deleteSectionToLine(line2.getId(), savedStationYeoksam.getId()));
-    }
-
-    @Test
     @DisplayName("노선에 구간 삭제 시 구간이 1개만 있을 경우 에러 발생")
     void validateSectionSizeToDeleteSection() {
         // given
@@ -219,6 +203,7 @@ public class LineServiceMockTest {
         given(stationService.findStationById(1L)).willReturn(savedStationGangnam);
         given(stationService.findStationById(2L)).willReturn(savedStationYeoksam);
         given(lineRepository.findById(1L)).willReturn(Optional.ofNullable(line2));
+        given(lineRepository.save(any(Line.class))).willReturn(line2);
     }
 
     private static Station createMockStation(String stationName, Long stationId) {
