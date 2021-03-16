@@ -2,9 +2,9 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.line.exception.HasNoneOrOneSectionException;
 import nextstep.subway.line.exception.InvalidSectionDistanceException;
-import nextstep.subway.line.exception.NotLastStationException;
 import nextstep.subway.line.exception.SectionDuplicatedException;
 import nextstep.subway.line.exception.SectionNotConnectedException;
+import nextstep.subway.line.exception.StationNotRegisteredException;
 import nextstep.subway.station.domain.Station;
 import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
@@ -175,8 +175,25 @@ class LineTest {
     @DisplayName("removeSection 메소드는")
     class Describe_removeSection {
         @Nested
-        @DisplayName("지하철 구간이 2개 이상일 때 마지막 역을 제거한다면")
-        class Context_with_last_station {
+        @DisplayName("지하철 구간이 2개 이상이면서 상행 종점역일 경우")
+        class Context_with_not_only_one_section_and_first_station {
+            @Test
+            @DisplayName("지하철 구간을 제거한다")
+            void it_remove_a_section() {
+                // given
+                이호선.addSection(역삼역, 삼성역, 15);
+
+                // when
+                이호선.removeSection(강남역.getId());
+
+                //then
+                assertThat(이호선.getStations()).containsExactly(Arrays.array(역삼역, 삼성역));
+            }
+        }
+
+        @Nested
+        @DisplayName("지하철 구간이 2개 이상이면서 하행 종점역일 경우")
+        class Context_with_not_only_one_section_and_last_station {
             @Test
             @DisplayName("지하철 구간을 제거한다")
             void it_remove_a_section() {
@@ -192,33 +209,50 @@ class LineTest {
         }
 
         @Nested
-        @DisplayName("지하철 구간이 1개일 때 역을 제거한다면")
+        @DisplayName("지하철 구간이 2개 이상이면서 중간역일 경우")
+        class Context_with_not_only_one_section_and_middle_station {
+            @Test
+            @DisplayName("지하철 구간을 제거한다")
+            void it_remove_a_section() {
+                // given
+                이호선.addSection(역삼역, 삼성역, 15);
+
+                // when
+                이호선.removeSection(역삼역.getId());
+
+                //then
+                assertThat(이호선.getStations()).containsExactly(Arrays.array(강남역, 삼성역));
+            }
+        }
+
+        @Nested
+        @DisplayName("구간에 등록되지 않은 역일 경우")
+        class Context_with_not_registered_station {
+            @Test
+            @DisplayName("예외를 발생시킨다")
+            void it_throw_exception() {
+                // given
+                Long stationId = 사당역.getId();
+                이호선.addSection(역삼역, 삼성역, 15);
+
+                // when, then
+                assertThatThrownBy(() -> 이호선.removeSection(stationId))
+                        .isInstanceOf(StationNotRegisteredException.class);
+            }
+        }
+
+        @Nested
+        @DisplayName("지하철 구간이 1개인 경우")
         class Context_with_only_one_section {
             @Test
             @DisplayName("예외를 발생시킨다")
             void it_throw_exception() {
                 // given
-                Long stationId = 역삼역.getId();
+                Long stationId = 강남역.getId();
 
                 // when, then
                 assertThatThrownBy(() -> 이호선.removeSection(stationId))
                         .isInstanceOf(HasNoneOrOneSectionException.class);
-            }
-        }
-
-        @Nested
-        @DisplayName("하행 종점역이 아닌 역을 제거한다면")
-        class Context_with_not_last_station {
-            @Test
-            @DisplayName("예외를 발생시킨다")
-            void it_throw_exception() {
-                // given
-                이호선.addSection(역삼역, 삼성역, 15);
-                Long stationId = 역삼역.getId();
-
-                // when, then
-                assertThatThrownBy(() -> 이호선.removeSection(stationId))
-                        .isInstanceOf(NotLastStationException.class);
             }
         }
     }

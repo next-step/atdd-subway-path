@@ -60,4 +60,12 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public boolean isUpStationId(Long stationId) {
+        return upStation.getId().equals(stationId);
+    }
+
+    public boolean isDownStationId(Long stationId) {
+        return downStation.getId().equals(stationId);
+    }
 }
