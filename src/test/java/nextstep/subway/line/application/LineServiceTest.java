@@ -48,7 +48,6 @@ public class LineServiceTest {
         savedStationSeolleung = stationRepository.save(new Station("선릉역"));
         savedStationSamseong = stationRepository.save(new Station("삼성역"));
 
-
         line2Request = new LineRequest("2호선", "bg-green-600", savedStationGangnam.getId(), savedStationYeoksam.getId(), 10);
     }
 
@@ -135,7 +134,7 @@ public class LineServiceTest {
     }
 
     @Test
-    @DisplayName("노선 중간에 신규 구간 구간 추가")
+    @DisplayName("노선 중간에 신규 구간 추가")
     void addSectionInMiddle() {
         // given
         LineResponse savedLineResponse = lineService.saveLine(line2Request);
