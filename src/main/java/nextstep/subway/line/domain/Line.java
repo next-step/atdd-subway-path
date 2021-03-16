@@ -17,8 +17,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -52,7 +52,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
@@ -155,9 +155,7 @@ public class Line extends BaseEntity {
         checkSectionRemoveValidity(stationId);
         List<Section> sectionsToRemove = getSectionToRemove(stationId);
         if (sectionsToRemove.size() > 1) {
-            for (Section section : sectionsToRemove) { // stream 을 사용해서...?
-                getSections().remove(section);
-            }
+            getSections().removeAll(sectionsToRemove);
             int newDistance = sectionsToRemove.stream().mapToInt(it -> it.getDistance()).sum();
             getSections().add(new Section(this, sectionsToRemove.get(0).getUpStation(), sectionsToRemove.get(1).getDownStation(), newDistance));
             return;
