@@ -1,5 +1,8 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.exception.AlreadyExistInLineException;
+import nextstep.subway.line.exception.IllegalSectionException;
+import nextstep.subway.line.exception.NotExistInLineException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -10,6 +13,8 @@ import java.util.*;
 
 @Embeddable
 public class Sections {
+    private static final String LONG_SECTION_EXCEPTION = "새로운 구간의 길이가 너무 길어서 등록할 수 없습니다.";
+    private static final String ILLEGAL_DELETE_EXCEPTION = "하행 종점역만 삭제가 가능합니다.";
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Section> sections = new ArrayList<>();
@@ -32,13 +37,13 @@ public class Sections {
 
     private void checkEqualUpAndDownStations(boolean isUpStationExisted, boolean isDownStationExisted) {
         if (isUpStationExisted && isDownStationExisted) {
-            throw new RuntimeException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
+            throw new AlreadyExistInLineException();
         }
     }
 
     private void checkNotIncludedStations(boolean isUpStationExisted, boolean isDownStationExisted) {
         if (!isUpStationExisted && !isDownStationExisted) {
-            throw new RuntimeException("일치하는 상행역 혹은 하행역이 구간에 없습니다.");
+            throw new NotExistInLineException();
         }
     }
 
@@ -66,7 +71,7 @@ public class Sections {
 
     private void checkEqualDistance(Section newSection, Section oldSection) {
         if (oldSection.getDistance() - newSection.getDistance() <= 0) {
-            throw new RuntimeException("새로운 구간의 길이가 너무 길어서 등록할 수 없습니다.");
+            throw new IllegalSectionException(LONG_SECTION_EXCEPTION);
         }
     }
 
@@ -139,7 +144,7 @@ public class Sections {
     private void checkLastStation(Long stationId) {
         boolean isNotValidUpStation = getStations().get(getStations().size() - 1).getId() != stationId;
         if (isNotValidUpStation) {
-            throw new RuntimeException("하행 종점역만 삭제가 가능합니다.");
+            throw new IllegalSectionException(ILLEGAL_DELETE_EXCEPTION);
         }
     }
 
