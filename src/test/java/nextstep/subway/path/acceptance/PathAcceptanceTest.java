@@ -1,4 +1,4 @@
-package nextstep.subway.path;
+package nextstep.subway.path.acceptance;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -82,7 +82,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         //then
         PathResponse pathResponse = 최단경로_요청_응답됨(response);
 
-        최단경로안_지하철역_개수같음(pathResponse, 4);
+        최단경로_지하철역_개수같음(pathResponse, 4);
         최단경로_요청결과_순서_같음(pathResponse, Arrays.asList(삼성역, 강남역, 고속터미널역, 강남구청역));
         최단경로_거리_같음(pathResponse, 20);
     }
@@ -150,7 +150,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(stationIds).containsExactlyElementsOf(expectedStationIds);
     }
 
-    private void 최단경로안_지하철역_개수같음(PathResponse response, int size) {
+    private void 최단경로_지하철역_개수같음(PathResponse response, int size) {
         assertThat(response.getStations()).hasSize(size);
     }
 
