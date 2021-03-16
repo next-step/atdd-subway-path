@@ -23,6 +23,7 @@ import static nextstep.subway.station.exception.StationExceptionMessage.*;
 public class Sections {
 
     private static final int NUMBER_ONE = 1;
+    private static final int FIRST_INDEX = 0;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Section> sections = new ArrayList<>();
@@ -84,12 +85,13 @@ public class Sections {
         int existingSectionIndex = sections.indexOf(existingSection);
         int adjustedDistance = calculateNewDistance(existingDistance, newSectionDistance);
 
+        Line existingLine = section.getLine();
         Station existingUpStation = existingSection.getUpStation();
         Station existingDownStation = existingSection.getDownStation();
         Station newDownStation = section.getDownStation();
 
-        sections.set(existingSectionIndex, new Section(section.getLine(), existingUpStation, newDownStation, newSectionDistance));
-        sections.add(existingSectionIndex + 1, new Section(section.getLine(), newDownStation, existingDownStation, adjustedDistance));
+        sections.set(existingSectionIndex, new Section(existingLine, existingUpStation, newDownStation, newSectionDistance));
+        sections.add(existingSectionIndex + NUMBER_ONE, new Section(existingLine, newDownStation, existingDownStation, adjustedDistance));
     }
 
     private void addForwardSection(Section section) {
@@ -107,13 +109,13 @@ public class Sections {
         validateSectionDistance(existingDistance, newSectionDistance);
 
         int existingSectionIndex = sections.indexOf(existingSection);
-        int newDistance = calculateNewDistance(existingDistance, newSectionDistance);
+        int adjustedDistance = calculateNewDistance(existingDistance, newSectionDistance);
 
         Station existingUpStation = existingSection.getUpStation();
         Station newUpStation = section.getUpStation();
 
         sections.set(existingSectionIndex, section);
-        sections.add(existingSectionIndex, new Section(section.getLine(), existingUpStation, newUpStation, newDistance));
+        sections.add(existingSectionIndex, new Section(section.getLine(), existingUpStation, newUpStation, adjustedDistance));
     }
 
     private Optional<Section> findSectionBy(Predicate<Section> predicate) {
@@ -167,7 +169,7 @@ public class Sections {
     }
 
     private Section getFirstSection() {
-        return sections.get(0);
+        return sections.get(FIRST_INDEX);
     }
 
     private Station getLastDownStation() {
