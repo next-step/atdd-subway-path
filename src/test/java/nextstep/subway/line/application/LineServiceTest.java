@@ -37,6 +37,6 @@ public class LineServiceTest {
         lineService.addSection(line.getId(), new SectionRequest(station2.getId(), station3.getId(), 10));
         // then
         // line.getSections 메서드를 통해 검증
-        assertThat(line.getSections().size()).isEqualTo(2);
+        assertThat(line.getSections().getSectionList().size()).isEqualTo(2);
     }
 }
