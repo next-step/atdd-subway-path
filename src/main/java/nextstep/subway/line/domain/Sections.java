@@ -18,7 +18,7 @@ public class Sections {
 
     public Sections(){ }
 
-    public void add(Section newSection) {
+    public void add(Section newSection){
         if (sections.size() == 0) {
             sections.add(newSection);
             return;
@@ -37,6 +37,10 @@ public class Sections {
             return;
         }
         sections.add(newSection);
+    }
+
+    public void add(Line line, Station upStation, Station downStation, int distance) {
+        this.add(new Section(line, upStation, downStation, distance));
     }
 
     private void addUpfrontSection(Section oldSection, Section newSection) {
