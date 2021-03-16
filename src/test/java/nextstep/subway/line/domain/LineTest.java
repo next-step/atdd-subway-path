@@ -3,10 +3,14 @@ package nextstep.subway.line.domain;
 import nextstep.subway.exception.DistanceMaximumException;
 import nextstep.subway.exception.NoOtherStationException;
 import nextstep.subway.exception.NotFoundException;
+import nextstep.subway.line.application.LineService;
+import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -84,6 +88,19 @@ public class LineTest {
 
         pinkLine.deleteSection(남한산성입구역.getId());
 
+        assertEquals(pinkLine.getAllStations().size(), 2);
+    }
+
+    @DisplayName("등록한 구간의 상행 종점역을 제거한다.")
+    @Test
+    void removeFirstSection() {
+        pinkLine.addSection(석촌역, 남한산성입구역, 4);
+
+        pinkLine.deleteSection(석촌역.getId());
+
+        for(StationResponse stationResponse : pinkLine.getAllStations()) {
+            System.out.println(stationResponse.getName());
+        }
         assertEquals(pinkLine.getAllStations().size(), 2);
     }
 

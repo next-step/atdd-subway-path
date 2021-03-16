@@ -64,6 +64,10 @@ public class Sections {
             sections.add(section);
         }
 
+        if (isExistedUpStationId && !isExistedDownStationId) {
+            sections.remove(getFirstSection());
+        }
+
         if (!isExistedUpStationId && isExistedDownStationId) {
             sections.remove(getFinishSection());
         }
