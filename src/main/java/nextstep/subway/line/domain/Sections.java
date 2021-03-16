@@ -94,8 +94,6 @@ public class Sections {
             selectedSection.changeDistance(changedDistance);
         }
         sections.add(index, section);
-        sections.stream().forEach((sec) -> System.out.println("=======" + sec.getUpStation().getName() + ", " + sec.getDownStation().getName()));
-        getStations().stream().forEach((station -> System.out.println("***********" + station.getName())));
     }
 
     public void addSectionWhenDownStationMatch(Section section) {
@@ -111,20 +109,35 @@ public class Sections {
         sections.add(index, section);
     }
 
-    public void removeSection(Long stationId) {
+    public void removeSection(Station station) {
         if (sections.size() <= 1) {
             throw new RuntimeException();
         }
+        int indexOfStation = getStations().indexOf(station);
+        boolean isStationExistInLine = indexOfStation==-1;
 
-        boolean isNotValidUpStation = getStations().get(getStations().size() - 1).getId() != stationId;
-        if (isNotValidUpStation) {
-            throw new RuntimeException("하행 종점역만 삭제가 가능합니다.");
+        if(isStationExistInLine){
+            throw new NoneOfStationEnrolledException("삭제하려는 역이 노선에 등록되어 있지 않습니다");
         }
 
-        sections.stream()
-                .filter(it -> it.getDownStation().getId() == stationId)
-                .findFirst()
-                .ifPresent(it -> sections.remove(it));
+        System.out.println("stationId = " + station.getId());
+        System.out.println("last stationId" + getStations().get(getStations().size() - 1).getId());
+        getStations().stream().forEach(st -> System.out.println(st.getName()));
+
+        if(indexOfStation==0){
+            sections.remove(0);
+            return;
+        }
+        if(indexOfStation==getStations().size()-1){
+            sections.remove(sections.size()-1);
+            return;
+        }
+        int changedDistance = sections.get(indexOfStation-1).getDistance()
+                + sections.get(indexOfStation).getDistance();
+
+        sections.get(indexOfStation-1).changeDownStation(getStations().get(indexOfStation+1));
+        sections.get(indexOfStation-1).changeDistance(changedDistance);
+        sections.remove(indexOfStation);
     }
 
     public List<Section> getSectionList() {

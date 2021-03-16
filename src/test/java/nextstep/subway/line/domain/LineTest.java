@@ -7,6 +7,7 @@ import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,9 +28,14 @@ public class LineTest {
     void setUp(){
         //given
         강남역1 = new Station("강남역1"); //repository를 써서 꺼내오지 않는 이유? 기능만 보기 위해서?
+        ReflectionTestUtils.setField(강남역1, "id", 1L);
         선릉역2 = new Station("선릉역2");
+        ReflectionTestUtils.setField(선릉역2, "id", 2L);
         역삼역3 = new Station("역삼역3");
+        ReflectionTestUtils.setField(역삼역3, "id", 3L);
         잠실역4 = new Station("잠실역4");
+        ReflectionTestUtils.setField(잠실역4, "id", 4L);
+
         line = new Line("2호선", "green", 강남역1, 선릉역2, 10);
 
     }
@@ -99,8 +105,49 @@ public class LineTest {
                 .isInstanceOf(NoneOfStationEnrolledException.class);
     }
 
+    @DisplayName("중간역 삭제")
     @Test
-    void removeSection() {
+    void removeSectionMiddleStation() {
+        //given
+        line.addSection(선릉역2, 역삼역3, 10);
+        line.addSection(역삼역3, 잠실역4, 20);
+        //when
+        line.getSections().removeSection(역삼역3);
+        //then
+        assertThat(line.getSections().getStations()
+                .stream().map(station -> station.getName())
+                .collect(Collectors.toList()))
+                .containsExactlyElementsOf(Arrays.asList("강남역1", "선릉역2", "잠실역4"));
+    }
+
+    @DisplayName("처음역 삭제")
+    @Test
+    void removeSectionFirstStation() {
+        //given
+        line.addSection(선릉역2, 역삼역3, 10);
+        line.addSection(역삼역3, 잠실역4, 20);
+        //when
+        line.getSections().removeSection(강남역1);
+        //then
+        assertThat(line.getSections().getStations()
+                .stream().map(station -> station.getName())
+                .collect(Collectors.toList()))
+                .containsExactlyElementsOf(Arrays.asList("선릉역2", "역삼역3", "잠실역4"));
+    }
+
+    @DisplayName("마지막역 삭제")
+    @Test
+    void removeSectionLastStation() {
+        //given
+        line.addSection(선릉역2, 역삼역3, 10);
+        line.addSection(역삼역3, 잠실역4, 20);
+        //when
+        line.getSections().removeSection(잠실역4);
+        //then
+        assertThat(line.getSections().getStations()
+                .stream().map(station -> station.getName())
+                .collect(Collectors.toList()))
+                .containsExactlyElementsOf(Arrays.asList("강남역1", "선릉역2", "역삼역3"));
     }
 
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
