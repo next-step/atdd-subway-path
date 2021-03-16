@@ -51,6 +51,19 @@ public class LineTest {
         assertThat(이호선.getSections().size()).isEqualTo(2);
     }
 
+    @DisplayName("새로운 역을 상행 종점으로 등록한다.")
+    @Test
+    void addSectionToFront() {
+        // given
+        이호선.addSection(강남역, 역삼역, 10);
+
+        // when
+        이호선.addSection(삼성역, 강남역, 10);
+
+        // then
+        assertThat(이호선.getSections().size()).isEqualTo(2);
+        assertThat(이호선.getStations()).containsExactly(삼성역, 강남역, 역삼역);
+    }
 
     @Test
     void removeSection() {
