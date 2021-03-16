@@ -2,7 +2,6 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.line.exception.InvalidSectionOperationException;
 import nextstep.subway.station.domain.Station;
-import org.springframework.data.annotation.ReadOnlyProperty;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -17,7 +16,6 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public Sections(){ }
-
 
     public void add(Section section){
         sections.add(section);
@@ -69,7 +67,7 @@ public class Sections {
 
     public List<Station> getStations() {
         if (sections.isEmpty()) {
-            return new ArrayList<>();
+            return Arrays.asList();
         }
 
         List<Station> stations = new ArrayList<>();
