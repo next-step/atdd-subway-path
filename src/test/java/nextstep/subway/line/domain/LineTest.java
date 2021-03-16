@@ -1,9 +1,6 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.exception.BothStationExistsException;
-import nextstep.subway.line.exception.BothStationNotExistsException;
-import nextstep.subway.line.exception.InvalidDistanceException;
-import nextstep.subway.line.exception.OnlyOneSectionRemainingException;
+import nextstep.subway.line.exception.*;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -150,6 +147,16 @@ public class LineTest {
 
         assertThat(신분당선.getStations()).doesNotContain(미금역);
         assertThat(after).isEqualTo(before - 1);
+    }
+
+    @DisplayName("하행 종점역이 아닌 역을 삭제하려는 경우 에러 응답")
+    @Test
+    void removeSection_WhenNotFinalStation() {
+        신분당선.addSection(new Section(신분당선, 정자역, 미금역, 7));
+
+        assertThatThrownBy(() -> {
+            신분당선.removeSection(정자역.getId());
+        }).isExactlyInstanceOf(OnlyFianlCanBeDeletedException.class);
     }
 
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")

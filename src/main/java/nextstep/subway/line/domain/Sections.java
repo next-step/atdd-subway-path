@@ -71,18 +71,33 @@ public class Sections {
         }
     }
 
-    private void addSectionAtDownSide(Section section) {
-        Section oldSection = sections.stream()
-                .filter(s -> s.getDownStation().equals(section.getDownStation()))
+    public void removeSection(Long id) {
+        if(sections.size() <= ONE) {
+            throw new OnlyOneSectionRemainingException();
+        }
+
+        Section targetSection = sections.stream()
+                .filter(section -> section.getDownStation().getId().equals(id))
                 .findAny()
-                .orElseThrow(TargetSectionNotExistsException::new);
-        Station oldDownStation = oldSection.getDownStation();
-        int oldDistance = oldSection.getDistance();
+                .orElseThrow(NoStationToRemoveException::new);
 
-        checkIfDistanceValid(section, oldDistance);
+        if(!targetSection.getDownStation().equals(getLastStation())) {
+            throw new OnlyFianlCanBeDeletedException();
+        }
 
-        oldSection.changeDownStationAndDistance(section.getUpStation(), oldDistance - section.getDistance());
-        sections.add(new Section(section.getLine(), section.getUpStation(), oldDownStation, section.getDistance()));
+        sections.remove(targetSection);
+    }
+
+    private boolean isStationExists(Station station) {
+        return sections.stream().anyMatch(s -> s.getUpStation().equals(station) || s.getDownStation().equals(station));
+    }
+
+    private boolean isNewFirstSection(Section section) {
+        return section.getDownStation().equals(getFirstStation());
+    }
+
+    private boolean isNewLastSection(Section section) {
+        return section.getUpStation().equals(getLastStation());
     }
 
     private void addSectionAtUpperSide(Section section) {
@@ -99,12 +114,18 @@ public class Sections {
         sections.add(new Section(section.getLine(), section.getDownStation(), oldDownStation,oldDistance - section.getDistance()));
     }
 
-    private boolean isNewFirstSection(Section section) {
-        return section.getDownStation().equals(getFirstStation());
-    }
+    private void addSectionAtDownSide(Section section) {
+        Section oldSection = sections.stream()
+                .filter(s -> s.getDownStation().equals(section.getDownStation()))
+                .findAny()
+                .orElseThrow(TargetSectionNotExistsException::new);
+        Station oldDownStation = oldSection.getDownStation();
+        int oldDistance = oldSection.getDistance();
 
-    private boolean isNewLastSection(Section section) {
-        return section.getUpStation().equals(getLastStation());
+        checkIfDistanceValid(section, oldDistance);
+
+        oldSection.changeDownStationAndDistance(section.getUpStation(), oldDistance - section.getDistance());
+        sections.add(new Section(section.getLine(), section.getUpStation(), oldDownStation, section.getDistance()));
     }
 
     private Station getFirstStation() {
@@ -119,22 +140,5 @@ public class Sections {
         if (oldDistance <= section.getDistance()) {
             throw new InvalidDistanceException();
         }
-    }
-
-    private boolean isStationExists(Station station) {
-        return sections.stream().anyMatch(s -> s.getUpStation().equals(station) || s.getDownStation().equals(station));
-    }
-
-    public void removeSection(Long id) {
-        if(sections.size() <= ONE) {
-            throw new OnlyOneSectionRemainingException();
-        }
-
-        Section targetSection = sections.stream()
-                .filter(section -> section.getDownStation().getId().equals(id))
-                .findAny()
-                .orElseThrow(NoStationToRemoveException::new);
-
-        sections.remove(targetSection);
     }
 }
