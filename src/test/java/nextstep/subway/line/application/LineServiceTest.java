@@ -13,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -50,11 +49,10 @@ public class LineServiceTest {
 
         //Then
         Line expected = lineService.findLineById(line.getId());
-        List<Station> stations = lineService.getStations(line);
 
         assertAll(
                 () -> assertThat(expected.getSections()).hasSize(1),
-                () -> assertThat(stations).containsExactlyElementsOf(Arrays.asList(station1, station2))
+                () -> assertThat(expected.getStations()).containsExactlyElementsOf(Arrays.asList(station1, station2))
         );
     }
 
@@ -69,10 +67,9 @@ public class LineServiceTest {
 
         //Then
         Line expected = lineRepository.findById(line.getId()).get();
-
         assertAll(
                 () -> assertThat(expected.getSections()).hasSize(2),
-                () -> assertThat(lineService.getStations(expected)).containsExactlyElementsOf(Arrays.asList(station1, station2, station3))
+                () -> assertThat(expected.getStations()).containsExactlyElementsOf(Arrays.asList(station1, station2, station3))
         );
     }
 }
