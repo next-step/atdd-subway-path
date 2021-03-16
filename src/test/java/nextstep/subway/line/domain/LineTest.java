@@ -48,8 +48,8 @@ public class LineTest {
         신분당선.addSection(양재역, 양재시민의숲, 6);
 
         // then
-        assertThat(신분당선.getSections().size()).isEqualTo(3);
-        assertThat(신분당선.getSections().stream()
+        assertThat(신분당선.getStations().size()).isEqualTo(3);
+        assertThat(신분당선.getStations().stream()
                 .map(s -> s.getId())
                 .collect(Collectors.toList()))
                 .containsExactlyElementsOf(Arrays.asList(강남역.getId(), 양재역.getId(), 양재시민의숲.getId()));
@@ -83,8 +83,8 @@ public class LineTest {
         신분당선.removeSection(양재역.getId());
 
         // then
-        assertThat(신분당선.getSections().size()).isEqualTo(2);
-        assertThat(신분당선.getSections().stream()
+        assertThat(신분당선.getStations().size()).isEqualTo(2);
+        assertThat(신분당선.getStations().stream()
                 .map(s -> s.getId())
                 .collect(Collectors.toList()))
                 .containsExactlyElementsOf(Arrays.asList(강남역.getId(), 양재시민의숲.getId()));

@@ -32,16 +32,17 @@ public class LineServiceTest {
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         Station 강남역 = stationRepository.save(new Station("강남역"));
         Station 양재역 = stationRepository.save(new Station("양재역"));
+        Station 양재시민의숲 = stationRepository.save(new Station("양재시민의숲"));
         Line 신분당선 = lineRepository.save(new Line("신분당선", "bg-red-600", 강남역, 양재역, 10));
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 양재역.getId(), 10));
+        lineService.addSection(신분당선.getId(), new SectionRequest(양재역.getId(), 양재시민의숲.getId(), 10));
 
         // then
         // line.getSections 메서드를 통해 검증
-        assertThat(신분당선.getSections().getUpStation().getName()).isEualTo(강남역.getName());
-        assertThat(신분당선.getSections().getDownStation().getName()).isEualTo(양재역.getName());
+        assertThat(신분당선.getSections().getFirstStation().getName()).isEqualTo(강남역.getName());
+        assertThat(신분당선.getSections().getLastStation().getName()).isEqualTo(양재시민의숲.getName());
 
     }
 }

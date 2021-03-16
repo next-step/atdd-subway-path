@@ -17,8 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,16 +56,16 @@ public class LineServiceMockTest {
     void addSection() {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
-        when(lineRepository.findById(이호선.getId())).thenReturn(java.util.Optional.of(new Line()));
-        when(stationService.findAllStations()).thenReturn(Lists.newArrayList(new StationResponse()));
+        given(stationService.findStationById(2L)).willReturn(역삼역);
+        given(stationService.findStationById(3L)).willReturn(삼성역);
+        given(lineRepository.findById(1L)).willReturn(Optional.ofNullable(이호선));
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 10));
+        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 삼성역.getId(), 10));
 
         // then
-        // line.findLineById 메서드를 통해 검증 // TODO ?
-        assertThat(lineService.findLineById(이호선.getId()).getSections().getUpStation().getName()).isEualTo(강남역.getName());
-        assertThat(lineService.findLineById(이호선.getId()).getSections().getDownStation().getName()).isEualTo(역삼역.getName());
+        // line.findLineById 메서드를 통해 검증
+        assertThat(lineService.findLineById(1L)).isEqualTo(이호선);
     }
 }
