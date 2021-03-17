@@ -29,12 +29,6 @@ public class AcceptanceTest {
         RestAssured.port = port;
         databaseCleanup.execute();
 
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         회원_생성_요청(EMAIL, PASSWORD, NAME);
         로그인_사용자 = 로그인_되어_있음(EMAIL, PASSWORD);
     }

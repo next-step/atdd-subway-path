@@ -3,7 +3,6 @@ package nextstep.subway.auth.ui.interceptor.authentication;
 import nextstep.subway.auth.application.handler.AuthenticationFailureHandler;
 import nextstep.subway.auth.application.handler.AuthenticationSuccessHandler;
 import nextstep.subway.auth.domain.Authentication;
-import nextstep.subway.auth.infrastructure.SecurityContextHolder;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,15 +31,11 @@ public abstract class AbstractAuthenticationInterceptor implements HandlerInterc
     }
 
     private void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
         successHandler.onAuthenticationSuccess(request, response, authentication);
     }
 
     protected void unsuccessfulAuthentication(HttpServletRequest request,
                                               HttpServletResponse response, AuthenticationException failed) throws IOException {
-        SecurityContextHolder.clearContext();
-
         failureHandler.onAuthenticationFailure(request, response, failed);
     }
 

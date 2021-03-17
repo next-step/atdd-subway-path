@@ -59,7 +59,7 @@ task testDocument(type: Test) {
 
 asciidoctor {
 	inputs.dir snippetsDir
-	dependsOn testDocument
+	dependsOn test
 }
 
 bootJar {
