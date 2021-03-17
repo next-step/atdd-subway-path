@@ -145,9 +145,6 @@ public class PathServiceTest {
   @DisplayName("시작역 도착역이 같으면 경로찾기를 실패한다")
   @Test
   void searchPathTestWithException(){
-    //given
-    given(stationService.findStation(광교역.getId())).willReturn(광교역);
-    given(lineService.getLineByStationId(광교역.getId(), 광교역.getId())).willReturn(Arrays.asList(신분당선));
     //when then
     assertThrows(InvalidStationPathException.class,()-> {
       pathService.findPath(광교역.getId(), 광교역.getId());

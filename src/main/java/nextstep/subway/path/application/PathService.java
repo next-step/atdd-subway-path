@@ -2,6 +2,7 @@ package nextstep.subway.path.application;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import nextstep.subway.common.exception.InvalidStationPathException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Sections;
@@ -26,6 +27,9 @@ public class PathService {
   }
 
   public StationPathResponse findPath(Long sourceId, Long targetId) {
+    if(sourceId.equals(targetId)) {
+      throw new InvalidStationPathException("출발역과 도착역은 서로 달라야 합니다.");
+    }
     List<Sections> sections =  lineService.getLineByStationId(sourceId,targetId)
         .stream()
         .map(Line::getSections)
