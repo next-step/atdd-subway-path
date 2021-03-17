@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import nextstep.subway.line.domain.exception.BothStationAlreadyEnrolledException;
 import nextstep.subway.line.domain.exception.InvalidDistanceException;
 import nextstep.subway.line.domain.exception.NoneOfStationEnrolledException;
+import nextstep.subway.line.domain.exception.OnlyOneSectionRemainException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -153,5 +154,8 @@ public class LineTest {
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
     @Test
     void removeSectionNotEndOfList() {
+        //when, then
+        assertThatThrownBy(() -> line.getSections().removeSection(선릉역2))
+                .isInstanceOf(OnlyOneSectionRemainException.class);
     }
 }

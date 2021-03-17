@@ -2,6 +2,7 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.exception.OnlyOneSectionRemainException;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -10,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.NoSuchElementException;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -33,10 +37,15 @@ public class LineServiceTest {
         Line line = lineRepository.save(new Line("2호선", "green", station1, station2, 10));
 
         // when
-        // lineService.addSection 호출
         lineService.addSection(line.getId(), new SectionRequest(station2.getId(), station3.getId(), 10));
         // then
-        // line.getSections 메서드를 통해 검증
         assertThat(line.getSections().getSectionList().size()).isEqualTo(2);
+    }
+
+    @Test
+    void getSection(){
+        //given
+        assertThatThrownBy(() -> lineService.findLineById(2L))
+                .isInstanceOf(NoSuchElementException.class);
     }
 }

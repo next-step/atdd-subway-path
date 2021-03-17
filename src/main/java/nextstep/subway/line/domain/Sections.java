@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import nextstep.subway.line.domain.exception.BothStationAlreadyEnrolledException;
 import nextstep.subway.line.domain.exception.InvalidDistanceException;
 import nextstep.subway.line.domain.exception.NoneOfStationEnrolledException;
+import nextstep.subway.line.domain.exception.OnlyOneSectionRemainException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -111,7 +112,7 @@ public class Sections {
 
     public void removeSection(Station station) {
         if (sections.size() <= 1) {
-            throw new RuntimeException();
+            throw new OnlyOneSectionRemainException("이 노선에 남아있는 구간이 1개라 더 이상 역을 삭제할 수 없습니다");
         }
         int indexOfStation = getStations().indexOf(station);
         boolean isStationExistInLine = indexOfStation==-1;
