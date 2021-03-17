@@ -23,6 +23,15 @@ public class Sections {
 
     }
 
+    private boolean existsByStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> isEqualDownAndUpStation(station, section));
+    }
+
+    private boolean isEqualDownAndUpStation(Station station, Section section) {
+        return Objects.equals(section.getUpStation(), station) || Objects.equals(section.getDownStation(), station);
+    }
+
     public void addSection(Section section) {
         List<StationResponse> stations = getAllStation();
         if (stations.size() == 0) {
@@ -31,8 +40,9 @@ public class Sections {
             return;
         }
 
-        boolean isExistedUpStation = sections.stream().anyMatch(it -> it.getUpStation().equals(section.getUpStation()));
-        boolean isExistedDownStation = sections.stream().anyMatch(it -> it.getDownStation().equals(section.getDownStation()));
+        boolean isExistedUpStation = existsByStation(section.getUpStation());
+        boolean isExistedDownStation = existsByStation(section.getDownStation());
+
         checkExistedStation(isExistedUpStation, isExistedDownStation);
 
         if (isExistedUpStation) {
@@ -131,14 +141,14 @@ public class Sections {
         return sections.stream()
                 .filter(it -> it.getUpStation().equals(upStation))
                 .findFirst()
-                .orElseThrow(RuntimeException::new);
+                .orElse(null);
     }
 
     private Section findDownSection(Station downStation) {
         return sections.stream()
                 .filter(it -> it.getDownStation().equals(downStation))
                 .findFirst()
-                .orElseThrow(RuntimeException::new);
+                .orElse(null);
     }
 
     private void checkSectionDistance(Section section, Section findSection) {
@@ -149,6 +159,12 @@ public class Sections {
 
     private void addBeginStation(Section section) {
         Section findSection = findUpSection(section.getUpStation());
+        if (Objects.isNull(findSection)) {
+            sections.add(section);
+            section.update(section.getLine());
+            return;
+        }
+
         checkSectionDistance(section, findSection);
 
         int index = sections.indexOf(findSection);
@@ -163,6 +179,11 @@ public class Sections {
 
     private void addLastStation(Section section) {
         Section findSection = findDownSection(section.getDownStation());
+        if (Objects.isNull(findSection)) {
+            sections.add(section);
+            section.update(section.getLine());
+            return;
+        }
         checkSectionDistance(section, findSection);
 
         int index = sections.indexOf(findSection);
