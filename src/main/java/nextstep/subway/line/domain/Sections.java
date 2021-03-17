@@ -19,6 +19,10 @@ public class Sections {
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
 
+        if(sections.isEmpty()) {
+            return stations;
+        }
+
         Station firstStation = sections.get(FIRST_INDEX).getUpStation();
         stations.add(firstStation);
 
