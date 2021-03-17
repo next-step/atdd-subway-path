@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.exception.InvalidStationException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -60,6 +59,10 @@ public class Line extends BaseEntity {
 
     public int getSectionSize(){
         return sections.getSectionSize();
+    }
+
+    public List<Section> getSections(){
+        return sections.getSections();
     }
 
     public List<Station> getStations(){

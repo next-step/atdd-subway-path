@@ -74,6 +74,10 @@ public class Sections {
         return sections.size();
     }
 
+    public List<Section>  getSections() {
+        return sections;
+    }
+
     public void remove(Station station){
         if (sections.size() <= 1) {
             throw new InvalidSectionOperationException("마지막 섹션은 삭제할 수 없습니다.");

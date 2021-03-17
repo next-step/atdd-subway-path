@@ -40,6 +40,10 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    public List<Line> findAllLines(){
+        return lineRepository.findAll();
+    }
+
     public Line findLineById(Long id) {
         return lineRepository.findById(id).orElseThrow(()-> new NoSuchLineException("존재하지 않는 노선입니다"));
     }

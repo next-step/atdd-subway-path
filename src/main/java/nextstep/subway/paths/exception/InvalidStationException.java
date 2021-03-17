@@ -1,4 +1,4 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.paths.exception;
 
 public class InvalidStationException extends RuntimeException{
     public InvalidStationException(String msg){

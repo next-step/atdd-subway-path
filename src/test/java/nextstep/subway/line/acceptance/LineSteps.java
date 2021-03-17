@@ -12,6 +12,16 @@ import java.util.Map;
 
 public class LineSteps {
 
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color, StationResponse upStation, StationResponse downStation, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStation.getId() + "");
+        params.put("downStationId", downStation.getId() + "");
+        params.put("distance", distance + "");
+        return 지하철_노선_등록되어_있음(params);
+    }
+
     public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(Map<String, String> params) {
         return 지하철_노선_생성_요청(params);
     }
@@ -83,12 +93,15 @@ public class LineSteps {
                 extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록되어_있음(LineResponse line, StationResponse upStation, StationResponse downStation, int distance) {
+        return 지하철_노선에_지하철역_등록_요청(line, upStation, downStation, distance);
+    }
+
     public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(LineResponse line, StationResponse upStation, StationResponse downStation, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStation.getId() + "");
         params.put("downStationId", downStation.getId() + "");
         params.put("distance", distance + "");
-
         return RestAssured.given().log().all().
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 body(params).
