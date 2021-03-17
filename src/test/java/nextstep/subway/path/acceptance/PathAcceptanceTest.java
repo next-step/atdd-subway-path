@@ -46,8 +46,8 @@ class PathAcceptanceTest extends AcceptanceTest {
         남부터미널역 = 지하철_역_등록_됨("남부터미널역").as(StationResponse.class);
 
         신분당선 = 지하철_노선_생성_요청(노선_요청("신분당선", "bg-red-600", 강남역.getId(), 양재역.getId(), 10)).as(LineResponse.class);
-        이호선 = 지하철_노선_생성_요청(노선_요청("이호선", "bg-green-600", 교대역.getId(), 강남역.getId(), 10)).as(LineResponse.class);
-        삼호선 = 지하철_노선_생성_요청(노선_요청("삼호선", "bg-orange-600", 교대역.getId(), 남부터미널역.getId(), 5)).as(LineResponse.class);
+        이호선 = 지하철_노선_생성_요청(노선_요청("2호선", "bg-green-600", 교대역.getId(), 강남역.getId(), 10)).as(LineResponse.class);
+        삼호선 = 지하철_노선_생성_요청(노선_요청("3호선", "bg-orange-600", 교대역.getId(), 남부터미널역.getId(), 5)).as(LineResponse.class);
 
         지하철_노선에_구간_등록_요청(삼호선.getId(), 남부터미널역.getId(), 양재역.getId(), 3);
     }
@@ -86,7 +86,8 @@ class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("출발역과 도착역이 연결되어 있지 않은 경우 예외 발생")
     void notConnectedSourceAndTarget() {
         // given
-        StationResponse 명동역 = 지하철_역_등록_됨("명동역").as(StationResponse.class);;
+        StationResponse 명동역 = 지하철_역_등록_됨("명동역").as(StationResponse.class);
+
         long source = 강남역.getId();
         long target = 명동역.getId();
 
