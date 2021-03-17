@@ -8,6 +8,8 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
@@ -75,32 +77,43 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("역 사이에 새로운 역을 등록할 수 있다.")
     @Test
     void addLineSectionBetweenStation() {
+        //When
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 정자역, 3);
+
+        //Then
+        ExtractableResponse<Response> expected = 지하철_노선_조회_요청(신분당선);
+        지하철_노선에_지하철역_등록됨(response);
+        지하철_노선에_지하철역_순서_정렬됨(expected, Arrays.asList(강남역, 정자역, 양재역));
     }
 
     @DisplayName("기존 역 사이의 길이보다 크거나 같으면 등록 할 수 없음")
-    @Test
-    void cannotAddWhenDistanceBiggerThanRegistered() {
+    @ParameterizedTest
+    @ValueSource(ints = {10,11})
+    void cannotAddWhenDistanceBiggerThanRegistered(int distance) {
+        //When
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 정자역, distance);
+
+        //Then
+        지하철_노선에_지하철역_등록_실패됨(response);
     }
 
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test
     void cannotAddWhenUpStationAndDownStationBothRegistered(){
+        //When
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 양재역, 3);
+
+        //Then
+        지하철_노선에_지하철역_등록_실패됨(response);
     }
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 추가할 수 없음")
     @Test
     void cannotAddContainsEither(){
-    }
+        //When
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 판교역, 광교역, 3);
 
-    @DisplayName("지하철 노선에 이미 포함된 역을 구간으로 등록한다.")
-    @Test
-    void addLineSectionAlreadyIncluded() {// given
-        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
-
-        // when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
-
-        // then
+        //Then
         지하철_노선에_지하철역_등록_실패됨(response);
     }
 
@@ -134,7 +147,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     public static void 지하철_노선에_지하철역_등록_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     public static void 지하철_노선에_지하철역_순서_정렬됨(ExtractableResponse<Response> response, List<StationResponse> expectedStations) {

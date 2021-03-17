@@ -1,6 +1,7 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.domain.exception.DomainBusinessException;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
@@ -62,6 +63,11 @@ public class LineController {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(DomainBusinessException.class)
+    public ResponseEntity handleDomainBusinessException(DomainBusinessException e) {
         return ResponseEntity.badRequest().build();
     }
 }
