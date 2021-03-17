@@ -3,19 +3,13 @@ package nextstep.subway.path.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 import nextstep.subway.line.acceptance.LineColor;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineRepository;
-import java.util.List;
-import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.path.domain.StationPath;
+import nextstep.subway.path.dto.StationPathResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,15 +47,15 @@ public class PathServiceTest {
   private Line 일호선;
 
   @BeforeEach
-  void init(){
-    pathService = new PathService(lineService,stationService);
+  void init() {
+    pathService = new PathService(lineService, stationService);
     역생성();
     노선생성();
     구간추가();
 
   }
 
-  void 역생성(){
+  void 역생성() {
     광명역 = new Station("광명역");
     ReflectionTestUtils.setField(광명역, "id", 12L);
 
@@ -106,19 +100,18 @@ public class PathServiceTest {
 
   }
 
-  void 노선생성(){
+  void 노선생성() {
     일호선 = new Line("일호선", LineColor.BLUE.toString(), 광명역, 독산역, 5);
-    ReflectionTestUtils.setField(일호선,"id",3L);
-    일호선.addSection(독산역, 금천구청역, 4);
+    ReflectionTestUtils.setField(일호선, "id", 3L);
     이호선 = new Line("신분당선", LineColor.GREEN.toString(), 사당역, 강남역, 5);
-    ReflectionTestUtils.setField(이호선,"id",2L);
+    ReflectionTestUtils.setField(이호선, "id", 2L);
     신분당선 = new Line("신분당선", LineColor.RED.toString(), 광교역, 광교중앙역, 5);
-    ReflectionTestUtils.setField(신분당선,"id",1L);
+    ReflectionTestUtils.setField(신분당선, "id", 1L);
   }
 
-  void 구간추가(){
+  void 구간추가() {
     일호선.addSection(독산역, 금천구청역, 4);
-    이호선.addSection(강남역,역삼역,4);
+    이호선.addSection(강남역, 역삼역, 4);
     신분당선.addSection(광교중앙역, 상현역, 5);
     신분당선.addSection(상현역, 성복역, 5);
     신분당선.addSection(성복역, 수지구청역, 5);
@@ -129,17 +122,21 @@ public class PathServiceTest {
 
   @DisplayName("두 역간의 경로를 탐색한다")
   @Test
-  void searchPathTest(){
+  void searchPathTest() {
     //given
     given(stationService.findStation(광교역.getId())).willReturn(광교역);
-    given(stationService.findStation(강남역.getId())).willReturn(강남역);
-    given(lineService.getLineById()).willReturn(신분당선,이호선);
+    given(stationService.findStation(역삼역.getId())).willReturn(역삼역);
+    given(lineService.getLineByStationId(광교역.getId(), 역삼역.getId()))
+        .willReturn(Arrays.asList(신분당선, 이호선));
     //when
-    StationPath stationPath =  pathService.findPath(광교역.getId(),강남역.getId());
+    StationPathResponse stationPathResponse = pathService.findPath(광교역.getId(), 역삼역.getId());
     //then
     int totalDistance = 39;
-    assertThat(stationPath.getStations()).containsExactly(광교역, 광교중앙역, 상현역, 성복역, 수지구청역, 동천역, 미금역, 강남역, 역삼역);
-    assertThat(stationPath.getDistance()).isEqualTo(totalDistance);
+    assertThat(stationPathResponse.getStationResponses())
+        .extracting(pathStationResponse -> pathStationResponse.getId())
+        .containsExactly(광교역.getId(), 광교중앙역.getId(), 상현역.getId(), 성복역.getId(), 수지구청역.getId(),
+            동천역.getId(), 미금역.getId(), 강남역.getId(), 역삼역.getId());
+    assertThat(stationPathResponse.getDistance()).isEqualTo(totalDistance);
   }
 
 

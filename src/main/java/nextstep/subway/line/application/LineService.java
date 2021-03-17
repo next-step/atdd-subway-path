@@ -80,4 +80,10 @@ public class LineService {
         .map(StationResponse::of)
         .collect(Collectors.toList());
   }
+
+  public List<Line> getLineByStationId(Long sourceId, Long targetId) {
+    return lineRepository.findAll().stream()
+        .filter(line -> line.getId().equals(sourceId) || line.getId().equals(targetId))
+        .collect(Collectors.toList());
+  }
 }
