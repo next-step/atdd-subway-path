@@ -4,11 +4,9 @@ import nextstep.subway.line.exception.*;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -142,8 +140,8 @@ public class Sections {
 
         List<Section> willRemoveSections = sections.stream()
                                                    .filter(it -> (
-                                                       it.getUpStation().getId().equals(stationId) ||
-                                                       it.getDownStation().getId().equals(stationId)
+                                                       Objects.equals(it.getUpStation().getId(), stationId) ||
+                                                       Objects.equals(it.getDownStation().getId(), stationId)
                                                    ))
                                                    .collect(Collectors.toList());
 
@@ -159,8 +157,8 @@ public class Sections {
 
         List<Section> sortedSections = willRemoveSections.stream()
             .sorted((front, back) -> (
-                front.getDownStation().getId().equals(stationId) &&
-                back.getUpStation().getId().equals(stationId)
+                Objects.equals(front.getDownStation().getId(), stationId) &&
+                Objects.equals(back.getUpStation().getId(), stationId)
             ) ? 1 : 0)
             .collect(Collectors.toList());
 
@@ -169,16 +167,22 @@ public class Sections {
                 willRemoveSections.get(0).getLine(),
                 willRemoveSections.get(0).getUpStation(),
                 willRemoveSections.get(1).getDownStation(),
-                sortedSections.stream()
-                    .map(Section::getDistance)
-                    .reduce(0, Math::addExact)
+                sumDistance(sortedSections)
             )
         );
     }
 
-    public int sumDistance() {
+    private int sumDistance(List<Section> sections) {
         return sections.stream()
             .map(Section::getDistance)
             .reduce(0, Math::addExact);
+    }
+
+    public int sumDistance() {
+        return sumDistance(sections);
+    }
+
+    public Stream<Section> stream() {
+        return sections.stream();
     }
 }

@@ -2,6 +2,7 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
@@ -69,5 +70,13 @@ public class LineService {
 
     public void removeSection(Long lineId, Long stationId) {
         findLineById(lineId).removeSection(stationId);
+    }
+
+    public List<Section> getAllSections() {
+        return lineRepository.findAll()
+                .stream()
+                .flatMap(line -> line.getSections().stream())
+                .distinct()
+                .collect(Collectors.toList());
     }
 }

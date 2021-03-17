@@ -80,6 +80,10 @@ public class LineSteps {
                 extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록되어_있음(LineResponse line, StationResponse upStation, StationResponse downStation, int distance) {
+        return 지하철_노선에_지하철역_등록_요청(line, upStation, downStation, distance);
+    }
+
     public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(LineResponse line, StationResponse upStation, StationResponse downStation, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStation.getId() + "");
