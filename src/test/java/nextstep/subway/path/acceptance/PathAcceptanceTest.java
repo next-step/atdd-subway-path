@@ -1,4 +1,4 @@
-package nextstep.subway.path;
+package nextstep.subway.path.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -17,8 +17,8 @@ import java.util.Arrays;
 
 import static nextstep.subway.line.acceptance.LineSteps.지하철_노선_등록되어_있음;
 import static nextstep.subway.line.acceptance.LineSteps.지하철_노선에_지하철역_등록_요청;
-import static nextstep.subway.path.PathSteps.최단거리_조회_요청;
-import static nextstep.subway.path.PathSteps.최단경로에_지하철역_순서_정렬됨;
+import static nextstep.subway.path.acceptance.PathSteps.최단거리_조회_요청;
+import static nextstep.subway.path.acceptance.PathSteps.최단경로에_지하철역_순서_정렬됨;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -65,7 +65,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 최단거리_조회_요청(강남역.getId(), 남부터미널역.getId());
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         최단경로에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 교대역, 남부터미널역));
     }
 
