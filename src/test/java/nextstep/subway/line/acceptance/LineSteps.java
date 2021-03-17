@@ -12,7 +12,23 @@ import java.util.Map;
 
 public class LineSteps {
 
+    private static final String URI_PATHS = "/paths";
+
     public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(Map<String, String> params) {
+        return 지하철_노선_생성_요청(params);
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name,
+                                                               String color,
+                                                               StationResponse upStation,
+                                                               StationResponse downStation,
+                                                               int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", String.valueOf(upStation.getId()));
+        params.put("downStationId", String.valueOf(downStation.getId()));
+        params.put("distance", String.valueOf(distance));
         return 지하철_노선_생성_요청(params);
     }
 
@@ -106,5 +122,17 @@ public class LineSteps {
                 then().
                 log().all().
                 extract();
+    }
+
+    public static ExtractableResponse<Response> 경로_조회_요청(StationResponse sourceStation, StationResponse targetStation) {
+        return RestAssured.given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .param("source", sourceStation.getId())
+                .param("target", targetStation.getId())
+                .when()
+                .get(URI_PATHS)
+                .then()
+                .log().all()
+                .extract();
     }
 }
