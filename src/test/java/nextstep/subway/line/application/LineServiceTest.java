@@ -35,11 +35,6 @@ public class LineServiceTest {
         Station 미금역 = stationRepository.save(new Station("미금역"));
         Line 신분당선 = lineRepository.save(new Line("신분당선", "bg-red-600", 판교역, 정자역, 10));
 
-        ReflectionTestUtils.setField(신분당선, "id",1L);
-        ReflectionTestUtils.setField(판교역, "id",1L);
-        ReflectionTestUtils.setField(정자역, "id",2L);
-        ReflectionTestUtils.setField(미금역, "id",3L);
-
         // when
         // lineService.addSection 호출
         lineService.addSection(신분당선.getId(), new SectionRequest(정자역.getId(), 미금역.getId(), 5));

@@ -34,13 +34,15 @@ public class LineTest {
 
     @Test
     void addSection() {
+        //given
         int before = 신분당선.getSections().size();
-
         Section section = new Section(신분당선, 정자역, 미금역,10);
-        신분당선.addSection(section);
 
+        //when
+        신분당선.addSection(section);
         int after = 신분당선.getSections().size();
 
+        //then
         assertThat(after).isEqualTo(before + 1);
     }
 

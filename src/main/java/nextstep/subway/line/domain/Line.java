@@ -78,4 +78,8 @@ public class Line extends BaseEntity {
     public int hashCode() {
         return Objects.hash(id, name, color);
     }
+
+    public void addSection(Line line, Station upStation, Station downStation, int distance) {
+        sections.addSection(line, upStation, downStation, distance);
+    }
 }

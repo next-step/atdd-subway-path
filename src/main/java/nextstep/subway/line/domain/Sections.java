@@ -22,15 +22,19 @@ public class Sections {
         Station firstStation = sections.get(FIRST_INDEX).getUpStation();
         stations.add(firstStation);
 
-        sections.stream().forEach(section -> {
+        for(Section section : sections) {
             stations.add(section.getDownStation());
-        });
+        }
 
         return stations;
     }
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void addSection(Line line, Station upStation, Station downStation, int distance) {
+        addSection(new Section(line, upStation, downStation, distance));
     }
 
     public void addSection(Section section) {
@@ -48,7 +52,7 @@ public class Sections {
         }
 
         if(isNewLastSection(section)) {
-            sections.add(sections.size(), section);
+            sections.add(section);
             return;
         }
 
@@ -141,4 +145,6 @@ public class Sections {
             throw new InvalidDistanceException();
         }
     }
+
+
 }

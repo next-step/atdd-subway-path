@@ -78,7 +78,7 @@ public class LineService {
     }
 
     private void addSection(Line line, Station upStation, Station downStation, int distance) {
-        line.addSection(new Section(line, upStation, downStation, distance));
+        line.addSection(line, upStation, downStation, distance);
     }
 
     public void removeSection(Line line, Long stationId) {
