@@ -83,7 +83,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 정자역, 양재역));
     }
 
-    @DisplayName("역 사이에 새로운 역을 등록 시, 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.")
+    @DisplayName("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.")
     @Test
     void addLineSectionBetweenInLongerDistance() {
         // when
@@ -93,11 +93,21 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록_실패됨(response);
     }
 
-    @DisplayName("역 사이에 새로운 역을 등록 시, 상행역과 하행역이 이미 노선에 있다면 등록할 수 없다.")
+    @DisplayName("상행역과 하행역이 이미 노선에 있다면 등록할 수 없다.")
     @Test
     void addLineSectionWithSameStations() {
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 양재역, 9);
+
+        // then
+        지하철_노선에_지하철역_등록_실패됨(response);
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나라도 포함되지 않으면 등록할 수 없다.")
+    @Test
+    void addLineSectionNotIncludeAny() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 정자역, 광교역, 9);
 
         // then
         지하철_노선에_지하철역_등록_실패됨(response);

@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.exception.ExistUpAndDownStationException;
 import nextstep.subway.exception.InValidSectionSizeException;
 import nextstep.subway.exception.InvalidSectionDistanceException;
 import nextstep.subway.station.domain.Station;
@@ -20,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DisplayName("지하철 노선에 역 등록 관련 기능 도메인 테스트")
 public class LineTest {
 
-    Station 강남역, 역삼역, 삼성역;
+    Station 강남역, 역삼역, 삼성역, 교대역;
     Line 이호선;
 
     @BeforeEach
@@ -28,6 +29,7 @@ public class LineTest {
         강남역 = new Station("강남역");
         역삼역 = new Station("역삼역");
         삼성역 = new Station("삼성역");
+        교대역 = new Station("교대역");
         이호선 = new Line("이호선", "green");
     }
 
@@ -85,7 +87,7 @@ public class LineTest {
         assertThat(이호선.getStations()).containsExactly(강남역, 삼성역, 역삼역);
     }
 
-    @DisplayName("역 사이에 새로운 역을 등록 시, 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.")
+    @DisplayName("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.")
     @Test
     void addLineSectionBetweenInLongerDistance() {
         // given
@@ -96,7 +98,7 @@ public class LineTest {
                 .isInstanceOf(InvalidSectionDistanceException.class);
     }
 
-    @DisplayName("역 사이에 새로운 역을 등록 시, 상행역과 하행역이 이미 노선에 있다면 등록할 수 없다.")
+    @DisplayName("상행역과 하행역이 이미 노선에 있다면 등록할 수 없다.")
     @Test
     void addLineSectionWithSameStations() {
         // given
@@ -104,6 +106,17 @@ public class LineTest {
 
         // then
         assertThatThrownBy(() -> 이호선.addSection(강남역, 역삼역, 9))
+                .isInstanceOf(ExistUpAndDownStationException.class);
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나라도 포함되지 않으면 등록할 수 없다.")
+    @Test
+    void addLineSectionNotIncludeAny() {
+        // given
+        이호선.addSection(강남역, 역삼역, 10);
+
+        // then
+        assertThatThrownBy(() -> 이호선.addSection(삼성역, 교대역, 9))
                 .isInstanceOf(RuntimeException.class);
     }
 
