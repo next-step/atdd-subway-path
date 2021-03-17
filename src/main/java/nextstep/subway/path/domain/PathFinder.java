@@ -14,9 +14,9 @@ public class PathFinder {
 
   public static StationPath findPath(List<Sections> sectionsList, Station source, Station target) {
     validate(source, target);
-    DijkstraShortestPath dijkstraShortestPath = createDijkstraShortestPath(sectionsList, source,
-        target);
-    GraphPath graphPath = dijkstraShortestPath.getPath(source, target);
+    DijkstraShortestPath<Station, Long> dijkstraShortestPath = createDijkstraShortestPath(
+        sectionsList, source);
+    GraphPath<Station, Long> graphPath = dijkstraShortestPath.getPath(source, target);
     if (graphPath == null) {
       throw new InvalidStationPathException("출발역과 도착역이 연결되어 있지 않습니다.");
     }
@@ -27,8 +27,8 @@ public class PathFinder {
     return new StationPath(distance, shortestPath);
   }
 
-  private static DijkstraShortestPath createDijkstraShortestPath(List<Sections> sectionsList,
-      Station source, Station target) {
+  private static DijkstraShortestPath<Station, Long> createDijkstraShortestPath(
+      List<Sections> sectionsList, Station source) {
     WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(
         DefaultWeightedEdge.class);
     graph.addVertex(source);

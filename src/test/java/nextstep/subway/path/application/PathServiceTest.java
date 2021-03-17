@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 
-import java.nio.file.InvalidPathException;
 import java.util.Arrays;
 import nextstep.subway.common.exception.InvalidStationPathException;
 import nextstep.subway.line.acceptance.LineColor;
@@ -144,9 +143,9 @@ public class PathServiceTest {
 
   @DisplayName("시작역 도착역이 같으면 경로찾기를 실패한다")
   @Test
-  void searchPathTestWithException(){
+  void searchPathTestWithException() {
     //when then
-    assertThrows(InvalidStationPathException.class,()-> {
+    assertThrows(InvalidStationPathException.class, () -> {
       pathService.findPath(광교역.getId(), 광교역.getId());
     });
 
