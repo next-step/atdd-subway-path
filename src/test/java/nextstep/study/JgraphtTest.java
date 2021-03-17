@@ -30,6 +30,7 @@ public class JgraphtTest {
         List<String> shortestPath = dijkstraShortestPath.getPath(source, target).getVertexList();
 
         assertThat(shortestPath.size()).isEqualTo(3);
+        assertThat(shortestPath).containsExactly("v3", "v2", "v1");
     }
 
     @Test
