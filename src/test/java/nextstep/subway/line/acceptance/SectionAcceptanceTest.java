@@ -8,14 +8,17 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import static nextstep.subway.line.acceptance.LineSectionAcceptanceTest.*;
 import static nextstep.subway.line.acceptance.LineSteps.*;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선에 구간 등록하기 위한 테스트")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -54,7 +57,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         //then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(이호선);
         지하철_노선에_지하철역_등록됨(response);
-        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(을지로3가역, 을지로입구역, 시청역));
     }
 
     @DisplayName("지하철 구간 등록 시 새로운 역을 상행 종점으로 등록한다.")
@@ -67,7 +69,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         //then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(이호선);
         지하철_노선에_지하철역_등록됨(response);
-        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(을지로3가역, 을지로입구역, 시청역));
     }
 
     @DisplayName("지하철 구간 등록 시 새로운 역을 하행 종점으로 등록한다.")
@@ -79,27 +80,29 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         //then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(이호선);
         지하철_노선에_지하철역_등록됨(response);
-        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(을지로3가역, 을지로입구역, 시청역));
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(을지로3가역, 시청역, 충정로역));
     }
 
     @DisplayName("구간 사이에 새로울 역을 등록하는데 기존 구간 길이와 같으면 등록 불가.")
     @Test
     void addSectionWithSameDistance(){
         //when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(이호선, 을지로입구역, 시청역, DEFAULT_LINE_DISTANCE);
+        지하철_노선에_지하철역_등록_요청(이호선, 을지로입구역, 시청역, DEFAULT_LINE_DISTANCE);
 
         //then
-        지하철_노선에_지하철역_등록_실패됨(response);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(이호선);
+        지하철_노선_조회시_지하철역_등록_되지_않은_상태(response, Arrays.asList(을지로3가역, 시청역));
     }
 
     @DisplayName("구간 사이에 새로울 역을 등록하는데 기존 구간 보다 길면 등록 불가.")
     @Test
     void addSectionWithLongerDistance(){
         //when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(이호선, 을지로입구역, 시청역, DEFAULT_LINE_DISTANCE+2);
+        지하철_노선에_지하철역_등록_요청(이호선, 을지로3가역, 을지로입구역, DEFAULT_LINE_DISTANCE+2);
 
         //then
-        지하철_노선에_지하철역_등록_실패됨(response);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(이호선);
+        지하철_노선_조회시_지하철역_등록_되지_않은_상태(response, Arrays.asList(을지로3가역, 시청역));
     }
 
     @DisplayName("구간 사이에 새로울 역을 등록하는데 기존 구간 보다 짧으면 정상 등록.")
@@ -161,5 +164,47 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         params.put("distance", distance);
 
         return params;
+    }
+
+    public static void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    public static void 지하철_노선에_지하철역_등록_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    public static void 지하철_노선_조회시_지하철역_등록_되지_않은_상태(ExtractableResponse<Response> response, List<StationResponse> expectedStations) {
+        LineResponse line = response.as(LineResponse.class);
+        List<Long> stationIds = line.getStations().stream()
+                .map(it -> it.getId())
+                .collect(Collectors.toList());
+
+        List<Long> expectedStationIds = expectedStations.stream()
+                .map(it -> it.getId())
+                .collect(Collectors.toList());
+
+        assertThat(stationIds).containsExactlyElementsOf(expectedStationIds);
+    }
+
+    public static void 지하철_노선에_지하철역_순서_정렬됨(ExtractableResponse<Response> response, List<StationResponse> expectedStations) {
+        LineResponse line = response.as(LineResponse.class);
+        List<Long> stationIds = line.getStations().stream()
+                .map(it -> it.getId())
+                .collect(Collectors.toList());
+
+        List<Long> expectedStationIds = expectedStations.stream()
+                .map(it -> it.getId())
+                .collect(Collectors.toList());
+
+        assertThat(stationIds).containsExactlyElementsOf(expectedStationIds);
+    }
+
+    public static void 지하철_노선에_지하철역_제외됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    public static void 지하철_노선에_지하철역_제외_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }

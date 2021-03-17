@@ -53,4 +53,16 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public boolean isSameUpStation(Section section) {
+        return this.getUpStation().getId() == section.getUpStation().getId();
+    }
+
+    public boolean isAddableInMiddle(Section section) {
+        return isSameUpStation(section) && isLongerThan(section.getDistance());
+    }
+
+    private boolean isLongerThan(int distance) {
+        return this.distance > distance;
+    }
 }
