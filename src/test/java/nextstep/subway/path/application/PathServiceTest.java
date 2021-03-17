@@ -1,9 +1,12 @@
 package nextstep.subway.path.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 
+import java.nio.file.InvalidPathException;
 import java.util.Arrays;
+import nextstep.subway.common.exception.InvalidStationPathException;
 import nextstep.subway.line.acceptance.LineColor;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
@@ -137,6 +140,19 @@ public class PathServiceTest {
         .containsExactly(광교역.getId(), 광교중앙역.getId(), 상현역.getId(), 성복역.getId(), 수지구청역.getId(),
             동천역.getId(), 미금역.getId(), 강남역.getId(), 역삼역.getId());
     assertThat(stationPathResponse.getDistance()).isEqualTo(totalDistance);
+  }
+
+  @DisplayName("시작역 도착역이 같으면 경로찾기를 실패한다")
+  @Test
+  void searchPathTestWithException(){
+    //given
+    given(stationService.findStation(광교역.getId())).willReturn(광교역);
+    given(lineService.getLineByStationId(광교역.getId(), 광교역.getId())).willReturn(Arrays.asList(신분당선));
+    //when then
+    assertThrows(InvalidStationPathException.class,()-> {
+      pathService.findPath(광교역.getId(), 광교역.getId());
+    });
+
   }
 
 
