@@ -81,9 +81,8 @@ public class LineService {
         .collect(Collectors.toList());
   }
 
-  public List<Line> getLineByStationId(Long sourceId, Long targetId) {
+  public List<Line> getAllLine() {
     return lineRepository.findAll().stream()
-        .filter(line -> line.getId().equals(sourceId) || line.getId().equals(targetId))
         .collect(Collectors.toList());
   }
 }

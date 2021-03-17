@@ -29,8 +29,7 @@ public class PathFinder {
 
   private static DijkstraShortestPath<Station, Long> createDijkstraShortestPath(
       List<Sections> sectionsList, Station source) {
-    WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(
-        DefaultWeightedEdge.class);
+    WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
     graph.addVertex(source);
     //vertex 추가
     sectionsList.stream()

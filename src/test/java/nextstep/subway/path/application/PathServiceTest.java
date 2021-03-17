@@ -3,7 +3,6 @@ package nextstep.subway.path.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
-
 import java.util.Arrays;
 import nextstep.subway.common.exception.InvalidStationPathException;
 import nextstep.subway.common.exception.NoResourceException;
@@ -129,8 +128,7 @@ public class PathServiceTest {
     //given
     given(stationService.findStation(광교역.getId())).willReturn(광교역);
     given(stationService.findStation(역삼역.getId())).willReturn(역삼역);
-    given(lineService.getLineByStationId(광교역.getId(), 역삼역.getId()))
-        .willReturn(Arrays.asList(신분당선, 이호선));
+    given(lineService.getAllLine()).willReturn(Arrays.asList(신분당선, 이호선));
     //when
     StationPathResponse stationPathResponse = pathService.findPath(광교역.getId(), 역삼역.getId());
     //then
@@ -158,8 +156,7 @@ public class PathServiceTest {
     //given
     given(stationService.findStation(광교역.getId())).willReturn(광교역);
     given(stationService.findStation(광명역.getId())).willReturn(광명역);
-    given(lineService.getLineByStationId(광교역.getId(), 광명역.getId()))
-        .willReturn(Arrays.asList(신분당선, 일호선));
+    given(lineService.getAllLine()).willReturn(Arrays.asList(신분당선, 이호선));
     //when then
     assertThrows(InvalidStationPathException.class, () -> {
       pathService.findPath(광교역.getId(), 광명역.getId());
@@ -169,11 +166,8 @@ public class PathServiceTest {
   @DisplayName("존재하지 않는 역을 출발역이나 도착역에 입력한경우 경로찾기를 실패한다")
   @Test
   void searchPathWithUnregisteredStation() {
-    //given
-    given(stationService.findStation(광교역.getId())).willReturn(광교역);
-    given(stationService.findStation(금천구청역.getId())).willThrow(NoResourceException.class);
     //when then
-    assertThrows(NoResourceException.class, () -> {
+    assertThrows(InvalidStationPathException.class, () -> {
       pathService.findPath(광교역.getId(), 금천구청역.getId());
     });
   }
