@@ -96,6 +96,16 @@ public class LineTest {
                 .isInstanceOf(InvalidSectionDistanceException.class);
     }
 
+    @DisplayName("역 사이에 새로운 역을 등록 시, 상행역과 하행역이 이미 노선에 있다면 등록할 수 없다.")
+    @Test
+    void addLineSectionWithSameStations() {
+        // given
+        이호선.addSection(강남역, 역삼역, 10);
+
+        // then
+        assertThatThrownBy(() -> 이호선.addSection(강남역, 역삼역, 9))
+                .isInstanceOf(RuntimeException.class);
+    }
 
     @Test
     void removeSection() {

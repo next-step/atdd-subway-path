@@ -93,6 +93,16 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록_실패됨(response);
     }
 
+    @DisplayName("역 사이에 새로운 역을 등록 시, 상행역과 하행역이 이미 노선에 있다면 등록할 수 없다.")
+    @Test
+    void addLineSectionWithSameStations() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 양재역, 9);
+
+        // then
+        지하철_노선에_지하철역_등록_실패됨(response);
+    }
+
     @DisplayName("지하철 노선에 등록된 지하철역을 제외한다.")
     @Test
     void removeLineSection() {
