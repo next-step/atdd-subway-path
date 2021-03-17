@@ -2,11 +2,16 @@ package nextstep.subway.path;
 
 import static nextstep.subway.line.acceptance.LineSteps.*;
 import static nextstep.subway.station.StationSteps.*;
+import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
@@ -49,7 +54,11 @@ public class PathAcceptanceTest extends AcceptanceTest {
 	@DisplayName("출발역부터 도착역까지의 최단 경로를 조회한다.")
 	@Test
 	void findShortestPath() {
+		// when
+		final ExtractableResponse<Response> response = 지하철_최단경로_조회_요청(강남역, 남부터미널역);
 
+		// then
+		지하철_최단경로_응답됨(response, 13);
 	}
 
 	@DisplayName("출발역과 도착역이 같은 최단 경로를 조회한다.")
@@ -68,5 +77,20 @@ public class PathAcceptanceTest extends AcceptanceTest {
 	@Test
 	void findShortestPathNotExistStation() {
 
+	}
+
+	private ExtractableResponse<Response> 지하철_최단경로_조회_요청(
+		StationResponse source, StationResponse target) {
+		return RestAssured
+			.given().log().all()
+			.queryParam("source", source.getId())
+			.queryParam("target", target.getId())
+			.when().get("/paths")
+			.then().log().all().extract();
+	}
+
+	private void 지하철_최단경로_응답됨(ExtractableResponse<Response> response, int expectedDistance) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(response.jsonPath().getInt("distance")).isEqualTo(expectedDistance);
 	}
 }

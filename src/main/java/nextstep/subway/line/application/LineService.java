@@ -1,7 +1,9 @@
 package nextstep.subway.line.application;
 
+import static java.util.stream.Collectors.*;
+
+import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +40,7 @@ public class LineService {
         List<Line> persistLines = lineRepository.findAll();
         return persistLines.stream()
                 .map(this::createLineResponse)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     public Line findLineById(Long id) {
@@ -75,7 +77,15 @@ public class LineService {
     public LineResponse createLineResponse(Line line) {
         List<StationResponse> stations = line.getStations().stream()
                 .map(StationResponse::of)
-                .collect(Collectors.toList());
+                .collect(toList());
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stations, line.getCreatedDate(), line.getModifiedDate());
+    }
+
+    public List<Section> findAllSections() {
+        final List<Line> lines = lineRepository.findAll();
+        return lines.stream()
+            .map(Line::getSections)
+            .flatMap(Collection::stream)
+            .collect(toList());
     }
 }

@@ -92,6 +92,10 @@ public class Sections {
 		return stations;
 	}
 
+	public List<Section> getSections() {
+		return sections;
+	}
+
 	private List<Section> filterTargets(Function<List<Section>, List<Section>> func) {
 		validateFilterBefore();
 
