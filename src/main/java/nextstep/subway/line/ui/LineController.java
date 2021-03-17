@@ -5,6 +5,7 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -67,7 +68,8 @@ public class LineController {
             SubwayNameDuplicateException.class,
             IllegalArgumentException.class,
             StationDuplicateException.class,
-            DistanceMaximumException.class
+            DistanceMaximumException.class,
+            DataIntegrityViolationException.class
     })
     public ResponseEntity subwayLineHandleException(Exception e) {
         return ResponseEntity.badRequest().body(e.getMessage());
