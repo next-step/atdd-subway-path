@@ -58,6 +58,43 @@ public class Line extends BaseEntity {
         return sections.getAllStations();
     }
 
+    public void addSection(Station upStation, Station downStation, int distance) {
+        if (getAllStations().size() == 0) {
+            sections.addSection(new Section(this, upStation, downStation, distance));
+            return;
+        }
+
+        boolean isNotValidUpStation = sections.getLastSection().getDownStation() != upStation;
+        if (isNotValidUpStation) {
+            throw new RuntimeException("상행역은 하행 종점역이어야 합니다.");
+        }
+
+        boolean isDownStationExisted = this.getAllStations().stream().anyMatch(it -> it == downStation);
+        if (isDownStationExisted) {
+            throw new RuntimeException("하행역이 이미 등록되어 있습니다.");
+        }
+
+        sections.addSection(new Section(this, upStation, downStation, distance));
+    }
+
+    public Station getLastStation(){
+        return sections.getLastSection().getDownStation();
+    }
+
+    public void removeSection(Long stationId) {
+        if (this.getSections().size() <= 1) {
+            throw new RuntimeException("하나의 구간만 존재하여 삭제가 불가능합니다.");
+        }
+
+        boolean isNotValidUpStation = this.getLastStation().getId() != stationId;
+        if (isNotValidUpStation) {
+            throw new RuntimeException("하행 종점역만 삭제가 가능합니다.");
+        }
+
+        sections.deleteLastSection(stationId);
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
