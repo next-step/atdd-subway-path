@@ -33,7 +33,7 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-        List<StationResponse> stations = getAllStation();
+        List<Station> stations = getAllStation();
         if (stations.size() == 0) {
             sections.add(section);
             section.update(section.getLine());
@@ -83,15 +83,15 @@ public class Sections {
         }
     }
 
-    public List<StationResponse> getAllStation() {
+    public List<Station> getAllStation() {
         if (sections.isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<StationResponse> responses = new ArrayList<>();
-        responses.add(StationResponse.of(sections.get(0).getUpStation()));
+        List<Station> responses = new ArrayList<>();
+        responses.add(upStation());
 
-        sections.stream().map(section -> StationResponse.of(section.getDownStation())).forEach(responses::add);
+        sections.stream().map(Section::getDownStation).forEach(responses::add);
         return responses;
     }
 
