@@ -44,11 +44,7 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("추가할 수 있는 구간이 존재하지 않습니다."));
 
-        if(matchSection.getDistance() <= section.getDistance()) {
-            throw new InvalidSectionDistanceException();
-        }
-
-        final int distance = matchSection.getDistance() - section.getDistance();
+        final int distance = matchSection.calculateDistance(section.getDistance());
         if(matchSection.getUpStation().equals(section.getUpStation())) {
             matchSection.updateDownStation(section.getDownStation(), distance);
         }

@@ -12,4 +12,9 @@ public class GlobalExceptionController {
     public ResponseEntity handleInvalidSectionDistanceException(InvalidSectionDistanceException e) {
         return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(ExistUpAndDownStationException.class)
+    public ResponseEntity handleExistUpAndDownStationException(ExistUpAndDownStationException e) {
+        return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }

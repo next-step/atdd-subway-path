@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.exception.ExistUpAndDownStationException;
+import nextstep.subway.exception.InvalidSectionDistanceException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -59,9 +61,12 @@ public class Section {
     }
 
     public boolean hasMatchStation(Section section) {
+        if(upStation.equals(section.getUpStation()) && downStation.equals(section.downStation)) {
+            throw new ExistUpAndDownStationException();
+        }
+
         return upStation.equals(section.getUpStation())
                 || downStation.equals(section.getDownStation());
-
     }
 
     public void updateDownStation(Station downStation, int distance) {
@@ -72,5 +77,13 @@ public class Section {
     public void updateUpStation(Station upStation, int distance) {
         this.downStation = upStation;
         this.distance = distance;
+    }
+
+    public int calculateDistance(int newDistance) {
+        final int distance = this.distance - newDistance;
+        if(distance < 0) {
+            throw new InvalidSectionDistanceException();
+        }
+        return distance;
     }
 }
