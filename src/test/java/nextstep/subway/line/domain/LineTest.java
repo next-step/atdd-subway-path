@@ -28,14 +28,10 @@ public class LineTest {
     @BeforeEach
     void setUp(){
         //given
-        강남역1 = new Station("강남역1"); //repository를 써서 꺼내오지 않는 이유? 기능만 보기 위해서?
-        ReflectionTestUtils.setField(강남역1, "id", 1L);
-        선릉역2 = new Station("선릉역2");
-        ReflectionTestUtils.setField(선릉역2, "id", 2L);
-        역삼역3 = new Station("역삼역3");
-        ReflectionTestUtils.setField(역삼역3, "id", 3L);
-        잠실역4 = new Station("잠실역4");
-        ReflectionTestUtils.setField(잠실역4, "id", 4L);
+        강남역1 = LineHelper.역_만들기("강남역1", 1L);
+        선릉역2 = LineHelper.역_만들기("선릉역2", 2L);
+        역삼역3 = LineHelper.역_만들기("역삼역3", 3L);
+        잠실역4 = LineHelper.역_만들기("잠실역4", 4L);
 
         line = new Line("2호선", "green", 강남역1, 선릉역2, 10);
 
@@ -44,38 +40,38 @@ public class LineTest {
     @Test
     void getStations() {
         //then
-        assertThat(line.getSections().getStations().size()).isEqualTo(2);
+        assertThat(line.getStations().size()).isEqualTo(2);
     }
 
     @Test
-    void addSection() {
+    void appendSection() {
         //when
         line.addSection(선릉역2, 역삼역3, 10);
         line.addSection(역삼역3, 잠실역4, 10);
         //then
-        List<String> resultList = line.getSections().getStations().stream().map(station -> station.getName()).collect(Collectors.toList());
+        List<String> resultList = line.getStations().stream().map(station -> station.getName()).collect(Collectors.toList());
         assertThat(resultList).containsExactlyElementsOf(Arrays.asList("강남역1", "선릉역2", "역삼역3", "잠실역4"));
     }
 
     @DisplayName("목록 중간에 추가 가능(upStation 매칭시)")
     @Test
-    void addSectionInMiddleWhenUpStationMatch() {
+    void insertSectionInMiddleWhenUpStationMatch() {
         //when
         line.addSection(강남역1, 잠실역4, 3);
         //then
-        List<String> resultList = line.getSections().getStations().stream().map(station -> station.getName()).collect(Collectors.toList());
+        List<String> resultList = line.getStations().stream().map(station -> station.getName()).collect(Collectors.toList());
         assertThat(resultList).containsExactlyElementsOf(Arrays.asList("강남역1", "잠실역4", "선릉역2"));
         assertThat(line.getSections().getSectionList().get(1).getDistance()).isEqualTo(7);
     }
 
     @DisplayName("목록 중간에 추가 가능(downStation 매칭시)")
     @Test
-    void addSectionInMiddleWhenDownStationMatch() {
+    void insertSectionInMiddleWhenDownStationMatch() {
         //when
         line.addSection(선릉역2, 역삼역3, 10);
         line.addSection(잠실역4, 선릉역2, 4);
         //then
-        List<String> resultList = line.getSections().getStations().stream().map(station -> station.getName()).collect(Collectors.toList());
+        List<String> resultList = line.getStations().stream().map(station -> station.getName()).collect(Collectors.toList());
         assertThat(resultList).containsExactlyElementsOf(Arrays.asList("강남역1", "잠실역4", "선릉역2", "역삼역3"));
         assertThat(line.getSections().getSectionList().get(0).getDistance()).isEqualTo(6);
     }
@@ -115,9 +111,8 @@ public class LineTest {
         //when
         line.getSections().removeSection(역삼역3);
         //then
-        assertThat(line.getSections().getStations()
-                .stream().map(station -> station.getName())
-                .collect(Collectors.toList()))
+        assertThat(line.getStations())
+                .extracting("name")
                 .containsExactlyElementsOf(Arrays.asList("강남역1", "선릉역2", "잠실역4"));
     }
 
@@ -130,9 +125,8 @@ public class LineTest {
         //when
         line.getSections().removeSection(강남역1);
         //then
-        assertThat(line.getSections().getStations()
-                .stream().map(station -> station.getName())
-                .collect(Collectors.toList()))
+        assertThat(line.getStations())
+                .extracting("name")
                 .containsExactlyElementsOf(Arrays.asList("선릉역2", "역삼역3", "잠실역4"));
     }
 
@@ -145,9 +139,8 @@ public class LineTest {
         //when
         line.getSections().removeSection(잠실역4);
         //then
-        assertThat(line.getSections().getStations()
-                .stream().map(station -> station.getName())
-                .collect(Collectors.toList()))
+        assertThat(line.getStations())
+                .extracting("name")
                 .containsExactlyElementsOf(Arrays.asList("강남역1", "선릉역2", "역삼역3"));
     }
 
@@ -157,5 +150,17 @@ public class LineTest {
         //when, then
         assertThatThrownBy(() -> line.getSections().removeSection(선릉역2))
                 .isInstanceOf(OnlyOneSectionRemainException.class);
+    }
+
+    @DisplayName("구간을 삭제했을 때 거리가 맞는지 확인")
+    @Test
+    void removeSectionAndValidateDistance(){
+        //given
+        line.addSection(선릉역2, 역삼역3, 10);
+        line.addSection(역삼역3, 잠실역4, 5);
+        //when
+        line.getSections().removeSection(역삼역3);
+        //then
+        assertThat(line.getSections().getSectionList().get(1).getDistance()).isEqualTo(15);
     }
 }

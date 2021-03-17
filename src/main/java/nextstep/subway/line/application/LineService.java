@@ -66,7 +66,7 @@ public class LineService {
         Line line = findLineById(lineId);
         Station upStation = stationService.findStationById(request.getUpStationId());
         Station downStation = stationService.findStationById(request.getDownStationId());
-        line.getSections().addSection(new Section(line, upStation, downStation, request.getDistance()));
+        line.addSection(upStation, downStation, request.getDistance());
     }
 
     public void removeSection(Long lineId, Long stationId) {
@@ -76,11 +76,10 @@ public class LineService {
     }
 
     public LineResponse createLineResponse(Line line) {
-        List<StationResponse> stations = line.getSections()
-                .getStations().stream()
+        List<StationResponse> stations = line.getStations()
+                .stream()
                 .map(it -> StationResponse.of(it))
                 .collect(Collectors.toList());
-        stations.stream().forEach((station) -> System.out.println("!!!!!!!!!!!!!!!!!!" + station.getName()));
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stations, line.getCreatedDate(), line.getModifiedDate());
     }
 }

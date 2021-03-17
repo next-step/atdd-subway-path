@@ -20,7 +20,7 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Section> sections = new ArrayList<>();
 
-    public void addSection(Section section) {
+    protected void addSection(Section section) {
         if (getStations().isEmpty()) {
             sections.add(section);
             return;
@@ -28,21 +28,27 @@ public class Sections {
 
         //upstation과 매칭 됐을 때
 
-        boolean isUpStationExist = getStations().stream().anyMatch(station -> station == section.getUpStation());
-        boolean isDownStationExist = getStations().stream().anyMatch(station -> station == section.getDownStation());
+        boolean isUpStationExist = isStationExistInStations(section.getUpStation());
+        boolean isDownStationExist = isStationExistInStations(section.getDownStation());
 
         if (isDownStationExist && isUpStationExist) {
             throw new BothStationAlreadyEnrolledException("추가하고자 하는 두 역 모두 등록 되어있습니다.");
         } else if (!isUpStationExist && !isDownStationExist) {
             throw new NoneOfStationEnrolledException("추가하고자 하는 두 역 모두 등록이 안되어있습니다.");
         } else if (isUpStationExist) {
-            addSectionWhenUpStationMatch(section);
+            insertSectionWhenUpStationMatch(section);
         } else if (isDownStationExist) {
-            addSectionWhenDownStationMatch(section);
+            insertSectionWhenDownStationMatch(section);
         }
     }
 
-    public List<Station> getStations() {
+    private boolean isStationExistInStations(Station station){
+        return getStations()
+                .stream()
+                .anyMatch(st -> st == station);
+    }
+
+    protected List<Station> getStations() {
         if (sections.isEmpty()) {
             return Arrays.asList();
         }
@@ -82,32 +88,30 @@ public class Sections {
         return downStation;
     }
 
-    public void addSectionWhenUpStationMatch(Section section) {
-        int index = getStations().indexOf(section.getUpStation());
+    public void insertSectionWhenUpStationMatch(Section insertedSection) {
+        int index = getStations().indexOf(insertedSection.getUpStation());
         //뒤의 요소 변경
         if (index < sections.size()) {
-            Section selectedSection = sections.get(index);
-            int changedDistance = selectedSection.getDistance() - section.getDistance();
-            if (changedDistance <= 0) {
-                throw new InvalidDistanceException("거리가 맞지 않습니다");
-            }
-            selectedSection.changeUpStation(section.getDownStation());
-            selectedSection.changeDistance(changedDistance);
+            Section changedSection = sections.get(index);
+            int changedDistance = changedSection.getDistance() - insertedSection.getDistance();
+            validateDistance(changedDistance);
+            changedSection.changeUpStation(insertedSection.getDownStation());
+            changedSection.changeDistance(changedDistance);
         }
-        sections.add(index, section);
+        sections.add(index, insertedSection);
     }
 
-    public void addSectionWhenDownStationMatch(Section section) {
-        int index = getStations().indexOf(section.getDownStation());
+    public void insertSectionWhenDownStationMatch(Section insertedSection) {
+        int index = getStations().indexOf(insertedSection.getDownStation());
         //앞의 요소 변경
         if (index > 0) {
-            Section selectedSection = sections.get(index - 1);
-            int changedDistance = selectedSection.getDistance() - section.getDistance();
-            if (changedDistance <= 0) throw new InvalidDistanceException("거리가 맞지 않습니다");
-            selectedSection.changeDownStation(section.getUpStation());
-            selectedSection.changeDistance(changedDistance);
+            Section changedSection = sections.get(index - 1);
+            int changedDistance = changedSection.getDistance() - insertedSection.getDistance();
+            validateDistance(changedDistance);
+            changedSection.changeDownStation(insertedSection.getUpStation());
+            changedSection.changeDistance(changedDistance);
         }
-        sections.add(index, section);
+        sections.add(index, insertedSection);
     }
 
     public void removeSection(Station station) {
@@ -120,10 +124,6 @@ public class Sections {
         if(isStationExistInLine){
             throw new NoneOfStationEnrolledException("삭제하려는 역이 노선에 등록되어 있지 않습니다");
         }
-
-        System.out.println("stationId = " + station.getId());
-        System.out.println("last stationId" + getStations().get(getStations().size() - 1).getId());
-        getStations().stream().forEach(st -> System.out.println(st.getName()));
 
         if(indexOfStation==0){
             sections.remove(0);
@@ -139,6 +139,10 @@ public class Sections {
         sections.get(indexOfStation-1).changeDownStation(getStations().get(indexOfStation+1));
         sections.get(indexOfStation-1).changeDistance(changedDistance);
         sections.remove(indexOfStation);
+    }
+
+    private void validateDistance(int changedDistance){
+        if (changedDistance <= 0) throw new InvalidDistanceException("거리가 맞지 않습니다");
     }
 
     public List<Section> getSectionList() {
