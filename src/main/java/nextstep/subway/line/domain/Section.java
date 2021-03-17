@@ -58,8 +58,19 @@ public class Section {
         return distance;
     }
 
-    public void update(Station downStation, int newDistance) {
+    public boolean hasMatchStation(Section section) {
+        return upStation.equals(section.getUpStation())
+                || downStation.equals(section.getDownStation());
+
+    }
+
+    public void updateDownStation(Station downStation, int distance) {
         this.upStation = downStation;
-        this.distance = newDistance;
+        this.distance = distance;
+    }
+
+    public void updateUpStation(Station upStation, int distance) {
+        this.downStation = upStation;
+        this.distance = distance;
     }
 }

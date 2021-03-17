@@ -33,29 +33,25 @@ public class Sections {
             return;
         }
 
-        if(getFirstStation().equals(section.getDownStation())) {
-            sections.add(0, section);
-        }
-
-        if(getLastStation().equals(section.getUpStation())) {
+        if(getLastStation().equals(section.getUpStation()) || getFirstStation().equals(section.getDownStation())) {
             sections.add(section);
+            return;
         }
 
-        Station upStation = getStations().stream()
-                .filter(station -> station.equals(section.getUpStation())) // 상행선과 일치하는 경우
+        Section matchSection = sections.stream()
+                .filter(it -> it.hasMatchStation(section))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("일치하는 상행역이 존재하지 않습니다."));
+                .orElseThrow(() -> new RuntimeException("추가할 수 있는 구간이 존재하지 않습니다."));
 
-        int index = IntStream.range(0, sections.size())
-                .filter(i -> sections.get(i).getUpStation().equals(upStation))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("해당 상행역을 가진 구간이 존재하지 않습니다."));
-
-        Section target = sections.get(index);
-        if(target.getDistance() > section.getDistance()) {
-            final int newDistance = target.getDistance() - section.getDistance();
-            target.update(section.getDownStation(), newDistance);
-            sections.add(index, section);
+        if(matchSection.getDistance() > section.getDistance()) {
+            final int distance = matchSection.getDistance() - section.getDistance();
+            if(matchSection.getUpStation().equals(section.getUpStation())) {
+                matchSection.updateDownStation(section.getDownStation(), distance);
+            }
+            if(matchSection.getDownStation().equals(section.getDownStation())) {
+                matchSection.updateUpStation(section.getUpStation(), distance);
+            }
+            sections.add(section);
         }
     }
 
