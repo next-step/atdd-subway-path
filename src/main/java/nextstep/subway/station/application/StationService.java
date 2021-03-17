@@ -16,9 +16,6 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class StationService {
-    @Autowired
-    private MemberRepository memberRepository;
-
     private StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {

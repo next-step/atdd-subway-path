@@ -50,9 +50,16 @@ test {
 	outputs.dir snippetsDir
 }
 
+task testDocument(type: Test) {
+	useJUnitPlatform()
+	filter {
+		includeTestsMatching "*.document.*"
+	}
+}
+
 asciidoctor {
 	inputs.dir snippetsDir
-	dependsOn test
+	dependsOn testDocument
 }
 
 bootJar {

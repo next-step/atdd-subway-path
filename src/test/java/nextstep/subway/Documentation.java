@@ -19,6 +19,7 @@ import static nextstep.subway.member.MemberSteps.로그인_되어_있음;
 import static nextstep.subway.member.MemberSteps.회원_생성_요청;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.documentationConfiguration;
 
+
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(RestDocumentationExtension.class)
@@ -32,21 +33,23 @@ public class Documentation {
     protected RequestSpecification spec;
 
     protected TokenResponse 로그인_사용자;
-    protected RequestSpecification 사용자;
 
     @BeforeEach
     public void setUp(RestDocumentationContextProvider restDocumentation) {
         RestAssured.port = port;
         databaseCleanup.execute();
 
-        this.spec = new RequestSpecBuilder()
-                .addFilter(documentationConfiguration(restDocumentation))
-                .build();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         회원_생성_요청(EMAIL, PASSWORD, NAME);
         로그인_사용자 = 로그인_되어_있음(EMAIL, PASSWORD);
 
-        사용자 = RestAssured.given(spec).log().all()
-                .auth().oauth2(로그인_사용자.getAccessToken());
+        this.spec = new RequestSpecBuilder()
+                .addFilter(documentationConfiguration(restDocumentation))
+                .build();
     }
 }
