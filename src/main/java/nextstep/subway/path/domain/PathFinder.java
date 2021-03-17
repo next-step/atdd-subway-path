@@ -14,6 +14,19 @@ public class PathFinder {
 
   public StationPath findPath(List<Sections> sectionsList, Station source, Station target) {
     validate(source, target);
+    DijkstraShortestPath dijkstraShortestPath = createDijkstraShortestPath(sectionsList,source,target);
+    GraphPath graphPath = dijkstraShortestPath.getPath(source, target);
+    if(graphPath == null) {
+      throw new InvalidStationPathException("출발역과 도착역이 연결되어 있지 않습니다.");
+    }
+    return createStationPath((int) graphPath.getWeight(),graphPath.getVertexList());
+  }
+
+  private StationPath createStationPath(int distance, List<Station> shortestPath){
+    return new StationPath(distance, shortestPath);
+  }
+
+  private DijkstraShortestPath createDijkstraShortestPath(List<Sections> sectionsList, Station source, Station target){
     WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(
         DefaultWeightedEdge.class);
     graph.addVertex(source);
@@ -28,13 +41,8 @@ public class PathFinder {
         .forEach(section -> graph
             .setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()),
                 section.getDistance()));
-    DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-    GraphPath graphPath = dijkstraShortestPath.getPath(source, target);
-    List<Station> shortestPath = graphPath.getVertexList();
-    int distance = (int) graphPath.getWeight();
-    return new StationPath(distance, shortestPath);
+    return new DijkstraShortestPath(graph);
   }
-
   private void validate(Station source, Station target) {
     if (source.equals(target)) {
       throw new InvalidStationPathException("출발역과 도착역은 서로 달라야 합니다.");
