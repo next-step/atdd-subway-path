@@ -1,6 +1,7 @@
 package nextstep.subway.path.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -102,4 +103,17 @@ public class PathFinderTest {
     assertThat(stationPath.getStations()).containsExactly(광교역,광교중앙역,상현역,성복역,수지구청역,동천역,미금역,강남역,역삼역);
     assertThat(stationPath.getDistance()).isEqualTo(totalDistance);
   }
+
+  @DisplayName("탐색하려는 경로의 출발역 도착역이 같으면 Exception")
+  @Test
+  void findPathWithSameStation(){
+    //given
+    Sections 신분당선_구간 = 신분당선.getSections();
+    Sections 이호선_구간 =이호선.getSections();
+    //when then
+    assertThrows(InvalidStationPathException.class, ()-> {
+      pathFinder.findPath(Arrays.asList(신분당선_구간,이호선_구간),광교역,광교역);
+    });
+  }
+
 }
