@@ -3,26 +3,27 @@ package nextstep.subway.path.domain;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.exception.DoseNotExistedStationException;
-import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Component
 public class PathFinder {
 
-    private PathFinder () {}
+    public PathFinder () {}
 
-    public static GraphPath<Station, DefaultWeightedEdge> getShortedPath(
+    public StationGraphPath getShortedPath(
         List<Section> sections,
         Station source,
         Station target
     ) {
-        List<Station> allStations = sections.stream()
+        List<Station> stations = sections.stream()
             .flatMap(section -> Stream.of(
                 section.getUpStation(),
                 section.getDownStation()
@@ -30,15 +31,11 @@ public class PathFinder {
             .distinct()
             .collect(Collectors.toList());
 
+        validateContains(stations, source, target);
+
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
 
-        if (!allStations.containsAll(Arrays.asList(source, target))) {
-            throw new DoseNotExistedStationException();
-        }
-
-        for (Station station : allStations) {
-            graph.addVertex(station);
-        }
+        stations.forEach(graph::addVertex);
 
         for (Section section : sections) {
             graph.setEdgeWeight(
@@ -47,7 +44,12 @@ public class PathFinder {
             );
         }
 
-        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
-        return dijkstraShortestPath.getPath(source, target);
+        return StationGraphPath.of(new DijkstraShortestPath<>(graph).getPath(source, target));
+    }
+
+    private void validateContains(List<Station> stations, Station source, Station target) {
+        if (!stations.containsAll(Arrays.asList(source, target))) {
+            throw new DoseNotExistedStationException();
+        }
     }
 }

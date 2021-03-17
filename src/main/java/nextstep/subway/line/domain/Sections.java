@@ -6,6 +6,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -179,5 +180,9 @@ public class Sections {
 
     public int sumDistance() {
         return sumDistance(sections);
+    }
+
+    public Stream<Section> stream() {
+        return sections.stream();
     }
 }
