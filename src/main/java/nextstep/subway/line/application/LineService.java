@@ -12,10 +12,7 @@ import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,7 +45,7 @@ public class LineService {
     }
 
     public Line findLineById(Long id) {
-        return lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        return lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
     public LineResponse findLineResponseById(Long id) {
@@ -74,11 +71,13 @@ public class LineService {
 
     public void removeSection(Long lineId, Long stationId) {
         Line line = findLineById(lineId);
-        line.removeSection(stationId);
+        Station station = stationService.findStationById(stationId);
+        line.getSections().removeSection(station);
     }
 
     public LineResponse createLineResponse(Line line) {
-        List<StationResponse> stations = line.getStations().stream()
+        List<StationResponse> stations = line.getStations()
+                .stream()
                 .map(it -> StationResponse.of(it))
                 .collect(Collectors.toList());
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stations, line.getCreatedDate(), line.getModifiedDate());
