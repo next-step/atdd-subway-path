@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.exception.InValidSectionSizeException;
+import nextstep.subway.exception.InvalidSectionDistanceException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -82,6 +83,17 @@ public class LineTest {
         // then
         assertThat(이호선.getSections().size()).isEqualTo(2);
         assertThat(이호선.getStations()).containsExactly(강남역, 삼성역, 역삼역);
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록 시, 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.")
+    @Test
+    void addLineSectionBetweenInLongerDistance() {
+        // given
+        이호선.addSection(강남역, 역삼역, 10);
+
+        // then
+        assertThatThrownBy(() -> 이호선.addSection(강남역, 삼성역, 11))
+                .isInstanceOf(InvalidSectionDistanceException.class);
     }
 
 
