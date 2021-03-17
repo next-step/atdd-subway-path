@@ -18,14 +18,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class LineSteps {
 
     public static ExtractableResponse<Response> 지하철_노선_생성요청(LineRequest lineRequest) {
-
         return RestAssured.given().log().all()
-                .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines")
-                .then()
-                .log().all().extract();
+                .body(lineRequest)
+                .when().post("/lines")
+                .then().log().all()
+                .extract();
     }
 
     public static void 지하철_노선_요청에대한_응답_확인(ExtractableResponse<Response> response, LineResponse line) {
@@ -70,14 +68,15 @@ public class LineSteps {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_수정_요청(LineResponse line) {
-        return RestAssured.given().log().all()
-                .body(line)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .put("/lines/{id}", line.getId())
-                .then().log().all()
-                .extract();
+    public static ExtractableResponse<Response> 지하철_노선_수정_요청(long lineId, LineRequest line) {
+        return RestAssured.given().log().all().
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                body(line).
+                when().
+                put("/lines/{id}", lineId).
+                then().
+                log().all().
+                extract();
     }
 
     public static ExtractableResponse<Response> 지하철_노선_제거_요청(LineResponse line) {

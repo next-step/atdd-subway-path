@@ -20,7 +20,6 @@ import static nextstep.subway.station.StationSteps.지하철역_생성_요청;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private LineResponse redLine;
     private StationResponse 강남역;
     private StationResponse 판교역;
     private StationResponse 정자역;
@@ -37,7 +36,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         판교역 = 지하철역_생성_요청("판교역").as(StationResponse.class);
         정자역 = 지하철역_생성_요청("정자역").as(StationResponse.class);
 
-        lineRequest = new LineRequest("신분당선", "red", 판교역.getId(), 정자역.getId(), distance);
+        lineRequest = new LineRequest("신분당선2", "red", 판교역.getId(), 정자역.getId(), distance);
     }
 
     @DisplayName("지하철 노선을 생성한다.")
@@ -103,13 +102,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         LineRequest brownLineRequest = setStationData("6호선", "brown", 상수역.getId(), 이태원역.getId(), 10);
 
         // given
-        LineResponse line = 지하철_노선_생성요청(brownLineRequest).as(LineResponse.class);
-
+        ExtractableResponse createLineResponse = 지하철_노선_생성요청(brownLineRequest);
+        long lineId = createLineResponse.as(LineResponse.class).getId();
         // when
-        ExtractableResponse<Response> response = 지하철_노선_수정_요청(line);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(lineId, brownLineRequest);
 
         // then
-        지하철_노선_요청에대한_응답_확인(response, line);
+        지하철_노선_응답_확인(response.statusCode(), HttpStatus.OK);
     }
 
     @DisplayName("지하철 노선을 제거한다.")
@@ -131,8 +130,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void subwayExistNameException() {
         //given
         지하철_노선_생성요청(lineRequest);
+
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성요청(lineRequest);
+
         // then
         지하철_노선_응답_확인(response.statusCode(), HttpStatus.BAD_REQUEST);
     }

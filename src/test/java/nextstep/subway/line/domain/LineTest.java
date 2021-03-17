@@ -54,6 +54,10 @@ public class LineTest {
     @Test
     void addSection() {
         pinkLine.addSection(석촌역, 남한산성입구역, 4);
+        for(StationResponse response : pinkLine.getAllStations()) {
+            System.out.println(response.getId());
+            System.out.println(response.getName());
+        }
         assertEquals(pinkLine.getAllStations().size(), 3);
     }
 
@@ -74,9 +78,6 @@ public class LineTest {
     @DisplayName("새로 등록하려는 구간 거리가 기존 구간 보다 크거나 같은 경우")
     @Test
     void distanceMaximumException() {
-        assertThatExceptionOfType(DistanceMaximumException.class)
-                .isThrownBy(() -> pinkLine.addSection(단대오거리역, 송파역, 5));
-
         assertThatExceptionOfType(DistanceMaximumException.class)
                 .isThrownBy(() -> pinkLine.addSection(단대오거리역, 송파역, 10));
     }
