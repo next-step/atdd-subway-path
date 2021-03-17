@@ -27,19 +27,60 @@ public class PathFinderTest {
   private Station 강남역;
   private Station 역삼역;
   private Station 사당역;
+  private Station 광명역;
+  private Station 금천구청역;
+  private Station 독산역;
+  private Station 철산역;
   private Line 신분당선;
   private Line 이호선;
+  private Line 일호선;
 
 
   @BeforeEach
   void init() {
-    역생성();
-    노선생성();
-    구간추가();
+    일호선_생성();
+    이호선_생성();
+    신분당선_생성();
     pathFinder = new PathFinder();
   }
 
-  void 역생성() {
+  void 일호선_생성() {
+    광명역 = new Station("광명역");
+    ReflectionTestUtils.setField(광명역, "id", 12L);
+
+    금천구청역 = new Station("금천구청역");
+    ReflectionTestUtils.setField(금천구청역, "id", 13L);
+
+    독산역 = new Station("독산역");
+    ReflectionTestUtils.setField(독산역, "id", 14L);
+
+    철산역 = new Station("철산역");
+    ReflectionTestUtils.setField(철산역, "id", 15L);
+
+    일호선 = new Line("일호선", LineColor.BLUE.toString(), 광명역, 독산역, 5);
+    ReflectionTestUtils.setField(일호선,"id",3L);
+
+    일호선.addSection(독산역, 금천구청역, 4);
+
+  }
+
+  void 이호선_생성() {
+    역삼역 = new Station("역삼역");
+    ReflectionTestUtils.setField(역삼역, "id", 10L);
+
+    사당역 = new Station("사당역");
+    ReflectionTestUtils.setField(사당역, "id", 11L);
+
+    강남역 = new Station("강남역");
+    ReflectionTestUtils.setField(강남역, "id", 9L);
+
+    이호선 = new Line("신분당선", LineColor.GREEN.toString(), 사당역, 강남역, 5);
+    ReflectionTestUtils.setField(이호선,"id",2L);
+    이호선.addSection(강남역,역삼역,4);
+
+  }
+
+  void 신분당선_생성() {
     광교역 = new Station("광교역");
     ReflectionTestUtils.setField(광교역, "id", 1L);
 
@@ -61,22 +102,9 @@ public class PathFinderTest {
     동천역 = new Station("동천역");
     ReflectionTestUtils.setField(동천역, "id", 8L);
 
-    강남역 = new Station("강남역");
-    ReflectionTestUtils.setField(강남역, "id", 9L);
-
-    역삼역 = new Station("역삼역");
-    ReflectionTestUtils.setField(역삼역, "id", 10L);
-
-    사당역 = new Station("사당역");
-    ReflectionTestUtils.setField(사당역, "id", 11L);
-  }
-
-  void 노선생성() {
     신분당선 = new Line("신분당선", LineColor.RED.toString(), 광교역, 광교중앙역, 5);
-    이호선 = new Line("신분당선", LineColor.GREEN.toString(), 사당역, 역삼역, 5);
-  }
+    ReflectionTestUtils.setField(신분당선,"id",1L);
 
-  void 구간추가() {
     신분당선.addSection(광교중앙역, 상현역, 5);
     신분당선.addSection(상현역, 성복역, 5);
     신분당선.addSection(성복역, 수지구청역, 5);
@@ -84,9 +112,7 @@ public class PathFinderTest {
     신분당선.addSection(동천역, 미금역, 5);
     신분당선.addSection(미금역, 강남역, 5);
 
-    이호선.addSection(강남역, 역삼역, 4);
   }
-
 
   @DisplayName("두 역간의 경로를 탐색한다")
   @Test
@@ -112,6 +138,19 @@ public class PathFinderTest {
     //when then
     assertThrows(InvalidStationPathException.class, () -> {
       pathFinder.findPath(Arrays.asList(신분당선_구간, 이호선_구간), 광교역, 광교역);
+    });
+  }
+
+  @DisplayName("탐색하려는 경로의 출발역과 도착역이 연결되어있지 않으면 Exception")
+  @Test
+  void findPathWithNoConnectedStation() {
+    //given
+    Sections 신분당선_구간 = 신분당선.getSections();
+    Sections 이호선_구간 = 이호선.getSections();
+    Sections 일호선_구간 = 일호선.getSections();
+    //when then
+    assertThrows(InvalidStationPathException.class, () -> {
+      pathFinder.findPath(Arrays.asList(신분당선_구간, 일호선_구간), 광교역, 광명역);
     });
   }
 
