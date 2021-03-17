@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import nextstep.subway.exception.AlreadyExistDownStation;
 import nextstep.subway.exception.InValidSectionSizeException;
 import nextstep.subway.exception.InValidUpStationException;
+import nextstep.subway.exception.InvalidSectionDistanceException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -43,16 +44,19 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("추가할 수 있는 구간이 존재하지 않습니다."));
 
-        if(matchSection.getDistance() > section.getDistance()) {
-            final int distance = matchSection.getDistance() - section.getDistance();
-            if(matchSection.getUpStation().equals(section.getUpStation())) {
-                matchSection.updateDownStation(section.getDownStation(), distance);
-            }
-            if(matchSection.getDownStation().equals(section.getDownStation())) {
-                matchSection.updateUpStation(section.getUpStation(), distance);
-            }
-            sections.add(section);
+        if(matchSection.getDistance() <= section.getDistance()) {
+            throw new InvalidSectionDistanceException();
         }
+
+        final int distance = matchSection.getDistance() - section.getDistance();
+        if(matchSection.getUpStation().equals(section.getUpStation())) {
+            matchSection.updateDownStation(section.getDownStation(), distance);
+        }
+        if(matchSection.getDownStation().equals(section.getDownStation())) {
+            matchSection.updateUpStation(section.getUpStation(), distance);
+        }
+        sections.add(section);
+
     }
 
     private Station getFirstStation() {
