@@ -3,13 +3,9 @@ package nextstep.subway.path.application;
 import com.google.common.collect.Lists;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
-import org.jgrapht.GraphPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,6 +40,8 @@ public class PathServiceTest {
 
     @BeforeEach
     void setUp() {
+        pathService = new PathService(lineService, stationService);
+
         강남역 = new Station("강남역");
         ReflectionTestUtils.setField(강남역, "id", 1L);
         양재역 = new Station("양재역");
@@ -69,14 +67,12 @@ public class PathServiceTest {
         when(lineService.findLines()).thenReturn(Lists.newArrayList(신분당선, 이호선, 삼호선));
         when(stationService.findById(강남역.getId())).thenReturn(강남역);
         when(stationService.findById(남부터미널역.getId())).thenReturn(남부터미널역);
+
         // when
-        PathResponse pathResponse= pathService.getShortestPath();
+        PathResponse pathResponse= pathService.getShortestPath(강남역.getId(), 남부터미널역.getId());
 
         // then
         assertThat(pathResponse.getStations()).isEqualTo(Arrays.asList(강남역, 교대역, 남부터미널역));
         assertThat(pathResponse.getDistance()).isEqualTo(13);
     }
-
-
-
 }

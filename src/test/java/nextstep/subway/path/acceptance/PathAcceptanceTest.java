@@ -17,8 +17,7 @@ import java.util.Arrays;
 
 import static nextstep.subway.line.acceptance.LineSteps.지하철_노선_등록되어_있음;
 import static nextstep.subway.line.acceptance.LineSteps.지하철_노선에_지하철역_등록_요청;
-import static nextstep.subway.path.acceptance.PathSteps.최단거리_조회_요청;
-import static nextstep.subway.path.acceptance.PathSteps.최단경로에_지하철역_순서_정렬됨;
+import static nextstep.subway.path.acceptance.PathSteps.*;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -66,7 +65,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        최단경로에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 교대역, 남부터미널역));
+        최단경로에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 양재역, 남부터미널역));
     }
 
     @DisplayName("출발역과 도착역이 같은 경우")
@@ -76,9 +75,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         // when
         // then
-        assertThatThrownBy(()->{
-            최단거리_조회_요청(강남역.getId(), 강남역.getId());
-        }).isInstanceOf(SourceEqualsWithTargetException.class);
+        ExtractableResponse response = 최단거리_조회_요청(강남역.getId(), 강남역.getId());
+        최단경로_조회_실패함(response);
     }
 
     @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우")
@@ -89,21 +87,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         // when
         // then
-        assertThatThrownBy( () -> {
-            최단거리_조회_요청(강남역.getId(), 사당역.getId());
-        }).isInstanceOf(StationsNotConnectedException.class);
-    }
-
-    @DisplayName("존재하지 않은 출발역이나 도착역을 조회 할 경우")
-    @Test
-    void findShortestPath_WhenInvalidStationRequested_ThenFail() {
-        // given
-        Long 존재하지않는역ID = 999L;
-
-        // when
-        // then
-        assertThatThrownBy( () -> {
-            최단거리_조회_요청(강남역.getId(), 존재하지않는역ID);
-        }).isInstanceOf(StationNotExistsException.class);
+        ExtractableResponse<Response> response = 최단거리_조회_요청(강남역.getId(), 사당역.getId());
+        최단경로_조회_실패함(response);
     }
 }
