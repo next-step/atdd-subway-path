@@ -2,6 +2,7 @@ package nextstep.subway.path.domain;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -12,6 +13,8 @@ import org.jgrapht.graph.WeightedMultigraph;
 
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.path.dto.PathResponse;
+import nextstep.subway.path.exception.NotExistPathException;
+import nextstep.subway.path.exception.SameStationException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -35,6 +38,8 @@ public class PathFinder {
 	}
 
 	public PathResponse findShortestPath(Station source, Station target) {
+		validateFindBefore(source, target);
+
 		stations.forEach(graph::addVertex);
 		sections.forEach(section ->
 			graph.setEdgeWeight(
@@ -43,6 +48,9 @@ public class PathFinder {
 
 		final DijkstraShortestPath<Station, DefaultWeightedEdge> path = new DijkstraShortestPath<>(graph);
 		final GraphPath<Station, DefaultWeightedEdge> graphPath = path.getPath(source, target);
+
+		validateFindAfter(graphPath);
+
 		final List<Station> pathStations = graphPath.getVertexList();
 
 		return PathResponse.of(
@@ -51,5 +59,17 @@ public class PathFinder {
 					.collect(Collectors.toList()),
 			(int) graphPath.getWeight()
 		);
+	}
+
+	private void validateFindAfter(GraphPath<Station, DefaultWeightedEdge> graphPath) {
+		if (Objects.isNull(graphPath) || graphPath.getVertexList().isEmpty()) {
+			throw new NotExistPathException();
+		}
+	}
+
+	private void validateFindBefore(Station source, Station target) {
+		if (source.equals(target)) {
+			throw new SameStationException();
+		}
 	}
 }

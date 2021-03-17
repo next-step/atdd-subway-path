@@ -58,25 +58,42 @@ public class PathAcceptanceTest extends AcceptanceTest {
 		final ExtractableResponse<Response> response = 지하철_최단경로_조회_요청(강남역, 남부터미널역);
 
 		// then
-		지하철_최단경로_응답됨(response, 13);
+		지하철_최단경로_응답됨(response);
 	}
 
 	@DisplayName("출발역과 도착역이 같은 최단 경로를 조회한다.")
 	@Test
 	void findShortestPathSameStation() {
+		// when
+		final ExtractableResponse<Response> response = 지하철_최단경로_조회_요청(강남역, 강남역);
 
+		// then
+		지하철_최단경로_조회_실패됨(response);
 	}
 
 	@DisplayName("출발역과 도착역이 연결되지 않은 경로를 조회한다.")
 	@Test
 	void findShortestPathNotConnected() {
+		// when
+		final ExtractableResponse<Response> response = 지하철_최단경로_조회_요청(강남역, 강남역);
 
+		// then
+		지하철_최단경로_조회_실패됨(response);
 	}
 
 	@DisplayName("출발역이나 도착역이 존재하지 않는 경로를 조회한다.")
 	@Test
 	void findShortestPathNotExistStation() {
+		// given
+		StationResponse 수원역 = 지하철역_등록되어_있음("수원역").as(StationResponse.class);
+		StationResponse 천안역 = 지하철역_등록되어_있음("천안역").as(StationResponse.class);
+		지하철_노선_등록되어_있음("일호선", "bg-green-600", 수원역, 천안역, 20);
 
+		//when
+		final ExtractableResponse<Response> response = 지하철_최단경로_조회_요청(수원역, 강남역);
+
+		// then
+		지하철_최단경로_조회_실패됨(response);
 	}
 
 	private ExtractableResponse<Response> 지하철_최단경로_조회_요청(
@@ -89,8 +106,12 @@ public class PathAcceptanceTest extends AcceptanceTest {
 			.then().log().all().extract();
 	}
 
-	private void 지하철_최단경로_응답됨(ExtractableResponse<Response> response, int expectedDistance) {
+	private void 지하철_최단경로_응답됨(ExtractableResponse<Response> response) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-		assertThat(response.jsonPath().getInt("distance")).isEqualTo(expectedDistance);
+		assertThat(response.jsonPath().getInt("distance")).isNotNull();
+	}
+
+	private void 지하철_최단경로_조회_실패됨(ExtractableResponse<Response> response) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 }
