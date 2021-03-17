@@ -1,9 +1,8 @@
 package nextstep.subway.path.domain;
-import java.util.HashSet;
+
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import nextstep.subway.common.exception.InvalidStationPathException;
 import nextstep.subway.line.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import org.jgrapht.GraphPath;
@@ -13,8 +12,10 @@ import org.jgrapht.graph.WeightedMultigraph;
 
 public class PathFinder {
 
-  public StationPath findPath(List<Sections> sectionsList,Station source, Station target) {
-    WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+  public StationPath findPath(List<Sections> sectionsList, Station source, Station target) {
+    validate(source, target);
+    WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(
+        DefaultWeightedEdge.class);
     graph.addVertex(source);
     //vertex 추가
     sectionsList.stream()
@@ -24,11 +25,19 @@ public class PathFinder {
     //edge 추가
     sectionsList.stream()
         .flatMap(section -> section.getSortedSection().stream())
-        .forEach(section -> graph.setEdgeWeight(graph.addEdge(section.getUpStation(),section.getDownStation()),section.getDistance()));
+        .forEach(section -> graph
+            .setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()),
+                section.getDistance()));
     DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-    GraphPath graphPath = dijkstraShortestPath.getPath(source,target);
+    GraphPath graphPath = dijkstraShortestPath.getPath(source, target);
     List<Station> shortestPath = graphPath.getVertexList();
     int distance = (int) graphPath.getWeight();
-    return new StationPath(distance,shortestPath);
+    return new StationPath(distance, shortestPath);
+  }
+
+  private void validate(Station source, Station target) {
+    if (source.equals(target)) {
+      throw new InvalidStationPathException("출발역과 도착역은 서로 달라야 합니다.");
+    }
   }
 }

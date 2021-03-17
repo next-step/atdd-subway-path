@@ -3,18 +3,16 @@ package nextstep.subway.path.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import nextstep.subway.common.exception.InvalidStationPathException;
 import nextstep.subway.line.acceptance.LineColor;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
-import java.util.List;
 
 public class PathFinderTest {
 
@@ -34,7 +32,7 @@ public class PathFinderTest {
 
 
   @BeforeEach
-  void init(){
+  void init() {
     역생성();
     노선생성();
     구간추가();
@@ -78,7 +76,7 @@ public class PathFinderTest {
     이호선 = new Line("신분당선", LineColor.GREEN.toString(), 사당역, 역삼역, 5);
   }
 
-  void 구간추가(){
+  void 구간추가() {
     신분당선.addSection(광교중앙역, 상현역, 5);
     신분당선.addSection(상현역, 성복역, 5);
     신분당선.addSection(성복역, 수지구청역, 5);
@@ -86,33 +84,34 @@ public class PathFinderTest {
     신분당선.addSection(동천역, 미금역, 5);
     신분당선.addSection(미금역, 강남역, 5);
 
-    이호선.addSection(강남역,역삼역,4);
+    이호선.addSection(강남역, 역삼역, 4);
   }
 
 
   @DisplayName("두 역간의 경로를 탐색한다")
   @Test
-  void findPath(){
+  void findPath() {
     //given
     Sections 신분당선_구간 = 신분당선.getSections();
-    Sections 이호선_구간 =이호선.getSections();
+    Sections 이호선_구간 = 이호선.getSections();
     //when
-    StationPath stationPath = pathFinder.findPath(Arrays.asList(신분당선_구간,이호선_구간),광교역,역삼역);
+    StationPath stationPath = pathFinder.findPath(Arrays.asList(신분당선_구간, 이호선_구간), 광교역, 역삼역);
     //then
     int totalDistance = 39;
-    assertThat(stationPath.getStations()).containsExactly(광교역,광교중앙역,상현역,성복역,수지구청역,동천역,미금역,강남역,역삼역);
+    assertThat(stationPath.getStations())
+        .containsExactly(광교역, 광교중앙역, 상현역, 성복역, 수지구청역, 동천역, 미금역, 강남역, 역삼역);
     assertThat(stationPath.getDistance()).isEqualTo(totalDistance);
   }
 
   @DisplayName("탐색하려는 경로의 출발역 도착역이 같으면 Exception")
   @Test
-  void findPathWithSameStation(){
+  void findPathWithSameStation() {
     //given
     Sections 신분당선_구간 = 신분당선.getSections();
-    Sections 이호선_구간 =이호선.getSections();
+    Sections 이호선_구간 = 이호선.getSections();
     //when then
-    assertThrows(InvalidStationPathException.class, ()-> {
-      pathFinder.findPath(Arrays.asList(신분당선_구간,이호선_구간),광교역,광교역);
+    assertThrows(InvalidStationPathException.class, () -> {
+      pathFinder.findPath(Arrays.asList(신분당선_구간, 이호선_구간), 광교역, 광교역);
     });
   }
 
