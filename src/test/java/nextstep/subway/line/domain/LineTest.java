@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.exception.IllegalSectionException;
 import nextstep.subway.station.domain.Station;
 import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,16 +27,11 @@ public class LineTest {
     @BeforeEach
     void setUp() {
         // given
-        강남역 = new Station("강남역");
-        ReflectionTestUtils.setField(강남역, "id", 1L);
-        역삼역 = new Station("역삼역");
-        ReflectionTestUtils.setField(역삼역, "id", 2L);
-        교대역 = new Station("교대역");
-        ReflectionTestUtils.setField(교대역, "id", 3L);
-        잠실역 = new Station("잠실역");
-        ReflectionTestUtils.setField(잠실역, "id", 4L);
-        강변역 = new Station("강변역");
-        ReflectionTestUtils.setField(강변역, "id", 5L);
+        강남역 = initStation(강남역, "강남역", 1L);
+        역삼역 = initStation(역삼역,"역삼역", 2L);
+        교대역 = initStation(교대역,"교대역", 3L);
+        잠실역 = initStation(잠실역,"잠실역", 4L);
+        강변역 = initStation(강변역,"강변역", 5L);
         이호선 = new Line("2호선", "green", 강남역, 역삼역, 10);
     }
 
@@ -119,17 +115,59 @@ public class LineTest {
         .hasMessage("일치하는 상행역 혹은 하행역이 구간에 없습니다.");
     }
 
+    @DisplayName("가장 앞에 있는 역 제거")
     @Test
-    void removeSection() {
+    void removeSection1() {
         // given
         이호선.addSection(역삼역, 교대역, 20);
 
         // when
-        이호선.removeSection(교대역.getId());
+        이호선.removeSection(강남역);
 
         // then
         assertThat(이호선.getSections().getSections()).hasSize(1);
-        assertThat(이호선.getSections().getSections().get(0).getDownStation()).isEqualTo(역삼역);
+        assertThat(이호선.getSections().getStations()).containsExactly(Arrays.array(역삼역, 교대역));
+    }
+
+    @DisplayName("가장 뒤에 있는 역 제거")
+    @Test
+    void removeSection2() {
+        // given
+        이호선.addSection(역삼역, 교대역, 20);
+
+        // when
+        이호선.removeSection(교대역);
+
+        // then
+        assertThat(이호선.getSections().getSections()).hasSize(1);
+        assertThat(이호선.getSections().getStations()).containsExactly(Arrays.array(강남역, 역삼역));
+    }
+
+    @DisplayName("중간에 있는 역 제거")
+    @Test
+    void removeSection3() {
+        // given
+        이호선.addSection(역삼역, 교대역, 20);
+
+        // when
+        이호선.removeSection(역삼역);
+
+        // then
+        assertThat(이호선.getSections().getSections()).hasSize(1);
+        assertThat(이호선.getSections().getStations()).containsExactly(Arrays.array(강남역, 교대역));
+    }
+
+    @DisplayName("노선에 없는 역 삭제 시 에러 발생")
+    @Test
+    void removeSectionNotExistStation() {
+        // given
+        이호선.addSection(역삼역, 교대역, 20);
+
+        // when/then
+        assertThatThrownBy(()->{
+            이호선.removeSection(잠실역);
+        }).isInstanceOf(IllegalSectionException.class)
+        .hasMessage("노선에 없는 역을 제거할 수 없습니다.");
     }
 
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
@@ -137,7 +175,14 @@ public class LineTest {
     void removeSectionNotEndOfList() {
         // when/then
         assertThatThrownBy(()->{
-            이호선.removeSection(역삼역.getId());
-        }).isInstanceOf(RuntimeException.class);
+            이호선.removeSection(역삼역);
+        }).isInstanceOf(IllegalSectionException.class)
+        .hasMessage("구간이 한개라서 역을 삭제할 수 없습니다.");
+    }
+
+    private Station initStation(Station station, String stationName, Long id) {
+        station = new Station(stationName);
+        ReflectionTestUtils.setField(station, "id", id);
+        return station;
     }
 }

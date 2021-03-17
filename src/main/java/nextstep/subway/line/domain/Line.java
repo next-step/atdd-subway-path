@@ -1,9 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
-import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
 import java.util.*;
@@ -38,13 +36,8 @@ public class Line extends BaseEntity {
         sections.addSections(new Section(this, upStation, downStation, distance));
     }
 
-    public void removeSection(Long stationId) {
-        sections.removeSection(stationId);
-    }
-
-    public LineResponse createLineResponse() {
-        List<StationResponse> stations = sections.toStationResponses();
-        return new LineResponse(id, name, color, stations, getCreatedDate(), getModifiedDate());
+    public void removeSection(Station station) {
+        sections.removeSection(station);
     }
 
     public void update(Line line) {
