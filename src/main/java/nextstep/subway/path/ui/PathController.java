@@ -1,9 +1,8 @@
-package nextstep.subway.paths.ui;
+package nextstep.subway.path.ui;
 
-import nextstep.subway.line.exception.InvalidStationException;
-import nextstep.subway.paths.application.PathService;
-import nextstep.subway.paths.dto.PathResponse;
-import nextstep.subway.paths.exception.NotFoundStationPath;
+import nextstep.subway.path.application.PathService;
+import nextstep.subway.path.dto.PathResponse;
+import nextstep.subway.path.exception.NotFoundStationPath;
 import nextstep.subway.station.exception.NoSuchStationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

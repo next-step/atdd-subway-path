@@ -1,8 +1,5 @@
-package nextstep.subway.paths.dto;
+package nextstep.subway.path.dto;
 
-import nextstep.subway.station.dto.StationResponse;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class PathResponse {

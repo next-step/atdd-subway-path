@@ -1,17 +1,17 @@
-package nextstep.subway.paths.application;
+package nextstep.subway.path.application;
 
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.paths.dto.PathResponse;
-import nextstep.subway.paths.dto.PathStationResponse;
+import nextstep.subway.path.dto.PathResponse;
+import nextstep.subway.path.dto.PathStationResponse;
+import nextstep.subway.path.exception.NotFoundStationPath;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.exception.NoSuchStationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,9 +24,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static nextstep.subway.line.acceptance.LineSteps.지하철_노선_등록되어_있음;
-import static nextstep.subway.line.acceptance.LineSteps.지하철_노선에_지하철역_등록되어_있음;
-import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -88,9 +87,33 @@ public class PathServiceTest {
         assertThat(response.getDistance()).isEqualTo(3);
     }
 
+    @DisplayName("경로가 없는 경우")
+    @Test
+    void searchNoPath() {
+        // given
+        사당역 = stationService.saveStation(new StationRequest("사당역"));
+        남태령 = stationService.saveStation(new StationRequest("남태령"));
+        사호선 = lineService.saveLine(new LineRequest("사호선", "bg-red-600", 사당역.getId(), 남태령.getId(), 5));
+        List<Line> lines = lineService.findAllLines();
+        pathFinder.initialize(lines);
+
+        final Station 교대_지하철 = stationService.findStationById(교대역.getId());
+        final Station 남태령_지하철 = stationService.findStationById(남태령.getId());
+
+        // then
+        assertThatThrownBy(()-> {
+            // when
+            pathFinder.searchShortestPath(교대_지하철, 남태령_지하철);
+        }).isInstanceOf(NotFoundStationPath.class);
+    }
+
     @DisplayName("전달한 역의 아이디가 잘못 된 경우")
     @Test
     void searchShortestPathWithInvalidStationId() {
-
+        // then
+        assertThatThrownBy(()-> {
+            // when
+            final Station source = stationService.findStationById(-1L);
+        }).isInstanceOf(NoSuchStationException.class);
     }
 }

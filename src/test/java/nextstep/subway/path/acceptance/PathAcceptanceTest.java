@@ -1,12 +1,11 @@
-package nextstep.subway.paths.acceptance;
+package nextstep.subway.path.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.paths.dto.PathResponse;
-import nextstep.subway.paths.dto.PathStationResponse;
-import nextstep.subway.station.domain.Station;
+import nextstep.subway.path.dto.PathResponse;
+import nextstep.subway.path.dto.PathStationResponse;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
 
 import static nextstep.subway.line.acceptance.LineSteps.*;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
-import static nextstep.subway.paths.acceptance.PathSteps.최단거리_조회_요청;
+import static nextstep.subway.path.acceptance.PathSteps.최단거리_조회_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 경로 검색")

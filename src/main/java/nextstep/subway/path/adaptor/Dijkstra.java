@@ -1,11 +1,11 @@
-package nextstep.subway.paths.infrastructure;
+package nextstep.subway.path.adaptor;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
-import nextstep.subway.paths.application.PathFinder;
-import nextstep.subway.paths.dto.PathResponse;
-import nextstep.subway.paths.dto.PathStationResponse;
-import nextstep.subway.paths.exception.NotFoundStationPath;
+import nextstep.subway.path.application.PathFinder;
+import nextstep.subway.path.dto.PathResponse;
+import nextstep.subway.path.dto.PathStationResponse;
+import nextstep.subway.path.exception.NotFoundStationPath;
 import nextstep.subway.station.domain.Station;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
