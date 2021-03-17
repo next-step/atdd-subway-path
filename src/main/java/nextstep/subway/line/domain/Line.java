@@ -65,6 +65,9 @@ public class Line extends BaseEntity {
         return sections.getStations();
     }
 
+    public int countTotalDistance() {
+        return sections.countTotalDistance();
+    }
 
     @Override
     public boolean equals(Object o) {
