@@ -74,7 +74,8 @@ public class LineService {
 
     public void removeSection(Long lineId, Long stationId) {
         Line line = findLineById(lineId);
-        line.removeSection(stationId);
+        Station station = stationService.findById(stationId);
+        line.removeSection(station);
     }
 
 
