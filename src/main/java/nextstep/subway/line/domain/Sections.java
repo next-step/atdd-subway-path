@@ -80,29 +80,22 @@ public class Sections {
             throw new OnlyOneSectionRemainingException();
         }
 
-        Section lastSection = sections.stream().filter(s -> s.getDownStation().getId().equals(id)).findAny().get();
-
         if(getLastStation().getId().equals(id)){
-            sections.remove(lastSection);
+            sections.remove(sections.size() - ONE);
             return;
         }
 
-        Section targetUpperSection = sections.stream()
-                .filter(section -> section.getDownStation().getId().equals(id))
-                .findAny()
-                .orElseThrow(NoStationToRemoveException::new);
+        Section targetUpperSection = findSectionToBeDeletedAtUpperSide(id);
+        Section targetDownSection = findSectionToBeDeletedAtDownSide(id);
 
-        Section targetDownSection = sections.stream()
-                .filter(section -> section.getUpStation().getId().equals(id))
-                .findAny()
-                .orElseThrow(NoStationToRemoveException::new);
+        Station newUpStation = targetUpperSection.getUpStation();
+        Station newDownStation = targetDownSection.getDownStation();
+        int distanceOfNewSection = targetUpperSection.getDistance() + targetDownSection.getDistance();
+        int indexOfNewSection = sections.indexOf(targetUpperSection);
 
-        Station upStation = targetUpperSection.getUpStation();
-        Station downStation = targetDownSection.getDownStation();
-        int idx = sections.indexOf(targetUpperSection);
-        sections.remove(targetUpperSection);
-        sections.remove(targetDownSection);
-        sections.add(idx, new Section(targetUpperSection.getLine(), upStation, downStation, targetUpperSection.getDistance() + targetDownSection.getDistance()));
+        Section newSection = new Section(targetUpperSection.getLine(), newUpStation, newDownStation, distanceOfNewSection);
+
+        replaceTargetSectionsWithNewOne(targetUpperSection, targetDownSection, indexOfNewSection, newSection);
     }
 
     private boolean isStationExists(Station station) {
@@ -143,6 +136,26 @@ public class Sections {
 
         oldSection.changeDownStationAndDistance(section.getUpStation(), oldDistance - section.getDistance());
         sections.add(new Section(section.getLine(), section.getUpStation(), oldDownStation, section.getDistance()));
+    }
+
+    private Section findSectionToBeDeletedAtDownSide(Long id) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().getId().equals(id))
+                .findAny()
+                .orElseThrow(NoStationToRemoveException::new);
+    }
+
+    private Section findSectionToBeDeletedAtUpperSide(Long id) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().getId().equals(id))
+                .findAny()
+                .orElseThrow(NoStationToRemoveException::new);
+    }
+
+    private void replaceTargetSectionsWithNewOne(Section targetUpperSection, Section targetDownSection, int indexOfNewSection, Section newSection) {
+        sections.remove(targetUpperSection);
+        sections.remove(targetDownSection);
+        sections.add(indexOfNewSection, newSection);
     }
 
     private Station getFirstStation() {
