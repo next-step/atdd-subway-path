@@ -22,8 +22,6 @@ public class SectionsTest {
     private Station 대방역;
     private Station 노량진역;
     private Station 영등포역;
-    private Section section;
-    private Sections sections;
 
     @BeforeEach
     public void setUp(){
@@ -34,25 +32,28 @@ public class SectionsTest {
         대방역 = new Station("대방역");
         노량진역 = new Station("노량진");
 
-        sections = new Sections();
-        section = new Section(line, 신길역, 대방역, 5);
-        sections.addSection(section);
     }
 
-    @DisplayName("새로운 구간을 추가한다. 새로운 역은 상행 종점으로 등록되며 하행역은 기존 상행역과 동일하다." +
+    @DisplayName("새로운 구간을 추가한다. 기존의 상행역은 새로 등록된 구간의 하행역이 된다." +
             "기존 :             신길역 ---> 대방역" +
             "신규 : 영등포역 ---> 신길역 ---> 대방역"
     )
     @Test
     public void addSection_case1() {
+        //Given
+        Sections sections = new Sections();
+        Section section = new Section(line, 신길역, 대방역, 5);
+        sections.addSection(section);
+
         //When
         Section section2 = new Section(line, 영등포역, 신길역, 5);
         sections.addSection(section2);
 
         //Then
+        List<Station> expected = sections.getStations();
         assertAll(
-                () -> assertThat(sections.getSections().size()).isEqualTo(2),
-                () -> assertThat(sections.getStations()).containsExactlyElementsOf(Arrays.asList(영등포역, 신길역, 대방역)),
+                () -> assertThat(expected.size()).isEqualTo(3),
+                () -> assertThat(expected).containsExactlyElementsOf(Arrays.asList(영등포역, 신길역, 대방역)),
                 () -> assertThat(sections.countTotalDistance()).isEqualTo(section.getDistance() + section2.getDistance())
         );
     }
@@ -62,6 +63,11 @@ public class SectionsTest {
             "신규 :  신길역 ---> 대방역 ---> 노량진역")
     @Test
     public void addSection_case2() {
+        //Given
+        Sections sections = new Sections();
+        Section section = new Section(line, 신길역, 대방역, 5);
+        sections.addSection(section);
+
         //When
         Section section2 = new Section(line, 대방역, 노량진역, 12);
         sections.addSection(section2);
@@ -89,10 +95,35 @@ public class SectionsTest {
         newSections.addSection(new Section(line, 영등포역, 신길역, section2Distance));
 
         List<Station> stations =newSections.getStations();
+
         //Then
         assertAll(
-                () -> assertThat(stations.size()).isEqualTo(2),
-                () -> assertThat(stations).containsExactlyElementsOf(Arrays.asList(영등포역, 신길역, 대방역))
+                () -> assertThat(stations.size()).isEqualTo(3),
+                () -> assertThat(stations).containsExactlyElementsOf(Arrays.asList(영등포역, 신길역, 대방역)),
+                () -> assertThat(newSections.countTotalDistance()).isEqualTo(section1Distance)
+        );
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록한다. 새로운 하행역은 기존 하행역과 동일하다." +
+            "기존 :             신길역 ---> 노량진역" +
+            "신규 :   신길역 ---> 대방역 ---> 노량진역")
+    @Test
+    public void addSection_case4(){
+        //Given
+        int section1Distance = 10;
+        Sections newSections = new Sections();
+        newSections.addSection(new Section(line, 신길역, 노량진역, section1Distance));
+
+        //When
+        int section2Distance = 5;
+        newSections.addSection(new Section(line, 대방역, 노량진역, section2Distance));
+
+        //Then
+        List<Station> stations = newSections.getStations();
+        assertAll(
+                () -> assertThat(stations.size()).isEqualTo(3),
+                () -> assertThat(stations).containsExactlyElementsOf(Arrays.asList(신길역, 대방역, 노량진역)),
+                () -> assertThat(newSections.countTotalDistance()).isEqualTo(section1Distance)
         );
     }
 

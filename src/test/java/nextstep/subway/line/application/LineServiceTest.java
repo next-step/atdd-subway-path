@@ -72,4 +72,20 @@ public class LineServiceTest {
                 () -> assertThat(expected.getStations()).containsExactlyElementsOf(Arrays.asList(station1, station2, station3))
         );
     }
+
+    @DisplayName("새로운 구간을 추가한다. 새로운 역은 상행 종점으로 등록된다.")
+    @Test
+    public void addSection_case3(){
+        //Given
+        lineService.addSection(line.getId(), new SectionRequest(station1.getId(), station2.getId(), 10));
+
+        //When
+        lineService.addSection(line.getId(), new SectionRequest(station3.getId(), station1.getId(), 5));
+
+        //Then
+        Line expected = lineRepository.findById(line.getId()).get();
+        assertAll(
+                () -> assertThat(expected.getSections()).hasSize(2)
+        );
+    }
 }

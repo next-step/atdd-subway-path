@@ -5,6 +5,7 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+
 import javax.persistence.OneToMany;
 import java.util.*;
 
@@ -23,11 +24,7 @@ public class Sections {
     }
 
     private void validateSection(Section section) {
-        if (sections.size() == 0) {
-            return;
-        }
-
-        if(isUpStationAddable(getStations(), section) || isDownStationAddable(getStations(), section)) {
+        if (sections.size() == 0 || isStartStationAndEndAddable(getStations(), section)) {
             return;
         }
 
@@ -40,14 +37,30 @@ public class Sections {
             throw new InvalidDistanceException("기존에 등록된 구간보다 큽니다.");
         }
 
+        if(isUpStationBetweenAddable(getStations(), section)){
+            sections.get(0).changeUpStation(section);
+            return;
+        }
+
+        if(isDownStationBetweenAddable(getStations(), section)) {
+            sections.get(0).changeDownStation(section);
+            return;
+        }
+
     }
 
-    private boolean isUpStationAddable(List<Station> stations, Section section) {
-        return stations.get(stations.size() -1).equals(section.getUpStation());
+    private boolean isStartStationAndEndAddable(List<Station> stations, Section section) {
+        return section.getDownStation().equals(stations.get(0)) || section.getUpStation().equals(stations.get(stations.size() - 1));
     }
 
-    private boolean isDownStationAddable(List<Station> stations, Section section) {
-        return stations.get(0).equals(section.getDownStation());
+    private boolean isDownStationBetweenAddable(List<Station> stations, Section section) {
+        return stations.stream()
+                    .anyMatch(station -> station.equals(section.getDownStation()));
+    }
+
+    private boolean isUpStationBetweenAddable(List<Station> stations, Section section) {
+        return stations.stream()
+                .anyMatch(station -> station.equals(section.getUpStation()));
     }
 
     private boolean isContainStation(Section section, Section targetSection) {

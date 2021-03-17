@@ -73,4 +73,18 @@ public class Section {
     public int hashCode() {
         return Objects.hash(line, upStation, downStation);
     }
+
+    public void changeUpStation(Section section) {
+        this.upStation = section.getDownStation();
+        adjustDistance(section.getDistance());
+    }
+
+    private void adjustDistance(int target) {
+        this.distance = distance - target;
+    }
+
+    public void changeDownStation(Section section) {
+        this.downStation = section.getUpStation();
+        adjustDistance(section.getDistance());
+    }
 }
