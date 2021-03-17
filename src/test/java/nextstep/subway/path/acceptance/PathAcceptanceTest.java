@@ -14,7 +14,6 @@ import java.util.Arrays;
 import static nextstep.subway.line.acceptance.LineRequestSteps.지하철_노선_생성_요청;
 import static nextstep.subway.line.acceptance.LineSectionRequestSteps.노선_요청;
 import static nextstep.subway.line.acceptance.LineSectionRequestSteps.지하철_노선에_구간_등록_요청;
-import static nextstep.subway.path.acceptance.PathRequestSteps.지하철_최단_경로_조회_요청;
 import static nextstep.subway.path.acceptance.PathVerificationSteps.*;
 import static nextstep.subway.station.StationRequestSteps.지하철_역_등록_됨;
 
@@ -61,7 +60,7 @@ class PathAcceptanceTest extends AcceptanceTest {
         long target = 남부터미널역.getId();
 
         // when
-        ExtractableResponse<Response> response = 지하철_최단_경로_조회_요청(source, target);
+        ExtractableResponse<Response> response = PathRequestSteps.지하철_최단_경로_조회_요청(source, target);
 
         // then
         지하철_최단_경로_조회_됨(response);
@@ -77,7 +76,7 @@ class PathAcceptanceTest extends AcceptanceTest {
         long target = 강남역.getId();
 
         // when
-        ExtractableResponse<Response> response = 지하철_최단_경로_조회_요청(source, target);
+        ExtractableResponse<Response> response = PathRequestSteps.지하철_최단_경로_조회_요청(source, target);
 
         // then
         지하철_최단_경로_조회_실패_됨(response);
@@ -92,7 +91,7 @@ class PathAcceptanceTest extends AcceptanceTest {
         long target = 명동역.getId();
 
         // when
-        ExtractableResponse<Response> response = 지하철_최단_경로_조회_요청(source, target);
+        ExtractableResponse<Response> response = PathRequestSteps.지하철_최단_경로_조회_요청(source, target);
 
         // then
         지하철_최단_경로_조회_실패_됨(response);
@@ -106,7 +105,7 @@ class PathAcceptanceTest extends AcceptanceTest {
         long target = 101L;
 
         // when
-        ExtractableResponse<Response> response = 지하철_최단_경로_조회_요청(source, target);
+        ExtractableResponse<Response> response = PathRequestSteps.지하철_최단_경로_조회_요청(source, target);
 
         // then
         지하철_최단_경로_조회_실패_됨(response);
