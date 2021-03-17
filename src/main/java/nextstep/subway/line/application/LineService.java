@@ -72,29 +72,17 @@ public class LineService {
         addSection(line, upStation, downStation, request.getDistance());
     }
 
+    private void addSection(Line line, Station upStation, Station downStation, int distance) {
+        line.addSection(line, upStation, downStation, distance);
+    }
+
     public void removeSection(Long lineId, Long stationId) {
         Line line = findLineById(lineId);
         removeSection(line, stationId);
     }
 
-    private void addSection(Line line, Station upStation, Station downStation, int distance) {
-        line.addSection(new Section(line, upStation, downStation, distance));
-    }
-
-    public void removeSection(Line line, Long stationId) {
-        if (line.getSections().size() <= 1) {
-            throw new RuntimeException();
-        }
-
-        boolean isNotValidUpStation = getStations(line).get(getStations(line).size() - 1).getId() != stationId;
-        if (isNotValidUpStation) {
-            throw new RuntimeException("하행 종점역만 삭제가 가능합니다.");
-        }
-
-        line.getSections().stream()
-                .filter(it -> it.getDownStation().getId() == stationId)
-                .findFirst()
-                .ifPresent(it -> line.getSections().remove(it));
+    private void removeSection(Line line, Long stationId) {
+        line.removeSection(stationId);
     }
 
     public List<Station> getStations(Line line) {
