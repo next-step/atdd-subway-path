@@ -133,44 +133,41 @@ public class Sections {
     public void removeSection(Station station) {
         validateSectionForRemove(station);
 
-        // remove before section
-        if (isStationLocatedBeforeSection(station)) {
+        if (isMatchBeforeSection(station)) {
             removeBeforeSection(station);
             return;
         }
 
-        // remove after section
-        if (isStationLocatedAfterSection(station)) {
+        if (isMatchAfterSection(station)) {
             removeAfterSection(station);
             return;
         }
 
-        // remove middle
         removeMiddleSection(station);
     }
 
     private void validateSectionForRemove(Station station) {
-        if (hasLastSection()) {
+        if (isLastSection()) {
             throw new IllegalSectionException(CANT_DELETE_ONE_SECTION);
         }
-        if (hasNotStation(station)) {
+        if (isNoneMatchSection(station)) {
             throw new IllegalSectionException(NOT_INCLUDED_STATION);
         }
     }
 
-    private boolean hasLastSection() {
+    private boolean isLastSection() {
         return sections.size() <= 1;
     }
 
-    private boolean hasNotStation(Station station) {
+    private boolean isNoneMatchSection(Station station) {
         return !findBeforeSectionOptional(station).isPresent() && !findAfterSectionOptional(station).isPresent();
     }
 
-    private boolean isStationLocatedBeforeSection(Station station) {
+    private boolean isMatchBeforeSection(Station station) {
         return findBeforeSectionOptional(station).isPresent() && !findAfterSectionOptional(station).isPresent();
     }
 
-    private boolean isStationLocatedAfterSection(Station station) {
+    private boolean isMatchAfterSection(Station station) {
         return !findBeforeSectionOptional(station).isPresent() && findAfterSectionOptional(station).isPresent();
     }
 
