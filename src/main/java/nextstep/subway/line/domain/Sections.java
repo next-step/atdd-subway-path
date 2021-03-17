@@ -1,6 +1,8 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.domain.exception.AlreadyExistStation;
 import nextstep.subway.line.domain.exception.InvalidDistanceException;
+import nextstep.subway.line.domain.exception.NotExistedStation;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -19,8 +21,15 @@ public class Sections {
     }
 
     public void addSection(Section section) {
+        validateContainsAllStations(section);
         validateSection(section);
         sections.add(section);
+    }
+
+    private void validateContainsAllStations(Section section){
+        if(getStations().containsAll(Arrays.asList(section.getUpStation(), section.getDownStation()))){
+            throw new AlreadyExistStation();
+        }
     }
 
     private void validateSection(Section section) {
@@ -28,21 +37,22 @@ public class Sections {
             return;
         }
 
+        List<Station> stations = getStations();
         Section find = sections.stream()
                 .filter(i -> isContainStation(i, section))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("등록된 역이 없습니다."));
+                .orElseThrow(() -> new NotExistedStation("등록된 역이 없습니다."));
 
         if (section.getDistance() >= find.getDistance()) {
             throw new InvalidDistanceException("기존에 등록된 구간보다 큽니다.");
         }
 
-        if(isUpStationBetweenAddable(getStations(), section)){
+        if(isUpStationBetweenAddable(stations, section)){
             sections.get(0).changeUpStation(section);
             return;
         }
 
-        if(isDownStationBetweenAddable(getStations(), section)) {
+        if(isDownStationBetweenAddable(stations, section)) {
             sections.get(0).changeDownStation(section);
             return;
         }

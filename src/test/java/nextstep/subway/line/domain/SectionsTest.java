@@ -1,6 +1,8 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.domain.exception.AlreadyExistStation;
 import nextstep.subway.line.domain.exception.InvalidDistanceException;
+import nextstep.subway.line.domain.exception.NotExistedStation;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -142,4 +144,34 @@ public class SectionsTest {
         }).isInstanceOf(InvalidDistanceException.class);
 
     }
+
+    @DisplayName("상행역과 하행역 둘 중하나도 포함되어있지 않을 경우 예외처리")
+    @Test
+    public void addSectionNotExistedStations(){
+        assertThatThrownBy(() -> {
+
+            Sections newSections = new Sections();
+            newSections.addSection(new Section(line, 영등포역, 대방역, 10));
+            Section section2 = new Section(line, 영등포역, 신길역, 3);
+            newSections.addSection(section2);
+
+            Section section3 = new Section(line, 노량진역, new Station("용산역"), 5);
+            newSections.addSection(section3);
+
+        }).isInstanceOf(NotExistedStation.class);
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있을 경우 예외처리")
+    @Test
+    public void alreadyExistStation(){
+        assertThatThrownBy(() -> {
+
+            Sections newSections = new Sections();
+            newSections.addSection(new Section(line, 영등포역, 대방역, 10));
+            Section section2 = new Section(line, 영등포역, 대방역, 3);
+            newSections.addSection(section2);
+
+        }).isInstanceOf(AlreadyExistStation.class);
+    }
+
 }
