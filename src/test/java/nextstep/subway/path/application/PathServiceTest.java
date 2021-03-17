@@ -151,5 +151,18 @@ public class PathServiceTest {
 
   }
 
+  @DisplayName("시작역과 도착역이 연결되어 있지 않으면 경로찾기를 실패한다")
+  @Test
+  void searchPathWithNotConnectedStation(){
+    //given
+    given(stationService.findStation(광교역.getId())).willReturn(광교역);
+    given(stationService.findStation(광명역.getId())).willReturn(광명역);
+    given(lineService.getLineByStationId(광교역.getId(), 광명역.getId()))
+        .willReturn(Arrays.asList(신분당선, 일호선));
+    assertThrows(InvalidStationPathException.class, () -> {
+      pathService.findPath(광교역.getId(), 광명역.getId());
+    });
+  }
+
 
 }
