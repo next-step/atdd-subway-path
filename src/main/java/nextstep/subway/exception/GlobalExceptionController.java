@@ -17,4 +17,9 @@ public class GlobalExceptionController {
     public ResponseEntity handleExistUpAndDownStationException(ExistUpAndDownStationException e) {
         return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(CanNotFoundSectionToAddException.class)
+    public ResponseEntity handleCanNotFoundSectionToAddException(CanNotFoundSectionToAddException e) {
+        return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }

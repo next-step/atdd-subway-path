@@ -86,4 +86,13 @@ public class Section {
         }
         return distance;
     }
+
+    public void update(Section section, int distance) {
+        if(upStation.equals(section.getUpStation())) {
+            updateDownStation(section.getDownStation(), distance);
+        }
+        if(downStation.equals(section.getDownStation())) {
+            updateUpStation(section.getUpStation(), distance);
+        }
+    }
 }
