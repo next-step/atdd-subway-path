@@ -2,7 +2,6 @@ package nextstep.subway.path.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import java.util.Arrays;
@@ -155,7 +154,7 @@ public class PathServiceTest {
 
   @DisplayName("시작역과 도착역이 연결되어 있지 않으면 경로찾기를 실패한다")
   @Test
-  void searchPathWithNotConnectedStation(){
+  void searchPathWithNotConnectedStation() {
     //given
     given(stationService.findStation(광교역.getId())).willReturn(광교역);
     given(stationService.findStation(광명역.getId())).willReturn(광명역);
@@ -169,7 +168,7 @@ public class PathServiceTest {
 
   @DisplayName("존재하지 않는 역을 출발역이나 도착역에 입력한경우 경로찾기를 실패한다")
   @Test
-  void searchPathWithUnregisteredStation(){
+  void searchPathWithUnregisteredStation() {
     //given
     given(stationService.findStation(광교역.getId())).willReturn(광교역);
     given(stationService.findStation(금천구청역.getId())).willThrow(NoResourceException.class);
