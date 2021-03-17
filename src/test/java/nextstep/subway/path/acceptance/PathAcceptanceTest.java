@@ -1,4 +1,4 @@
-package nextstep.subway.path;
+package nextstep.subway.path.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 import static nextstep.subway.line.acceptance.LineSteps.지하철_노선_등록되어_있음;
 import static nextstep.subway.line.acceptance.LineSteps.지하철_노선에_지하철역_등록되어_있음;
-import static nextstep.subway.path.PathSteps.지하철_경로_조회_요청;
+import static nextstep.subway.path.acceptance.PathSteps.지하철_경로_조회_요청;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -58,7 +58,6 @@ public class PathAcceptanceTest extends AcceptanceTest {
         ).as(LineResponse.class);
 
         지하철_노선에_지하철역_등록되어_있음(삼호선, 교대역, 남부터미널역, 3);
-        지하철_노선에_지하철역_등록되어_있음(삼호선, 남부터미널역, 양재역, 2);
     }
 
     @DisplayName("지하철 경로 조회: 정상")
