@@ -80,16 +80,29 @@ public class Sections {
             throw new OnlyOneSectionRemainingException();
         }
 
-        Section targetSection = sections.stream()
+        Section lastSection = sections.stream().filter(s -> s.getDownStation().getId().equals(id)).findAny().get();
+
+        if(getLastStation().getId().equals(id)){
+            sections.remove(lastSection);
+            return;
+        }
+
+        Section targetUpperSection = sections.stream()
                 .filter(section -> section.getDownStation().getId().equals(id))
                 .findAny()
                 .orElseThrow(NoStationToRemoveException::new);
 
-        if(!targetSection.getDownStation().equals(getLastStation())) {
-            throw new OnlyFianlCanBeDeletedException();
-        }
+        Section targetDownSection = sections.stream()
+                .filter(section -> section.getUpStation().getId().equals(id))
+                .findAny()
+                .orElseThrow(NoStationToRemoveException::new);
 
-        sections.remove(targetSection);
+        Station upStation = targetUpperSection.getUpStation();
+        Station downStation = targetDownSection.getDownStation();
+        int idx = sections.indexOf(targetUpperSection);
+        sections.remove(targetUpperSection);
+        sections.remove(targetDownSection);
+        sections.add(idx, new Section(targetUpperSection.getLine(), upStation, downStation, targetUpperSection.getDistance() + targetDownSection.getDistance()));
     }
 
     private boolean isStationExists(Station station) {
@@ -145,6 +158,4 @@ public class Sections {
             throw new InvalidDistanceException();
         }
     }
-
-
 }
