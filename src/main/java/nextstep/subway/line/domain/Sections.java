@@ -5,6 +5,7 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Embeddable
@@ -17,11 +18,11 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
-
         if(sections.isEmpty()) {
-            return stations;
+            return Collections.emptyList();
         }
+
+        List<Station> stations = new ArrayList<>();
 
         Station firstStation = sections.get(FIRST_INDEX).getUpStation();
         stations.add(firstStation);
@@ -84,7 +85,12 @@ public class Sections {
             throw new OnlyOneSectionRemainingException();
         }
 
-        if(getLastStation().getId().equals(id)){
+        if(getFirstStation().isSameId(id)) {
+            sections.remove(0);
+            return;
+        }
+
+        if(getLastStation().isSameId(id)) {
             sections.remove(sections.size() - ONE);
             return;
         }
@@ -107,16 +113,16 @@ public class Sections {
     }
 
     private boolean isNewFirstSection(Section section) {
-        return section.getDownStation().equals(getFirstStation());
+        return section.isSameWithDownStation(getFirstStation());
     }
 
     private boolean isNewLastSection(Section section) {
-        return section.getUpStation().equals(getLastStation());
+        return section.isSameWithUpStation(getLastStation());
     }
 
     private void addSectionAtUpperSide(Section section) {
         Section oldSection = sections.stream()
-                .filter(s -> s.getUpStation().equals(section.getUpStation()))
+                .filter(s -> s.isSameWithUpStation(section.getUpStation()))
                 .findAny()
                 .orElseThrow(TargetSectionNotExistsException::new);
         Station oldDownStation = oldSection.getDownStation();
@@ -130,7 +136,7 @@ public class Sections {
 
     private void addSectionAtDownSide(Section section) {
         Section oldSection = sections.stream()
-                .filter(s -> s.getDownStation().equals(section.getDownStation()))
+                .filter(s -> s.isSameWithDownStation(section.getDownStation()))
                 .findAny()
                 .orElseThrow(TargetSectionNotExistsException::new);
         Station oldDownStation = oldSection.getDownStation();

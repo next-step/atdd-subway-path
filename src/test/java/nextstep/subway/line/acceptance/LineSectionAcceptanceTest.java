@@ -163,7 +163,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선에 등록된 지하철역을 제외한다.")
     @Test
-    void removeLineSection() {
+    void removeFinalSection() {
         // given
         // 강남----------양재------정자
         지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
@@ -178,7 +178,24 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 양재역));
     }
 
-    @DisplayName("지하철 노선에 등록된 하행 종점역이 아닌 지하철역을 제외한다.")
+    @DisplayName("지하철 노선에 등록된 상행 종점역을 제외한다.")
+    @Test
+    void removeFirstSection(){
+        // given
+        // 강남----------양재------정자
+        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
+
+        // when
+        // 강남역 삭제 시도
+        ExtractableResponse<Response> removeResponse = 지하철_노선에_지하철역_제외_요청(신분당선, 강남역);
+
+        // then
+        지하철_노선에_지하철역_제외됨(removeResponse);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(양재역, 정자역));
+    }
+
+    @DisplayName("지하철 노선에 등록된 중간에 위치한 지하철역을 제외한다.")
     @Test
     void removeLineSection_WhenStationInMiddle(){
         // given

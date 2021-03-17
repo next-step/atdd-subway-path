@@ -1,8 +1,10 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.station.domain.Station;
+import org.apache.commons.lang3.ObjectUtils;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -57,5 +59,15 @@ public class Section {
     public void changeDownStationAndDistance(final Station downStation, final int distance) {
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public boolean isSameWithDownStation(Station station) {
+        Objects.requireNonNull(station);
+        return station.equals(downStation);
+    }
+
+    public boolean isSameWithUpStation(Station station) {
+        Objects.requireNonNull(station);
+        return station.equals(upStation);
     }
 }

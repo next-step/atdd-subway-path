@@ -1,6 +1,9 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.exception.*;
+import nextstep.subway.line.exception.BothStationExistsException;
+import nextstep.subway.line.exception.BothStationNotExistsException;
+import nextstep.subway.line.exception.InvalidDistanceException;
+import nextstep.subway.line.exception.OnlyOneSectionRemainingException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -138,19 +141,36 @@ public class LineTest {
         }).isInstanceOf(BothStationNotExistsException.class);
     }
 
-    @DisplayName("하행 종점역 삭제")
+    @DisplayName("상행 종점역 삭제")
     @Test
-    void removeSection() {
+    void removeFistSection() {
         // given
-        //강남----------정자-----미금
+        // 강남----------정자-----미금
         신분당선.addSection(new Section(신분당선, 정자역, 미금역, 5));
 
         // when
-        //정자역 삭제
-        신분당선.removeSection(3L);
+        // 강남역 삭제
+        신분당선.removeSection(강남역.getId());
 
         // then
-        //강남---------------미금
+        // 정자-----미금
+        assertThat(신분당선.getStations()).isEqualTo(Arrays.asList(정자역, 미금역));
+        assertThat(신분당선.getStations()).doesNotContain(강남역);
+    }
+
+    @DisplayName("하행 종점역 삭제")
+    @Test
+    void removeFinalSection() {
+        // given
+        // 강남----------정자-----미금
+        신분당선.addSection(new Section(신분당선, 정자역, 미금역, 5));
+
+        // when
+        // 미금역 삭제
+        신분당선.removeSection(미금역.getId());
+
+        // then
+        // 강남----------정자
         assertThat(신분당선.getStations()).isEqualTo(Arrays.asList(강남역, 정자역));
         assertThat(신분당선.getStations()).doesNotContain(미금역);
     }
@@ -164,7 +184,7 @@ public class LineTest {
 
         // when
         // 정자역 삭제
-        신분당선.removeSection(2L);
+        신분당선.removeSection(정자역.getId());
 
         // then
         //강남---------------미금
