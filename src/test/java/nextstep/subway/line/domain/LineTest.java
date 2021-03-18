@@ -52,6 +52,10 @@ public class LineTest {
 
         // then
         assertThat(이호선.getSections().getStations()).containsExactly(Arrays.array(강남역, 역삼역, 교대역));
+        assertThat(이호선.getSections().getSections()
+                .stream()
+                .map(s-> s.getDistance())
+                .reduce(0, Integer::sum)).isEqualTo(30);
     }
 
     @DisplayName("외부에 구간추가 - 기존 구간의 상행역과 신규 구간의 하행역이 같을 경우")
@@ -62,26 +66,38 @@ public class LineTest {
 
         // then
         assertThat(이호선.getSections().getStations()).containsExactly(Arrays.array(교대역, 강남역, 역삼역));
+        assertThat(이호선.getSections().getSections()
+                .stream()
+                .map(s-> s.getDistance())
+                .reduce(0, Integer::sum)).isEqualTo(30);
     }
 
     @DisplayName("기존 구간 중간에 역 추가 - 기존 구간의 상행역과 새로 추가된 구간의 상행역이 같을 경우")
     @Test
     void addSectionInMiddle1() {
         // when
-        이호선.addSection(강남역, 교대역, 5);
+        이호선.addSection(강남역, 교대역, 6);
 
         // then
         assertThat(이호선.getSections().getStations()).containsExactly(Arrays.array(강남역, 교대역, 역삼역));
+        assertThat(이호선.getSections().getSections()
+                .stream()
+                .map(s-> s.getDistance())
+                .reduce(0, Integer::sum)).isEqualTo(10);
     }
 
     @DisplayName("기존 구간 중간에 역 추가 - 기존 구간의 하행역과 새로 추가된 구간의 하행역이 같을 경우")
     @Test
     void addSectionInMiddle2() {
         // when
-        이호선.addSection(교대역, 역삼역, 5);
+        이호선.addSection(교대역, 역삼역, 4);
 
         // then
         assertThat(이호선.getSections().getStations()).containsExactly(Arrays.array(강남역, 교대역, 역삼역));
+        assertThat(이호선.getSections().getSections()
+                .stream()
+                .map(s-> s.getDistance())
+                .reduce(0, Integer::sum)).isEqualTo(10);
     }
 
     @DisplayName("중간에 들어가는 새로운 구간의 길이가 기존 구간 길이와 같거나 더 크면 에러발생")
@@ -127,6 +143,7 @@ public class LineTest {
         // then
         assertThat(이호선.getSections().getSections()).hasSize(1);
         assertThat(이호선.getSections().getStations()).containsExactly(Arrays.array(역삼역, 교대역));
+        assertThat(이호선.getSections().getSections().get(0).getDistance()).isEqualTo(20);
     }
 
     @DisplayName("가장 뒤에 있는 역 제거")
@@ -141,6 +158,7 @@ public class LineTest {
         // then
         assertThat(이호선.getSections().getSections()).hasSize(1);
         assertThat(이호선.getSections().getStations()).containsExactly(Arrays.array(강남역, 역삼역));
+        assertThat(이호선.getSections().getSections().get(0).getDistance()).isEqualTo(10);
     }
 
     @DisplayName("중간에 있는 역 제거")
@@ -155,6 +173,7 @@ public class LineTest {
         // then
         assertThat(이호선.getSections().getSections()).hasSize(1);
         assertThat(이호선.getSections().getStations()).containsExactly(Arrays.array(강남역, 교대역));
+        assertThat(이호선.getSections().getSections().get(0).getDistance()).isEqualTo(30);
     }
 
     @DisplayName("노선에 없는 역 삭제 시 에러 발생")
