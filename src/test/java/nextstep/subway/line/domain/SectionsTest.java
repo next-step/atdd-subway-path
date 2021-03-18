@@ -118,7 +118,8 @@ public class SectionsTest {
         assertThat(resultStations.get(1)).isEqualTo(정자역);
     }
 
-    @DisplayName("노션에서 한 구간만 존재할 경우 삭제 실")
+
+    @DisplayName("노션에서 한 구간만 존재할 경우 삭제 실패")
     @Test
     void removeLeftOneSection() {
         // then

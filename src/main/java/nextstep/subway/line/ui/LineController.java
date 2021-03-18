@@ -89,5 +89,4 @@ public class LineController {
         responseBody.put("message", e.getMessage());
         return ResponseEntity.badRequest().body(responseBody);
     }
-
 }
