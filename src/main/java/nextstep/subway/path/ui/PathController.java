@@ -1,5 +1,7 @@
 package nextstep.subway.path.ui;
 
+import nextstep.subway.path.application.PathService;
+import nextstep.subway.path.dto.PathResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +22,7 @@ public class PathController {
 
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PathResponse> getShortestPath(@RequestParam Long source, @RequestParam Long target) {
-        PathResponse pathResponse = pathService.getShortestPath(source, target);
+        PathResponse pathResponse = pathService.findShortestPath(source, target);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
