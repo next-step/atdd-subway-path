@@ -5,11 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import java.util.Arrays;
 import nextstep.subway.common.exception.InvalidStationPathException;
-import nextstep.subway.common.exception.NoResourceException;
 import nextstep.subway.line.acceptance.LineColor;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.path.dto.StationPathResponse;
+import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
@@ -130,7 +129,7 @@ public class PathServiceTest {
     given(stationService.findStation(역삼역.getId())).willReturn(역삼역);
     given(lineService.getAllLine()).willReturn(Arrays.asList(신분당선, 이호선));
     //when
-    StationPathResponse stationPathResponse = pathService.findPath(광교역.getId(), 역삼역.getId());
+    PathResponse stationPathResponse = pathService.findPath(광교역.getId(), 역삼역.getId());
     //then
     int totalDistance = 39;
     assertThat(stationPathResponse.getStationResponses())

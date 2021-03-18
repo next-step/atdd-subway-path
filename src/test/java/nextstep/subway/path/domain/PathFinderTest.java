@@ -41,7 +41,7 @@ public class PathFinderTest {
     일호선_생성();
     이호선_생성();
     신분당선_생성();
-    pathFinder = new PathFinder();
+    pathFinder = PathFinder.of(Arrays.asList(신분당선.getSections(),이호선.getSections()));
   }
 
   void 일호선_생성() {
@@ -121,12 +121,12 @@ public class PathFinderTest {
     Sections 신분당선_구간 = 신분당선.getSections();
     Sections 이호선_구간 = 이호선.getSections();
     //when
-    StationPath stationPath = pathFinder.findPath(Arrays.asList(신분당선_구간, 이호선_구간), 광교역, 역삼역);
+    Path path = pathFinder.findPath(광교역, 역삼역);
     //then
     int totalDistance = 39;
-    assertThat(stationPath.getStations())
+    assertThat(path.getStations())
         .containsExactly(광교역, 광교중앙역, 상현역, 성복역, 수지구청역, 동천역, 미금역, 강남역, 역삼역);
-    assertThat(stationPath.getDistance()).isEqualTo(totalDistance);
+    assertThat(path.getDistance()).isEqualTo(totalDistance);
   }
 
   @DisplayName("탐색하려는 경로의 출발역 도착역이 같으면 Exception")
@@ -137,7 +137,7 @@ public class PathFinderTest {
     Sections 이호선_구간 = 이호선.getSections();
     //when then
     assertThrows(InvalidStationPathException.class, () -> {
-      pathFinder.findPath(Arrays.asList(신분당선_구간, 이호선_구간), 광교역, 광교역);
+      pathFinder.findPath(광교역, 광교역);
     });
   }
 
@@ -150,7 +150,7 @@ public class PathFinderTest {
     Sections 일호선_구간 = 일호선.getSections();
     //when then
     assertThrows(InvalidStationPathException.class, () -> {
-      pathFinder.findPath(Arrays.asList(신분당선_구간, 일호선_구간), 광교역, 광명역);
+      pathFinder.findPath(광교역, 광명역);
     });
   }
 
