@@ -56,6 +56,7 @@ class PathAcceptanceTest extends AcceptanceTest {
         // then
         최단_경로_응답됨(response);
         최단_경로_목록_포함됨(response, Arrays.asList(강남역, 양재역, 남부터미널역));
+        최단_경로_거리_포함됨(response, 12);
     }
 
     private void 최단_경로_응답됨(ExtractableResponse<Response> response) {
@@ -72,5 +73,9 @@ class PathAcceptanceTest extends AcceptanceTest {
                 .collect(Collectors.toList());
 
         assertThat(resultLineIds).containsAll(expectedLineIds);
+    }
+
+    private void 최단_경로_거리_포함됨(ExtractableResponse<Response> response, int distance) {
+        assertThat(response.jsonPath().getInt("distance")).isEqualTo(distance);
     }
 }
