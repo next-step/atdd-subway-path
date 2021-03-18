@@ -14,6 +14,7 @@ import nextstep.subway.auth.infrastructure.JwtTokenProvider;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.InvalidParameterException;
 import java.util.stream.Collectors;
 
 public class TokenAuthenticationInterceptor extends AbstractAuthenticationInterceptor {
@@ -31,12 +32,17 @@ public class TokenAuthenticationInterceptor extends AbstractAuthenticationInterc
     }
 
     public AuthenticationToken convert(HttpServletRequest request) throws IOException {
-        String content = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-        TokenRequest tokenRequest = new ObjectMapper().readValue(content, TokenRequest.class);
+        try {
+            String content = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+            TokenRequest tokenRequest = new ObjectMapper().readValue(content, TokenRequest.class);
 
-        String principal = tokenRequest.getEmail();
-        String credentials = tokenRequest.getPassword();
+            String principal = tokenRequest.getEmail();
+            String credentials = tokenRequest.getPassword();
 
-        return new AuthenticationToken(principal, credentials);
+            return new AuthenticationToken(principal, credentials);
+        } catch (RuntimeException e) {
+            throw new InvalidParameterException();
+        }
+
     }
 }

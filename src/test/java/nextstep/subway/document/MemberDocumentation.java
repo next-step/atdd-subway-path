@@ -23,7 +23,6 @@ public class MemberDocumentation extends Documentation {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header("Origin", "http://localhost:8080")
                 .body(memberRequest)
                 .when().post("/members")
                 .then().log().all().extract();
@@ -36,7 +35,6 @@ public class MemberDocumentation extends Documentation {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header("Origin", "http://localhost:8080")
                 .body(tokenRequest)
                 .when().post("/login/token")
                 .then().log().all()
@@ -48,7 +46,6 @@ public class MemberDocumentation extends Documentation {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())))
                 .header("Authorization", "Bearer " + 로그인_사용자.getAccessToken())
-                .header("Origin", "http://localhost:8080")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/members/me")
                 .then().log().all().extract();
@@ -60,7 +57,6 @@ public class MemberDocumentation extends Documentation {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header("Origin", "http://localhost:8080")
                 .body(failTokenRequest)
                 .when().post("/login/token")
                 .then().log().all()
