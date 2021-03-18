@@ -5,7 +5,7 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.path.dto.PathResponse;
-import nextstep.subway.path.exception.NotConnectedPathException;
+import nextstep.subway.path.exception.DoesNotConnectedPathException;
 import nextstep.subway.path.exception.SameStationPathSearchException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -75,8 +75,8 @@ class PathServiceTest {
 
         // then
         assertThat(pathResponse.getStations()).hasSize(3);
-        assertThat(pathResponse.getStations()).containsAll(Arrays.asList(savedStationGangNam, savedStationGyoDae, savedStationNambuTerminal));
-        assertThat(pathResponse.getDistance()).isEqualTo(15);
+        assertThat(pathResponse.getStations()).containsAll(Arrays.asList(savedStationGangNam, savedStationYangJae, savedStationNambuTerminal));
+        assertThat(pathResponse.getDistance()).isEqualTo(13);
     }
 
     @Test
@@ -101,10 +101,8 @@ class PathServiceTest {
         long target = savedStationMyeongDong.getId();
 
         // when & then
-        assertThatExceptionOfType(NotConnectedPathException.class)
-                .isThrownBy(() -> {
-                    pathService.findShortestPath(source, target);
-                });
+        assertThatExceptionOfType(DoesNotConnectedPathException.class)
+                .isThrownBy(() -> pathService.findShortestPath(source, target));
     }
 
     @Test

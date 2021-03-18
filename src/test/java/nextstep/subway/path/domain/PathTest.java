@@ -2,7 +2,7 @@ package nextstep.subway.path.domain;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
-import nextstep.subway.path.exception.NotConnectedPathException;
+import nextstep.subway.path.exception.DoesNotConnectedPathException;
 import nextstep.subway.path.exception.SameStationPathSearchException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,7 +72,7 @@ class PathTest {
 
         // then
         assertThat(shortestPath).hasSize(3);
-        assertThat(path.getTotalDistance()).isEqualTo(15);
+        assertThat(path.getTotalDistance()).isEqualTo(13);
     }
 
     @Test
@@ -87,10 +87,10 @@ class PathTest {
     @DisplayName("출발역과 도착역이 연결되어 있지 않은 경우 예외 발생")
     void notConnectedSourceAndTarget() {
         // given
-        Station savedStationMyeongDong = new Station(3L, "명동역");
+        Station savedStationMyeongDong = new Station(10L, "명동역");
 
         // when & then
-        assertThatExceptionOfType(NotConnectedPathException.class)
+        assertThatExceptionOfType(DoesNotConnectedPathException.class)
                 .isThrownBy(() -> path.findShortestPath(savedStationGangNam, savedStationMyeongDong));
     }
 }

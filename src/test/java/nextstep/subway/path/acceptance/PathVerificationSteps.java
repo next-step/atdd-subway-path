@@ -22,7 +22,11 @@ public class PathVerificationSteps {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
-    public static void 지하철_최단_겅로_거리(ExtractableResponse<Response> response, int resultDistance) {
+    public static void 지하철_역_조회_실패_됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    public static void 지하철_최단_경로_거리(ExtractableResponse<Response> response, int resultDistance) {
         PathResponse pathResponse = response.as(PathResponse.class);
         assertThat(pathResponse.getDistance()).isEqualTo(resultDistance);
     }

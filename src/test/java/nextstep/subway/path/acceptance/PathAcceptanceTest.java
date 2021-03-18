@@ -64,8 +64,8 @@ class PathAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_최단_경로_조회_됨(response);
-        지하철_최단_경로_포함_역(response, Arrays.asList(강남역, 교대역, 남부터미널역));
-        지하철_최단_겅로_거리(response, 15);
+        지하철_최단_경로_포함_역(response, Arrays.asList(강남역, 양재역, 남부터미널역));
+        지하철_최단_경로_거리(response, 13);
     }
 
     @Test
@@ -109,6 +109,6 @@ class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = PathRequestSteps.지하철_최단_경로_조회_요청(source, target);
 
         // then
-        지하철_최단_경로_조회_실패_됨(response);
+        지하철_역_조회_실패_됨(response);
     }
 }
