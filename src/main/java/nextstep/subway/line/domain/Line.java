@@ -58,6 +58,10 @@ public class Line extends BaseEntity {
         return sections.getAllStations();
     }
 
+    public Station getLastStation(){
+        return sections.getLastSection().getDownStation();
+    }
+
     public void addSection(Station upStation, Station downStation, int distance) {
         if (getAllStations().size() == 0) {
             sections.addSection(new Section(this, upStation, downStation, distance));
@@ -75,10 +79,6 @@ public class Line extends BaseEntity {
         }
 
         sections.addSection(new Section(this, upStation, downStation, distance));
-    }
-
-    public Station getLastStation(){
-        return sections.getLastSection().getDownStation();
     }
 
     public void removeSection(Long stationId) {
