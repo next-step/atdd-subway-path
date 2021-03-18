@@ -97,7 +97,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         지하철역간_최단경로_조회_실패됨(response);
     }
 
-    @DisplayName("최단경로를 조회하다 실패한다 - case3 : 존재하지 않은 춟발역이나 도착역을 조회 할 경우")
+    @DisplayName("최단경로를 조회하다 실패한다 - case3 : 존재하지 않은 출발역이나 도착역을 조회 할 경우")
     @Test
     void findShortestPathFailedCase3() {
         // given
