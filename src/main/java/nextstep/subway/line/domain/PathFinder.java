@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.EqualStationException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -20,6 +21,8 @@ public class PathFinder {
     }
 
     public StationGraph getPathInfo(Station source, Station target) {
+        validateEqualStation(source, target);
+
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
 
         for (Line line : lines) {
@@ -29,6 +32,12 @@ public class PathFinder {
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
         GraphPath pathInfo = dijkstraShortestPath.getPath(source, target);
         return new StationGraph(pathInfo);
+    }
+
+    private void validateEqualStation(Station source, Station target) {
+        if (source == target) {
+            throw new EqualStationException();
+        }
     }
 
     private void setGraph(WeightedMultigraph<Station, DefaultWeightedEdge> graph, Line line) {
@@ -57,8 +66,8 @@ public class PathFinder {
 
     private List<Station> getStations(List<Section> sections) {
         return sections.stream()
-                    .flatMap(s -> Stream.of(s.getUpStation(), s.getDownStation()))
-                    .distinct()
-                    .collect(Collectors.toList());
+                .flatMap(s -> Stream.of(s.getUpStation(), s.getDownStation()))
+                .distinct()
+                .collect(Collectors.toList());
     }
 }
