@@ -1,5 +1,6 @@
 package nextstep.subway.line.acceptance;
 
+import com.github.jknack.handlebars.Template;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -13,6 +14,16 @@ import java.util.Map;
 public class LineSteps {
 
     public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(Map<String, String> params) {
+        return 지하철_노선_생성_요청(params);
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(String name, String color, StationResponse stationResponse, StationResponse stationResponse2, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", stationResponse.getId() + "");
+        params.put("downStationId", stationResponse2.getId() + "");
+        params.put("distance", distance + "");
         return 지하철_노선_생성_요청(params);
     }
 
