@@ -5,7 +5,6 @@ import nextstep.subway.exception.NoOtherStationException;
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.exception.StationDuplicateException;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
@@ -21,15 +20,6 @@ public class Sections {
 
     public Sections() {
 
-    }
-
-    private boolean existsByStation(Station station) {
-        return sections.stream()
-                .anyMatch(section -> isEqualDownAndUpStation(station, section));
-    }
-
-    private boolean isEqualDownAndUpStation(Station station, Section section) {
-        return Objects.equals(section.getUpStation(), station) || Objects.equals(section.getDownStation(), station);
     }
 
     public void addSection(Section section) {
@@ -68,7 +58,7 @@ public class Sections {
             List<Section> removeTargetSections = findAllStation(stationId);
 
             int totalSectionDistance = firstSectionDistance() + finishSectionDistance();
-            Section section = Section.of(line, upStation(), downStation(), totalSectionDistance);
+            Section section = Section.of(line, getUpStation(), getDownStation(), totalSectionDistance);
 
             sections.removeAll(removeTargetSections);
             sections.add(section);
@@ -89,7 +79,7 @@ public class Sections {
         }
 
         List<Station> responses = new ArrayList<>();
-        responses.add(upStation());
+        responses.add(getUpStation());
 
         sections.stream().map(Section::getDownStation).forEach(responses::add);
         return responses;
@@ -99,11 +89,11 @@ public class Sections {
         return sections.size();
     }
 
-    private Station upStation() {
+    private Station getUpStation() {
         return getFirstSection().getUpStation();
     }
 
-    private Station downStation() {
+    private Station getDownStation() {
         return getFinishSection().getDownStation();
     }
 
@@ -209,5 +199,14 @@ public class Sections {
                 .filter(section -> isEqualsUpStationId(section, stationId)
                         || isEqualsDownStationId(section, stationId))
                 .collect(Collectors.toList());
+    }
+
+    private boolean existsByStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> isEqualDownAndUpStation(station, section));
+    }
+
+    private boolean isEqualDownAndUpStation(Station station, Section section) {
+        return Objects.equals(section.getUpStation(), station) || Objects.equals(section.getDownStation(), station);
     }
 }
