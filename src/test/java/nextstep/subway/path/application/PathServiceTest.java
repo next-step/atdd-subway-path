@@ -6,6 +6,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.path.exception.SameStationsException;
+import nextstep.subway.path.exception.SeperatedStationsException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
@@ -83,9 +84,28 @@ class PathServiceTest {
             @Test
             @DisplayName("예외를 발생시킨다")
             void it_throw_exception() {
+                // given
+                Long 강남역Id = 강남역.getId();
+
                 // when, then
-                assertThatThrownBy(() -> pathService.findShortestPath(강남역.getId(), 강남역.getId()))
+                assertThatThrownBy(() -> pathService.findShortestPath(강남역Id, 강남역Id))
                         .isInstanceOf(SameStationsException.class);
+            }
+        }
+
+        @Nested
+        @DisplayName("출발역과 도착역이 연결되지 않은 경우")
+        class Context_with_seperated_source_and_target_stations {
+            @Test
+            @DisplayName("예외를 발생시킨다")
+            void it_throw_exception() {
+                // given
+                Long 강남역Id = 강남역.getId();
+                Long 사당역Id = 사당역.getId();
+
+                // when, then
+                assertThatThrownBy(() -> pathService.findShortestPath(강남역Id, 사당역Id))
+                        .isInstanceOf(SeperatedStationsException.class);
             }
         }
     }

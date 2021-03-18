@@ -2,6 +2,7 @@ package nextstep.subway.path.application;
 
 import nextstep.subway.line.dto.LineSectionResponse;
 import nextstep.subway.line.dto.SectionResponse;
+import nextstep.subway.path.exception.SeperatedStationsException;
 import nextstep.subway.station.dto.StationResponse;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -44,7 +45,13 @@ public class ShortestPathFinder {
 
     public List<StationResponse> getShortestPath(Long sourceStationId, Long targetStationId) {
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-        List<String> shortestPath = dijkstraShortestPath.getPath(String.valueOf(sourceStationId), String.valueOf(targetStationId)).getVertexList();
+        GraphPath path = dijkstraShortestPath.getPath(String.valueOf(sourceStationId), String.valueOf(targetStationId));
+
+        if (path == null) {
+            throw new SeperatedStationsException();
+        }
+
+        List<String> shortestPath = path.getVertexList();
         return shortestPath.stream()
                 .map(id -> stationResponses.stream().filter(it -> it.getId() == Long.parseLong(id)).findFirst().orElseThrow(RuntimeException::new))
                 .collect(Collectors.toList());
@@ -52,6 +59,6 @@ public class ShortestPathFinder {
 
     public int getShortestDistance(Long sourceStationId, Long targetStationId) {
         List<GraphPath> paths = new KShortestPaths(graph, 100).getPaths(String.valueOf(sourceStationId), String.valueOf(targetStationId));
-        return  (int) paths.get(0).getWeight();
+        return (int) paths.get(0).getWeight();
     }
 }
