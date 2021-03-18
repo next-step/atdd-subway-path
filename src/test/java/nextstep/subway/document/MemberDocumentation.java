@@ -40,6 +40,16 @@ public class MemberDocumentation extends Documentation {
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value()).extract();
 
+        RestAssured
+                .given(spec).log().all()
+                .filter(document("member/me",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())))
+                .header("Authorization", "Bearer " + 로그인_사용자.getAccessToken())
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/members/me")
+                .then().log().all().extract();
+
         TokenRequest failTokenRequest = new TokenRequest(OTHER_EMAIL, OTHER_PASSWORD + 1);
         RestAssured
                 .given(spec).log().all()

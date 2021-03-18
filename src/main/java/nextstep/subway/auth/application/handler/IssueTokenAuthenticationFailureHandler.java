@@ -11,6 +11,8 @@ public class IssueTokenAuthenticationFailureHandler implements AuthenticationFai
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
         response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
         response.setHeader("Vary", "Origin");
+        response.setHeader("Vary", "Access-Control-Request-Method");
+        response.setHeader("Vary", "Access-Control-Request-Headers");
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 }

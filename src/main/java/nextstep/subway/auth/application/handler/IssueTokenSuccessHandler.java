@@ -28,6 +28,8 @@ public class IssueTokenSuccessHandler implements AuthenticationSuccessHandler {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
         response.setHeader("Vary", "Origin");
+        response.setHeader("Vary", "Access-Control-Request-Method");
+        response.setHeader("Vary", "Access-Control-Request-Headers");
         response.getOutputStream().print(responseToClient);
     }
 }
