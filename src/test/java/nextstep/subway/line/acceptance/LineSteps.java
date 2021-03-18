@@ -3,6 +3,7 @@ package nextstep.subway.line.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.HttpStatus;
@@ -17,14 +18,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineSteps {
 
-    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(Map<String, String> params) {
-        return 지하철_노선_생성_요청(params);
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest lineRequest) {
+        return 지하철_노선_생성_요청(lineRequest);
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
         return RestAssured.given().log().all().
                 contentType(MediaType.APPLICATION_JSON_VALUE).
-                body(params).
+                body(lineRequest).
                 when().
                 post("/lines").
                 then().
@@ -113,14 +114,9 @@ public class LineSteps {
                 extract();
     }
 
-    public static Map<String, String> 파라미터_생성(String name, String color, Long upStationId, Long downStationId, int distance){
+    public static LineRequest 파라미터_생성(String name, String color, Long upStationId, Long downStationId, int distance){
         Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", upStationId + "");
-        params.put("downStationId", downStationId + "");
-        params.put("distance", distance + "");
-        return params;
+        return new LineRequest(name, color, upStationId, downStationId, distance);
     }
 
     public static void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {

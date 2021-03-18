@@ -3,6 +3,7 @@ package nextstep.subway.line.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,8 +38,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         정자역3 = 지하철역_등록되어_있음("정자역3").as(StationResponse.class);
         광교역4 = 지하철역_등록되어_있음("광교역4").as(StationResponse.class);
 
-        Map<String, String> lineCreateParams = 파라미터_생성("신분당선", "red", 강남역1.getId(), 양재역2.getId(), 10);
-        신분당선 = 지하철_노선_등록되어_있음(lineCreateParams).as(LineResponse.class);
+        LineRequest lineRequest = 파라미터_생성("신분당선", "red", 강남역1.getId(), 양재역2.getId(), 10);
+        신분당선 = 지하철_노선_등록되어_있음(lineRequest).as(LineResponse.class);
     }
 
     @DisplayName("지하철 노선에 구간을 등록한다.")

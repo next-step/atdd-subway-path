@@ -7,6 +7,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,14 +23,23 @@ public class JgraphtTest {
         graph.addVertex("v1");
         graph.addVertex("v2");
         graph.addVertex("v3");
+        graph.addVertex("v4");
+        graph.addVertex("v5");
+        graph.addVertex("v6");
+        graph.addVertex("v7");
         graph.setEdgeWeight(graph.addEdge("v1", "v2"), 2);
-        graph.setEdgeWeight(graph.addEdge("v2", "v3"), 2);
+        graph.setEdgeWeight(graph.addEdge("v2", "v3"), 4);
         graph.setEdgeWeight(graph.addEdge("v1", "v3"), 100);
+        graph.setEdgeWeight(graph.addEdge("v2", "v4"), 1);
+        graph.setEdgeWeight(graph.addEdge("v4", "v5"), 1);
+        graph.setEdgeWeight(graph.addEdge("v5", "v3"), 1);
+
 
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
         List<String> shortestPath = dijkstraShortestPath.getPath(source, target).getVertexList();
 
-        assertThat(shortestPath.size()).isEqualTo(3);
+        assertThat(shortestPath).containsExactlyElementsOf(Arrays.asList("v3", "v5", "v4", "v2", "v1"));
+        assertThat(shortestPath.size()).isEqualTo(5);
     }
 
     @Test
