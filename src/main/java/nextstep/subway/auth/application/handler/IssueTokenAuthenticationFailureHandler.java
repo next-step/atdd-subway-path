@@ -9,8 +9,7 @@ import java.io.IOException;
 public class IssueTokenAuthenticationFailureHandler implements AuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        response.addHeader("Vary", "Origin");
+        response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 }
