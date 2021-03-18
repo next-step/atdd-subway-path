@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineServiceTest {
     @Autowired
     private StationRepository stationRepository;
+
     @Autowired
     private LineRepository lineRepository;
 

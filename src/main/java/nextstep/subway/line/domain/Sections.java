@@ -22,6 +22,10 @@ public class Sections {
 
     }
 
+    public List<Section> getSections() {
+        return sections;
+    }
+
     public void addSection(Section section) {
         List<Station> stations = getAllStation();
         if (stations.size() == 0) {

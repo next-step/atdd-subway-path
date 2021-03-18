@@ -73,4 +73,8 @@ public class LineService {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new NotFoundException("지하철 노선을 찾을 수 없습니다."));
     }
+
+    public List<Line> findAll(){
+        return lineRepository.findAll();
+    }
 }
