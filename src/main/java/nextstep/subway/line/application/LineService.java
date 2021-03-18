@@ -4,6 +4,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineSectionResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
@@ -71,5 +72,12 @@ public class LineService {
     public void removeSection(Long lineId, Long stationId) {
         Line line = findLineById(lineId);
         line.removeSection(stationId);
+    }
+
+    public List<LineSectionResponse> findAllSections() {
+        List<Line> persistLines = lineRepository.findAll();
+        return persistLines.stream()
+                .map(LineSectionResponse::of)
+                .collect(Collectors.toList());
     }
 }

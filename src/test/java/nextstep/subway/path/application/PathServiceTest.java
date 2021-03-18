@@ -3,8 +3,8 @@ package nextstep.subway.path.application;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.dto.PathResponse;
 import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +26,9 @@ class PathServiceTest {
 
     @Autowired
     private LineRepository lineRepository;
+
+    @Autowired
+    private PathService pathService;
 
     @Autowired
     private LineService lineService;
@@ -50,7 +53,7 @@ class PathServiceTest {
                 lineService.addSection(사호선.getId(), new SectionRequest(삼성역.getId(), 사당역.getId(), 3));
 
                 // when
-                PathResponse pathResponse = lineService.findShortestPath(강남역.getId(), 사당역.getId());
+                PathResponse pathResponse = pathService.findShortestPath(강남역.getId(), 사당역.getId());
 
                 //then
                 assertThat(pathResponse).isNotNull();

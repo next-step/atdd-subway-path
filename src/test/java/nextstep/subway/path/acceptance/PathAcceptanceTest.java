@@ -21,7 +21,7 @@ import static nextstep.subway.station.StationSteps.지하철역_등록되어_있
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 경로 조회 관련 기능")
-public class PathAcceptanceTest extends AcceptanceTest {
+class PathAcceptanceTest extends AcceptanceTest {
 
     private LineResponse 신분당선;
     private LineResponse 이호선;
@@ -67,7 +67,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
 
-        List<Long> resultLineIds = response.jsonPath().getList(".", LineResponse.class).stream()
+        List<Long> resultLineIds = response.jsonPath().getList("stations", LineResponse.class).stream()
                 .map(LineResponse::getId)
                 .collect(Collectors.toList());
 
