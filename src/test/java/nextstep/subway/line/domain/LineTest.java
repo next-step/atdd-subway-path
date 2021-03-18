@@ -199,4 +199,18 @@ public class LineTest {
       신분당선.removeSection(광교중앙역);
     });
   }
+
+  @DisplayName("노선의 구간 중간을 삭제하면 새로운 구간의 거리로 변경한다")
+  @Test
+  void updateNewSectionDistance(){
+    //given
+    신분당선.addSection(광교중앙역, 상현역, 5);
+    //when
+    신분당선.removeSection(광교중앙역);
+    Section 광교역_상현역_구간 = 신분당선.getSections().getSortedSection().stream()
+        .filter(section -> section.getUpStation().equals(광교역) && section.getDownStation().equals(상현역))
+        .findFirst().get();
+    //then
+    assertThat(광교역_상현역_구간.getDistance()).isEqualTo(10);
+  }
 }
