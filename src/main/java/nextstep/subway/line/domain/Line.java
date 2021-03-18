@@ -2,10 +2,15 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.station.domain.Station;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @Entity
 public class Line extends BaseEntity {
@@ -58,31 +63,16 @@ public class Line extends BaseEntity {
         return sections.getAllStations();
     }
 
-    public Station getLastStation(){
+    public Station getLastStation() {
         return sections.getLastSection().getDownStation();
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        if (getAllStations().size() == 0) {
-            sections.addSection(new Section(this, upStation, downStation, distance));
-            return;
-        }
-
-        boolean isNotValidUpStation = sections.getLastSection().getDownStation() != upStation;
-        if (isNotValidUpStation) {
-            throw new RuntimeException("상행역은 하행 종점역이어야 합니다.");
-        }
-
-        boolean isDownStationExisted = this.getAllStations().stream().anyMatch(it -> it == downStation);
-        if (isDownStationExisted) {
-            throw new RuntimeException("하행역이 이미 등록되어 있습니다.");
-        }
-
         sections.addSection(new Section(this, upStation, downStation, distance));
     }
 
     public void removeSection(Long stationId) {
-        if (this.getSections().size() <= 1) {
+        if (sections.getAllSections().size() <= 1) {
             throw new RuntimeException("하나의 구간만 존재하여 삭제가 불가능합니다.");
         }
 
@@ -93,7 +83,6 @@ public class Line extends BaseEntity {
 
         sections.deleteLastSection(stationId);
     }
-
 
     @Override
     public boolean equals(Object o) {

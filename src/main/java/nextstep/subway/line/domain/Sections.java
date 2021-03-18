@@ -1,8 +1,11 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.exception.DuplicateStationException;
-import nextstep.subway.exception.NotEqualsLastStationException;
+import nextstep.subway.exception.InvaliadDistanceException;
+import nextstep.subway.exception.NotExistedStationException;
 import nextstep.subway.station.domain.Station;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
@@ -13,7 +16,7 @@ import java.util.List;
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    private List<Section> sections = new ArrayList<Section>();
 
     public Sections() {
     }
@@ -22,25 +25,76 @@ public class Sections {
         return sections.size();
     }
 
-    private boolean isEqualsLastStation(Section section, Station station) {
-        String newUpStationName = section.getUpStation().getName();
-        String currentLastSationName = station.getName();
-        return newUpStationName.equals(currentLastSationName);
+    private boolean isValidAddingLastSection(Section section) {
+        Station newUpStation = section.getUpStation();
+        Station currentLastStation = getLastSection().getDownStation();
+        boolean isLastSame = newUpStation.equals(currentLastStation);
+
+        if (isLastSame && validExistedStation(section.getDownStation())) {
+            throw new DuplicateStationException();
+        }
+        if (isLastSame) return true;
+        return false;
     }
 
-    private boolean isExistedStation(List<Station> stations, Section section) {
-        return stations.stream().anyMatch(i -> i.getId().equals(section.getDownStation().getId()));
+    private boolean isValidAddingFirstSection(Section section) {
+        Station newDownStation = section.getDownStation();
+        Station currentFirstStation = sections.get(0).getUpStation();
+        boolean isFirstSame = newDownStation.equals(currentFirstStation);
+        if (isFirstSame && validExistedStation(section.getUpStation())) {
+            throw new DuplicateStationException();
+        }
+        if (isFirstSame) return true;
+        return false;
     }
 
-    private void addSectionValidate(List<Station> allStations, Section newSection) {
-        Station lastStation = getLastSection().getDownStation();
+    private boolean validExistedStation(Station station) {
+        return getAllStations().stream().anyMatch(i -> i.getId().equals(station.getId()));
+    }
 
-        if (!isEqualsLastStation(newSection, lastStation)) {
-            throw new NotEqualsLastStationException();
+    public void addSection(Section section) {
+        /** 구간 등록하는 비즈니스 로직 작성 */
+        //최초등록 CASE
+        List<Station> stations = getAllStations();
+        if (stations.size() == 0) {
+            sections.add(section);
+            return;
         }
 
-        if (isExistedStation(allStations, newSection)) {
+        //하행역 등록 CASE (기존)
+        if (isValidAddingLastSection(section)) {
+            sections.add(section);
+            return;
+        }
+
+        //상행역 등록 CASE
+        if(isValidAddingFirstSection(section)){
+            sections.add(0,section);
+            return;
+        }
+
+        Logger logger = LoggerFactory.getLogger(Sections.class);
+        boolean isExistedUpStation = sections.stream().anyMatch(i -> i.getUpStation().equals(section.getUpStation()));
+        boolean isExistedDownStation = sections.stream().anyMatch(i -> i.getDownStation().equals(section.getDownStation()));
+        validExistedStation(isExistedUpStation, isExistedDownStation);
+
+        if (isExistedUpStation) {
+            addPrevSection(section);
+        }
+
+        if (isExistedDownStation) {
+            addNextSection(section);
+        }
+
+    }
+
+    private void validExistedStation(boolean isExistedUpStation, boolean isExistedDownStation) {
+        if (isExistedUpStation && isExistedDownStation) {
             throw new DuplicateStationException();
+        }
+
+        if (!isExistedUpStation && !isExistedDownStation) {
+            throw new NotExistedStationException();
         }
     }
 
@@ -56,15 +110,51 @@ public class Sections {
         return sections.get(size() - 1);
     }
 
-    public void addSection(Section newSection) {
-        List<Station> stations = getAllStations();
-        if (stations.size() == 0) {
-            sections.add(newSection);
-            return;
-        }
 
-        addSectionValidate(stations, newSection);
-        sections.add(newSection);
+    private Section findUpSection(Station upStation) {
+        return sections.stream()
+                .filter(it -> it.getUpStation().equals(upStation))
+                .findFirst()
+                .orElseThrow(NotExistedStationException::new);
+    }
+
+    private Section findDownSection(Station downStation) {
+        return sections.stream()
+                .filter(it -> it.getDownStation().equals(downStation))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+    }
+
+    public void addPrevSection(Section section) {
+        Section findSection = findUpSection(section.getUpStation());
+        checkSectionDistance(section, findSection);
+
+        int index = sections.indexOf(findSection);
+        Line line = section.getLine();
+
+        int sectionDistance = section.getDistance() - findSection.getDistance();
+        Section nextSection = new Section(line, section.getDownStation(), findSection.getDownStation(), sectionDistance);
+        sections.set(index, section);
+        sections.add(index + 1, nextSection);
+    }
+
+    public void addNextSection(Section section) {
+        Section findSection = findDownSection(section.getDownStation());
+        checkSectionDistance(section, findSection);
+
+        int index = sections.indexOf(findSection);
+        Line line = section.getLine();
+
+        int sectionDistance = section.getDistance() - findSection.getDistance();
+        Section prevSection = new Section(line, findSection.getUpStation(), section.getUpStation(), sectionDistance);
+        sections.set(index, prevSection);
+        sections.add(index + 1, section);
+    }
+
+    private void checkSectionDistance(Section section, Section findSection) {
+        if (section.getDistance() >= findSection.getDistance()) {
+            throw new InvaliadDistanceException();
+        }
     }
 
     public void deleteLastSection(Long stationId) {
@@ -84,7 +174,7 @@ public class Sections {
         return responses;
     }
 
-    public List<Section> getAllSections(){
+    public List<Section> getAllSections() {
         return sections;
     }
 

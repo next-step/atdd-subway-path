@@ -14,13 +14,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({DuplicateStationException.class,NotEqualsLastStationException.class})
     public ResponseEntity handleLineException(Exception error) {
-        return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity(HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
     public ResponseEntity handleRuntimeException(RuntimeException error) {
         return new ResponseEntity(HttpStatus.BAD_REQUEST);
     }
-
 
 }
