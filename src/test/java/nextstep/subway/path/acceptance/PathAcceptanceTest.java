@@ -41,7 +41,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
          * |                        |
          * *3호선*                   *신분당선*
          * |                        |
-         * 남부터미널역  --- *3호선* ---   양재
+         * 남부터미널역  --- *3호선* ---   양재역
          */
         강남역 = 지하철역_등록되어_있음("강남역").as(StationResponse.class);
         양재역 = 지하철역_등록되어_있음("양재역").as(StationResponse.class);
@@ -75,7 +75,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         // then
         최단거리_조회_요청_조회됨(response);
-//        최단거리_지하철역_순서_정렬됨(response, Arrays.asList(교대역, 남부터미널역, 양재역));
+        최단거리_지하철역_순서_정렬됨(response, Arrays.asList(교대역, 남부터미널역, 양재역));
     }
 
     private void 최단거리_조회_요청_조회됨(ExtractableResponse<Response> response) {
