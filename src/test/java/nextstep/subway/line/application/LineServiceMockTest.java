@@ -9,7 +9,6 @@ import nextstep.subway.line.exception.CannotRemoveSectionException;
 import nextstep.subway.line.exception.LineAlreadyExistException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.exception.CannotRemoveStationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -120,7 +119,7 @@ public class LineServiceMockTest {
         lineService.deleteLineById(lineResponse.getId());
 
         // then
-        assertThat(lineService.findAllLines()).hasSize(0);
+        assertThat(lineService.findAllLineResponses()).hasSize(0);
     }
 
     @Test
@@ -137,7 +136,7 @@ public class LineServiceMockTest {
         given(lineRepository.findAll()).willReturn(Arrays.asList(line2, lineNewBunDang));
 
         // when
-        List<LineResponse> savedLineAllResponses = lineService.findAllLines();
+        List<LineResponse> savedLineAllResponses = lineService.findAllLineResponses();
 
         // then
         assertThat(savedLineAllResponses).hasSize(2);

@@ -33,7 +33,7 @@ public class LineController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> findAllLines() {
-        List<LineResponse> allLineResponses = lineService.findAllLines();
+        List<LineResponse> allLineResponses = lineService.findAllLineResponses();
         return ResponseEntity.ok()
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .body(allLineResponses);

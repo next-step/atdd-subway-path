@@ -99,7 +99,7 @@ public class LineServiceTest {
         lineService.deleteLineById(savedLine2Response.getId());
 
         // then
-        assertThat(lineService.findAllLines()).hasSize(0);
+        assertThat(lineService.findAllLineResponses()).hasSize(0);
     }
 
     @Test
@@ -113,7 +113,7 @@ public class LineServiceTest {
         lineService.saveLine(lineNewBundangRequest);
 
         // when
-        List<LineResponse> lineResponses = lineService.findAllLines();
+        List<LineResponse> lineResponses = lineService.findAllLineResponses();
 
         // then
         assertThat(lineResponses).hasSize(2);
