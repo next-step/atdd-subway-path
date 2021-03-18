@@ -59,6 +59,20 @@ public class Section {
         return upStation.equals(station) || downStation.equals(station);
     }
 
+    public void changeDownStation(Section section) {
+        this.downStation = section.getUpStation();
+        decreaseDistance(section.getDistance());
+    }
+
+    public void changeUpStation(Section section) {
+        this.upStation = section.getDownStation();
+        decreaseDistance(section.getDistance());
+    }
+
+    private void decreaseDistance(int newSectionDistance) {
+        this.distance = distance - newSectionDistance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -72,19 +86,5 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(line, upStation, downStation);
-    }
-
-    public void changeUpStation(Section section) {
-        this.upStation = section.getDownStation();
-        decreaseDistance(section.getDistance());
-    }
-
-    private void decreaseDistance(int newSectionDistance) {
-        this.distance = distance - newSectionDistance;
-    }
-
-    public void changeDownStation(Section section) {
-        this.downStation = section.getUpStation();
-        decreaseDistance(section.getDistance());
     }
 }
