@@ -5,17 +5,11 @@ import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.path.exception.SourceEqualsWithTargetException;
 import nextstep.subway.path.exception.StationNotExistsException;
 import nextstep.subway.path.exception.StationsNotConnectedException;
-import nextstep.subway.station.dto.StationResponse;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 public class PathController {

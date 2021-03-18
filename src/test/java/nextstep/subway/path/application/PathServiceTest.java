@@ -6,6 +6,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -62,7 +64,7 @@ public class PathServiceTest {
     }
 
     @Test
-    void getShortestPathTest(Long sourceId, Long targetId) {
+    void getShortestPathTest() {
         // given
         when(lineService.findLines()).thenReturn(Lists.newArrayList(신분당선, 이호선, 삼호선));
         when(stationService.findById(강남역.getId())).thenReturn(강남역);
@@ -72,7 +74,10 @@ public class PathServiceTest {
         PathResponse pathResponse= pathService.getShortestPath(강남역.getId(), 남부터미널역.getId());
 
         // then
-        assertThat(pathResponse.getStations()).isEqualTo(Arrays.asList(강남역, 교대역, 남부터미널역));
-        assertThat(pathResponse.getDistance()).isEqualTo(13);
+        List<Long> ids = pathResponse.getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+        assertThat(ids).contains(강남역.getId(), 양재역.getId(), 남부터미널역.getId());
     }
 }

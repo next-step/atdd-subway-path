@@ -4,9 +4,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.path.exception.SourceEqualsWithTargetException;
-import nextstep.subway.path.exception.StationNotExistsException;
-import nextstep.subway.path.exception.StationsNotConnectedException;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +17,6 @@ import static nextstep.subway.line.acceptance.LineSteps.지하철_노선에_지�
 import static nextstep.subway.path.acceptance.PathSteps.*;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("경로 조회 관련 기능")
 public class PathAcceptanceTest extends AcceptanceTest {
@@ -32,17 +28,16 @@ public class PathAcceptanceTest extends AcceptanceTest {
     private StationResponse 교대역;
     private StationResponse 남부터미널역;
 
-    /**
-     * 교대역    --- *2호선* ---   강남역
-     * |                        |
-     * *3호선*                   *신분당선*
-     * |                        |
-     * 남부터미널역  --- *3호선* ---   양재
-     */
     @BeforeEach
     public void setUp() {
         super.setUp();
-
+        /**
+         * 교대역    --- *2호선* ---   강남역
+         * |                        |
+         * *3호선*                   *신분당선*
+         * |                        |
+         * 남부터미널역  --- *3호선* ---   양재
+         */
         강남역 = 지하철역_등록되어_있음("강남역").as(StationResponse.class);
         양재역 = 지하철역_등록되어_있음("양재역").as(StationResponse.class);
         교대역 = 지하철역_등록되어_있음("교대역").as(StationResponse.class);

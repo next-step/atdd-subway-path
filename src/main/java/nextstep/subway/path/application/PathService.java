@@ -23,37 +23,17 @@ public class PathService {
     private final LineService lineService;
     private final StationService stationService;
 
-
     public PathService(LineService lineService, StationService stationService) {
         this.lineService = lineService;
         this.stationService = stationService;
     }
 
-    private PathFinder initializePathFinder() {
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-
-        List<Line> lines = lineService.findLines();
-
-        for(Line line : lines) {
-            List<Station> stations = line.getStations();
-            List<Section> sections = line.getSections();
-
-            for(Station station : stations) {
-                graph.addVertex(station);
-            }
-
-            for(Section section : sections) {
-                graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
-            }
-        }
-
-        return new PathFinder(graph);
-    }
-
     public PathResponse getShortestPath(Long sourceId, Long targetId) {
         PathFinder pathFinder = initializePathFinder();
+
         Station source = stationService.findById(sourceId);
         Station target = stationService.findById(targetId);
+
         GraphPath path = pathFinder.getShortestPath(source, target);
         return createPathResponse(path);
     }
@@ -64,5 +44,30 @@ public class PathService {
                 .collect(Collectors.toList());
 
         return PathResponse.of(stations, path.getWeight());
+    }
+
+    private PathFinder initializePathFinder() {
+        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+
+        List<Line> lines = lineService.findLines();
+
+        for(Line line : lines) {
+            addStationAsVertex(graph, line.getStations());
+            setEdgeWithDistance(graph, line.getSections());
+        }
+
+        return new PathFinder(graph);
+    }
+
+    private void addStationAsVertex(WeightedMultigraph<Station, DefaultWeightedEdge> graph, List<Station> stations) {
+        for(Station station : stations) {
+            graph.addVertex(station);
+        }
+    }
+
+    private void setEdgeWithDistance(WeightedMultigraph<Station, DefaultWeightedEdge> graph, List<Section> sections) {
+        for(Section section : sections) {
+            graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
+        }
     }
 }
