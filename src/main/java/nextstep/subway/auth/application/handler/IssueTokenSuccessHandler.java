@@ -26,7 +26,7 @@ public class IssueTokenSuccessHandler implements AuthenticationSuccessHandler {
         String responseToClient = new ObjectMapper().writeValueAsString(tokenResponse);
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.addHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+        response.addHeader("Access-Control-Allow-Origin", "*");
         response.getOutputStream().print(responseToClient);
     }
 }
