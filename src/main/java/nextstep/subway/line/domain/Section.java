@@ -76,15 +76,15 @@ public class Section {
 
     public void changeUpStation(Section section) {
         this.upStation = section.getDownStation();
-        adjustDistance(section.getDistance());
+        decreaseDistance(section.getDistance());
     }
 
-    private void adjustDistance(int target) {
-        this.distance = distance - target;
+    private void decreaseDistance(int newSectionDistance) {
+        this.distance = distance - newSectionDistance;
     }
 
     public void changeDownStation(Section section) {
         this.downStation = section.getUpStation();
-        adjustDistance(section.getDistance());
+        decreaseDistance(section.getDistance());
     }
 }
