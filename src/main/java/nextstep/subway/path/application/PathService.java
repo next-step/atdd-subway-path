@@ -3,6 +3,7 @@ package nextstep.subway.path.application;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineSectionResponse;
 import nextstep.subway.path.dto.PathResponse;
+import nextstep.subway.path.exception.SameStationsException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,10 @@ public class PathService {
     }
 
     public PathResponse findShortestPath(Long sourceStationId, Long targetStationId) {
+        if (sourceStationId.equals(targetStationId)) {
+            throw new SameStationsException();
+        }
+
         List<StationResponse> stationResponses = stationService.findAllStations();
         List<LineSectionResponse> lineSectionResponses = lineService.findAllSections();
         ShortestPathFinder shortestPathFinder = new ShortestPathFinder(stationResponses, lineSectionResponses);
