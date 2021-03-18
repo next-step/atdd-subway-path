@@ -1,7 +1,5 @@
 package nextstep.subway.line.domain;
 
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import nextstep.subway.exception.ExistUpAndDownStationException;
 import nextstep.subway.exception.InValidSectionSizeException;
 import nextstep.subway.exception.InvalidSectionDistanceException;
@@ -10,18 +8,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.List;
 
-import static nextstep.subway.line.acceptance.LineSteps.지하철_노선_조회_요청;
-import static nextstep.subway.line.acceptance.LineSteps.지하철_노선에_지하철역_등록_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철 노선에 역 등록 관련 기능 도메인 테스트")
 public class LineTest {
 
-    Station 강남역, 역삼역, 삼성역, 교대역;
+    Station 강남역;
+    Station 역삼역;
+    Station 삼성역;
+    Station 교대역;
+
     Line 이호선;
 
     @BeforeEach
