@@ -12,6 +12,22 @@ import java.util.Map;
 
 public class LineSteps {
 
+    public static LineResponse 지하철_노선_등록되어_있음(String lineName, String lineColor,
+                                              StationResponse upStation, StationResponse downStation, int distance) {
+        return 지하철_노선_생성_요청(initParams(lineName, lineColor, upStation, downStation, distance)).as(LineResponse.class);
+    }
+
+    private static Map<String, String> initParams(String lineName, String lineColor,
+                                                  StationResponse upStation, StationResponse downStation, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", lineName);
+        params.put("color", lineColor);
+        params.put("upStationId", upStation.getId() + "");
+        params.put("downStationId", downStation.getId() + "");
+        params.put("distance", distance + "");
+        return params;
+    }
+
     public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(Map<String, String> params) {
         return 지하철_노선_생성_요청(params);
     }
