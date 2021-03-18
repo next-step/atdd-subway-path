@@ -46,4 +46,8 @@ public class StationService {
     public Station findById(Long id) {
         return stationRepository.findById(id).orElseThrow(StationNotFoundException::new);
     }
+
+    public boolean notExistsById(Long id) {
+        return !stationRepository.existsById(id);
+    }
 }

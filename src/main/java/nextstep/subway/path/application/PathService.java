@@ -3,6 +3,7 @@ package nextstep.subway.path.application;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineSectionResponse;
 import nextstep.subway.path.dto.PathResponse;
+import nextstep.subway.path.exception.NotExistsStations;
 import nextstep.subway.path.exception.SameStationsException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.dto.StationResponse;
@@ -24,9 +25,7 @@ public class PathService {
     }
 
     public PathResponse findShortestPath(Long sourceStationId, Long targetStationId) {
-        if (sourceStationId.equals(targetStationId)) {
-            throw new SameStationsException();
-        }
+        validateFindShortestPath(sourceStationId, targetStationId);
 
         List<StationResponse> stationResponses = stationService.findAllStations();
         List<LineSectionResponse> lineSectionResponses = lineService.findAllSections();
@@ -36,5 +35,15 @@ public class PathService {
         int shortestDistance = shortestPathFinder.getShortestDistance(sourceStationId, targetStationId);
 
         return PathResponse.of(shortestStationResponses, shortestDistance);
+    }
+
+    private void validateFindShortestPath(Long sourceStationId, Long targetStationId) {
+        if (sourceStationId.equals(targetStationId)) {
+            throw new SameStationsException();
+        }
+
+        if (stationService.notExistsById(sourceStationId) || stationService.notExistsById(targetStationId)) {
+            throw new NotExistsStations();
+        }
     }
 }

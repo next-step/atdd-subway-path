@@ -5,6 +5,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.path.dto.PathResponse;
+import nextstep.subway.path.exception.NotExistsStations;
 import nextstep.subway.path.exception.SameStationsException;
 import nextstep.subway.path.exception.SeperatedStationsException;
 import nextstep.subway.station.domain.Station;
@@ -106,6 +107,18 @@ class PathServiceTest {
                 // when, then
                 assertThatThrownBy(() -> pathService.findShortestPath(강남역Id, 사당역Id))
                         .isInstanceOf(SeperatedStationsException.class);
+            }
+        }
+
+        @Nested
+        @DisplayName("존재하지 않은 출발역이나 도착역일 경우")
+        class Context_with_not_exists_source_and_target_stations {
+            @Test
+            @DisplayName("예외를 발생시킨다")
+            void it_throw_exception() {
+                // when, then
+                assertThatThrownBy(() -> pathService.findShortestPath(5L, 6L))
+                        .isInstanceOf(NotExistsStations.class);
             }
         }
     }
