@@ -2,8 +2,8 @@ package nextstep.subway.auth.ui.interceptor.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nextstep.subway.auth.application.UserDetailsService;
+import nextstep.subway.auth.application.handler.IssueTokenAuthenticationFailureHandler;
 import nextstep.subway.auth.application.handler.IssueTokenSuccessHandler;
-import nextstep.subway.auth.application.handler.SimpleUrlAuthenticationFailureHandler;
 import nextstep.subway.auth.application.provider.AuthenticationManager;
 import nextstep.subway.auth.application.provider.AuthenticationProvider;
 import nextstep.subway.auth.domain.Authentication;
@@ -20,7 +20,7 @@ public class TokenAuthenticationInterceptor extends AbstractAuthenticationInterc
     private AuthenticationManager authenticationManager;
 
     public TokenAuthenticationInterceptor(UserDetailsService userDetailsService, JwtTokenProvider jwtTokenProvider) {
-        super(new IssueTokenSuccessHandler(jwtTokenProvider), new SimpleUrlAuthenticationFailureHandler());
+        super(new IssueTokenSuccessHandler(jwtTokenProvider), new IssueTokenAuthenticationFailureHandler());
         this.authenticationManager = new AuthenticationProvider(userDetailsService);
     }
 

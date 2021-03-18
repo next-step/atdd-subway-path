@@ -39,5 +39,17 @@ public class MemberDocumentation extends Documentation {
                 .when().post("/login/token")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value()).extract();
+
+        TokenRequest failTokenRequest = new TokenRequest(OTHER_EMAIL, OTHER_PASSWORD + 1);
+        RestAssured
+                .given(spec).log().all()
+                .filter(document("member/login-fail",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(failTokenRequest)
+                .when().post("/login/token")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value()).extract();
     }
 }

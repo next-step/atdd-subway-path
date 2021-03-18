@@ -20,3 +20,13 @@ include::{snippets}/member/login/http-request.adoc[]
 ==== Response
 
 include::{snippets}/member/login/http-response.adoc[]
+
+=== 로그인 실패
+
+==== Request
+
+include::{snippets}/member/login-fail/http-request.adoc[]
+
+==== Response
+
+include::{snippets}/member/login-fail/http-response.adoc[]
