@@ -10,6 +10,7 @@ public class IssueTokenAuthenticationFailureHandler implements AuthenticationFai
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
         response.addHeader("Access-Control-Allow-Origin", "*");
+        response.addHeader("Vary", "Origin");
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 }
