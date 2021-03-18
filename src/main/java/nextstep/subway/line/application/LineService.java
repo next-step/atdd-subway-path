@@ -1,6 +1,6 @@
 package nextstep.subway.line.application;
 
-import nextstep.subway.exception.NotFoundException;
+import nextstep.subway.line.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;

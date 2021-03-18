@@ -1,4 +1,4 @@
-package nextstep.subway.exception;
+package nextstep.subway.line.exception;
 
 public class NotEqualsNameException extends RuntimeException {
     public NotEqualsNameException() {

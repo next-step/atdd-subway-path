@@ -1,9 +1,9 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.exception.DistanceMaximumException;
-import nextstep.subway.exception.NoOtherStationException;
-import nextstep.subway.exception.NotFoundException;
-import nextstep.subway.exception.StationDuplicateException;
+import nextstep.subway.line.exception.DistanceMaximumException;
+import nextstep.subway.line.exception.NoOtherStationException;
+import nextstep.subway.line.exception.NotFoundException;
+import nextstep.subway.line.exception.StationDuplicateException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -57,7 +57,7 @@ public class Sections {
 
             List<Section> removeTargetSections = findAllStation(stationId);
 
-            int totalSectionDistance = firstSectionDistance() + finishSectionDistance();
+            int totalSectionDistance = getFirstSectionDistance() + getFinishSectionDistance();
             Section section = Section.of(line, getUpStation(), getDownStation(), totalSectionDistance);
 
             sections.removeAll(removeTargetSections);
@@ -97,11 +97,11 @@ public class Sections {
         return getFinishSection().getDownStation();
     }
 
-    private int firstSectionDistance() {
+    private int getFirstSectionDistance() {
         return getFirstSection().getDistance();
     }
 
-    private int finishSectionDistance() {
+    private int getFinishSectionDistance() {
         return getFinishSection().getDistance();
     }
 
@@ -111,20 +111,6 @@ public class Sections {
 
     private Section getFinishSection() {
         return sections.get(size() - LIST_MINIMUM_SIZE);
-    }
-
-    private boolean isNotOtherStation() {
-        return size() == LIST_MINIMUM_SIZE;
-    }
-
-    private void checkExistedStation(boolean isExistedUpStation, boolean isExistedDownStation) {
-        if (isExistedUpStation && isExistedDownStation) {
-            throw new StationDuplicateException();
-        }
-
-        if (!isExistedUpStation && !isExistedDownStation) {
-            throw new NotFoundException("등록하시려는 역에 상행역과 하행역을 찾을 수 없습니다.");
-        }
     }
 
     private Section findUpSection(Station upStation) {
@@ -139,12 +125,6 @@ public class Sections {
                 .filter(it -> it.getDownStation().equals(downStation))
                 .findFirst()
                 .orElse(null);
-    }
-
-    private void checkSectionDistance(Section section, Section findSection) {
-        if (section.getDistance() >= findSection.getDistance()) {
-            throw new DistanceMaximumException();
-        }
     }
 
     private void addBeginStation(Section section) {
@@ -186,14 +166,6 @@ public class Sections {
         sections.add(index + 1, section);
     }
 
-    private boolean isEqualsUpStationId(Section section, long stationId) {
-        return section.getUpStation().getId().equals(stationId);
-    }
-
-    private boolean isEqualsDownStationId(Section section, long stationId) {
-        return section.getDownStation().getId().equals(stationId);
-    }
-
     private List<Section> findAllStation(Long stationId) {
         return sections.stream()
                 .filter(section -> isEqualsUpStationId(section, stationId)
@@ -201,9 +173,37 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    private void checkExistedStation(boolean isExistedUpStation, boolean isExistedDownStation) {
+        if (isExistedUpStation && isExistedDownStation) {
+            throw new StationDuplicateException();
+        }
+
+        if (!isExistedUpStation && !isExistedDownStation) {
+            throw new NotFoundException("등록하시려는 역에 상행역과 하행역을 찾을 수 없습니다.");
+        }
+    }
+
+    private void checkSectionDistance(Section section, Section findSection) {
+        if (section.getDistance() >= findSection.getDistance()) {
+            throw new DistanceMaximumException();
+        }
+    }
+
     private boolean existsByStation(Station station) {
         return sections.stream()
                 .anyMatch(section -> isEqualDownAndUpStation(station, section));
+    }
+
+    private boolean isNotOtherStation() {
+        return size() == LIST_MINIMUM_SIZE;
+    }
+
+    private boolean isEqualsUpStationId(Section section, long stationId) {
+        return section.getUpStation().getId().equals(stationId);
+    }
+
+    private boolean isEqualsDownStationId(Section section, long stationId) {
+        return section.getDownStation().getId().equals(stationId);
     }
 
     private boolean isEqualDownAndUpStation(Station station, Section section) {
