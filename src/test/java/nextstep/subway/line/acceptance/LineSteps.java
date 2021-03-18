@@ -12,7 +12,10 @@ import java.util.Map;
 
 public class LineSteps {
 
+    private static final String URI_LINES = "/lines";
+    private static final String URI_SECTIONS = "/sections";
     private static final String URI_PATHS = "/paths";
+    private static final String HEADER_LOCATION = "Location";
 
     public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(Map<String, String> params) {
         return 지하철_노선_생성_요청(params);
@@ -33,70 +36,70 @@ public class LineSteps {
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
-        return RestAssured.given().log().all().
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                body(params).
-                when().
-                post("/lines").
-                then().
-                log().all().
-                extract();
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when()
+                .post(URI_LINES)
+                .then()
+                .log().all()
+                .extract();
     }
 
     public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
-        return RestAssured.given().log().all().
-                accept(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                get("/lines").
-                then().
-                log().all().
-                extract();
+        return RestAssured.given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get(URI_LINES)
+                .then()
+                .log().all()
+                .extract();
     }
 
     public static ExtractableResponse<Response> 지하철_노선_조회_요청(LineResponse response) {
-        return RestAssured.given().log().all().
-                accept(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                get("/lines/{lineId}", response.getId()).
-                then().
-                log().all().
-                extract();
+        return RestAssured.given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get(URI_LINES + "/{lineId}", response.getId())
+                .then()
+                .log().all()
+                .extract();
     }
 
     public static ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> response) {
-        String uri = response.header("Location");
+        String uri = response.header(HEADER_LOCATION);
 
-        return RestAssured.given().log().all().
-                accept(MediaType.APPLICATION_JSON_VALUE).
-                when().
-                get(uri).
-                then().
-                log().all().
-                extract();
+        return RestAssured.given().log().all()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get(uri)
+                .then()
+                .log().all()
+                .extract();
     }
 
     public static ExtractableResponse<Response> 지하철_노선_수정_요청(ExtractableResponse<Response> response, Map<String, String> params) {
-        String uri = response.header("Location");
+        String uri = response.header(HEADER_LOCATION);
 
-        return RestAssured.given().log().all().
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                body(params).
-                when().
-                put(uri).
-                then().
-                log().all().
-                extract();
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when()
+                .put(uri)
+                .then()
+                .log().all()
+                .extract();
     }
 
     public static ExtractableResponse<Response> 지하철_노선_제거_요청(ExtractableResponse<Response> response) {
-        String uri = response.header("Location");
+        String uri = response.header(HEADER_LOCATION);
 
-        return RestAssured.given().log().all().
-                when().
-                delete(uri).
-                then().
-                log().all().
-                extract();
+        return RestAssured.given().log().all()
+                .when()
+                .delete(uri)
+                .then()
+                .log().all()
+                .extract();
     }
 
     public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(LineResponse line, StationResponse upStation, StationResponse downStation, int distance) {
@@ -105,23 +108,24 @@ public class LineSteps {
         params.put("downStationId", downStation.getId() + "");
         params.put("distance", distance + "");
 
-        return RestAssured.given().log().all().
-                contentType(MediaType.APPLICATION_JSON_VALUE).
-                body(params).
-                when().
-                post("/lines/{lineId}/sections", line.getId()).
-                then().
-                log().all().
-                extract();
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when()
+                .post(URI_LINES + "/{lineId}" + URI_SECTIONS, line.getId())
+                .then()
+                .log().all()
+                .extract();
     }
 
     public static ExtractableResponse<Response> 지하철_노선에_지하철역_제외_요청(LineResponse line, StationResponse station) {
-        return RestAssured.given().log().all().
-                when().
-                delete("/lines/{lineId}/sections?stationId={stationId}", line.getId(), station.getId()).
-                then().
-                log().all().
-                extract();
+        return RestAssured.given().log().all()
+                .param("stationId", station.getId())
+                .when()
+                .delete(URI_LINES + "/{lineId}" + URI_SECTIONS, line.getId())
+                .then()
+                .log().all()
+                .extract();
     }
 
     public static ExtractableResponse<Response> 경로_조회_요청(StationResponse sourceStation, StationResponse targetStation) {
