@@ -17,6 +17,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LineSteps {
 
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest lineRequest) {
+        return 지하철_노선_생성요청(lineRequest);
+    }
+
     public static ExtractableResponse<Response> 지하철_노선_생성요청(LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
