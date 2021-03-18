@@ -2,6 +2,8 @@ package nextstep.subway.path.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.path.dto.PathResponse;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.HttpStatus;
 
@@ -30,8 +32,11 @@ public class PathVerificationSteps {
                 .map(StationResponse::getName)
                 .collect(Collectors.toList());
 
-        List<String> resultStationNames = response.jsonPath().getList(".", PathResponse.class).stream()
-                .map(PathResponse::getName)
+        PathResponse pathResponse = response.as(PathResponse.class);
+        List<Station> stations = pathResponse.getStations();
+
+        List<String> resultStationNames = stations.stream()
+                .map(station -> station.getName())
                 .collect(Collectors.toList());
 
         assertThat(resultStationNames).containsAll(expectedStationNames);

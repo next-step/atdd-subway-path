@@ -2,6 +2,8 @@ package nextstep.subway.path.domain;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
+import nextstep.subway.path.exception.NotConnectedPathException;
+import nextstep.subway.path.exception.SameStationPathSearchException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -65,28 +67,20 @@ class PathTest {
     @Test
     @DisplayName("지하철 최단 경로 조회")
     void findShortestPathStation() {
-        // given
-        long source = savedStationGangNam.getId();
-        long target = savedStationNambuTerminal.getId();
-
         // when
-        List<Station> shortestPath = path.findShortestPath(source, target);
+        List<Station> shortestPath = path.findShortestPath(savedStationGangNam, savedStationNambuTerminal);
 
         // then
         assertThat(shortestPath).hasSize(3);
-        assertThat(path.getDistance()).isEqualTo(15);
+        assertThat(path.getTotalDistance()).isEqualTo(15);
     }
 
     @Test
     @DisplayName("출발역과 도착역이 같은 경우 예외 발생")
     void notEqualsSourceAndTarget() {
-        // given
-        long source = savedStationGangNam.getId();
-        long target = savedStationGangNam.getId();
-
         // when & then
         assertThatExceptionOfType(SameStationPathSearchException.class)
-                .isThrownBy(() -> path.findShortestPath(source, target));
+                .isThrownBy(() -> path.findShortestPath(savedStationGangNam, savedStationGangNam));
     }
 
     @Test
@@ -95,23 +89,8 @@ class PathTest {
         // given
         Station savedStationMyeongDong = new Station(3L, "명동역");
 
-        long source = savedStationGangNam.getId();
-        long target = savedStationMyeongDong.getId();
-
         // when & then
-        assertThatExceptionOfType(NotConenctedPathException.class)
-                .isThrownBy(() -> path.findShortestPath(source, target));
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 출발역, 도착역을 조회할 경우 예외 발생")
-    void findNotExistSourceAndTarget() {
-        // given
-        long source = 100L;
-        long target = 101L;
-
-        // when & then
-        assertThatExceptionOfType(StationNonExistException.class)
-                .isThrownBy(() -> path.findShortestPath(source, target));
+        assertThatExceptionOfType(NotConnectedPathException.class)
+                .isThrownBy(() -> path.findShortestPath(savedStationGangNam, savedStationMyeongDong));
     }
 }
