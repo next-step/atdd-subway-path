@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.exception.*;
+import nextstep.subway.exception.CanNotFoundSectionToAddException;
+import nextstep.subway.exception.InValidSectionSizeException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.IntStream;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -85,12 +86,31 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
-        checkRemoveSection(station);
+        // checkRemoveSection(station);
+        if (sections.size() <= 1) {
+            throw new InValidSectionSizeException();
+        }
 
-        sections.stream()
-                .filter(it -> it.getDownStation().equals(station))
-                .findFirst()
-                .ifPresent(it -> sections.remove(it));
+        Optional<Section> downSection = sections.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findFirst();
+
+        Optional<Section> upSection = sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst();
+
+        if (upSection.isPresent() && downSection.isPresent()) {
+            Station upStation = downSection.get().getUpStation();
+            Station downStation = upSection.get().getDownStation();
+            int distance = downSection.get().getDistance() + upSection.get().getDistance();
+            sections.add(Section.of(upSection.get().getLine(), upStation, downStation, distance));
+        }
+        upSection.ifPresent(section -> sections.remove(section));
+        downSection.ifPresent(section -> sections.remove(section));
+    }
+
+    private boolean matchAny(Section section, Station station) {
+        return section.getDownStation().equals(station) || section.getUpStation().equals(station);
     }
 
     private boolean isEmptyStations() {
