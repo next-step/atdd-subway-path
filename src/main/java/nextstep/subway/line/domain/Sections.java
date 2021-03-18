@@ -22,9 +22,10 @@ public class Sections {
 
     public void addSection(Section section) {
         validateContainsAllStations(section);
-        validateSection(section);
+        swapStation(section);
         sections.add(section);
     }
+
 
     private void validateContainsAllStations(Section section){
         if(getStations().containsAll(Arrays.asList(section.getUpStation(), section.getDownStation()))){
@@ -32,12 +33,24 @@ public class Sections {
         }
     }
 
-    private void validateSection(Section section) {
+    private void swapStation(Section section) {
         if (sections.size() == 0 || isStartStationAndEndAddable(getStations(), section)) {
             return;
         }
+        validateSwapAvailable(section);
 
         List<Station> stations = getStations();
+        if(isUpStationBetweenAddable(stations, section)){
+            sections.get(0).changeUpStation(section);
+            return;
+        }
+
+        if(isDownStationBetweenAddable(stations, section)) {
+            sections.get(0).changeDownStation(section);
+        }
+    }
+
+    private void validateSwapAvailable(Section section) {
         Section find = sections.stream()
                 .filter(i -> isContainStation(i, section))
                 .findFirst()
@@ -46,17 +59,6 @@ public class Sections {
         if (section.getDistance() >= find.getDistance()) {
             throw new InvalidDistanceException("기존에 등록된 구간보다 큽니다.");
         }
-
-        if(isUpStationBetweenAddable(stations, section)){
-            sections.get(0).changeUpStation(section);
-            return;
-        }
-
-        if(isDownStationBetweenAddable(stations, section)) {
-            sections.get(0).changeDownStation(section);
-            return;
-        }
-
     }
 
     private boolean isStartStationAndEndAddable(List<Station> stations, Section section) {
@@ -87,10 +89,10 @@ public class Sections {
             throw new RuntimeException("하행 종점역만 삭제가 가능합니다.");
         }
 
-        line.getSections().stream()
+        sections.stream()
                 .filter(it -> it.getDownStation().getId() == stationId)
                 .findFirst()
-                .ifPresent(it -> line.getSections().remove(it));
+                .ifPresent(it -> sections.remove(it));
     }
 
     public List<Station> getStations() {
