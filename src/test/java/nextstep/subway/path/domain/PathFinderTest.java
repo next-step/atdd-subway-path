@@ -30,9 +30,11 @@ class PathFinderTest {
 
 		// when
 		PathFinder finder = PathFinder.of(sections);
-		final PathResponse pathResponse = finder.findShortestPath(강남역, 남부터미널역);
+		final List<Station> stations = finder.findShortestPath(강남역, 남부터미널역);
+		final int distance = finder.findShortestPathDistance(강남역, 남부터미널역);
 
 		// then
-		assertThat(pathResponse.getDistance()).isEqualTo(13);
+		assertThat(stations.size()).isEqualTo(3);
+		assertThat(distance).isEqualTo(13);
 	}
 }

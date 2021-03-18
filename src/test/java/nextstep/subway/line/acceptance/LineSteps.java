@@ -1,14 +1,18 @@
 package nextstep.subway.line.acceptance;
 
+import static org.assertj.core.api.Assertions.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
-import org.springframework.http.MediaType;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class LineSteps {
 
@@ -24,7 +28,16 @@ public class LineSteps {
         params.put("upStationId", upStation.getId() + "");
         params.put("downStationId", downStation.getId() + "");
         params.put("distance", distance + "");
-        return 지하철_노선_생성_요청(params).as(LineResponse.class);
+
+        final ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
+        지하철_노선_생성됨(response);
+
+        return response.as(LineResponse.class);
+    }
+
+    public static void 지하철_노선_생성됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.header("Location")).isNotBlank();
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {

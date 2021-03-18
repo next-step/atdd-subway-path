@@ -1,5 +1,7 @@
 package nextstep.subway.path.application;
 
+import static java.util.stream.Collectors.*;
+
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ import nextstep.subway.path.domain.PathFinder;
 import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 @Service
 public class PathService {
@@ -29,7 +32,13 @@ public class PathService {
 
 		final PathFinder pathFinder = PathFinder.of(sections);
 
-		return pathFinder.findShortestPath(startStation, endStation);
+		return PathResponse.of(
+			pathFinder.findShortestPath(startStation, endStation)
+				.stream()
+				.map(StationResponse::of)
+				.collect(toList()),
+			pathFinder.findShortestPathDistance(startStation, endStation)
+		);
 	}
 
 }
