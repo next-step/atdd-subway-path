@@ -20,7 +20,7 @@ import static nextstep.subway.line.acceptance.LineSteps.*;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("지하철 노선에 역 등록 관련 기능")
+@DisplayName("지하철 노선에 역 등록 관련 기능 인수 테스트")
 public class LineSectionAcceptanceTest extends AcceptanceTest {
     private LineResponse 신분당선;
     private StationResponse 강남역;
@@ -47,9 +47,9 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         신분당선 = 지하철_노선_등록되어_있음(lineCreateParams).as(LineResponse.class);
     }
 
-    @DisplayName("지하철 노선에 구간을 등록한다.")
+    @DisplayName("새로운 역을 하행 종점으로 등록한다.")
     @Test
-    void addLineSection() {
+    void addLineSectionToEnd() {
         // when
         지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
 
@@ -59,16 +59,28 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 양재역, 정자역));
     }
 
-    @DisplayName("지하철 노선에 이미 포함된 역을 구간으로 등록한다.")
+    @DisplayName("새로운 역을 상행 종점으로 등록한다.")
     @Test
-    void addLineSectionAlreadyIncluded() {// given
-        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
-
+    void addLineSectionToFront() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
+        지하철_노선에_지하철역_등록_요청(신분당선, 정자역, 강남역, 6);
 
         // then
-        지하철_노선에_지하철역_등록_실패됨(response);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_노선에_지하철역_등록됨(response);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(정자역, 강남역, 양재역));
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록한다.")
+    @Test
+    void addLineSectionBetween() {
+        // when
+        지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 정자역, 6);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_노선에_지하철역_등록됨(response);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 정자역, 양재역));
     }
 
     @DisplayName("지하철 노선에 등록된 지하철역을 제외한다.")
