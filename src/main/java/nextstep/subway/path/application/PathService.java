@@ -34,9 +34,9 @@ public class PathService {
         List<Line> allLines = lineService.findAllLines();
         List<Section> allSections = getAllSections(allLines);
 
-        Path path = new Path(allSections);
-        List<Station> shortestPath = path.findShortestPath(sourceStation, targetStation);
+        Path path = new Path(allSections, sourceStation, targetStation);
         int totalDistance = path.getTotalDistance();
+        List<Station> shortestPath = path.findShortestPath();
 
         return new PathResponse(shortestPath, totalDistance);
     }

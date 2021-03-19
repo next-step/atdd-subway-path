@@ -60,15 +60,14 @@ class PathTest {
                 .map(Line::getSections)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-
-        path = new Path(allSections);
     }
 
     @Test
     @DisplayName("지하철 최단 경로 조회")
     void findShortestPathStation() {
         // when
-        List<Station> shortestPath = path.findShortestPath(savedStationGangNam, savedStationNambuTerminal);
+        path = new Path(allSections, savedStationGangNam, savedStationNambuTerminal);
+        List<Station> shortestPath = path.findShortestPath();
 
         // then
         assertThat(shortestPath).hasSize(3);
@@ -80,7 +79,10 @@ class PathTest {
     void notEqualsSourceAndTarget() {
         // when & then
         assertThatExceptionOfType(SameStationPathSearchException.class)
-                .isThrownBy(() -> path.findShortestPath(savedStationGangNam, savedStationGangNam));
+                .isThrownBy(() -> {
+                    path = new Path(allSections, savedStationGangNam, savedStationGangNam);
+                    path.findShortestPath();
+                });
     }
 
     @Test
@@ -91,6 +93,9 @@ class PathTest {
 
         // when & then
         assertThatExceptionOfType(DoesNotConnectedPathException.class)
-                .isThrownBy(() -> path.findShortestPath(savedStationGangNam, savedStationMyeongDong));
+                .isThrownBy(() -> {
+                    path = new Path(allSections, savedStationGangNam, savedStationMyeongDong);
+                    path.findShortestPath();
+                });
     }
 }

@@ -15,23 +15,13 @@ import java.util.Set;
 
 public class Path {
 
-    private List<Section> sections;
-    private Set<Station> stations;
-    private GraphPath<Station, DefaultWeightedEdge> graphPath;
+    private final WeightedMultigraph<Station, DefaultWeightedEdge> lineSectionsGraph;
+    private final GraphPath<Station, DefaultWeightedEdge> graphPath;
 
-    public Path() {
-    }
-
-    public Path(List<Section> sections) {
-        this.sections = sections;
-    }
-
-    public List<Station> findShortestPath(Station source, Station target) {
+    public Path(List<Section> sections, Station source, Station target) {
+        lineSectionsGraph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         validateSourceAndTargetStation(source, target);
-
-        graphPath = getGraphPath(source, target);
-
-        return graphPath.getVertexList();
+        graphPath = initShortestPathGraph(sections, source, target);
     }
 
     private void validateSourceAndTargetStation(Station source, Station target) {
@@ -40,25 +30,19 @@ public class Path {
         }
     }
 
-    private GraphPath<Station, DefaultWeightedEdge> getGraphPath(Station source, Station target) {
-        WeightedMultigraph<Station, DefaultWeightedEdge> lineSectionsGraph = initLineSectionsGraph();
+    private GraphPath<Station, DefaultWeightedEdge> initShortestPathGraph(List<Section> sections, Station source, Station target) {
+        Set<Station> stations = getDistinctStations(sections);
+
+        addVertex(stations);
+        addEdge(sections);
+
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(lineSectionsGraph);
-        validateConnectPathStation(source, target);
+        validateConnectPathStation(stations, source, target);
         return dijkstraShortestPath.getPath(source, target);
     }
 
-    private WeightedMultigraph<Station, DefaultWeightedEdge> initLineSectionsGraph() {
-        WeightedMultigraph<Station, DefaultWeightedEdge> lineSectionsGraph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-        Set<Station> stations = getDistinctStations();
-
-        addVertex(stations, lineSectionsGraph);
-        addEdge(lineSectionsGraph);
-
-        return lineSectionsGraph;
-    }
-
-    private Set<Station> getDistinctStations() {
-        stations = new HashSet<>();
+    private Set<Station> getDistinctStations(List<Section> sections) {
+        Set<Station> stations = new HashSet<>();
 
         for (Section section : sections) {
             stations.add(section.getUpStation());
@@ -67,13 +51,13 @@ public class Path {
         return stations;
     }
 
-    private void addVertex(Set<Station> stations, WeightedMultigraph<Station, DefaultWeightedEdge> lineSectionsGraph) {
+    private void addVertex(Set<Station> stations) {
         for (Station station : stations) {
             lineSectionsGraph.addVertex(station);
         }
     }
 
-    private void addEdge(WeightedMultigraph<Station, DefaultWeightedEdge> lineSectionsGraph) {
+    private void addEdge(List<Section> sections) {
         for (Section section : sections) {
             Station upStation = section.getUpStation();
             Station downStation = section.getDownStation();
@@ -84,10 +68,14 @@ public class Path {
         }
     }
 
-    private void validateConnectPathStation(Station source, Station target) {
+    private void validateConnectPathStation(Set<Station> stations, Station source, Station target) {
         if (!stations.contains(source) || !stations.contains(target)) {
             throw new DoesNotConnectedPathException();
         }
+    }
+
+    public List<Station> findShortestPath() {
+        return graphPath.getVertexList();
     }
 
     public int getTotalDistance() {
