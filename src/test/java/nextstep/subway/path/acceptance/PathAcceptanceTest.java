@@ -20,7 +20,6 @@ import static nextstep.subway.path.acceptance.PathSteps.최단거리_조회_요�
 import static nextstep.subway.path.acceptance.PathSteps.최단거리_지하철역_순서_정렬됨;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
 @DisplayName("경로 조회 관련 기능")
@@ -35,6 +34,12 @@ public class PathAcceptanceTest extends AcceptanceTest {
     private StationResponse 교대역;
     private StationResponse 남부터미널역;
 
+    private LineResponse 분당선;
+
+    private StationResponse 야탑역;
+    private StationResponse 이매역;
+    private StationResponse 서현역;
+
     @BeforeEach
     public void setUp() {
         super.setUp();
@@ -44,25 +49,34 @@ public class PathAcceptanceTest extends AcceptanceTest {
          * *3호선*                   *신분당선*
          * |                        |
          * 남부터미널역  --- *3호선* ---   양재역
+         *
+         * 야탑역    --- *분당선* ---   이매역
          */
-        강남역 = 지하철역_등록되어_있음("강남역").as(StationResponse.class);
-        양재역 = 지하철역_등록되어_있음("양재역").as(StationResponse.class);
-        교대역 = 지하철역_등록되어_있음("교대역").as(StationResponse.class);
-        남부터미널역 = 지하철역_등록되어_있음("남부터미널역").as(StationResponse.class);
-
-        신분당선 = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 강남역, 양재역, 10).as(LineResponse.class);
-        이호선 = 지하철_노선_등록되어_있음("이호선", "bg-red-600", 교대역, 강남역, 10).as(LineResponse.class);
-        삼호선 = 지하철_노선_등록되어_있음("삼호선", "bg-red-600", 교대역, 양재역, 5).as(LineResponse.class);
-
-        지하철_노선에_지하철역_등록_요청(삼호선, 교대역, 남부터미널역, 3);
-
         /**
          * 교대역   --- 10 ---    강남역
          * |                     |
          * 3                     10
          * |                     |
          * 남부터미널역  --- 2 ---  양재역
+         *
+         * 야탑역    --- 10 ---   이매역
          */
+        강남역 = 지하철역_등록되어_있음("강남역").as(StationResponse.class);
+        양재역 = 지하철역_등록되어_있음("양재역").as(StationResponse.class);
+        교대역 = 지하철역_등록되어_있음("교대역").as(StationResponse.class);
+        남부터미널역 = 지하철역_등록되어_있음("남부터미널역").as(StationResponse.class);
+
+        신분당선 = 지하철_노선_등록되어_있음("신분당선", "bg-red-400", 강남역, 양재역, 10).as(LineResponse.class);
+        이호선 = 지하철_노선_등록되어_있음("이호선", "bg-red-500", 교대역, 강남역, 10).as(LineResponse.class);
+        삼호선 = 지하철_노선_등록되어_있음("삼호선", "bg-red-600", 교대역, 양재역, 5).as(LineResponse.class);
+
+        지하철_노선에_지하철역_등록_요청(삼호선, 교대역, 남부터미널역, 3);
+
+        야탑역 = 지하철역_등록되어_있음("야탑역").as(StationResponse.class);
+        이매역 = 지하철역_등록되어_있음("이매역").as(StationResponse.class);
+        서현역 = 지하철역_등록되어_있음("서현역").as(StationResponse.class);
+
+        분당선 = 지하철_노선_등록되어_있음("분당선", "bg-red-700", 야탑역, 이매역, 10).as(LineResponse.class);
     }
 
     @DisplayName("최단거리를 조회한다")
@@ -101,13 +115,29 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("최단거리 조회시 출발역과 도착역이 연결이 되어 있지 않은 경우 실패한다")
     @Test
     void failFindShortestPath_StationsNotConnected() {
+        // when & then
+        Map<String, String> paramsToFind = new HashMap<>();
+        paramsToFind.put("sourceId", String.valueOf(강남역.getId()));
+        paramsToFind.put("targetId", String.valueOf(야탑역.getId()));
 
+        ExtractableResponse<Response> response = 최단거리_조회_요청(paramsToFind);
+
+        // then
+        최단거리_조회_요청_실패됨(response);
     }
 
     @DisplayName("최단거리 조회시 존재하지 않은 출발역이나 도착역을 조회 할 경우 실패한다")
     @Test
     void failFindShortestPath_StationsNotExist() {
+        // when & then
+        Map<String, String> paramsToFind = new HashMap<>();
+        paramsToFind.put("sourceId", String.valueOf(강남역.getId()));
+        paramsToFind.put("targetId", String.valueOf(서현역.getId()));
 
+        ExtractableResponse<Response> response = 최단거리_조회_요청(paramsToFind);
+
+        // then
+        최단거리_조회_요청_실패됨(response);
     }
 
     public static void 최단거리_조회_요청_실패됨(ExtractableResponse<Response> response) {
