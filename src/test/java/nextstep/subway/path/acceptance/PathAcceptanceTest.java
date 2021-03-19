@@ -20,6 +20,8 @@ import static nextstep.subway.path.acceptance.PathSteps.최단거리_조회_요�
 import static nextstep.subway.path.acceptance.PathSteps.최단거리_지하철역_순서_정렬됨;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 
 @DisplayName("경로 조회 관련 기능")
 public class PathAcceptanceTest extends AcceptanceTest {
@@ -84,19 +86,31 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("최단거리 조회시 출발역과 도착역이 같은 경우 실패한다")
     @Test
-    void failFindShortestPath_SearchStationsSame() {
+    void failFindShortestPath_StationsSame() {
+        // when & then
+        Map<String, String> paramsToFind = new HashMap<>();
+        paramsToFind.put("sourceId", String.valueOf(교대역.getId()));
+        paramsToFind.put("targetId", String.valueOf(교대역.getId()));
 
+        ExtractableResponse<Response> response = 최단거리_조회_요청(paramsToFind);
+
+        // then
+        최단거리_조회_요청_실패됨(response);
     }
 
     @DisplayName("최단거리 조회시 출발역과 도착역이 연결이 되어 있지 않은 경우 실패한다")
     @Test
-    void failFindShortestPath_SearchStationsNotConnected() {
+    void failFindShortestPath_StationsNotConnected() {
 
     }
 
     @DisplayName("최단거리 조회시 존재하지 않은 출발역이나 도착역을 조회 할 경우 실패한다")
     @Test
-    void failFindShortestPath_SearchStationsNotExist() {
+    void failFindShortestPath_StationsNotExist() {
 
+    }
+
+    public static void 최단거리_조회_요청_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }
