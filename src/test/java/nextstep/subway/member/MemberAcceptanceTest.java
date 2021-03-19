@@ -25,7 +25,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("중복 이메일로 회원가입을 한다.")
     @Test
-    void createMemberwithSameEmail() {
+    void createMemberWithSameEmail() {
         회원_생성_요청(OTHER_EMAIL, OTHER_PASSWORD, NAME);
 
         ExtractableResponse<Response> response = 회원_생성_요청(OTHER_EMAIL, OTHER_PASSWORD, NAME);
