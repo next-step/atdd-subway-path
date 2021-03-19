@@ -15,8 +15,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -50,7 +50,23 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
+    }
+
+    public void removeSection(Line line, Long stationId) {
+        sections.removeSection(line, stationId);
+    }
+
+    public List<Station> getStations(){
+        return sections.getStations();
+    }
+
+    public int countTotalDistance() {
+        return sections.countTotalDistance();
     }
 
     @Override
@@ -58,11 +74,12 @@ public class Line extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color);
+        return Objects.equals(name, line.name) &&
+                Objects.equals(color, line.color);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color);
+        return Objects.hash(name, color);
     }
 }
