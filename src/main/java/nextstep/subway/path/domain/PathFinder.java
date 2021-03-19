@@ -43,7 +43,18 @@ public class PathFinder {
     }
 
     public void calculateShortestPath(Station source, Station target) {
+        validatePath(source, target);
         graphPath = path.getPath(source, target);
+    }
+
+    private void validatePath(Station source, Station target) {
+        validateSourceTargetNotSame(source, target);
+    }
+
+    private void validateSourceTargetNotSame(Station source, Station target) {
+        if (source == target) {
+            throw new RuntimeException();
+        }
     }
 
     public List<Station> getShortestPath() {
