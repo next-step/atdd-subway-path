@@ -123,12 +123,20 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 정자역));
     }
 
-    @DisplayName("등록되지 않는 노선을 제거한다.")
+    @DisplayName("등록되지 않는 지하철역 제거한다.")
     @Test
     void removeLineSectionNotExistStation(){
+        //Given
+        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 3);
+
+        //When
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_제외_요청(신분당선, 광교역);
+
+        // then
+        지하철_노선에_지하철역_제외_실패됨(response);
     }
 
-    @DisplayName("지하철 노선에 등록된 지하철역을 제외한다.")
+    @DisplayName("등록된 하행 종점역을 제거한다.")
     @Test
     void removeLineSection() {
         // given
@@ -179,6 +187,6 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     public static void 지하철_노선에_지하철역_제외_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
