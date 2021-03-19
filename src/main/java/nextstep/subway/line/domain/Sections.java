@@ -23,7 +23,7 @@ public class Sections {
 
     public void addSection(Section section) {
         validateContainsAllStations(section);
-        swapStation(section);
+        insertBetweenStation(section);
         sections.add(section);
     }
 
@@ -34,7 +34,7 @@ public class Sections {
         }
     }
 
-    private void swapStation(Section section) {
+    private void insertBetweenStation(Section section) {
         if (sections.size() == 0 || isStartStationAndEndAddable(getStations(), section)) {
             return;
         }

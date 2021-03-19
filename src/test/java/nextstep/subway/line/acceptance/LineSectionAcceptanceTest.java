@@ -107,7 +107,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
 
-    @DisplayName("변경된 요구사항 : 지하철 노선에 등록된 지하철을 제외한다.")
+    @DisplayName("역과 역사이의 등록된 지하철역을 제외한다.")
     @Test
     void removeLineSection_NewVersion(){
         //Given
