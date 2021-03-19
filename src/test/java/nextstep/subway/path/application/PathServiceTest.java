@@ -1,8 +1,14 @@
 package nextstep.subway.path.application;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.exception.NotFoundException;
 import nextstep.subway.path.dto.PathResponse;
+import nextstep.subway.path.exception.FirstStationEqualsFinalStationException;
+import nextstep.subway.path.exception.NotConnectedException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
@@ -11,12 +17,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("지하철 경로 조회 단위 테스트")
 @SpringBootTest
@@ -61,5 +70,21 @@ public class PathServiceTest {
         List<StationResponse> stationResponses =
                 Arrays.asList(StationResponse.of(강남역), StationResponse.of(교대역), StationResponse.of(남부터미널역));
         assertThat(path.getStations()).containsAll(stationResponses);
+    }
+
+    @DisplayName("출발역과 도착역이 동일한 경우 예외처리")
+    @Test
+    void firstStationEqualsFinalStationException() {
+        assertThrows(FirstStationEqualsFinalStationException.class,
+                () -> pathService.findShortestPath(강남역.getId(), 강남역.getId()));
+    }
+
+    @DisplayName("존재하지 않는 출발역 또는 도착역인 경우 예외처리")
+    @Test
+    void stationNotFoundException() {
+        long source = 50L;
+        long target = 51L;
+        assertThrows(NotFoundException.class,
+                () -> pathService.findShortestPath(source, target));
     }
 }
