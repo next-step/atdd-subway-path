@@ -1,12 +1,12 @@
 package nextstep.subway.station;
 
-import static nextstep.subway.station.StationRequestBuilder.지하철역_목록조회_요청;
-import static nextstep.subway.station.StationRequestBuilder.지하철역_삭제_요청;
-import static nextstep.subway.station.StationRequestBuilder.지하철역_삭제됨;
-import static nextstep.subway.station.StationRequestBuilder.지하철역_생성_요청;
-import static nextstep.subway.station.StationRequestBuilder.지하철역_생성됨;
-import static nextstep.subway.station.StationRequestBuilder.지하철역_생성실패됨;
-import static nextstep.subway.station.StationRequestBuilder.지하철역_조회됨;
+import static nextstep.subway.station.StationAcceptanceTestSteps.지하철역_목록조회_요청;
+import static nextstep.subway.station.StationAcceptanceTestSteps.지하철역_삭제_요청;
+import static nextstep.subway.station.StationAcceptanceTestSteps.지하철역_삭제됨;
+import static nextstep.subway.station.StationAcceptanceTestSteps.지하철역_생성_요청;
+import static nextstep.subway.station.StationAcceptanceTestSteps.지하철역_생성됨;
+import static nextstep.subway.station.StationAcceptanceTestSteps.지하철역_생성실패됨;
+import static nextstep.subway.station.StationAcceptanceTestSteps.지하철역_조회됨;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;

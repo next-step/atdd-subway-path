@@ -1,11 +1,11 @@
 package nextstep.subway.path.acceptance;
 
-import static nextstep.subway.line.acceptance.LineRequestBuilder.구간등록요청;
-import static nextstep.subway.line.acceptance.LineRequestBuilder.지하철_노선_생성요청;
-import static nextstep.subway.path.acceptance.PathRequestBuilder.경로_조회됨;
-import static nextstep.subway.path.acceptance.PathRequestBuilder.경로_조회실패됨;
-import static nextstep.subway.path.acceptance.PathRequestBuilder.두역의_경로탐색을_요청한다;
-import static nextstep.subway.station.StationRequestBuilder.지하철역_생성_요청;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.구간등록요청;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.지하철_노선_생성요청;
+import static nextstep.subway.path.acceptance.PathAcceptanceTestSteps.경로_조회됨;
+import static nextstep.subway.path.acceptance.PathAcceptanceTestSteps.경로_조회실패됨;
+import static nextstep.subway.path.acceptance.PathAcceptanceTestSteps.두역의_경로탐색을_요청한다;
+import static nextstep.subway.station.StationAcceptanceTestSteps.지하철역_생성_요청;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;

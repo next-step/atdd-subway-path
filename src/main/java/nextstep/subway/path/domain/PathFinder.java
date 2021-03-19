@@ -15,9 +15,9 @@ public class PathFinder {
   private List<Sections> sectionsList;
   private WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(
       DefaultWeightedEdge.class);
-  private final int MIN = 2;
+  private final int MIN = 1;
 
-  public PathFinder(List<Sections> sectionsList) {
+  private PathFinder(List<Sections> sectionsList) {
     this.sectionsList = sectionsList;
   }
 
@@ -28,9 +28,9 @@ public class PathFinder {
   public Path findPath(Station source, Station target) {
     validate(source, target);
     DijkstraShortestPath<Station, Long> dijkstraShortestPath = createDijkstraShortestPath(
-        sectionsList, source);
+        sectionsList, source,target);
     GraphPath<Station, Long> graphPath = dijkstraShortestPath.getPath(source, target);
-    if (graphPath == null) {
+    if(graphPath == null){
       throw new InvalidStationPathException("출발역과 도착역이 연결되어 있지 않습니다.");
     }
     return createPath((int) graphPath.getWeight(), graphPath.getVertexList());
@@ -41,7 +41,7 @@ public class PathFinder {
   }
 
   private DijkstraShortestPath<Station, Long> createDijkstraShortestPath(
-      List<Sections> sectionsList, Station source) {
+      List<Sections> sectionsList, Station source, Station target) {
     graph.addVertex(source);
     sectionsList.stream()
         .flatMap(section -> section.getSortedStations().stream())

@@ -13,7 +13,7 @@ import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-public class StationRequestBuilder {
+public class StationAcceptanceTestSteps {
 
   public static Map<String, String> createStationRequestParams(String name) {
     Map<String, String> params = new HashMap<>();

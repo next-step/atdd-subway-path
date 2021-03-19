@@ -207,10 +207,10 @@ public class LineTest {
     신분당선.addSection(광교중앙역, 상현역, 5);
     //when
     신분당선.removeSection(광교중앙역);
+    //then
     Section 광교역_상현역_구간 = 신분당선.getSections().getSortedSection().stream()
         .filter(section -> section.getUpStation().equals(광교역) && section.getDownStation().equals(상현역))
         .findFirst().get();
-    //then
     assertThat(광교역_상현역_구간.getDistance()).isEqualTo(10);
   }
 }

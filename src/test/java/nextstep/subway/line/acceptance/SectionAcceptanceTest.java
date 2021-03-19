@@ -1,16 +1,16 @@
 package nextstep.subway.line.acceptance;
 
 
-import static nextstep.subway.line.acceptance.LineRequestBuilder.구간등록요청;
-import static nextstep.subway.line.acceptance.LineRequestBuilder.구간삭제요청;
-import static nextstep.subway.line.acceptance.LineRequestBuilder.노선_구간_등록됨;
-import static nextstep.subway.line.acceptance.LineRequestBuilder.노선_구간_등록실패됨;
-import static nextstep.subway.line.acceptance.LineRequestBuilder.노선_구간_삭제됨;
-import static nextstep.subway.line.acceptance.LineRequestBuilder.노선_구간_삭제실패됨;
-import static nextstep.subway.line.acceptance.LineRequestBuilder.지하철_노선_생성요청;
-import static nextstep.subway.line.acceptance.LineRequestBuilder.지하철_노선에서_구간_조회됨;
-import static nextstep.subway.line.acceptance.LineRequestBuilder.지하철_노선조회_요청;
-import static nextstep.subway.station.StationRequestBuilder.지하철역_생성_요청;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.구간등록요청;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.구간삭제요청;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.노선_구간_등록됨;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.노선_구간_등록실패됨;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.노선_구간_삭제됨;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.노선_구간_삭제실패됨;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.지하철_노선_생성요청;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.지하철_노선에서_구간_조회됨;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.지하철_노선조회_요청;
+import static nextstep.subway.station.StationAcceptanceTestSteps.지하철역_생성_요청;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;

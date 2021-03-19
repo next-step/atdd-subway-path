@@ -1,14 +1,12 @@
 package nextstep.subway.path.application;
 
-import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.BDDMockito.given;
-import java.util.Arrays;
 import nextstep.subway.common.exception.InvalidStationPathException;
 import nextstep.subway.line.acceptance.LineColor;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.path.dto.PathResponse;
+
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,6 +45,38 @@ public class PathServiceTest {
   private Line 이호선;
   private Line 일호선;
 
+  /**
+   * [노선 미등록 역]
+   *
+   * 철산역
+   *
+   * [1호선]
+   *     광명역-독산역교-금천구
+   *
+   * [2호선]
+   *     사당-----강남----역삼청
+   *              ㅣ
+   *              ㅣ
+   * [신분당]       ㅣ
+   *              ㅣ
+   *              ㅣ
+   *              미금
+   *              ㅣ
+   *              동천
+   *              ㅣ
+   *              수지구청교
+   *              ㅣ
+   *              상현
+   *              ㅣ
+   *              성복
+   *              ㅣ
+   *              광교중앙
+   *              ㅣ
+   *              광교
+   *
+   *
+   *
+   */
   @BeforeEach
   void init() {
     pathService = new PathService(lineService, stationService);
@@ -121,24 +151,6 @@ public class PathServiceTest {
     신분당선.addSection(미금역, 강남역, 5);
   }
 
-  @DisplayName("두 역간의 경로를 탐색한다")
-  @Test
-  void searchPathTest() {
-    //given
-    given(stationService.findStation(광교역.getId())).willReturn(광교역);
-    given(stationService.findStation(역삼역.getId())).willReturn(역삼역);
-    given(lineService.getAllLine()).willReturn(Arrays.asList(신분당선, 이호선));
-    //when
-    PathResponse stationPathResponse = pathService.findPath(광교역.getId(), 역삼역.getId());
-    //then
-    int totalDistance = 39;
-    assertThat(stationPathResponse.getStationResponses())
-        .extracting(pathStationResponse -> pathStationResponse.getId())
-        .containsExactly(광교역.getId(), 광교중앙역.getId(), 상현역.getId(), 성복역.getId(), 수지구청역.getId(),
-            동천역.getId(), 미금역.getId(), 강남역.getId(), 역삼역.getId());
-    assertThat(stationPathResponse.getDistance()).isEqualTo(totalDistance);
-  }
-
   @DisplayName("시작역 도착역이 같으면 경로찾기를 실패한다")
   @Test
   void searchPathTestWithException() {
@@ -146,29 +158,5 @@ public class PathServiceTest {
     assertThrows(InvalidStationPathException.class, () -> {
       pathService.findPath(광교역.getId(), 광교역.getId());
     });
-
   }
-
-  @DisplayName("시작역과 도착역이 연결되어 있지 않으면 경로찾기를 실패한다")
-  @Test
-  void searchPathWithNotConnectedStation() {
-    //given
-    given(stationService.findStation(광교역.getId())).willReturn(광교역);
-    given(stationService.findStation(광명역.getId())).willReturn(광명역);
-    given(lineService.getAllLine()).willReturn(Arrays.asList(신분당선, 이호선));
-    //when then
-    assertThrows(InvalidStationPathException.class, () -> {
-      pathService.findPath(광교역.getId(), 광명역.getId());
-    });
-  }
-
-  @DisplayName("존재하지 않는 역을 출발역이나 도착역에 입력한경우 경로찾기를 실패한다")
-  @Test
-  void searchPathWithUnregisteredStation() {
-    //when then
-    assertThrows(InvalidStationPathException.class, () -> {
-      pathService.findPath(광교역.getId(), 금천구청역.getId());
-    });
-  }
-
 }

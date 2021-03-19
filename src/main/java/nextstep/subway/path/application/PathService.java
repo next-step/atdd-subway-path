@@ -33,7 +33,7 @@ public class PathService {
     List<Sections> sectionsList = filterSections(sourceStation, targetStation);
     Path path = PathFinder.of(sectionsList)
         .findPath(sourceStation, targetStation);
-    return PathResponse.of(path.getStations(), path.getDistance());
+    return PathResponse.of(path);
   }
 
   private List<Sections> filterSections(Station sourceStation, Station targetStation) {

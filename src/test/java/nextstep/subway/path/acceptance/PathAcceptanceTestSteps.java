@@ -8,7 +8,7 @@ import io.restassured.response.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-public class PathRequestBuilder {
+public class PathAcceptanceTestSteps {
 
   public static ExtractableResponse<Response> 두역의_경로탐색을_요청한다(long sourceId, long targetId) {
     return RestAssured.given().log().all()
