@@ -72,9 +72,8 @@ class PathServiceTest {
                 PathResponse pathResponse = pathService.findShortestPath(강남역.getId(), 사당역.getId());
 
                 //then
-                assertThat(pathResponse.getStations().stream().map(StationResponse::getId)).containsExactly(
-                        강남역.getId(), 삼성역.getId(), 사당역.getId()
-                );
+                assertThat(pathResponse.getStations()).extracting(StationResponse::getId)
+                        .containsExactly(강남역.getId(), 삼성역.getId(), 사당역.getId());
                 assertThat(pathResponse.getDistance()).isEqualTo(8);
             }
         }
