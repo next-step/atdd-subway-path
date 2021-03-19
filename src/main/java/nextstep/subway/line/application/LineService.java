@@ -81,13 +81,6 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public List<LineResponse> findAllLineResponses() {
-        return findAllLines().stream()
-                .map(LineResponse::of)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
     public List<Line> findAllLines() {
         return lineRepository.findAll();
     }
