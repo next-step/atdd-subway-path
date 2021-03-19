@@ -70,7 +70,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록됨(response);
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(정자역, 강남역, 양재역));
     }
-
+  
     @DisplayName("역 사이에 새로운 역을 등록한다.")
     @Test
     void addLineSectionBetween() {
@@ -110,7 +110,9 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 정자역, 광교역, 9);
 
         // then
-        지하철_노선에_지하철역_등록_실패됨(response);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_노선에_지하철역_등록됨(response);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 정자역, 양재역));
     }
 
     @DisplayName("지하철 노선에 등록된 마지막 지하철역을 제외한다.")

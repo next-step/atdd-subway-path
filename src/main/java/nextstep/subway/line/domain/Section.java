@@ -60,6 +60,7 @@ public class Section {
         return distance;
     }
 
+
     public boolean hasMatchStation(Section section) {
         if(upStation.equals(section.getUpStation()) && downStation.equals(section.downStation)) {
             throw new ExistUpAndDownStationException();
