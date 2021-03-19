@@ -20,7 +20,7 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Section> sections = new ArrayList<>();
 
-    protected void addSection(Section section) {
+    void addSection(Section section) {
         if (getStations().isEmpty()) {
             sections.add(section);
             return;

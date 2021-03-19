@@ -37,7 +37,6 @@ public class JgraphtTest {
 
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
         List<String> shortestPath = dijkstraShortestPath.getPath(source, target).getVertexList();
-
         assertThat(shortestPath).containsExactlyElementsOf(Arrays.asList("v3", "v5", "v4", "v2", "v1"));
         assertThat(shortestPath.size()).isEqualTo(5);
     }
