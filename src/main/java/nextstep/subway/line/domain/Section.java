@@ -73,6 +73,11 @@ public class Section {
         this.distance = distance - newSectionDistance;
     }
 
+    public void union(Section lastSection) {
+        this.downStation = lastSection.getDownStation();
+        this.distance += lastSection.getDistance();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -81,21 +81,29 @@ public class Sections {
     }
 
     public void removeSection(Long stationId) {
-        validateRemoveSection(stationId);
-        sections.stream()
-                .filter(it -> it.getDownStation().getId() == stationId)
-                .findFirst()
-                .ifPresent(it -> sections.remove(it))
-        ;
-    }
+        validateRemoveSection();
 
-    private void validateRemoveSection(Long stationId) {
-        if (sections.size() <= 1) {
-            throw new CannotRemoveStation("노선에 등록된 구간이 1개 이하일때는 삭제할 수 없습니다.");
+        boolean isCenter = isCenterStation(stationId);
+        if(isCenter) {
+            Section lastSection = sections.get(sections.size() -1);
+            sections.get(0).union(lastSection);
         }
 
-        if(!getStations().stream().anyMatch(it -> it.getId() == stationId)){
-            throw new CannotRemoveStation("노선에 해당되는 역이 없습니다.");
+        Section section = sections.stream()
+                .filter(it -> it.getDownStation().getId() == stationId || it.getUpStation().getId() == stationId)
+                .findFirst()
+                .orElseThrow(() -> new CannotRemoveStation("노선에 해당되는 역이 없습니다."));
+        sections.remove(section);
+    }
+
+    private boolean isCenterStation(Long stationId) {
+       return  sections.stream().anyMatch(it -> it.getDownStation().getId() == stationId) &&
+               sections.stream().anyMatch(it -> it.getUpStation().getId() == stationId);
+    }
+
+    private void validateRemoveSection() {
+        if (sections.size() <= 1) {
+            throw new CannotRemoveStation("노선에 등록된 구간이 1개 이하일때는 삭제할 수 없습니다.");
         }
     }
 
