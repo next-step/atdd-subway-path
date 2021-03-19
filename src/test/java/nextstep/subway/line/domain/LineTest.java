@@ -216,12 +216,14 @@ class LineTest {
             void it_remove_a_section() {
                 // given
                 이호선.addSection(역삼역, 삼성역, 15);
+                int distance = 이호선.getSections().getTotalDistance();
 
                 // when
                 이호선.removeSection(역삼역.getId());
 
                 //then
                 assertThat(이호선.getStations()).containsExactly(Arrays.array(강남역, 삼성역));
+                assertThat(이호선.getSections().getTotalDistance()).isEqualTo(distance);
             }
         }
 

@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
+@DisplayName("LineService 클래스")
 class LineServiceTest {
 
     @Autowired
@@ -51,7 +52,7 @@ class LineServiceTest {
         Station 역삼역 = stationRepository.save(new Station("역삼역"));
         Station 삼성역 = stationRepository.save(new Station("삼성역"));
         Line 이호선 = lineRepository.save(new Line("2호선", "green", 강남역, 역삼역, 10));
-        이호선.addSection(역삼역, 삼성역, 15);
+        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 삼성역.getId(), 15));
 
         // when
         lineService.removeSection(이호선.getId(), 삼성역.getId());
