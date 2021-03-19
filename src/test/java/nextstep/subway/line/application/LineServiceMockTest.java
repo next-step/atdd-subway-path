@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import nextstep.subway.line.domain.Line;
@@ -27,7 +26,6 @@ public class LineServiceMockTest {
     @Mock
     private StationService stationService;
 
-    @Autowired
     private LineService lineService;
     private Station 강남역;
     private Station 역삼역;
@@ -64,5 +62,21 @@ public class LineServiceMockTest {
         // line.findLineById 메서드를 통해 검증
         Line line = lineService.findLineById(이호선.getId());
         assertThat(line.getStations().size()).isEqualTo(3);
+    }
+
+    @Test
+    void removeSection() {
+        // given
+        when(stationService.findStationById(역삼역.getId())).thenReturn(역삼역);
+        when(stationService.findStationById(삼성역.getId())).thenReturn(삼성역);
+        when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
+        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 삼성역.getId(), 5));
+
+        // when
+        lineService.removeSection(이호선.getId(), 역삼역.getId());
+
+        // then
+        Line line = lineService.findLineById(이호선.getId());
+        assertThat(line.getStations().size()).isEqualTo(2);
     }
 }

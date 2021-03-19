@@ -2,6 +2,8 @@ package nextstep.subway.line.application;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Arrays;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,5 +43,27 @@ public class LineServiceTest {
         // then
         // line.getSections 메서드를 통해 검증
         assertThat(신분당선.getStations().size()).isEqualTo(expectedSize);
+        assertThat(신분당선.getStations())
+            .usingRecursiveFieldByFieldElementComparator()
+            .containsExactlyElementsOf(Arrays.asList(강남역, 양재역, 판교역));
+    }
+
+    @Test
+    void removeSection() {
+        // given
+        Station 강남역 = stationRepository.save(new Station("강남역"));
+        Station 양재역 = stationRepository.save(new Station("양재역"));
+        Station 판교역 = stationRepository.save(new Station("판교역"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red", 강남역, 양재역, 5));
+        lineService.addSection(신분당선.getId(), new SectionRequest(양재역.getId(), 판교역.getId(), 5));
+
+        // when
+        lineService.removeSection(신분당선.getId(), 양재역.getId());
+
+        // then
+        assertThat(신분당선.getStations().size()).isEqualTo(2);
+        assertThat(신분당선.getStations())
+            .usingRecursiveFieldByFieldElementComparator()
+            .containsExactlyElementsOf(Arrays.asList(강남역, 판교역));
     }
 }

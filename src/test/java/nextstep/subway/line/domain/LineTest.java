@@ -33,7 +33,7 @@ public class LineTest {
     void getStations() {
         // given
         Station 판교역 = new Station("판교역");
-        신분당선.addSection(Section.of(신분당선, 역삼역, 판교역, 3));
+        신분당선.addSection(역삼역, 판교역, 3);
 
         // when
         final List<Station> stations = 신분당선.getStations();
@@ -53,7 +53,7 @@ public class LineTest {
         int expectedSize = 신분당선.getStations().size() + 1;
 
         // when
-        신분당선.addSection(Section.of(신분당선, 역삼역, 판교역, 3));
+        신분당선.addSection(역삼역, 판교역, 3);
 
         // then
         assertThat(신분당선.getStations().size()).isEqualTo(expectedSize);
@@ -70,7 +70,7 @@ public class LineTest {
         int expectedSize = 신분당선.getStations().size() + 1;
 
         // when
-        신분당선.addSection(Section.of(신분당선, 판교역, 강남역, 5));
+        신분당선.addSection(판교역, 강남역, 5);
 
         // then
         assertThat(신분당선.getStations().size()).isEqualTo(expectedSize);
@@ -88,8 +88,8 @@ public class LineTest {
         int expectedSize = 신분당선.getStations().size() + 2;
 
         // when
-        신분당선.addSection(Section.of(신분당선, 강남역, 판교역, 3));
-        신분당선.addSection(Section.of(신분당선, 삼성역, 역삼역, 1));
+        신분당선.addSection(강남역, 판교역, 3);
+        신분당선.addSection(삼성역, 역삼역, 1);
 
         // then
         assertThat(신분당선.getStations().size()).isEqualTo(expectedSize);
@@ -105,7 +105,7 @@ public class LineTest {
         Station 판교역 = new Station("판교역");
 
         // when, then
-        assertThatThrownBy(() -> 신분당선.addSection(Section.of(신분당선, 판교역, 역삼역, 5)))
+        assertThatThrownBy(() -> 신분당선.addSection(판교역, 역삼역, 5))
             .isInstanceOf(TooLongDistanceException.class);
     }
 
@@ -113,7 +113,7 @@ public class LineTest {
     @Test
     void addSectionAlreadyIncludedAllStation() {
         // when, then
-        assertThatThrownBy(() -> 신분당선.addSection(Section.of(신분당선, 강남역, 역삼역, 3)))
+        assertThatThrownBy(() -> 신분당선.addSection(강남역, 역삼역, 3))
             .isInstanceOf(AlreadyIncludedAllStationException.class);
     }
 
@@ -125,7 +125,7 @@ public class LineTest {
         Station 삼성역 = new Station("삼성역");
 
         // when, then
-        assertThatThrownBy(() -> 신분당선.addSection(Section.of(신분당선, 삼성역, 판교역, 3)))
+        assertThatThrownBy(() -> 신분당선.addSection(삼성역, 판교역, 3))
             .isInstanceOf(NotExistStationException.class);
     }
 
@@ -134,7 +134,7 @@ public class LineTest {
     void removeSectionFirstUpStation() {
         // given
         Station 판교역 = new Station("판교역");
-        신분당선.addSection(Section.of(신분당선, 역삼역, 판교역, 3));
+        신분당선.addSection(역삼역, 판교역, 3);
 
         // when
         신분당선.removeSection(강남역);
@@ -148,7 +148,7 @@ public class LineTest {
     void removeSectionLastDownStation() {
         // given
         Station 판교역 = new Station("판교역");
-        신분당선.addSection(Section.of(신분당선, 역삼역, 판교역, 3));
+        신분당선.addSection(역삼역, 판교역, 3);
 
         // when
         신분당선.removeSection(판교역);
@@ -165,8 +165,8 @@ public class LineTest {
         Station 삼성역 = new Station("삼성역");
         int expectedSize = 신분당선.getStations().size() + 1;
 
-        신분당선.addSection(Section.of(신분당선, 강남역, 판교역, 3));
-        신분당선.addSection(Section.of(신분당선, 삼성역, 역삼역, 1));
+        신분당선.addSection(강남역, 판교역, 3);
+        신분당선.addSection(삼성역, 역삼역, 1);
 
         // when
         신분당선.removeSection(판교역);
@@ -184,7 +184,7 @@ public class LineTest {
         // given
         Station 판교역 = new Station("판교역");
         Station 삼성역 = new Station("삼성역");
-        신분당선.addSection(Section.of(신분당선, 강남역, 판교역, 3));
+        신분당선.addSection(강남역, 판교역, 3);
 
         // when, then
         assertThatThrownBy(() -> 신분당선.removeSection(삼성역))

@@ -54,8 +54,8 @@ public class Sections {
 
 	public void removeSection(Station station) {
 		List<Section> targets = filterTargets(
-			sec -> sec.stream()
-				.filter(s -> s.containsStation(station))
+			targetSections -> targetSections.stream()
+				.filter(section -> section.containsStation(station))
 				.collect(toList())
 		);
 
@@ -90,6 +90,10 @@ public class Sections {
 		}
 
 		return stations;
+	}
+
+	public List<Section> getSections() {
+		return sections;
 	}
 
 	private List<Section> filterTargets(Function<List<Section>, List<Section>> func) {

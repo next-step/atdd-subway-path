@@ -50,7 +50,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void addSectionInMiddle() {
 		// when
-		지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 정자역, 6);
+		지하철_노선에_지하철역_등록되어_있음(신분당선, 강남역, 정자역, 6);
 
 		// then
 		ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
@@ -62,7 +62,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void removeSectionInMiddle() {
 		// given
-		지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 정자역, 6);
+		지하철_노선에_지하철역_등록되어_있음(신분당선, 강남역, 정자역, 6);
 
 		// when
 		ExtractableResponse<Response> response = 지하철_노선에_지하철역_제외_요청(신분당선, 정자역);
@@ -75,7 +75,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void removeSectionNotIncluded() {
 		// given
-		지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 정자역, 6);
+		지하철_노선에_지하철역_등록되어_있음(신분당선, 강남역, 정자역, 6);
 
 		// when
 		ExtractableResponse<Response> response = 지하철_노선에_지하철역_제외_요청(신분당선, 광교역);
