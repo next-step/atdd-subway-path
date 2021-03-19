@@ -21,18 +21,19 @@ public class PathFinder {
     public PathFinder(List<Line> lines) {
         this.lines = lines;
         this.graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+        initialize();
     }
 
     public GraphPath getShortestPath(Station source, Station target) {
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-        return  Optional
+        return Optional
                 .ofNullable(dijkstraShortestPath.getPath(source, target))
                 .orElseThrow(NotConnectedException::new);
     }
 
-    public void initialize() {
+    private void initialize() {
         lines.stream().map(Line::getAllStations).forEach(this::addVertex);
-        lines.stream().map(Line::getAllSections).forEach(this::setEdgeWeight);
+        lines.stream().map(line -> line.getSections().getSections()).forEach(this::setEdgeWeight);
     }
 
     private void setEdgeWeight(List<Section> sections) {

@@ -32,7 +32,6 @@ public class PathFinderTest {
         lines.add(신분당선);
 
         PathFinder path = new PathFinder(lines);
-        path.initialize();
 
         GraphPath shortestPath = path.getShortestPath(강남역, 남부터미널역);
 
