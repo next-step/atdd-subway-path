@@ -149,6 +149,21 @@ public class LineTest {
         assertThat(이호선.getStations()).containsExactly(역삼역, 삼성역);
     }
 
+    @DisplayName("지하철 노선에 가운데 지하철역을 제외한다")
+    @Test
+    void removeMiddleSection() {
+        // given
+        이호선.addSection(강남역, 역삼역, 10);
+        이호선.addSection(역삼역, 삼성역, 10);
+
+        // when
+        이호선.removeSection(역삼역);
+
+        // then
+        assertThat(이호선.getSections().size()).isEqualTo(1);
+        assertThat(이호선.getStations()).containsExactly(강남역, 삼성역);
+    }
+
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
     @Test
     void removeSectionNotEndOfList() {
