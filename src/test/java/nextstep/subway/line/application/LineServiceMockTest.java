@@ -20,7 +20,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -129,16 +132,14 @@ public class LineServiceMockTest {
         assertThat(이호선.getColor()).isEqualTo("주황색");
     }
 
-    /*@Test
+    @Test
     void deleteLineById() {
-        // given ?
-
-        // when
-        lineService.deleteLineById(이호선.getId());
-
-        // then
-        assertThat(이호선).isNull();
-    }*/
+        // when / then
+        assertThatCode(() ->
+                lineService.deleteLineById(이호선.getId())
+        ).doesNotThrowAnyException();
+        verify(lineRepository).deleteById(anyLong());
+    }
 
     @Test
     void addSection() {
