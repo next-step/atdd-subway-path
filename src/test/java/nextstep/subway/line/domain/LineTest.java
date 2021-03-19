@@ -119,6 +119,7 @@ public class LineTest {
                 .isInstanceOf(RuntimeException.class);
     }
 
+    @DisplayName("지하철 노선에 등록된 지하철역을 제외한다")
     @Test
     void removeSection() {
         // given
@@ -130,6 +131,22 @@ public class LineTest {
 
         // then
         assertThat(이호선.getSections().size()).isEqualTo(1);
+        assertThat(이호선.getStations()).containsExactly(강남역, 역삼역);
+    }
+
+    @DisplayName("지하철 노선에 첫번째 지하철역을 제외한다")
+    @Test
+    void removeFirstSection() {
+        // given
+        이호선.addSection(강남역, 역삼역, 10);
+        이호선.addSection(역삼역, 삼성역, 10);
+
+        // when
+        이호선.removeSection(강남역);
+
+        // then
+        assertThat(이호선.getSections().size()).isEqualTo(1);
+        assertThat(이호선.getStations()).containsExactly(역삼역, 삼성역);
     }
 
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")

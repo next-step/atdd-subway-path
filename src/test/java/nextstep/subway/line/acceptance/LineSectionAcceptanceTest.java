@@ -128,6 +128,21 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 양재역));
     }
 
+    @DisplayName("지하철 노선에 등록된 첫번쨰 지하철역을 제외한다.")
+    @Test
+    void removeFirstLineSection() {
+        // given
+        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
+
+        // when
+        ExtractableResponse<Response> removeResponse = 지하철_노선에_지하철역_제외_요청(신분당선, 강남역);
+
+        // then
+        지하철_노선에_지하철역_제외됨(removeResponse);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(양재역, 정자역));
+    }
+
     @DisplayName("지하철 노선에 구간이 하나일 때 지하철역을 제외한다.")
     @Test
     void removeLineSectionOnlyOneSection() {
