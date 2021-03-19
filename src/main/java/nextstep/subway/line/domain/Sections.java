@@ -5,16 +5,13 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Embeddable
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    private List<Section> sections = new LinkedList<>();
 
     public Sections() {
     }
@@ -74,24 +71,56 @@ public class Sections {
         }
 
         // 벨리데이션
-        isNotValidUpStation(section.getUpStation());
-        isDownStationExisted(section.getDownStation());
+        isConnectableSection(section);
+        isAlreadyAdded(section);
 
-        sections.add(section);
+        // 처음
+        if(getFirstStation().equals(section.getDownStation())){
+            sections.add(0, section);
+            return;
+        }
+        // 마지막
+        if(getLastStation().equals(section.getUpStation())){
+            sections.add(section);
+            return;
+        }
+        // 중간에 추가
+        sections.stream()
+                .filter(it -> it.getUpStation().equals(section.getUpStation()))
+                .findFirst()
+                .ifPresent(it -> addSectionInMiddle(sections.indexOf(it), it, section));
     }
 
-    // 구간 추가 벨리데이션
-    private void isNotValidUpStation(Station upStation){
-        if (getLastStation() != upStation) {
-            throw new RuntimeException("상행역은 하행 종점역이어야 합니다.");
+    void isConnectableSection(Section section){
+        if(!(isContainsStation(section.getUpStation()) || isContainsStation(section.getDownStation()))){
+            throw new RuntimeException("상행역과 하행역 둘 중 하나도 포함되어있지 않음");
         }
     }
 
-    // 구간 추가 벨리데이션
-    private void isDownStationExisted(Station downStation){
-        if (getStations().stream().anyMatch(it -> it == downStation)) {
-            throw new RuntimeException("하행역이 이미 등록되어 있습니다.");
+    void isAlreadyAdded(Section section){
+        if(isContainsStation(section.getUpStation()) && isContainsStation(section.getDownStation())){
+            throw new RuntimeException("상행역과 하행역이 이미 노선에 모두 등록됨");
         }
+    }
+
+    // 해당역 포함여부
+    boolean isContainsStation(Station station){
+        return getStations().stream()
+                .anyMatch(it -> it.equals(station));
+    }
+
+    // 구간사이에 구간추가
+    private void addSectionInMiddle(int idx, Section originSection, Section newSection){
+        // 구간사이 길이 계산
+        int originDist = originSection.getDistance();
+        int newDist = newSection.getDistance();
+        if(originDist <= newDist){
+            throw new RuntimeException("기존 역 사이 길이보다 크거나 같음");
+        }
+        // 구간 등록+업데이트
+        Section tmp = new Section(originSection.getLine(), newSection.getDownStation(), originSection.getDownStation(), originDist - newDist);
+        sections.add(idx+1, tmp);
+        sections.set(idx, originSection.insertStation(newSection.getDownStation(), newDist));
     }
 
     // 구간 삭제

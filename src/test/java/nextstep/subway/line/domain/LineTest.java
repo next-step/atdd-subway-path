@@ -55,14 +55,14 @@ public class LineTest {
                 .containsExactlyElementsOf(Arrays.asList(강남역.getId(), 양재역.getId(), 양재시민의숲.getId()));
     }
 
-    @DisplayName("목록 중간에 추가할 경우 에러 발생")
+    /*@DisplayName("목록 중간에 추가할 경우 에러 발생")
     @Test
     void addSectionInMiddle() {
         // when + then
         assertThatThrownBy(() -> {
             신분당선.addSection(강남역, 양재시민의숲, 6);
         }).isInstanceOf(RuntimeException.class);
-    }
+    }*/
 
     @DisplayName("이미 존재하는 구간 추가 시 에러 발생")
     @Test

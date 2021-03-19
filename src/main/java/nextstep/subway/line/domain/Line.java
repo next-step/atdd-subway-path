@@ -53,19 +53,6 @@ public class Line extends BaseEntity {
         return sections;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Line line = (Line) o;
-        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, color);
-    }
-
     /* 도메인 기능 메서드 */
     // 역 조회
     public List<Station> getStations(){
@@ -90,6 +77,19 @@ public class Line extends BaseEntity {
     // 역개수
     public int getStationSize(){
         return sections.getStations().size();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Line line = (Line) o;
+        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, color);
     }
 
 }
