@@ -81,10 +81,8 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public List<LineResponse> findAllLines() {
-        return lineRepository.findAll().stream()
-                .map(LineResponse::of)
-                .collect(Collectors.toList());
+    public List<Line> findAllLines() {
+        return lineRepository.findAll();
     }
 
     @Transactional(readOnly = true)
@@ -93,6 +91,7 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    @Transactional(readOnly = true)
     public Line findLineById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new LineNonExistException(EXCEPTION_MESSAGE_NON_EXIST_LINE));

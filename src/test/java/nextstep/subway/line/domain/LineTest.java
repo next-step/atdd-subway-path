@@ -17,22 +17,22 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 public class LineTest {
 
     private Station savedStationGyoDae;
-    private Station savedStationGangnam;
-    private Station savedStationYeoksam;
+    private Station savedStationGangNam;
+    private Station savedStationYeokSam;
     private Station savedStationSeolleung;
-    private Station savedStationSamseong;
+    private Station savedStationSamSeong;
     private Line line2;
 
     @BeforeEach
     void setUp() {
-        savedStationGangnam = new Station(1L, "강남역");
-        savedStationYeoksam = new Station(2L, "역삼역");
-        savedStationSamseong = new Station(3L, "삼성역");
+        savedStationGangNam = new Station(1L, "강남역");
+        savedStationYeokSam = new Station(2L, "역삼역");
+        savedStationSamSeong = new Station(3L, "삼성역");
         savedStationGyoDae = new Station(4L, "교대역");
         savedStationSeolleung = new Station(5L, "선릉역");
 
         line2 = new Line(1L, "2호선", "bg-green-600");
-        line2.addSection(savedStationGangnam, savedStationYeoksam, 10);
+        line2.addSection(savedStationGangNam, savedStationYeokSam, 10);
     }
 
     @Test
@@ -49,89 +49,90 @@ public class LineTest {
     @DisplayName("노선에 신규 상행역 구간 추가. 교대 - 강남 - 역삼")
     void addSectionInUp() {
         // when
-        line2.addSection(savedStationGyoDae, savedStationGangnam, 5);
+        line2.addSection(savedStationGyoDae, savedStationGangNam, 5);
 
         // then
-        assertThat(line2.getStations()).containsExactlyElementsOf(Arrays.asList(savedStationGyoDae, savedStationGangnam, savedStationYeoksam));
+        assertThat(line2.getStations()).containsExactlyElementsOf(Arrays.asList(savedStationGyoDae, savedStationGangNam, savedStationYeokSam));
     }
 
     @Test
     @DisplayName("노선 중간에 신규 구간 추가. 강남 - 역삼 - 선릉 - 삼성")
     void addSectionInMiddle() {
         // given
-        line2.addSection(savedStationYeoksam, savedStationSamseong, 6);
+        line2.addSection(savedStationYeokSam, savedStationSamSeong, 6);
 
         // when
-        line2.addSection(savedStationYeoksam, savedStationSeolleung, 3);
+        line2.addSection(savedStationYeokSam, savedStationSeolleung, 3);
 
         // then
-        assertThat(line2.getStations()).containsExactlyElementsOf(Arrays.asList(savedStationGangnam, savedStationYeoksam, savedStationSeolleung, savedStationSamseong));
+        assertThat(line2.getStations()).containsExactlyElementsOf(Arrays.asList(savedStationGangNam, savedStationYeokSam, savedStationSeolleung, savedStationSamSeong));
     }
 
     @Test
     @DisplayName("노선의 하행역에 신규 구간 추가. 강남 - 역삼 - 삼성")
     void addSectionInDown() {
         // when
-        line2.addSection(savedStationYeoksam, savedStationSamseong, 6);
+        line2.addSection(savedStationYeokSam, savedStationSamSeong, 6);
 
         // then
-        assertThat(line2.getStations()).containsExactlyElementsOf(Arrays.asList(savedStationGangnam, savedStationYeoksam, savedStationSamseong));
+        assertThat(line2.getStations()).containsExactlyElementsOf(Arrays.asList(savedStationGangNam, savedStationYeokSam, savedStationSamSeong));
     }
 
     @Test
     @DisplayName("노선에 존재하는 구간 추가 시 에러 발생")
     void addSectionAlreadyIncluded() {
         assertThatExceptionOfType(StationAlreadyExistException.class)
-                .isThrownBy(() -> line2.addSection(savedStationGangnam, savedStationYeoksam, 10));
+                .isThrownBy(() -> line2.addSection(savedStationGangNam, savedStationYeokSam, 10));
     }
 
     @Test
-    @DisplayName("노선에 있는 상행 종점역 구간 삭제")
+    @DisplayName("노선에 있는 상행 종점역 구간 제거")
     void removeUpStationSection() {
         // given
-        line2.addSection(savedStationYeoksam, savedStationSamseong, 6);
+        line2.addSection(savedStationYeokSam, savedStationSamSeong, 6);
 
         // when
-        line2.deleteSection(savedStationGangnam);
+        line2.deleteSection(savedStationGangNam);
 
         // then
         assertThat(line2.getSections()).hasSize(1);
-        assertThat(line2.getStations()).containsExactlyElementsOf(Arrays.asList(savedStationYeoksam, savedStationSamseong));
+        assertThat(line2.getStations()).containsExactlyElementsOf(Arrays.asList(savedStationYeokSam, savedStationSamSeong));
     }
 
     @Test
-    @DisplayName("노선에 있는 중간 구간 삭제")
+    @DisplayName("노선에 있는 중간 구간 제거")
     void removeMiddleSection() {
         // given
-        line2.addSection(savedStationYeoksam, savedStationSamseong, 6);
-        line2.addSection(savedStationYeoksam, savedStationSeolleung, 3);
+        line2.addSection(savedStationYeokSam, savedStationSamSeong, 6);
+        line2.addSection(savedStationYeokSam, savedStationSeolleung, 3);
 
         // when
-        line2.deleteSection(savedStationYeoksam);
+        line2.deleteSection(savedStationYeokSam);
 
         // then
         assertThat(line2.getSections()).hasSize(2);
-        assertThat(line2.getStations()).containsExactlyElementsOf(Arrays.asList(savedStationGangnam, savedStationSeolleung, savedStationSamseong));
+        assertThat(line2.getStations()).containsExactlyElementsOf(Arrays.asList(savedStationGangNam, savedStationSeolleung, savedStationSamSeong));
+        assertThat(line2.findSection(savedStationGangNam, savedStationSeolleung).getDistance()).isEqualTo(13);
     }
 
     @Test
-    @DisplayName("노선에 있는 하행 종점역 구간 삭제")
+    @DisplayName("노선에 있는 하행 종점역 구간 제거")
     void removeDownStationSection() {
         // given
-        line2.addSection(savedStationYeoksam, savedStationSamseong, 6);
+        line2.addSection(savedStationYeokSam, savedStationSamSeong, 6);
 
         // when
-        line2.deleteSection(savedStationSamseong);
+        line2.deleteSection(savedStationSamSeong);
 
         // then
         assertThat(line2.getSections()).hasSize(1);
-        assertThat(line2.getStations()).containsExactlyElementsOf(Arrays.asList(savedStationGangnam, savedStationYeoksam));
+        assertThat(line2.getStations()).containsExactlyElementsOf(Arrays.asList(savedStationGangNam, savedStationYeokSam));
     }
 
     @Test
     @DisplayName("구간이 하나인 노선 삭제 시 에러 발생")
     void removeSectionNotEndOfList() {
         assertThatExceptionOfType(CannotRemoveSectionException.class)
-                .isThrownBy(() -> line2.deleteSection(savedStationYeoksam));
+                .isThrownBy(() -> line2.deleteSection(savedStationYeokSam));
     }
 }

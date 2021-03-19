@@ -9,7 +9,6 @@ import nextstep.subway.line.exception.CannotRemoveSectionException;
 import nextstep.subway.line.exception.LineAlreadyExistException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.exception.CannotRemoveStationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +20,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -120,7 +120,8 @@ public class LineServiceMockTest {
         lineService.deleteLineById(lineResponse.getId());
 
         // then
-        assertThat(lineService.findAllLines()).hasSize(0);
+        List<LineResponse> lineResponses = getLineResponses();
+        assertThat(lineResponses).hasSize(0);
     }
 
     @Test
@@ -137,7 +138,7 @@ public class LineServiceMockTest {
         given(lineRepository.findAll()).willReturn(Arrays.asList(line2, lineNewBunDang));
 
         // when
-        List<LineResponse> savedLineAllResponses = lineService.findAllLines();
+        List<LineResponse> savedLineAllResponses = getLineResponses();
 
         // then
         assertThat(savedLineAllResponses).hasSize(2);
@@ -282,6 +283,12 @@ public class LineServiceMockTest {
         given(stationService.findStationById(2L)).willReturn(savedStationYeoksam);
         given(lineRepository.findById(1L)).willReturn(Optional.ofNullable(line2));
         given(lineRepository.save(any(Line.class))).willReturn(line2);
+    }
+
+    private List<LineResponse> getLineResponses() {
+        return lineService.findAllLines().stream()
+                .map(LineResponse::of)
+                .collect(Collectors.toList());
     }
 
     private static Station createMockStation(String stationName, Long stationId) {

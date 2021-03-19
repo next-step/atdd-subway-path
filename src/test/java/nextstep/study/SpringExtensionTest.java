@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -30,7 +31,9 @@ public class SpringExtensionTest {
         LineService lineService = new LineService(lineRepository, stationService);
 
         // when
-        List<LineResponse> responses = lineService.findAllLines();
+        List<LineResponse> responses = lineService.findAllLines().stream()
+                .map(LineResponse::of)
+                .collect(Collectors.toList());
 
         // then
         assertThat(responses).hasSize(1);

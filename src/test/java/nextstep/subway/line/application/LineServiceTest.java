@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -99,7 +100,8 @@ public class LineServiceTest {
         lineService.deleteLineById(savedLine2Response.getId());
 
         // then
-        assertThat(lineService.findAllLines()).hasSize(0);
+        List<LineResponse> lineResponses = getLineResponses();
+        assertThat(lineResponses).hasSize(0);
     }
 
     @Test
@@ -113,7 +115,7 @@ public class LineServiceTest {
         lineService.saveLine(lineNewBundangRequest);
 
         // when
-        List<LineResponse> lineResponses = lineService.findAllLines();
+        List<LineResponse> lineResponses = getLineResponses();
 
         // then
         assertThat(lineResponses).hasSize(2);
@@ -222,5 +224,11 @@ public class LineServiceTest {
 
     private SectionRequest createSectionRequest(Station upStation, Station downStation, int distance) {
         return new SectionRequest(upStation.getId(), downStation.getId(), distance);
+    }
+
+    private List<LineResponse> getLineResponses() {
+        return lineService.findAllLines().stream()
+                .map(LineResponse::of)
+                .collect(Collectors.toList());
     }
 }

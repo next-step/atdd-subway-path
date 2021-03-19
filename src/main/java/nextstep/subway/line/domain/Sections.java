@@ -22,7 +22,7 @@ import static nextstep.subway.station.exception.StationExceptionMessage.*;
 @Embeddable
 public class Sections {
 
-    private static final int NUMBER_ONE = 1;
+    private static final int SECTION_MIN_SIZE = 1;
     private static final int FIRST_INDEX = 0;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
@@ -91,7 +91,7 @@ public class Sections {
         Station newDownStation = section.getDownStation();
 
         sections.set(existingSectionIndex, new Section(existingLine, existingUpStation, newDownStation, newSectionDistance));
-        sections.add(existingSectionIndex + NUMBER_ONE, new Section(existingLine, newDownStation, existingDownStation, adjustedDistance));
+        sections.add(existingSectionIndex + SECTION_MIN_SIZE, new Section(existingLine, newDownStation, existingDownStation, adjustedDistance));
     }
 
     private void addForwardSection(Section section) {
@@ -158,7 +158,7 @@ public class Sections {
     }
 
     private void validateDeletableCurrentSections() {
-        if (sections.size() == NUMBER_ONE || sections.isEmpty()) {
+        if (sections.size() == SECTION_MIN_SIZE || sections.isEmpty()) {
             throw new CannotRemoveSectionException(EXCEPTION_MESSAGE_NOT_DELETABLE_SECTION);
         }
     }
@@ -178,7 +178,7 @@ public class Sections {
     }
 
     private Section getLastSection() {
-        return sections.get(sections.size() - NUMBER_ONE);
+        return sections.get(sections.size() - SECTION_MIN_SIZE);
     }
 
     private void deleteMiddleSection(Station deleteStation) {
@@ -212,7 +212,7 @@ public class Sections {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return Collections.unmodifiableList(sections);
     }
 
     public List<Station> getStations() {
