@@ -1,8 +1,8 @@
 package nextstep.subway.path.application;
 
-import nextstep.subway.line.dto.LineSectionResponse;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.path.exception.SeperatedStationsException;
-import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.domain.Station;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.alg.shortestpath.KShortestPaths;
@@ -15,19 +15,19 @@ import java.util.stream.Collectors;
 public class ShortestPathFinder {
 
     private final WeightedMultigraph<Long, DefaultWeightedEdge> graph;
-    private final List<StationResponse> stationResponses;
-    private final List<LineSectionResponse> lineSectionResponses;
+    private final List<Station> stations;
+    private final List<Line> lines;
 
-    public ShortestPathFinder(List<StationResponse> stationResponses, List<LineSectionResponse> lineSectionResponses) {
-        this.stationResponses = stationResponses;
-        this.lineSectionResponses = lineSectionResponses;
+    public ShortestPathFinder(List<Station> stations, List<Line> lines) {
+        this.stations = stations;
+        this.lines = lines;
 
         graph = new WeightedMultigraph(DefaultWeightedEdge.class);
         setStations();
         setSections();
     }
 
-    public List<StationResponse> getShortestPath(Long sourceStationId, Long targetStationId) {
+    public List<Station> getShortestPath(Long sourceStationId, Long targetStationId) {
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
         GraphPath path = dijkstraShortestPath.getPath(sourceStationId, targetStationId);
 
@@ -37,7 +37,7 @@ public class ShortestPathFinder {
 
         List<Long> shortestPath = path.getVertexList();
         return shortestPath.stream()
-                .map(id -> stationResponses.stream().filter(it -> it.getId().equals(id)).findFirst().orElseThrow(RuntimeException::new))
+                .map(id -> stations.stream().filter(it -> it.getId().equals(id)).findFirst().orElseThrow(RuntimeException::new))
                 .collect(Collectors.toList());
     }
 
@@ -47,17 +47,18 @@ public class ShortestPathFinder {
     }
 
     private void setStations() {
-        stationResponses.forEach(it -> graph.addVertex(it.getId()));
+        stations.forEach(it -> graph.addVertex(it.getId()));
     }
 
     private void setSections() {
-        lineSectionResponses.forEach(this::setSection);
+        lines.forEach(this::setSection);
     }
 
-    private void setSection(LineSectionResponse lineSectionResponse) {
-        lineSectionResponse.getSections()
+    private void setSection(Line line) {
+        line.getSections()
+                .getSections()
                 .forEach(it -> graph.setEdgeWeight(
-                        graph.addEdge(it.getUpStationId(), it.getDownStationId()),
+                        graph.addEdge(it.getUpStation().getId(), it.getDownStation().getId()),
                         it.getDistance()
                         )
                 );

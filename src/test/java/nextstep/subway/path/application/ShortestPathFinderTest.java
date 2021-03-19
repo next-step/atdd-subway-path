@@ -1,12 +1,13 @@
 package nextstep.subway.path.application;
 
 import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.LineSectionResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.path.exception.SeperatedStationsException;
 import nextstep.subway.station.application.StationService;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,9 +57,9 @@ class ShortestPathFinderTest {
         사호선 = lineService.saveLine(new LineRequest("4호선", "blue", 강남역.getId(), 삼성역.getId(), 5));
         lineService.addSection(삼호선.getId(), new SectionRequest(삼성역.getId(), 사당역.getId(), 3));
 
-        List<StationResponse> stationResponses = stationService.findAllStations();
-        List<LineSectionResponse> lineSectionResponses = lineService.findAllSections();
-        shortestPathFinder = new ShortestPathFinder(stationResponses, lineSectionResponses);
+        List<Station> stations = stationService.findStations();
+        List<Line> lines = lineService.findLines();
+        shortestPathFinder = new ShortestPathFinder(stations, lines);
     }
 
     @Nested
@@ -71,10 +72,10 @@ class ShortestPathFinderTest {
             @DisplayName("최단 경로 역 목록을 리턴한다")
             void it_return_station_list_of_shortest_path() {
                 // when
-                List<StationResponse> shortestPath = shortestPathFinder.getShortestPath(강남역.getId(), 사당역.getId());
+                List<Station> shortestPath = shortestPathFinder.getShortestPath(강남역.getId(), 사당역.getId());
 
                 //then
-                assertThat(shortestPath).extracting(StationResponse::getId)
+                assertThat(shortestPath).extracting(Station::getId)
                         .containsExactly(강남역.getId(), 삼성역.getId(), 사당역.getId());
             }
         }

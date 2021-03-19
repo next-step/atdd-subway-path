@@ -1,12 +1,12 @@
 package nextstep.subway.path.application;
 
 import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.dto.LineSectionResponse;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.path.exception.NotExistsStations;
 import nextstep.subway.path.exception.SameStationsException;
 import nextstep.subway.station.application.StationService;
-import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,14 +27,14 @@ public class PathService {
     public PathResponse findShortestPath(Long sourceStationId, Long targetStationId) {
         validateFindShortestPath(sourceStationId, targetStationId);
 
-        List<StationResponse> stationResponses = stationService.findAllStations();
-        List<LineSectionResponse> lineSectionResponses = lineService.findAllSections();
-        ShortestPathFinder shortestPathFinder = new ShortestPathFinder(stationResponses, lineSectionResponses);
+        List<Station> stations = stationService.findStations();
+        List<Line> lines = lineService.findLines();
+        ShortestPathFinder shortestPathFinder = new ShortestPathFinder(stations, lines);
 
-        List<StationResponse> shortestStationResponses = shortestPathFinder.getShortestPath(sourceStationId, targetStationId);
+        List<Station> shortestStations = shortestPathFinder.getShortestPath(sourceStationId, targetStationId);
         int shortestDistance = shortestPathFinder.getShortestDistance(sourceStationId, targetStationId);
 
-        return PathResponse.of(shortestStationResponses, shortestDistance);
+        return PathResponse.of(shortestStations, shortestDistance);
     }
 
     private void validateFindShortestPath(Long sourceStationId, Long targetStationId) {
