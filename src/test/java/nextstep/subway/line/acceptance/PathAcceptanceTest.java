@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 
 import static nextstep.subway.line.acceptance.LineSteps.지하철_노선_등록되어_있음;
 import static nextstep.subway.line.acceptance.LineSteps.지하철_노선에_지하철역_등록_요청;
-import static nextstep.subway.station.StationSteps.*;
+import static nextstep.subway.station.acceptance.StationSteps.지하철역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("경로 조회 관련 기능 인수 테스트")
@@ -92,20 +92,6 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = 지하철역간_최단경로_조회_요청(강남역Id, 석촌역Id);
-
-        // then
-        지하철역간_최단경로_조회_실패됨(response);
-    }
-
-    @DisplayName("최단경로를 조회하다 실패한다 - case3 : 존재하지 않은 출발역이나 도착역을 조회 할 경우")
-    @Test
-    void findShortestPathFailedCase3() {
-        // given
-        Long 모르는출발역 = 100L;
-        Long 모르는도착역 = 101L;
-
-        // when
-        ExtractableResponse<Response> response = 지하철역간_최단경로_조회_요청(모르는출발역, 모르는도착역);
 
         // then
         지하철역간_최단경로_조회_실패됨(response);
