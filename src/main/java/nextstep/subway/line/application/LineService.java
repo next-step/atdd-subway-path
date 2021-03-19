@@ -8,6 +8,7 @@ import nextstep.subway.line.dto.*;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,6 +82,10 @@ public class LineService {
 
         PathFinder pathFinder = new PathFinder(lines);
         StationGraph pathInfo = pathFinder.getPathInfo(source, target);
-        return new PathResponse(pathInfo.getStations(), pathInfo.getIntegerWeight());
+        List<StationResponse> shortestPathStations = pathInfo.getStations()
+                                                     .stream()
+                                                     .map(s -> StationResponse.of(s))
+                                                     .collect(Collectors.toList());
+        return new PathResponse(shortestPathStations, pathInfo.getIntegerWeight());
     }
 }

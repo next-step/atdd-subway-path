@@ -2,7 +2,6 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.line.exception.NotExistPathInfoException;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.exception.EqualStationException;
 import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,11 +70,7 @@ class PathFinderTest {
         StationGraph pathInfo = pathFinder.getPathInfo(역삼역, 도곡역);
 
         // then
-        StationResponse 역삼역리스폰스 = StationResponse.of(역삼역);
-        StationResponse 선릉역리스폰스 = StationResponse.of(선릉역);
-        StationResponse 도곡역리스폰스 = StationResponse.of(도곡역);
-
-        assertThat(pathInfo.getStations()).containsExactly(Arrays.array(역삼역리스폰스, 선릉역리스폰스, 도곡역리스폰스));
+        assertThat(pathInfo.getStations()).containsExactly(Arrays.array(역삼역, 선릉역, 도곡역));
         assertThat(pathInfo.getIntegerWeight()).isEqualTo(22);
     }
 

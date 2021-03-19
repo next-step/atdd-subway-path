@@ -2,13 +2,11 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.line.exception.NotExistPathInfoException;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 import org.jgrapht.GraphPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class StationGraph {
 
@@ -25,12 +23,8 @@ public class StationGraph {
         }
     }
 
-    public List<StationResponse> getStations() {
-        List<Station> shortestPath = graphPath.getVertexList();
-
-        return shortestPath.stream()
-                .map(s -> StationResponse.of(s))
-                .collect(Collectors.toList());
+    public List<Station> getStations() {
+        return graphPath.getVertexList();
     }
 
     public int getIntegerWeight() {
