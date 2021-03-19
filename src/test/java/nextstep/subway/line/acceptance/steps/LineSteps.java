@@ -1,8 +1,9 @@
-package nextstep.subway.line.acceptance;
+package nextstep.subway.line.acceptance.steps;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.MediaType;
@@ -12,14 +13,14 @@ import java.util.Map;
 
 public class LineSteps {
 
-    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(Map<String, String> params) {
-        return 지하철_노선_생성_요청(params);
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(LineRequest lineRequest) {
+        return 지하철_노선_생성_요청(lineRequest);
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest lineRequest) {
         return RestAssured.given().log().all().
                 contentType(MediaType.APPLICATION_JSON_VALUE).
-                body(params).
+                body(lineRequest).
                 when().
                 post("/lines").
                 then().
