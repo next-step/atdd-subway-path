@@ -113,7 +113,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록_실패됨(response);
     }
 
-    @DisplayName("지하철 노선에 등록된 지하철역을 제외한다.")
+    @DisplayName("지하철 노선에 등록된 마지막 지하철역을 제외한다.")
     @Test
     void removeLineSection() {
         // given

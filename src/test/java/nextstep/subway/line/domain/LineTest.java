@@ -119,7 +119,7 @@ public class LineTest {
                 .isInstanceOf(RuntimeException.class);
     }
 
-    @DisplayName("지하철 노선에 등록된 지하철역을 제외한다")
+    @DisplayName("지하철 노선에 등록된 마지막 지하철역을 제외한다")
     @Test
     void removeSection() {
         // given
