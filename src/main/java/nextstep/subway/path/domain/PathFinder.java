@@ -43,17 +43,22 @@ public class PathFinder {
     }
 
     public void calculateShortestPath(Station source, Station target) {
-        validatePath(source, target);
-        graphPath = path.getPath(source, target);
-    }
-
-    private void validatePath(Station source, Station target) {
         validateSourceTargetNotSame(source, target);
+
+        try {
+            graphPath = path.getPath(source, target);
+            if (graphPath == null) {
+                throw new RuntimeException("출발역과 도착역이 연결이 되어 있지 않은 경우 실패");
+            }
+        } catch (IllegalArgumentException exception) {
+            throw new RuntimeException("존재하지 않은 출발역이나 도착역을 조회 할 경우 실패");
+        }
+
     }
 
     private void validateSourceTargetNotSame(Station source, Station target) {
         if (source == target) {
-            throw new RuntimeException();
+            throw new RuntimeException("시작역, 끝역 동일하면 실패");
         }
     }
 
