@@ -34,10 +34,6 @@ public class PathService {
         Station source = stationService.findStationById(sourceId);
         Station target = stationService.findStationById(targetId);
 
-        if (Objects.isNull(source) || Objects.isNull(target)) {
-            throw new NotFoundException("존재하지 않는 역 입니다.");
-        }
-
         if (source.equals(target)) {
             throw new FirstStationEqualsFinalStationException();
         }
@@ -49,7 +45,6 @@ public class PathService {
         List<Line> lines = lineService.findAll();
 
         PathFinder pathFinder = new PathFinder(lines);
-        pathFinder.initialize();
 
         GraphPath path = pathFinder.getShortestPath(source, target);
         List<Station> findShortestPath = path.getVertexList();
