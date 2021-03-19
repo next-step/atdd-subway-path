@@ -130,6 +130,10 @@ public class MemberSteps {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
+    public static void 회원_생성_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     public static void 회원_정보_조회됨(ExtractableResponse<Response> response, String email, String name) {
         MemberResponse memberResponse = response.as(MemberResponse.class);
         assertThat(memberResponse.getId()).isNotNull();

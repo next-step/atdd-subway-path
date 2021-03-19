@@ -23,6 +23,16 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         회원_생성됨(response);
     }
 
+    @DisplayName("중복 이메일로 회원가입을 한다.")
+    @Test
+    void createMemberwithSameEmail() {
+        회원_생성_요청(OTHER_EMAIL, OTHER_PASSWORD, NAME);
+
+        ExtractableResponse<Response> response = 회원_생성_요청(OTHER_EMAIL, OTHER_PASSWORD, NAME);
+        // then
+        회원_생성_실패됨(response);
+    }
+
     @DisplayName("회원 정보를 조회한다.")
     @Test
     void getMember() {

@@ -63,7 +63,7 @@ public class MemberController {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().body("ERROR - 중복 이메일");
+        return ResponseEntity.badRequest().body("이미 존재하는 이메일 입니다.");
     }
 }
 
