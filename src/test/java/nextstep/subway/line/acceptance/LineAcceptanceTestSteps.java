@@ -11,7 +11,7 @@ import nextstep.subway.line.dto.LineResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-public class LineRequestBuilder {
+public class LineAcceptanceTestSteps {
 
   public static Map<String,String> createLineRequestParams(String name, LineColor color,long startId, long endId) {
     Map params = new HashMap<>();

@@ -1,18 +1,18 @@
 package nextstep.subway.line.acceptance;
 
-import static nextstep.subway.line.acceptance.LineRequestBuilder.createLineRequestParams;
-import static nextstep.subway.line.acceptance.LineRequestBuilder.지하철_노선_생성됨;
-import static nextstep.subway.line.acceptance.LineRequestBuilder.지하철_노선_생성요청;
-import static nextstep.subway.line.acceptance.LineRequestBuilder.지하철_노선_수정됨;
-import static nextstep.subway.line.acceptance.LineRequestBuilder.지하철_노선_조회됨;
-import static nextstep.subway.line.acceptance.LineRequestBuilder.지하철_노선목록_조회됨;
-import static nextstep.subway.line.acceptance.LineRequestBuilder.지하철_노선목록조회_요청;
-import static nextstep.subway.line.acceptance.LineRequestBuilder.지하철_노선삭제_요청;
-import static nextstep.subway.line.acceptance.LineRequestBuilder.지하철_노선삭제됨;
-import static nextstep.subway.line.acceptance.LineRequestBuilder.지하철_노선생성_실패됨;
-import static nextstep.subway.line.acceptance.LineRequestBuilder.지하철_노선수정_요청;
-import static nextstep.subway.line.acceptance.LineRequestBuilder.지하철_노선조회_요청;
-import static nextstep.subway.station.StationRequestBuilder.지하철역_생성_요청;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.createLineRequestParams;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.지하철_노선_생성됨;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.지하철_노선_생성요청;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.지하철_노선_수정됨;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.지하철_노선_조회됨;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.지하철_노선목록_조회됨;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.지하철_노선목록조회_요청;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.지하철_노선삭제_요청;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.지하철_노선삭제됨;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.지하철_노선생성_실패됨;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.지하철_노선수정_요청;
+import static nextstep.subway.line.acceptance.LineAcceptanceTestSteps.지하철_노선조회_요청;
+import static nextstep.subway.station.StationAcceptanceTestSteps.지하철역_생성_요청;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;

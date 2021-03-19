@@ -80,4 +80,9 @@ public class LineService {
         .map(StationResponse::of)
         .collect(Collectors.toList());
   }
+
+  public List<Line> getAllLine() {
+    return lineRepository.findAll().stream()
+        .collect(Collectors.toList());
+  }
 }
