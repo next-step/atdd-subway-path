@@ -1,7 +1,6 @@
 package nextstep.subway.config;
 
 import nextstep.subway.auth.infrastructure.JwtTokenProvider;
-import nextstep.subway.auth.ui.interceptor.authentication.TokenAuthenticationInterceptor;
 import nextstep.subway.auth.ui.interceptor.authorization.AuthenticationPrincipalArgumentResolver;
 import nextstep.subway.auth.ui.interceptor.authorization.TokenSecurityContextPersistenceInterceptor;
 import nextstep.subway.member.application.CustomUserDetailsService;
@@ -22,7 +21,6 @@ public class AuthConfig implements WebMvcConfigurer {
     }
 
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new TokenAuthenticationInterceptor(userDetailsService, jwtTokenProvider)).addPathPatterns("/login/token");
         registry.addInterceptor(new TokenSecurityContextPersistenceInterceptor(jwtTokenProvider)).excludePathPatterns("/login/token");
     }
 

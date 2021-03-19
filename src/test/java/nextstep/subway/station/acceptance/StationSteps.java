@@ -23,7 +23,8 @@ public class StationSteps {
     public static ExtractableResponse<Response> 지하철역_생성_요청(TokenResponse user, String name) {
         StationRequest stationRequest = new StationRequest(name);
 
-        return RestAssured.given().log().all()
+        return RestAssured
+                .given().log().all()
                 .auth().oauth2(user.getAccessToken())
                 .body(stationRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -32,7 +33,8 @@ public class StationSteps {
     }
 
     public static ExtractableResponse<Response> 지하철역_목록_조회_요청(TokenResponse user) {
-        return RestAssured.given().log().all()
+        return RestAssured
+                .given().log().all()
                 .auth().oauth2(user.getAccessToken())
                 .when()
                 .get("/stations")
@@ -42,7 +44,8 @@ public class StationSteps {
     public static ExtractableResponse<Response> 지하철역_수정_요청(TokenResponse user, ExtractableResponse<Response> response, StationRequest stationRequest) {
         String uri = response.header("Location");
 
-        return RestAssured.given().log().all()
+        return RestAssured
+                .given().log().all()
                 .auth().oauth2(user.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(stationRequest)
@@ -53,7 +56,8 @@ public class StationSteps {
     public static ExtractableResponse<Response> 지하철역_제거_요청(TokenResponse user, ExtractableResponse<Response> response) {
         String uri = response.header("Location");
 
-        return RestAssured.given().log().all()
+        return RestAssured
+                .given().log().all()
                 .auth().oauth2(user.getAccessToken())
                 .when().delete(uri)
                 .then().log().all().extract();
