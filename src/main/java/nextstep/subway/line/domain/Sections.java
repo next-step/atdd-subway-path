@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.line.domain.exception.AlreadyExistStation;
+import nextstep.subway.line.domain.exception.CannotRemoveStation;
 import nextstep.subway.line.domain.exception.InvalidDistanceException;
 import nextstep.subway.line.domain.exception.NotExistedStation;
 import nextstep.subway.station.domain.Station;
@@ -79,20 +80,23 @@ public class Sections {
      return section.containsStation(targetSection.getUpStation()) || section.containsStation(targetSection.getDownStation());
     }
 
-    public void removeSection(Line line, Long stationId) {
-        if (line.getSections().size() <= 1) {
-            throw new RuntimeException();
-        }
-
-        boolean isNotValidUpStation = getStations().get(getStations().size() - 1).getId() != stationId;
-        if (isNotValidUpStation) {
-            throw new RuntimeException("하행 종점역만 삭제가 가능합니다.");
-        }
-
+    public void removeSection(Long stationId) {
+        validateRemoveSection(stationId);
         sections.stream()
                 .filter(it -> it.getDownStation().getId() == stationId)
                 .findFirst()
-                .ifPresent(it -> sections.remove(it));
+                .ifPresent(it -> sections.remove(it))
+        ;
+    }
+
+    private void validateRemoveSection(Long stationId) {
+        if (sections.size() <= 1) {
+            throw new CannotRemoveStation("노선에 등록된 구간이 1개 이하일때는 삭제할 수 없습니다.");
+        }
+
+        if(!getStations().stream().anyMatch(it -> it.getId() == stationId)){
+            throw new CannotRemoveStation("노선에 해당되는 역이 없습니다.");
+        }
     }
 
     public List<Station> getStations() {
