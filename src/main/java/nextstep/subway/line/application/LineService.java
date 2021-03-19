@@ -9,6 +9,8 @@ import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -34,10 +37,6 @@ public class LineService {
         Station downStation = stationService.findById(request.getDownStationId());
         Line persistLine = lineRepository.save(new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
         return createLineResponse(persistLine);
-    }
-
-    public List<Line> findLines() {
-        return lineRepository.findAll();
     }
 
     public List<LineResponse> findLineResponses() {
@@ -78,22 +77,7 @@ public class LineService {
     }
 
     public void addSection(Line line, Station upStation, Station downStation, int distance) {
-        if (getStations(line).size() == 0) {
-            line.getSections().add(new Section(line, upStation, downStation, distance));
-            return;
-        }
-
-        boolean isNotValidUpStation = getStations(line).get(getStations(line).size() - 1) != upStation;
-        if (isNotValidUpStation) {
-            throw new RuntimeException("상행역은 하행 종점역이어야 합니다.");
-        }
-
-        boolean isDownStationExisted = getStations(line).stream().anyMatch(it -> it == downStation);
-        if (isDownStationExisted) {
-            throw new RuntimeException("하행역이 이미 등록되어 있습니다.");
-        }
-
-        line.getSections().add(new Section(line, upStation, downStation, distance));
+        line.addSection(upStation, downStation, distance);
     }
 
     public void removeSection(Line line, Long stationId) {
