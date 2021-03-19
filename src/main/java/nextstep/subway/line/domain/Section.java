@@ -95,4 +95,16 @@ public class Section {
             updateUpStation(section.getUpStation(), distance);
         }
     }
+
+    public boolean hasDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    public boolean hasUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public int addDistance(int distance) {
+        return this.distance + distance;
+    }
 }
