@@ -29,7 +29,7 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        sections.add(new Section(this, upStation, downStation, distance));
+        sections.add(this, upStation, downStation, distance);
     }
 
     public void update(Line line) {
@@ -53,28 +53,22 @@ public class Line extends BaseEntity {
         return sections;
     }
 
-    /* 도메인 기능 메서드 */
-    // 역 조회
     public List<Station> getStations(){
         return sections.getStations();
     }
 
-    // 구간추가
     public void addSection(Station upStation, Station downStation, int distance) {
-        sections.add(new Section(this, upStation, downStation, distance));
+        sections.add(this, upStation, downStation, distance);
     }
 
-    // 구간삭제
     public void removeSection(Long stationId) {
         sections.removeSection(stationId);
     }
 
-    // 구간개수
     public int getSectionSize(){
         return sections.getSectionSize();
     }
 
-    // 역개수
     public int getStationSize(){
         return sections.getStations().size();
     }
