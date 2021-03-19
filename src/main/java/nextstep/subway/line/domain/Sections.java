@@ -1,11 +1,10 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.exception.DistanceMaximumException;
-import nextstep.subway.exception.NoOtherStationException;
-import nextstep.subway.exception.NotFoundException;
-import nextstep.subway.exception.StationDuplicateException;
+import nextstep.subway.line.exception.DistanceMaximumException;
+import nextstep.subway.line.exception.NoOtherStationException;
+import nextstep.subway.line.exception.NotFoundException;
+import nextstep.subway.line.exception.StationDuplicateException;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
@@ -23,13 +22,8 @@ public class Sections {
 
     }
 
-    private boolean existsByStation(Station station) {
-        return sections.stream()
-                .anyMatch(section -> isEqualDownAndUpStation(station, section));
-    }
-
-    private boolean isEqualDownAndUpStation(Station station, Section section) {
-        return Objects.equals(section.getUpStation(), station) || Objects.equals(section.getDownStation(), station);
+    public List<Section> getSections() {
+        return sections;
     }
 
     public void addSection(Section section) {
@@ -67,8 +61,8 @@ public class Sections {
 
             List<Section> removeTargetSections = findAllStation(stationId);
 
-            int totalSectionDistance = firstSectionDistance() + finishSectionDistance();
-            Section section = Section.of(line, upStation(), downStation(), totalSectionDistance);
+            int totalSectionDistance = getFirstSectionDistance() + getFinishSectionDistance();
+            Section section = Section.of(line, getUpStation(), getDownStation(), totalSectionDistance);
 
             sections.removeAll(removeTargetSections);
             sections.add(section);
@@ -89,7 +83,7 @@ public class Sections {
         }
 
         List<Station> responses = new ArrayList<>();
-        responses.add(upStation());
+        responses.add(getUpStation());
 
         sections.stream().map(Section::getDownStation).forEach(responses::add);
         return responses;
@@ -99,19 +93,19 @@ public class Sections {
         return sections.size();
     }
 
-    private Station upStation() {
+    private Station getUpStation() {
         return getFirstSection().getUpStation();
     }
 
-    private Station downStation() {
+    private Station getDownStation() {
         return getFinishSection().getDownStation();
     }
 
-    private int firstSectionDistance() {
+    private int getFirstSectionDistance() {
         return getFirstSection().getDistance();
     }
 
-    private int finishSectionDistance() {
+    private int getFinishSectionDistance() {
         return getFinishSection().getDistance();
     }
 
@@ -121,20 +115,6 @@ public class Sections {
 
     private Section getFinishSection() {
         return sections.get(size() - LIST_MINIMUM_SIZE);
-    }
-
-    private boolean isNotOtherStation() {
-        return size() == LIST_MINIMUM_SIZE;
-    }
-
-    private void checkExistedStation(boolean isExistedUpStation, boolean isExistedDownStation) {
-        if (isExistedUpStation && isExistedDownStation) {
-            throw new StationDuplicateException();
-        }
-
-        if (!isExistedUpStation && !isExistedDownStation) {
-            throw new NotFoundException("등록하시려는 역에 상행역과 하행역을 찾을 수 없습니다.");
-        }
     }
 
     private Section findUpSection(Station upStation) {
@@ -149,12 +129,6 @@ public class Sections {
                 .filter(it -> it.getDownStation().equals(downStation))
                 .findFirst()
                 .orElse(null);
-    }
-
-    private void checkSectionDistance(Section section, Section findSection) {
-        if (section.getDistance() >= findSection.getDistance()) {
-            throw new DistanceMaximumException();
-        }
     }
 
     private void addBeginStation(Section section) {
@@ -196,6 +170,38 @@ public class Sections {
         sections.add(index + 1, section);
     }
 
+    private List<Section> findAllStation(Long stationId) {
+        return sections.stream()
+                .filter(section -> isEqualsUpStationId(section, stationId)
+                        || isEqualsDownStationId(section, stationId))
+                .collect(Collectors.toList());
+    }
+
+    private void checkExistedStation(boolean isExistedUpStation, boolean isExistedDownStation) {
+        if (isExistedUpStation && isExistedDownStation) {
+            throw new StationDuplicateException();
+        }
+
+        if (!isExistedUpStation && !isExistedDownStation) {
+            throw new NotFoundException("등록하시려는 역에 상행역과 하행역을 찾을 수 없습니다.");
+        }
+    }
+
+    private void checkSectionDistance(Section section, Section findSection) {
+        if (section.getDistance() >= findSection.getDistance()) {
+            throw new DistanceMaximumException();
+        }
+    }
+
+    private boolean existsByStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> isEqualDownAndUpStation(station, section));
+    }
+
+    private boolean isNotOtherStation() {
+        return size() == LIST_MINIMUM_SIZE;
+    }
+
     private boolean isEqualsUpStationId(Section section, long stationId) {
         return section.getUpStation().getId().equals(stationId);
     }
@@ -204,10 +210,7 @@ public class Sections {
         return section.getDownStation().getId().equals(stationId);
     }
 
-    private List<Section> findAllStation(Long stationId) {
-        return sections.stream()
-                .filter(section -> isEqualsUpStationId(section, stationId)
-                        || isEqualsDownStationId(section, stationId))
-                .collect(Collectors.toList());
+    private boolean isEqualDownAndUpStation(Station station, Section section) {
+        return Objects.equals(section.getUpStation(), station) || Objects.equals(section.getDownStation(), station);
     }
 }

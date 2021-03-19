@@ -1,4 +1,4 @@
-package nextstep.subway.exception;
+package nextstep.subway.line.exception;
 
 public class NotFoundException extends RuntimeException {
     public NotFoundException(String message) {

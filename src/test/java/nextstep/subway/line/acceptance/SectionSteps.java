@@ -11,6 +11,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SectionSteps {
 
+    public static ExtractableResponse<Response> 지하철_노선_구간_등록되어_있음(SectionRequest sectionRequest, long lineId) {
+        return 지하철_노선_구간_등록_요청(sectionRequest, lineId);
+    }
+
     public static ExtractableResponse<Response> 지하철_노선_구간_등록_요청(SectionRequest sectionRequest, long lineId) {
         return RestAssured.given().log().all()
                 .body(sectionRequest)

@@ -1,6 +1,6 @@
 package nextstep.subway.line.application;
 
-import nextstep.subway.exception.NotFoundException;
+import nextstep.subway.line.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
@@ -72,5 +72,9 @@ public class LineService {
     public Line findLineById(long lineId) {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new NotFoundException("지하철 노선을 찾을 수 없습니다."));
+    }
+
+    public List<Line> findAll(){
+        return lineRepository.findAll();
     }
 }
