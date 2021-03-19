@@ -196,6 +196,31 @@ public class SectionsTest {
 
     /**
      * 기존 : 영등포역 --10--> 신길역 --7--> 대방역
+     * 신규 : 영등포역 --17--> 대방역
+     */
+    @DisplayName("구간이 두개 이상일 경우, 가운역을 제거한다.")
+    @ParameterizedTest
+    @CsvSource(value = {"10:7", "15:3"}, delimiter = ':')
+    public void removeBetweenStation(int distance1, int distance2) {
+        //Given
+        Sections sections = new Sections();
+        sections.addSection(new Section(line, 영등포역, 신길역, distance1));
+        sections.addSection(new Section(line, 신길역, 대방역, distance2));
+
+        //When
+        sections.removeSection(신길역.getId());
+
+        //Then
+        assertAll(
+                () -> assertThat(sections.getStations()).hasSize(2),
+                () -> assertThat(sections.getSections()).hasSize(1),
+                () -> assertThat(sections.countTotalDistance()).isEqualTo(distance1 + distance2),
+                () -> assertThat(sections.getStations()).containsExactlyElementsOf(Arrays.asList(영등포역, 대방역))
+        );
+    }
+
+    /**
+     * 기존 : 영등포역 --10--> 신길역 --7--> 대방역
      * 신규 : 영등포역 --10--> 신길역
      */
     @DisplayName("구간이 두개 이상일 경우, 하행 종점역을 제거한다.")
