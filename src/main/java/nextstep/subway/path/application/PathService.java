@@ -3,20 +3,19 @@ package nextstep.subway.path.application;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
-import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.path.dto.ShortestPathResponse;
+import nextstep.subway.path.exception.SameSourceTargetException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
-import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.alg.shortestpath.KShortestPaths;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,25 +32,43 @@ public class PathService {
     }
 
     public ShortestPathResponse getShortestPath(Long source, Long target) {
+
+        if(source==target){
+            throw new SameSourceTargetException("출발역과 도착역이 같습니다");
+        }
+
+        if(!validateStationExist(source) && !validateStationExist(target)){
+            throw new NoSuchElementException("출발역 또는 도착역이 없습니다");
+        }
+
         WeightedMultigraph<String, DefaultWeightedEdge> graph = createGraph();
 
-        List<String> shortestPath = getShortestPathList(graph, source, target);
         int shortestLength = getShortestPathLength(graph, source, target);
-        List<Station> stations = shortestPath.stream().map(this::convert).collect(Collectors.toList());
+        List<String> shortestPath = getShortestPathList(graph, source, target);
+        List<Station> stations = shortestPath
+                .stream()
+                .map(this::stringIdToStation)
+                .collect(Collectors.toList());
         return new ShortestPathResponse(StationResponse.ofList(stations), shortestLength);
     }
 
-    private List<String> getShortestPathList(WeightedMultigraph<String, DefaultWeightedEdge> graph, Long source, Long target){
+    private boolean validateStationExist(Long id){
+        return stationService.isExist(id);
+    }
+
+    private List<String> getShortestPathList(WeightedMultigraph<String, DefaultWeightedEdge> graph,
+                                             Long source, Long target) throws NullPointerException{
         return new DijkstraShortestPath(graph).getPath(source.toString(), target.toString()).getVertexList();
     }
 
-    private int getShortestPathLength(WeightedMultigraph<String, DefaultWeightedEdge> graph, Long source, Long target){
+    private int getShortestPathLength(WeightedMultigraph<String, DefaultWeightedEdge> graph,
+                                      Long source, Long target) throws NullPointerException{
         return (int) new DijkstraShortestPath(graph)
                 .getPath(source.toString(), target.toString()).getWeight();
     }
 
-    private Station convert(String idAsStr){
-        return stationService.findById(Long.parseLong(idAsStr));
+    private Station stringIdToStation(String idAsStr){
+        return stationService.findStationById(Long.parseLong(idAsStr));
     }
 
 

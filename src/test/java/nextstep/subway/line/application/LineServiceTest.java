@@ -104,9 +104,4 @@ public class LineServiceTest {
         assertThatThrownBy(() -> lineService.findLineById(2L))
                 .isInstanceOf(NoSuchElementException.class);
     }
-
-    public void updateLine(Long id, LineRequest lineUpdateRequest) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-        persistLine.update(new Line(lineUpdateRequest.getName(), lineUpdateRequest.getColor()));
-    }
 }
