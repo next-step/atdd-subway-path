@@ -49,7 +49,7 @@ public class Sections {
     }
 
     private boolean validExistedStation(Station station) {
-        return getAllStations().stream().anyMatch(i -> i.getId().equals(station.getId()));
+        return getAllStations().stream().anyMatch(i -> i.equals(station));
     }
 
     public void addSection(Section section) {
@@ -73,7 +73,6 @@ public class Sections {
             return;
         }
 
-        Logger logger = LoggerFactory.getLogger(Sections.class);
         boolean isExistedUpStation = sections.stream().anyMatch(i -> i.getUpStation().equals(section.getUpStation()));
         boolean isExistedDownStation = sections.stream().anyMatch(i -> i.getDownStation().equals(section.getDownStation()));
         validExistedStation(isExistedUpStation, isExistedDownStation);

@@ -68,16 +68,12 @@ public class LineService {
         Line line = findLineById(lineId);
         Station upStation = stationService.findStationById(request.getUpStationId());
         Station downStation = stationService.findStationById(request.getDownStationId());
-        addSection(line, upStation, downStation, request.getDistance());
+        line.addSection(upStation, downStation, request.getDistance());
     }
 
     public void removeSection(Long lineId, Long stationId) {
         Line line = findLineById(lineId);
         removeSection(line, stationId);
-    }
-
-    public void addSection(Line line, Station upStation, Station downStation, int distance) {
-        line.addSection(upStation, downStation, distance);
     }
 
     public void removeSection(Line line, Long stationId) {
