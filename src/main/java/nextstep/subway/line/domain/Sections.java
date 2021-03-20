@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.line.domain.exception.AlreadyExistStation;
+import nextstep.subway.line.domain.exception.CannotRemoveStation;
 import nextstep.subway.line.domain.exception.InvalidDistanceException;
 import nextstep.subway.line.domain.exception.NotExistedStation;
 import nextstep.subway.station.domain.Station;
@@ -10,6 +11,7 @@ import javax.persistence.Embeddable;
 
 import javax.persistence.OneToMany;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -22,7 +24,7 @@ public class Sections {
 
     public void addSection(Section section) {
         validateContainsAllStations(section);
-        swapStation(section);
+        insertBetweenStation(section);
         sections.add(section);
     }
 
@@ -33,7 +35,7 @@ public class Sections {
         }
     }
 
-    private void swapStation(Section section) {
+    private void insertBetweenStation(Section section) {
         if (sections.size() == 0 || isStartStationAndEndAddable(getStations(), section)) {
             return;
         }
@@ -79,20 +81,37 @@ public class Sections {
      return section.containsStation(targetSection.getUpStation()) || section.containsStation(targetSection.getDownStation());
     }
 
-    public void removeSection(Line line, Long stationId) {
-        if (line.getSections().size() <= 1) {
-            throw new RuntimeException();
-        }
+    public void removeSection(Long stationId) {
+        validateRemoveSection();
+        unionIfStartOrEndStation(stationId);
 
-        boolean isNotValidUpStation = getStations().get(getStations().size() - 1).getId() != stationId;
-        if (isNotValidUpStation) {
-            throw new RuntimeException("하행 종점역만 삭제가 가능합니다.");
-        }
-
-        sections.stream()
-                .filter(it -> it.getDownStation().getId() == stationId)
+        Section section = sections.stream()
+                .filter(it -> it.getDownStation().getId() == stationId || it.getUpStation().getId() == stationId)
                 .findFirst()
-                .ifPresent(it -> sections.remove(it));
+                .orElseThrow(() -> new CannotRemoveStation("노선에 해당되는 역이 없습니다."));
+        sections.remove(section);
+    }
+
+    private void unionIfStartOrEndStation(Long stationId) {
+        if(isNotStartOrEndStation(stationId)) {
+            List<Section> result = sections.stream()
+                    .filter(section -> section.getDownStation().getId() == stationId || section.getUpStation().getId() == stationId)
+                    .collect(Collectors.toList());
+
+            sections.stream().filter(it -> it.equals(result.get(0)))
+                    .forEach(it -> it.union(result.get(result.size() - 1)));
+        }
+    }
+
+    private boolean isNotStartOrEndStation(Long stationId) {
+       return  sections.stream().anyMatch(it -> it.getDownStation().getId() == stationId) &&
+               sections.stream().anyMatch(it -> it.getUpStation().getId() == stationId);
+    }
+
+    private void validateRemoveSection() {
+        if (sections.size() <= 1) {
+            throw new CannotRemoveStation("노선에 등록된 구간이 1개 이하일때는 삭제할 수 없습니다.");
+        }
     }
 
     public List<Station> getStations() {

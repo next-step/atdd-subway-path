@@ -68,6 +68,6 @@ public class LineController {
 
     @ExceptionHandler(DomainBusinessException.class)
     public ResponseEntity handleDomainBusinessException(DomainBusinessException e) {
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
