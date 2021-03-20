@@ -1,6 +1,6 @@
 package nextstep.subway.path.ui;
 
-import nextstep.subway.line.application.LineService;
+import nextstep.subway.path.application.PathService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/paths")
 public class PathController {
 
-    private final LineService lineService;
+    private final PathService pathService;
 
-    public PathController(final LineService lineService) {
-        this.lineService = lineService;
+    public PathController(final PathService pathService) {
+        this.pathService = pathService;
     }
 
     @GetMapping
     public ResponseEntity getShortestPath(@RequestParam Long source, @RequestParam Long target) {
-        return null;
+        return ResponseEntity.ok().build();
     }
 }
