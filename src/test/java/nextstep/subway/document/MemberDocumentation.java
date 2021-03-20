@@ -38,7 +38,7 @@ public class MemberDocumentation extends Documentation {
 
         RestAssured
                 .given(spec).log().all()
-                .filter(document("member/valid-check-success",
+                .filter(document("member/valid-check-fail",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())))
                 .queryParam("email", OTHER_EMAIL)
