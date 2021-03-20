@@ -4,6 +4,7 @@ import nextstep.subway.line.domain.exception.AlreadyExistStation;
 import nextstep.subway.line.domain.exception.CannotRemoveStation;
 import nextstep.subway.line.domain.exception.InvalidDistanceException;
 import nextstep.subway.line.domain.exception.NotExistedStation;
+import nextstep.subway.line.domain.support.SectionsDomainBuilder;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,13 +23,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class SectionsTest {
+public class SectionsTest extends SectionsDomainBuilder{
 
     private Line line;
     private Station 신길역;
     private Station 대방역;
     private Station 노량진역;
     private Station 영등포역;
+    private Station 용산역;
 
     @BeforeEach
     public void setUp() {
@@ -37,7 +39,8 @@ public class SectionsTest {
         영등포역 = new Station(1L, "영등포역");
         신길역 = new Station(2L, "신길역");
         대방역 = new Station(3L, "대방역");
-        노량진역 = new Station(4L, "노량진");
+        노량진역 = new Station(4L, "노량진역");
+        용산역 = new Station(5L, "용산역");
 
     }
 
@@ -195,10 +198,38 @@ public class SectionsTest {
 
 
     /**
-     * 기존 : 영등포역 --10--> 신길역 --7--> 대방역
-     * 신규 : 영등포역 --17--> 대방역
-     */
-    @DisplayName("구간이 두개 이상일 경우, 가운역을 제거한다.")
+     *  기존 : 영등포역 --10--> 신길역 --7--> 대방역 --3--> 노량진역 --5--> 용산역
+     *  신규 : 영등포역 --10--> 신길역 --10--> 노량진역 --8--> 용산역
+     **/
+    @DisplayName("구간이 4개일 경우, 상/하행 종점이 아닌역을 제거한다.")
+    @ParameterizedTest
+    @CsvSource(value = {"10:7:3:5"}, delimiter = ':')
+    public void removeBetweenStation(int distance1, int distance2, int distance3, int distance4) {
+        //Given
+        Sections sections = build(Arrays.asList(distance1,distance2,distance3,distance4), 영등포역, 신길역, 대방역, 노량진역, 용산역);
+
+        //When
+        sections.removeSection(대방역.getId());
+
+        //Then
+        assertAll(
+                () -> assertThat(sections.getStations()).hasSize(4),
+                () -> assertThat(sections.getSections()).hasSize(3),
+                () -> assertThat(sections.countTotalDistance()).isEqualTo(distance1 + distance2 + distance3 + distance4),
+                () -> assertThat(sections.getStations()).containsExactlyElementsOf(Arrays.asList(영등포역, 신길역, 노량진역, 용산역))
+        );
+    }
+
+
+    /**
+     * 1) case
+     *  기존 : 영등포역 --10--> 신길역 --7--> 대방역
+     *  신규 : 영등포역 --17--> 대방역
+     * 2) case
+     *  기존 : 영등포역 --15--> 신길역 --3--> 대방역
+     *  신규 : 영등포역 --18--> 대방역
+     **/
+    @DisplayName("구간이 두개 이상일 경우, 가운데역을 제거한다.")
     @ParameterizedTest
     @CsvSource(value = {"10:7", "15:3"}, delimiter = ':')
     public void removeBetweenStation(int distance1, int distance2) {
@@ -219,9 +250,39 @@ public class SectionsTest {
         );
     }
 
+
     /**
      * 기존 : 영등포역 --10--> 신길역 --7--> 대방역
+     * 신규 : 신길역 --7--> 대방역
+     **/
+    @DisplayName("구간이 두개 이상일 경우, 상행 종점역을 제거한다.")
+    @ParameterizedTest
+    @CsvSource(value = {"10:7"}, delimiter = ':')
+    public void removeStartStation(int distance1, int distance2) {
+        //Given
+        Sections sections = build(Arrays.asList(distance1,distance2), 영등포역, 신길역, 대방역);
+
+        //When
+        sections.removeSection(영등포역.getId());
+
+        //Then
+        assertAll(
+                () -> assertThat(sections.getStations()).hasSize(2),
+                () -> assertThat(sections.getSections()).hasSize(1),
+                () -> assertThat(sections.countTotalDistance()).isEqualTo(distance2),
+                () -> assertThat(sections.getStations()).containsExactlyElementsOf(Arrays.asList(신길역, 대방역))
+        );
+    }
+
+
+
+    /**
+     * 1) case
+     * 기존 : 영등포역 --10--> 신길역 --7--> 대방역
      * 신규 : 영등포역 --10--> 신길역
+     * 2) case
+     * 기존 : 영등포역 --15--> 신길역 --3--> 대방역
+     * 신규 : 영등포역 --15--> 신길역
      */
     @DisplayName("구간이 두개 이상일 경우, 하행 종점역을 제거한다.")
     @ParameterizedTest
