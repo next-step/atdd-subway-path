@@ -35,8 +35,8 @@ public class PathService {
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
 
-        PathFinder pathFinder = PathFinder.create(sections);
-        pathFinder.calculateShortestPath(source, target);
+        PathFinder pathFinder = PathFinder.create(sections, source, target);
+        pathFinder.getShortestPath();
 
         return createPathResponse(pathFinder.getShortestPath(), pathFinder.getShortestPathDistance());
     }

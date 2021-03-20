@@ -46,23 +46,30 @@ class PathServiceMockTest {
     void setUp() {
         pathService = new PathService(lineService, stationService);
 
-        강남역 = new Station("강남역");
-        ReflectionTestUtils.setField(강남역, "id", 1L);
-        양재역 = new Station("양재역");
-        ReflectionTestUtils.setField(양재역, "id", 2L);
-        교대역 = new Station("교대역");
-        ReflectionTestUtils.setField(교대역, "id", 3L);
-        남부터미널역 = new Station("남부터미널역");
-        ReflectionTestUtils.setField(남부터미널역, "id", 4L);
+        강남역 = createStation(1L, "강남역");
+        양재역 = createStation(2L, "양재역");
+        교대역 = createStation(3L, "교대역");
+        남부터미널역 = createStation(4L, "남부터미널역");
 
-        신분당선 = new Line("신분당선", "bg-red-600", 강남역, 양재역, 10);
-        ReflectionTestUtils.setField(신분당선, "id", 1L);
-        이호선 = new Line("이호선", "bg-red-600", 교대역, 강남역, 10);
-        ReflectionTestUtils.setField(이호선, "id", 2L);
-        삼호선 = new Line("삼호선", "bg-red-600", 교대역, 양재역, 5);
-        ReflectionTestUtils.setField(이호선, "id", 3L);
+        신분당선 = createLine(1L, "신분당선", "bg-red-400", 강남역, 양재역, 10);
+        이호선 = createLine(2L, "이호선", "bg-red-500", 교대역, 강남역, 10);
+        삼호선 = createLine(3L, "삼호선", "bg-red-600", 교대역, 양재역, 5);
 
         삼호선.addSection(new Section(삼호선, 교대역, 남부터미널역, 3));
+    }
+
+    private Station createStation(Long id, String name) {
+        Station station = new Station(name);
+        ReflectionTestUtils.setField(station, "id", id);
+
+        return station;
+    }
+
+    private Line createLine(Long id, String name, String color, Station upStation, Station downStation, int distance) {
+        Line line = new Line(name, color, upStation, downStation, distance);
+        ReflectionTestUtils.setField(line, "id", id);
+
+        return line;
     }
 
     @DisplayName("최단거리 조회")

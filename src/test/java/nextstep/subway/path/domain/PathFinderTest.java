@@ -2,9 +2,7 @@ package nextstep.subway.path.domain;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
-import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class PathFinderTest {
 
     private PathFinder pathFinder;
+    private List<Section> sections;
 
     private Station 강남역;
     private Station 양재역;
@@ -48,12 +47,10 @@ class PathFinderTest {
 
         Line 분당선 = new Line("분당선", "bg-red-700", 야탑역, 이매역, 10);
 
-        List<Section> sections = Arrays.asList(신분당선, 이호선, 삼호선, 분당선).stream()
+        sections = Arrays.asList(신분당선, 이호선, 삼호선, 분당선).stream()
                 .map(it -> it.getSections())
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-
-        pathFinder = PathFinder.create(sections);
     }
 
     private Station getStation() {
@@ -64,26 +61,29 @@ class PathFinderTest {
     @Test
     void failStationsSame() {
         // when
-        assertThatThrownBy(() -> pathFinder.calculateShortestPath(강남역, 강남역))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("시작역, 끝역 동일하면 실패");
+        assertThatThrownBy(() -> {
+            pathFinder = PathFinder.create(sections, 강남역, 강남역);
+            pathFinder.getShortestPath();
+        }).isInstanceOf(RuntimeException.class).hasMessage("시작역, 끝역 동일하면 실패");
     }
 
     @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우 실패")
     @Test
     void failStationsNotConnected() {
         // when
-        assertThatThrownBy(() -> pathFinder.calculateShortestPath(강남역, 야탑역))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("출발역과 도착역이 연결이 되어 있지 않은 경우 실패");
+        assertThatThrownBy(() -> {
+            pathFinder = PathFinder.create(sections, 강남역, 야탑역);
+            pathFinder.getShortestPath();
+        }).isInstanceOf(RuntimeException.class).hasMessage("출발역과 도착역이 연결이 되어 있지 않은 경우 실패");
     }
 
     @DisplayName("존재하지 않은 출발역이나 도착역을 조회 할 경우 실패")
     @Test
     void failStationsNotExist() {
         // when
-        assertThatThrownBy(() -> pathFinder.calculateShortestPath(강남역, 서현역))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("존재하지 않은 출발역이나 도착역을 조회 할 경우 실패");
+        assertThatThrownBy(() -> {
+            pathFinder = PathFinder.create(sections, 강남역, 서현역);
+            pathFinder.getShortestPath();
+        }).isInstanceOf(RuntimeException.class).hasMessage("존재하지 않은 출발역이나 도착역을 조회 할 경우 실패");
     }
 }
