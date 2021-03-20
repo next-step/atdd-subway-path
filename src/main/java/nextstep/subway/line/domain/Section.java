@@ -5,7 +5,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 
 @Entity
-public class Section {
+public class Section implements Comparable<Section>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -64,5 +64,12 @@ public class Section {
 
     private boolean isLongerThan(int distance) {
         return this.distance > distance;
+    }
+
+    @Override
+    public int compareTo(Section section) {
+        if (getDownStation().equals(section.getUpStation())) return -1;
+        if (getUpStation().equals(section.getDownStation())) return 1;
+        return 0;
     }
 }

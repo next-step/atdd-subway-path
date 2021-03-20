@@ -56,7 +56,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(이호선);
-        지하철_노선에_지하철역_등록됨(response);
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(을지로3가역, 을지로입구역, 시청역));
     }
 
@@ -64,12 +63,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionWithUpStationAsDownStation() {
         //when
-        //지하철 구간 등록
+        //을지로3가 시청역
         지하철_노선에_지하철역_등록_요청(이호선, 을지로4가역, 을지로3가역, 5);
 
         //then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(이호선);
-        지하철_노선에_지하철역_등록됨(response);
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(을지로4가역, 을지로3가역, 시청역));
     }
 
@@ -81,7 +79,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(이호선);
-        지하철_노선에_지하철역_등록됨(response);
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(을지로3가역, 시청역, 충정로역));
     }
 

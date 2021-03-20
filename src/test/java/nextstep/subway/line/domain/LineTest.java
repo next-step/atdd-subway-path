@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -34,6 +35,7 @@ public class LineTest {
     }
 
     @Test
+    @DisplayName("역 목록을 조회")
     void getStations() {
         List<Station> stations = 이호선.getStations();
 
@@ -42,6 +44,7 @@ public class LineTest {
     }
 
     @Test
+    @DisplayName("라인에 구간을 추가")
     void addSection() {
         // when
         이호선.addSection(시청역, 을지로입구역, 5);
@@ -113,7 +116,7 @@ public class LineTest {
         이호선.addSection(을지로3가역, 을지로입구역, 5);
 
         //when
-        이호선.removeSection(을지로입구역);
+        이호선.removeSection(시청역);
 
         //then
         assertThat(이호선.getLineDistance()).isEqualTo(5);
@@ -131,5 +134,9 @@ public class LineTest {
         //then
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains("구간은 최소하나는 등록되어있어야 합니다."));
+
+        assertThatThrownBy(() -> 이호선.removeSection(시청역))
+                .isInstanceOf(ApplicationException.class)
+                .hasMessage("구간은 최소하나는 등록되어있어야 합니다.");
     }
 }
