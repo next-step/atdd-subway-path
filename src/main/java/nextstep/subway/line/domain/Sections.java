@@ -11,6 +11,7 @@ import javax.persistence.Embeddable;
 
 import javax.persistence.OneToMany;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -82,12 +83,7 @@ public class Sections {
 
     public void removeSection(Long stationId) {
         validateRemoveSection();
-
-        boolean isCenter = isCenterStation(stationId);
-        if(isCenter) {
-            Section lastSection = sections.get(sections.size() -1);
-            sections.get(0).union(lastSection);
-        }
+        unionIfStartOrEndStation(stationId);
 
         Section section = sections.stream()
                 .filter(it -> it.getDownStation().getId() == stationId || it.getUpStation().getId() == stationId)
@@ -96,7 +92,18 @@ public class Sections {
         sections.remove(section);
     }
 
-    private boolean isCenterStation(Long stationId) {
+    private void unionIfStartOrEndStation(Long stationId) {
+        if(isNotStartOrEndStation(stationId)) {
+            List<Section> result = sections.stream()
+                    .filter(section -> section.getDownStation().getId() == stationId || section.getUpStation().getId() == stationId)
+                    .collect(Collectors.toList());
+
+            sections.stream().filter(it -> it.equals(result.get(0)))
+                    .forEach(it -> it.union(result.get(result.size() - 1)));
+        }
+    }
+
+    private boolean isNotStartOrEndStation(Long stationId) {
        return  sections.stream().anyMatch(it -> it.getDownStation().getId() == stationId) &&
                sections.stream().anyMatch(it -> it.getUpStation().getId() == stationId);
     }
