@@ -101,6 +101,17 @@ public class Line extends BaseEntity {
         sections.remove(this, station);
     }
 
+    protected boolean isBothStationsNotIncluded(Station upStation, Station downStation) {
+        return getStations().stream().noneMatch(it -> it == upStation) &&
+                getStations().stream().noneMatch(it -> it == downStation);
+    }
+
+
+    protected boolean isBothStationsAlreadyIncluded(Station upStation, Station downStation) {
+        return getStations().stream().anyMatch(it -> it == upStation) &&
+                getStations().stream().anyMatch(it -> it == downStation);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

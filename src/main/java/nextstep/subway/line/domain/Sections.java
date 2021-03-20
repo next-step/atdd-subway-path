@@ -38,12 +38,10 @@ public class Sections {
     }
 
     private void checkSectionAddValidity(Line line, Station upStation, Station downStation) {
-        if (line.getStations().stream().noneMatch(it -> it == upStation) &&
-                line.getStations().stream().noneMatch(it -> it == downStation)) {
+        if (line.isBothStationsNotIncluded(upStation, downStation)) {
             throw new RuntimeException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
         }
-        if (line.getStations().stream().anyMatch(it -> it == upStation) &&
-                line.getStations().stream().anyMatch(it -> it == downStation)) {
+        if (line.isBothStationsAlreadyIncluded(upStation, downStation)) {
             throw new RuntimeException("상행역과 하행역이 모두 노선에 등록되어 있다면 추가할 수 없습니다.");
         }
     }
