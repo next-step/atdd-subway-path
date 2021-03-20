@@ -67,7 +67,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 //        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
     }
 
-    @DisplayName("지하철 노선에 등록된 구간을 제거한다.")
+    @DisplayName("지하철 노선에 등록된 (마지막) 구간을 제거한다.")
     @Test
     void removeSection() {
         // given [신분당선]강남역-양재역-정자역
@@ -114,7 +114,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_구간_응답_확인(removeResponse.statusCode(),HttpStatus.BAD_REQUEST);
-
     }
 
     /** ----- 신규 요구사항 인수테스트 ---- */
@@ -141,7 +140,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_순서_정렬됨(지하철_노선_조회_요청(신분당선),expectedStations);
     }
 
-    @DisplayName("지하철 노선에 중간에 구간을 등록한다.")
+    @DisplayName("지하철 노선 중간에 구간을 등록한다.")
     @Test
     void addMiddleSection() {
         // given [신분당선]강남역-양재역-정자역
@@ -161,6 +160,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         expectedStations.add(청계산입구);
         expectedStations.add(정자역);
         지하철_노선에_지하철역_순서_정렬됨(지하철_노선_조회_요청(신분당선),expectedStations);
+    }
+
+    @DisplayName("지하철 노선 중간의 구간을 제거한다.")
+    @Test
+    void removeMiddleSection() {
+        // given [신분당선]강남역-양재역-정자역
+        Map<String,String> sectionRequest = makeSectionCreateParam(양재역,정자역,10);
+        지하철_노선에_구간_등록(신분당선.getId(),sectionRequest);
+
+        // when
+        ExtractableResponse<Response> removeResponse = 지하철_노선에서_구간_제거(신분당선.getId(),양재역.getId());
+
+        // then
+        지하철_노선_구간_응답_확인(removeResponse.statusCode(),HttpStatus.NO_CONTENT);
+        List<StationResponse> expectedStations = new ArrayList<>();
+        expectedStations.add(강남역);
+        expectedStations.add(정자역);
+        지하철_노선에_지하철역_순서_정렬됨(지하철_노선_조회_요청(신분당선),expectedStations);
+
     }
 
     private Map<String,String> makeSectionCreateParam(StationResponse upStation, StationResponse downStation, int distance){

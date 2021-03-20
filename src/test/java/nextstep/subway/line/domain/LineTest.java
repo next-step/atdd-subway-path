@@ -70,23 +70,59 @@ public class LineTest {
         assertThatExceptionOfType(RuntimeException.class).isThrownBy(()->이호선.addSection(강남역, 역삼역, 2));
     }
 
-    @DisplayName("하나의 구간 제거")
+    @DisplayName("하나의 구간 제거(중간역도 제거가능)")
     @Test
     void removeSection() {
-        //given
+        //given 강남역-역삼역-삼성역
+        ReflectionTestUtils.setField(강남역, "id", 1L);
+        ReflectionTestUtils.setField(역삼역, "id", 2L);
+        ReflectionTestUtils.setField(삼성역, "id", 3L);
         이호선.addSection(역삼역, 삼성역, 7);
 
         //when
-        이호선.removeSection(삼성역.getId());
+        이호선.removeSection(역삼역);
+
+        //then
+        assertThat(이호선.getLastStation()).isEqualTo(삼성역);
+    }
+
+    @DisplayName("종점역(하행역=마지막구간) 제거")
+    @Test
+    void removeLastSection() {
+        //given 강남역-역삼역-삼성역
+        ReflectionTestUtils.setField(강남역, "id", 1L);
+        ReflectionTestUtils.setField(역삼역, "id", 2L);
+        ReflectionTestUtils.setField(삼성역, "id", 3L);
+        이호선.addSection(역삼역, 삼성역, 7);
+
+        //when
+        이호선.removeSection(삼성역);
 
         //then
         assertThat(이호선.getLastStation()).isEqualTo(역삼역);
+    }
+
+    @DisplayName("상행역(첫구간) 제거")
+    @Test
+    void removeFirstSection() {
+        //given 강남역-역삼역-삼성역
+        ReflectionTestUtils.setField(강남역, "id", 1L);
+        ReflectionTestUtils.setField(역삼역, "id", 2L);
+        ReflectionTestUtils.setField(삼성역, "id", 3L);
+        이호선.addSection(역삼역, 삼성역, 7);
+
+        //when
+        이호선.removeSection(강남역);
+
+        //then
+        assertThat(이호선.getFirstStation()).isEqualTo(역삼역);
     }
 
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
     @Test
     void removeSectionNotEndOfList() {
         //when - then
-        assertThatExceptionOfType(RuntimeException.class).isThrownBy(()->이호선.removeSection(역삼역.getId()));
+        assertThatExceptionOfType(RuntimeException.class).isThrownBy(()->이호선.removeSection(역삼역));
     }
+
 }

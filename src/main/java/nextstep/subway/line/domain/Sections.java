@@ -98,15 +98,15 @@ public class Sections {
     }
 
     private void isValidDeleteSection(Long stationId) {
-        if (getLastSection().getDownStation().getId() != stationId) {
-            throw new IllegalArgumentException("종점역만 삭제가 가능합니다.");
-        }
         if (size() == 1)
             throw new RuntimeException("마지막 구간은 삭제할 수 없습니다.");
     }
 
     public Section getLastSection() {
         return sections.get(size() - 1);
+    }
+    public Section getFirstSection() {
+        return sections.get(0);
     }
 
 
@@ -156,9 +156,33 @@ public class Sections {
         }
     }
 
-    public void deleteLastSection(Long stationId) {
-        isValidDeleteSection(stationId);
-        sections.remove(getLastSection());
+    public void deleteSection(Station station) {
+        isValidDeleteSection(station.getId());
+
+        if(station.equals(getFirstSection().getUpStation())) {
+            sections.remove(0);
+            return;
+        }
+
+        if(station.equals(getLastSection().getDownStation())) {
+            sections.remove(sections.size()-1);
+            return;
+        }
+
+        Section section = findDownSection(station);
+        removeStation(section);
+    }
+
+    public void removeStation(Section upSection) {
+        Section downSection = findUpSection(upSection.getDownStation());
+
+        int index = sections.indexOf(upSection);
+        Line line = upSection.getLine();
+
+        int newDistance = downSection.getDistance() + upSection.getDistance();
+        Section newSection = new Section(line, upSection.getUpStation(), downSection.getDownStation(), newDistance);
+        sections.set(index, newSection);
+        sections.remove(index+1);
     }
 
     public List<Station> getAllStations() {
