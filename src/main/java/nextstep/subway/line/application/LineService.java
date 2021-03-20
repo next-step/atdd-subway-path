@@ -2,12 +2,13 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.dto.LineRequest;
-import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.domain.PathFinder;
+import nextstep.subway.line.domain.StationGraph;
+import nextstep.subway.line.dto.*;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,8 +27,8 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = stationService.findById(request.getUpStationId());
-        Station downStation = stationService.findById(request.getDownStationId());
+        Station upStation = stationService.findStationById(request.getUpStationId());
+        Station downStation = stationService.findStationById(request.getDownStationId());
         Line persistLine = lineRepository.save(new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
         return LineResponse.of(persistLine);
     }
@@ -72,5 +73,19 @@ public class LineService {
         Line line = findLineById(lineId);
         Station station = stationService.findStationById(stationId);
         line.removeSection(station);
+    }
+
+    public PathResponse findShortestPath(PathRequest pathRequest) {
+        List<Line> lines = lineRepository.findAll();
+        Station source = stationService.findStationById(pathRequest.getSource());
+        Station target = stationService.findStationById(pathRequest.getTarget());
+
+        PathFinder pathFinder = new PathFinder(lines);
+        StationGraph pathInfo = pathFinder.getPathInfo(source, target);
+        List<StationResponse> shortestPathStations = pathInfo.getStations()
+                                                     .stream()
+                                                     .map(s -> StationResponse.of(s))
+                                                     .collect(Collectors.toList());
+        return new PathResponse(shortestPathStations, pathInfo.getIntegerWeight());
     }
 }
