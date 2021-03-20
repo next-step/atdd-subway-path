@@ -4,6 +4,8 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PathFinderTest {
@@ -14,7 +16,7 @@ public class PathFinderTest {
         Station upStation = new Station("홍대입구역");
         Station downStation = new Station("신촌역");
         line.addSection(upStation, downStation, 5);
-        PathFinder pathFinder = new PathFinder(line);
+        PathFinder pathFinder = new PathFinder(Arrays.asList(line));
         assertThat(pathFinder.getShortestDistance(upStation, downStation)).isEqualTo(5);
         assertThat(pathFinder.getShortestPathList(upStation, downStation).size()).isEqualTo(2);
     }

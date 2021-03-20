@@ -14,16 +14,30 @@ public class PathFinder {
     WeightedMultigraph<Station, DefaultWeightedEdge> graph;
     DijkstraShortestPath dijkstraShortestPath;
 
-    public PathFinder(Line line) {
+    public PathFinder(List<Line> lines) {
         graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-        for (Station station : line.getStations()) {
-            graph.addVertex(station);
-        }
-        for (Section section : line.getSections()) {
-            graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
-        }
+        addAllVertex(lines);
+        addAllEdgeWeight(lines);
         dijkstraShortestPath = new DijkstraShortestPath(graph);
     }
+
+    private void addAllVertex(List<Line> lines) {
+        for (Line line : lines) {
+            for (Station station : line.getStations()) {
+                graph.addVertex(station);
+            }
+        }
+    }
+
+    private void addAllEdgeWeight(List<Line> lines) {
+        for (Line line : lines) {
+            for (Section section : line.getSections()) {
+                graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
+            }
+        }
+    }
+
+
     public List<Station> getShortestPathList(Station source, Station target) {
       return dijkstraShortestPath.getPath(target, source).getVertexList();
     }

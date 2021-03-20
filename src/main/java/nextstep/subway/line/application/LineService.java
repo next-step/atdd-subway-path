@@ -74,7 +74,6 @@ public class LineService {
         line.removeSection(station);
     }
 
-
     public LineResponse createLineResponse(Line line) {
         List<StationResponse> stations = line.getStations().stream()
                 .map(StationResponse::of)
