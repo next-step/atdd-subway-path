@@ -47,6 +47,29 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
     }
 
+    @DisplayName("중복 이메일 여부를 확인 한다.")
+    @Test
+    void validateEmailFail() {
+        // given
+        회원_생성_요청(OTHER_EMAIL, OTHER_PASSWORD, NAME);
+
+        // when
+        ExtractableResponse<Response> response = 이메일_존재_여부_확인_요청(OTHER_EMAIL);
+
+        // then
+        이메일_존재함(response);
+    }
+
+    @DisplayName("중복 이메일 여부를 확인 한다.")
+    @Test
+    void validateEmailSuccess() {
+        // when
+        ExtractableResponse<Response> response = 이메일_존재_여부_확인_요청(OTHER_EMAIL);
+
+        // then
+        이메일_사용가능함(response);
+    }
+
     @DisplayName("회원 정보를 수정한다.")
     @Test
     void updateMember() {

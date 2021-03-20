@@ -32,4 +32,10 @@ public class MemberService {
     public void deleteMember(Long id) {
         memberRepository.deleteById(id);
     }
+
+    public void checkValidation(String email) {
+        memberRepository.findByEmail(email).ifPresent(it -> {
+            throw new AlreadyExistEmail("이미 존재하는 이메일 입니다.");
+        });
+    }
 }

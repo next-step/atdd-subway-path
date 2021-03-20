@@ -49,6 +49,12 @@ public class MemberController {
         return ResponseEntity.ok().body(member);
     }
 
+    @GetMapping("/members/check-validation")
+    public ResponseEntity<MemberResponse> checkEmail(@RequestParam String email) {
+        memberService.checkValidation(email);
+        return ResponseEntity.ok().build();
+    }
+
     @PutMapping("/members/me")
     public ResponseEntity<MemberResponse> updateMemberOfMine(@AuthenticationPrincipal LoginMember loginMember, @RequestBody MemberRequest param) {
         memberService.updateMember(loginMember.getId(), param);

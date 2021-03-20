@@ -19,12 +19,30 @@ public class MemberDocumentation extends Documentation {
 
         RestAssured
                 .given(spec).log().all()
+                .filter(document("member/valid-check-success",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())))
+                .queryParam("email", OTHER_EMAIL)
+                .when().get("/members/check-validation")
+                .then().log().all().extract();
+
+        RestAssured
+                .given(spec).log().all()
                 .filter(document("member/create",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(memberRequest)
                 .when().post("/members")
+                .then().log().all().extract();
+
+        RestAssured
+                .given(spec).log().all()
+                .filter(document("member/valid-check-success",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint())))
+                .queryParam("email", OTHER_EMAIL)
+                .when().get("/members/check-validation")
                 .then().log().all().extract();
 
         TokenRequest tokenRequest = new TokenRequest(OTHER_EMAIL, OTHER_PASSWORD);
@@ -61,5 +79,6 @@ public class MemberDocumentation extends Documentation {
                 .when().post("/login/token")
                 .then().log().all()
                 .statusCode(HttpStatus.BAD_REQUEST.value()).extract();
+
     }
 }
