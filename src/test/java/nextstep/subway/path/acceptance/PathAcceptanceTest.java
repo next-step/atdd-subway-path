@@ -1,6 +1,5 @@
 package nextstep.subway.path.acceptance;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -9,10 +8,10 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
+import static nextstep.subway.path.acceptance.PathSteps.지하철_역간_최단경로_조회_요청;
+import static nextstep.subway.path.acceptance.PathSteps.지하철_역간_최단경로_조회됨;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +59,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         params.put("color", color);
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");
-        params.put("distance", 15 + "");
+        params.put("distance", distance + "");
         return params;
     }
 
@@ -69,12 +68,12 @@ public class PathAcceptanceTest extends AcceptanceTest {
     void getShortestPath() {
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all().
-                get("/paths?source={sourceId}&target={targetId}", 교대역.getId(), 양재역.getId()).
-                then().log().all().extract();
+        ExtractableResponse<Response> response = 지하철_역간_최단경로_조회_요청(교대역, 양재역);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        지하철_역간_최단경로_조회됨(response);
     }
+
+
 
 }
