@@ -55,10 +55,10 @@ public class Section {
         return distance;
     }
 
-    public Section insertStation(Station downStation, int distance){
+    public void updateSection(Station upStation, Station downStation, int distance){
+        this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-        return this;
     }
 
     @Override
