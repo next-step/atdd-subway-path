@@ -60,7 +60,6 @@ public class LineTest {
 
         // then
         assertThat(이호선.getLastStation()).isEqualTo(삼성역);
-//        assertThatExceptionOfType(RuntimeException.class).isThrownBy(()->이호선.addSection(강남역, 잠실새내역, 7));
     }
 
     @DisplayName("이미 존재하는 역 추가 시 에러 발생")
@@ -74,9 +73,6 @@ public class LineTest {
     @Test
     void removeSection() {
         //given 강남역-역삼역-삼성역
-        ReflectionTestUtils.setField(강남역, "id", 1L);
-        ReflectionTestUtils.setField(역삼역, "id", 2L);
-        ReflectionTestUtils.setField(삼성역, "id", 3L);
         이호선.addSection(역삼역, 삼성역, 7);
 
         //when
@@ -90,9 +86,6 @@ public class LineTest {
     @Test
     void removeLastSection() {
         //given 강남역-역삼역-삼성역
-        ReflectionTestUtils.setField(강남역, "id", 1L);
-        ReflectionTestUtils.setField(역삼역, "id", 2L);
-        ReflectionTestUtils.setField(삼성역, "id", 3L);
         이호선.addSection(역삼역, 삼성역, 7);
 
         //when
@@ -106,9 +99,6 @@ public class LineTest {
     @Test
     void removeFirstSection() {
         //given 강남역-역삼역-삼성역
-        ReflectionTestUtils.setField(강남역, "id", 1L);
-        ReflectionTestUtils.setField(역삼역, "id", 2L);
-        ReflectionTestUtils.setField(삼성역, "id", 3L);
         이호선.addSection(역삼역, 삼성역, 7);
 
         //when
