@@ -29,6 +29,8 @@ public class SubwayGraph {
     }
 
     public Path getShortestPath(Station source, Station target) {
+        validateSourceTargetNotSame(source, target);
+
         GraphPath graphPath;
 
         try {
@@ -43,5 +45,11 @@ public class SubwayGraph {
         }
 
         return new Path(graphPath.getVertexList(), (int) graphPath.getWeight());
+    }
+
+    private void validateSourceTargetNotSame(Station source, Station target) {
+        if (source == target) {
+            throw new RuntimeException("시작역, 끝역 동일하면 실패");
+        }
     }
 }
