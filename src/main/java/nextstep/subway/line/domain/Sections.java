@@ -12,6 +12,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Sections {
 
@@ -49,7 +50,7 @@ public class Sections {
     }
 
     private boolean validExistedStation(Station station) {
-        return getAllStations().stream().anyMatch(i -> i.getId().equals(station.getId()));
+        return getAllStations().stream().anyMatch(i -> i.equals(station));
     }
 
     public void addSection(Section section) {
@@ -68,12 +69,11 @@ public class Sections {
         }
 
         //상행역 등록 CASE
-        if(isValidAddingFirstSection(section)){
-            sections.add(0,section);
+        if (isValidAddingFirstSection(section)) {
+            sections.add(0, section);
             return;
         }
 
-        Logger logger = LoggerFactory.getLogger(Sections.class);
         boolean isExistedUpStation = sections.stream().anyMatch(i -> i.getUpStation().equals(section.getUpStation()));
         boolean isExistedDownStation = sections.stream().anyMatch(i -> i.getDownStation().equals(section.getDownStation()));
         validExistedStation(isExistedUpStation, isExistedDownStation);
@@ -99,17 +99,53 @@ public class Sections {
     }
 
     private void isValidDeleteSection(Long stationId) {
-        if (getLastSection().getDownStation().getId() != stationId) {
-            throw new IllegalArgumentException("종점역만 삭제가 가능합니다.");
-        }
         if (size() == 1)
             throw new RuntimeException("마지막 구간은 삭제할 수 없습니다.");
     }
 
-    public Section getLastSection() {
-        return sections.get(size() - 1);
+    private List<Station> getUpStationList(){
+        List<Station> upStationList = new ArrayList<Station>();
+        sections.stream().map(it -> it.getUpStation()).forEach(upStationList::add);
+        return upStationList;
     }
 
+    private List<Station> getDownStationList(){
+        List<Station> downStationList = new ArrayList<Station>();
+        sections.stream().map(it -> it.getDownStation()).forEach(downStationList::add);
+        return downStationList;
+    }
+
+    public Section getLastSection() {
+        List<Station> upStationList = getUpStationList();
+        List<Station> downStationList = getDownStationList();
+
+        Station LastStation = getLastStation(upStationList,downStationList);
+        return findDownSection(LastStation);
+    }
+
+    public Section getFirstSection() {
+        List<Station> upStationList = getUpStationList();
+        List<Station> downStationList = getDownStationList();
+
+        Station firstStation = getFirstStation(upStationList,downStationList);
+        return findUpSection(firstStation);
+    }
+
+    private Station getFirstStation(List<Station> upStationList, List<Station> downStationList) {
+        for (Station station : upStationList) {
+            if (!downStationList.contains(station))
+                return station;
+        }
+        throw new RuntimeException("첫번째 역을 찾을 수 없습니다.");
+    }
+
+    private Station getLastStation(List<Station> upStationList, List<Station> downStationList) {
+        for (Station station : downStationList) {
+            if (!upStationList.contains(station))
+                return station;
+        }
+        throw new RuntimeException("마지막 역을 찾을 수 없습니다.");
+    }
 
     private Section findUpSection(Station upStation) {
         return sections.stream()
@@ -157,9 +193,35 @@ public class Sections {
         }
     }
 
-    public void deleteLastSection(Long stationId) {
-        isValidDeleteSection(stationId);
-        sections.remove(getLastSection());
+    public void deleteSection(Station station) {
+        isValidDeleteSection(station.getId());
+
+        Section firstSection = getFirstSection();
+        Section lastSection = getLastSection();
+        if (station.equals(firstSection.getUpStation())) {
+            sections.remove(sections.indexOf(firstSection));
+            return;
+        }
+
+        if (station.equals(lastSection.getDownStation())) {
+            sections.remove(sections.indexOf(lastSection));
+            return;
+        }
+
+        Section section = findDownSection(station);
+        removeStation(section);
+    }
+
+    public void removeStation(Section upSection) {
+        Section downSection = findUpSection(upSection.getDownStation());
+
+        int upIndex = sections.indexOf(upSection);
+        Line line = upSection.getLine();
+
+        int newDistance = downSection.getDistance() + upSection.getDistance();
+        Section newSection = new Section(line, upSection.getUpStation(), downSection.getDownStation(), newDistance);
+        sections.set(upIndex, newSection);
+        sections.remove(sections.indexOf(downSection));
     }
 
     public List<Station> getAllStations() {
