@@ -12,6 +12,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Sections {
 
@@ -68,8 +69,8 @@ public class Sections {
         }
 
         //상행역 등록 CASE
-        if(isValidAddingFirstSection(section)){
-            sections.add(0,section);
+        if (isValidAddingFirstSection(section)) {
+            sections.add(0, section);
             return;
         }
 
@@ -102,13 +103,49 @@ public class Sections {
             throw new RuntimeException("마지막 구간은 삭제할 수 없습니다.");
     }
 
-    public Section getLastSection() {
-        return sections.get(size() - 1);
-    }
-    public Section getFirstSection() {
-        return sections.get(0);
+    private List<Station> getUpStationList(){
+        List<Station> upStationList = new ArrayList<Station>();
+        sections.stream().map(it -> it.getUpStation()).forEach(upStationList::add);
+        return upStationList;
     }
 
+    private List<Station> getDownStationList(){
+        List<Station> downStationList = new ArrayList<Station>();
+        sections.stream().map(it -> it.getDownStation()).forEach(downStationList::add);
+        return downStationList;
+    }
+
+    public Section getLastSection() {
+        List<Station> upStationList = getUpStationList();
+        List<Station> downStationList = getDownStationList();
+
+        Station LastStation = getLastStation(upStationList,downStationList);
+        return findDownSection(LastStation);
+    }
+
+    public Section getFirstSection() {
+        List<Station> upStationList = getUpStationList();
+        List<Station> downStationList = getDownStationList();
+
+        Station firstStation = getFirstStation(upStationList,downStationList);
+        return findUpSection(firstStation);
+    }
+
+    private Station getFirstStation(List<Station> upStationList, List<Station> downStationList) {
+        for (Station station : upStationList) {
+            if (!downStationList.contains(station))
+                return station;
+        }
+        throw new RuntimeException("첫번째 역을 찾을 수 없습니다.");
+    }
+
+    private Station getLastStation(List<Station> upStationList, List<Station> downStationList) {
+        for (Station station : downStationList) {
+            if (!upStationList.contains(station))
+                return station;
+        }
+        throw new RuntimeException("마지막 역을 찾을 수 없습니다.");
+    }
 
     private Section findUpSection(Station upStation) {
         return sections.stream()
@@ -159,13 +196,15 @@ public class Sections {
     public void deleteSection(Station station) {
         isValidDeleteSection(station.getId());
 
-        if(station.equals(getFirstSection().getUpStation())) {
-            sections.remove(0);
+        Section firstSection = getFirstSection();
+        Section lastSection = getLastSection();
+        if (station.equals(firstSection.getUpStation())) {
+            sections.remove(sections.indexOf(firstSection));
             return;
         }
 
-        if(station.equals(getLastSection().getDownStation())) {
-            sections.remove(sections.size()-1);
+        if (station.equals(lastSection.getDownStation())) {
+            sections.remove(sections.indexOf(lastSection));
             return;
         }
 
@@ -176,13 +215,13 @@ public class Sections {
     public void removeStation(Section upSection) {
         Section downSection = findUpSection(upSection.getDownStation());
 
-        int index = sections.indexOf(upSection);
+        int upIndex = sections.indexOf(upSection);
         Line line = upSection.getLine();
 
         int newDistance = downSection.getDistance() + upSection.getDistance();
         Section newSection = new Section(line, upSection.getUpStation(), downSection.getDownStation(), newDistance);
-        sections.set(index, newSection);
-        sections.remove(index+1);
+        sections.set(upIndex, newSection);
+        sections.remove(sections.indexOf(downSection));
     }
 
     public List<Station> getAllStations() {
