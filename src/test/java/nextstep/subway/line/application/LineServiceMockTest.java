@@ -2,8 +2,10 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +13,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.Optional;
+
+import static org.mockito.Mockito.when;
+
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
@@ -44,11 +51,17 @@ public class LineServiceMockTest {
     void addSection() {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
+        when(lineRepository.findById(1L)).thenReturn(Optional.of(이호선));
+        when(stationService.findStationById(2L)).thenReturn(역삼역);
+        when(stationService.findStationById(3L)).thenReturn(삼성역);
 
         // when
         // lineService.addSection 호출
+        lineService.addSection(1L, new SectionRequest(2L, 3L, 100));
 
         // then
         // line.findLineById 메서드를 통해 검증
+        Line findLine = lineService.findLineById(1L);
+        Assertions.assertThat(findLine.getSections().size()).isEqualTo(2);
     }
 }
