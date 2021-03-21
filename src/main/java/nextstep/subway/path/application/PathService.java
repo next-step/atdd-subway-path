@@ -3,6 +3,7 @@ package nextstep.subway.path.application;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
+import nextstep.subway.path.domain.Path;
 import nextstep.subway.path.dto.ShortestPathResponse;
 import nextstep.subway.path.exception.SameSourceTargetException;
 import nextstep.subway.station.application.StationService;
@@ -22,55 +23,35 @@ import java.util.stream.Collectors;
 @Transactional
 public class PathService {
 
-    StationService stationService;
+    private final StationService stationService;
 
-    LineService lineService;
+    private final LineService lineService;
+
+    private Path path;
 
     public PathService(StationService stationService, LineService lineService) {
         this.stationService = stationService;
         this.lineService = lineService;
+        path = new Path();
     }
 
-    public ShortestPathResponse getShortestPath(Long source, Long target) {
+    public ShortestPathResponse getShortestPath(long source, long target) {
 
-        if(source==target){
-            throw new SameSourceTargetException("출발역과 도착역이 같습니다");
-        }
-
-        if(!validateStationExist(source) && !validateStationExist(target)){
+        if (!validateStationExist(source) && !validateStationExist(target)) {
             throw new NoSuchElementException("출발역 또는 도착역이 없습니다");
         }
 
         WeightedMultigraph<String, DefaultWeightedEdge> graph = createGraph();
 
-        int shortestLength = getShortestPathLength(graph, source, target);
-        List<String> shortestPath = getShortestPathList(graph, source, target);
+        int shortestLength = path.getShortestPathLength(graph, source, target);
+        List<String> shortestPath = path.getShortestPathList(graph, source, target);
         List<Station> stations = shortestPath
                 .stream()
                 .map(this::stringIdToStation)
                 .collect(Collectors.toList());
+
         return new ShortestPathResponse(StationResponse.ofList(stations), shortestLength);
     }
-
-    private boolean validateStationExist(Long id){
-        return stationService.isExist(id);
-    }
-
-    private List<String> getShortestPathList(WeightedMultigraph<String, DefaultWeightedEdge> graph,
-                                             Long source, Long target) throws NullPointerException{
-        return new DijkstraShortestPath(graph).getPath(source.toString(), target.toString()).getVertexList();
-    }
-
-    private int getShortestPathLength(WeightedMultigraph<String, DefaultWeightedEdge> graph,
-                                      Long source, Long target) throws NullPointerException{
-        return (int) new DijkstraShortestPath(graph)
-                .getPath(source.toString(), target.toString()).getWeight();
-    }
-
-    private Station stringIdToStation(String idAsStr){
-        return stationService.findStationById(Long.parseLong(idAsStr));
-    }
-
 
     private WeightedMultigraph<String, DefaultWeightedEdge> createGraph() {
         WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
@@ -81,30 +62,19 @@ public class PathService {
 
     private void addVertex(WeightedMultigraph<String, DefaultWeightedEdge> graph) {
         List<StationResponse> stationResponses = stationService.findAllStations();
-
-        for (StationResponse stationResponse : stationResponses) {
-            graph.addVertex(stationResponse.getId().toString());
-        }
+        path.addVertex(graph, stationResponses);
     }
 
     private void setEdgeWeight(WeightedMultigraph<String, DefaultWeightedEdge> graph) {
         List<Line> lines = lineService.findLines();
-
-        for (Line line : lines) {
-            setEdgeWeight(line, graph);
-        }
+        path.setEdgeWeight(graph, lines);
     }
 
-    private void setEdgeWeight(Line line, WeightedMultigraph<String, DefaultWeightedEdge> graph) {
+    private boolean validateStationExist(Long id) {
+        return stationService.isExist(id);
+    }
 
-        for (Section section : line.getSections().getSectionList()) {
-            graph.setEdgeWeight(
-                    graph.addEdge(
-                            section.getUpStation().getId().toString(),
-                            section.getDownStation().getId().toString()
-                    )
-                    , section.getDistance()
-            );
-        }
+    private Station stringIdToStation(String idAsStr) {
+        return stationService.findStationById(Long.parseLong(idAsStr));
     }
 }

@@ -1,23 +1,24 @@
-package nextstep.subway.path;
+package nextstep.subway.path.acceptance;
 
 import static nextstep.subway.line.acceptance.LineSteps.*;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import static nextstep.subway.station.StationSteps.*;
-import static nextstep.subway.path.PathSteps.*;
+import static nextstep.subway.path.acceptance.PathSteps.*;
 
 
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
+@DisplayName("최단 경로 탐색 인수테스트")
 public class PathAcceptanceTest extends AcceptanceTest {
     StationResponse 강남역;
     StationResponse 역삼역;
@@ -58,16 +59,45 @@ public class PathAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록_요청(분당선, 한티역, 도곡역, 5);
     }
 
+    @DisplayName("최단 경로 조회")
     @Test
     void 최단_경로_조회(){
         //given
-        int source = 1;
-        int target = 9;
+        long source = 강남역.getId();
+        long target = 한티역.getId();
         //when
         ExtractableResponse<Response> response = PathSteps.최단경로_요청(source, target);
         //then
         최단거리_확인(response, 15);
         최단경로_확인(response, Arrays.asList("강남역", "역삼역", "선릉역", "한티역"));
+    }
+
+    @DisplayName("시작과 끝이 같을 때")
+    @Test
+    void 시작과_끝_같을_때(){
+        //given
+        long source = 강남역.getId();
+        long target = 강남역.getId();
+        //when
+        ExtractableResponse<Response> response = PathSteps.최단경로_요청(source, target);
+        //then
+        응답_400_코드(response);
+    }
+
+    @DisplayName("두 역이 만날 수 없을 때")
+    @Test
+    void 두_역이_만날_수_없을_때(){
+        //given
+        StationResponse 동춘역 = 지하철역_등록되어_있음("동춘역").as(StationResponse.class);
+        StationResponse 동막역 = 지하철역_등록되어_있음("동막역").as(StationResponse.class);
+        LineResponse 인천1호선 = 지하철_노선_등록되어_있음(new LineRequest("인천1호선", "blue", 동춘역.getId(), 동막역.getId(), 5)).as(LineResponse.class);
+
+        long source = 강남역.getId();
+        long target = 동막역.getId();
+        //when
+        ExtractableResponse<Response> response = PathSteps.최단경로_요청(source, target);
+        //then
+        응답_400_코드(response);
     }
 
 }
