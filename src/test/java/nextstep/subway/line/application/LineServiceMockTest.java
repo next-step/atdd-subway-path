@@ -171,7 +171,7 @@ public class LineServiceMockTest {
         // when
         lineService.removeSection(이호선.getId(), 시청역.getId());
 
-        assertThat(lineService.findLineById(이호선.getId()).getStations())
+        assertThat(lineService.findLineById(이호선.getId()).getSortedStations())
                 .extracting(Station::getName)
                 .containsExactly(을지로입구역.getName(), 을지로3가역.getName());
     }

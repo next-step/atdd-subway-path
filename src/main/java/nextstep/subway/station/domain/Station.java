@@ -46,5 +46,4 @@ public class Station extends BaseEntity {
         return Objects.hash(id, name);
     }
 
-
 }
