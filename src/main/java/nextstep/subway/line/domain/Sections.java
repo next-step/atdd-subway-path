@@ -38,12 +38,10 @@ public class Sections {
     }
 
     private void checkSectionAddValidity(Line line, Station upStation, Station downStation) {
-        if (line.getStations().stream().noneMatch(it -> it == upStation) &&
-                line.getStations().stream().noneMatch(it -> it == downStation)) {
+        if (line.isBothStationsNotIncluded(upStation, downStation)) {
             throw new RuntimeException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
         }
-        if (line.getStations().stream().anyMatch(it -> it == upStation) &&
-                line.getStations().stream().anyMatch(it -> it == downStation)) {
+        if (line.isBothStationsAlreadyIncluded(upStation, downStation)) {
             throw new RuntimeException("상행역과 하행역이 모두 노선에 등록되어 있다면 추가할 수 없습니다.");
         }
     }
@@ -63,17 +61,16 @@ public class Sections {
         int oldDistance = oldSection.getDistance();
         checkSectionDistanceValidity(oldDistance, distance);
 
-
         if (oldSection.getUpStation() == upStation) {
             sections.add(new Section(line, upStation, downStation, distance));
             sections.add(new Section(line, downStation, oldSection.getDownStation(), oldDistance - distance));
-            line.removeSection(oldSection.getDownStation());
+            line.removeSection(oldSection.getUpStation(), oldSection.getDownStation());
             return;
         }
 
         sections.add(new Section(line, oldSection.getUpStation(), upStation, oldDistance - distance));
         sections.add(new Section(line, upStation, downStation, distance));
-        line.removeSection(oldSection.getDownStation());
+        line.removeSection(oldSection.getUpStation(), oldSection.getDownStation());
 
     }
 
@@ -103,6 +100,13 @@ public class Sections {
         }
         getSections().stream()
                 .filter(it -> it.getDownStation() == station)
+                .findFirst()
+                .ifPresent(it -> getSections().remove(it));
+    }
+
+    public void remove(Station upStation, Station downStation) {
+        getSections().stream()
+                .filter(it -> it.getUpStation() == upStation && it.getDownStation() == downStation)
                 .findFirst()
                 .ifPresent(it -> getSections().remove(it));
     }

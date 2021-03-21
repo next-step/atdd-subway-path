@@ -30,6 +30,10 @@ public class LineTest {
         line.addSection(upStation, downStation, 5);
         Station middleStation = new Station("이대역");
         line.addSection(middleStation, downStation, 3);
+        assertThat(line.getSections().get(0).getUpStation()).isEqualTo(upStation);
+        assertThat(line.getSections().get(0).getDownStation()).isEqualTo(middleStation);
+        assertThat(line.getSections().get(1).getUpStation()).isEqualTo(middleStation);
+        assertThat(line.getSections().get(1).getDownStation()).isEqualTo(downStation);
         assertThat(line.getSections().size()).isEqualTo(2);
 
     }

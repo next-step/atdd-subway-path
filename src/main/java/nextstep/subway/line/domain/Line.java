@@ -5,8 +5,6 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -99,6 +97,21 @@ public class Line extends BaseEntity {
 
     public void removeSection(Station station) {
         sections.remove(this, station);
+    }
+
+    public void removeSection(Station upStation, Station downStation) {
+        sections.remove(upStation, downStation);
+    }
+
+    protected boolean isBothStationsNotIncluded(Station upStation, Station downStation) {
+        return getStations().stream().noneMatch(it -> it == upStation) &&
+                getStations().stream().noneMatch(it -> it == downStation);
+    }
+
+
+    protected boolean isBothStationsAlreadyIncluded(Station upStation, Station downStation) {
+        return getStations().stream().anyMatch(it -> it == upStation) &&
+                getStations().stream().anyMatch(it -> it == downStation);
     }
 
     @Override

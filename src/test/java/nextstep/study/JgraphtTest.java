@@ -30,6 +30,7 @@ public class JgraphtTest {
         List<String> shortestPath = dijkstraShortestPath.getPath(source, target).getVertexList();
 
         assertThat(shortestPath.size()).isEqualTo(3);
+        assertThat(dijkstraShortestPath.getPath(source, target).getWeight()).isEqualTo(4);
     }
 
     @Test
