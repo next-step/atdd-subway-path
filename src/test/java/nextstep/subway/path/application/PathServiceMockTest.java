@@ -115,48 +115,4 @@ class PathServiceMockTest {
 
         assertThat(stationIds).containsExactlyElementsOf(expectedStationIds);
     }
-
-    @DisplayName("최단거리 조회 withGraphService")
-    @Test
-    void findShortestPathWithGraphService() {
-        // given
-        when(stationService.findById(교대역.getId())).thenReturn(교대역);
-        when(stationService.findById(양재역.getId())).thenReturn(양재역);
-        when(lineService.findLines()).thenReturn(Arrays.asList(신분당선, 이호선, 삼호선));
-
-        // when
-        PathResponse response = pathService.findShortestPathWithGraphService(교대역.getId(), 양재역.getId());
-
-        List<Long> stationIds = response.getStations().stream()
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
-
-        List<Long> expectedStationIds = Stream.of(교대역, 남부터미널역, 양재역)
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
-
-        assertThat(stationIds).containsExactlyElementsOf(expectedStationIds);
-    }
-
-    @DisplayName("최단거리 조회_1 withGraphService")
-    @Test
-    void findShortestPathWithGraphService_1() {
-        // given
-        when(stationService.findById(강남역.getId())).thenReturn(강남역);
-        when(stationService.findById(남부터미널역.getId())).thenReturn(남부터미널역);
-        when(lineService.findLines()).thenReturn(Arrays.asList(신분당선, 이호선, 삼호선));
-
-        // when
-        PathResponse response = pathService.findShortestPathWithGraphService(강남역.getId(), 남부터미널역.getId());
-
-        List<Long> stationIds = response.getStations().stream()
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
-
-        List<Long> expectedStationIds = Stream.of(강남역, 양재역, 남부터미널역)
-                .map(it -> it.getId())
-                .collect(Collectors.toList());
-
-        assertThat(stationIds).containsExactlyElementsOf(expectedStationIds);
-    }
 }

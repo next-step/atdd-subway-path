@@ -3,7 +3,6 @@ package nextstep.subway.path.application;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.path.domain.Path;
-import nextstep.subway.path.domain.PathFinder;
 import nextstep.subway.path.domain.SubwayGraph;
 import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.application.StationService;
@@ -39,35 +38,12 @@ public class PathService {
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
 
-        PathFinder pathFinder = PathFinder.create(sections, source, target);
-        pathFinder.getShortestPath();
-
-        return createPathResponse(pathFinder.getShortestPath(), pathFinder.getShortestPathDistance());
-    }
-
-    private PathResponse createPathResponse(List<Station> stations, int distance) {
-        List<StationResponse> stationResponses = stations.stream()
-                .map(it -> StationResponse.of(it))
-                .collect(Collectors.toList());
-
-        return new PathResponse(stationResponses, distance);
-    }
-
-    public PathResponse findShortestPathWithGraphService(Long sourceId, Long targetId) {
-        Station source = stationService.findById(sourceId);
-        Station target = stationService.findById(targetId);
-
-        List<Section> sections = lineService.findLines().stream()
-                .map(it -> it.getSections())
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-
         SubwayGraph subwayGraph = graphService.findGraph(sections);
 
-        return createPathResponseWithGraphService(subwayGraph, source, target);
+        return createPathResponse(subwayGraph, source, target);
     }
 
-    private PathResponse createPathResponseWithGraphService(SubwayGraph subwayGraph, Station source, Station target) {
+    private PathResponse createPathResponse(SubwayGraph subwayGraph, Station source, Station target) {
         Path path = subwayGraph.getShortestPath(source, target);
 
         List<StationResponse> stationResponses = path.getStations().stream()
