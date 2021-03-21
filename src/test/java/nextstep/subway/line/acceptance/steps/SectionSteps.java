@@ -71,10 +71,11 @@ public class SectionSteps {
     public static ExtractableResponse<Response> 지하철_노선에_지하철역_제거_요청(LineResponse lineResponse, StationResponse stationResponse) {
         return RestAssured.given().log().all()
                 .when()
-                .delete("lines/{lineId}/staions?stationId={stationId]", lineResponse.getId(), stationResponse.getId())
+                .delete("/lines/{lineId}/sections?stationId={stationId}", lineResponse.getId(), stationResponse.getId())
                 .then().log().all()
                 .extract();
     }
+
 
     public static void 지하철_노선에_지하철역_등록됨(LineResponse lineResponse, SectionRequest sectionRequest) {
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(lineResponse, sectionRequest);

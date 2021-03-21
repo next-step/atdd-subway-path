@@ -18,7 +18,7 @@ import static nextstep.subway.line.acceptance.steps.LineSteps.지하철_노선_�
 import static nextstep.subway.line.acceptance.steps.SectionSteps.*;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
 
-@DisplayName("구간 추가 기능변경에 따른 인수테스트")
+@DisplayName("구간 추가/제 기능변경에 따른 인수테스트")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SectionAcceptanceTest extends AcceptanceTest {
 
