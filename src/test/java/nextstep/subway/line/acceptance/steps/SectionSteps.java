@@ -27,7 +27,7 @@ public class SectionSteps {
                 .extract();
     }
 
-    public static void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
+    public static void 지하철_노선에_지하철역_등록_성공됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
     }
@@ -58,5 +58,26 @@ public class SectionSteps {
                 .get("lines/{id}")
                 .then().log().all()
                 .extract();
+    }
+
+    public static void 지하철_노선에_지하철역_제거_성공됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    public static void 지하철_노선에_지하철역_없음(LineResponse lineResponse, StationResponse stationResponse){
+        assertThat(lineResponse.getStations()).doesNotContain(stationResponse);
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선에_지하철역_제거_요청(LineResponse lineResponse, StationResponse stationResponse) {
+        return RestAssured.given().log().all()
+                .when()
+                .delete("lines/{lineId}/staions?stationId={stationId]", lineResponse.getId(), stationResponse.getId())
+                .then().log().all()
+                .extract();
+    }
+
+    public static void 지하철_노선에_지하철역_등록됨(LineResponse lineResponse, SectionRequest sectionRequest) {
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(lineResponse, sectionRequest);
+        지하철_노선에_지하철역_등록_성공됨(response);
     }
 }
