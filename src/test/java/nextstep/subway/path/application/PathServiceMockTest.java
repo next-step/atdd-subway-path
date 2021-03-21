@@ -3,6 +3,7 @@ package nextstep.subway.path.application;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
+import nextstep.subway.path.domain.SubwayGraph;
 import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
@@ -31,6 +32,10 @@ class PathServiceMockTest {
     @Mock
     private StationService stationService;
 
+    @Mock
+    private GraphService graphService;
+    private SubwayGraph subwayGraph;
+
     private PathService pathService;
 
     private Line 신분당선;
@@ -42,9 +47,11 @@ class PathServiceMockTest {
     private Station 교대역;
     private Station 남부터미널역;
 
+
     @BeforeEach
     void setUp() {
-        pathService = new PathService(lineService, stationService);
+        subwayGraph = new SubwayGraph();
+        pathService = new PathService(lineService, stationService, graphService);
 
         강남역 = createStation(1L, "강남역");
         양재역 = createStation(2L, "양재역");
@@ -79,6 +86,7 @@ class PathServiceMockTest {
         when(stationService.findById(교대역.getId())).thenReturn(교대역);
         when(stationService.findById(양재역.getId())).thenReturn(양재역);
         when(lineService.findLines()).thenReturn(Arrays.asList(신분당선, 이호선, 삼호선));
+        when(graphService.findGraph()).thenReturn(subwayGraph);
 
         // when
         PathResponse response = pathService.findShortestPath(교대역.getId(), 양재역.getId());
@@ -101,6 +109,7 @@ class PathServiceMockTest {
         when(stationService.findById(강남역.getId())).thenReturn(강남역);
         when(stationService.findById(남부터미널역.getId())).thenReturn(남부터미널역);
         when(lineService.findLines()).thenReturn(Arrays.asList(신분당선, 이호선, 삼호선));
+        when(graphService.findGraph()).thenReturn(subwayGraph);
 
         // when
         PathResponse response = pathService.findShortestPath(강남역.getId(), 남부터미널역.getId());

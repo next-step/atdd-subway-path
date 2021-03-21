@@ -21,26 +21,29 @@ public class PathService {
 
     private LineService lineService;
     private StationService stationService;
+    private GraphService graphService;
 
-    private GraphService graphService = new GraphService();
-
-    public PathService(LineService lineService, StationService stationService) {
+    public PathService(LineService lineService, StationService stationService, GraphService graphService) {
         this.lineService = lineService;
         this.stationService = stationService;
+        this.graphService = graphService;
     }
 
     public PathResponse findShortestPath(Long sourceId, Long targetId) {
         Station source = stationService.findById(sourceId);
         Station target = stationService.findById(targetId);
 
-        List<Section> sections = lineService.findLines().stream()
+        SubwayGraph subwayGraph = graphService.findGraph();
+        subwayGraph.initialize(findSections());
+
+        return createPathResponse(subwayGraph, source, target);
+    }
+
+    private List<Section> findSections() {
+        return lineService.findLines().stream()
                 .map(it -> it.getSections())
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-
-        SubwayGraph subwayGraph = graphService.findGraph(sections);
-
-        return createPathResponse(subwayGraph, source, target);
     }
 
     private PathResponse createPathResponse(SubwayGraph subwayGraph, Station source, Station target) {

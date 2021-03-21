@@ -59,7 +59,8 @@ class SubwayGraphTest {
                 .distinct()
                 .collect(Collectors.toList());
 
-        subwayGraph = new SubwayGraph(stations, sections);
+        subwayGraph = new SubwayGraph();
+        subwayGraph.initialize(sections);
     }
 
     @DisplayName("시작역, 끝역 동일하면 실패")
