@@ -42,10 +42,10 @@ public class PathService {
     }
 
     private PathResponse createPathResponse(List<Station> stations, int distance) {
-        List<StationResponse> stationReponses = stations.stream()
+        List<StationResponse> stationResponses = stations.stream()
                 .map(it -> StationResponse.of(it))
                 .collect(Collectors.toList());
 
-        return new PathResponse(stationReponses, distance);
+        return new PathResponse(stationResponses, distance);
     }
 }

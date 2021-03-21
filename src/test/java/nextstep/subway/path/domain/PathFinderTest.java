@@ -30,7 +30,7 @@ class PathFinderTest {
 
     @BeforeEach
     void setUp() {
-        강남역 = getStation();
+        강남역 = new Station("강남역");
         양재역 = new Station("양재역");
         교대역 = new Station("교대역");
         남부터미널역 = new Station("남부터미널역");
@@ -51,10 +51,6 @@ class PathFinderTest {
                 .map(it -> it.getSections())
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-    }
-
-    private Station getStation() {
-        return new Station("강남역");
     }
 
     @DisplayName("시작역, 끝역 동일하면 실패")
