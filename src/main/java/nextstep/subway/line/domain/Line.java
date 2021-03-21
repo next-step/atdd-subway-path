@@ -99,6 +99,10 @@ public class Line extends BaseEntity {
         sections.remove(this, station);
     }
 
+    public void removeSection(Station upStation, Station downStation) {
+        sections.remove(upStation, downStation);
+    }
+
     protected boolean isBothStationsNotIncluded(Station upStation, Station downStation) {
         return getStations().stream().noneMatch(it -> it == upStation) &&
                 getStations().stream().noneMatch(it -> it == downStation);

@@ -50,7 +50,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         이호선 = 지하철_노선_등록되어_있음(lineCreateParams("이호선", "green", 교대역.getId(), 강남역.getId(), 10)).as(LineResponse.class);
         신분당선 = 지하철_노선_등록되어_있음(lineCreateParams("신분당선", "bg-red-600", 강남역.getId(), 양재역.getId(), 10)).as(LineResponse.class);
         삼호선 = 지하철_노선_등록되어_있음(lineCreateParams("삼호선", "orange", 교대역.getId(), 양재역.getId(), 5)).as(LineResponse.class);
-        //지하철_노선에_지하철역_등록_요청(삼호선, 교대역, 남부터미널역, 3);
+        지하철_노선에_지하철역_등록_요청(삼호선, 교대역, 남부터미널역, 3);
 
     }
 

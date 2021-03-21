@@ -29,7 +29,7 @@ public class PathService {
         List<Line> lines = lineService.findLines();
         PathFinder pathFinder = new PathFinder(lines);
         return new PathResponse(pathFinder.getShortestPathList(source, target).stream()
-                .map(it -> StationResponse.of(it))
+                .map(StationResponse::of)
                 .collect(Collectors.toList()),
                 pathFinder.getShortestDistance(source, target));
     }

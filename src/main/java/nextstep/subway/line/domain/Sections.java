@@ -61,17 +61,16 @@ public class Sections {
         int oldDistance = oldSection.getDistance();
         checkSectionDistanceValidity(oldDistance, distance);
 
-
         if (oldSection.getUpStation() == upStation) {
             sections.add(new Section(line, upStation, downStation, distance));
             sections.add(new Section(line, downStation, oldSection.getDownStation(), oldDistance - distance));
-            line.removeSection(oldSection.getDownStation());
+            line.removeSection(oldSection.getUpStation(), oldSection.getDownStation());
             return;
         }
 
         sections.add(new Section(line, oldSection.getUpStation(), upStation, oldDistance - distance));
         sections.add(new Section(line, upStation, downStation, distance));
-        line.removeSection(oldSection.getDownStation());
+        line.removeSection(oldSection.getUpStation(), oldSection.getDownStation());
 
     }
 
@@ -101,6 +100,13 @@ public class Sections {
         }
         getSections().stream()
                 .filter(it -> it.getDownStation() == station)
+                .findFirst()
+                .ifPresent(it -> getSections().remove(it));
+    }
+
+    public void remove(Station upStation, Station downStation) {
+        getSections().stream()
+                .filter(it -> it.getUpStation() == upStation && it.getDownStation() == downStation)
                 .findFirst()
                 .ifPresent(it -> getSections().remove(it));
     }
