@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.exception.ExistUpAndDownStationException;
+import nextstep.subway.exception.InvalidSectionDistanceException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -58,8 +60,52 @@ public class Section {
         return distance;
     }
 
-    public void update(Station downStation, int newDistance) {
+
+    public boolean hasMatchStation(Section section) {
+        if(upStation.equals(section.getUpStation()) && downStation.equals(section.downStation)) {
+            throw new ExistUpAndDownStationException();
+        }
+
+        return upStation.equals(section.getUpStation())
+                || downStation.equals(section.getDownStation());
+    }
+
+    public void updateDownStation(Station downStation, int distance) {
         this.upStation = downStation;
-        this.distance = newDistance;
+        this.distance = distance;
+    }
+
+    public void updateUpStation(Station upStation, int distance) {
+        this.downStation = upStation;
+        this.distance = distance;
+    }
+
+    public int calculateDistance(int newDistance) {
+        final int distance = this.distance - newDistance;
+        if(distance < 0) {
+            throw new InvalidSectionDistanceException();
+        }
+        return distance;
+    }
+
+    public void update(Section section, int distance) {
+        if(upStation.equals(section.getUpStation())) {
+            updateDownStation(section.getDownStation(), distance);
+        }
+        if(downStation.equals(section.getDownStation())) {
+            updateUpStation(section.getUpStation(), distance);
+        }
+    }
+
+    public boolean hasDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    public boolean hasUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public int addDistance(int distance) {
+        return this.distance + distance;
     }
 }

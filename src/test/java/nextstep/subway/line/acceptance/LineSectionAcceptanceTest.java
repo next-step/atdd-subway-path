@@ -70,7 +70,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록됨(response);
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(정자역, 강남역, 양재역));
     }
-
+  
     @DisplayName("역 사이에 새로운 역을 등록한다.")
     @Test
     void addLineSectionBetween() {
@@ -83,7 +83,39 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 정자역, 양재역));
     }
 
-    @DisplayName("지하철 노선에 등록된 지하철역을 제외한다.")
+    @DisplayName("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.")
+    @Test
+    void addLineSectionBetweenInLongerDistance() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 정자역, 11);
+
+        // then
+        지하철_노선에_지하철역_등록_실패됨(response);
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 있다면 등록할 수 없다.")
+    @Test
+    void addLineSectionWithSameStations() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 양재역, 9);
+
+        // then
+        지하철_노선에_지하철역_등록_실패됨(response);
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나라도 포함되지 않으면 등록할 수 없다.")
+    @Test
+    void addLineSectionNotIncludeAny() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 정자역, 광교역, 9);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_노선에_지하철역_등록됨(response);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 정자역, 양재역));
+    }
+
+    @DisplayName("지하철 노선에 등록된 마지막 지하철역을 제외한다.")
     @Test
     void removeLineSection() {
         // given
@@ -96,6 +128,36 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_제외됨(removeResponse);
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 양재역));
+    }
+
+    @DisplayName("지하철 노선에 등록된 첫번쨰 지하철역을 제외한다.")
+    @Test
+    void removeFirstLineSection() {
+        // given
+        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
+
+        // when
+        ExtractableResponse<Response> removeResponse = 지하철_노선에_지하철역_제외_요청(신분당선, 강남역);
+
+        // then
+        지하철_노선에_지하철역_제외됨(removeResponse);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(양재역, 정자역));
+    }
+
+    @DisplayName("지하철 노선에 등록된 중간 지하철역을 제외한다.")
+    @Test
+    void removeMiddleLineSection() {
+        // given
+        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
+
+        // when
+        ExtractableResponse<Response> removeResponse = 지하철_노선에_지하철역_제외_요청(신분당선, 양재역);
+
+        // then
+        지하철_노선에_지하철역_제외됨(removeResponse);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 정자역));
     }
 
     @DisplayName("지하철 노선에 구간이 하나일 때 지하철역을 제외한다.")
@@ -113,7 +175,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     public static void 지하철_노선에_지하철역_등록_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     public static void 지하철_노선에_지하철역_순서_정렬됨(ExtractableResponse<Response> response, List<StationResponse> expectedStations) {
