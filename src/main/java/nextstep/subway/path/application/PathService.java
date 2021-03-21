@@ -2,7 +2,9 @@ package nextstep.subway.path.application;
 
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Section;
+import nextstep.subway.path.domain.Path;
 import nextstep.subway.path.domain.PathFinder;
+import nextstep.subway.path.domain.SubwayGraph;
 import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
@@ -20,6 +22,8 @@ public class PathService {
 
     private LineService lineService;
     private StationService stationService;
+
+    private GraphService graphService = new GraphService();
 
     public PathService(LineService lineService, StationService stationService) {
         this.lineService = lineService;
@@ -47,5 +51,29 @@ public class PathService {
                 .collect(Collectors.toList());
 
         return new PathResponse(stationResponses, distance);
+    }
+
+    public PathResponse findShortestPathWithGraphService(Long sourceId, Long targetId) {
+        Station source = stationService.findById(sourceId);
+        Station target = stationService.findById(targetId);
+
+        List<Section> sections = lineService.findLines().stream()
+                .map(it -> it.getSections())
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+        SubwayGraph subwayGraph = graphService.findGraph(sections);
+
+        return createPathResponseWithGraphService(subwayGraph, source, target);
+    }
+
+    private PathResponse createPathResponseWithGraphService(SubwayGraph subwayGraph, Station source, Station target) {
+        Path path = subwayGraph.getShortestPath(source, target);
+
+        List<StationResponse> stationResponses = path.getStations().stream()
+                .map(it -> StationResponse.of(it))
+                .collect(Collectors.toList());
+
+        return new PathResponse(stationResponses, path.getDistance());
     }
 }
