@@ -1,6 +1,8 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.common.exception.ApplicationException;
+import nextstep.subway.common.exception.ApplicationType;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -8,6 +10,7 @@ import java.util.*;
 
 @Entity
 public class Line extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -15,8 +18,9 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections;
+
 
     public Line() {
     }
@@ -27,9 +31,11 @@ public class Line extends BaseEntity {
     }
 
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this.sections = new Sections();
+
         this.name = name;
         this.color = color;
-        sections.add(new Section(this, upStation, downStation, distance));
+        this.sections.add(new Section(this, upStation, downStation, distance));
     }
 
     public void update(Line line) {
@@ -50,7 +56,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return this.sections.getSections();
     }
 
     @Override
@@ -64,5 +70,25 @@ public class Line extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, color);
+    }
+
+    public List<Station> getStations() {
+        return this.sections.getStations();
+    }
+
+    public List<Station> getSortedStations() {
+        return this.sections.getSortedStations();
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        this.sections.addSection(this, upStation, downStation, distance);
+    }
+
+    public void removeSection(Station station) {
+        this.sections.removeSection(station);
+    }
+
+    public int getLineDistance() {
+        return this.sections.getTotalDistance();
     }
 }

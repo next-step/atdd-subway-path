@@ -31,12 +31,4 @@ public class StationResponse {
     public String getName() {
         return name;
     }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
-    }
 }

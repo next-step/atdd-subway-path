@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineAcceptanceTest extends AcceptanceTest {
     private StationResponse 강남역;
     private StationResponse 광교역;
-    private Map<String, String> lineCreateParams;
+    private Map<String, Object> lineCreateParams;
 
     @BeforeEach
     public void setUp() {
@@ -56,7 +56,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", "구분당선");
         params.put("color", "bg-red-600");
         params.put("upStationId", 강남역.getId() + "");
@@ -94,7 +94,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(lineCreateParams);
 
         // when
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", "구분당선");
         params.put("color", "bg-red-600");
         params.put("upStationId", 강남역.getId() + "");

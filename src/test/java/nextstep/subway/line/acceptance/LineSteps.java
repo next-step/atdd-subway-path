@@ -12,11 +12,11 @@ import java.util.Map;
 
 public class LineSteps {
 
-    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(Map<String, String> params) {
+    public static ExtractableResponse<Response> 지하철_노선_등록되어_있음(Map<String, Object> params) {
         return 지하철_노선_생성_요청(params);
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, Object> params) {
         return RestAssured.given().log().all().
                 contentType(MediaType.APPLICATION_JSON_VALUE).
                 body(params).
@@ -59,7 +59,7 @@ public class LineSteps {
                 extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_수정_요청(ExtractableResponse<Response> response, Map<String, String> params) {
+    public static ExtractableResponse<Response> 지하철_노선_수정_요청(ExtractableResponse<Response> response, Map<String, Object> params) {
         String uri = response.header("Location");
 
         return RestAssured.given().log().all().
