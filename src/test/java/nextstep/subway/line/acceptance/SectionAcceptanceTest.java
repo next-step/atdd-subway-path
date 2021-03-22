@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import static nextstep.subway.line.acceptance.LineSteps.*;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
-s
+
 @DisplayName("지하철 노선에 구간 등록하기 위한 테스트")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
