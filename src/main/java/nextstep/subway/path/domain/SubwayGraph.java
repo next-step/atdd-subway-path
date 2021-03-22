@@ -6,22 +6,18 @@ import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
-import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
 public class SubwayGraph {
 
     private final WeightedMultigraph<Station, DefaultWeightedEdge> graph;
 
-    public SubwayGraph() {
+    public SubwayGraph(List<Section> sections) {
         this.graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-    }
 
-    public void initialize(List<Section> sections) {
         List<Station> stations = getStations(sections);
 
         stations.forEach(this::addVertex);

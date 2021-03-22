@@ -1,7 +1,5 @@
 package nextstep.subway.path.application;
 
-import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.domain.Section;
 import nextstep.subway.path.domain.Path;
 import nextstep.subway.path.domain.SubwayGraph;
 import nextstep.subway.path.dto.PathResponse;
@@ -11,7 +9,6 @@ import nextstep.subway.station.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,31 +16,21 @@ import java.util.stream.Collectors;
 @Transactional
 public class PathService {
 
-    private LineService lineService;
     private StationService stationService;
     private GraphService graphService;
 
-    public PathService(LineService lineService, StationService stationService, GraphService graphService) {
-        this.lineService = lineService;
+    public PathService(StationService stationService, GraphService graphService) {
         this.stationService = stationService;
         this.graphService = graphService;
     }
 
     public PathResponse findShortestPath(Long sourceId, Long targetId) {
+        SubwayGraph subwayGraph = graphService.findGraph();
+
         Station source = stationService.findById(sourceId);
         Station target = stationService.findById(targetId);
 
-        SubwayGraph subwayGraph = graphService.findGraph();
-        subwayGraph.initialize(findSections());
-
         return createPathResponse(subwayGraph, source, target);
-    }
-
-    private List<Section> findSections() {
-        return lineService.findLines().stream()
-                .map(it -> it.getSections())
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
     }
 
     private PathResponse createPathResponse(SubwayGraph subwayGraph, Station source, Station target) {

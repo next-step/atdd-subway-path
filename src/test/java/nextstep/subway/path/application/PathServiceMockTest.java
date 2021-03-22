@@ -16,6 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,14 +29,10 @@ import static org.mockito.Mockito.when;
 class PathServiceMockTest {
 
     @Mock
-    private LineService lineService;
-
-    @Mock
     private StationService stationService;
 
     @Mock
     private GraphService graphService;
-    private SubwayGraph subwayGraph;
 
     private PathService pathService;
 
@@ -47,11 +45,11 @@ class PathServiceMockTest {
     private Station 교대역;
     private Station 남부터미널역;
 
+    private SubwayGraph subwayGraph;
 
     @BeforeEach
     void setUp() {
-        subwayGraph = new SubwayGraph();
-        pathService = new PathService(lineService, stationService, graphService);
+        pathService = new PathService(stationService, graphService);
 
         강남역 = createStation(1L, "강남역");
         양재역 = createStation(2L, "양재역");
@@ -63,6 +61,8 @@ class PathServiceMockTest {
         삼호선 = createLine(3L, "삼호선", "bg-red-600", 교대역, 양재역, 5);
 
         삼호선.addSection(new Section(삼호선, 교대역, 남부터미널역, 3));
+
+        subwayGraph = createSubwayGraph();
     }
 
     private Station createStation(Long id, String name) {
@@ -70,6 +70,15 @@ class PathServiceMockTest {
         ReflectionTestUtils.setField(station, "id", id);
 
         return station;
+    }
+
+    private SubwayGraph createSubwayGraph() {
+        List<Section> sections = Arrays.asList(신분당선, 이호선, 삼호선).stream()
+                .map(it -> it.getSections())
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+        return new SubwayGraph(sections);
     }
 
     private Line createLine(Long id, String name, String color, Station upStation, Station downStation, int distance) {
@@ -85,7 +94,6 @@ class PathServiceMockTest {
         // given
         when(stationService.findById(교대역.getId())).thenReturn(교대역);
         when(stationService.findById(양재역.getId())).thenReturn(양재역);
-        when(lineService.findLines()).thenReturn(Arrays.asList(신분당선, 이호선, 삼호선));
         when(graphService.findGraph()).thenReturn(subwayGraph);
 
         // when
@@ -108,7 +116,6 @@ class PathServiceMockTest {
         // given
         when(stationService.findById(강남역.getId())).thenReturn(강남역);
         when(stationService.findById(남부터미널역.getId())).thenReturn(남부터미널역);
-        when(lineService.findLines()).thenReturn(Arrays.asList(신분당선, 이호선, 삼호선));
         when(graphService.findGraph()).thenReturn(subwayGraph);
 
         // when
