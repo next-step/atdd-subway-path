@@ -44,4 +44,8 @@ public class StationService {
     public Station findById(Long id) {
         return stationRepository.findById(id).orElseThrow(RuntimeException::new);
     }
+
+    public boolean isExist(Long id){
+        return stationRepository.existsById(id);
+    }
 }

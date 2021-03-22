@@ -98,14 +98,10 @@ public class LineServiceTest {
     }
 
     @Test
+    @DisplayName("등록되지 않은 역 불러올 때 에러 발생")
     void 등록되지_않은_역_불러오기() {
         //given
         assertThatThrownBy(() -> lineService.findLineById(2L))
                 .isInstanceOf(NoSuchElementException.class);
-    }
-
-    public void updateLine(Long id, LineRequest lineUpdateRequest) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-        persistLine.update(new Line(lineUpdateRequest.getName(), lineUpdateRequest.getColor()));
     }
 }
