@@ -30,13 +30,4 @@ public class SectionSteps {
                 extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선의_마지막역_조회(long lineId) {
-        return RestAssured.given().log().all().
-                when().
-                get("/lines/{lineId}/sections/last-station", lineId).
-                then().
-                log().all().
-                extract();
-    }
-
 }

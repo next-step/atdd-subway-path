@@ -81,17 +81,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선_구간_응답_확인(removeResponse.statusCode(),HttpStatus.NO_CONTENT);
     }
 
-    @DisplayName("지하철 노선에 등록된 하행역(마지막)을 조회한다.")
-    @Test
-    void getLastStation(){
-        // when
-        ExtractableResponse<Response> response = 지하철_노선의_마지막역_조회(신분당선.getId());
-
-        // then
-        지하철_노선_구간_응답_확인(response.statusCode(),HttpStatus.OK);
-        assertThat(response.jsonPath().getLong("id")).isEqualTo(양재역.getId());
-    }
-
     @DisplayName("지하철 노선에 이미 포함된 역을 구간으로 등록한다.")
     @Test
     void addLineSectionAlreadyIncluded() {
