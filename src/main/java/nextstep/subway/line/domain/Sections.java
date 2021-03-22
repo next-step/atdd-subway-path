@@ -23,7 +23,7 @@ public class Sections {
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
         if(getSectionSize() == 0) {
-            return stations;
+            return Collections.emptyList();
         }
 
         Station station = getFirstStation();
@@ -38,7 +38,7 @@ public class Sections {
     public Station getNextStation(Station station) {
         Station nextStation = null;
         if (sections.size() == 0) {
-            return nextStation;
+            return null;
         }
 
         Optional<Section> section = sections.stream()
@@ -114,7 +114,7 @@ public class Sections {
         sections.stream()
                 .filter(it -> it.getUpStation().equals(section.getUpStation()))
                 .findFirst()
-                .ifPresent(it -> arrangeAddSection(sections.indexOf(it), it, section));
+                .ifPresent(it -> arrangeAddSection(it, section));
     }
 
     private void checkConnectableSection(Section section){
@@ -134,7 +134,7 @@ public class Sections {
                 .anyMatch(it -> it.equals(station));
     }
 
-    private void arrangeAddSection(int idx, Section frontSection, Section backSection){
+    private void arrangeAddSection(Section frontSection, Section backSection){
         // 구간사이 길이 계산
         int frontDistance = frontSection.getDistance();
         int backDistance = backSection.getDistance();
@@ -149,12 +149,12 @@ public class Sections {
 
         // 상행 구간
         frontSection.updateSection(frontUpStation, frontDownStation, backDistance);
-        sections.set(idx, frontSection);
+        sections.remove(frontSection);
+        sections.add(frontSection);
 
         // 하행 구간
         backSection.updateSection(backUpStation, backDownStation, frontDistance - backDistance);
-        sections.add(idx+1, backSection);
-
+        sections.add(backSection);
     }
 
     public void removeSection(Long stationId) {
@@ -201,24 +201,25 @@ public class Sections {
                 .findFirst()
                 .ifPresent(it -> {
                     int idx = sections.indexOf(it);
-                    arrangeRemoveSection(idx, it, sections.get(idx+1));
+                    arrangeRemoveSection(it, sections.get(idx+1));
                 });
     }
 
-    private void arrangeRemoveSection(int idx, Section frontSection, Section backSection){
+    private void arrangeRemoveSection(Section frontSection, Section backSection){
         // 구간사이 길이 계산
         int frontDistance = frontSection.getDistance();
         int backDistance = backSection.getDistance();
         // 구간에 등록될 역 정보
-        Station frontUpStation = frontSection.getUpStation();
-        Station frontDownStation = backSection.getDownStation();
+        Station backUpStation = frontSection.getUpStation();
+        Station backDownStation = backSection.getDownStation();
 
         // 상행 구간
-        frontSection.updateSection(frontUpStation, frontDownStation, frontDistance + backDistance);
-        sections.set(idx, frontSection);
+        sections.remove(frontSection);
 
         // 하행 구간
-        sections.remove(idx+1);
+        backSection.updateSection(backUpStation, backDownStation, frontDistance + backDistance);
+        sections.remove(backSection);
+        sections.add(backSection);
     }
 
     private Station getStationById(Long stationId){
