@@ -3,6 +3,7 @@ package nextstep.subway.line.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.common.exception.ApplicationException;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 import static nextstep.subway.line.acceptance.LineSteps.*;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
-
+s
 @DisplayName("지하철 노선에 구간 등록하기 위한 테스트")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
@@ -56,19 +57,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(이호선);
-        지하철_노선에_지하철역_등록됨(response);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(을지로3가역, 을지로입구역, 시청역));
     }
 
     @DisplayName("지하철 구간 등록 시 새로운 역을 상행 종점으로 등록한다.")
     @Test
     void addSectionWithUpStationAsDownStation() {
         //when
-        //지하철 구간 등록
+        //을지로3가 시청역
         지하철_노선에_지하철역_등록_요청(이호선, 을지로4가역, 을지로3가역, 5);
 
         //then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(이호선);
-        지하철_노선에_지하철역_등록됨(response);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(을지로4가역, 을지로3가역, 시청역));
     }
 
     @DisplayName("지하철 구간 등록 시 새로운 역을 하행 종점으로 등록한다.")
@@ -79,7 +80,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(이호선);
-        지하철_노선에_지하철역_등록됨(response);
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(을지로3가역, 시청역, 충정로역));
     }
 
@@ -98,22 +98,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionWithLongerDistance(){
         //when
-        지하철_노선에_지하철역_등록_요청(이호선, 을지로3가역, 을지로입구역, DEFAULT_LINE_DISTANCE+2);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(이호선, 을지로3가역, 을지로입구역, DEFAULT_LINE_DISTANCE + 2);
 
         //then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(이호선);
-        지하철_노선_조회시_지하철역_등록_되지_않은_상태(response, Arrays.asList(을지로3가역, 시청역));
+        지하철_노선에_지하철역_등록_실패됨(response);
     }
 
-    @DisplayName("구간 사이에 새로울 역을 등록하는데 기존 구간 보다 짧으면 정상 등록.")
-    @Test
-    void addSectionWithShorterDistance(){
-        //when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(이호선, 을지로입구역, 시청역, DEFAULT_LINE_DISTANCE-2);
-
-        //then
-        지하철_노선에_지하철역_등록됨(response);
-    }
 
     @DisplayName("상행역과 하행역이 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test

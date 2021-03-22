@@ -3,6 +3,7 @@ package nextstep.subway.line.application;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.Sections;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
@@ -80,10 +81,13 @@ public class LineService {
     }
 
     public LineResponse createLineResponse(Line line) {
-        List<Station> ss = line.getStations();
-        List<StationResponse> stations = line.getStations().stream()
-                .map(it -> StationResponse.of(it))
+        List<StationResponse> stations = toStationResponse(line);
+        return LineResponse.of(line, stations);
+    }
+
+    private List<StationResponse> toStationResponse(Line line) {
+        return line.getSortedStations().stream()
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations, line.getCreatedDate(), line.getModifiedDate());
     }
 }

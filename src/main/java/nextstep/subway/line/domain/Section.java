@@ -5,7 +5,7 @@ import nextstep.subway.station.domain.Station;
 import javax.persistence.*;
 
 @Entity
-public class Section {
+public class Section implements Comparable<Section>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,8 +24,7 @@ public class Section {
 
     private int distance;
 
-    public Section() {
-    }
+    public Section() {}
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
@@ -55,14 +54,17 @@ public class Section {
     }
 
     public boolean isSameUpStation(Section section) {
-        return this.getUpStation().getId() == section.getUpStation().getId();
+        return this.getUpStation().equals(section.getUpStation());
     }
 
-    public boolean isAddableInMiddle(Section section) {
-        return isSameUpStation(section) && isLongerThan(section.getDistance());
+    public boolean addable(Section section) {
+        return this.distance > section.getDistance();
     }
 
-    private boolean isLongerThan(int distance) {
-        return this.distance > distance;
+    @Override
+    public int compareTo(Section section) {
+        if (getDownStation().equals(section.getUpStation())) return -1;
+        if (getUpStation().equals(section.getDownStation())) return 1;
+        return 0;
     }
 }

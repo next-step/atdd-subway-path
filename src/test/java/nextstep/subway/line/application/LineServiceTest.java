@@ -78,20 +78,4 @@ public class LineServiceTest {
         assertThat(sections.get(1).getDownStation()).isEqualTo(시청역);
     }
 
-    @Test
-    void addSectionBetweenSectionWithSameDownStation() {
-        // when
-        // lineService.addSection 호출
-        lineService.addSection(이호선, 을지로입구역, 시청역, 5);
-
-        // then
-        // line.getSections 메서드를 통해 검증
-        List<Section> sections = 이호선.getSections();
-        assertThat(sections.size()).isEqualTo(2);
-        assertThat(sections.get(0).getUpStation()).isEqualTo(을지로3가역);
-        assertThat(sections.get(0).getDownStation()).isEqualTo(을지로입구역);
-        assertThat(sections.get(1).getUpStation()).isEqualTo(을지로입구역);
-        assertThat(sections.get(1).getDownStation()).isEqualTo(시청역);
-    }
-
 }

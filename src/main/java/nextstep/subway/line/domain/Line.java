@@ -10,6 +10,7 @@ import java.util.*;
 
 @Entity
 public class Line extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,7 +35,7 @@ public class Line extends BaseEntity {
 
         this.name = name;
         this.color = color;
-        this.sections.add(new Section(this, upStation, downStation, distance));
+        this.sections.addSection(this, upStation, downStation, distance);
     }
 
     public void update(Line line) {
@@ -55,7 +56,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> getSections() {
-        return sections.getSections();
+        return this.sections.getSections();
     }
 
     @Override
@@ -71,97 +72,19 @@ public class Line extends BaseEntity {
         return Objects.hash(id, name, color);
     }
 
-    public List<Station> getStations() {
-        return this.sections.getStations();
+    public List<Station> getSortedStations() {
+        return this.sections.getSortedStations();
     }
-
 
     public void addSection(Station upStation, Station downStation, int distance) {
-
-        if (getStations().size() == 0) {
-            addSectionInLast(upStation, downStation, distance);
-            return;
-        }
-
-        //둘다 등록된 역 혹은 둘다 등록되지 않은역은 등록불가
-        validateSectionAddable(upStation, downStation, distance);
-
-        if (isFirstStationEqualsWithDownStation(downStation)) {
-            addSectionInFirst(upStation, downStation, distance);
-            return;
-        }
-
-        if (isLastDownStationContains(upStation)) {
-            addSectionInLast(upStation, downStation, distance);
-            return;
-        }
-
-
-        if (isContainsStationInUpStation(upStation)) {
-            addSectionInMiddle(upStation, downStation, distance);
-            return;
-        }
-    }
-    private boolean isFirstStationEqualsWithDownStation(Station station) {
-        return station.equals(this.sections.getFirstStation());
-    }
-
-    private void addSectionInFirst(Station upStation, Station downStation, int distance) {
-        this.sections.addSectionInFirst(new Section(this, upStation, downStation, distance));
-    }
-
-    private void addSectionInLast(Station upStation, Station downStation, int distance) {
-        this.sections.add(new Section(this, upStation, downStation, distance));
-    }
-
-    private void addSectionInMiddle(Station upStation, Station downStation, int distance) {
-
-        this.sections.addInMiddle(new Section(this, upStation, downStation, distance));
+        this.sections.addSection(this, upStation, downStation, distance);
     }
 
     public void removeSection(Station station) {
-        if (this.getSections().size() <= 1) {
-            throw  new ApplicationException(ApplicationType.LINE_MUST_BE_HAVE_ONE_SECTION_AT_LEAST);
-        }
-
-        if (isNotValidUpStation(station)) {
-            throw new ApplicationException(ApplicationType.ONLY_DOWN_STATIONS_CAN_BE_DELETED);
-        }
-
         this.sections.removeSection(station);
     }
 
-    private boolean isNotValidUpStation(Station station){
-        return this.sections.isLastDownStationContains(station);
-    }
-
-    private boolean isLastDownStationContains(Station station) {
-        return this.sections.isLastDownStationContains(station);
-    }
-
-    private void validateSectionAddable(Station upStation, Station downStation, int distance) {
-        validateContainsBothStations(upStation, downStation);
-    }
-
-    private void validateContainsBothStations(Station upStation, Station downStation) {
-        if(this.sections.containsBothStation(upStation, downStation)) {
-            throw new ApplicationException(ApplicationType.STATIONS_ALREADY_REGISTERD);
-        }
-
-        if(this.sections.notContainsBothStation(upStation, downStation)) {
-            throw new ApplicationException(ApplicationType.ONE_STATION_MUST_BE_REGISTERED_AT_LEAST);
-        }
-    }
-
-    private boolean isContainsStationInUpStation(Station station) {
-        if (this.sections.getSectionUpStationContains(station) == null) {
-            return false;
-        }
-
-        return true;
-    }
-
     public int getLineDistance() {
-        return this.sections.getToalDistance();
+        return this.sections.getTotalDistance();
     }
 }
