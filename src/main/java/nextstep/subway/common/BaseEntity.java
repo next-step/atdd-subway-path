@@ -39,6 +39,6 @@ public class BaseEntity {
     }
 
     public boolean isOwner(Long userId) {
-        return userId == this.userId;
+        return this.userId.equals(userId);
     }
 }
