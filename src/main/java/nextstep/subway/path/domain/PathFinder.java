@@ -17,8 +17,12 @@ public class PathFinder {
         if(source.equals(target)) {
             throw new CannotFindPathException("출발역과 도착역이 같을 순 없습니다");
         }
-
-        return pathStrategy.getPath(source, target);
+        try{
+            Stations stations = pathStrategy.getPath(source, target);
+            return stations;
+        }catch (CannotFindPathException e){
+            throw new CannotFindPathException("연결되지 않았습니다.");
+        }
     }
 
 }

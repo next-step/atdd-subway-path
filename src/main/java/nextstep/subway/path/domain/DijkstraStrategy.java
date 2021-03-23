@@ -46,9 +46,7 @@ public class DijkstraStrategy implements PathStrategy{
             double distance = paths.stream().mapToDouble(path -> path.getWeight()).sum();
             return new Stations(stations, distance);
         }catch(Exception e){
-            e.printStackTrace();
+            throw new CannotFindPathException("연결되지 않았습니다.");
         }
-
-        throw new CannotFindPathException("출발역과 도착역이 연결되지 않았습니다.");
     }
 }
