@@ -1,8 +1,8 @@
 package nextstep.subway.path.domain;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.Lines;
 import nextstep.subway.line.domain.Section;
-import nextstep.subway.path.domain.DijkstraStrategy;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.Stations;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +49,8 @@ public class PathStrategyTest {
         DijkstraStrategy dijkstraStrategy = new DijkstraStrategy(Arrays.asList(이호선));
 
         //When
-        Stations stations = dijkstraStrategy.getPath(사당역, 역삼역);
+        Lines lines = new Lines(Arrays.asList(이호선));
+        Stations stations = dijkstraStrategy.getPath(사당역, 역삼역, lines);
 
         //Then
         assertAll(

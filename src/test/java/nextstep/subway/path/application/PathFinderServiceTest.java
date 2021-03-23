@@ -3,6 +3,7 @@ package nextstep.subway.path.application;
 
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
@@ -10,6 +11,7 @@ import nextstep.subway.station.application.exception.NotFoundStationException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.domain.Stations;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,8 +27,12 @@ public class PathFinderServiceTest {
 
     @Autowired
     private LineService lineService;
+
     @Autowired
     private StationRepository stationRepository;
+
+    @Autowired
+    private LineRepository lineRepository;
 
     @Autowired
     private PathFinderService pathFinderService;
@@ -57,6 +63,12 @@ public class PathFinderServiceTest {
         lineService.addSection(lineResponse.getId(), new SectionRequest(노량진역.getId(), 용산역.getId(), 2));
         lineService.addSection(lineResponse.getId(), new SectionRequest(용산역.getId(), 서울역.getId(), 3));
 
+    }
+
+    @AfterEach
+    public void clean(){
+        lineRepository.deleteAll();
+        stationRepository.deleteAll();
     }
 
     @DisplayName("최단 경로를 조회한다")

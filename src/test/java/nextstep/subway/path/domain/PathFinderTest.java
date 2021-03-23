@@ -2,8 +2,6 @@ package nextstep.subway.path.domain;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
-import nextstep.subway.path.domain.DijkstraStrategy;
-import nextstep.subway.path.domain.PathFinder;
 import nextstep.subway.path.domain.exception.CannotFindPathException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.Stations;
@@ -12,13 +10,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
 public class PathFinderTest {
-
 
     private Line 이호선;
     private Station 역삼역;
@@ -56,8 +54,8 @@ public class PathFinderTest {
     @Test
     public void createInstance(){
         //Given
-
-        PathFinder pathFinder = new PathFinder(new DijkstraStrategy(Arrays.asList(이호선)));
+        List<Line> lines = Arrays.asList(이호선);
+        PathFinder pathFinder = new PathFinder(lines, (교대역, 역삼역, 이호선) -> new Stations(Arrays.asList(교대역, 강남역, 역삼역)));
 
         //When
         Stations stations = pathFinder.findShortestPath(교대역, 역삼역);
@@ -70,7 +68,8 @@ public class PathFinderTest {
     @Test
     public void startAndEndStationTheEquals(){
         assertThatThrownBy(() -> {
-            PathFinder pathFinder = new PathFinder(new DijkstraStrategy(Arrays.asList(이호선)));
+            List<Line> lines = Arrays.asList(이호선);
+            PathFinder pathFinder =  new PathFinder(lines, new DijkstraStrategy());
             pathFinder.findShortestPath(교대역, 교대역);
         }).isInstanceOf(CannotFindPathException.class);
     }
@@ -79,7 +78,8 @@ public class PathFinderTest {
     @Test
     public void notConnectStation(){
         assertThatThrownBy(() -> {
-            PathFinder pathFinder = new PathFinder(new DijkstraStrategy(Arrays.asList(이호선)));
+            List<Line> lines = Arrays.asList(이호선);
+            PathFinder pathFinder = new PathFinder(lines, new DijkstraStrategy());
             pathFinder.findShortestPath(교대역, 대방역);
         }).isInstanceOf(CannotFindPathException.class);
     }
