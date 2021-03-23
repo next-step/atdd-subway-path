@@ -64,6 +64,6 @@ public class LineController {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest().body("이미 존재하는 이름 입니다.");
     }
 }

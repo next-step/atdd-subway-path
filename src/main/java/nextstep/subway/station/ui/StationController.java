@@ -46,11 +46,6 @@ public class StationController {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity handleRuntimeException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+        return ResponseEntity.badRequest().body("이미 존재하는 이름 입니다.");
     }
 }

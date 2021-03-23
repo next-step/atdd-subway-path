@@ -21,6 +21,16 @@ include::{snippets}/station/read/http-request.adoc[]
 
 include::{snippets}/station/read/http-response.adoc[]
 
+=== 수정
+
+==== Request
+
+include::{snippets}/station/update/http-request.adoc[]
+
+==== Response
+
+include::{snippets}/station/update/http-response.adoc[]
+
 === 삭제
 
 ==== Request
