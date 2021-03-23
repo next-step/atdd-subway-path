@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import jdk.nashorn.internal.runtime.options.Option;
 import nextstep.subway.common.exception.ApplicationException;
 import nextstep.subway.common.exception.ApplicationType;
 import nextstep.subway.station.domain.Station;
@@ -9,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,14 +26,35 @@ public class Sections {
             throw  new ApplicationException(ApplicationType.LINE_MUST_BE_HAVE_ONE_SECTION_AT_LEAST);
         }
 
-        if (!station.equals(getLastStation())) {
-            throw new ApplicationException(ApplicationType.ONLY_DOWN_STATIONS_CAN_BE_DELETED);
+        //마지막역 삭제시
+        if (station.equals(getLastStation())) {
+            this.sections.stream()
+                    .filter(it -> it.getDownStation().getId() == station.getId())
+                    .findFirst()
+                    .ifPresent(it -> this.sections.remove(it));
+
+            return;
         }
 
+        for (int i=0; i < sections.size(); i++) {
+            Section currentSection = sections.get(i);
+            if (currentSection.getDownStation().equals(station)) {
+                sections.get(i).extendSection(sections.get(i+1).getDownStation(), sections.get(i+1).getDistance());
+                sections.remove(i+1);
+            }
+        }
+
+        //중간역 삭제시
         this.sections.stream()
                 .filter(it -> it.getDownStation().getId() == station.getId())
                 .findFirst()
                 .ifPresent(it -> this.sections.remove(it));
+    }
+
+    public Optional<Section> containsDownStation(Station station) {
+        return this.sections.stream()
+                .filter(it -> it.getDownStation().equals(station))
+                .findFirst();
     }
 
     public List<Section> getSections() {

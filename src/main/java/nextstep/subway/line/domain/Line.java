@@ -82,7 +82,15 @@ public class Line extends BaseEntity {
     }
 
     public void removeSection(Station station) {
+        if (!containsStation(station)) {
+            throw new ApplicationException(ApplicationType.NOT_REGISTERED_STATION_ON_LINE);
+        }
+
         this.sections.removeSection(station);
+    }
+
+    private boolean containsStation(Station station) {
+        return getSortedStations().stream().anyMatch(it-> it.equals(station));
     }
 
     public int getLineDistance() {

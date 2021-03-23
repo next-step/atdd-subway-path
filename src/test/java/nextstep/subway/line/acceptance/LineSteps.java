@@ -83,6 +83,16 @@ public class LineSteps {
                 extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_노선_제거_요청(Long lineId, Long stationId) {
+
+        return RestAssured.given().log().all().
+                when().
+                delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId).
+                then().
+                log().all().
+                extract();
+    }
+
     public static ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(LineResponse line, StationResponse upStation, StationResponse downStation, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStation.getId() + "");

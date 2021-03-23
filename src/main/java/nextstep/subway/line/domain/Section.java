@@ -61,6 +61,11 @@ public class Section implements Comparable<Section>{
         return this.distance > section.getDistance();
     }
 
+    public void extendSection(Station downStation, int distance) {
+        this.downStation = downStation;
+        this.distance += distance;
+    }
+
     @Override
     public int compareTo(Section section) {
         if (getDownStation().equals(section.getUpStation())) return -1;

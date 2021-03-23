@@ -127,15 +127,7 @@ public class LineTest {
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
     @Test
     void removeSectionWhenMinSectionSize() {
-        //when
-        Exception exception = assertThrows(ApplicationException.class, () -> {
-            이호선.removeSection(시청역);
-        });
-
-        //then
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains("구간은 최소하나는 등록되어있어야 합니다."));
-
+        //when/then
         assertThatThrownBy(() -> 이호선.removeSection(시청역))
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("구간은 최소하나는 등록되어있어야 합니다.");
@@ -144,15 +136,13 @@ public class LineTest {
     @DisplayName("등록되지 않은 역을 삭제시 에러 발생")
     @Test
     void removeSectionNotRegistered() {
+        //given
         이호선.addSection(시청역, 을지로입구역, 10);
-        //when
-        Exception exception = assertThrows(ApplicationException.class, () -> {
-            이호선.removeSection(충정로역);
-        });
 
-        //then
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains("노선에 등록되지 않은 역입니다."));
+        //when/then
+        assertThatThrownBy(() -> 이호선.removeSection(충정로역))
+                .isInstanceOf(ApplicationException.class)
+                .hasMessage("구간에 등록되어있지 않은 역입니다.");
     }
 
     @DisplayName("중간 역 삭제시 성공")
