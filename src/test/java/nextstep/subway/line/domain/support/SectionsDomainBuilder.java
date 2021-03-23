@@ -9,7 +9,7 @@ import java.util.List;
 
 public class SectionsDomainBuilder {
 
-    public static Sections build(List<Integer> distances, Station ...stations){
+    public static Sections sectionsBuild(List<Integer> distances, Station ...stations){
         Sections sections = new Sections();
         for(int i = 0; i < stations.length - 1 ; i++){
             sections.addSection(new Section(new Line("1호선", "블루"), stations[i], stations[i+1], distances.get(i)));
