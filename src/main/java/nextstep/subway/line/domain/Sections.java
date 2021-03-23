@@ -240,6 +240,4 @@ public class Sections {
             throw new RuntimeException("존재하지 않는 역입니다.");
         }
     }
-
-
 }

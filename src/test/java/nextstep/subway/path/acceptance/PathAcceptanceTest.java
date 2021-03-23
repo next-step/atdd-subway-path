@@ -15,7 +15,7 @@ import static nextstep.subway.line.acceptance.steps.LineSteps.지하철_노선�
 import static nextstep.subway.path.acceptance.steps.PathSteps.*;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
 
-@DisplayName("지하철 경로 조회")
+@DisplayName("지하철 최단 경로 조회")
 public class PathAcceptanceTest extends AcceptanceTest {
 
     private LineResponse 신분당선, 이호선, 삼호선, 팔호선;
