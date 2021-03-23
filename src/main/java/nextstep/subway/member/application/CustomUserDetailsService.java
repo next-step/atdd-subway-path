@@ -15,7 +15,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     public LoginMember loadUserByUsername(String email) {
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
+        Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
         return LoginMember.of(member);
     }
 }

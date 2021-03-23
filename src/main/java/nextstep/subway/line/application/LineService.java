@@ -48,29 +48,32 @@ public class LineService {
     }
 
     public Line findLineById(LoginMember loginMember, Long id) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        Line persistLine = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
         if (!persistLine.isOwner(loginMember.getId())) {
-            throw new RuntimeException("조회할 수 없습니다.");
+            throw new LineNotFoundException();
         }
-        return lineRepository.findById(id).orElseThrow(RuntimeException::new);
+        return persistLine;
+    }
+
+    public void updateLine(LoginMember loginMember, Long id, LineRequest lineUpdateRequest) {
+        Line persistLine = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+        if (!persistLine.isOwner(loginMember.getId())) {
+            throw new LineNotFoundException();
+        }
+        persistLine.update(new Line(loginMember.getId(), lineUpdateRequest.getName(), lineUpdateRequest.getColor()));
+    }
+
+    public void deleteLineById(LoginMember loginMember, Long id) {
+        Line persistLine = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+        if (!persistLine.isOwner(loginMember.getId())) {
+            throw new LineNotFoundException();
+        }
+        lineRepository.deleteById(id);
     }
 
     public LineResponse findLineResponseById(LoginMember loginMember, Long id) {
         Line persistLine = findLineById(loginMember, id);
         return LineResponse.of(persistLine);
-    }
-
-    public void updateLine(LoginMember loginMember, Long id, LineRequest lineUpdateRequest) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-        persistLine.update(new Line(loginMember.getId(), lineUpdateRequest.getName(), lineUpdateRequest.getColor()));
-    }
-
-    public void deleteLineById(LoginMember loginMember, Long id) {
-        Line persistLine = lineRepository.findById(id).orElseThrow(RuntimeException::new);
-        if (!persistLine.isOwner(loginMember.getId())) {
-            throw new RuntimeException("삭제할 수 없습니다.");
-        }
-        lineRepository.deleteById(id);
     }
 
     public void addSection(LoginMember loginMember, Long lineId, SectionRequest request) {

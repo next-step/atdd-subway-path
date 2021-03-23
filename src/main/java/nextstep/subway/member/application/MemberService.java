@@ -1,5 +1,6 @@
 package nextstep.subway.member.application;
 
+import nextstep.subway.member.domain.LoginMember;
 import nextstep.subway.member.domain.Member;
 import nextstep.subway.member.domain.MemberRepository;
 import nextstep.subway.member.dto.MemberRequest;
@@ -19,23 +20,23 @@ public class MemberService {
         return MemberResponse.of(member);
     }
 
-    public MemberResponse findMember(Long id) {
-        Member member = memberRepository.findById(id).orElseThrow(RuntimeException::new);
+    public MemberResponse findMember(LoginMember loginMember) {
+        Member member = memberRepository.findById(loginMember.getId()).orElseThrow(MemberNotFoundException::new);
         return MemberResponse.of(member);
     }
 
-    public void updateMember(Long id, MemberRequest param) {
-        Member member = memberRepository.findById(id).orElseThrow(RuntimeException::new);
+    public void updateMember(LoginMember loginMember, MemberRequest param) {
+        Member member = memberRepository.findById(loginMember.getId()).orElseThrow(MemberNotFoundException::new);
         member.update(param.toMember());
     }
 
-    public void deleteMember(Long id) {
-        memberRepository.deleteById(id);
+    public void deleteMember(LoginMember loginMember) {
+        memberRepository.deleteById(loginMember.getId());
     }
 
     public void checkValidation(String email) {
         memberRepository.findByEmail(email).ifPresent(it -> {
-            throw new AlreadyExistEmail("이미 존재하는 이메일 입니다.");
+            throw new AlreadyExistEmailException();
         });
     }
 }
