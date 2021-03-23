@@ -36,26 +36,28 @@ public class StationService {
     }
 
     public void updateStation(LoginMember loginMember, Long id, StationRequest stationRequest) {
-        Station persistStation = stationRepository.findById(id).orElseThrow(StationNotFoundException::new);
-        if (!persistStation.isOwner(loginMember.getId())) {
-            throw new StationNotFoundException();
-        }
-        persistStation.update(new Station(loginMember.getId(), stationRequest.getName()));
+        Station station = findMyStationById(loginMember, id);
+        station.update(new Station(loginMember.getId(), stationRequest.getName()));
     }
 
     public void deleteStationById(LoginMember loginMember, Long id) {
-        Station persistStation = stationRepository.findById(id).orElseThrow(StationNotFoundException::new);
-        if (!persistStation.isOwner(loginMember.getId())) {
-            throw new StationNotFoundException();
-        }
-        stationRepository.deleteById(id);
+        Station station = findMyStationById(loginMember, id);
+        stationRepository.delete(station);
     }
 
-    public Station findStationById(LoginMember loginMember, Long id) {
-        Station persistStation = stationRepository.findById(id).orElseThrow(StationNotFoundException::new);
-        if (!persistStation.isOwner(loginMember.getId())) {
+    public Station findMyStationById(LoginMember loginMember, Long id) {
+        Station station = findStationById(id);
+        checkOwner(loginMember, station);
+        return station;
+    }
+
+    private Station findStationById(Long id) {
+        return stationRepository.findById(id).orElseThrow(StationNotFoundException::new);
+    }
+
+    private void checkOwner(LoginMember loginMember, Station station) {
+        if (!station.isOwner(loginMember.getId())) {
             throw new StationNotFoundException();
         }
-        return persistStation;
     }
 }

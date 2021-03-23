@@ -45,6 +45,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성됨(response);
     }
 
+    @DisplayName("존재하지 않는 역으로 지하철 노선을 생성한다.")
+    @Test
+    void createLineWithNotExistedStation() {
+        // given
+        LineRequest otherLineRequest = new LineRequest("신분당선", "bg-red-600", 100L, 광교역.getId(), 10, 10);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(로그인_사용자, otherLineRequest);
+
+        // then
+        지하철_노선_생성_실패됨(response);
+    }
+
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
@@ -120,6 +133,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.header("Location")).isNotBlank();
     }
 
+    public void 지하철_노선_생성_실패됨(ExtractableResponse response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     public void 지하철_노선_목록_응답됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -147,9 +164,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     public void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    public void 지하철_노선_생성_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

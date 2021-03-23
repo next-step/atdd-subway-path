@@ -1,11 +1,13 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.auth.domain.AuthenticationPrincipal;
+import nextstep.subway.line.application.LineNotFoundException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.member.domain.LoginMember;
+import nextstep.subway.station.application.StationNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,7 +65,17 @@ public class LineController {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
+    public ResponseEntity handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().body("이미 존재하는 이름 입니다.");
+    }
+
+    @ExceptionHandler(StationNotFoundException.class)
+    public ResponseEntity<String> handleStationNotFoundException(StationNotFoundException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(LineNotFoundException.class)
+    public ResponseEntity<String> handleLineNotFoundException(LineNotFoundException e) {
+        return ResponseEntity.notFound().build();
     }
 }

@@ -1,6 +1,7 @@
 package nextstep.subway.member.ui;
 
 import nextstep.subway.auth.domain.AuthenticationPrincipal;
+import nextstep.subway.member.application.MemberNotFoundException;
 import nextstep.subway.member.application.MemberService;
 import nextstep.subway.member.domain.LoginMember;
 import nextstep.subway.member.dto.MemberRequest;
@@ -50,8 +51,13 @@ public class MemberController {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
+    public ResponseEntity handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().body("이미 존재하는 이메일 입니다.");
+    }
+
+    @ExceptionHandler(MemberNotFoundException.class)
+    public ResponseEntity<String> handleMemberNotFoundException(MemberNotFoundException e) {
+        return ResponseEntity.notFound().build();
     }
 }
 

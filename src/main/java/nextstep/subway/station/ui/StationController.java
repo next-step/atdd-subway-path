@@ -2,6 +2,7 @@ package nextstep.subway.station.ui;
 
 import nextstep.subway.auth.domain.AuthenticationPrincipal;
 import nextstep.subway.member.domain.LoginMember;
+import nextstep.subway.station.application.StationNotFoundException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
@@ -45,7 +46,12 @@ public class StationController {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
+    public ResponseEntity handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().body("이미 존재하는 이름 입니다.");
+    }
+
+    @ExceptionHandler(StationNotFoundException.class)
+    public ResponseEntity<String> handleStationNotFoundException() {
+        return ResponseEntity.notFound().build();
     }
 }

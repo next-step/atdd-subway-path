@@ -31,7 +31,11 @@ public class MemberService {
     }
 
     public void deleteMember(LoginMember loginMember) {
-        memberRepository.deleteById(loginMember.getId());
+        try {
+            memberRepository.deleteById(loginMember.getId());
+        } catch (IllegalArgumentException e) {
+            throw new MemberNotFoundException();
+        }
     }
 
     public void checkValidation(String email) {
