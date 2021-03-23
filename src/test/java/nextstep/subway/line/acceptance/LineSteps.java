@@ -107,4 +107,23 @@ public class LineSteps {
                 log().all().
                 extract();
     }
+
+    public static LineResponse 지하철_노선_등록되어_있음(String lineName, String color, Long upStationId, Long downStationId, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", lineName);
+        params.put("color", color);
+        params.put("upStationId", upStationId+"");
+        params.put("downStationId", downStationId+"");
+        params.put("distance", distance+"");
+
+        return RestAssured.given().log().all().
+                contentType(MediaType.APPLICATION_JSON_VALUE).
+                body(params).
+                when().
+                post("/lines").
+                then().
+                log().all().
+                extract().as(LineResponse.class);
+    }
+
 }
