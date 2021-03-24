@@ -13,7 +13,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class SectionsTest extends SectionsDomainBuilder{
+public class SectionsTest {
 
     private Line line;
     private Station 신길역;
@@ -199,14 +198,14 @@ public class SectionsTest extends SectionsDomainBuilder{
 
     /**
      *  기존 : 영등포역 --10--> 신길역 --7--> 대방역 --3--> 노량진역 --5--> 용산역
-     *  신규 : 영등포역 --10--> 신길역 --10--> 노량진역 --8--> 용산역
+     *  신규 : 영등포역 --10--> 신길역 -------10--------> 노량진역 --8--> 용산역
      **/
     @DisplayName("구간이 4개일 경우, 상/하행 종점이 아닌역을 제거한다.")
     @ParameterizedTest
     @CsvSource(value = {"10:7:3:5"}, delimiter = ':')
     public void removeBetweenStation(int distance1, int distance2, int distance3, int distance4) {
         //Given
-        Sections sections = build(Arrays.asList(distance1,distance2,distance3,distance4), 영등포역, 신길역, 대방역, 노량진역, 용산역);
+        Sections sections = SectionsDomainBuilder.sectionsBuild(Arrays.asList(distance1,distance2,distance3,distance4), 영등포역, 신길역, 대방역, 노량진역, 용산역);
 
         //When
         sections.removeSection(대방역.getId());
@@ -260,7 +259,7 @@ public class SectionsTest extends SectionsDomainBuilder{
     @CsvSource(value = {"10:7"}, delimiter = ':')
     public void removeStartStation(int distance1, int distance2) {
         //Given
-        Sections sections = build(Arrays.asList(distance1,distance2), 영등포역, 신길역, 대방역);
+        Sections sections = SectionsDomainBuilder.sectionsBuild(Arrays.asList(distance1,distance2), 영등포역, 신길역, 대방역);
 
         //When
         sections.removeSection(영등포역.getId());
