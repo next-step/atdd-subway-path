@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         lineCreateParams.put("name", "신분당선");
         lineCreateParams.put("color", "bg-red-600");
         lineCreateParams.put("upStationId", 강남역.getId() + "");
-        lineCreateParams.put("downStationId", 양재역.getId() + "");
+        lineCreateParams.put("downStationId", 정자역.getId() + "");
         lineCreateParams.put("distance", 10 + "");
         신분당선 = 지하철_노선_등록되어_있음(lineCreateParams).as(LineResponse.class);
     }
@@ -51,7 +52,19 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSection() {
         // when
-        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
+        지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 정자역, 6);
+        
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_노선에_지하철역_등록됨(response);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 정자역));
+    }
+
+    @DisplayName("기존 구간 사이에 구간 추가")
+    @Test
+    void addSectionBetweenExistSection() {
+        // when
+        지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 양재역, 3);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
@@ -59,9 +72,41 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 양재역, 정자역));
     }
 
+    @DisplayName("상행 종점 앞에 구간 추가")
+    @Test
+    void addSectionBeforeUpStation() {
+        // when
+        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 강남역, 30);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_노선에_지하철역_등록됨(response);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(양재역, 강남역, 정자역));
+    }
+
+    @DisplayName("기존 구간 사이에 구간 추가시, 거리가 기존 구간의 거리보다 같거나 크면 에러")
+    @Test
+    void addSectionBeforeUpStationWithOverDistance() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 양재역, 100);
+
+        // then
+        지하철_노선에_지하철역_등록_실패됨(response);
+    }
+
+    @DisplayName("노선에 구간 추가 시, 새로운 구간의 상행/하행역이 모두 포함되어있지 않으면 에러")
+    @Test
+    void addSectionNotExistUpDownStation() {
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 광교역, 30);
+
+        // then
+        지하철_노선에_지하철역_등록_실패됨(response);
+    }
+
     @DisplayName("지하철 노선에 이미 포함된 역을 구간으로 등록한다.")
     @Test
-    void addLineSectionAlreadyIncluded() {// given
+    void addLineSectionAlreadyIncluded() {
+        // given
         지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
 
         // when
@@ -75,15 +120,15 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeLineSection() {
         // given
-        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
+        지하철_노선에_지하철역_등록_요청(신분당선, 정자역, 광교역, 6);
 
         // when
-        ExtractableResponse<Response> removeResponse = 지하철_노선에_지하철역_제외_요청(신분당선, 정자역);
+        ExtractableResponse<Response> removeResponse = 지하철_노선에_지하철역_제외_요청(신분당선, 광교역);
 
         // then
         지하철_노선에_지하철역_제외됨(removeResponse);
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 양재역));
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 정자역));
     }
 
     @DisplayName("지하철 노선에 구간이 하나일 때 지하철역을 제외한다.")
@@ -107,11 +152,11 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     public static void 지하철_노선에_지하철역_순서_정렬됨(ExtractableResponse<Response> response, List<StationResponse> expectedStations) {
         LineResponse line = response.as(LineResponse.class);
         List<Long> stationIds = line.getStations().stream()
-                .map(it -> it.getId())
+                .map(StationResponse::getId)
                 .collect(Collectors.toList());
 
         List<Long> expectedStationIds = expectedStations.stream()
-                .map(it -> it.getId())
+                .map(StationResponse::getId)
                 .collect(Collectors.toList());
 
         assertThat(stationIds).containsExactlyElementsOf(expectedStationIds);
@@ -124,4 +169,5 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     public static void 지하철_노선에_지하철역_제외_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
+
 }
