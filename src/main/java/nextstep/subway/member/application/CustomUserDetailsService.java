@@ -15,7 +15,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     public LoginMember loadUserByUsername(String email) {
-        Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
+        Member member = memberRepository.findByEmail(email).orElseThrow(LoginException::new);
         return LoginMember.of(member);
     }
 }

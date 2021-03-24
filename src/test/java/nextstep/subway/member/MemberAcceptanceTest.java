@@ -46,6 +46,15 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         이메일_사용가능함(response);
     }
 
+    @DisplayName("잘못된 비밀번호로 로그인을 한다.")
+    @Test
+    void loginWithWrongPassword() {
+        ExtractableResponse<Response> response = 로그인_요청(EMAIL, PASSWORD + 123);
+
+        로그인_실패됨(response);
+
+    }
+
     @DisplayName("나의 정보를 관리한다.")
     @Test
     void manageMyInfo() {

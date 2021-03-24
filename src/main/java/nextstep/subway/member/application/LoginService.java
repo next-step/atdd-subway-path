@@ -22,7 +22,7 @@ public class LoginService {
     public TokenResponse login(TokenRequest request) {
         LoginMember loginMember = customUserDetailsService.loadUserByUsername(request.getEmail());
         if (!loginMember.checkPassword(request.getPassword())) {
-            throw new LoginException("비밀번호를 확인해주세요.");
+            throw new LoginException();
         }
 
         try {
@@ -30,9 +30,8 @@ public class LoginService {
             String token = jwtTokenProvider.createToken(payload);
             return new TokenResponse(token);
         } catch (JsonProcessingException e) {
-            throw new LoginException("토큰 생성을 실패하였습니다.");
+            throw new RuntimeException("토큰 생성을 실패하였습니다.");
         }
-
     }
 }
 
