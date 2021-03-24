@@ -117,7 +117,39 @@ public class Line extends BaseEntity {
                 .collect(Collectors.toList());
     }
 
+    public void addSection(Station upStation, Station downStation, int distance) {
+        if (sections.size() == 0) {
+            sections.add(new Section(this, upStation, downStation, distance));
+            return;
+        }
+
+        boolean isNotValidUpStation = findDownStation() != upStation;
+        if (isNotValidUpStation) {
+            throw new RuntimeException("상행역은 하행 종점역이어야 합니다.");
+        }
+
+        boolean isDownStationExisted = getStations().stream().anyMatch(it -> it == downStation);
+        if (isDownStationExisted) {
+            throw new RuntimeException("하행역이 이미 등록되어 있습니다.");
+        }
+
+        sections.add(new Section(this, upStation, downStation, distance));
+    }
 
 
+    public void removeSection(Station station) {
+        if (sections.size() <= 1) {
+            throw new RuntimeException("구간이 1개 이하일 경우 삭제할 수 없습니다.");
+        }
 
+        Station downStation = findDownStation();
+        if (downStation != station) {
+            throw new RuntimeException("하행 종점역만 삭제가 가능합니다.");
+        }
+
+        sections.stream()
+                .filter(section -> section.getDownStation() == downStation)
+                .findFirst()
+                .ifPresent(section -> sections.remove(section));
+    }
 }
