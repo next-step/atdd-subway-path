@@ -36,7 +36,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         양재역 = 지하철역_등록되어_있음("양재역").as(StationResponse.class);
         교대역 = 지하철역_등록되어_있음("교대역").as(StationResponse.class);
         남부터미널역 = 지하철역_등록되어_있음("남부터미널역").as(StationResponse.class);
-        잠실역 = 지하철역_등록되어_있음("천호역").as(StationResponse.class);
+        잠실역 = 지하철역_등록되어_있음("잠실역").as(StationResponse.class);
         천호역 = 지하철역_등록되어_있음("천호역").as(StationResponse.class);
 
         신분당선 = 지하철_노선_등록되어_있음(new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 양재역.getId(), 10)).as(LineResponse.class);
@@ -51,37 +51,16 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void getShortestPath(){
         // when
-        ExtractableResponse<Response> response = 최단거리_조회_요청(강남역, 남부터미널역);
+        ExtractableResponse<Response> response = 최단거리_조회_요청(강남역.getId(), 남부터미널역.getId());
         // then
         최단거리_조회됨(response, 12);
-    }
-
-    @DisplayName("[예외처리] 출발역과 도착역이 같은 경우")
-    @Test
-    void sameSourceAndTarget(){
-        // when
-        ExtractableResponse<Response> response = 최단거리_조회_요청(강남역, 강남역);
-        // then
-        최단거리_조회_실패됨(response);
-    }
-
-    @DisplayName("[예외처리] 출발역과 도착역이 연결이 되어 있지 않은 경우")
-    @Test
-    void unconnectedSourceAndTarget(){
-        // when
-        ExtractableResponse<Response> response = 최단거리_조회_요청(강남역, 천호역);
-        // then
-        최단거리_조회_실패됨(response);
     }
 
     @DisplayName("[예외처리] 존재하지 않은 출발역이나 도착역을 조회 할 경우")
     @Test
     void NotExistsSourceOrTarget(){
-        // given
-        StationResponse 미개통역 = 지하철역_등록되어_있음("미개통역").as(StationResponse.class);
-
         // when
-        ExtractableResponse<Response> response = 최단거리_조회_요청(강남역, 미개통역);
+        ExtractableResponse<Response> response = 최단거리_조회_요청(강남역.getId(), 100L);
 
         // then
         최단거리_조회_실패됨(response);

@@ -100,8 +100,8 @@ public class LineSteps {
                 extract();
     }
 
-    public static void 지하철_노선에_지하철역_등록되어_있음(LineResponse 신분당선, StationResponse 양재역, StationResponse 정자역, int distance) {
-        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
+    public static void 지하철_노선에_지하철역_등록되어_있음(LineResponse lineResponse, StationResponse upStationResponse, StationResponse downStationResponse, int distance) {
+        지하철_노선에_지하철역_등록_요청(lineResponse, upStationResponse, downStationResponse, distance);
     }
 
     public static ExtractableResponse<Response> 지하철_노선에_지하철역_제외_요청(LineResponse line, StationResponse station) {
