@@ -95,6 +95,21 @@ public class LineTest {
         지하철_노선에_지하철역_순서_정렬됨(신분당선.getStations(), Arrays.asList(강남역, 양재역));
     }
 
+    @DisplayName("구간 중간에 위치한 지하철 역을 삭제한다.")
+    @Test
+    void removeSectionInMiddle() {
+        // given
+        신분당선.addSection(강남역, 양재역, 100);
+        신분당선.addSection(양재역, 판교역, 100);
+
+        // when
+        신분당선.removeSection(양재역);
+
+        // then
+        지하철_노선에_지하철역_순서_정렬됨(신분당선.getStations(), Arrays.asList(강남역, 판교역));
+    }
+
+
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
     @Test
     void removeSectionNotEndOfList() {
