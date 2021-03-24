@@ -5,6 +5,7 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -65,4 +66,58 @@ public class Line extends BaseEntity {
     public int hashCode() {
         return Objects.hash(id, name, color);
     }
+
+    public List<Station> getStations() {
+        List<Station> allDownStations = getAllDownStations();
+        allDownStations.add(0, findUpStation());
+        return allDownStations;
+    }
+
+    private Station findUpStation() {
+        Station downStation = sections.get(0).getUpStation();
+        while (downStation != null) {
+            Station finalDownStation = downStation;
+            Optional<Section> nextLineStation = sections.stream()
+                    .filter(it -> it.getDownStation() == finalDownStation)
+                    .findFirst();
+            if (!nextLineStation.isPresent()) {
+                break;
+            }
+            downStation = nextLineStation.get().getUpStation();
+        }
+
+        return downStation;
+    }
+
+    private Station findDownStation() {
+        Station upStation = sections.get(0).getDownStation();
+        while (upStation != null) {
+            Station finalUpStation = upStation;
+            Optional<Section> nextLineStation = sections.stream()
+                    .filter(it -> it.getUpStation() == finalUpStation)
+                    .findFirst();
+            if (!nextLineStation.isPresent()) {
+                break;
+            }
+            upStation = nextLineStation.get().getDownStation();
+        }
+
+        return upStation;
+    }
+
+    private List<Station> getAllUpStations() {
+        return sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+    }
+
+    private List<Station> getAllDownStations() {
+        return sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+    }
+
+
+
+
 }
