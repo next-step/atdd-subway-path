@@ -68,9 +68,28 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        List<Station> allDownStations = getAllDownStations();
-        allDownStations.add(0, findUpStation());
-        return allDownStations;
+
+        if (sections.isEmpty()) {
+            return Arrays.asList();
+        }
+
+        List<Station> stations = new ArrayList<>();
+        Station downStation = findUpStation();
+        stations.add(downStation);
+
+        while (downStation != null) {
+            Station finalDownStation = downStation;
+            Optional<Section> nextLineStation = sections.stream()
+                    .filter(it -> it.getUpStation() == finalDownStation)
+                    .findFirst();
+            if (!nextLineStation.isPresent()) {
+                break;
+            }
+            downStation = nextLineStation.get().getDownStation();
+            stations.add(downStation);
+        }
+
+        return stations;
     }
 
     private Station findUpStation() {
@@ -118,14 +137,20 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
+
+        Section section = new Section(this, upStation, downStation, distance);
+
         if (sections.size() == 0) {
-            sections.add(new Section(this, upStation, downStation, distance));
+            sections.add(section);
             return;
         }
 
-        boolean isNotValidUpStation = findDownStation() != upStation;
-        if (isNotValidUpStation) {
-            throw new RuntimeException("상행역은 하행 종점역이어야 합니다.");
+        Optional<Section> sameUpStationSection = sections.stream()
+                .filter(it -> it.getUpStation() == upStation)
+                .findFirst();
+        if (sameUpStationSection.isPresent()) {
+            addSectionBetweenExist(sameUpStationSection.get(), section);
+            return;
         }
 
         boolean isDownStationExisted = getStations().stream().anyMatch(it -> it == downStation);
@@ -133,9 +158,27 @@ public class Line extends BaseEntity {
             throw new RuntimeException("하행역이 이미 등록되어 있습니다.");
         }
 
-        sections.add(new Section(this, upStation, downStation, distance));
+        sections.add(section);
     }
 
+    private void addSectionBetweenExist(Section existSection, Section newSection) {
+        int existSectionDistance = existSection.getDistance();
+        int newSectionDistance = newSection.getDistance();
+        if (newSectionDistance >= existSectionDistance) {
+            throw new RuntimeException("새로운 구간의 길이는 기존 구간의 길이보다 클 수 없습니다.");
+        }
+
+        Section newFirstSection = new Section(this, existSection.getUpStation(), newSection.getUpStation(), newSectionDistance);
+        Section newSecondSection = new Section(this
+                , newSection.getDownStation()
+                , existSection.getDownStation()
+                , existSectionDistance - newSectionDistance);
+
+        sections.remove(existSection);
+
+
+
+    }
 
     public void removeSection(Station station) {
         if (sections.size() <= 1) {
