@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import javassist.NotFoundException;
 import nextstep.subway.station.domain.Station;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class LineTest {
 
@@ -53,18 +55,27 @@ public class LineTest {
         신분당선.addSection(강남역, 양재역, 100);
 
         // then
-        Assertions.assertThat(신분당선.getSections().size()).isEqualTo(1);
         지하철_노선에_지하철역_순서_정렬됨(신분당선.getStations(), Arrays.asList(강남역, 양재역));
     }
 
     @DisplayName("목록 중간에 추가할 경우 에러 발생")
     @Test
     void addSectionInMiddle() {
+        // given
+
+
     }
 
     @DisplayName("이미 존재하는 역 추가 시 에러 발생")
     @Test
     void addSectionAlreadyIncluded() {
+        Assertions.assertThatThrownBy(() -> {
+            // given
+            신분당선.addSection(강남역, 양재역, 100);
+
+            // when
+            신분당선.addSection(강남역, 판교역, 100);
+        }).isInstanceOf(RuntimeException.class);
     }
 
     @Test
