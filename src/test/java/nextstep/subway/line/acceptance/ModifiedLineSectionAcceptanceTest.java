@@ -63,11 +63,8 @@ public class ModifiedLineSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존 구간 사이에 구간 추가")
     @Test
     void addSectionBetweenExistSection() {
-        // given
-        지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 정자역, 100);
-
         // when
-        지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 양재역, 30);
+        지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 양재역, 3);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);

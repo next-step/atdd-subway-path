@@ -145,17 +145,24 @@ public class Line extends BaseEntity {
             return;
         }
 
+        boolean existUpStation = getStations().stream().anyMatch(it -> it == upStation);
+        boolean existDownStation = getStations().stream().anyMatch(it -> it == downStation);
+
+        if (!existUpStation && !existDownStation) {
+            throw new RuntimeException("노선에 상행역 또는 하행역이 등록되어 있어야 등록할 수 있습니다.");
+        }
+
+        boolean sameUpDownStation = sections.stream().anyMatch(it -> it.getUpStation() == upStation && it.getDownStation() == downStation);
+        if (sameUpDownStation) {
+            throw new RuntimeException("기존 구간과 같은 상행역 / 하행역을 가지는 노선은 등록할 수 없습니다.");
+        }
+
         Optional<Section> sameUpStationSection = sections.stream()
                 .filter(it -> it.getUpStation() == upStation)
                 .findFirst();
         if (sameUpStationSection.isPresent()) {
             addSectionBetweenExist(sameUpStationSection.get(), section);
             return;
-        }
-
-        boolean isDownStationExisted = getStations().stream().anyMatch(it -> it == downStation);
-        if (isDownStationExisted) {
-            throw new RuntimeException("하행역이 이미 등록되어 있습니다.");
         }
 
         sections.add(section);
@@ -168,16 +175,15 @@ public class Line extends BaseEntity {
             throw new RuntimeException("새로운 구간의 길이는 기존 구간의 길이보다 클 수 없습니다.");
         }
 
-        Section newFirstSection = new Section(this, existSection.getUpStation(), newSection.getUpStation(), newSectionDistance);
+        Section newFirstSection = new Section(this, existSection.getUpStation(), newSection.getDownStation(), newSectionDistance);
         Section newSecondSection = new Section(this
                 , newSection.getDownStation()
                 , existSection.getDownStation()
                 , existSectionDistance - newSectionDistance);
 
         sections.remove(existSection);
-
-
-
+        sections.add(newFirstSection);
+        sections.add(newSecondSection);
     }
 
     public void removeSection(Station station) {
