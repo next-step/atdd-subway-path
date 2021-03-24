@@ -1,6 +1,7 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.auth.domain.AuthenticationPrincipal;
+import nextstep.subway.line.application.InvalidSectionFoundException;
 import nextstep.subway.line.application.LineNotFoundException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
@@ -77,5 +78,10 @@ public class LineController {
     @ExceptionHandler(LineNotFoundException.class)
     public ResponseEntity<String> handleLineNotFoundException(LineNotFoundException e) {
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(InvalidSectionFoundException.class)
+    public ResponseEntity<String> handleInvalidSectionFoundException(InvalidSectionFoundException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

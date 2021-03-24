@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.application.InvalidSectionFoundException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
@@ -102,12 +103,12 @@ public class Line extends BaseEntity {
         boolean isDownStationExisted = getStations().stream().anyMatch(it -> it == downStation);
 
         if (isUpStationExisted && isDownStationExisted) {
-            throw new RuntimeException("이미 등록된 구간 입니다.");
+            throw new InvalidSectionFoundException("이미 등록된 구간 입니다.");
         }
 
         if (!getSections().isEmpty() && getStations().stream().noneMatch(it -> it == upStation) &&
                 getStations().stream().noneMatch(it -> it == downStation)) {
-            throw new RuntimeException("등록할 수 없는 구간 입니다.");
+            throw new InvalidSectionFoundException("등록할 수 없는 구간 입니다.");
         }
 
         if (getSections().isEmpty()) {
@@ -136,7 +137,7 @@ public class Line extends BaseEntity {
 
     public void removeSection(Station station) {
         if (sections.size() <= 1) {
-            throw new RuntimeException();
+            throw new InvalidSectionFoundException("제거할 구간이 없습니다.");
         }
 
         Optional<Section> upLineStation = sections.stream()
