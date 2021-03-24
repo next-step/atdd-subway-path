@@ -75,16 +75,13 @@ public class ModifiedLineSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("상행 종점 앞에 구간 추가")
     @Test
     void addSectionBeforeUpStation() {
-        // given
-        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 100);
-
         // when
-        지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 양재역, 30);
+        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 강남역, 30);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         지하철_노선에_지하철역_등록됨(response);
-        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 양재역, 정자역));
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(양재역, 강남역, 정자역));
     }
 
     @DisplayName("기존 구간 사이에 구간 추가시, 거리가 기존 구간의 거리보다 같거나 크면 에러")
