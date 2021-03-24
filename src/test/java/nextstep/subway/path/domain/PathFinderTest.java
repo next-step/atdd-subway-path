@@ -50,6 +50,9 @@ public class PathFinderTest {
         대방역 = new Station(7L,"대방역");
     }
 
+    /**
+     * 교대역 ---> 강남역 ---> 역삼역
+     */
     @DisplayName("가장 빠른 경로를 조회한다.")
     @Test
     public void createInstance(){
