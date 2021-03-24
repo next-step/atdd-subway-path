@@ -191,14 +191,44 @@ public class Line extends BaseEntity {
             throw new RuntimeException("구간이 1개 이하일 경우 삭제할 수 없습니다.");
         }
 
-        Station downStation = findDownStation();
-        if (downStation != station) {
-            throw new RuntimeException("하행 종점역만 삭제가 가능합니다.");
+        boolean existStation = getStations().stream().anyMatch(it -> it == station);
+        if (!existStation) {
+            throw new RuntimeException("존재하지 않는 역은 삭제할 수 없습니다.");
         }
 
-        sections.stream()
-                .filter(section -> section.getDownStation() == downStation)
-                .findFirst()
-                .ifPresent(section -> sections.remove(section));
+        // 종점역 제거
+        Station upStation = findUpStation();
+        Station downStation = findDownStation();
+        if (upStation == station || downStation == station) {
+            removeSectionOfEndStation(station);
+        }
+
+        // 종점이 아닌역 제거
+        removeSectionInMiddle(station);
+    }
+
+    private void removeSectionOfEndStation(Station station) {
+        sections.removeIf(section -> section.getUpStation() == station || section.getDownStation() == station);
+    }
+
+    private void removeSectionInMiddle(Station station) {
+
+        Optional<Section> frontSectionOpt = sections.stream().filter(section -> section.getDownStation() == station).findFirst();
+        Optional<Section> backSectionOpt = sections.stream().filter(section -> section.getUpStation() == station).findFirst();
+
+        if (frontSectionOpt.isPresent() && backSectionOpt.isPresent()) {
+            Section frontSection = frontSectionOpt.get();
+            Section backSection = backSectionOpt.get();
+
+            Section newSection = new Section(this
+                    , frontSection.getUpStation()
+                    , backSection.getDownStation()
+                    , frontSection.getDistance() + backSection.getDistance());
+
+            sections.remove(frontSection);
+            sections.remove(backSection);
+            sections.add(newSection);
+        }
     }
 }
+
