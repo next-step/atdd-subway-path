@@ -98,6 +98,14 @@ public class LineTest {
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
     @Test
     void removeSectionNotEndOfList() {
+        assertThatThrownBy(() -> {
+            // given
+            신분당선.addSection(강남역, 양재역, 100);
+            신분당선.addSection(양재역, 판교역, 100);
+
+            // when
+            신분당선.removeSection(양재역);
+        }).isInstanceOf(RuntimeException.class);
     }
 
     public static void 지하철_노선에_지하철역_순서_정렬됨(List<Station> stations, List<Station> expectedStations) {
