@@ -103,6 +103,43 @@ public class ModifiedLineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록_실패됨(response);
     }
 
+    @DisplayName("지하철 노선에 이미 포함된 역을 구간으로 등록한다.")
+    @Test
+    void addLineSectionAlreadyIncluded() {// given
+        지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
+
+        // then
+        지하철_노선에_지하철역_등록_실패됨(response);
+    }
+
+    @DisplayName("지하철 노선에 등록된 지하철역을 제외한다.")
+    @Test
+    void removeLineSection() {
+        // given
+        지하철_노선에_지하철역_등록_요청(신분당선, 정자역, 광교역, 6);
+
+        // when
+        ExtractableResponse<Response> removeResponse = 지하철_노선에_지하철역_제외_요청(신분당선, 광교역);
+
+        // then
+        지하철_노선에_지하철역_제외됨(removeResponse);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 정자역));
+    }
+
+    @DisplayName("지하철 노선에 구간이 하나일 때 지하철역을 제외한다.")
+    @Test
+    void removeLineSectionOnlyOneSection() {
+        // when
+        ExtractableResponse<Response> removeResponse = 지하철_노선에_지하철역_제외_요청(신분당선, 양재역);
+
+        // then
+        지하철_노선에_지하철역_제외_실패됨(removeResponse);
+    }
+
     public static void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
