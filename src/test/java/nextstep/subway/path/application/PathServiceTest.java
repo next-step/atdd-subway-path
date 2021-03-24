@@ -50,6 +50,6 @@ public class PathServiceTest {
         PathResponse response = pathService.findShortestPath(source, target);
 
         // then
-        assertThat(response.getStations().size()).isEqualTo(3);
+        assertThat(response.getStations().size()).isEqualTo(0);
     }
 }
