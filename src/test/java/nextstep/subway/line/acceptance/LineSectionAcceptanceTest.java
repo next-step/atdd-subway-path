@@ -105,7 +105,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선에 이미 포함된 역을 구간으로 등록한다.")
     @Test
-    void addLineSectionAlreadyIncluded() {// given
+    void addLineSectionAlreadyIncluded() {
+        // given
         지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 정자역, 6);
 
         // when
