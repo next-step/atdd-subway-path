@@ -58,16 +58,17 @@ public class LineTest {
         지하철_노선에_지하철역_순서_정렬됨(신분당선.getStations(), Arrays.asList(강남역, 양재역));
     }
 
-    @DisplayName("목록 중간에 추가할 경우 에러 발생")
+    @DisplayName("목록 중간에 구간 추가")
     @Test
     void addSectionInMiddle() {
-        Assertions.assertThatThrownBy(() -> {
-            // given
-            신분당선.addSection(강남역, 양재역, 100);
+        // given
+        신분당선.addSection(강남역, 양재역, 100);
 
-            // when
-            신분당선.addSection(강남역, 판교역, 100);
-        }).isInstanceOf(RuntimeException.class);
+        // when
+        신분당선.addSection(강남역, 판교역, 30);
+        
+        // then
+        지하철_노선에_지하철역_순서_정렬됨(신분당선.getStations(), Arrays.asList(강남역, 판교역, 양재역));
     }
 
     @DisplayName("이미 존재하는 역 추가 시 에러 발생")
@@ -115,7 +116,6 @@ public class LineTest {
         assertThatThrownBy(() -> {
             // given
             신분당선.addSection(강남역, 양재역, 100);
-            신분당선.addSection(양재역, 판교역, 100);
 
             // when
             신분당선.removeSection(양재역);
@@ -123,15 +123,15 @@ public class LineTest {
     }
 
     public static void 지하철_노선에_지하철역_순서_정렬됨(List<Station> stations, List<Station> expectedStations) {
-        List<Long> stationIds = stations.stream()
-                .map(Station::getId)
+        List<String> stationNames = stations.stream()
+                .map(Station::getName)
                 .collect(Collectors.toList());
 
-        List<Long> expectedStationIds = expectedStations.stream()
-                .map(Station::getId)
+        List<String> expectedStationNames = expectedStations.stream()
+                .map(Station::getName)
                 .collect(Collectors.toList());
 
-        assertThat(stationIds).containsExactlyElementsOf(expectedStationIds);
+        assertThat(stationNames).containsExactlyElementsOf(expectedStationNames);
     }
 
 }

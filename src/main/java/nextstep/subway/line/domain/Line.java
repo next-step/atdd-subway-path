@@ -152,8 +152,7 @@ public class Line extends BaseEntity {
             throw new RuntimeException("노선에 상행역 또는 하행역이 등록되어 있어야 등록할 수 있습니다.");
         }
 
-        boolean sameUpDownStation = sections.stream().anyMatch(it -> it.getUpStation() == upStation && it.getDownStation() == downStation);
-        if (sameUpDownStation) {
+        if (existUpStation && existDownStation) {
             throw new RuntimeException("기존 구간과 같은 상행역 / 하행역을 가지는 노선은 등록할 수 없습니다.");
         }
 
