@@ -87,31 +87,20 @@ public class ModifiedLineSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존 구간 사이에 구간 추가시, 거리가 기존 구간의 거리보다 같거나 크면 에러")
     @Test
     void addSectionBeforeUpStationWithOverDistance() {
-        // given
-        지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 정자역, 100);
-
         // when
-        지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 양재역, 100);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 양재역, 100);
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        지하철_노선에_지하철역_등록됨(response);
-        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 양재역, 정자역));
+        지하철_노선에_지하철역_등록_실패됨(response);
     }
 
     @DisplayName("노선에 구간 추가 시, 새로운 구간의 상행/하행역이 모두 포함되어있지 않으면 에러")
     @Test
     void addSectionNotExistUpDownStation() {
-        // given
-        지하철_노선에_지하철역_등록_요청(신분당선, 강남역, 양재역, 100);
-
-        // when
-        지하철_노선에_지하철역_등록_요청(신분당선, 정자역, 광교역, 30);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 양재역, 광교역, 30);
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        지하철_노선에_지하철역_등록됨(response);
-        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 양재역, 정자역));
+        지하철_노선에_지하철역_등록_실패됨(response);
     }
 
     public static void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
@@ -142,4 +131,5 @@ public class ModifiedLineSectionAcceptanceTest extends AcceptanceTest {
     public static void 지하철_노선에_지하철역_제외_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
+
 }
