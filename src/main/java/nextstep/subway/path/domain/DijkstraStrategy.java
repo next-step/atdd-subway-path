@@ -17,6 +17,7 @@ public class DijkstraStrategy implements PathStrategy{
 
     private WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
     private DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
+    private static int FASTEST_INDEX = 0;
 
     @Override
     public Stations getPath(Station source, Station target, Lines lines) {
@@ -27,7 +28,7 @@ public class DijkstraStrategy implements PathStrategy{
         try {
             List<Station> stations = dijkstraShortestPath.getPath(source, target).getVertexList();
             List<GraphPath> paths = new KShortestPaths(graph, stations.size()).getPaths(source, target);
-            double distance = paths.stream().mapToDouble(path -> path.getWeight()).sum();
+            double distance = paths.get(FASTEST_INDEX).getWeight();
 
             return new Stations(stations, distance);
         }catch(IllegalArgumentException e){
