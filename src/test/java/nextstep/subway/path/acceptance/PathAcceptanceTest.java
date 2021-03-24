@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import static nextstep.subway.line.acceptance.LineSteps.*;
+import static nextstep.subway.path.acceptance.PathSteps.경로_조회_요청;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
 
 @DisplayName("경로 관련 인수 테스트")
@@ -52,15 +53,18 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("최단 경로를 조회한다")
     @Test
     void findShortestPath() {
+        // given
+        int source = 1;
+        int target = 4;
+
         // when
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .params("source",1)
-                .params("target",6)
-                .when().get("/paths")
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 경로_조회_요청(source, target);
         
         // then
+        경로_조회됨(response);
+    }
+
+    private void 경로_조회됨(ExtractableResponse<Response> response) {
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }

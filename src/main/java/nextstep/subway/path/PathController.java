@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PathController {
 
     @GetMapping("/paths")
-    public ResponseEntity findShortestPath() {
+    public ResponseEntity findShortestPath(String source, String target) {
         return ResponseEntity.ok().build();
     }
 }
