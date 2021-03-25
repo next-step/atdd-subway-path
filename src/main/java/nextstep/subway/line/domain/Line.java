@@ -23,6 +23,7 @@ public class Line extends BaseEntity {
 
 
     public Line() {
+        sections = new Sections();
     }
 
     public Line(String name, String color) {
@@ -35,7 +36,7 @@ public class Line extends BaseEntity {
 
         this.name = name;
         this.color = color;
-        this.sections.add(new Section(this, upStation, downStation, distance));
+        this.sections.addSection(this, upStation, downStation, distance);
     }
 
     public void update(Line line) {
@@ -70,10 +71,6 @@ public class Line extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, color);
-    }
-
-    public List<Station> getStations() {
-        return this.sections.getStations();
     }
 
     public List<Station> getSortedStations() {

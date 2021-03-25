@@ -23,6 +23,7 @@ public class LineTest {
 
     private Line 이호선;
 
+    private final static int DEFAULT_LINE_DISTANCE = 10;
     @BeforeEach
     public void setUp() {
         // given
@@ -31,13 +32,13 @@ public class LineTest {
         시청역 = new Station(3L,"시청역");
         충정로역 = new Station(4L, "충정로역");
 
-        이호선 = new Line("이호선", "green", 을지로3가역, 시청역, 10);
+        이호선 = new Line("이호선", "green", 을지로3가역, 시청역, DEFAULT_LINE_DISTANCE);
     }
 
     @Test
     @DisplayName("역 목록을 조회")
-    void getStations() {
-        List<Station> stations = 이호선.getStations();
+    void getSortedStations() {
+        List<Station> stations = 이호선.getSortedStations();
 
         assertThat(stations.size()).isEqualTo(2);
         assertThat(stations).containsExactlyElementsOf(Arrays.asList(을지로3가역, 시청역));
@@ -51,7 +52,7 @@ public class LineTest {
 
         // then
         assertThat(이호선.getSections().size()).isEqualTo(2);
-        assertThat(이호선.getStations()).containsExactlyElementsOf(Arrays.asList(을지로3가역, 시청역, 을지로입구역));
+        assertThat(이호선.getSortedStations()).containsExactlyElementsOf(Arrays.asList(을지로3가역, 시청역, 을지로입구역));
     }
 
     @DisplayName("구간 중간에 추가할 경우 이전 distance보다 짧거나 상행역이 같으면 성공")
@@ -61,9 +62,9 @@ public class LineTest {
         이호선.addSection(을지로3가역, 을지로입구역, 5);
 
         //then
-        assertThat(이호선.getStations().size()).isEqualTo(3);
+        assertThat(이호선.getSortedStations().size()).isEqualTo(3);
         assertThat(이호선.getSections().size()).isEqualTo(2);
-        assertThat(이호선.getStations()).containsExactlyElementsOf(Arrays.asList(을지로3가역, 을지로입구역, 시청역));
+        assertThat(이호선.getSortedStations()).containsExactlyElementsOf(Arrays.asList(을지로3가역, 을지로입구역, 시청역));
         assertThat(이호선.getLineDistance()).isEqualTo(10);
     }
 
@@ -75,9 +76,9 @@ public class LineTest {
         이호선.addSection(을지로3가역, 충정로역, 2);
 
         //then
-        assertThat(이호선.getStations().size()).isEqualTo(4);
+        assertThat(이호선.getSortedStations().size()).isEqualTo(4);
         assertThat(이호선.getSections().size()).isEqualTo(3);
-        assertThat(이호선.getStations()).containsExactlyElementsOf(Arrays.asList(을지로3가역, 충정로역, 을지로입구역, 시청역));
+        assertThat(이호선.getSortedStations()).containsExactlyElementsOf(Arrays.asList(을지로3가역, 충정로역, 을지로입구역, 시청역));
         assertThat(이호선.getLineDistance()).isEqualTo(10);
     }
 
@@ -109,7 +110,7 @@ public class LineTest {
     }
 
 
-    @DisplayName("구간 삭제")
+    @DisplayName("마지막 구간 삭제시 성공")
     @Test
     void removeSection() {
         //given
@@ -125,18 +126,50 @@ public class LineTest {
 
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
     @Test
-    void removeSectionNotEndOfList() {
-        //when
-        Exception exception = assertThrows(ApplicationException.class, () -> {
-            이호선.removeSection(시청역);
-        });
-
-        //then
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains("구간은 최소하나는 등록되어있어야 합니다."));
-
+    void removeSectionWhenMinSectionSize() {
+        //when/then
         assertThatThrownBy(() -> 이호선.removeSection(시청역))
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("구간은 최소하나는 등록되어있어야 합니다.");
+    }
+
+    @DisplayName("등록되지 않은 역을 삭제시 에러 발생")
+    @Test
+    void removeSectionNotRegistered() {
+        //given
+        이호선.addSection(시청역, 을지로입구역, 10);
+
+        //when/then
+        assertThatThrownBy(() -> 이호선.removeSection(충정로역))
+                .isInstanceOf(ApplicationException.class)
+                .hasMessage("구간에 등록되어있지 않은 역입니다.");
+    }
+
+    @DisplayName("중간 역 삭제시 성공")
+    @Test
+    void removeSectionInMiddle() {
+        //given
+        이호선.addSection(시청역, 을지로입구역, 5);
+
+        //when
+        이호선.removeSection(시청역);
+
+        //then
+        assertThat(이호선.getLineDistance()).isEqualTo(DEFAULT_LINE_DISTANCE+5);
+        assertThat(이호선.getSections().size()).isEqualTo(1);
+    }
+
+    @DisplayName("상행 역 삭제시 성공")
+    @Test
+    void removeSectionInUpStation() {
+        //given
+        이호선.addSection(시청역, 을지로입구역, 5);
+
+        //when
+        이호선.removeSection(을지로3가역);
+
+        //then
+        assertThat(이호선.getLineDistance()).isEqualTo(5);
+        assertThat(이호선.getSections().size()).isEqualTo(1);
     }
 }

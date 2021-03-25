@@ -24,8 +24,7 @@ public class Section implements Comparable<Section>{
 
     private int distance;
 
-    public Section() {
-    }
+    public Section() {}
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
@@ -55,15 +54,16 @@ public class Section implements Comparable<Section>{
     }
 
     public boolean isSameUpStation(Section section) {
-        return this.getUpStation().getId() == section.getUpStation().getId();
+        return this.getUpStation().equals(section.getUpStation());
     }
 
-    public boolean isAddableInMiddle(Section section) {
-        return isSameUpStation(section) && isLongerThan(section.getDistance());
+    public boolean isAddable(Section section) {
+        return this.distance > section.getDistance();
     }
 
-    private boolean isLongerThan(int distance) {
-        return this.distance > distance;
+    public void extendSection(Station downStation, int distance) {
+        this.downStation = downStation;
+        this.distance += distance;
     }
 
     @Override

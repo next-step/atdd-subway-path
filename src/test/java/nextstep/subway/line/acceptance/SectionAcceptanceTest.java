@@ -97,12 +97,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionWithLongerDistance(){
         //when
-        지하철_노선에_지하철역_등록_요청(이호선, 을지로3가역, 을지로입구역, DEFAULT_LINE_DISTANCE+2);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(이호선, 을지로3가역, 을지로입구역, DEFAULT_LINE_DISTANCE + 2);
 
         //then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(이호선);
-        지하철_노선_조회시_지하철역_등록_되지_않은_상태(response, Arrays.asList(을지로3가역, 시청역));
+        지하철_노선에_지하철역_등록_실패됨(response);
     }
+
 
     @DisplayName("상행역과 하행역이 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test
@@ -144,6 +144,32 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록_실패됨(response);
     }
 
+    @DisplayName("마지막 구간 삭제시 정상 삭제")
+    @Test
+    void removeLastSection() {
+        //given
+        지하철_노선에_지하철역_등록_요청(이호선, 시청역, 충정로역, DEFAULT_SECTION_DISTANCE);
+
+        //when
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(이호선.getId(), 충정로역.getId());
+
+        //then
+        지하철_노선_삭제됨(response);
+    }
+
+    @DisplayName("지하철 중간 노선을 제거한다.")
+    @Test
+    void removeSectionInMiddle() {
+        //given
+        지하철_노선에_지하철역_등록_요청(이호선, 시청역, 충정로역, DEFAULT_SECTION_DISTANCE);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_제거_요청(이호선.getId(), 시청역.getId());
+
+        // then
+        지하철_노선_삭제됨(response);
+    }
+
     private Map<String, Object> createLineParams(String lineName, String color, Long upStationId, Long downStationId, int distance) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", lineName);
@@ -157,6 +183,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     public static void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    public void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     public static void 지하철_노선에_지하철역_등록_실패됨(ExtractableResponse<Response> response) {
@@ -190,7 +220,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     public static void 지하철_노선에_지하철역_제외됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     public static void 지하철_노선에_지하철역_제외_실패됨(ExtractableResponse<Response> response) {

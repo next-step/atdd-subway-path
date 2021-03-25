@@ -8,7 +8,6 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,6 +41,7 @@ public class LineServiceMockTest {
 
     private Line 이호선;
 
+    private final static int 기본_구간_길이 = 50;
     @BeforeEach
     void setUp() {
         lineService = new LineService(lineRepository, stationService);
@@ -65,7 +65,7 @@ public class LineServiceMockTest {
     }
 
     void 이호선_생성() {
-        이호선 = new Line("2호선", "green", 을지로3가역, 시청역, 50);
+        이호선 = new Line("2호선", "green", 을지로3가역, 시청역, 기본_구간_길이);
         ReflectionTestUtils.setField(이호선, "id", 1L);
     }
 
@@ -146,7 +146,7 @@ public class LineServiceMockTest {
                         .hasMessage("구간은 최소하나는 등록되어있어야 합니다.");
     }
 
-    @DisplayName("지하철 삭제 시 하행종점이 아닐 때 오류")
+    @DisplayName("지하철 삭제 시 하행종점이 아닐 때 정상 삭제")
     @Test
     void removeSectionWithUpstation() {
         // given
@@ -155,9 +155,10 @@ public class LineServiceMockTest {
         이호선.addSection(시청역, 충정로역,9);
 
         // when
-        assertThatThrownBy(() -> lineService.removeSection(이호선.getId(), 시청역.getId()))
-                .isInstanceOf(ApplicationException.class)
-                .hasMessage("하행 종점역만 삭제 가능합니다.");
+        lineService.removeSection(이호선.getId(), 시청역.getId());
+
+        assertThat(이호선.getLineDistance()).isEqualTo(기본_구간_길이+9);
+        assertThat(이호선.getSections().size()).isEqualTo(1);
     }
 
     @DisplayName("지하철 삭제")
@@ -171,7 +172,7 @@ public class LineServiceMockTest {
         // when
         lineService.removeSection(이호선.getId(), 시청역.getId());
 
-        assertThat(lineService.findLineById(이호선.getId()).getStations())
+        assertThat(lineService.findLineById(이호선.getId()).getSortedStations())
                 .extracting(Station::getName)
                 .containsExactly(을지로입구역.getName(), 을지로3가역.getName());
     }

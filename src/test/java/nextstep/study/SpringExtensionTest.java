@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 public class SpringExtensionTest {
     @MockBean
     private LineRepository lineRepository;
+
     @MockBean
     private StationService stationService;
 

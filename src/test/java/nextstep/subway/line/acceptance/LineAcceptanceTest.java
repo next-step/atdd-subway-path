@@ -106,7 +106,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_수정됨(response);
     }
 
-    @DisplayName("지하철 노선을 제거한다.")
+    @DisplayName("지하철 마지막 노선을 제거한다.")
     @Test
     void deleteLine() {
         // given

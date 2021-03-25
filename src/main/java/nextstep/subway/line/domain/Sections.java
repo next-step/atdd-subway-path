@@ -8,77 +8,79 @@ import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Sections {
 
-    private final static int MINIMUM_SECTION_SIZE = 1 ;
+    private final static int MINIMUM_SECTION_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Section> sections = new ArrayList<>();
 
-    public List<Station> getStations() {
-        /*
-        return this.sections.stream()
-                .sorted()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                .distinct()
-                .collect(Collectors.toList());
-         */
-        List<Station> stations = new ArrayList<>();
-
-        if (isSectionNotEmpty()) {
-            stations.add(this.sections.get(0).getUpStation());
-
-            this.sections.forEach(section -> {
-                stations.add(section.getDownStation());
-            });
-        }
-
-        return stations;
-    }
-
     public void removeSection(Station station) {
+
+        if (!hasStations(station)) {
+            throw new ApplicationException(ApplicationType.NOT_REGISTERED_STATION_ON_LINE);
+        }
+
         if (sections.size() <= MINIMUM_SECTION_SIZE) {
-            throw  new ApplicationException(ApplicationType.LINE_MUST_BE_HAVE_ONE_SECTION_AT_LEAST);
+            throw new ApplicationException(ApplicationType.LINE_MUST_BE_HAVE_ONE_SECTION_AT_LEAST);
         }
 
-        if (!isLastDownStationContains(station)) {
-            throw new ApplicationException(ApplicationType.ONLY_DOWN_STATIONS_CAN_BE_DELETED);
+        //첫번째역 삭제시
+        if (station.equals(getFirstStation())) {
+            this.sections.stream()
+                    .filter(it -> it.getUpStation().equals(station))
+                    .findFirst()
+                    .ifPresent(it -> this.sections.remove(it));
+
+            return;
         }
 
-        this.sections.stream()
-                .filter(it -> it.getDownStation().getId() == station.getId())
-                .findFirst()
-                .ifPresent(it -> this.sections.remove(it));
-    }
+        //마지막역 삭제시
+        if (station.equals(getLastStation())) {
+            this.sections.stream()
+                    .filter(it -> it.getDownStation().equals(station))
+                    .findFirst()
+                    .ifPresent(it -> this.sections.remove(it));
 
-    private boolean isSectionNotEmpty() {
-        return !this.sections.isEmpty();
+            return;
+        }
+
+        //중간역 삭제시
+        for (int i = 0; i < sections.size(); i++) {
+            Section currentSection = sections.get(i);
+            if (currentSection.getDownStation().equals(station)) {
+                sections.get(i).extendSection(sections.get(i + 1).getDownStation(), sections.get(i + 1).getDistance());
+                sections.remove(i + 1);
+            }
+        }
     }
 
     public List<Section> getSections() {
         return this.sections;
     }
 
-    public void addSectionInFirst(Section section) {
+    private void addInFirst(Section section) {
         this.sections.add(0, section);
     }
 
-    public void add(Section section) {
+    private void addInLast(Section section) {
         this.sections.add(section);
     }
 
-    public void addInMiddle(Section addSection) {
+    private void addInMiddle(Section addSection) {
         int size = getSections().size();
 
-        for (int targetIndex=0; targetIndex< size; targetIndex++) {
+        for (int targetIndex = 0; targetIndex < size; targetIndex++) {
             Section currentSection = this.sections.get(targetIndex);
 
-            if (currentSection.isAddableInMiddle(addSection)) {
+            if (currentSection.isSameUpStation(addSection)) {
+
+                validateDistance(currentSection, addSection);
 
                 Section frontSection = new Section(currentSection.getLine(), addSection.getUpStation(), addSection.getDownStation(), addSection.getDistance());
                 Section afterSection = new Section(currentSection.getLine(), addSection.getDownStation(), currentSection.getDownStation(), currentSection.getDistance() - addSection.getDistance());
@@ -89,38 +91,23 @@ public class Sections {
         }
     }
 
-    private boolean containsStation(Station station) {
-        return getStations().stream().filter(s -> s.getId().equals(station.getId())).count() > 0;
-    }
-
-    public boolean containsBothStation(Station upStation, Station downStation) {
-        return containsStation(upStation) && containsStation(downStation);
-    }
-
-    public boolean notContainsBothStation(Station upStation, Station downStation) {
-        return !containsStation(upStation) && !containsStation(downStation);
-    }
-
-    public Section getSectionUpStationContains(Station upStation) {
-        return this.sections.stream().filter(s -> s.getUpStation().getId().equals(upStation.getId())).findFirst().orElse(null);
-    }
-
-    public Station getLastStation() {
-        int lastIndex = getStations().size()-1;
-
-        return getStations().get(lastIndex);
-    }
-
-    public Station getFirstStation() {
-        return this.getStations().stream().findFirst().orElseGet(null);
-    }
-
-    public boolean isLastDownStationContains(Station station) {
-        if (getLastStation().getId().equals(station.getId())) {
-            return true;
+    private void validateDistance(Section currentSection, Section addSection) {
+        if (!currentSection.isAddable(addSection)) {
+            throw new ApplicationException(ApplicationType.SECTION_DISTANCE_CANNOT_BE_LONGER_THAN_CURRENT_SECTION);
         }
+    }
 
-        return false;
+    private Section getSectionsUpStationContains(Station upStation) {
+        return this.sections.stream().filter(s -> s.getUpStation().equals(upStation)).findFirst().orElse(null);
+    }
+
+    private Station getLastStation() {
+        int lastIndex = getSortedStations().size() - 1;
+        return getSortedStations().get(lastIndex);
+    }
+
+    private Station getFirstStation() {
+        return this.getSortedStations().stream().findFirst().orElseGet(null);
     }
 
     public int getTotalDistance() {
@@ -128,67 +115,48 @@ public class Sections {
     }
 
     public void addSection(Line line, Station upStation, Station downStation, int distance) {
-
-        if (getStations().size() == 0) {
-            addSectionInLast(line, upStation, downStation, distance);
+        if (getSortedStations().size() == 0) {
+            addInLast(new Section(line, upStation, downStation, distance));
             return;
         }
 
         //둘다 등록된 역 혹은 둘다 등록되지 않은역은 등록불가
-        validateSectionAddable(upStation, downStation, distance);
+        validateContainsBothStations(upStation, downStation);
 
-        if (isFirstStationEqualsWithDownStation(downStation)) {
-            addSectionInFirst(line, upStation, downStation, distance);
+        if (downStation.equals(getFirstStation())) {
+            addInFirst(new Section(line, upStation, downStation, distance));
             return;
         }
 
-        if (isLastDownStationContains(upStation)) {
-            addSectionInLast(line, upStation, downStation, distance);
+        if (upStation.equals(getLastStation())) {
+            addInLast(new Section(line, upStation, downStation, distance));
             return;
         }
 
-
-        if (isContainsStationInUpStation(upStation)) {
-            addSectionInMiddle(line, upStation, downStation, distance);
+        if (hasSameUpStation(upStation)) {
+            addInMiddle(new Section(line, upStation, downStation, distance));
             return;
         }
     }
 
-    private boolean isFirstStationEqualsWithDownStation(Station station) {
-        return station.equals(getFirstStation());
-    }
-
-    private void addSectionInFirst(Line line, Station upStation, Station downStation, int distance) {
-        addSectionInFirst(new Section(line, upStation, downStation, distance));
-    }
-
-    private void addSectionInLast(Line line, Station upStation, Station downStation, int distance) {
-        add(new Section(line, upStation, downStation, distance));
-    }
-
-    private void addSectionInMiddle(Line line, Station upStation, Station downStation, int distance) {
-
-        addInMiddle(new Section(line, upStation, downStation, distance));
-    }
-
-    private boolean isContainsStationInUpStation(Station station) {
-        if (getSectionUpStationContains(station) == null) {
+    private boolean hasSameUpStation(Station station) {
+        if (getSectionsUpStationContains(station) == null) {
             return false;
         }
 
         return true;
     }
 
-    private void validateSectionAddable(Station upStation, Station downStation, int distance) {
-        validateContainsBothStations(upStation, downStation);
+    private boolean containsStation(Station station) {
+        return getSortedStations().stream().filter(s -> s.getId().equals(station.getId())).count() > 0;
     }
 
     private void validateContainsBothStations(Station upStation, Station downStation) {
-        if(containsBothStation(upStation, downStation)) {
+        if (containsStation(upStation) && containsStation(downStation)) {
             throw new ApplicationException(ApplicationType.STATIONS_ALREADY_REGISTERD);
         }
 
-        if(notContainsBothStation(upStation, downStation)) {
+        if (!containsStation(upStation) && !containsStation(downStation)) {
             throw new ApplicationException(ApplicationType.ONE_STATION_MUST_BE_REGISTERED_AT_LEAST);
         }
     }
@@ -201,7 +169,7 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public int getSize() {
-        return this.sections.size();
+    public boolean hasStations(Station station) {
+        return getSortedStations().stream().anyMatch(it -> it.equals(station));
     }
 }
