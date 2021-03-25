@@ -158,4 +158,18 @@ public class LineTest {
         assertThat(이호선.getLineDistance()).isEqualTo(DEFAULT_LINE_DISTANCE+5);
         assertThat(이호선.getSections().size()).isEqualTo(1);
     }
+
+    @DisplayName("상행 역 삭제시 성공")
+    @Test
+    void removeSectionInUpStation() {
+        //given
+        이호선.addSection(시청역, 을지로입구역, 5);
+
+        //when
+        이호선.removeSection(을지로3가역);
+
+        //then
+        assertThat(이호선.getLineDistance()).isEqualTo(5);
+        assertThat(이호선.getSections().size()).isEqualTo(1);
+    }
 }

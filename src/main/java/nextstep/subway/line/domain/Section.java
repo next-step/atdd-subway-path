@@ -57,7 +57,7 @@ public class Section implements Comparable<Section>{
         return this.getUpStation().equals(section.getUpStation());
     }
 
-    public boolean addable(Section section) {
+    public boolean isAddable(Section section) {
         return this.distance > section.getDistance();
     }
 
