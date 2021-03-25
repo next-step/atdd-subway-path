@@ -67,6 +67,7 @@ public class PathFinderTest {
 
         // then
         assertThat(path.getStations().size()).isEqualTo(3);
-        assertThat(path.getDistance()).isEqualTo(13);
+        assertThat(path.getStations()).containsExactly(강남역, 교대역, 남부터미널역);
+        assertThat(path.getDistance()).isEqualTo(8);
     }
 }
