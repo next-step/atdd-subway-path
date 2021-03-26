@@ -71,10 +71,24 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse = 지하철역_등록되어_있음(로그인_사용자, 강남역);
 
         // when
-        ExtractableResponse<Response> response = 지하철역_수정_요청(로그인_사용자, createResponse, new StationRequest("역삼역"));
+        ExtractableResponse<Response> response = 지하철역_수정_요청(로그인_사용자, createResponse, new StationRequest(역삼역));
 
         // then
         지하철역_수정됨(response);
+    }
+
+    @DisplayName("기존에 존재하는 이름으로 지하철 노선을 수정한다.")
+    @Test
+    void updateLineWithDuplicatedName() {
+        // given
+        지하철역_등록되어_있음(로그인_사용자, 역삼역);
+        ExtractableResponse<Response> createResponse = 지하철역_등록되어_있음(로그인_사용자, 강남역);
+
+        // when
+        ExtractableResponse<Response> response = 지하철역_수정_요청(로그인_사용자, createResponse, new StationRequest(역삼역));
+
+        // then
+        지하철역_같은이름으로_수정_실패됨(response);
     }
 
     @DisplayName("다른 사람이 지하철 노선을 수정한다.")
@@ -148,6 +162,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     public void 지하철역_수정됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    public void 지하철역_같은이름으로_수정_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     public void 지하철역_수정_실패됨(ExtractableResponse<Response> response) {
