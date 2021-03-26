@@ -30,6 +30,10 @@ public class Section {
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance, int duration) {
+        if (distance == 0 || duration == 0) {
+            throw new InvalidSectionFoundException("거리와 소요 시간은 1 이상인 값이어야 합니다.");
+        }
+
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -62,10 +66,10 @@ public class Section {
     }
 
     public void updateUpStation(Station station, int newDistance, int newDuration) {
-        if (this.distance < newDistance) {
+        if (this.distance <= newDistance) {
             throw new InvalidSectionFoundException("역과 역 사이의 거리보다 좁은 거리를 입력해주세요");
         }
-        if (this.duration < newDuration) {
+        if (this.duration <= newDuration) {
             throw new InvalidSectionFoundException("역과 역 사이의 소요 시간보다 적은 시간을 입력해주세요");
         }
 
@@ -75,10 +79,10 @@ public class Section {
     }
 
     public void updateDownStation(Station station, int newDistance, int newDuration) {
-        if (this.distance < newDistance) {
+        if (this.distance <= newDistance) {
             throw new InvalidSectionFoundException("역과 역 사이의 거리보다 좁은 거리를 입력해주세요");
         }
-        if (this.duration < newDuration) {
+        if (this.duration <= newDuration) {
             throw new InvalidSectionFoundException("역과 역 사이의 소요 시간보다 적은 시간을 입력해주세요");
         }
 
