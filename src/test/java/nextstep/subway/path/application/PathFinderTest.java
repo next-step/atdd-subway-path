@@ -4,11 +4,11 @@ import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
-import nextstep.subway.path.Path;
 import nextstep.subway.path.PathFinder;
+import nextstep.subway.path.PathResponse;
+import nextstep.subway.path.domain.PathResult;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
-import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,7 +62,7 @@ public class PathFinderTest {
         List<Section> sections = lineService.getSections();
 
         // when
-        Path path = pathFinder.findPath(sections, 강남역, 남부터미널역);
+        PathResult path = pathFinder.findPath(sections, 강남역, 남부터미널역);
 
         // then
         assertThat(path.getStations().size()).isEqualTo(3);

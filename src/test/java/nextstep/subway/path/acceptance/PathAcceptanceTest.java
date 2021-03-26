@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.path.PathResponse;
 import nextstep.subway.station.dto.StationResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import static nextstep.subway.line.acceptance.LineSteps.*;
 import static nextstep.subway.path.acceptance.PathSteps.경로_조회_요청;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("경로 관련 인수 테스트")
 public class PathAcceptanceTest extends AcceptanceTest {
@@ -54,8 +56,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void findShortestPath() {
         // given
-        int source = 1;
-        int target = 4;
+        Long source = 1L;
+        Long target = 4L;
 
         // when
         ExtractableResponse<Response> response = 경로_조회_요청(source, target);
@@ -65,6 +67,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
     private void 경로_조회됨(ExtractableResponse<Response> response) {
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().as(PathResponse.class).getStations()).containsExactly(강남역, 교대역, 남부터미널역);
     }
 }

@@ -1,16 +1,15 @@
-package nextstep.subway.path;
+package nextstep.subway.path.domain;
 
 import nextstep.subway.station.domain.Station;
 
 import java.util.List;
 
-public class Path {
+public class PathResult {
 
     private List<Station> stations;
-
     private int distance;
 
-    public Path(List<Station> stations, int distance) {
+    public PathResult(List<Station> stations, int distance) {
         this.stations = stations;
         this.distance = distance;
     }

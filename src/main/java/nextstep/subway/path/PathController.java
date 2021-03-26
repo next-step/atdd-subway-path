@@ -7,8 +7,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class PathController {
 
+    private final PathService pathService;
+
+    public PathController(PathService pathService) {
+        this.pathService = pathService;
+    }
+
     @GetMapping("/paths")
-    public ResponseEntity findShortestPath(String source, String target) {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<PathResponse> findShortestPath(Long source, Long target) {
+        PathResponse path = pathService.findShortestPath(source, target);
+        return ResponseEntity.ok(path);
     }
 }
