@@ -37,7 +37,10 @@ public class SubwayGraph {
     }
 
     public PathResult findPath(Station source, Station target) {
-        // 다익스트라 최단 경로 찾기
+        if (source.equals(target)) {
+            throw new InvalidPathException("출발역과 도착역이 같습니다.");
+        }
+
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
         GraphPath<Station, SubwayEdge> result = dijkstraShortestPath.getPath(source, target);
         List<Section> sections = result.getEdgeList().stream()

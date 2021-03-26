@@ -14,6 +14,7 @@ import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.List;
@@ -68,6 +69,20 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         // then
         최소_시간_경로_응답됨(response);
+    }
+
+    @DisplayName("두 역의 최소 시간 경로를 조회한다.")
+    @Test
+    void findPathWithSameSourceAndTarget() {
+        // when
+        ExtractableResponse<Response> response = 두_역의_경로_조회를_요청(로그인_사용자, 교대역.getId(), 교대역.getId(), PathType.DURATION);
+
+        // then
+        경로_응답_실패됨(response);
+    }
+
+    private void 경로_응답_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private LineResponse 지하철_노선_등록되어_있음(TokenResponse user, String name, String color, StationResponse upStation, StationResponse downStation, int distance, int duration) {
