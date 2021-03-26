@@ -47,6 +47,7 @@ public class StationService {
     }
 
     public void updateStation(LoginMember loginMember, Long id, StationRequest stationRequest) {
+        checkDuplicateStationName(loginMember, stationRequest);
         Station station = findMyStationById(loginMember, id);
         station.update(new Station(loginMember.getId(), stationRequest.getName()));
     }

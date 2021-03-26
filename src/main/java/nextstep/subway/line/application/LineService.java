@@ -25,13 +25,13 @@ public class LineService {
         this.stationService = stationService;
     }
 
-    public LineResponse saveLine(LoginMember loginMember, LineRequest request) {
-        checkDuplicateName(loginMember, request);
-        Station upStation = stationService.findMyStationById(loginMember, request.getUpStationId());
-        Station downStation = stationService.findMyStationById(loginMember, request.getDownStationId());
+    public LineResponse saveLine(LoginMember loginMember, LineRequest lineRequest) {
+        checkDuplicateName(loginMember, lineRequest);
+        Station upStation = stationService.findMyStationById(loginMember, lineRequest.getUpStationId());
+        Station downStation = stationService.findMyStationById(loginMember, lineRequest.getDownStationId());
 
-        Line line = new Line(loginMember.getId(), request.getName(), request.getColor());
-        line.addSection(upStation, downStation, request.getDistance(), request.getDuration());
+        Line line = new Line(loginMember.getId(), lineRequest.getName(), lineRequest.getColor());
+        line.addSection(upStation, downStation, lineRequest.getDistance(), lineRequest.getDuration());
         Line persistLine = lineRepository.save(line);
 
         return LineResponse.of(persistLine);
@@ -58,9 +58,10 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public void updateLine(LoginMember loginMember, Long id, LineRequest lineUpdateRequest) {
+    public void updateLine(LoginMember loginMember, Long id, LineRequest lineRequest) {
+        checkDuplicateName(loginMember, lineRequest);
         Line line = findMyLineById(loginMember, id);
-        line.update(new Line(loginMember.getId(), lineUpdateRequest.getName(), lineUpdateRequest.getColor()));
+        line.update(new Line(loginMember.getId(), lineRequest.getName(), lineRequest.getColor()));
     }
 
     public void deleteLineById(LoginMember loginMember, Long id) {
