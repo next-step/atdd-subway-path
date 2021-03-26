@@ -21,9 +21,20 @@ public class StationService {
     }
 
     public StationResponse saveStation(LoginMember loginMember, StationRequest stationRequest) {
+        checkDuplicateStationName(loginMember, stationRequest);
         Station station = new Station(loginMember.getId(), stationRequest.getName());
         Station persistStation = stationRepository.save(station);
         return StationResponse.of(persistStation);
+    }
+
+    private void checkDuplicateStationName(LoginMember loginMember, StationRequest stationRequest) {
+        List<Station> stations = stationRepository.findAllByUserId(loginMember.getId());
+        stations.stream()
+                .filter(it -> it.getName().equals(stationRequest.getName()))
+                .findFirst()
+                .ifPresent(it -> {
+                    throw new StationDuplicateException();
+                });
     }
 
     @Transactional(readOnly = true)

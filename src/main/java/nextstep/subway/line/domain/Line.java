@@ -4,12 +4,14 @@ import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.application.InvalidSectionFoundException;
 import nextstep.subway.station.domain.Station;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import java.util.*;
 
 @Entity
 public class Line extends BaseEntity {
-    @Column(unique = true)
     private String name;
     private String color;
 

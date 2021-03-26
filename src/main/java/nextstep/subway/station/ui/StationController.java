@@ -2,11 +2,11 @@ package nextstep.subway.station.ui;
 
 import nextstep.subway.auth.domain.AuthenticationPrincipal;
 import nextstep.subway.member.domain.LoginMember;
+import nextstep.subway.station.application.StationDuplicateException;
 import nextstep.subway.station.application.StationNotFoundException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,9 +45,9 @@ public class StationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleDataIntegrityViolationException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().body("이미 존재하는 이름 입니다.");
+    @ExceptionHandler(StationDuplicateException.class)
+    public ResponseEntity handleStationDuplicateException(StationDuplicateException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 
     @ExceptionHandler(StationNotFoundException.class)

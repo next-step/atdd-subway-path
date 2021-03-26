@@ -2,13 +2,11 @@ package nextstep.subway.station.domain;
 
 import nextstep.subway.common.BaseEntity;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import java.util.Objects;
 
 @Entity
 public class Station extends BaseEntity {
-    @Column(unique = true)
     private String name;
 
     public Station() {

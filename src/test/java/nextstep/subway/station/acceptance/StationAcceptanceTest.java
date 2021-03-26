@@ -14,8 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.TestConstants.OTHER_EMAIL;
-import static nextstep.subway.TestConstants.OTHER_PASSWORD;
+import static nextstep.subway.TestConstants.*;
 import static nextstep.subway.member.MemberSteps.로그인_되어_있음;
 import static nextstep.subway.member.MemberSteps.회원_생성_요청;
 import static nextstep.subway.station.acceptance.StationSteps.*;
@@ -117,6 +116,21 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철역_생성_실패됨(response);
+    }
+
+    @DisplayName("다른사람이 기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @Test
+    void createStationWithDuplicateNameFromOtherUser() {
+        //given
+        회원_생성_요청(OTHER_EMAIL, OTHER_PASSWORD, NAME);
+        TokenResponse 다른_로그인_사용자 = 로그인_되어_있음(OTHER_EMAIL, OTHER_PASSWORD);
+        지하철역_등록되어_있음(로그인_사용자, 강남역);
+
+        // when
+        ExtractableResponse<Response> response = 지하철역_생성_요청(다른_로그인_사용자, 강남역);
+
+        // then
+        지하철역_생성됨(response);
     }
 
     public void 지하철역_생성됨(ExtractableResponse response) {

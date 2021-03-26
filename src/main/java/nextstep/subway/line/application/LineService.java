@@ -26,6 +26,7 @@ public class LineService {
     }
 
     public LineResponse saveLine(LoginMember loginMember, LineRequest request) {
+        checkDuplicateName(loginMember, request);
         Station upStation = stationService.findMyStationById(loginMember, request.getUpStationId());
         Station downStation = stationService.findMyStationById(loginMember, request.getDownStationId());
 
@@ -34,6 +35,16 @@ public class LineService {
         Line persistLine = lineRepository.save(line);
 
         return LineResponse.of(persistLine);
+    }
+
+    private void checkDuplicateName(LoginMember loginMember, LineRequest lineRequest) {
+        List<Line> lines = lineRepository.findAllByUserId(loginMember.getId());
+        lines.stream()
+                .filter(it -> it.getName().equals(lineRequest.getName()))
+                .findFirst()
+                .ifPresent(it -> {
+                    throw new LineDuplicateException();
+                });
     }
 
     public List<Line> findLines(LoginMember loginMember) {
