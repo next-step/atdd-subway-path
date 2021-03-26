@@ -4,7 +4,7 @@ import nextstep.subway.auth.application.UserDetails;
 import nextstep.subway.auth.application.UserDetailsService;
 import nextstep.subway.auth.domain.Authentication;
 import nextstep.subway.auth.domain.AuthenticationToken;
-import nextstep.subway.auth.ui.interceptor.authentication.AuthenticationException;
+import nextstep.subway.member.application.LoginException;
 
 public class AuthenticationProvider implements AuthenticationManager {
     private UserDetailsService userDetailsService;
@@ -23,12 +23,8 @@ public class AuthenticationProvider implements AuthenticationManager {
     }
 
     private void checkAuthentication(UserDetails userDetails, AuthenticationToken token) {
-        if (userDetails == null) {
-            throw new AuthenticationException();
-        }
-
         if (!userDetails.checkCredentials(token.getCredentials())) {
-            throw new AuthenticationException();
+            throw new LoginException();
         }
     }
 }

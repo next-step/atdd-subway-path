@@ -44,6 +44,7 @@ public class TokenSecurityContextPersistenceInterceptor implements HandlerInterc
             Map principal = new ObjectMapper().readValue(payload, typeRef);
             return new SecurityContext(new Authentication(principal));
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
