@@ -91,11 +91,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        String name = "신분당선";
         ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(로그인_사용자, lineRequest);
 
         // when
         LineRequest lineRequest = new LineRequest("구분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10, 10);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(로그인_사용자, createResponse, lineRequest);
+
+        // then
+        지하철_노선_수정됨(response);
+    }
+
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLineWithSameName() {
+        // given
+        String name = "신분당선";
+        ExtractableResponse<Response> createResponse = 지하철_노선_등록되어_있음(로그인_사용자, lineRequest);
+
+        // when
+        LineRequest lineRequest = new LineRequest(name, "bg-red-600", 강남역.getId(), 광교역.getId(), 10, 10);
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(로그인_사용자, createResponse, lineRequest);
 
         // then

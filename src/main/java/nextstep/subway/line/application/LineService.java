@@ -59,8 +59,10 @@ public class LineService {
     }
 
     public void updateLine(LoginMember loginMember, Long id, LineRequest lineRequest) {
-        checkDuplicateName(loginMember, lineRequest);
         Line line = findMyLineById(loginMember, id);
+        if (!line.getName().equals(lineRequest.getName())) {
+            checkDuplicateName(loginMember, lineRequest);
+        }
         line.update(new Line(loginMember.getId(), lineRequest.getName(), lineRequest.getColor()));
     }
 
