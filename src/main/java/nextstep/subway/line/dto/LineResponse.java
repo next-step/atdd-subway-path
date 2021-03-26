@@ -12,26 +12,33 @@ public class LineResponse {
     private String name;
     private String color;
     private List<StationResponse> stations;
+    private List<SectionResponse> sections;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, List<StationResponse> stations, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public LineResponse(Long id, String name, String color, List<StationResponse> stations, List<SectionResponse> sections, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.stations = stations;
+        this.sections = sections;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
     }
 
     public static LineResponse of(Line line) {
         List<StationResponse> stations = line.getStations().stream()
-                .map(it -> StationResponse.of(it))
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations, line.getCreatedDate(), line.getModifiedDate());
+
+        List<SectionResponse> sections = line.getSections().stream()
+                .sorted()
+                .map(SectionResponse::of)
+                .collect(Collectors.toList());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations, sections, line.getCreatedDate(), line.getModifiedDate());
     }
 
     public Long getId() {
@@ -48,6 +55,10 @@ public class LineResponse {
 
     public List<StationResponse> getStations() {
         return stations;
+    }
+
+    public List<SectionResponse> getSections() {
+        return sections;
     }
 
     public LocalDateTime getCreatedDate() {
