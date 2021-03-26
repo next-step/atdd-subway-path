@@ -55,7 +55,7 @@ public class LineTest {
 
         line.addSection(역삼역, 삼성역, 5, 10);
 
-        assertThat(line.getSections().size()).isEqualTo(2);
+        assertThat(line.getSections().getSections().size()).isEqualTo(2);
     }
 
     @DisplayName("목록 중간에 추가할 경우")
@@ -69,7 +69,7 @@ public class LineTest {
 
         line.addSection(강남역, 삼성역, 5, 9);
 
-        assertThat(line.getSections().size()).isEqualTo(2);
+        assertThat(line.getSections().getSections().size()).isEqualTo(2);
     }
 
     @DisplayName("상행, 하행 모두 노선에 존재하는 경우")
@@ -107,7 +107,7 @@ public class LineTest {
 
         line.removeSection(삼성역);
 
-        assertThat(line.getSections().size()).isEqualTo(1);
+        assertThat(line.getSections().getSections().size()).isEqualTo(1);
     }
 
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")

@@ -34,7 +34,7 @@ public class LineResponse {
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
 
-        List<SectionResponse> sections = line.getSections().stream()
+        List<SectionResponse> sections = line.getSections().getSections().stream()
                 .sorted()
                 .map(SectionResponse::of)
                 .collect(Collectors.toList());
