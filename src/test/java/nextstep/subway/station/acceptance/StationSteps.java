@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.auth.dto.TokenResponse;
 import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -60,6 +61,14 @@ public class StationSteps {
                 .given().log().all()
                 .auth().oauth2(user.getAccessToken())
                 .when().delete(uri)
+                .then().log().all().extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철역_제거_요청(TokenResponse user, StationResponse stationResponse) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(user.getAccessToken())
+                .when().delete("/stations/" + stationResponse.getId())
                 .then().log().all().extract();
     }
 }

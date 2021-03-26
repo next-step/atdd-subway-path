@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 @RestController
@@ -53,5 +54,10 @@ public class StationController {
     @ExceptionHandler(StationNotFoundException.class)
     public ResponseEntity<String> handleStationNotFoundException() {
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+    public ResponseEntity<String> handleSQLIntegrityConstraintViolationException() {
+        return ResponseEntity.badRequest().body("노선에 등록된 역은 삭제할 수 없습니다.");
     }
 }

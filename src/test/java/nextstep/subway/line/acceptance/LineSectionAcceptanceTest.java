@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import static nextstep.subway.line.acceptance.LineSteps.*;
 import static nextstep.subway.station.acceptance.StationSteps.지하철역_등록되어_있음;
+import static nextstep.subway.station.acceptance.StationSteps.지하철역_제거_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선에 역 등록 관련 기능")
@@ -101,6 +102,17 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_제외_실패됨(removeResponse);
     }
 
+
+    @DisplayName("노선에 등록된 역을 제거한다.")
+    @Test
+    void deleteStationOfLine() {
+        // when
+        ExtractableResponse<Response> response = 지하철역_제거_요청(로그인_사용자, 강남역);
+
+        // then
+        지하철역_삭제_실패됨(response);
+    }
+
     public static void 지하철_노선에_지하철역_등록됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -127,6 +139,10 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     public static void 지하철_노선에_지하철역_제외_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    public void 지하철역_삭제_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

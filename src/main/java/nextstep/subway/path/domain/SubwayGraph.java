@@ -4,6 +4,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.Sections;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.Stations;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -47,6 +48,6 @@ public class SubwayGraph {
                 .map(it -> it.getSection())
                 .collect(Collectors.toList());
 
-        return new PathResult(new Sections(sections));
+        return new PathResult(new Stations(result.getVertexList()), new Sections(sections));
     }
 }
