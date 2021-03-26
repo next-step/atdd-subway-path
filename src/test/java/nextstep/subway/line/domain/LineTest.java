@@ -67,7 +67,7 @@ public class LineTest {
         Line line = new Line(사용자, "2호선", "green");
         line.addSection(강남역, 역삼역, 10, 10);
 
-        line.addSection(강남역, 삼성역, 5, 10);
+        line.addSection(강남역, 삼성역, 5, 9);
 
         assertThat(line.getSections().size()).isEqualTo(2);
     }
