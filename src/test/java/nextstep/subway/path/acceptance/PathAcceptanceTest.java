@@ -66,6 +66,24 @@ public class PathAcceptanceTest extends AcceptanceTest {
         경로_조회됨(response);
     }
 
+    @DisplayName("출발역과 도착역이 같을 때 최단 경로를 조회한다")
+    @Test
+    void findPathWithSameSourceAndTarget() {
+        // given
+        Long source = 1L;
+        Long target = 1L;
+
+        // when
+        ExtractableResponse<Response> response = 경로_조회_요청(source, target);
+
+        // then
+        경로_조회_실패됨(response);
+    }
+
+    private void 경로_조회_실패됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private void 경로_조회됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.body().as(PathResponse.class).getStations()).containsExactly(강남역, 교대역, 남부터미널역);
