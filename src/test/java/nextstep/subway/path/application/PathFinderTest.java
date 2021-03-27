@@ -1,5 +1,7 @@
 package nextstep.subway.path.application;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static nextstep.subway.path.acceptance.PathSteps.경로_조회_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("경로 탐색 관련 테스트")

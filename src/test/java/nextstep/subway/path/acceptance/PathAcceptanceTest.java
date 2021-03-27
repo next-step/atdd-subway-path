@@ -1,6 +1,5 @@
 package nextstep.subway.path.acceptance;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -8,7 +7,6 @@ import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.path.PathResponse;
 import nextstep.subway.station.dto.StationResponse;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,6 +24,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     private StationResponse 양재역;
     private StationResponse 교대역;
     private StationResponse 남부터미널역;
+    private StationResponse 선릉역;
     private LineRequest 신분당선_요청;
     private LineRequest 이호선_요청;
     private LineRequest 삼호선_요청;
@@ -40,6 +39,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         양재역 = 지하철역_등록되어_있음("양재역").as(StationResponse.class);
         교대역 = 지하철역_등록되어_있음("교대역").as(StationResponse.class);
         남부터미널역 = 지하철역_등록되어_있음("남부터미널역").as(StationResponse.class);
+        선릉역 = 지하철역_등록되어_있음("선릉역").as(StationResponse.class);
 
         신분당선_요청 = 지하철_노선_요청("신분당선", "bg-red-600", 강남역, 양재역, 10);
         이호선_요청 = 지하철_노선_요청("이호선", "bg-red-600", 양재역, 남부터미널역, 10);
@@ -72,6 +72,20 @@ public class PathAcceptanceTest extends AcceptanceTest {
         // given
         Long source = 1L;
         Long target = 1L;
+
+        // when
+        ExtractableResponse<Response> response = 경로_조회_요청(source, target);
+
+        // then
+        경로_조회_실패됨(response);
+    }
+
+    @DisplayName("출발역과 도착역이 연결되지 않을 때 최단 경로를 조회한다")
+    @Test
+    void findPathDisconnectedPath() {
+        // given
+        Long source = 1L;
+        Long target = 5L;
 
         // when
         ExtractableResponse<Response> response = 경로_조회_요청(source, target);

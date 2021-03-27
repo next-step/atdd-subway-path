@@ -27,4 +27,9 @@ public class GlobalExceptionController {
     public ResponseEntity handleSameSourceAndTargetException(SameSourceAndTargetException e) {
         return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(LineDisconnectedException.class)
+    public ResponseEntity handleLineDisconnectedException(LineDisconnectedException e) {
+        return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }

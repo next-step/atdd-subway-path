@@ -20,7 +20,11 @@ public class DijkstraGraph implements Graph {
     @Override
     public Path getPath(List<Station> stations, List<Section> sections) {
         stations.forEach(graph::addVertex);
-        sections.forEach(section -> graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance()));
+        sections.forEach(section -> addEdgeWeight(section));
         return new DijkstraPath(graph);
+    }
+
+    private void addEdgeWeight(Section section) {
+        graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
     }
 }

@@ -1,5 +1,6 @@
 package nextstep.subway.path;
 
+import nextstep.subway.exception.LineDisconnectedException;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.path.domain.PathResult;
 import nextstep.subway.path.domain.graph.Graph;
@@ -22,6 +23,9 @@ public class PathFinder {
 
     public PathResult findPath(List<Section> sections, Station source, Station target) {
         List<Station> stations = getStations(sections);
+        if(!stations.contains(source) || !stations.contains(target)) {
+            throw new LineDisconnectedException();
+        }
         Path path = graph.getPath(stations, sections);
         return path.find(source, target);
     }
