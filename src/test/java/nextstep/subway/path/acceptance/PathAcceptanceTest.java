@@ -94,6 +94,20 @@ public class PathAcceptanceTest extends AcceptanceTest {
         경로_조회_실패됨(response);
     }
 
+    @DisplayName("존재하지 않는 출발역이나 도착역으로 최단 경로를 조회한다")
+    @Test
+    void findPathWithNonExistStation() {
+        // given
+        Long source = 1L;
+        Long target = 7L;
+
+        // when
+        ExtractableResponse<Response> response = 경로_조회_요청(source, target);
+
+        // then
+        경로_조회_실패됨(response);
+    }
+
     private void 경로_조회_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }

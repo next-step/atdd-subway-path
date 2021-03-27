@@ -1,6 +1,7 @@
 package nextstep.subway.path;
 
 import nextstep.subway.exception.SameSourceAndTargetException;
+import nextstep.subway.exception.StationNotExistException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.domain.Station;
@@ -37,6 +38,6 @@ public class PathService {
 
     private Station findStationById(Long sourceId) {
         return stationRepository.findById(sourceId)
-                .orElseThrow(() -> new RuntimeException("역이 존재하지 않습니다"));
+                .orElseThrow(() -> new StationNotExistException());
     }
 }

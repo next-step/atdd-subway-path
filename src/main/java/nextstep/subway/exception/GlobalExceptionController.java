@@ -32,4 +32,9 @@ public class GlobalExceptionController {
     public ResponseEntity handleLineDisconnectedException(LineDisconnectedException e) {
         return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(StationNotExistException.class)
+    public ResponseEntity handleStationNotExistException(StationNotExistException e) {
+        return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }
