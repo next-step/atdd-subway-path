@@ -1,4 +1,4 @@
-package nextstep.subway.line.acceptance;
+package nextstep.subway.path.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -11,12 +11,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import static nextstep.subway.line.acceptance.LineSteps.지하철_노선_등록되어_있음;
-import static nextstep.subway.line.acceptance.PathSteps.지하철_경로_조회_요청;
+import static nextstep.subway.path.acceptance.PathSteps.지하철_경로_조회_요청;
 import static nextstep.subway.line.acceptance.SectionSteps.지하철_노선에_지하철역_등록되어_있음;
 import static nextstep.subway.station.StationSteps.지하철역_등록되어_있음;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -139,11 +140,13 @@ public class PathAcceptanceTest extends AcceptanceTest {
     public void 지하철_경로_일치됨(ExtractableResponse<Response> response) {
         PathResponse path = response.as(PathResponse.class);
 
-        assertThat(path.getStations().stream().map(StationResponse::getId))
-                .isEqualTo(Stream.of(강남역.getId(), 양재역.getId(), 남부터미널역.getId()));
-
-        assertThat(path.getDistance())
-                .isEqualTo(12);
+        assertThat(
+                path.getStations()
+                        .stream()
+                        .map(StationResponse::getId)
+                        .collect(Collectors.toList())
+        )
+                .isEqualTo(Arrays.asList(강남역.getId(), 양재역.getId(), 남부터미널역.getId()));
     }
 
     public void 지하철_경로_응답_실패됨(ExtractableResponse<Response> response) {
