@@ -7,6 +7,7 @@ import nextstep.subway.line.application.LineNotFoundException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.member.domain.LoginMember;
 import nextstep.subway.station.application.StationNotFoundException;
@@ -43,7 +44,7 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateLine(@AuthenticationPrincipal LoginMember loginMember, @PathVariable Long id, @RequestBody LineRequest lineUpdateRequest) {
+    public ResponseEntity updateLine(@AuthenticationPrincipal LoginMember loginMember, @PathVariable Long id, @RequestBody LineUpdateRequest lineUpdateRequest) {
         lineService.updateLine(loginMember, id, lineUpdateRequest);
         return ResponseEntity.ok().build();
     }

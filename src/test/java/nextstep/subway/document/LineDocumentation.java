@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.Documentation;
 import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ public class LineDocumentation extends Documentation {
     private StationResponse 강남역;
     private StationResponse 광교역;
     private LineRequest lineRequest;
+    private LineUpdateRequest lineUpdateRequest;
 
     @BeforeEach
     public void setUp(RestDocumentationContextProvider restDocumentation) {
@@ -28,6 +30,7 @@ public class LineDocumentation extends Documentation {
         강남역 = 지하철역_등록되어_있음(로그인_사용자, "강남역").as(StationResponse.class);
         광교역 = 지하철역_등록되어_있음(로그인_사용자, "광교역").as(StationResponse.class);
         lineRequest = new LineRequest("신분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10, 10);
+        lineUpdateRequest = new LineUpdateRequest("구분당선", "bg-old-600");
     }
 
     @Test
@@ -71,7 +74,7 @@ public class LineDocumentation extends Documentation {
                         preprocessResponse(prettyPrint())))
                 .header("Authorization", "Bearer " + 로그인_사용자.getAccessToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(lineRequest)
+                .body(lineUpdateRequest)
                 .when().put(location)
                 .then().log().all().extract();
 

@@ -4,6 +4,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.member.domain.LoginMember;
 import nextstep.subway.station.application.StationService;
@@ -26,7 +27,7 @@ public class LineService {
     }
 
     public LineResponse saveLine(LoginMember loginMember, LineRequest lineRequest) {
-        checkDuplicateName(loginMember, lineRequest);
+        checkDuplicateName(loginMember, lineRequest.getName());
         Station upStation = stationService.findMyStationById(loginMember, lineRequest.getUpStationId());
         Station downStation = stationService.findMyStationById(loginMember, lineRequest.getDownStationId());
 
@@ -37,10 +38,10 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    private void checkDuplicateName(LoginMember loginMember, LineRequest lineRequest) {
+    private void checkDuplicateName(LoginMember loginMember, String name) {
         List<Line> lines = lineRepository.findAllByUserId(loginMember.getId());
         lines.stream()
-                .filter(it -> it.getName().equals(lineRequest.getName()))
+                .filter(it -> it.getName().equals(name))
                 .findFirst()
                 .ifPresent(it -> {
                     throw new LineDuplicateException();
@@ -58,12 +59,12 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public void updateLine(LoginMember loginMember, Long id, LineRequest lineRequest) {
+    public void updateLine(LoginMember loginMember, Long id, LineUpdateRequest lineUpdateRequest) {
         Line line = findMyLineById(loginMember, id);
-        if (!line.getName().equals(lineRequest.getName())) {
-            checkDuplicateName(loginMember, lineRequest);
+        if (!line.getName().equals(lineUpdateRequest.getName())) {
+            checkDuplicateName(loginMember, lineUpdateRequest.getName());
         }
-        line.update(new Line(loginMember.getId(), lineRequest.getName(), lineRequest.getColor()));
+        line.update(new Line(loginMember.getId(), lineUpdateRequest.getName(), lineUpdateRequest.getColor()));
     }
 
     public void deleteLineById(LoginMember loginMember, Long id) {
