@@ -1,4 +1,5 @@
 package nextstep.subway.line.dto;
+import nextstep.subway.path.domain.StationGraphPath;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationResponse;
 
@@ -21,6 +22,10 @@ public class PathResponse {
                         .collect(Collectors.toList()),
                 distance
         );
+    }
+
+    public static PathResponse of(StationGraphPath stationGraphPath) {
+        return of(stationGraphPath.getVertexStations(),stationGraphPath.getDistance());
     }
 
     public List<StationResponse> getStations() {

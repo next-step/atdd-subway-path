@@ -34,11 +34,11 @@ public class PathAcceptanceTest extends AcceptanceTest {
     private Map<String, String> lineCreateParams;
 
     /**
-     * 교대역    --- *2호선* ---   강남역
+     * 교대역  --5-- *2호선* ---   강남역
      * |                        |
-     * *3호선*                   *신분당선*
+     * *3호선* -7                   *신분당선* -10
      * |                        |
-     * 남부터미널역  --- *3호선* --- 양재역
+     * 남부터미널역 --3-- *3호선* -- 양재역
      */
 
     @BeforeEach
@@ -59,7 +59,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         lineCreateParams = createLindCreateParams("3호선", "bg-orange-600", 교대역.getId(), 남부터미널역.getId(), 7);
         삼호선 = 지하철_노선_등록되어_있음(lineCreateParams).as(LineResponse.class);
 
-        지하철_노선에_지하철역_등록되어_있음(삼호선, 남부터미널역, 양재역, 2);
+        지하철_노선에_지하철역_등록되어_있음(삼호선, 남부터미널역, 양재역, 3);
     }
 
     private Map<String, String> createLindCreateParams(String lineName, String color, Long upstationId, Long downStationId, Integer distance) {
@@ -146,7 +146,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
                         .map(StationResponse::getId)
                         .collect(Collectors.toList())
         )
-                .isEqualTo(Arrays.asList(강남역.getId(), 양재역.getId(), 남부터미널역.getId()));
+                .isEqualTo(Arrays.asList(강남역.getId(), 교대역.getId(), 남부터미널역.getId()));
     }
 
     public void 지하철_경로_응답_실패됨(ExtractableResponse<Response> response) {

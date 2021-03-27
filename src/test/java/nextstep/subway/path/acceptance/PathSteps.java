@@ -15,7 +15,7 @@ public class PathSteps {
         return RestAssured.given().log().all()
                 .queryParam("source", source.getId())
                 .queryParam("target", target.getId())
-                .when().get("/path")
+                .when().get("/paths")
                 .then().log().all().extract();
     }
 

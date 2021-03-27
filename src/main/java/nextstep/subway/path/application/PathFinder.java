@@ -1,16 +1,20 @@
-package nextstep.subway.path.domain;
+package nextstep.subway.path.application;
 
 import nextstep.subway.line.domain.Section;
+import nextstep.subway.path.domain.StationGraphPath;
 import nextstep.subway.station.domain.Station;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Component
 public class PathFinder {
     public StationGraphPath getShortestPath(List<Section> sections, Station source, Station target){
         List<Station> stations = sections.stream()

@@ -123,4 +123,12 @@ public class LineService {
                 .collect(Collectors.toList());
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stations, line.getCreatedDate(), line.getModifiedDate());
     }
+
+    public List<Section> getAllSections() {
+        return lineRepository.findAll()
+                .stream()
+                .flatMap(line -> line.getSections().stream())
+                .distinct()
+                .collect(Collectors.toList());
+    }
 }
