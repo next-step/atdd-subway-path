@@ -80,7 +80,7 @@ public class Line extends BaseEntity {
         while (downStation != null) {
             Station finalDownStation = downStation;
             Optional<Section> nextLineStation = sections.stream()
-                    .filter(it -> it.getUpStation() == finalDownStation)
+                    .filter(it -> it.getUpStation().equals(finalDownStation))
                     .findFirst();
             if (!nextLineStation.isPresent()) {
                 break;
@@ -157,7 +157,7 @@ public class Line extends BaseEntity {
         }
 
         Optional<Section> sameUpStationSection = sections.stream()
-                .filter(it -> it.getUpStation() == upStation)
+                .filter(it -> it.getUpStation().equals(upStation))
                 .findFirst();
         if (sameUpStationSection.isPresent()) {
             addSectionBetweenExist(sameUpStationSection.get(), section);
@@ -212,8 +212,8 @@ public class Line extends BaseEntity {
 
     private void removeSectionInMiddle(Station station) {
 
-        Optional<Section> frontSectionOpt = sections.stream().filter(section -> section.getDownStation() == station).findFirst();
-        Optional<Section> backSectionOpt = sections.stream().filter(section -> section.getUpStation() == station).findFirst();
+        Optional<Section> frontSectionOpt = sections.stream().filter(section -> section.getDownStation().equals(station)).findFirst();
+        Optional<Section> backSectionOpt = sections.stream().filter(section -> section.getUpStation().equals(station)).findFirst();
 
         if (frontSectionOpt.isPresent() && backSectionOpt.isPresent()) {
             Section frontSection = frontSectionOpt.get();
