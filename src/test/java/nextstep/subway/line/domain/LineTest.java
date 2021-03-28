@@ -100,6 +100,21 @@ public class LineTest {
         지하철_노선의_거리는(신분당선.getSections().get(0), 100);
     }
 
+    @DisplayName("구간 맨 앞에 위치한 지하철 역을 삭제한다.")
+    @Test
+    void removeSectionInFront() {
+        // given
+        신분당선.addSection(강남역, 양재역, 100);
+        신분당선.addSection(양재역, 판교역, 150);
+
+        // when
+        신분당선.removeSection(강남역);
+
+        // then
+        지하철_노선에_지하철역_순서_정렬됨(신분당선.getStations(), Arrays.asList(양재역, 판교역));
+        지하철_노선의_거리는(신분당선.getSections().get(0), 150);
+    }
+
     @DisplayName("구간 중간에 위치한 지하철 역을 삭제한다.")
     @Test
     void removeSectionInMiddle() {
@@ -114,8 +129,6 @@ public class LineTest {
         지하철_노선에_지하철역_순서_정렬됨(신분당선.getStations(), Arrays.asList(강남역, 판교역));
         지하철_노선의_거리는(신분당선.getSections().get(0), 200);
     }
-
-
 
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
     @Test
