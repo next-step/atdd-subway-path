@@ -72,6 +72,17 @@ public class LineSteps {
                 extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_구간_제거_요청(Long lineId, Long stationId) {
+        String uri = "/lines/{lineId}/sections?stationId={stationId}";
+
+        return RestAssured.given().log().all().
+                when().
+                delete(uri, lineId, stationId).
+                then().
+                log().all().
+                extract();
+    }
+
     public static ExtractableResponse<Response> 지하철_노선_제거_요청(ExtractableResponse<Response> response) {
         String uri = response.header("Location");
 
@@ -116,5 +127,16 @@ public class LineSteps {
                 then().
                 log().all().
                 extract();
+    }
+
+    public static Map<String, Object> createLineParams(String lineName, String color, Long upStationId, Long downStationId, int distance) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", lineName);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+
+        return params;
     }
 }

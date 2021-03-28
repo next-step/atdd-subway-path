@@ -33,7 +33,6 @@ public class LineServiceMockTest {
 
     private LineService lineService;
 
-    @Autowired
     private Station 을지로3가역;
     private Station 을지로입구역;
     private Station 시청역;
@@ -73,8 +72,8 @@ public class LineServiceMockTest {
     @Test
     void addLine() {
         //given
-        given(stationService.findById(을지로3가역.getId())).willReturn(을지로3가역);
-        given(stationService.findById(을지로입구역.getId())).willReturn(을지로입구역);
+        given(stationService.findStationById(을지로3가역.getId())).willReturn(을지로3가역);
+        given(stationService.findStationById(을지로입구역.getId())).willReturn(을지로입구역);
         given(lineRepository.save(any(Line.class))).willReturn(이호선);
 
         //when
