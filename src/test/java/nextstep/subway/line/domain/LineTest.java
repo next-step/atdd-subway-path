@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,7 +41,8 @@ public class LineTest {
         // given
         강남_양재 = new Section(신분당선, 강남역, 양재역, 10);
         양재_판교 = new Section(신분당선, 양재역, 판교역, 10);
-        ReflectionTestUtils.setField(신분당선, "sections", Arrays.asList(강남_양재, 양재_판교));
+
+        ReflectionTestUtils.setField(신분당선, "sections", new Sections(강남_양재, 양재_판교));
 
         // when
         List<Station> stations = 신분당선.getStations();
@@ -58,16 +60,19 @@ public class LineTest {
         지하철_노선에_지하철역_순서_정렬됨(신분당선.getStations(), Arrays.asList(강남역, 양재역));
     }
 
-    @DisplayName("목록 중간에 추가할 경우 에러 발생")
+    @DisplayName("목록 중간에 구간 추가")
     @Test
     void addSectionInMiddle() {
-        Assertions.assertThatThrownBy(() -> {
-            // given
-            신분당선.addSection(강남역, 양재역, 100);
+        // given
+        신분당선.addSection(강남역, 양재역, 100);
 
-            // when
-            신분당선.addSection(강남역, 판교역, 100);
-        }).isInstanceOf(RuntimeException.class);
+        // when
+        신분당선.addSection(강남역, 판교역, 30);
+        
+        // then
+        지하철_노선에_지하철역_순서_정렬됨(신분당선.getStations(), Arrays.asList(강남역, 판교역, 양재역));
+        지하철_노선의_거리는(신분당선.getSections().get(0), 30);
+        지하철_노선의_거리는(신분당선.getSections().get(1), 70);
     }
 
     @DisplayName("이미 존재하는 역 추가 시 에러 발생")
@@ -93,6 +98,37 @@ public class LineTest {
 
         // then
         지하철_노선에_지하철역_순서_정렬됨(신분당선.getStations(), Arrays.asList(강남역, 양재역));
+        지하철_노선의_거리는(신분당선.getSections().get(0), 100);
+    }
+
+    @DisplayName("구간 맨 앞에 위치한 지하철 역을 삭제한다.")
+    @Test
+    void removeSectionInFront() {
+        // given
+        신분당선.addSection(강남역, 양재역, 100);
+        신분당선.addSection(양재역, 판교역, 150);
+
+        // when
+        신분당선.removeSection(강남역);
+
+        // then
+        지하철_노선에_지하철역_순서_정렬됨(신분당선.getStations(), Arrays.asList(양재역, 판교역));
+        지하철_노선의_거리는(신분당선.getSections().get(0), 150);
+    }
+
+    @DisplayName("구간 중간에 위치한 지하철 역을 삭제한다.")
+    @Test
+    void removeSectionInMiddle() {
+        // given
+        신분당선.addSection(강남역, 양재역, 100);
+        신분당선.addSection(양재역, 판교역, 100);
+
+        // when
+        신분당선.removeSection(양재역);
+
+        // then
+        지하철_노선에_지하철역_순서_정렬됨(신분당선.getStations(), Arrays.asList(강남역, 판교역));
+        지하철_노선의_거리는(신분당선.getSections().get(0), 200);
     }
 
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
@@ -101,7 +137,6 @@ public class LineTest {
         assertThatThrownBy(() -> {
             // given
             신분당선.addSection(강남역, 양재역, 100);
-            신분당선.addSection(양재역, 판교역, 100);
 
             // when
             신분당선.removeSection(양재역);
@@ -109,15 +144,19 @@ public class LineTest {
     }
 
     public static void 지하철_노선에_지하철역_순서_정렬됨(List<Station> stations, List<Station> expectedStations) {
-        List<Long> stationIds = stations.stream()
-                .map(Station::getId)
+        List<String> stationNames = stations.stream()
+                .map(Station::getName)
                 .collect(Collectors.toList());
 
-        List<Long> expectedStationIds = expectedStations.stream()
-                .map(Station::getId)
+        List<String> expectedStationNames = expectedStations.stream()
+                .map(Station::getName)
                 .collect(Collectors.toList());
 
-        assertThat(stationIds).containsExactlyElementsOf(expectedStationIds);
+        assertThat(stationNames).containsExactlyElementsOf(expectedStationNames);
+    }
+
+    public static void 지하철_노선의_거리는(Section section, int distance) {
+        assertThat(section.getDistance()).isEqualTo(distance);
     }
 
 }
