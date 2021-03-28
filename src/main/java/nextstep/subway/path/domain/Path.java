@@ -1,26 +1,21 @@
-package nextstep.subway.path.dto;
+package nextstep.subway.path.domain;
 
-import nextstep.subway.path.domain.Path;
 import nextstep.subway.station.domain.Station;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PathResponse {
+public class Path {
     private List<Station> stations;
     private double distance;
 
-    public PathResponse() {
+    public Path() {
         this.stations = new ArrayList<>();
     }
 
-    private PathResponse(List<Station> stations, double distance) {
+    public Path(List<Station> stations, double distance) {
         this.stations = stations;
         this.distance = distance;
-    }
-
-    public static PathResponse of(Path path) {
-        return new PathResponse(path.getStations(), path.getDistance());
     }
 
     public List<Station> getStations() {

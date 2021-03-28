@@ -85,4 +85,8 @@ public class LineService {
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
+
+    public List<Line> findAllLines() {
+        return lineRepository.findAll();
+    }
 }

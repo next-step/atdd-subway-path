@@ -157,7 +157,7 @@ public class LineServiceMockTest {
         lineService.removeSection(이호선.getId(), 시청역.getId());
 
         assertThat(이호선.getLineDistance()).isEqualTo(기본_구간_길이+9);
-        assertThat(이호선.getSections().size()).isEqualTo(1);
+        assertThat(이호선.getSections().getSections().size()).isEqualTo(1);
     }
 
     @DisplayName("지하철 삭제")

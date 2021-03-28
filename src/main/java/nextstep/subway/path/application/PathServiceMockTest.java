@@ -1,5 +1,6 @@
 package nextstep.subway.path.application;
 
+import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.station.application.StationService;
@@ -23,6 +24,9 @@ public class PathServiceMockTest {
     @Mock
     private StationService stationService;
 
+    @Mock
+    private LineService lineService;
+
     private PathService pathService;
 
     private Station 방배역;
@@ -43,7 +47,7 @@ public class PathServiceMockTest {
 
     @BeforeEach
     void setUp() {
-        pathService = new PathService(stationService);
+        pathService = new PathService(lineService, stationService);
 
         역_생성();
         이호선_생성();

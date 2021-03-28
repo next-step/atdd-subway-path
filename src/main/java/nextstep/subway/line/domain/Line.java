@@ -56,8 +56,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
-        return this.sections.getSections();
+    public Sections getSections() {
+        return this.sections;
     }
 
     @Override
