@@ -70,6 +70,8 @@ public class LineTest {
         
         // then
         지하철_노선에_지하철역_순서_정렬됨(신분당선.getStations(), Arrays.asList(강남역, 판교역, 양재역));
+        지하철_노선의_거리는(신분당선.getSections().get(0), 30);
+        지하철_노선의_거리는(신분당선.getSections().get(1), 70);
     }
 
     @DisplayName("이미 존재하는 역 추가 시 에러 발생")
@@ -95,6 +97,7 @@ public class LineTest {
 
         // then
         지하철_노선에_지하철역_순서_정렬됨(신분당선.getStations(), Arrays.asList(강남역, 양재역));
+        지하철_노선의_거리는(신분당선.getSections().get(0), 100);
     }
 
     @DisplayName("구간 중간에 위치한 지하철 역을 삭제한다.")
@@ -109,7 +112,10 @@ public class LineTest {
 
         // then
         지하철_노선에_지하철역_순서_정렬됨(신분당선.getStations(), Arrays.asList(강남역, 판교역));
+        지하철_노선의_거리는(신분당선.getSections().get(0), 200);
     }
+
+
 
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
     @Test
@@ -133,6 +139,10 @@ public class LineTest {
                 .collect(Collectors.toList());
 
         assertThat(stationNames).containsExactlyElementsOf(expectedStationNames);
+    }
+
+    public static void 지하철_노선의_거리는(Section section, int distance) {
+        assertThat(section.getDistance()).isEqualTo(distance);
     }
 
 }
