@@ -41,7 +41,8 @@ public class LineTest {
         // given
         강남_양재 = new Section(신분당선, 강남역, 양재역, 10);
         양재_판교 = new Section(신분당선, 양재역, 판교역, 10);
-        ReflectionTestUtils.setField(신분당선, "sections", Arrays.asList(강남_양재, 양재_판교));
+
+        ReflectionTestUtils.setField(신분당선, "sections", new Sections(강남_양재, 양재_판교));
 
         // when
         List<Station> stations = 신분당선.getStations();

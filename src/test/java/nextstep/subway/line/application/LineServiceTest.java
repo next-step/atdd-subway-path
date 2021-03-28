@@ -3,6 +3,7 @@ package nextstep.subway.line.application;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.assertj.core.api.Assertions;
@@ -41,7 +42,7 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        List<Section> sections = 신분당선.getSections();
+        Sections sections = 신분당선.getSections();
         Assertions.assertThat(sections.size()).isEqualTo(1);
     }
 }
