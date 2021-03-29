@@ -1,13 +1,16 @@
 package nextstep.subway.path.application;
 
+import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.Sections;
 import nextstep.subway.path.domain.StationGraphPath;
+import nextstep.subway.path.domain.SubwayGraph;
+import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,30 +19,22 @@ import java.util.stream.Stream;
 
 @Component
 public class PathFinder {
+
+    private final GraphService graphService;
+
+    public PathFinder(GraphService graphService) {
+        this.graphService = graphService;
+    }
+
     public StationGraphPath getShortestPath(List<Section> sections, Station source, Station target){
-        List<Station> stations = sections.stream()
-                .flatMap(section -> Stream.of(
-                        section.getUpStation(),
-                        section.getDownStation()
-                ))
-                .distinct()
-                .collect(Collectors.toList());
+
+        List<Station> stations = graphService.makeStations(sections);
 
         validateContains(stations, source, target);
 
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph =
-                new WeightedMultigraph<Station, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+        SubwayGraph graph = graphService.findGraph(sections,stations);
 
-        stations.forEach(graph::addVertex);
-
-        for (Section section : sections) {
-            graph.setEdgeWeight(
-                    graph.addEdge(section.getUpStation(), section.getDownStation()),
-                    section.getDistance()
-            );
-        }
-
-        return StationGraphPath.of(new DijkstraShortestPath<>(graph).getPath(source, target));
+        return StationGraphPath.of(new DijkstraShortestPath<>(graph.getSubwayGraph()).getPath(source, target));
     }
 
     private void validateContains(List<Station> stations, Station source, Station target) {

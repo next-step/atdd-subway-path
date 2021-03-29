@@ -106,7 +106,7 @@ public class Sections {
         return upStationList;
     }
 
-    private List<Station> getDownStationList(){
+    private List<Station> getDownStations(){
         List<Station> downStationList = new ArrayList<Station>();
         sections.stream().map(it -> it.getDownStation()).forEach(downStationList::add);
         return downStationList;
@@ -114,7 +114,7 @@ public class Sections {
 
     private Section getLastSection() {
         List<Station> upStationList = getUpStations();
-        List<Station> downStationList = getDownStationList();
+        List<Station> downStationList = getDownStations();
 
         Station LastStation = getLastStation(upStationList,downStationList);
         return findDownSection(LastStation);
@@ -122,7 +122,7 @@ public class Sections {
 
     private Section getFirstSection() {
         List<Station> upStationList = getUpStations();
-        List<Station> downStationList = getDownStationList();
+        List<Station> downStationList = getDownStations();
 
         Station firstStation = getFirstStation(upStationList,downStationList);
         return findUpSection(firstStation);
