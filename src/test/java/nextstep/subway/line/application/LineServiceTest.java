@@ -53,7 +53,7 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        List<Section> sections = 이호선.getSections();
+        List<Section> sections = 이호선.getSections().getSections();
         assertThat(sections.size()).isEqualTo(2);
         assertThat(sections.get(0).getUpStation()).isEqualTo(을지로3가역);
         assertThat(sections.get(0).getDownStation()).isEqualTo(시청역);
@@ -70,7 +70,7 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        List<Section> sections = 이호선.getSections();
+        List<Section> sections = 이호선.getSections().getSections();
         assertThat(sections.size()).isEqualTo(2);
         assertThat(sections.get(0).getUpStation()).isEqualTo(을지로3가역);
         assertThat(sections.get(0).getDownStation()).isEqualTo(을지로입구역);

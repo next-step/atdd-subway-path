@@ -103,7 +103,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록_실패됨(response);
     }
 
-
     @DisplayName("상행역과 하행역이 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test
     void addSectionWithDuplicateBothUpAndDownStations() {
@@ -151,7 +150,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록_요청(이호선, 시청역, 충정로역, DEFAULT_SECTION_DISTANCE);
 
         //when
-        ExtractableResponse<Response> response = 지하철_노선_제거_요청(이호선.getId(), 충정로역.getId());
+        ExtractableResponse<Response> response = 지하철_구간_제거_요청(이호선.getId(), 충정로역.getId());
 
         //then
         지하철_노선_삭제됨(response);
@@ -164,7 +163,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록_요청(이호선, 시청역, 충정로역, DEFAULT_SECTION_DISTANCE);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_제거_요청(이호선.getId(), 시청역.getId());
+        ExtractableResponse<Response> response = 지하철_구간_제거_요청(이호선.getId(), 시청역.getId());
 
         // then
         지하철_노선_삭제됨(response);
@@ -185,12 +184,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    public void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
     public static void 지하철_노선에_지하철역_등록_실패됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    public static void 지하철_노선_삭제됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     public static void 지하철_노선_조회시_지하철역_등록_되지_않은_상태(ExtractableResponse<Response> response, List<StationResponse> expectedStations) {

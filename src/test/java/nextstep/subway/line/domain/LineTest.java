@@ -51,7 +51,7 @@ public class LineTest {
         이호선.addSection(시청역, 을지로입구역, 5);
 
         // then
-        assertThat(이호선.getSections().size()).isEqualTo(2);
+        assertThat(이호선.getSections().getSections().size()).isEqualTo(2);
         assertThat(이호선.getSortedStations()).containsExactlyElementsOf(Arrays.asList(을지로3가역, 시청역, 을지로입구역));
     }
 
@@ -63,7 +63,7 @@ public class LineTest {
 
         //then
         assertThat(이호선.getSortedStations().size()).isEqualTo(3);
-        assertThat(이호선.getSections().size()).isEqualTo(2);
+        assertThat(이호선.getSections().getSections().size()).isEqualTo(2);
         assertThat(이호선.getSortedStations()).containsExactlyElementsOf(Arrays.asList(을지로3가역, 을지로입구역, 시청역));
         assertThat(이호선.getLineDistance()).isEqualTo(10);
     }
@@ -77,7 +77,7 @@ public class LineTest {
 
         //then
         assertThat(이호선.getSortedStations().size()).isEqualTo(4);
-        assertThat(이호선.getSections().size()).isEqualTo(3);
+        assertThat(이호선.getSections().getSections().size()).isEqualTo(3);
         assertThat(이호선.getSortedStations()).containsExactlyElementsOf(Arrays.asList(을지로3가역, 충정로역, 을지로입구역, 시청역));
         assertThat(이호선.getLineDistance()).isEqualTo(10);
     }
@@ -121,7 +121,7 @@ public class LineTest {
 
         //then
         assertThat(이호선.getLineDistance()).isEqualTo(5);
-        assertThat(이호선.getSections().size()).isEqualTo(1);
+        assertThat(이호선.getSections().getSections().size()).isEqualTo(1);
     }
 
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
@@ -156,7 +156,7 @@ public class LineTest {
 
         //then
         assertThat(이호선.getLineDistance()).isEqualTo(DEFAULT_LINE_DISTANCE+5);
-        assertThat(이호선.getSections().size()).isEqualTo(1);
+        assertThat(이호선.getSections().getSections().size()).isEqualTo(1);
     }
 
     @DisplayName("상행 역 삭제시 성공")
@@ -170,6 +170,6 @@ public class LineTest {
 
         //then
         assertThat(이호선.getLineDistance()).isEqualTo(5);
-        assertThat(이호선.getSections().size()).isEqualTo(1);
+        assertThat(이호선.getSections().getSections().size()).isEqualTo(1);
     }
 }
