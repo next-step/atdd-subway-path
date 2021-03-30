@@ -11,6 +11,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class LineTest {
 
@@ -46,7 +47,7 @@ public class LineTest {
         이호선.addSection(역삼역, 삼성역, 7);
 
         //then
-        assertThat(이호선.getLastStation()).isEqualTo(삼성역);
+        assertThat(이호선.getAllStations()).containsOnlyOnce(삼성역);
     }
 
     @DisplayName("목록 중간에 추가 가능(신규요건)")
@@ -59,7 +60,7 @@ public class LineTest {
         이호선.addSection(강남역, 잠실새내역, 7);
 
         // then
-        assertThat(이호선.getLastStation()).isEqualTo(삼성역);
+        assertEquals(이호선.getAllStations().size(), 4);
     }
 
     @DisplayName("이미 존재하는 역 추가 시 에러 발생")
@@ -79,7 +80,7 @@ public class LineTest {
         이호선.removeSection(역삼역);
 
         //then
-        assertThat(이호선.getLastStation()).isEqualTo(삼성역);
+        assertEquals(이호선.getAllStations().size(), 2);
     }
 
     @DisplayName("종점역(하행역=마지막구간) 제거")
@@ -92,7 +93,7 @@ public class LineTest {
         이호선.removeSection(삼성역);
 
         //then
-        assertThat(이호선.getLastStation()).isEqualTo(역삼역);
+        assertEquals(이호선.getAllStations().size(), 2);
     }
 
     @DisplayName("상행역(첫구간) 제거")
@@ -105,7 +106,7 @@ public class LineTest {
         이호선.removeSection(강남역);
 
         //then
-        assertThat(이호선.getFirstStation()).isEqualTo(역삼역);
+        assertEquals(이호선.getAllStations().size(), 2);
     }
 
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")

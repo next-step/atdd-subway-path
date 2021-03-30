@@ -62,12 +62,6 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{lineId}/sections/last-station")
-    public ResponseEntity<StationResponse> findLastStation(@PathVariable Long lineId) {
-        Line line = lineService.findLineById(lineId);
-        return ResponseEntity.ok(StationResponse.of(line.getLastStation()));
-    }
-
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();

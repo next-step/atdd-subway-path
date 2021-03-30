@@ -4,15 +4,12 @@ import nextstep.subway.exception.DuplicateStationException;
 import nextstep.subway.exception.InvaliadDistanceException;
 import nextstep.subway.exception.NotExistedStationException;
 import nextstep.subway.station.domain.Station;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Sections {
 
@@ -103,29 +100,29 @@ public class Sections {
             throw new RuntimeException("마지막 구간은 삭제할 수 없습니다.");
     }
 
-    private List<Station> getUpStationList(){
+    private List<Station> getUpStations(){
         List<Station> upStationList = new ArrayList<Station>();
         sections.stream().map(it -> it.getUpStation()).forEach(upStationList::add);
         return upStationList;
     }
 
-    private List<Station> getDownStationList(){
+    private List<Station> getDownStations(){
         List<Station> downStationList = new ArrayList<Station>();
         sections.stream().map(it -> it.getDownStation()).forEach(downStationList::add);
         return downStationList;
     }
 
-    public Section getLastSection() {
-        List<Station> upStationList = getUpStationList();
-        List<Station> downStationList = getDownStationList();
+    private Section getLastSection() {
+        List<Station> upStationList = getUpStations();
+        List<Station> downStationList = getDownStations();
 
         Station LastStation = getLastStation(upStationList,downStationList);
         return findDownSection(LastStation);
     }
 
-    public Section getFirstSection() {
-        List<Station> upStationList = getUpStationList();
-        List<Station> downStationList = getDownStationList();
+    private Section getFirstSection() {
+        List<Station> upStationList = getUpStations();
+        List<Station> downStationList = getDownStations();
 
         Station firstStation = getFirstStation(upStationList,downStationList);
         return findUpSection(firstStation);
