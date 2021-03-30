@@ -58,11 +58,12 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     void addLineSection2() {
         // when
         지하철_노선에_지하철역_등록_요청(로그인_사용자, 신분당선, 강남역, 정자역, 6, 6);
+        지하철_노선에_지하철역_등록_요청(로그인_사용자, 신분당선, 광교역, 강남역, 6, 6);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(로그인_사용자, 신분당선);
         지하철_노선에_지하철역_등록됨(response);
-        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 정자역, 양재역));
+        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(광교역, 강남역, 정자역, 양재역));
     }
 
     @DisplayName("지하철 노선에 이미 포함된 역을 구간으로 등록한다.")
