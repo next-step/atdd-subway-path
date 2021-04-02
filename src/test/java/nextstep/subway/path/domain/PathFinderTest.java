@@ -10,58 +10,67 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static nextstep.subway.path.domain.PathHelper.*;
+import static nextstep.subway.path.domain.PathFinderHelper.*;
 
 @DisplayName("최단 경로 탐색 테스트")
-public class PathTest {
+public class PathFinderTest {
     WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-    Path path;
+    PathFinder pathFinder;
+    List<Station> stations;
+    List<Line> lines;
     @BeforeEach
     void setUp(){
-        Station station1 = 역_만들기(1L);
-        Station station2 = 역_만들기(2L);
-        Station station3 = 역_만들기(3L);
-        Station station4 = 역_만들기(4L);
+        Station station1 = 역_만들기("강남역",1L);
+        Station station2 = 역_만들기("역삼역", 2L);
+        Station station3 = 역_만들기("선릉역", 3L);
+        Station station4 = 역_만들기("잠실역", 4L);
+        Station station5 = 역_만들기("부평역",5L);
+        Station station6 = 역_만들기("인천역", 6L);
 
-        Line line = new Line("1호선", "red", station1, station2, 20);
-        line.addSection(station2, station3, 20);
+        stations = Arrays.asList(
+            station1, station2, station3, station4, station5, station6
+        );
+
+        Line line1 = new Line("1호선", "red", station1, station2, 20);
+        line1.addSection(station2, station3, 20);
         Line line2 = new Line("2호선", "green", station1, station4, 10);
+        Line line3 = new Line("3호선", "green", station5, station6, 20);
 
-        path = new Path();
+        lines = Arrays.asList(
+                line1, line2, line3
+        );
 
-        graph.addVertex("1");
-        graph.addVertex("2");
-        graph.addVertex("3");
-        graph.addVertex("4");
-        graph.setEdgeWeight(graph.addEdge("1", "2"), 2);
-        graph.setEdgeWeight(graph.addEdge("2", "3"), 2);
-        graph.setEdgeWeight(graph.addEdge("3", "4"), 2);
-        graph.setEdgeWeight(graph.addEdge("1", "4"), 2);
+        pathFinder = new PathFinder(stations, lines);
     }
 
     @DisplayName("가장 짧은 경로 테스트")
     @Test
     void 가장_짧은_경로_반환(){
         //when
-        List<String> pathList = path.getShortestPathList(graph, 1L, 4L);
+        List<Station> pathList = pathFinder.getShortestPathList(1L, 4L);
+        List<Long> pathIdList = pathList.stream()
+                .map(station -> station.getId())
+                .collect(Collectors.toList());
 
         //then
-        assertThat(pathList).containsExactlyElementsOf(Arrays.asList("1", "4"));
+        assertThat(pathIdList).containsExactlyElementsOf(Arrays.asList(1L, 4L));
     }
 
     @DisplayName("가장 짧은 경로값 테스트")
     @Test
     void 가장_짧은_경로값_반환(){
         //when
-        int length = path.getShortestPathLength(graph, 1L, 4L);
+        int length = pathFinder.getShortestPathLength(1L, 4L);
 
         //then
-        assertThat(length).isEqualTo(2);
+        assertThat(length).isEqualTo(10);
     }
 
     @DisplayName("시작, 끝점 같을 때")
@@ -69,21 +78,16 @@ public class PathTest {
     void 시작_끝_같을_때(){
         //when
         //then
-        assertThatThrownBy(() -> path.getGraphPath(graph, 1L, 1L))
+        assertThatThrownBy(() -> pathFinder.getGraphPath( 1L, 1L))
                 .isInstanceOf(SameSourceTargetException.class);
     }
 
     @DisplayName("서로 만날 수 없는 역일때")
     @Test
     void 서로_만날_수_없는_역일때(){
-        //given
-        graph.addVertex("5");
-        graph.addVertex("6");
-        graph.setEdgeWeight(graph.addEdge("5", "6"), 2);
-
         //when
         //then
-        assertThatThrownBy(() -> path.getGraphPath(graph, 1L, 6L))
+        assertThatThrownBy(() -> pathFinder.getGraphPath( 1L, 6L))
                 .isInstanceOf(SourceTargetNotReachable.class);
     }
 }

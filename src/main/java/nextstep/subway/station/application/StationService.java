@@ -48,4 +48,8 @@ public class StationService {
     public boolean isExist(Long id){
         return stationRepository.existsById(id);
     }
+
+    public List<Station> findAll(){
+        return stationRepository.findAll();
+    }
 }
