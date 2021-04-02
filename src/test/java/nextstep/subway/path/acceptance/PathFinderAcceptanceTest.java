@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 
 @DisplayName("최단 경로 탐색 인수테스트")
-public class PathAcceptanceTest extends AcceptanceTest {
+public class PathFinderAcceptanceTest extends AcceptanceTest {
     StationResponse 강남역;
     StationResponse 역삼역;
     StationResponse 선릉역;
