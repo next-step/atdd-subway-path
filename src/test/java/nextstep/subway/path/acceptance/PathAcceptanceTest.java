@@ -1,5 +1,6 @@
 package nextstep.subway.path.acceptance;
 
+import com.google.common.collect.Lists;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -11,6 +12,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static nextstep.subway.line.acceptance.LineSteps.*;
 import static nextstep.subway.path.acceptance.PathSteps.경로_조회_요청;
@@ -63,7 +67,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 경로_조회_요청(source, target);
         
         // then
-        경로_조회됨(response);
+        경로_조회됨(response, Lists.newArrayList(강남역, 교대역, 남부터미널역), 8);
     }
 
     @DisplayName("출발역과 도착역이 같을 때 최단 경로를 조회한다")
@@ -112,8 +116,19 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private void 경로_조회됨(ExtractableResponse<Response> response) {
+    private void 경로_조회됨(ExtractableResponse<Response> response, List<StationResponse> stationResponses, int distance) {
+        PathResponse pathResponse = response.as(PathResponse.class);
+        assertThat(pathResponse.getDistance()).isEqualTo(distance);
+
+        List<Long> stationIds = pathResponse.getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+        List<Long> expectedStationIds = stationResponses.stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().as(PathResponse.class).getStations()).containsExactly(강남역, 교대역, 남부터미널역);
+        assertThat(stationIds).containsExactlyElementsOf(expectedStationIds);
     }
 }
