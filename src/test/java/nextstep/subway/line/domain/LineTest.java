@@ -1,6 +1,5 @@
 package nextstep.subway.line.domain;
 
-
 import nextstep.subway.exception.ExistUpAndDownStationException;
 import nextstep.subway.exception.InValidSectionSizeException;
 import nextstep.subway.exception.InvalidSectionDistanceException;
@@ -10,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -29,7 +29,6 @@ public class LineTest {
         역삼역 = new Station("역삼역");
         삼성역 = new Station("삼성역");
         교대역 = new Station("교대역");
-
         이호선 = new Line("이호선", "green");
     }
 
@@ -121,7 +120,6 @@ public class LineTest {
     }
 
     @DisplayName("지하철 노선에 등록된 마지막 지하철역을 제외한다")
-
     @Test
     void removeSection() {
         // given

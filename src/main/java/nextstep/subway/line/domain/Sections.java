@@ -2,9 +2,6 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.exception.CanNotFoundSectionToAddException;
 import nextstep.subway.exception.InValidSectionSizeException;
-import nextstep.subway.exception.AlreadyExistDownStation;
-import nextstep.subway.exception.InValidSectionSizeException;
-import nextstep.subway.exception.InValidUpStationException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -135,7 +132,6 @@ public class Sections {
 
         return downStation;
     }
-
 
     private Station getLastStation() {
         return getStations().get(getStations().size() - 1);

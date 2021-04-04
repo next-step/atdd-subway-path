@@ -22,4 +22,19 @@ public class GlobalExceptionController {
     public ResponseEntity handleCanNotFoundSectionToAddException(CanNotFoundSectionToAddException e) {
         return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(SameSourceAndTargetException.class)
+    public ResponseEntity handleSameSourceAndTargetException(SameSourceAndTargetException e) {
+        return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(LineDisconnectedException.class)
+    public ResponseEntity handleLineDisconnectedException(LineDisconnectedException e) {
+        return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(StationNotExistException.class)
+    public ResponseEntity handleStationNotExistException(StationNotExistException e) {
+        return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }

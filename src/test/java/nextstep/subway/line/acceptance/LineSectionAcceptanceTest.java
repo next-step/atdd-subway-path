@@ -3,6 +3,7 @@ package nextstep.subway.line.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     private StationResponse 양재역;
     private StationResponse 정자역;
     private StationResponse 광교역;
+    private LineRequest 신분당선_요청;
 
     @BeforeEach
     public void setUp() {
@@ -37,14 +39,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         정자역 = 지하철역_등록되어_있음("정자역").as(StationResponse.class);
         광교역 = 지하철역_등록되어_있음("광교역").as(StationResponse.class);
 
-        Map<String, String> lineCreateParams;
-        lineCreateParams = new HashMap<>();
-        lineCreateParams.put("name", "신분당선");
-        lineCreateParams.put("color", "bg-red-600");
-        lineCreateParams.put("upStationId", 강남역.getId() + "");
-        lineCreateParams.put("downStationId", 양재역.getId() + "");
-        lineCreateParams.put("distance", 10 + "");
-        신분당선 = 지하철_노선_등록되어_있음(lineCreateParams).as(LineResponse.class);
+        신분당선_요청 = 지하철_노선_요청("신분당선", "bg-red-600", 강남역, 양재역, 10);
+        신분당선 = 지하철_노선_등록되어_있음(신분당선_요청).as(LineResponse.class);
     }
 
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
@@ -70,7 +66,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록됨(response);
         지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(정자역, 강남역, 양재역));
     }
-  
+
     @DisplayName("역 사이에 새로운 역을 등록한다.")
     @Test
     void addLineSectionBetween() {
@@ -110,9 +106,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선, 정자역, 광교역, 9);
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        지하철_노선에_지하철역_등록됨(response);
-        지하철_노선에_지하철역_순서_정렬됨(response, Arrays.asList(강남역, 정자역, 양재역));
+        지하철_노선에_지하철역_등록_실패됨(response);
     }
 
     @DisplayName("지하철 노선에 등록된 마지막 지하철역을 제외한다.")
