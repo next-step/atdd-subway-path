@@ -2,12 +2,11 @@
     <img width="200px;" src="https://raw.githubusercontent.com/woowacourse/atdd-subway-admin-frontend/master/images/main_logo.png"/>
 </p>
 <p align="center">
-  <img alt="npm" src="https://img.shields.io/badge/npm-%3E%3D%205.5.0-blue">
-  <img alt="node" src="https://img.shields.io/badge/node-%3E%3D%209.3.0-blue">
+  <img alt="npm" src="https://img.shields.io/badge/npm-6.14.15-blue">
+  <img alt="node" src="https://img.shields.io/badge/node-14.18.2-blue">
   <a href="https://edu.nextstep.camp/c/R89PYi5H" alt="nextstep atdd">
     <img alt="Website" src="https://img.shields.io/website?url=https%3A%2F%2Fedu.nextstep.camp%2Fc%2FR89PYi5H">
   </a>
-  <img alt="GitHub" src="https://img.shields.io/github/license/next-step/atdd-subway-map">
 </p>
 
 <br>
@@ -36,19 +35,3 @@ npm run dev
 ```
 ./gradlew bootRun
 ```
-<br>
-
-## ✏️ Code Reive Process
-[텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
-
-<br>
-
-## 🐞 Bug Report
-
-버그를 발견한다면, [Issues](https://github.com/next-step/atdd-subway-map/issues) 에 등록해주세요 :)
-
-<br>
-
-## 📝 License
-
-This project is [MIT](https://github.com/next-step/atdd-subway-map/blob/master/LICENSE.md) licensed.
