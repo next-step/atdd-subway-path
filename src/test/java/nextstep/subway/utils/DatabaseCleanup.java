@@ -1,9 +1,7 @@
 package nextstep.subway.utils;
 
 import com.google.common.base.CaseFormat;
-import nextstep.subway.station.domain.StationRepository;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,9 +15,6 @@ import java.util.stream.Collectors;
 @Service
 @ActiveProfiles("test")
 public class DatabaseCleanup implements InitializingBean {
-    @Autowired
-    StationRepository stationRepository;
-
     @PersistenceContext
     private EntityManager entityManager;
 

@@ -43,6 +43,11 @@ export default {
           _id: 3,
           link: '/sections',
           text: '구간 관리'
+        },
+        {
+          _id: 4,
+          link: '/path',
+          text: '경로 검색'
         }
       ]
     }

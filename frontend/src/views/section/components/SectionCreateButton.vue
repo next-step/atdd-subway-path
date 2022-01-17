@@ -122,6 +122,9 @@ export default {
         this.showSnackbar(SNACKBAR_MESSAGES.COMMON.FAIL)
       }
     },
+    setLineColor(color) {
+      this.sectionForm.color = color
+    },
     isValid() {
       return this.$refs.sectionForm.validate()
     },
