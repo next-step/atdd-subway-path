@@ -2,7 +2,7 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.line.exception.DownStationExistedException;
 import nextstep.subway.line.exception.EmptyLineException;
-import nextstep.subway.line.exception.InValidUpStationException;
+import nextstep.subway.line.exception.NotLastStationException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +28,7 @@ public class LineTest {
         이호선 = new Line("2호선", "green", 강남역, 역삼역, 10);
     }
 
-    @DisplayName("노선의 역들을 조회할 수 있어야 한다.")
+    @DisplayName("노선의 역들을 조회 가능")
     @Test
     void getStations() {
         // given
@@ -42,7 +42,7 @@ public class LineTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @DisplayName("노선에 구간을 추가하면, 노선의 크기가 증가한다.")
+    @DisplayName("노선에 구간을 추가하면, 노선의 크기가 증가")
     @Test
     void addSection() {
         // given
@@ -58,7 +58,7 @@ public class LineTest {
     @DisplayName("목록 중간에 추가할 경우 에러 발생")
     @Test
     void addSectionInMiddle() {
-        assertThatExceptionOfType(InValidUpStationException.class)
+        assertThatExceptionOfType(NotLastStationException.class)
                 .isThrownBy(() -> 이호선.addSection(new Section(이호선, 강남역, 삼성역, 10)));
     }
 
@@ -69,7 +69,7 @@ public class LineTest {
                 .isThrownBy(() -> 이호선.addSection(new Section(이호선, 역삼역, 강남역, 10)));
     }
 
-    @DisplayName("노선에서 구간을 삭제하면, 노선의 크기가 감소한다.")
+    @DisplayName("노선에서 구간을 삭제하면, 노선의 크기가 감소")
     @Test
     void removeSection() {
         // given
@@ -90,14 +90,14 @@ public class LineTest {
                 .isThrownBy(() -> 이호선.removeSection(역삼역));
     }
 
-    @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
+    @DisplayName("마지막이 아닌 역을 삭제시 에러 발생")
     @Test
     void removeSectionInvalidUpStation() {
         // given
         이호선.addSection(new Section(이호선, 역삼역, 삼성역, 10));
 
         // then
-        assertThatExceptionOfType(InValidUpStationException.class)
+        assertThatExceptionOfType(NotLastStationException.class)
                 .isThrownBy(() -> 이호선.removeSection(역삼역));
     }
 }

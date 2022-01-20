@@ -10,14 +10,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
-import static io.restassured.RestAssured.when;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -49,7 +47,7 @@ public class LineServiceMockTest {
         ReflectionTestUtils.setField(이호선, "id", 1L);
     }
 
-    @DisplayName("노선에 구간을 추가하면, 노선의 크기가 증가한다.")
+    @DisplayName("노선에 구간을 추가하면, 노선의 크기가 증가")
     @Test
     void addSection() {
         // given

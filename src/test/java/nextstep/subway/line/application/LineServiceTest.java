@@ -23,7 +23,7 @@ public class LineServiceTest {
     @Autowired
     private LineService lineService;
 
-    @DisplayName("노선에 구간을 추가하면, 노선의 크기가 증가한다.")
+    @DisplayName("노선에 구간을 추가하면, 노선의 크기가 증가")
     @Test
     void addSection() {
         // given
