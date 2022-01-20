@@ -93,7 +93,7 @@ public class LineService {
             throw new RuntimeException("하행역이 이미 등록되어 있습니다.");
         }
 
-        line.getSections().add(new Section(line, upStation, downStation, distance));
+        line.addSection(new Section(line, upStation, downStation, distance));
     }
 
     public void removeSection(Line line, Long stationId) {
