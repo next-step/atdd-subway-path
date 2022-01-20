@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 public class SubwayApplication {
 
     public static void main(String[] args) {
+        //step0
         SpringApplication.run(SubwayApplication.class, args);
     }
 
