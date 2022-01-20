@@ -2,12 +2,12 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.exception.DownStationExistedException;
-import nextstep.subway.line.exception.NotValidUpStationException;
+import nextstep.subway.line.exception.EmptyLineException;
+import nextstep.subway.line.exception.InValidUpStationException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -45,14 +45,39 @@ public class Line extends BaseEntity {
             sections.add(section);
             return;
         }
-        validateSection(section);
+        validateAddSection(section);
         sections.add(section);
     }
 
+    public void removeSection(Station station) {
+        validateRemoveSections(station);
+        sections.stream()
+                .filter(it -> it.getDownStation().equals(station))
+                .findFirst()
+                .ifPresent(it -> sections.remove(it));
+    }
+
     public List<Station> getStations() {
-        List<Station> stations = sections.stream().map(Section::getUpStation)
-                .collect(Collectors.toList());
-        stations.add(getLastDownStation());
+        if (sections.isEmpty()) {
+            return Arrays.asList();
+        }
+
+        List<Station> stations = new ArrayList<>();
+        Station downStation = findUpStation();
+        stations.add(downStation);
+
+        while (downStation != null) {
+            Station finalDownStation = downStation;
+            Optional<Section> nextLineStation = sections.stream()
+                    .filter(it -> it.getUpStation() == finalDownStation)
+                    .findFirst();
+            if (!nextLineStation.isPresent()) {
+                break;
+            }
+            downStation = nextLineStation.get().getDownStation();
+            stations.add(downStation);
+        }
+
         return stations;
     }
 
@@ -89,17 +114,45 @@ public class Line extends BaseEntity {
         return Objects.hash(id, name, color);
     }
 
-    private void validateSection(Section section) {
-        if (!getLastDownStation().equals(section.getUpStation())) {
-            throw new NotValidUpStationException();
-        }
+
+    private void validateAddSection(Section section) {
+        validateUpStation(section.getUpStation());
         if (getStations().stream().anyMatch(
                 section.getDownStation()::equals)) {
             throw new DownStationExistedException();
         }
     }
 
+    private void validateRemoveSections(Station station) {
+        if (sections.size() <= 1) {
+            throw new EmptyLineException();
+        }
+        validateUpStation(station);
+    }
+
+    private void validateUpStation(Station station) {
+        if (!getLastDownStation().equals(station)) {
+            throw new InValidUpStationException();
+        }
+    }
+
     private Station getLastDownStation() {
         return sections.get(sections.size() - 1).getDownStation();
+    }
+
+    private Station findUpStation() {
+        Station downStation = sections.get(0).getUpStation();
+        while (downStation != null) {
+            Station finalDownStation = downStation;
+            Optional<Section> nextLineStation = sections.stream()
+                    .filter(it -> it.getDownStation() == finalDownStation)
+                    .findFirst();
+            if (!nextLineStation.isPresent()) {
+                break;
+            }
+            downStation = nextLineStation.get().getUpStation();
+        }
+
+        return downStation;
     }
 }
