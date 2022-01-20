@@ -78,21 +78,6 @@ public class LineService {
     }
 
     public void addSection(Line line, Station upStation, Station downStation, int distance) {
-        if (getStations(line).size() == 0) {
-            line.getSections().add(new Section(line, upStation, downStation, distance));
-            return;
-        }
-
-        boolean isNotValidUpStation = getStations(line).get(getStations(line).size() - 1) != upStation;
-        if (isNotValidUpStation) {
-            throw new RuntimeException("상행역은 하행 종점역이어야 합니다.");
-        }
-
-        boolean isDownStationExisted = getStations(line).stream().anyMatch(it -> it == downStation);
-        if (isDownStationExisted) {
-            throw new RuntimeException("하행역이 이미 등록되어 있습니다.");
-        }
-
         line.addSection(new Section(line, upStation, downStation, distance));
     }
 

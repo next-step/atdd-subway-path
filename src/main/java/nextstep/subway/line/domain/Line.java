@@ -1,10 +1,13 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.BaseEntity;
+import nextstep.subway.line.exception.DownStationExistedException;
+import nextstep.subway.line.exception.NotValidUpStationException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -38,7 +41,19 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
+        if (sections.isEmpty()) {
+            sections.add(section);
+            return;
+        }
+        validateSection(section);
         sections.add(section);
+    }
+
+    public List<Station> getStations() {
+        List<Station> stations = sections.stream().map(Section::getUpStation)
+                .collect(Collectors.toList());
+        stations.add(getLastDownStation());
+        return stations;
     }
 
     public int size() {
@@ -72,5 +87,19 @@ public class Line extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, color);
+    }
+
+    private void validateSection(Section section) {
+        if (!getLastDownStation().equals(section.getUpStation())) {
+            throw new NotValidUpStationException();
+        }
+        if (getStations().stream().anyMatch(
+                section.getDownStation()::equals)) {
+            throw new DownStationExistedException();
+        }
+    }
+
+    private Station getLastDownStation() {
+        return sections.get(sections.size() - 1).getDownStation();
     }
 }
