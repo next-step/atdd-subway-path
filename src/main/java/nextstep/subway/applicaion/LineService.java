@@ -2,6 +2,7 @@ package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
+import nextstep.subway.applicaion.exception.DuplicationException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,10 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
+        lineRepository.findByName(request.getName())
+                .ifPresent(l -> {
+                    throw new DuplicationException();
+                });
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
         return new LineResponse(
                 line.getId(),
@@ -32,7 +37,9 @@ public class LineService {
 
     public List<LineResponse> findAll() {
         List<Line> lines = lineRepository.findAll();
-        return lines.stream().map(LineResponse::of).collect(Collectors.toList());
+        return lines.stream()
+                .map(LineResponse::of)
+                .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
@@ -42,7 +49,7 @@ public class LineService {
 
     public void update(Long id, LineRequest request) {
         Line line = lineRepository.findById(id).orElseThrow(() -> new RuntimeException("없는 노선"));
-        line.update(request);
+        line.update(request.toEntity());
     }
 
     public void delete(Long id) {
