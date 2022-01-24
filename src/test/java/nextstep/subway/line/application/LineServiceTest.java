@@ -8,6 +8,8 @@ import nextstep.subway.station.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -106,15 +108,14 @@ public class LineServiceTest {
     }
 
     @DisplayName("노선의 중간에 구간을 추가 시, 구간의 길이가 노선의 길이 이상이면 에러 발생")
-    @Test
-    void addSectionMiddleInvalidDistance() {
+    @ValueSource(ints = {10, 11, 100})
+    @ParameterizedTest
+    void addSectionMiddleInvalidDistance(int distance) {
         assertThatExceptionOfType(InvalidDistanceException.class)
-                .isThrownBy(() -> lineService.addSection(이호선, 역삼역, 선릉역, 10));
-        assertThatExceptionOfType(InvalidDistanceException.class)
-                .isThrownBy(() -> lineService.addSection(이호선, 역삼역, 선릉역, 11));
+                .isThrownBy(() -> lineService.addSection(이호선, 선릉역, 역삼역, distance));
     }
 
-    @DisplayName("상행역과 하행역이 이미 모선에 모드 등록되어 있다면 추가 시 에러 발생")
+    @DisplayName("상행역과 하행역이 이미 모선에 모두 등록되어 있다면 추가 시 에러 발생")
     @Test
     void addSectionAlreadyRegistered() {
         assertThatExceptionOfType(SectionAlreadyRegisteredException.class)
@@ -126,7 +127,7 @@ public class LineServiceTest {
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가 시 에러 발생")
     @Test
     void addSectionStationNotFound() {
-        assertThatExceptionOfType(StationNotFoundException.class)
+        assertThatExceptionOfType(SectionNotSearchedException.class)
                 .isThrownBy(() -> lineService.addSection(이호선, 교대역, 삼성역, 1));
     }
 

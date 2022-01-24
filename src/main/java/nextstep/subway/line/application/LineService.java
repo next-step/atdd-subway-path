@@ -2,7 +2,6 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
@@ -76,7 +75,7 @@ public class LineService {
     }
 
     public void addSection(Line line, Station upStation, Station downStation, int distance) {
-        line.addSection(new Section(line, upStation, downStation, distance));
+        line.addSection(upStation, downStation, distance);
     }
 
 

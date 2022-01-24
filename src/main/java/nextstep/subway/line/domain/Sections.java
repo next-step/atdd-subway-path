@@ -1,8 +1,9 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.exception.DownStationExistedException;
 import nextstep.subway.line.exception.EmptyLineException;
 import nextstep.subway.line.exception.NotLastStationException;
+import nextstep.subway.line.exception.SectionAlreadyRegisteredException;
+import nextstep.subway.line.exception.SectionNotSearchedException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -16,7 +17,8 @@ import java.util.Optional;
 
 @Embeddable
 public class Sections {
-    
+    private static final int FIRST_INDEX = 0;
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Section> sections = new ArrayList<>();
 
@@ -40,7 +42,18 @@ public class Sections {
             return;
         }
         validateAddSection(section);
-        sections.add(section);
+
+        Section searchedSection = searchSection(section);
+        if (searchedSection.isSplittable(section)) {
+            sections.remove(searchedSection);
+            sections.addAll(searchedSection.split(section));
+        } else if (isLastSection(searchedSection)) {
+            sections.add(section);
+        } else if (isFirstSection(searchedSection)) {
+            sections.add(FIRST_INDEX, section);
+        } else {
+            throw new SectionNotSearchedException();
+        }
     }
 
     public void removeSection(Station station) {
@@ -75,11 +88,18 @@ public class Sections {
         return stations;
     }
 
+    private Section searchSection(Section section) {
+        return sections.stream()
+                .filter(section::search)
+                .findAny()
+                .orElseThrow(SectionNotSearchedException::new);
+    }
+
     private void validateAddSection(Section section) {
-        validateUpStation(section.getUpStation());
-        if (getStations().stream().anyMatch(
-                section.getDownStation()::equals)) {
-            throw new DownStationExistedException();
+        boolean alreadyRegistered = sections.stream()
+                .anyMatch(section::isRegistered);
+        if (alreadyRegistered) {
+            throw new SectionAlreadyRegisteredException();
         }
     }
 
@@ -114,5 +134,14 @@ public class Sections {
         }
 
         return downStation;
+    }
+
+    private boolean isFirstSection(Section section) {
+        return sections.get(FIRST_INDEX).equals(section);
+    }
+
+    private boolean isLastSection(Section section) {
+        int lastIndex = sections.size() - 1;
+        return sections.get(lastIndex).equals(section);
     }
 }

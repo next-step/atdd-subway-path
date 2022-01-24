@@ -5,9 +5,10 @@ import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -34,14 +35,9 @@ public class LineTest {
     @Test
     void getStations() {
         // given
-        이호선.addSection(new Section(이호선, 역삼역, 삼성역, 1));
-        List<Station> expectedSize = Arrays.asList(강남역, 역삼역, 삼성역);
+        이호선.addSection(역삼역, 삼성역, 1);
 
-        // when
-        List<Station> actual = 이호선.getStations();
-
-        // then
-        assertThat(actual).isEqualTo(expectedSize);
+        // when, then
         assertThat(이호선.getStations()).isEqualTo(Arrays.asList(강남역, 역삼역, 삼성역));
     }
 
@@ -52,7 +48,7 @@ public class LineTest {
         int expectedSize = 이호선.size() + 1;
 
         // when
-        이호선.addSection(new Section(이호선, 역삼역, 삼성역, 1));
+        이호선.addSection(역삼역, 삼성역, 1);
 
         // then
         assertThat(이호선.size()).isEqualTo(expectedSize);
@@ -65,7 +61,7 @@ public class LineTest {
         int expectedSize = 이호선.size() + 1;
 
         // when
-        이호선.addSection(new Section(이호선, 역삼역, 선릉역, 1));
+        이호선.addSection(역삼역, 선릉역, 1);
 
         // then
         assertThat(이호선.size()).isEqualTo(expectedSize);
@@ -79,7 +75,7 @@ public class LineTest {
         int expectedSize = 이호선.size() + 1;
 
         // when
-        이호선.addSection(new Section(이호선, 교대역, 강남역, 1));
+        이호선.addSection(교대역, 강남역, 1);
 
         // then
         assertThat(이호선.size()).isEqualTo(expectedSize);
@@ -93,8 +89,8 @@ public class LineTest {
         int expectedSize = 이호선.size() + 2;
 
         // when
-        이호선.addSection(new Section(이호선, 강남역, 선릉역, 2));
-        이호선.addSection(new Section(이호선, 삼성역, 역삼역, 3));
+        이호선.addSection(강남역, 선릉역, 2);
+        이호선.addSection(삼성역, 역삼역, 3);
 
         // then
         assertThat(이호선.size()).isEqualTo(expectedSize);
@@ -102,35 +98,34 @@ public class LineTest {
     }
 
     @DisplayName("노선의 중간에 구간을 추가 시, 구간의 길이가 노선의 길이 이상이면 에러 발생")
-    @Test
-    void addSectionMiddleInvalidDistance() {
+    @ValueSource(ints = {10, 11, 100})
+    @ParameterizedTest
+    void addSectionMiddleInvalidDistance(int distance) {
         assertThatExceptionOfType(InvalidDistanceException.class)
-                .isThrownBy(() -> 이호선.addSection(new Section(이호선, 역삼역, 선릉역, 10)));
-        assertThatExceptionOfType(InvalidDistanceException.class)
-                .isThrownBy(() -> 이호선.addSection(new Section(이호선, 역삼역, 선릉역, 11)));
+                .isThrownBy(() -> 이호선.addSection(강남역, 선릉역, distance));
     }
 
-    @DisplayName("상행역과 하행역이 이미 모선에 모드 등록되어 있다면 추가 시 에러 발생")
+    @DisplayName("상행역과 하행역이 이미 모선에 모두 등록되어 있다면 추가 시 에러 발생")
     @Test
     void addSectionAlreadyRegistered() {
         assertThatExceptionOfType(SectionAlreadyRegisteredException.class)
-                .isThrownBy(() -> 이호선.addSection(new Section(이호선, 강남역, 역삼역, 1)));
+                .isThrownBy(() -> 이호선.addSection(강남역, 역삼역, 1));
         assertThatExceptionOfType(SectionAlreadyRegisteredException.class)
-                .isThrownBy(() -> 이호선.addSection(new Section(이호선, 역삼역, 강남역, 1)));
+                .isThrownBy(() -> 이호선.addSection(역삼역, 강남역, 1));
     }
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가 시 에러 발생")
     @Test
     void addSectionStationNotFound() {
-        assertThatExceptionOfType(StationNotFoundException.class)
-                .isThrownBy(() -> 이호선.addSection(new Section(이호선, 교대역, 삼성역, 1)));
+        assertThatExceptionOfType(SectionNotSearchedException.class)
+                .isThrownBy(() -> 이호선.addSection(교대역, 삼성역, 1));
     }
 
     @DisplayName("노선에서 구간을 삭제하면, 노선의 크기가 감소")
     @Test
     void removeSection() {
         // given
-        이호선.addSection(new Section(이호선, 역삼역, 삼성역, 1));
+        이호선.addSection(역삼역, 삼성역, 1);
         int expectedSize = 이호선.size() - 1;
 
         // when
@@ -151,7 +146,7 @@ public class LineTest {
     @Test
     void removeSectionInvalidUpStation() {
         // given
-        이호선.addSection(new Section(이호선, 역삼역, 삼성역, 1));
+        이호선.addSection(역삼역, 삼성역, 1);
 
         // then
         assertThatExceptionOfType(NotLastStationException.class)

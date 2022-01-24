@@ -10,6 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,22 +145,21 @@ public class LineServiceMockTest {
     }
 
     @DisplayName("노선의 중간에 구간을 추가 시, 구간의 길이가 노선의 길이 이상이면 에러 발생")
-    @Test
-    void addSectionMiddleInvalidDistance() {
+    @ValueSource(ints = {10, 11, 100})
+    @ParameterizedTest
+    void addSectionMiddleInvalidDistance(int distance) {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
-        when(stationService.findStationById(강남역.getId())).thenReturn(강남역);
         when(stationService.findStationById(역삼역.getId())).thenReturn(역삼역);
+        when(stationService.findStationById(선릉역.getId())).thenReturn(선릉역);
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
         // when, then
-        assertThatExceptionOfType(DownStationExistedException.class)
-                .isThrownBy(() -> lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 선릉역.getId(), 10)));
-        assertThatExceptionOfType(DownStationExistedException.class)
-                .isThrownBy(() -> lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 선릉역.getId(), 11)));
+        assertThatExceptionOfType(InvalidDistanceException.class)
+                .isThrownBy(() -> lineService.addSection(이호선.getId(), new SectionRequest(선릉역.getId(), 역삼역.getId(), distance)));
     }
 
-    @DisplayName("상행역과 하행역이 이미 모선에 모드 등록되어 있다면 추가 시 에러 발생")
+    @DisplayName("상행역과 하행역이 이미 모선에 모두 등록되어 있다면 추가 시 에러 발생")
     @Test
     void addSectionAlreadyRegistered() {
         // given
@@ -181,7 +182,7 @@ public class LineServiceMockTest {
         when(stationService.findStationById(삼성역.getId())).thenReturn(삼성역);
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
-        assertThatExceptionOfType(StationNotFoundException.class)
+        assertThatExceptionOfType(SectionNotSearchedException.class)
                 .isThrownBy(() -> lineService.addSection(이호선.getId(), new SectionRequest(교대역.getId(), 삼성역.getId(), 1)));
     }
 

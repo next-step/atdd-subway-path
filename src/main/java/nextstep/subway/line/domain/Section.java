@@ -1,11 +1,17 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.exception.InvalidDistanceException;
+import nextstep.subway.line.exception.InvalidSectionSplitException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 public class Section {
+    private static final int MIN_DISTANCE = 0;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,6 +40,34 @@ public class Section {
         this.distance = distance;
     }
 
+    public boolean search(Section section) {
+        return hasStation(section.upStation) || hasStation(section.downStation);
+    }
+
+    public boolean isRegistered(Section section) {
+        return hasStation(section.upStation) && hasStation(section.downStation);
+    }
+
+    public boolean isSplittable(Section section) {
+        return upStation.equals(section.upStation) || downStation.equals(section.downStation);
+    }
+
+    public List<Section> split(Section section) {
+        if (upStation.equals(section.upStation)) {
+            return Arrays.asList(
+                    new Section(line, upStation, section.downStation, section.distance),
+                    new Section(line, section.downStation, downStation, calculateSplitDistance(section))
+            );
+        }
+        if (downStation.equals(section.downStation)) {
+            return Arrays.asList(
+                    new Section(line, upStation, section.upStation, calculateSplitDistance(section)),
+                    new Section(line, section.upStation, downStation, section.distance)
+            );
+        }
+        throw new InvalidSectionSplitException();
+    }
+
     public Long getId() {
         return id;
     }
@@ -52,5 +86,17 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    private boolean hasStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
+    private int calculateSplitDistance(Section section) {
+        int splitDistance = distance - section.distance;
+        if (splitDistance <= MIN_DISTANCE) {
+            throw new InvalidDistanceException();
+        }
+        return splitDistance;
     }
 }
