@@ -2,6 +2,7 @@ package nextstep.subway.line.application;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.line.exception.*;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -56,7 +57,7 @@ public class LineServiceTest {
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(이호선, 역삼역, 삼성역, 1);
+        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 삼성역.getId(), 1));
 
         // then
         // line.getSections 메서드를 통해 검증
@@ -71,7 +72,7 @@ public class LineServiceTest {
         int expectedSize = 이호선.size() + 1;
 
         // when
-        lineService.addSection(이호선, 역삼역, 선릉역, 1);
+        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 선릉역.getId(), 1));
 
         // then
         assertThat(이호선.size()).isEqualTo(expectedSize);
@@ -85,7 +86,7 @@ public class LineServiceTest {
         int expectedSize = 이호선.size() + 1;
 
         // when
-        lineService.addSection(이호선, 교대역, 강남역, 1);
+        lineService.addSection(이호선.getId(), new SectionRequest(교대역.getId(), 강남역.getId(), 1));
 
         // then
         assertThat(이호선.size()).isEqualTo(expectedSize);
@@ -99,8 +100,8 @@ public class LineServiceTest {
         int expectedSize = 이호선.size() + 2;
 
         // when
-        lineService.addSection(이호선, 강남역, 선릉역, 2);
-        lineService.addSection(이호선, 삼성역, 역삼역, 3);
+        lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 선릉역.getId(), 1));
+        lineService.addSection(이호선.getId(), new SectionRequest(삼성역.getId(), 역삼역.getId(), 1));
 
         // then
         assertThat(이호선.size()).isEqualTo(expectedSize);
@@ -112,34 +113,34 @@ public class LineServiceTest {
     @ParameterizedTest
     void addSectionMiddleInvalidDistance(int distance) {
         assertThatExceptionOfType(InvalidDistanceException.class)
-                .isThrownBy(() -> lineService.addSection(이호선, 선릉역, 역삼역, distance));
+                .isThrownBy(() -> lineService.addSection(이호선.getId(), new SectionRequest(선릉역.getId(), 역삼역.getId(), distance)));
     }
 
     @DisplayName("상행역과 하행역이 이미 모선에 모두 등록되어 있다면 추가 시 에러 발생")
     @Test
     void addSectionAlreadyRegistered() {
         assertThatExceptionOfType(SectionAlreadyRegisteredException.class)
-                .isThrownBy(() -> lineService.addSection(이호선, 강남역, 역삼역, 1));
+                .isThrownBy(() -> lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 1)));
         assertThatExceptionOfType(SectionAlreadyRegisteredException.class)
-                .isThrownBy(() -> lineService.addSection(이호선, 역삼역, 강남역, 1));
+                .isThrownBy(() -> lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 강남역.getId(), 1)));
     }
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가 시 에러 발생")
     @Test
     void addSectionStationNotFound() {
         assertThatExceptionOfType(SectionNotSearchedException.class)
-                .isThrownBy(() -> lineService.addSection(이호선, 교대역, 삼성역, 1));
+                .isThrownBy(() -> lineService.addSection(이호선.getId(), new SectionRequest(교대역.getId(), 삼성역.getId(), 1)));
     }
 
     @DisplayName("노선에서 구간을 삭제하면, 노선의 크기가 감소")
     @Test
     void removeSection() {
         // given
-        lineService.addSection(이호선, 역삼역, 삼성역, 1);
+        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 삼성역.getId(), 1));
         int expected = 이호선.size() - 1;
 
         // when
-        lineService.removeSection(이호선, 삼성역);
+        lineService.removeSection(이호선.getId(), 삼성역.getId());
 
         // then
         assertThat(이호선.size()).isEqualTo(expected);
@@ -149,17 +150,17 @@ public class LineServiceTest {
     @Test
     void removeSectionNotEndOfList() {
         assertThatExceptionOfType(EmptyLineException.class)
-                .isThrownBy(() -> lineService.removeSection(이호선, 삼성역));
+                .isThrownBy(() -> lineService.removeSection(이호선.getId(), 삼성역.getId()));
     }
 
     @DisplayName("마지막이 아닌 역을 삭제시 에러 발생")
     @Test
     void removeSectionInvalidUpStation() {
         // given
-        lineService.addSection(이호선, 역삼역, 삼성역, 1);
+        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 삼성역.getId(), 1));
 
         // then
         assertThatExceptionOfType(NotLastStationException.class)
-                .isThrownBy(() -> lineService.removeSection(이호선, 역삼역));
+                .isThrownBy(() -> lineService.removeSection(이호선.getId(), 역삼역.getId()));
     }
 }
