@@ -72,7 +72,8 @@ public class LineServiceMockTest {
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 삼성역.getId(), 1));
+        int distance = 1;
+        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 삼성역.getId(), distance));
 
         // then
         // line.findLineById 메서드를 통해 검증
@@ -92,7 +93,8 @@ public class LineServiceMockTest {
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 선릉역.getId(), 1));
+        int distance = 1;
+        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 선릉역.getId(), distance));
 
         // then
         // line.findLineById 메서드를 통해 검증
@@ -112,7 +114,8 @@ public class LineServiceMockTest {
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(이호선.getId(), new SectionRequest(교대역.getId(), 강남역.getId(), 1));
+        int distance = 1;
+        lineService.addSection(이호선.getId(), new SectionRequest(교대역.getId(), 강남역.getId(), distance));
 
         // then
         // line.findLineById 메서드를 통해 검증
@@ -134,8 +137,9 @@ public class LineServiceMockTest {
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 선릉역.getId(), 1));
-        lineService.addSection(이호선.getId(), new SectionRequest(삼성역.getId(), 역삼역.getId(), 1));
+        int distance = 1;
+        lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 선릉역.getId(), distance));
+        lineService.addSection(이호선.getId(), new SectionRequest(삼성역.getId(), 역삼역.getId(), distance));
 
         // then
         // line.findLineById 메서드를 통해 검증
@@ -168,10 +172,11 @@ public class LineServiceMockTest {
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
         // when, then
+        int distance = 1;
         assertThatExceptionOfType(SectionAlreadyRegisteredException.class)
-                .isThrownBy(() -> lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 1)));
+                .isThrownBy(() -> lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), distance)));
         assertThatExceptionOfType(SectionAlreadyRegisteredException.class)
-                .isThrownBy(() -> lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 강남역.getId(), 1)));
+                .isThrownBy(() -> lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 강남역.getId(), distance)));
     }
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가 시 에러 발생")
@@ -182,8 +187,10 @@ public class LineServiceMockTest {
         when(stationService.findStationById(삼성역.getId())).thenReturn(삼성역);
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
+        // when, then
+        int distance = 1;
         assertThatExceptionOfType(SectionNotSearchedException.class)
-                .isThrownBy(() -> lineService.addSection(이호선.getId(), new SectionRequest(교대역.getId(), 삼성역.getId(), 1)));
+                .isThrownBy(() -> lineService.addSection(이호선.getId(), new SectionRequest(교대역.getId(), 삼성역.getId(), distance)));
     }
 
     @DisplayName("노선에서 구간을 삭제하면, 노선의 크기가 감소")
@@ -195,7 +202,8 @@ public class LineServiceMockTest {
         when(stationService.findStationById(삼성역.getId())).thenReturn(삼성역);
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
-        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 삼성역.getId(), 1));
+        int distance = 1;
+        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 삼성역.getId(), distance));
         int expectedSize = 이호선.size() - 1;
 
         // when
@@ -228,7 +236,8 @@ public class LineServiceMockTest {
         when(stationService.findStationById(삼성역.getId())).thenReturn(삼성역);
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
-        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 삼성역.getId(), 1));
+        int distance = 1;
+        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 삼성역.getId(), distance));
 
         // then
         assertThatExceptionOfType(NotLastStationException.class)
