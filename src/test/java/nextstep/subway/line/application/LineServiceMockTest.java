@@ -1,9 +1,15 @@
 package nextstep.subway.line.application;
 
+import java.util.Arrays;
+import java.util.Optional;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.SectionRequest;
-import nextstep.subway.line.exception.*;
+import nextstep.subway.line.exception.EmptyLineException;
+import nextstep.subway.line.exception.InvalidDistanceException;
+import nextstep.subway.line.exception.NotLastStationException;
+import nextstep.subway.line.exception.SectionAlreadyRegisteredException;
+import nextstep.subway.line.exception.SectionNotSearchedException;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,11 +23,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.Arrays;
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -78,8 +82,10 @@ public class LineServiceMockTest {
         // then
         // line.findLineById 메서드를 통해 검증
         Line line = lineService.findLineById(이호선.getId());
-        assertThat(line.size()).isEqualTo(expectedSize);
-        assertThat(line.getStations()).isEqualTo(Arrays.asList(강남역, 역삼역, 삼성역));
+        assertAll(
+                () -> assertThat(line.size()).isEqualTo(expectedSize),
+                () -> assertThat(line.getStations()).isEqualTo(Arrays.asList(강남역, 역삼역, 삼성역))
+        );
     }
 
     @DisplayName("노선의 마지막 하행에 구간을 추가")
@@ -99,8 +105,10 @@ public class LineServiceMockTest {
         // then
         // line.findLineById 메서드를 통해 검증
         Line line = lineService.findLineById(이호선.getId());
-        assertThat(line.size()).isEqualTo(expectedSize);
-        assertThat(line.getStations()).isEqualTo(Arrays.asList(강남역, 역삼역, 선릉역));
+        assertAll(
+                () -> assertThat(line.size()).isEqualTo(expectedSize),
+                () -> assertThat(line.getStations()).isEqualTo(Arrays.asList(강남역, 역삼역, 선릉역))
+        );
     }
 
     @DisplayName("노선의 첫번째 상행에 구간을 추가")
@@ -120,8 +128,10 @@ public class LineServiceMockTest {
         // then
         // line.findLineById 메서드를 통해 검증
         Line line = lineService.findLineById(이호선.getId());
-        assertThat(line.size()).isEqualTo(expectedSize);
-        assertThat(line.getStations()).isEqualTo(Arrays.asList(교대역, 강남역, 역삼역));
+        assertAll(
+                () -> assertThat(line.size()).isEqualTo(expectedSize),
+                () -> assertThat(line.getStations()).isEqualTo(Arrays.asList(교대역, 강남역, 역삼역))
+        );
     }
 
     @DisplayName("노선의 중간에 구간을 추가")
@@ -144,8 +154,10 @@ public class LineServiceMockTest {
         // then
         // line.findLineById 메서드를 통해 검증
         Line line = lineService.findLineById(이호선.getId());
-        assertThat(line.size()).isEqualTo(expectedSize);
-        assertThat(line.getStations()).isEqualTo(Arrays.asList(강남역, 선릉역, 삼성역, 역삼역));
+        assertAll(
+                () -> assertThat(line.size()).isEqualTo(expectedSize),
+                () -> assertThat(line.getStations()).isEqualTo(Arrays.asList(강남역, 선릉역, 삼성역, 역삼역))
+        );
     }
 
     @DisplayName("노선의 중간에 구간을 추가 시, 구간의 길이가 노선의 길이 이상이면 에러 발생")
@@ -173,10 +185,12 @@ public class LineServiceMockTest {
 
         // when, then
         int distance = 1;
-        assertThatExceptionOfType(SectionAlreadyRegisteredException.class)
-                .isThrownBy(() -> lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), distance)));
-        assertThatExceptionOfType(SectionAlreadyRegisteredException.class)
-                .isThrownBy(() -> lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 강남역.getId(), distance)));
+        assertAll(
+                () -> assertThatExceptionOfType(SectionAlreadyRegisteredException.class)
+                        .isThrownBy(() -> lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), distance))),
+                () -> assertThatExceptionOfType(SectionAlreadyRegisteredException.class)
+                        .isThrownBy(() -> lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 강남역.getId(), distance)))
+        );
     }
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가 시 에러 발생")

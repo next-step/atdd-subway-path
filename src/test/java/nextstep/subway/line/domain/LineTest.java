@@ -1,6 +1,11 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.exception.*;
+import java.util.Arrays;
+import nextstep.subway.line.exception.EmptyLineException;
+import nextstep.subway.line.exception.InvalidDistanceException;
+import nextstep.subway.line.exception.NotLastStationException;
+import nextstep.subway.line.exception.SectionAlreadyRegisteredException;
+import nextstep.subway.line.exception.SectionNotSearchedException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -8,10 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.Arrays;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class LineTest {
     private Station 교대역;
@@ -69,8 +73,10 @@ public class LineTest {
         이호선.addSection(역삼역, 선릉역, distance);
 
         // then
-        assertThat(이호선.size()).isEqualTo(expectedSize);
-        assertThat(이호선.getStations()).isEqualTo(Arrays.asList(강남역, 역삼역, 선릉역));
+        assertAll(
+                () -> assertThat(이호선.size()).isEqualTo(expectedSize),
+                () -> assertThat(이호선.getStations()).isEqualTo(Arrays.asList(강남역, 역삼역, 선릉역))
+        );
     }
 
     @DisplayName("노선의 첫번째 상행에 구간을 추가")
@@ -84,8 +90,10 @@ public class LineTest {
         이호선.addSection(교대역, 강남역, distance);
 
         // then
-        assertThat(이호선.size()).isEqualTo(expectedSize);
-        assertThat(이호선.getStations()).isEqualTo(Arrays.asList(교대역, 강남역, 역삼역));
+        assertAll(
+                () -> assertThat(이호선.size()).isEqualTo(expectedSize),
+                () -> assertThat(이호선.getStations()).isEqualTo(Arrays.asList(교대역, 강남역, 역삼역))
+        );
     }
 
     @DisplayName("노선의 중간에 구간을 추가")
@@ -100,8 +108,10 @@ public class LineTest {
         이호선.addSection(삼성역, 역삼역, distance);
 
         // then
-        assertThat(이호선.size()).isEqualTo(expectedSize);
-        assertThat(이호선.getStations()).isEqualTo(Arrays.asList(강남역, 선릉역, 삼성역, 역삼역));
+        assertAll(
+                () -> assertThat(이호선.size()).isEqualTo(expectedSize),
+                () -> assertThat(이호선.getStations()).isEqualTo(Arrays.asList(강남역, 선릉역, 삼성역, 역삼역))
+        );
     }
 
     @DisplayName("노선의 중간에 구간을 추가 시, 구간의 길이가 노선의 길이 이상이면 에러 발생")
@@ -116,10 +126,12 @@ public class LineTest {
     @Test
     void addSectionAlreadyRegistered() {
         int distance = 1;
-        assertThatExceptionOfType(SectionAlreadyRegisteredException.class)
-                .isThrownBy(() -> 이호선.addSection(강남역, 역삼역, distance));
-        assertThatExceptionOfType(SectionAlreadyRegisteredException.class)
-                .isThrownBy(() -> 이호선.addSection(역삼역, 강남역, distance));
+        assertAll(
+                () -> assertThatExceptionOfType(SectionAlreadyRegisteredException.class)
+                        .isThrownBy(() -> 이호선.addSection(강남역, 역삼역, distance)),
+                () -> assertThatExceptionOfType(SectionAlreadyRegisteredException.class)
+                        .isThrownBy(() -> 이호선.addSection(역삼역, 강남역, distance))
+        );
     }
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가 시 에러 발생")
