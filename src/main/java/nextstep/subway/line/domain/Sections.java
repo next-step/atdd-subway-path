@@ -8,9 +8,9 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import nextstep.subway.line.exception.EmptyLineException;
-import nextstep.subway.line.exception.NotLastStationException;
 import nextstep.subway.line.exception.SectionAlreadyRegisteredException;
 import nextstep.subway.line.exception.SectionNotSearchedException;
+import nextstep.subway.line.exception.StationNotFoundException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -91,7 +91,7 @@ public class Sections {
 
     private void validateUpStation(Station station) {
         if (!getLastDownStation().equals(station)) {
-            throw new NotLastStationException();
+            throw new StationNotFoundException();
         }
     }
 

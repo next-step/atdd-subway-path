@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import nextstep.subway.line.exception.EmptyLineException;
 import nextstep.subway.line.exception.InvalidDistanceException;
-import nextstep.subway.line.exception.NotLastStationException;
 import nextstep.subway.line.exception.SectionAlreadyRegisteredException;
 import nextstep.subway.line.exception.SectionNotSearchedException;
+import nextstep.subway.line.exception.StationNotFoundException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +19,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class LineTest {
+    private static final int FIRST_INDEX = 0;
+
     private Station 교대역;
     private Station 강남역;
     private Station 역삼역;
@@ -138,7 +140,7 @@ public class LineTest {
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가 시 에러 발생")
     @Test
-    void addSectionStationNotFound() {
+    void addSectionNotSearched() {
         int distance = 1;
         assertThatExceptionOfType(SectionNotSearchedException.class)
                 .isThrownBy(() -> 이호선.addSection(교대역, 삼성역, distance));
@@ -151,30 +153,95 @@ public class LineTest {
         int distance = 1;
         이호선.addSection(역삼역, 삼성역, distance);
         int expectedSize = 이호선.size() - 1;
+        int expectedDistance = distance + distance;
 
         // when
         이호선.removeSection(삼성역);
 
         // then
-        assertThat(이호선.size()).isEqualTo(expectedSize);
+        assertAll(
+                () -> assertThat(이호선.size()).isEqualTo(expectedSize),
+                () -> assertThat(이호선.getStations()).isEqualTo(Arrays.asList(강남역, 역삼역)),
+                () -> assertThat(이호선.getSections().get(FIRST_INDEX).getDistance()).isEqualTo(expectedDistance)
+        );
+    }
+
+    @DisplayName("노선의 마지막 하행을 삭제")
+    @Test
+    void removeLastDownStation() {
+        // given
+        int distance = 1;
+        이호선.addSection(역삼역, 선릉역, distance);
+        int expectedSize = 이호선.size() - 1;
+        int expectedDistance = distance + distance;
+
+        // when
+        이호선.removeSection(선릉역);
+
+        // then
+        assertAll(
+                () -> assertThat(이호선.size()).isEqualTo(expectedSize),
+                () -> assertThat(이호선.getStations()).isEqualTo(Arrays.asList(강남역, 역삼역)),
+                () -> assertThat(이호선.getSections().get(FIRST_INDEX).getDistance()).isEqualTo(expectedDistance)
+        );
+    }
+
+    @DisplayName("노선의 첫번째 상행을 삭제")
+    @Test
+    void removeFirstUpStation() {
+        // given
+        int distance = 1;
+        이호선.addSection(역삼역, 선릉역, distance);
+        int expectedSize = 이호선.size() - 1;
+        int expectedDistance = distance + distance;
+
+        // when
+        이호선.removeSection(강남역);
+
+        // then
+        assertAll(
+                () -> assertThat(이호선.size()).isEqualTo(expectedSize),
+                () -> assertThat(이호선.getStations()).isEqualTo(Arrays.asList(역삼역, 선릉역)),
+                () -> assertThat(이호선.getSections().get(FIRST_INDEX).getDistance()).isEqualTo(expectedDistance)
+        );
+    }
+
+    @DisplayName("노선의 중간을 삭제")
+    @Test
+    void removeMiddleStation() {
+        // given
+        int distance = 1;
+        이호선.addSection(역삼역, 선릉역, distance);
+        int expectedSize = 이호선.size() - 1;
+        int expectedDistance = distance + distance;
+
+        // when
+        이호선.removeSection(역삼역);
+
+        // then
+        assertAll(
+                () -> assertThat(이호선.size()).isEqualTo(expectedSize),
+                () -> assertThat(이호선.getStations()).isEqualTo(Arrays.asList(강남역, 선릉역)),
+                () -> assertThat(이호선.getSections().get(FIRST_INDEX).getDistance()).isEqualTo(expectedDistance)
+        );
     }
 
     @DisplayName("구간이 하나인 노선에서 역 삭제 시 에러 발생")
     @Test
-    void removeSectionNotEndOfList() {
+    void removeSectionEmptyLine() {
         assertThatExceptionOfType(EmptyLineException.class)
                 .isThrownBy(() -> 이호선.removeSection(역삼역));
     }
 
-    @DisplayName("마지막이 아닌 역을 삭제시 에러 발생")
+    @DisplayName("노선에 존재하지 않는 역을 삭제시 에러 발생")
     @Test
-    void removeSectionInvalidUpStation() {
+    void removeSectionStationNotFound() {
         // given
         int distance = 1;
-        이호선.addSection(역삼역, 삼성역, distance);
+        이호선.addSection(역삼역, 선릉역, distance);
 
         // then
-        assertThatExceptionOfType(NotLastStationException.class)
-                .isThrownBy(() -> 이호선.removeSection(역삼역));
+        assertThatExceptionOfType(StationNotFoundException.class)
+                .isThrownBy(() -> 이호선.removeSection(교대역));
     }
 }
