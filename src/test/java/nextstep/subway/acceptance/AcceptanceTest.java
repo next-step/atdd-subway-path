@@ -9,6 +9,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
+
     @LocalServerPort
     int port;
 
@@ -20,4 +21,5 @@ public class AcceptanceTest {
         RestAssured.port = port;
         databaseCleanup.execute();
     }
+
 }
