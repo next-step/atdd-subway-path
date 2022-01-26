@@ -6,7 +6,6 @@ import nextstep.subway.line.exception.EmptyLineException;
 import nextstep.subway.line.exception.InvalidDistanceException;
 import nextstep.subway.line.exception.SectionAlreadyRegisteredException;
 import nextstep.subway.line.exception.SectionNotSearchedException;
-import nextstep.subway.line.exception.StationNotFoundException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -46,9 +45,11 @@ public class LineTest {
         // given
         int distance = 1;
         이호선.addSection(역삼역, 삼성역, distance);
+        이호선.addSection(교대역, 강남역, distance);
+        이호선.addSection(역삼역, 선릉역, distance);
 
         // when, then
-        assertThat(이호선.getStations()).isEqualTo(Arrays.asList(강남역, 역삼역, 삼성역));
+        assertThat(이호선.getStations()).isEqualTo(Arrays.asList(교대역, 강남역, 역삼역, 삼성역));
     }
 
     @DisplayName("노선에 구간을 추가하면, 노선의 크기가 증가")
@@ -146,23 +147,27 @@ public class LineTest {
                 .isThrownBy(() -> 이호선.addSection(교대역, 삼성역, distance));
     }
 
-    @DisplayName("노선에서 구간을 삭제하면, 노선의 크기가 감소")
+    @DisplayName("노선에서 구간을 삭제하면, 구강의 길이가 병합")
     @Test
     void removeSection() {
         // given
-        int distance = 1;
-        이호선.addSection(역삼역, 삼성역, distance);
+        int upDistance = 3;
+        int downDistance = 1;
+        이호선.addSection(역삼역, 삼성역, upDistance);
+        이호선.addSection(교대역, 강남역, downDistance);
+        이호선.addSection(선릉역, 삼성역, downDistance);
         int expectedSize = 이호선.size() - 1;
-        int expectedDistance = distance + distance;
+        int expectedDistance = 3;
 
         // when
-        이호선.removeSection(삼성역);
+        이호선.removeSection(선릉역);
 
         // then
+        Section mergedSection = 이호선.getSections().get(이호선.getSections().size() - 1);
         assertAll(
+                () -> assertThat(mergedSection.getDistance()).isEqualTo(expectedDistance),
                 () -> assertThat(이호선.size()).isEqualTo(expectedSize),
-                () -> assertThat(이호선.getStations()).isEqualTo(Arrays.asList(강남역, 역삼역)),
-                () -> assertThat(이호선.getSections().get(FIRST_INDEX).getDistance()).isEqualTo(expectedDistance)
+                () -> assertThat(이호선.getStations()).isEqualTo(Arrays.asList(교대역, 강남역, 역삼역, 삼성역))
         );
     }
 
@@ -173,7 +178,6 @@ public class LineTest {
         int distance = 1;
         이호선.addSection(역삼역, 선릉역, distance);
         int expectedSize = 이호선.size() - 1;
-        int expectedDistance = distance + distance;
 
         // when
         이호선.removeSection(선릉역);
@@ -181,8 +185,7 @@ public class LineTest {
         // then
         assertAll(
                 () -> assertThat(이호선.size()).isEqualTo(expectedSize),
-                () -> assertThat(이호선.getStations()).isEqualTo(Arrays.asList(강남역, 역삼역)),
-                () -> assertThat(이호선.getSections().get(FIRST_INDEX).getDistance()).isEqualTo(expectedDistance)
+                () -> assertThat(이호선.getStations()).isEqualTo(Arrays.asList(강남역, 역삼역))
         );
     }
 
@@ -193,7 +196,6 @@ public class LineTest {
         int distance = 1;
         이호선.addSection(역삼역, 선릉역, distance);
         int expectedSize = 이호선.size() - 1;
-        int expectedDistance = distance + distance;
 
         // when
         이호선.removeSection(강남역);
@@ -201,8 +203,7 @@ public class LineTest {
         // then
         assertAll(
                 () -> assertThat(이호선.size()).isEqualTo(expectedSize),
-                () -> assertThat(이호선.getStations()).isEqualTo(Arrays.asList(역삼역, 선릉역)),
-                () -> assertThat(이호선.getSections().get(FIRST_INDEX).getDistance()).isEqualTo(expectedDistance)
+                () -> assertThat(이호선.getStations()).isEqualTo(Arrays.asList(역삼역, 선릉역))
         );
     }
 
@@ -213,7 +214,6 @@ public class LineTest {
         int distance = 1;
         이호선.addSection(역삼역, 선릉역, distance);
         int expectedSize = 이호선.size() - 1;
-        int expectedDistance = distance + distance;
 
         // when
         이호선.removeSection(역삼역);
@@ -221,8 +221,7 @@ public class LineTest {
         // then
         assertAll(
                 () -> assertThat(이호선.size()).isEqualTo(expectedSize),
-                () -> assertThat(이호선.getStations()).isEqualTo(Arrays.asList(강남역, 선릉역)),
-                () -> assertThat(이호선.getSections().get(FIRST_INDEX).getDistance()).isEqualTo(expectedDistance)
+                () -> assertThat(이호선.getStations()).isEqualTo(Arrays.asList(강남역, 선릉역))
         );
     }
 
@@ -233,7 +232,7 @@ public class LineTest {
                 .isThrownBy(() -> 이호선.removeSection(역삼역));
     }
 
-    @DisplayName("노선에 존재하지 않는 역을 삭제시 에러 발생")
+    @DisplayName("노선에 존재하지 않는 역을 가진 구역을 삭제시 에러 발생")
     @Test
     void removeSectionStationNotFound() {
         // given
@@ -241,7 +240,7 @@ public class LineTest {
         이호선.addSection(역삼역, 선릉역, distance);
 
         // then
-        assertThatExceptionOfType(StationNotFoundException.class)
+        assertThatExceptionOfType(SectionNotSearchedException.class)
                 .isThrownBy(() -> 이호선.removeSection(교대역));
     }
 }

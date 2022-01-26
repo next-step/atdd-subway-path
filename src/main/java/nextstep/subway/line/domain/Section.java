@@ -1,12 +1,18 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.exception.InvalidDistanceException;
-import nextstep.subway.line.exception.InvalidSectionSplitException;
-import nextstep.subway.station.domain.Station;
-
-import javax.persistence.*;
 import java.util.Arrays;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import nextstep.subway.line.exception.InvalidDistanceException;
+import nextstep.subway.line.exception.InvalidSectionSplitException;
+import nextstep.subway.line.exception.SectionMergeFailedException;
+import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Section {
@@ -40,8 +46,8 @@ public class Section {
         this.distance = distance;
     }
 
-    public boolean search(Section section) {
-        return hasStation(section.upStation) || hasStation(section.downStation);
+    public boolean hasStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
     }
 
     public boolean isRegistered(Section section) {
@@ -68,6 +74,14 @@ public class Section {
         throw new InvalidSectionSplitException();
     }
 
+    public Section merge(Section nextSection) {
+        if (!downStation.equals(nextSection.upStation)) {
+            throw new SectionMergeFailedException();
+        }
+        int mergedDistance = distance + nextSection.distance;
+        return new Section(line, upStation, nextSection.downStation, mergedDistance);
+    }
+
     public Long getId() {
         return id;
     }
@@ -86,10 +100,6 @@ public class Section {
 
     public int getDistance() {
         return distance;
-    }
-
-    private boolean hasStation(Station station) {
-        return upStation.equals(station) || downStation.equals(station);
     }
 
     private int calculateSplitDistance(Section section) {

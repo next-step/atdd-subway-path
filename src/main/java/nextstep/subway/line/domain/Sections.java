@@ -1,7 +1,10 @@
 package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -9,13 +12,14 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import nextstep.subway.line.exception.EmptyLineException;
 import nextstep.subway.line.exception.SectionAlreadyRegisteredException;
+import nextstep.subway.line.exception.SectionMergeFailedException;
 import nextstep.subway.line.exception.SectionNotSearchedException;
-import nextstep.subway.line.exception.StationNotFoundException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
     private static final int FIRST_INDEX = 0;
+    private static final int SINGLE_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Section> sections = new ArrayList<>();
@@ -46,34 +50,53 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
-        validateRemoveSections(station);
-        sections.stream()
-                .filter(it -> it.getDownStation().equals(station))
-                .findFirst()
-                .ifPresent(it -> sections.remove(it));
+        if (sections.size() <= SINGLE_SIZE) {
+            throw new EmptyLineException();
+        }
+        List<Section> searchedSections = searchSections(station);
+        sections.removeAll(searchedSections);
+        if (searchedSections.size() > SINGLE_SIZE) {
+            sections.add(mergeSections(searchedSections, station));
+        }
     }
 
     public List<Station> getStations() {
-        List<Station> stations = sections.stream()
-                .map(Section::getUpStation)
-                .collect(Collectors.toList());
-        System.out.println(sections.stream()
-                .map(Section::getUpStation)
-                .map(Station::getName)
-                .collect(Collectors.toList()));
-        System.out.println(sections.stream()
-                .map(Section::getDownStation)
-                .map(Station::getName)
-                .collect(Collectors.toList()));
-        stations.add(getLastDownStation());
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Station> stations = new ArrayList<>();
+        Map<Station, Station> downMapper = sections.stream()
+                .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
+
+        Station downStation = getFirstUpStation();
+        while (downStation != null) {
+            stations.add(downStation);
+            downStation = downMapper.get(downStation);
+        }
+
         return stations;
     }
 
-    private Section searchSection(Section section) {
-        return sections.stream()
-                .filter(section::search)
-                .findAny()
-                .orElseThrow(SectionNotSearchedException::new);
+    private List<Section> searchSections(Station... stations) {
+        List<Section> searchedSections = sections.stream()
+                .filter(section -> Arrays.stream(stations).anyMatch(section::hasStation))
+                .collect(Collectors.toList());
+        if (searchedSections.isEmpty()) {
+            throw new SectionNotSearchedException();
+        }
+        return searchedSections;
+    }
+
+    private Section mergeSections(List<Section> sections, Station station) {
+        Section upSection = sections.stream().filter(
+                section -> station.equals(section.getDownStation())
+        ).findAny().orElseThrow(SectionMergeFailedException::new);
+        Section downSection = sections.stream().filter(
+                section -> station.equals(section.getUpStation())
+        ).findAny().orElseThrow(SectionMergeFailedException::new);
+        return upSection.merge(downSection);
+
     }
 
     private void validateAddSection(Section section) {
@@ -82,21 +105,10 @@ public class Sections {
         }
     }
 
-    private void validateRemoveSections(Station station) {
-        if (sections.size() <= 1) {
-            throw new EmptyLineException();
-        }
-        validateUpStation(station);
-    }
-
-    private void validateUpStation(Station station) {
-        if (!getLastDownStation().equals(station)) {
-            throw new StationNotFoundException();
-        }
-    }
-
     private void addMiddleSections(Section section) {
-        Section searchedSection = searchSection(section);
+        Section searchedSection = searchSections(
+                section.getUpStation(), section.getDownStation()
+        ).get(FIRST_INDEX);
         if (!isSectionAlreadyRegistered(section)
                 && searchedSection.isSplittable(section)) {
             sections.remove(searchedSection);
@@ -119,12 +131,23 @@ public class Sections {
     }
 
     private Station getFirstUpStation() {
-        return sections.get(FIRST_INDEX).getUpStation();
+        Map<Station, Station> upMapper = sections.stream()
+                .collect(Collectors.toMap(Section::getDownStation, Section::getUpStation));
+        Station station = sections.get(FIRST_INDEX).getUpStation();
+        while (upMapper.get(station) != null) {
+            station = upMapper.get(station);
+        }
+        return station;
     }
 
     private Station getLastDownStation() {
-        int lastIndex = sections.size() - 1;
-        return sections.get(lastIndex).getDownStation();
+        Map<Station, Station> downMapper = sections.stream()
+                .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
+        Station station = sections.get(FIRST_INDEX).getDownStation();
+        while (downMapper.get(station) != null) {
+            station = downMapper.get(station);
+        }
+        return station;
     }
 
     private boolean isSectionAlreadyRegistered(Section section) {
