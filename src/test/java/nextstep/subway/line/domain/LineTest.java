@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 import nextstep.subway.line.exception.EmptyLineException;
 import nextstep.subway.line.exception.InvalidDistanceException;
 import nextstep.subway.line.exception.NotLastStationException;
@@ -92,7 +93,8 @@ public class LineTest {
         // then
         assertAll(
                 () -> assertThat(이호선.size()).isEqualTo(expectedSize),
-                () -> assertThat(이호선.getStations()).isEqualTo(Arrays.asList(교대역, 강남역, 역삼역))
+                () -> assertThat(이호선.getStations().stream().map(Station::getName).collect(Collectors.toList()))
+                        .isEqualTo(Arrays.asList(교대역, 강남역, 역삼역).stream().map(Station::getName).collect(Collectors.toList()))
         );
     }
 

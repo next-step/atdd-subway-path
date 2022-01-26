@@ -1,19 +1,17 @@
 package nextstep.subway.line.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import nextstep.subway.line.exception.EmptyLineException;
 import nextstep.subway.line.exception.NotLastStationException;
 import nextstep.subway.line.exception.SectionAlreadyRegisteredException;
 import nextstep.subway.line.exception.SectionNotSearchedException;
 import nextstep.subway.station.domain.Station;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 
 @Embeddable
 public class Sections {
@@ -42,18 +40,9 @@ public class Sections {
             return;
         }
         validateAddSection(section);
-
-        Section searchedSection = searchSection(section);
-        if (searchedSection.isSplittable(section)) {
-            sections.remove(searchedSection);
-            sections.addAll(searchedSection.split(section));
-        } else if (isLastSection(searchedSection)) {
-            sections.add(section);
-        } else if (isFirstSection(searchedSection)) {
-            sections.add(FIRST_INDEX, section);
-        } else {
-            throw new SectionNotSearchedException();
-        }
+        addFirstSection(section);
+        addMiddleSections(section);
+        addLastSection(section);
     }
 
     public void removeSection(Station station) {
@@ -65,26 +54,18 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        if (sections.isEmpty()) {
-            return Arrays.asList();
-        }
-
-        List<Station> stations = new ArrayList<>();
-        Station downStation = findUpStation();
-        stations.add(downStation);
-
-        while (downStation != null) {
-            Station finalDownStation = downStation;
-            Optional<Section> nextLineStation = sections.stream()
-                    .filter(it -> it.getUpStation() == finalDownStation)
-                    .findFirst();
-            if (!nextLineStation.isPresent()) {
-                break;
-            }
-            downStation = nextLineStation.get().getDownStation();
-            stations.add(downStation);
-        }
-
+        List<Station> stations = sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+        System.out.println(sections.stream()
+                .map(Section::getUpStation)
+                .map(Station::getName)
+                .collect(Collectors.toList()));
+        System.out.println(sections.stream()
+                .map(Section::getDownStation)
+                .map(Station::getName)
+                .collect(Collectors.toList()));
+        stations.add(getLastDownStation());
         return stations;
     }
 
@@ -96,9 +77,7 @@ public class Sections {
     }
 
     private void validateAddSection(Section section) {
-        boolean alreadyRegistered = sections.stream()
-                .anyMatch(section::isRegistered);
-        if (alreadyRegistered) {
+        if (isSectionAlreadyRegistered(section)) {
             throw new SectionAlreadyRegisteredException();
         }
     }
@@ -116,32 +95,40 @@ public class Sections {
         }
     }
 
-    private Station getLastDownStation() {
-        return sections.get(sections.size() - 1).getDownStation();
-    }
-
-    private Station findUpStation() {
-        Station downStation = sections.get(0).getUpStation();
-        while (downStation != null) {
-            Station finalDownStation = downStation;
-            Optional<Section> nextLineStation = sections.stream()
-                    .filter(it -> it.getDownStation() == finalDownStation)
-                    .findFirst();
-            if (!nextLineStation.isPresent()) {
-                break;
-            }
-            downStation = nextLineStation.get().getUpStation();
+    private void addMiddleSections(Section section) {
+        Section searchedSection = searchSection(section);
+        if (!isSectionAlreadyRegistered(section)
+                && searchedSection.isSplittable(section)) {
+            sections.remove(searchedSection);
+            sections.addAll(searchedSection.split(section));
         }
-
-        return downStation;
     }
 
-    private boolean isFirstSection(Section section) {
-        return sections.get(FIRST_INDEX).equals(section);
+    private void addFirstSection(Section section) {
+        if (!isSectionAlreadyRegistered(section)
+                && getFirstUpStation().equals(section.getDownStation())) {
+            sections.add(FIRST_INDEX, section);
+        }
     }
 
-    private boolean isLastSection(Section section) {
+    private void addLastSection(Section section) {
+        if (!isSectionAlreadyRegistered(section)
+                && getLastDownStation().equals(section.getUpStation())) {
+            sections.add(section);
+        }
+    }
+
+    private Station getFirstUpStation() {
+        return sections.get(FIRST_INDEX).getUpStation();
+    }
+
+    private Station getLastDownStation() {
         int lastIndex = sections.size() - 1;
-        return sections.get(lastIndex).equals(section);
+        return sections.get(lastIndex).getDownStation();
+    }
+
+    private boolean isSectionAlreadyRegistered(Section section) {
+        return sections.stream()
+                .anyMatch(section::isRegistered);
     }
 }
