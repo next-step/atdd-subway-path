@@ -1,63 +1,84 @@
 package nextstep.subway.line.domain.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
+import org.springframework.util.StringUtils;
+
+import lombok.Getter;
 import nextstep.subway.common.domain.model.BaseEntity;
+import nextstep.subway.station.domain.model.Station;
 
+@Getter
 @Entity
 public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID", unique = true)
     private Long id;
-    @Column(unique = true)
+
+    @Column(
+        name = "NAME",
+        nullable = false,
+        unique = true,
+        length = 50
+    )
     private String name;
+
+    @Column(
+        name = "COLOR",
+        nullable = false,
+        length = 50
+    )
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections;
 
-    public Line() {
+    protected Line() {
+    }
+
+    public Line(Long id, String name, String color) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.sections = new Sections();
     }
 
     public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
+        this(null, name, color);
     }
 
-    public Long getId() {
-        return id;
+    public List<Station> getStations() {
+        return sections.toStations();
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void edit(String name, String color) {
+        if (StringUtils.hasText(name)) {
+            this.name = name;
+        }
+        if (StringUtils.hasText(color)) {
+            this.color = color;
+        }
     }
 
-    public String getName() {
-        return name;
+    public void addSection(Station upStation, Station downStation, Distance distance) {
+        Section section = Section.builder()
+            .line(this)
+            .upStation(upStation)
+            .downStation(downStation)
+            .distance(distance)
+            .build();
+        this.sections.add(section);
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public List<Section> getSections() {
-        return sections;
+    public void deleteSection(Long stationId) {
+        this.sections.remove(stationId);
     }
 }

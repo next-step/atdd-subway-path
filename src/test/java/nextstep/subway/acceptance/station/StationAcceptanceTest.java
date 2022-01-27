@@ -94,6 +94,6 @@ class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse = 지하철역_생성_요청("강남역");
 
         // then
-        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 }

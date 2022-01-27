@@ -6,23 +6,31 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
+import nextstep.subway.common.domain.model.exception.EntityNotFoundException;
+import nextstep.subway.common.domain.model.exception.FieldDuplicateException;
 import nextstep.subway.station.domain.dto.StationRequest;
 import nextstep.subway.station.domain.dto.StationResponse;
 import nextstep.subway.station.domain.model.Station;
 import nextstep.subway.station.domain.repository.StationRepository;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class StationService {
-    private StationRepository stationRepository;
+    private static final String ENTITY_NAME_FOR_EXCEPTION = "지하철 역";
 
-    public StationService(StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
-    }
+    private final StationRepository stationRepository;
 
-    public StationResponse saveStation(StationRequest stationRequest) {
-        Station station = stationRepository.save(new Station(stationRequest.getName()));
-        return createStationResponse(station);
+    public StationResponse saveStation(StationRequest request) {
+        if (stationRepository.existsByName(request.getName())) {
+            throw new FieldDuplicateException("역 이름");
+        }
+        Station station = stationRepository.save(
+            new Station(request.getName())
+        );
+
+        return StationResponse.from(station);
     }
 
     @Transactional(readOnly = true)
@@ -30,7 +38,7 @@ public class StationService {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-                .map(this::createStationResponse)
+                .map(StationResponse::from)
                 .collect(Collectors.toList());
     }
 
@@ -38,16 +46,8 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    public StationResponse createStationResponse(Station station) {
-        return new StationResponse(
-                station.getId(),
-                station.getName(),
-                station.getCreatedDate(),
-                station.getModifiedDate()
-        );
-    }
-
-    public Station findById(Long id) {
-        return stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+    public Station findByIdOrThrow(Long id) {
+        return stationRepository.findById(id)
+                                .orElseThrow(() -> new EntityNotFoundException(ENTITY_NAME_FOR_EXCEPTION));
     }
 }

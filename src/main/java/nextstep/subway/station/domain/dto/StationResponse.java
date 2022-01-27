@@ -2,32 +2,31 @@ package nextstep.subway.station.domain.dto;
 
 import java.time.LocalDateTime;
 
-public class StationResponse {
-    private Long id;
-    private String name;
-    private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
+import lombok.Builder;
+import lombok.Getter;
+import nextstep.subway.station.domain.model.Station;
 
-    public StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+@Getter
+public class StationResponse {
+    private final Long id;
+    private final String name;
+    private final LocalDateTime createdDate;
+    private final LocalDateTime modifiedDate;
+
+    @Builder
+    private StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
+    public static StationResponse from(Station station) {
+        return builder()
+            .id(station.getId())
+            .name(station.getName())
+            .createdDate(station.getCreatedDate())
+            .modifiedDate(station.getModifiedDate())
+            .build();
     }
 }

@@ -1,29 +1,32 @@
 package nextstep.subway.line.domain.dto;
 
+import java.util.Objects;
+
+import lombok.Builder;
+import lombok.Getter;
+import nextstep.subway.line.domain.model.Distance;
+
+@Getter
 public class LineRequest {
     private String name;
     private String color;
     private Long upStationId;
     private Long downStationId;
-    private int distance;
+    private Distance distance;
 
-    public String getName() {
-        return name;
+    private LineRequest() {
     }
 
-    public String getColor() {
-        return color;
+    @Builder
+    private LineRequest(String name, String color, Long upStationId, Long downStationId, Distance distance) {
+        this.name = name;
+        this.color = color;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
     }
 
-    public Long getUpStationId() {
-        return upStationId;
-    }
-
-    public Long getDownStationId() {
-        return downStationId;
-    }
-
-    public int getDistance() {
-        return distance;
+    public boolean hasSection() {
+        return Objects.nonNull(upStationId) && Objects.nonNull(downStationId) && Objects.nonNull(distance);
     }
 }
