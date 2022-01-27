@@ -40,7 +40,7 @@ public class LineServiceMockTest {
         // when
         // lineService.addSection 호출
         LineService lineService = new LineService(lineRepository, stationService);
-        lineService.addSection(lineId, new SectionRequest(upStationId, downStationId, 99));
+        lineService.addSection(lineId, SectionRequest.of(upStationId, downStationId, 99));
 
         // then
         // line.findLineById 메서드를 통해 검증

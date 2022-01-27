@@ -35,7 +35,7 @@ public class LineServiceTest {
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(line.getId(), new SectionRequest(station1.getId(), station2.getId(), 10));
+        lineService.addSection(line.getId(), SectionRequest.of(station1.getId(), station2.getId(), 10));
 
         // then
         // line.getSections 메서드를 통해 검증
