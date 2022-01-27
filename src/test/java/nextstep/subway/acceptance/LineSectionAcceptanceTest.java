@@ -49,9 +49,9 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         신규역 = 지하철역_생성_요청한다(StationRequest.of("신규역")).as(StationResponse.class).getId();
     }
 
-    @DisplayName("기존 지하철 노선 뒤에 구간 추가 성공하는 단순 케이스")
+    @DisplayName("기존 지하철 노선 뒤에 구간 추가 성공하는 단순 케이스 (해피케이스)")
     @Test
-    void addLineSection_성공케이스() {
+    void addLineSection_성공케이스_해피케이스() {
         // when
         지하철_노선에_지하철_구간_생성_요청(신분당선, SectionRequest.of(사번역4, 신규역, DISTANCE_VALID));
 
@@ -160,7 +160,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class))
-            .containsExactly(일번역1, 삼번역3, 신규역, 사번역4);
+            .containsExactly(일번역1, 이번역2, 삼번역3, 사번역4);
     }
 
 }

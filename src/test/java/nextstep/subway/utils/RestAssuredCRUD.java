@@ -20,6 +20,16 @@ public class RestAssuredCRUD {
             .extract();
     }
 
+    public static ExtractableResponse<Response> postRequest(String path, Object request, Object... pathParams) {
+        return RestAssured.given().log().all()
+            .body(request)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .post(path, pathParams)
+            .then().log().all()
+            .extract();
+    }
+
     public static ExtractableResponse<Response> postRequestWithOAuth(String path, Object request, String token) {
         return RestAssured.given().log().all()
             .body(request)
@@ -35,6 +45,14 @@ public class RestAssuredCRUD {
         return RestAssured.given().log().all()
             .when()
             .get(path)
+            .then().log().all()
+            .extract();
+    }
+
+    public static ExtractableResponse<Response> get(String path, Object... pathParam) {
+        return RestAssured.given().log().all()
+            .when()
+            .get(path, pathParam)
             .then().log().all()
             .extract();
     }
