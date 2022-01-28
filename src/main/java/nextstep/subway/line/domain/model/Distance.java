@@ -13,11 +13,6 @@ import nextstep.subway.common.domain.model.exception.ErrorMessage;
 @Getter
 @Embeddable
 public class Distance {
-    private static final Distance ZERO = new Distance();
-    static {
-        ZERO.value = 0;
-    }
-
     @JsonValue
     @Column(name = "DISTANCE", nullable = false)
     private int value;
@@ -28,10 +23,6 @@ public class Distance {
     public Distance(int value) {
         verifyZero(value);
         this.value = value;
-    }
-
-    public static Distance zero() {
-        return ZERO;
     }
 
     private void verifyZero(int value) {

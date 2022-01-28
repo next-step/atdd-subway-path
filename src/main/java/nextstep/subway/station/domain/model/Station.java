@@ -43,10 +43,6 @@ public class Station extends BaseEntity {
         return this.id == id;
     }
 
-    public boolean matchId(Station station) {
-        return this.id.equals(station.getId());
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {

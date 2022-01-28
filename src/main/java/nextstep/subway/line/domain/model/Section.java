@@ -51,16 +51,8 @@ public class Section {
         this.distance = distance;
     }
 
-    public boolean existsStation(long id) {
-        return matchUpStation(id) || matchDownStation(id);
-    }
-
-    public boolean matchUpStation(long id) {
-        return upStation.matchId(id);
-    }
-
     public boolean matchUpStation(Section section) {
-        return upStation.matchId(section.getUpStation());
+        return upStation.equals(section.upStation);
     }
 
     public boolean matchDownStation(long id) {

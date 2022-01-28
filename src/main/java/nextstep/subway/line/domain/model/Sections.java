@@ -122,11 +122,12 @@ public class Sections {
                                  .findFirst().get();
     }
 
-    public Distance totalDistance() {
+    public int totalDistance() {
         return values.stream()
                      .map(Section::getDistance)
                      .reduce(Distance::add)
-                     .orElse(Distance.zero());
+                     .map(Distance::getValue)
+                     .orElse(0);
     }
 
     public int size() {
