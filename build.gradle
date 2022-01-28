@@ -8,6 +8,12 @@ group = 'nextstep'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
 repositories {
 	mavenCentral()
 }
@@ -25,6 +31,12 @@ dependencies {
 
 	// jgraph
 	implementation 'org.jgrapht:jgrapht-core:1.0.1'
+
+	// lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
 
 	// test
 	testImplementation 'io.rest-assured:rest-assured:3.3.0'

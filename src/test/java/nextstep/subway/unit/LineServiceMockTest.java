@@ -1,7 +1,7 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.applicaion.StationService;
-import nextstep.subway.domain.LineRepository;
+import nextstep.subway.station.service.StationService;
+import nextstep.subway.line.repository.LineRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

@@ -1,4 +1,4 @@
-package nextstep.subway.applicaion.dto;
+package nextstep.subway.line.dto;
 
 public class LineRequest {
     private String name;

@@ -1,4 +1,4 @@
-package nextstep.subway.ui;
+package nextstep.subway;
 
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;

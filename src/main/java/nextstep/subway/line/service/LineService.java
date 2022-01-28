@@ -1,13 +1,14 @@
-package nextstep.subway.applicaion;
+package nextstep.subway.line.service;
 
-import nextstep.subway.applicaion.dto.LineRequest;
-import nextstep.subway.applicaion.dto.LineResponse;
-import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.repository.LineRepository;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.service.StationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

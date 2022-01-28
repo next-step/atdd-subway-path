@@ -1,4 +1,4 @@
-package nextstep.subway.applicaion.dto;
+package nextstep.subway.station.dto;
 
 import java.time.LocalDateTime;
 
