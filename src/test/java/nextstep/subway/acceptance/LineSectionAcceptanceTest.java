@@ -120,10 +120,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSection_실패케이스_1() {
         // when
-        지하철_노선에_지하철_구간_생성_요청(신분당선, SectionRequest.of(이번역2, 신규역, DISTANCE_INVALID));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선,
+            SectionRequest.of(이번역2, 신규역, DISTANCE_INVALID));
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 

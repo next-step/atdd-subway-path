@@ -60,6 +60,14 @@ public class Section {
         this.line.addSection(this);
     }
 
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
     public boolean hasStation(Station station) {
         return upStation.equals(station) || downStation.equals(station);
     }
@@ -82,4 +90,9 @@ public class Section {
     public int hashCode() {
         return Objects.hash(id, line, upStation, downStation, distance);
     }
+
+    public boolean hasSameOrLongerDistanceThan(Section section) {
+        return this.distance >= section.distance;
+    }
+
 }
