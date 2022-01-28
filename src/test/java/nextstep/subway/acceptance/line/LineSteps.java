@@ -43,7 +43,7 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, Object> params) {
         return RestAssured
                 .given().log().all()
                 .body(params)
@@ -52,7 +52,7 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청(Long lineId, Map<String, String> params) {
+    public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청(Long lineId, Map<String, Object> params) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
@@ -64,5 +64,27 @@ public class LineSteps {
         return RestAssured.given().log().all()
                 .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then().log().all().extract();
+    }
+
+    public static Map<String, Object> createLineCreateParams(Long upStationId, Long downStationId) {
+        Map<String, Object> lineCreateParams = new HashMap<>();
+        lineCreateParams.put("name", "노선");
+        lineCreateParams.put("color", "bg-red-600");
+        lineCreateParams.put("upStationId", upStationId);
+        lineCreateParams.put("downStationId", downStationId);
+        lineCreateParams.put("distance", 10);
+        return lineCreateParams;
+    }
+
+    public static Map<String, Object> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+        return params;
+    }
+
+    public static Map<String, Object> createSectionCreateParams(Long upStationId, Long downStationId) {
+        return createSectionCreateParams(upStationId, downStationId, 6);
     }
 }
