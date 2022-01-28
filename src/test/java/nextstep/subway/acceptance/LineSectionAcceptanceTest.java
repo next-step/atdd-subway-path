@@ -131,10 +131,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSection_실패케이스_2() {
         // when
-        지하철_노선에_지하철_구간_생성_요청(신분당선, SectionRequest.of(신규역, 신규역, DISTANCE_VALID));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선,
+            SectionRequest.of(신규역, 신규역, DISTANCE_VALID));
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -142,10 +142,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSection_실패케이스_3() {
         // when
-        지하철_노선에_지하철_구간_생성_요청(신분당선, SectionRequest.of(일번역1, 사번역4, DISTANCE_VALID));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선,
+            SectionRequest.of(일번역1, 사번역4, DISTANCE_VALID));
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
