@@ -197,8 +197,8 @@ class LineTest {
 
     private Section 거리가_크거나_같아서_실패하도록_추가할_구간을_만든다() {
         Station 역1 = Station.of(역1Id, "역1");
-        Station 역2 = Station.of(역2Id, "역2");
-        return Section.of(역1, 역2, DISTANCE_INVALID);
+        Station 추가역 = Station.of(추가역Id, "추가역");
+        return Section.of(역1, 추가역, DISTANCE_INVALID);
     }
 
     private Section 연결되는_역이_없어서_실패하도록_추가할_구간을_만든다() {

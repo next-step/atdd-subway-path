@@ -43,8 +43,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         삼번역3 = 지하철역_생성_요청한다(StationRequest.of("삼번역3")).as(StationResponse.class).getId();
         사번역4 = 지하철역_생성_요청한다(StationRequest.of("사번역4")).as(StationResponse.class).getId();
 
-        신분당선 = 지하철_노선_생성_요청(LineRequest.of("신분당선", "bg-red-600", 일번역1, 이번역2, DISTANCE_BASIC))
-            .jsonPath().getLong("id");
+        신분당선 = 지하철_노선_생성_요청(LineRequest.of("신분당선", "bg-red-600",
+            일번역1, 이번역2, DISTANCE_BASIC)).jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, SectionRequest.of(이번역2, 삼번역3, DISTANCE_BASIC));
         지하철_노선에_지하철_구간_생성_요청(신분당선, SectionRequest.of(삼번역3, 사번역4, DISTANCE_BASIC));
 
@@ -68,13 +68,13 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSection_성공케이스_1() {
         // when
-        지하철_노선에_지하철_구간_생성_요청(신분당선, SectionRequest.of(신규역, 이번역2, DISTANCE_VALID));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, SectionRequest.of(신규역, 일번역1, DISTANCE_VALID));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class))
-            .containsExactly(일번역1, 신규역, 이번역2, 삼번역3, 사번역4);
+            .containsExactly(신규역, 일번역1, 이번역2, 삼번역3, 사번역4);
     }
 
     @DisplayName("지하철 노선에 있는 구간들 중 상행역 쪽 중간역에 구간 등록을 성공")
@@ -107,13 +107,13 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSection_성공케이스_4() {
         // when
-        지하철_노선에_지하철_구간_생성_요청(신분당선, SectionRequest.of(삼번역3, 신규역, DISTANCE_VALID));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, SectionRequest.of(사번역4, 신규역, DISTANCE_VALID));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class))
-            .containsExactly(일번역1, 이번역2, 삼번역3, 신규역, 사번역4);
+            .containsExactly(일번역1, 이번역2, 삼번역3, 사번역4, 신규역);
     }
 
     @DisplayName("지하철 노선에 있는 구간 사이에 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록 실패")
