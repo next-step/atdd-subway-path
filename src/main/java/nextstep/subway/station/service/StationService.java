@@ -1,5 +1,7 @@
 package nextstep.subway.station.service;
 
+import lombok.RequiredArgsConstructor;
+import nextstep.subway.exceptions.BadRequestException;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.domain.Station;
@@ -10,18 +12,31 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@RequiredArgsConstructor
 @Transactional
+@Service
 public class StationService {
-    private StationRepository stationRepository;
-
-    public StationService(StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
-    }
+    private final StationRepository stationRepository;
 
     public StationResponse saveStation(StationRequest stationRequest) {
+        validateDuplicateStationName(stationRequest.getName());
         Station station = stationRepository.save(new Station(stationRequest.getName()));
         return createStationResponse(station);
+    }
+
+    private StationResponse createStationResponse(Station station) {
+        return new StationResponse(
+                station.getId(),
+                station.getName(),
+                station.getCreatedDate(),
+                station.getModifiedDate()
+        );
+    }
+
+    private void validateDuplicateStationName(String name) {
+        stationRepository.findByName(name).ifPresent(station -> {
+            throw new BadRequestException("해당 역은 이미 존재합니다.");
+        });
     }
 
     @Transactional(readOnly = true)
@@ -37,16 +52,9 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    public StationResponse createStationResponse(Station station) {
-        return new StationResponse(
-                station.getId(),
-                station.getName(),
-                station.getCreatedDate(),
-                station.getModifiedDate()
-        );
+    public Station findById(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("존재하지 않는 역입니다. stationId: " + id));
     }
 
-    public Station findById(Long id) {
-        return stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-    }
 }

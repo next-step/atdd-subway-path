@@ -1,4 +1,4 @@
-package nextstep.subway.utils;
+package nextstep.subway.commons;
 
 import com.google.common.base.CaseFormat;
 import org.springframework.beans.factory.InitializingBean;
