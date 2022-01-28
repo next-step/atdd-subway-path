@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 
 import lombok.Builder;
 import lombok.Getter;
+import nextstep.subway.common.domain.exception.ErrorMessage;
 import nextstep.subway.station.domain.model.Station;
 
 @Getter
@@ -50,7 +51,32 @@ public class Section {
         this.distance = distance;
     }
 
-    public boolean matchDownStationId(long id) {
-        return this.downStation.matchId(id);
+    public boolean existsStation(long id) {
+        return matchUpStation(id) || matchDownStation(id);
+    }
+
+    public boolean matchUpStation(long id) {
+        return upStation.matchId(id);
+    }
+
+    public boolean matchUpStation(Section section) {
+        return upStation.matchId(section.getUpStation());
+    }
+
+    public boolean matchDownStation(long id) {
+        return downStation.matchId(id);
+    }
+
+    public void changeUpStation(Section newSection) {
+        verifyDistanceExceeded(newSection.distance);
+
+        distance = distance.sub(newSection.distance);
+        upStation = newSection.getDownStation();
+    }
+
+    private void verifyDistanceExceeded(Distance newSectionDistance) {
+        if (newSectionDistance.greaterThan(this.distance) || newSectionDistance.equals(this.distance)) {
+            throw new IllegalArgumentException(ErrorMessage.DISTANCE_EXCEEDED.getMessage());
+        }
     }
 }

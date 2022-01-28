@@ -17,16 +17,18 @@ public class LineResponse {
     private final Long id;
     private final String name;
     private final String color;
+    private final Integer length;
     private final List<StationResponse> stations;
     private final LocalDateTime createdDate;
     private final LocalDateTime modifiedDate;
 
     @Builder
-    private LineResponse(Long id, String name, String color, List<StationResponse> stations, LocalDateTime createdDate,
-                        LocalDateTime modifiedDate) {
+    public LineResponse(Long id, String name, String color, int length, List<StationResponse> stations,
+                        LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.color = color;
+        this.length = length;
         this.stations = stations;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
@@ -54,6 +56,7 @@ public class LineResponse {
             .name(line.getName())
             .color(line.getColor())
             .stations(stations)
+            .length(line.getLength())
             .createdDate(line.getCreatedDate())
             .modifiedDate(line.getModifiedDate())
             .build();

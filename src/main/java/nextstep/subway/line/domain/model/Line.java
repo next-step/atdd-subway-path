@@ -83,6 +83,10 @@ public class Line extends BaseEntity {
     }
 
     public int getLength() {
-        return 0;
+        return sections.totalDistance().getValue();
+    }
+
+    public int sectionSize() {
+        return this.sections.size();
     }
 }

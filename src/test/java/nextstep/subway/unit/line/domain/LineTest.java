@@ -2,6 +2,8 @@ package nextstep.subway.unit.line.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,6 +47,7 @@ class LineTest {
         line.addSection(downStation, newStation, distance);
 
         assertThat(line.getStations())
+            .withFailMessage(line.getStations().stream().map(Station::getName).collect(Collectors.joining(",")))
             .containsExactly(upStation, downStation, newStation);
     }
 
@@ -63,9 +66,10 @@ class LineTest {
     void addSectionCase3() {
         int beforeLength = line.getLength();
         Station newStation = new Station(3L, "새로운 중간행");
-        line.addSection(upStation, newStation, distance);
+        line.addSection(upStation, newStation, new Distance(1));
 
         assertThat(line.getStations())
+            .withFailMessage(line.getStations().stream().map(Station::getName).collect(Collectors.joining(",")))
             .containsExactly(upStation, newStation, downStation);
         assertThat(line.getLength())
             .isEqualTo(beforeLength);
@@ -98,22 +102,26 @@ class LineTest {
     @DisplayName("노선에 속해있는 역 목록 조회")
     @Test
     void getStations() {
-        line.addSection(upStation, downStation, distance);
-
+        Station newUpStation = new Station(3L, "새로운 상행");
+        line.addSection(newUpStation, upStation, distance);
         assertThat(line.getStations())
-            .containsExactly(upStation, downStation);
+            .containsExactly(newUpStation, upStation, downStation);
     }
 
     @DisplayName("구간이 목록에서 마지막 역 삭제")
     @Test
     void deleteSection() {
-        Station newDownStation = new Station(1L, "새로운 구간의 하행");
-        line.addSection(upStation, downStation, distance);
+        Station newDownStation = new Station(3L, "새로운 구간의 하행");
         line.addSection(downStation, newDownStation, distance);
-
         line.deleteSection(newDownStation.getId());
 
-        assertThat(line.getStations().size())
-            .isEqualTo(2);
+        assertThat(line.getStations())
+            .containsExactly(upStation, downStation);
+    }
+
+    @DisplayName("모든 구간의 길이를 더한 값 반환")
+    @Test
+    void getLength() {
+        assertThat(line.getLength()).isEqualTo(distance.getValue());
     }
 }

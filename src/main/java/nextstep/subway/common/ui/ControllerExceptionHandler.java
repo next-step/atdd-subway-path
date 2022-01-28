@@ -25,4 +25,10 @@ public class ControllerExceptionHandler {
     public ErrorResponse handleEntityNotFoundException(Exception e) {
         return new ErrorResponse(e.getMessage());
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ErrorResponse handleIllegalArgumentException(Exception e) {
+        return new ErrorResponse(e.getMessage());
+    }
 }

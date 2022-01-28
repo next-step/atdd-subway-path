@@ -13,6 +13,11 @@ import nextstep.subway.common.domain.model.exception.ErrorMessage;
 @Getter
 @Embeddable
 public class Distance {
+    private static final Distance ZERO = new Distance();
+    static {
+        ZERO.value = 0;
+    }
+
     @JsonValue
     @Column(name = "DISTANCE", nullable = false)
     private int value;
@@ -25,12 +30,28 @@ public class Distance {
         this.value = value;
     }
 
+    public static Distance zero() {
+        return ZERO;
+    }
+
     private void verifyZero(int value) {
         if (value <= 0) {
             throw new IllegalArgumentException(
                 ErrorMessage.INVALID_DISTANCE.getMessage()
             );
         }
+    }
+
+    public boolean greaterThan(Distance distance) {
+        return this.value > distance.value;
+    }
+
+    public Distance add(Distance thatDistance) {
+        return new Distance(value + thatDistance.value);
+    }
+
+    public Distance sub(Distance thatDistance) {
+        return new Distance(value - thatDistance.value);
     }
 
     @Override

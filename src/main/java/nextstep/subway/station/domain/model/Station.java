@@ -1,5 +1,7 @@
 package nextstep.subway.station.domain.model;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -39,5 +41,26 @@ public class Station extends BaseEntity {
 
     public boolean matchId(long id) {
         return this.id == id;
+    }
+
+    public boolean matchId(Station station) {
+        return this.id.equals(station.getId());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Station station = (Station)o;
+        return Objects.equals(id, station.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
