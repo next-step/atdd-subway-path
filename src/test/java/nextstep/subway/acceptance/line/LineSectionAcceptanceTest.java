@@ -4,7 +4,6 @@ import static nextstep.subway.acceptance.line.LineSteps.*;
 import static nextstep.subway.acceptance.station.StationSteps.*;
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.Arrays;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -57,7 +56,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(노선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class))
-            .containsAll(Arrays.asList(A역, B역, C역));
+            .containsExactly(A역, B역, C역);
     }
 
     /**
@@ -80,7 +79,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(노선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class))
-            .containsAll(Arrays.asList(A역, B역, C역));
+            .containsExactly(A역, B역, C역);
     }
 
     /**
@@ -106,7 +105,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode())
             .isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class))
-            .containsAll(Arrays.asList(A역, B역, C역));
+            .containsExactly(A역, B역, C역);
         assertThat((Integer) response.jsonPath().get("length"))
             .isEqualTo(beforeLength);
     }
@@ -187,6 +186,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(노선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class))
-            .containsAll(Arrays.asList(상행, 하행));
+            .containsExactly(상행, 하행);
     }
 }
