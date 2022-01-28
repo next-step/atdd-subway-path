@@ -31,10 +31,14 @@ public class LineService {
                              .orElseThrow(() -> new EntityNotFoundException(ENTITY_NAME_FOR_EXCEPTION));
     }
 
+    public Line findByIdWithStationsOrThrow(Long id) {
+        return lineRepository.findByIdWithStations(id)
+                             .orElseThrow(() -> new EntityNotFoundException(ENTITY_NAME_FOR_EXCEPTION));
+    }
+
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        Line line = lineRepository.findByIdWithStations(id)
-                                  .orElseThrow(() -> new EntityNotFoundException(ENTITY_NAME_FOR_EXCEPTION));
+        Line line = findByIdWithStationsOrThrow(id);
 
         return LineResponse.withStationsFrom(line);
     }
@@ -77,7 +81,7 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest request) {
         Station upStation = stationService.findByIdOrThrow(request.getUpStationId());
         Station downStation = stationService.findByIdOrThrow(request.getDownStationId());
-        Line line = findByIdOrThrow(lineId);
+        Line line = findByIdWithStationsOrThrow(lineId);
 
         line.addSection(upStation, downStation, request.getDistance());
     }
