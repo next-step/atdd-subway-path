@@ -20,28 +20,29 @@ public class Sections {
             validateAddable(newSection);
         }
 
-        for (Section section : sections) {
-            if (section.getUpStation().equals(newSection.getUpStation())) {
-                if (newSection.hasSameOrLongerDistanceThan(section)) {
-                    throw new DataIntegrityViolationException("유효하지 않은 구간 길이.");
-                }
+        sections.stream()
+            .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+            .forEach(section -> {
+                validateDistance(newSection, section);
                 section.setUpStation(newSection.getDownStation());
-                sections.add(newSection);
-                return;
-            }
+            });
 
-            if (section.getDownStation().equals(newSection.getDownStation())) {
-                if (newSection.hasSameOrLongerDistanceThan(section)) {
-                    throw new DataIntegrityViolationException("유효하지 않은 구간 길이.");
-                }
+        sections.stream()
+            .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
+            .forEach(section -> {
+                validateDistance(newSection, section);
                 section.setDownStation(newSection.getUpStation());
-                sections.add(newSection);
-                return;
-            }
-        }
+            });
 
         sections.add(newSection);
     }
+
+    private void validateDistance(Section newSection, Section section) {
+        if (newSection.hasSameOrLongerDistanceThan(section)) {
+            throw new DataIntegrityViolationException("유효하지 않은 구간 길이.");
+        }
+    }
+
 
     private void validateAddable(Section newSection) {
         if (alreadyHasStationsOf(newSection)) {
@@ -92,19 +93,23 @@ public class Sections {
             return Collections.emptyList();
         }
 
-        Station upStation = sections.get(0).getUpStation();
-        Station downStation = sections.get(0).getDownStation();
-
         List<Station> stations = new ArrayList<>();
-        stations.add(upStation);
-        stations.add(downStation);
+        makeFrontSideOf(stations);
+        makeRearSideOf(stations);
 
-        boolean frontSideIsDone = false;
-        boolean rearSideIsDone = false;
+        return stations;
+    }
+
+    private void makeFrontSideOf(List<Station> stations) {
+        Station upStation = sections.get(0).getUpStation();
+        stations.add(upStation);
+
+        boolean found;
+        Boolean frontSideIsDone = false;
         while (!frontSideIsDone) {
-            boolean found = false;
+            found = false;
             for (Section section : sections) {
-                if (upStation.equals(section.getDownStation())) {
+                if (canBeConnectedFront(upStation, section)) {
                     upStation = section.getUpStation();
                     stations.add(0, upStation);
                     found = true;
@@ -114,11 +119,18 @@ public class Sections {
                 frontSideIsDone = true;
             }
         }
+    }
 
+    private void makeRearSideOf(List<Station> stations) {
+        Station downStation = sections.get(0).getDownStation();
+        stations.add(downStation);
+
+        boolean found;
+        boolean rearSideIsDone = false;
         while (!rearSideIsDone) {
-            boolean found = false;
+            found = false;
             for (Section section : sections) {
-                if (downStation.equals(section.getUpStation())) {
+                if (canBeConnectedRear(downStation, section)) {
                     downStation = section.getDownStation();
                     stations.add(downStation);
                     found = true;
@@ -128,7 +140,13 @@ public class Sections {
                 rearSideIsDone = true;
             }
         }
+    }
 
-        return stations;
+    private boolean canBeConnectedFront(Station upStation, Section section) {
+        return upStation.equals(section.getDownStation());
+    }
+
+    private boolean canBeConnectedRear(Station downStation, Section section) {
+        return downStation.equals(section.getUpStation());
     }
 }
