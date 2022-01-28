@@ -34,12 +34,10 @@ public class DistanceTest {
     @DisplayName("계산시에도 유효성 검사 진행")
     @Test
     void calculateFail() {
-        assertThatThrownBy(() ->
-                               new Distance(10).sub(new Distance(100))
-        ).isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() ->
-                               new Distance(10).add(new Distance(-100))
-        ).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new Distance(10).sub(new Distance(100)))
+            .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new Distance(10).add(new Distance(-100)))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @CsvSource({
@@ -76,15 +74,31 @@ public class DistanceTest {
         "10,5,true",
         "3,2,true",
         "200,100,true",
+        "100,100,false",
         "1,3,false",
         "100,200,false"
     }, delimiter = ',')
-    @DisplayName("부등호 테스트 - 이상")
+    @DisplayName("부등호 테스트 - 초과")
     @ParameterizedTest
     void greaterThan(int leftDistance, int rightDistance, boolean result) {
         Distance distance = new Distance(leftDistance);
+        Distance thatDistance = new Distance(rightDistance);
 
-        assertThat(distance.greaterThan(new Distance(rightDistance)))
+        assertThat(distance.greaterThan(thatDistance))
+            .isEqualTo(result);
+    }
+
+    @CsvSource(value = {
+        "10,10,true",
+        "10,5,false"
+    }, delimiter = ',')
+    @DisplayName("Equals 테스트")
+    @ParameterizedTest
+    void equals(int leftDistance, int rightDistance, boolean result) {
+        Distance distance = new Distance(leftDistance);
+        Distance thatDistance = new Distance(rightDistance);
+
+        assertThat(distance.equals(thatDistance))
             .isEqualTo(result);
     }
 }

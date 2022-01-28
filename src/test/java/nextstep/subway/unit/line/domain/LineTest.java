@@ -108,15 +108,17 @@ class LineTest {
             .containsExactly(newUpStation, upStation, downStation);
     }
 
-    @DisplayName("구간이 목록에서 마지막 역 삭제")
+    @DisplayName("구간 목록에서 마지막 역 삭제")
     @Test
     void deleteSection() {
         Station newDownStation = new Station(3L, "새로운 구간의 하행");
+        Station insertNewDownStation = new Station(4L, "중간에 삽입될 하행");
         line.addSection(downStation, newDownStation, distance);
+        line.addSection(downStation, insertNewDownStation, new Distance(1));
         line.deleteSection(newDownStation.getId());
 
         assertThat(line.getStations())
-            .containsExactly(upStation, downStation);
+            .containsExactly(upStation, downStation, insertNewDownStation);
     }
 
     @DisplayName("모든 구간의 길이를 더한 값 반환")

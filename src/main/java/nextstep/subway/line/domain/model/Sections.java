@@ -33,15 +33,12 @@ public class Sections {
     }
 
     public void add(Section newSection) {
-        if (values.isEmpty()) {
-            values.add(newSection);
-            return;
-        }
-        verifyAddable(newSection);
+        if (!values.isEmpty()) {
+            verifyAddable(newSection);
 
-        findInsertableSection(newSection).ifPresent(
-            insertableSection -> insertableSection.changeUpStation(newSection)
-        );
+            findInsertableSection(newSection)
+                .ifPresent(insertableSection -> insertableSection.changeUpStation(newSection));
+        }
         values.add(newSection);
     }
 
@@ -66,20 +63,22 @@ public class Sections {
 
     public void remove(long stationId) {
         verifyRemovable(stationId);
+
         values.removeIf(
             eachSection -> eachSection.matchDownStation(stationId)
         );
     }
 
     private void verifyRemovable(long downStationId) {
-        if (!isLastDownStation(downStationId)) {
+        if (isNotLastStation(downStationId)) {
             throw new IllegalArgumentException(ErrorMessage.NOT_LAST_STATION_DELETED.getMessage());
         }
     }
 
-    private boolean isLastDownStation(long stationId) {
-        return values.get(values.size() - 1)
-                     .matchDownStation(stationId);
+    private boolean isNotLastStation(long stationId) {
+        List<Station> stations = toStations();
+        Station lastStation = stations.get(stations.size() - 1);
+        return !lastStation.matchId(stationId);
     }
 
     public List<Station> toStations() {
