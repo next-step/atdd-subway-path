@@ -6,10 +6,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -26,7 +23,30 @@ public class Sections {
     }
 
     public void add(Section section) {
-        checkAddValidation(section.getUpStation().getId(), section.getDownStation().getId());
+        if (!isEmpty()) {
+            Long upStationId = section.getUpStation().getId();
+            Long downStationId = section.getDownStation().getId();
+
+            boolean isUpStationExisted = getStationIds().stream().anyMatch(it -> it == upStationId);
+            boolean isDownStationExisted = getStationIds().stream().anyMatch(it -> it == downStationId);
+
+            if (isUpStationExisted && isDownStationExisted) {
+                throw new RuntimeException("이미 등록된 구간 입니다.");
+            }
+
+            if (getStationIds().stream().noneMatch(it -> it == upStationId) && getStationIds().stream().noneMatch(it -> it == downStationId)) {
+                throw new RuntimeException("등록할 수 없는 구간 입니다.");
+            }
+
+            if (isUpStationExisted) {
+                updateUpSection(section);
+            }
+
+            if (isDownStationExisted) {
+                updateDownSection(section);
+            }
+        }
+
         sections.add(section);
     }
 
@@ -50,45 +70,64 @@ public class Sections {
             return Arrays.asList();
         }
 
-        List<Station> stations = sections.stream().map(Section::getDownStation)
-                .collect(Collectors.toList());
-        stations.add(0, sections.get(0).getUpStation());
+        List<Station> stations = new ArrayList<>();
+        Station downStation = findUpStation();
+        stations.add(downStation);
+
+        while (downStation != null) {
+            Station finalDownStation = downStation;
+            Optional<Section> nextLineStation = sections.stream()
+                    .filter(it -> it.getUpStation() == finalDownStation)
+                    .findFirst();
+            if (!nextLineStation.isPresent()) {
+                break;
+            }
+            downStation = nextLineStation.get().getDownStation();
+            stations.add(downStation);
+        }
+
         return stations;
     }
 
-    private void checkAddValidation(Long upStationId, Long downStationId) {
-//        if (!isEmpty()) {
-//            checkUpStationNone(upStationId);
-//            checkDownStationNone(downStationId);
-//            checkUpDownStation(upStationId);
-//        }
+    public List<Long> getStationIds() {
+        if (isEmpty()) {
+            return Arrays.asList();
+        }
+
+        return sections.stream().map(it -> Arrays.asList(it.getUpStation().getId(), it.getDownStation().getId()))
+                .flatMap(it -> it.stream()).distinct()
+                .collect(Collectors.toList());
+
     }
 
-    private void checkUpStationNone(Long upStationId) {
-        Assert.isTrue(sections.stream().noneMatch(section ->
-                Objects.equals(section.getUpStation().getId(), upStationId)
 
-        ), "새로운 구간의 상행역은 현재 등록되어있는 상행역일 수 없다.");
+    private void updateDownSection(Section section) {
+        sections.stream()
+                .filter(it -> it.getDownStation() == section.getDownStation())
+                .findFirst()
+                .ifPresent(it -> it.updateDownStation(section.getUpStation(), section.getDistance()));
     }
 
-    private void checkDownStationNone(Long downStationId) {
-        Assert.isTrue(sections.stream().noneMatch(section ->
-                Objects.equals(section.getUpStation().getId(), downStationId) || Objects.equals(section.getDownStation().getId(), downStationId)
-        ), "새로운 구간의 하행역은 현재 등록되어있는 역일 수 없다.");
+    private void updateUpSection(Section section) {
+        sections.stream()
+                .filter(it -> it.getUpStation() == section.getUpStation())
+                .findFirst()
+                .ifPresent(it -> it.updateUpStation(section.getDownStation(), section.getDistance()));
     }
 
-    private void checkUpDownStation(Long upStationId) {
-        Assert.isTrue(sections.stream().anyMatch(section ->
-                Objects.equals(section.getDownStation().getId(), upStationId)
-        ), "구간의 상행역은 현재 등록되어있는 하행 종점역이어야 합니다.");
-    }
+    private Station findUpStation() {
+        Station downStation = sections.get(0).getUpStation();
+        while (downStation != null) {
+            Station finalDownStation = downStation;
+            Optional<Section> nextLineStation = sections.stream()
+                    .filter(it -> it.getDownStation() == finalDownStation)
+                    .findFirst();
+            if (!nextLineStation.isPresent()) {
+                break;
+            }
+            downStation = nextLineStation.get().getUpStation();
+        }
 
-    private void checkRemoveOnlyStation() {
-        Assert.isTrue(sections.size() != MIN_SECTION_SIZE, "지하철 노선에 상행 종점역과 하행 종점역만 있는 경우(구간이 " + MIN_SECTION_SIZE + "개인 경우) 역을 삭제할 수 없다.");
-    }
-
-    private void checkRemoveDownStation(Long downStationId) {
-        Assert.isTrue(Objects.equals(sections.get(sections.size() - 1).getDownStation().getId(), downStationId)
-                , "지하철 노선에 등록된 마지막 역(하행 종점역)만 제거할 수 있다.");
+        return downStation;
     }
 }
