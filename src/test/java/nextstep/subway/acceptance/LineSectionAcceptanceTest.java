@@ -1,5 +1,15 @@
 package nextstep.subway.acceptance;
 
+import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선_조회_요청;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_제거_요청;
+import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청한다;
+import static nextstep.subway.common.LineSomething.DISTANCE_BASIC;
+import static nextstep.subway.common.LineSomething.DISTANCE_INVALID;
+import static nextstep.subway.common.LineSomething.DISTANCE_VALID;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.applicaion.dto.LineRequest;
@@ -11,10 +21,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import static nextstep.subway.acceptance.LineSteps.*;
-import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청한다;
-import static org.assertj.core.api.Assertions.assertThat;
-
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
     private Long 신분당선;
@@ -24,10 +30,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     private Long 삼번역3;
     private Long 사번역4;
     private Long 신규역;
-
-    public final int DISTANCE_BASIC = 20;
-    public final int DISTANCE_VALID = 10;
-    public final int DISTANCE_INVALID = 30;
 
     /**
      * Given 지하철역과 노선 생성을 요청 하고

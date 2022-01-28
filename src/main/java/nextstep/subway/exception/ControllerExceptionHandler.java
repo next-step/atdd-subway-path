@@ -1,4 +1,4 @@
-package nextstep.subway.ui;
+package nextstep.subway.exception;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;

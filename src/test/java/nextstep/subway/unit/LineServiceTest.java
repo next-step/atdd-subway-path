@@ -1,5 +1,6 @@
 package nextstep.subway.unit;
 
+import static nextstep.subway.common.LineSomething.DISTANCE_VALID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import nextstep.subway.applicaion.LineService;
@@ -29,13 +30,13 @@ public class LineServiceTest {
     void addSection() {
         // given
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
-        Station station1 = stationRepository.save(new Station("station1"));
-        Station station2 = stationRepository.save(new Station("station2"));
-        Line line = lineRepository.save(new Line("line1", "color"));
+        Station station1 = stationRepository.save(Station.of("station1"));
+        Station station2 = stationRepository.save(Station.of("station2"));
+        Line line = lineRepository.save(Line.of("line1", "color"));
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(line.getId(), SectionRequest.of(station1.getId(), station2.getId(), 10));
+        lineService.addSection(line.getId(), SectionRequest.of(station1.getId(), station2.getId(), DISTANCE_VALID));
 
         // then
         // line.getSections 메서드를 통해 검증

@@ -37,12 +37,8 @@ public class Section {
         return new Section(line, upStation, downStation, distance);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Line getLine() {
-        return line;
+    public static Section of(Station upStation, Station downStation, int distance) {
+        return new Section(null, upStation, downStation, distance);
     }
 
     public Station getUpStation() {
@@ -53,7 +49,4 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
-        return distance;
-    }
 }
