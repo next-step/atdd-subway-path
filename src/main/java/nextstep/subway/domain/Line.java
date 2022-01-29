@@ -41,6 +41,14 @@ public class Line extends BaseEntity {
         }
     }
 
+    public void deleteSection(final Station station) {
+        if (!this.sections.get(this.sections.size() - 1).getDownStation().equals(station)) {
+            throw new IllegalArgumentException();
+        }
+
+        this.sections.remove(this.sections.size() - 1);
+    }
+
     public Long getId() {
         return id;
     }
