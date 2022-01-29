@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
@@ -13,15 +14,20 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = new Sections();
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public Line(String name, String color, Station lastUpStation, Station lastDownStation, int distance) {
+        this(name, color);
+        sections.add(new Section(this, lastUpStation, lastDownStation, distance));
     }
 
     public Long getId() {
@@ -48,7 +54,48 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public List<Station> getStations() {
+        List<Station> allStations = new ArrayList<>();
+        Section lastUpSection = findLastUpSection();
+        allStations.add(lastUpSection.getUpStation());
+
+        Optional<Section> nextSection = Optional.ofNullable(lastUpSection);
+        while (nextSection.isPresent()) {
+            Section section = nextSection.get();
+            allStations.add(section.getDownStation());
+            nextSection = findSectionWithUpStation(section.getDownStation());
+        }
+        return allStations;
+    }
+
+    private Optional<Section> findSectionWithUpStation(Station downStation) {
+        return sections.findSectionWithUpStation(downStation);
+    }
+
+    private Section findLastUpSection() {
+        return sections.findLastUpSection();
+    }
+
+    public boolean isSectionsEmpty() {
+        return sections.isEmpty();
+    }
+
+    public int getSectionSize() {
+        return sections.getSize();
+    }
+
+    public void removeSectionByLastDownStation(Station station) {
+        if (!isLastDownStation(station)) {
+            throw new IllegalArgumentException();
+        }
+        sections.remove(station);
+    }
+
+    private boolean isLastDownStation(Station station) {
+        return sections.isLastDownStation(station);
     }
 }

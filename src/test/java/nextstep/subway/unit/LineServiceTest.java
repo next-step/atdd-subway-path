@@ -30,18 +30,24 @@ public class LineServiceTest {
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         Station 강남역 = new Station("강남역");
         Station 판교역 = new Station("판교역");
+        Station 양재역 = new Station("양재역");
+
         stationRepository.save(강남역);
         stationRepository.save(판교역);
+        stationRepository.save(양재역);
 
-        Line 신분당선 = new Line("신분당선", "yellow");
+        Line 신분당선 = new Line("신분당선", "yellow", 강남역, 판교역, 10);
         lineRepository.save(신분당선);
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 판교역.getId(), 10));
+        lineService.addSection(
+                신분당선.getId(),
+                new SectionRequest(판교역.getId(), 양재역.getId(), 10));
 
         // then
         // line.getSections 메서드를 통해 검증
-        assertThat(신분당선.getSections()).hasSize(1);
+        assertThat(신분당선.getSectionSize()).isEqualTo(2);
+        assertThat(신분당선.getStations()).containsExactly(강남역, 판교역, 양재역);
     }
 }
