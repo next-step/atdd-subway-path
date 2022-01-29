@@ -1,10 +1,13 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.HashSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,7 +39,16 @@ class LineTest {
     @DisplayName("노선에 속해있는 역 목록 조회")
     @Test
     void getStations() {
+        // given
+        HashSet<Station> stations = new HashSet<>();
+        for (Section section : line.getSections()) {
+            stations.add(section.getUpStation());
+            stations.add(section.getDownStation());
+        }
 
+        // then
+        assertThat(line.getSections().size()).isEqualTo(1);
+        assertThat(stations).containsExactly(upStation, downStation);
     }
 
     @DisplayName("구간이 목록에서 마지막 역 삭제")
