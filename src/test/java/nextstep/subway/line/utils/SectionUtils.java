@@ -42,6 +42,5 @@ public class SectionUtils {
 
         생성요청_성공(sectionResponse);
         assertThat(lineResponse.jsonPath().getList("stations").size()).isEqualTo(3);
-
     }
 }

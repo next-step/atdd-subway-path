@@ -6,11 +6,13 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.line.service.LineService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.ResourceBundle;
 
 @RequiredArgsConstructor
 @RestController
@@ -47,11 +49,10 @@ public class LineController {
     }
 
     @PostMapping("/{id}/sections")
-    public ResponseEntity<SectionResponse> addSection(@RequestBody SectionRequest request,
+    public ResponseEntity<Void> addSection(@RequestBody SectionRequest request,
                                                       @PathVariable("id") Long lineId) {
-        SectionResponse section = lineService.addSection(lineId, request);
-        return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections/" + section.getId()))
-                .body(section);
+        lineService.addSection(lineId, request);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
 }

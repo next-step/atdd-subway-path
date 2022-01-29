@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import nextstep.subway.exceptions.BadRequestException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -15,6 +16,10 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
 
+    public static final String DISTANCE_EXCEPTION_MESSAGE = "기존 구간의 길이보다 작은 길이의 구간만 추가할 수 있습니다.";
+    public static final String BOTH_EXIST_EXCEPTION_MESSAGE = "상행역과 하행역 모두 이미 노선에 등록되어 있습니다.";
+    public static final String BOTH_NOT_EXIST_EXCEPTION_MESSAGE = "상행역과 하행역 중 최소 하나는 노선에 등록되어 있어야 합니다.";
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -26,6 +31,7 @@ public class Sections {
 
         boolean isExistUpStation = isExistStation(section.getUpStation());
         boolean isExistDownStation = isExistStation(section.getDownStation());
+        validateAddSection(isExistUpStation, isExistDownStation);
 
         if(isExistUpStation) {
             addSectionBasedOnUpStation(section);
@@ -33,6 +39,16 @@ public class Sections {
 
         if(isExistDownStation) {
             addSectionBasedOnDownStation(section);
+        }
+    }
+
+    private void validateAddSection(boolean isExistUpStation, boolean isExistDownStation) {
+        if(isExistUpStation && isExistDownStation) {
+            throw new BadRequestException(BOTH_EXIST_EXCEPTION_MESSAGE);
+        }
+
+        if(!isExistUpStation && !isExistDownStation) {
+            throw new BadRequestException(BOTH_NOT_EXIST_EXCEPTION_MESSAGE);
         }
     }
 
@@ -61,6 +77,7 @@ public class Sections {
         Line line = findSection.getLine();
 
         int distance = findSection.getDistance() - section.getDistance();
+        validateDistance(distance);
         Section nextSection = Section.builder()
                 .line(line)
                 .upStation(section.getDownStation())
@@ -68,8 +85,6 @@ public class Sections {
                 .distance(distance)
                 .build();
 
-        // sections.remove(findSection);
-        // sections.add(section);
         sections.set(index, section);
         sections.add(index + 1, nextSection);
     }
@@ -85,6 +100,8 @@ public class Sections {
         Line line = findSection.getLine();
 
         int distance = findSection.getDistance() - section.getDistance();
+        validateDistance(distance);
+
         Section prevSection = Section.builder()
                 .line(line)
                 .upStation(findSection.getUpStation())
@@ -92,10 +109,14 @@ public class Sections {
                 .distance(distance)
                 .build();
 
-       // sections.remove(findSection);
-        //sections.add(section);
         sections.set(index, prevSection);
         sections.add(index + 1, section);
+    }
+
+    public void validateDistance(int distance) {
+        if(distance <= 0) {
+            throw new BadRequestException(DISTANCE_EXCEPTION_MESSAGE);
+        }
     }
 
     private boolean isExistStation(Station station) {
@@ -125,35 +146,5 @@ public class Sections {
         if(Objects.nonNull(section)) {
             addStationInOrder(stations, section.getDownStation());
         }
-    }
-
-    public void remove(Section section) {
-        sections.remove(section);
-    }
-
-    private List<Long> getStationIds() {
-        return getAllStation().stream()
-                .map(Station::getId)
-                .collect(Collectors.toList());
-    }
-
-    public Station getDownStation() {
-        return getAllStation().get(getAllStation().size() - 1);
-    }
-
-    public Section getLastSection() {
-        return sections.get(sections.size() - 1);
-    }
-
-    public boolean isRegisteredStation(Station station) {
-        return getAllStation().contains(station);
-    }
-
-    public boolean canDelete() {
-        return sections.size() > 1;
-    }
-
-    public boolean isDownStation(Station station) {
-        return getDownStation().equals(station);
     }
 }

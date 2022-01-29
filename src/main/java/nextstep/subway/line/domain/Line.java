@@ -43,28 +43,18 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void addSection(Section section) {
-        sections.add(section);
-    }
+    public void addSection(Station upStation, Station downStation, int distance) {
+        Section section = Section.builder()
+                .line(this)
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(distance)
+                .build();
 
-    public void removeSection(Section section) {
-        sections.remove(section);
+        sections.add(section);
     }
 
     public List<Station> getAllStations() {
         return sections.getAllStation();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Line line = (Line) o;
-        return Objects.equals(id, line.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 }

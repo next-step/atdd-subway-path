@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.Sections;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.time.LocalDateTime;

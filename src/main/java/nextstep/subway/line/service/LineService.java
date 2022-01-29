@@ -28,11 +28,14 @@ public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
-    public LineResponse saveLine(LineRequest lineRequest) {
-        validateDuplicateLineName(lineRequest.getName());
+    public LineResponse saveLine(LineRequest request) {
+        validateDuplicateLineName(request.getName());
 
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        line.addSection(createSection(line, lineRequest));
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
+
+        Line line = new Line(request.getName(), request.getColor());
+        line.addSection(upStation, downStation, request.getDistance());
         lineRepository.save(line);
 
         return LineResponse.of(line);
@@ -87,30 +90,11 @@ public class LineService {
                 .orElseThrow(() -> new StationNotFoundException(id));
     }
 
-    public SectionResponse addSection(Long lineId, SectionRequest sectionRequest) {
+    public void addSection(Long lineId, SectionRequest request) {
         Line line = findLineById(lineId);
-        Station upStation = findStationById(sectionRequest.getUpStationId());
-        Station downStation = findStationById(sectionRequest.getDownStationId());
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
 
-        Section section = Section.builder()
-                .line(line)
-                .upStation(upStation)
-                .downStation(downStation)
-                .distance(sectionRequest.getDistance())
-                .build();
-        line.addSection(section);
-
-        return SectionResponse.of(section);
+        line.addSection(upStation, downStation, request.getDistance());
     }
-
-    /*private void validateAddSection(Sections sections, StationsDto stationsDto) {
-        if(!sections.isDownStation(stationsDto.getUpStation())) {
-            throw new BadRequestException("새로운 구간의 상행역은 현재 등록되어있는 하행 종점역이어야 합니다.");
-        }
-
-        if(sections.isRegisteredStation(stationsDto.getDownStation())) {
-            throw new BadRequestException("새로운 구간의 하행역은 현재 등록되어있는 역일 수 없습니다.");
-        }
-    }*/
-
 }

@@ -15,7 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +25,17 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class LineServiceTest {
+
+    static final Long 이호선_상행종점역_아이디 = 1L;
+    static final Long 이호선_하행종점역_아이디 = 2L;
+    static final Long 새로운구간_하행역_아이디 = 3L;
+
+    static final Long 이호선_첫구간_아이디 = 1L;
+
+    static final int 이호선_첫구간_길이 = 7;
+    static final int 새로운구간_길이 = 6;
 
     @Mock
     LineRepository lineRepository;
@@ -47,17 +58,10 @@ public class LineServiceTest {
                 .color("bg-green")
                 .build();
 
-        Station 신도림역 = new Station(1L, "신도림역");
-        Station 영등포구청역 = new Station(2L, "영등포구청역");
+        Station 신도림역 = new Station(이호선_상행종점역_아이디, "신도림역");
+        Station 영등포구청역 = new Station(이호선_하행종점역_아이디, "영등포구청역");
 
-        Section section = Section.builder()
-                .upStation(신도림역)
-                .downStation(영등포구청역)
-                .line(line)
-                .distance(6)
-                .build();
-        ReflectionTestUtils.setField(section, "id", 1L);
-        line.addSection(section);
+        line.addSection(신도림역, 영등포구청역, 이호선_첫구간_길이);
 
         Mockito.when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
         Mockito.when(stationRepository.findById(신도림역.getId())).thenReturn(Optional.of(신도림역));
@@ -71,11 +75,11 @@ public class LineServiceTest {
     @Test
     void 구간_추가() {
         // given
-        Station station = new Station(3L, "문래역");
+        Station station = new Station(새로운구간_하행역_아이디, "문래역");
         long 문래역 = station.getId();
         Mockito.when(stationRepository.findById(문래역)).thenReturn(Optional.of(station));
 
-        SectionRequest request = new SectionRequest(이호선_상행종점역, 문래역, 7);
+        SectionRequest request = new SectionRequest(이호선_상행종점역, 문래역, 새로운구간_길이);
 
         // when
         lineService.addSection(이호선, request);
