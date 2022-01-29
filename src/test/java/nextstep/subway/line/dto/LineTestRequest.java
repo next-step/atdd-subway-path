@@ -1,10 +1,13 @@
-package nextstep.subway.line.acceptance.dto;
+package nextstep.subway.line.dto;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-public class LineRequest {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class LineTestRequest {
     private String upStationName;
     private String downStationName;
     private String lineName;
@@ -12,8 +15,8 @@ public class LineRequest {
     private int distance;
 
     @Builder
-    private LineRequest(String upStationName, String downStationName, String lineName,
-                        String lineColor, int distance) {
+    private LineTestRequest(String upStationName, String downStationName, String lineName,
+                            String lineColor, int distance) {
         this.upStationName = upStationName;
         this.downStationName = downStationName;
         this.lineName = lineName;

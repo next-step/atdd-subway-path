@@ -3,7 +3,7 @@ package nextstep.subway.line.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.commons.AcceptanceTest;
-import nextstep.subway.line.acceptance.dto.LineRequest;
+import nextstep.subway.line.dto.LineTestRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +12,7 @@ import java.util.Map;
 
 import static nextstep.subway.commons.AssertionsUtils.삭제요청_성공;
 import static nextstep.subway.commons.AssertionsUtils.요청_실패;
-import static nextstep.subway.line.acceptance.utils.LineUtils.*;
+import static nextstep.subway.line.utils.LineUtils.*;
 
 @DisplayName("지하철 노선 관리 기능")
 class LineAcceptanceTest extends AcceptanceTest {
@@ -26,7 +26,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        LineRequest request = LineRequest.builder()
+        LineTestRequest request = LineTestRequest.builder()
                 .lineName("2호선")
                 .lineColor("bg-green")
                 .upStationName("신도림")
@@ -50,7 +50,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void duplicateLineName() {
         // given
-        LineRequest request = LineRequest.builder()
+        LineTestRequest request = LineTestRequest.builder()
                 .lineName("2호선")
                 .lineColor("bg-green")
                 .upStationName("신도림")
@@ -60,7 +60,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         지하철노선_생성_요청(request);
 
         // when
-        LineRequest request2 = LineRequest.builder()
+        LineTestRequest request2 = LineTestRequest.builder()
                 .lineName("2호선")
                 .lineColor("bg-green")
                 .upStationName("영등포구청역")
@@ -83,7 +83,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        LineRequest request = LineRequest.builder()
+        LineTestRequest request = LineTestRequest.builder()
                 .lineName("2호선")
                 .lineColor("bg-green")
                 .upStationName("신도림")
@@ -92,7 +92,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .build();
         지하철노선_생성_요청(request);
 
-        LineRequest request2 = LineRequest.builder()
+        LineTestRequest request2 = LineTestRequest.builder()
                 .lineName("1호선")
                 .lineColor("bg-blue")
                 .upStationName("부천역")
@@ -117,7 +117,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        LineRequest request = LineRequest.builder()
+        LineTestRequest request = LineTestRequest.builder()
                 .lineName("2호선")
                 .lineColor("bg-green")
                 .upStationName("신도림")
@@ -144,7 +144,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        LineRequest request = LineRequest.builder()
+        LineTestRequest request = LineTestRequest.builder()
                 .lineName("2호선")
                 .lineColor("bg-green")
                 .upStationName("신도림")
@@ -175,7 +175,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineRequest request = LineRequest.builder()
+        LineTestRequest request = LineTestRequest.builder()
                 .lineName("2호선")
                 .lineColor("bg-green")
                 .upStationName("신도림")

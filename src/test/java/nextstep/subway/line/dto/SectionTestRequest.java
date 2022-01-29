@@ -1,4 +1,4 @@
-package nextstep.subway.line.acceptance.dto;
+package nextstep.subway.line.dto;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -7,14 +7,14 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SectionRequest {
+public class SectionTestRequest {
     private Long lineId;
     private Long upStationId;
     private Long downStationId;
     private int distance;
 
     @Builder
-    private SectionRequest(Long lineId, Long upStationId, Long downStationId, int distance) {
+    private SectionTestRequest(Long lineId, Long upStationId, Long downStationId, int distance) {
         this.lineId = lineId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;

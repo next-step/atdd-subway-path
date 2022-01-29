@@ -1,8 +1,8 @@
-package nextstep.subway.line.acceptance.utils;
+package nextstep.subway.line.utils;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.line.acceptance.dto.LineRequest;
+import nextstep.subway.line.dto.LineTestRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +18,7 @@ public class LineUtils {
 
     private LineUtils() {}
 
-    public static ExtractableResponse<Response> 지하철노선_생성_요청(LineRequest request) {
+    public static ExtractableResponse<Response> 지하철노선_생성_요청(LineTestRequest request) {
         long upStationId = 지하철역_생성요청(request.getUpStationName()).jsonPath().getLong("id");
         long downStationId = 지하철역_생성요청(request.getDownStationName()).jsonPath().getLong("id");
 
