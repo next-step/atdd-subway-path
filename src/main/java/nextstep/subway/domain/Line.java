@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import org.springframework.util.ObjectUtils;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,15 @@ public class Line extends BaseEntity {
     public void addSection(final Station upStation, final Station downStation, final int distance) {
         Section newSection = new Section(this, upStation, downStation, distance);
         this.sections.add(newSection);
+    }
+
+    public void update(final String name, final String color) {
+        if (!ObjectUtils.isEmpty(name)) {
+            this.name = name;
+        }
+        if (!ObjectUtils.isEmpty(color)) {
+            this.color = color;
+        }
     }
 
     public Long getId() {
