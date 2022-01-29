@@ -21,7 +21,7 @@ public class Sections {
             return;
         }
 
-        List<Station> allStations = getAllStations();
+        List<Station> allStations = allStations();
 
         if (allStations.contains(upStation) && allStations.contains(downStation)
                 || !(allStations.contains(upStation) || allStations.contains(downStation))) {
@@ -68,21 +68,21 @@ public class Sections {
     }
 
     public boolean isDownStationEndpoint(Station station) {
-        return getHaHang().equals(station);
+        return getDownStationEndpoint().equals(station);
     }
 
     private boolean isUpStationEndpoint(Station station) {
-        return getSangHang().equals(station);
+        return geUpStationEndpoint().equals(station);
     }
 
-    public Station getSangHang() {
+    public Station geUpStationEndpoint() {
         List<Station> upStations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
         List<Station> downStations = sections.stream().map(Section::getDownStation).collect(Collectors.toList());
 
         return upStations.stream().filter(it -> !downStations.contains(it)).findAny().orElse(null);
     }
 
-    private Station getHaHang() {
+    private Station getDownStationEndpoint() {
         List<Station> upStations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
         List<Station> downStations = sections.stream().map(Section::getDownStation).collect(Collectors.toList());
 
@@ -97,10 +97,10 @@ public class Sections {
         return this.sections.stream().filter(it -> it.getDownStation().equals(station)).findAny().orElse(null);
     }
 
-    private List<Station> getAllStations() {
+    private List<Station> allStations() {
         List<Station> allStations = new ArrayList<>();
         List<Station> upStations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
-        Station haHang = getHaHang();
+        Station haHang = getDownStationEndpoint();
 
         allStations.addAll(upStations);
         allStations.add(haHang);

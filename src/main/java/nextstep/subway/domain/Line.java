@@ -77,7 +77,7 @@ public class Line extends BaseEntity {
 
     public List<Section> getSections() {
         List<Section> sections = new ArrayList<>();
-        Station upStation = this.sections.getSangHang();
+        Station upStation = this.sections.geUpStationEndpoint();
         if(Objects.isNull(upStation)){
             return sections;
         }
