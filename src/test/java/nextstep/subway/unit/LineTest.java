@@ -36,10 +36,21 @@ class LineTest {
     @DisplayName("노선에 속해있는 역 목록 조회")
     @Test
     void getStations() {
+
     }
 
     @DisplayName("구간이 목록에서 마지막 역 삭제")
     @Test
     void removeSection() {
+        // given
+        final int newDistance = 5;
+        final Station newDownStation = new Station("성균관대역");
+        line.addSection(downStation, newDownStation, newDistance);
+
+        // when
+        line.deleteSection(newDownStation);
+
+        // then
+        assertThat(line.getSections().size()).isEqualTo(1);
     }
 }
