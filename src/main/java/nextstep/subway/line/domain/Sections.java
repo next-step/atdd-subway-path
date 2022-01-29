@@ -1,4 +1,4 @@
-package nextstep.subway.line.domain.model;
+package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,7 +17,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.common.domain.exception.ErrorMessage;
-import nextstep.subway.station.domain.model.Station;
+import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
@@ -124,7 +124,7 @@ public class Sections {
     public int totalDistance() {
         return values.stream()
                      .map(Section::getDistance)
-                     .reduce(Distance::add)
+                     .reduce(Distance::addition)
                      .map(Distance::getValue)
                      .orElse(0);
     }

@@ -9,9 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.common.domain.model.exception.EntityNotFoundException;
 import nextstep.subway.common.domain.model.exception.FieldDuplicateException;
-import nextstep.subway.station.domain.dto.StationRequest;
-import nextstep.subway.station.domain.dto.StationResponse;
-import nextstep.subway.station.domain.model.Station;
+import nextstep.subway.station.application.dto.StationRequest;
+import nextstep.subway.station.application.dto.StationResponse;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.repository.StationRepository;
 
 @RequiredArgsConstructor
@@ -21,6 +21,11 @@ public class StationService {
     private static final String ENTITY_NAME_FOR_EXCEPTION = "지하철 역";
 
     private final StationRepository stationRepository;
+
+    public Station findById(Long id) {
+        return stationRepository.findById(id)
+                                .orElseThrow(() -> new EntityNotFoundException(ENTITY_NAME_FOR_EXCEPTION));
+    }
 
     public StationResponse saveStation(StationRequest request) {
         if (stationRepository.existsByName(request.getName())) {
@@ -42,12 +47,7 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteStationById(Long id) {
+    public void deleteStation(Long id) {
         stationRepository.deleteById(id);
-    }
-
-    public Station findByIdOrThrow(Long id) {
-        return stationRepository.findById(id)
-                                .orElseThrow(() -> new EntityNotFoundException(ENTITY_NAME_FOR_EXCEPTION));
     }
 }

@@ -1,4 +1,4 @@
-package nextstep.subway.line.domain.dto;
+package nextstep.subway.line.application.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -8,8 +8,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Builder;
 import lombok.Getter;
-import nextstep.subway.line.domain.model.Line;
-import nextstep.subway.station.domain.dto.StationResponse;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.application.dto.StationResponse;
 
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)

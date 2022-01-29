@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.station.application.StationService;
-import nextstep.subway.station.domain.dto.StationRequest;
-import nextstep.subway.station.domain.dto.StationResponse;
+import nextstep.subway.station.application.dto.StationRequest;
+import nextstep.subway.station.application.dto.StationResponse;
 
 @RequiredArgsConstructor
 @RestController
@@ -35,7 +35,7 @@ public class StationController {
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
-        stationService.deleteStationById(id);
+        stationService.deleteStation(id);
         return ResponseEntity.noContent().build();
     }
 }

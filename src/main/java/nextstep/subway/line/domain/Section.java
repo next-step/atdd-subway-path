@@ -1,4 +1,4 @@
-package nextstep.subway.line.domain.model;
+package nextstep.subway.line.domain;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -14,7 +14,7 @@ import javax.persistence.ManyToOne;
 import lombok.Builder;
 import lombok.Getter;
 import nextstep.subway.common.domain.exception.ErrorMessage;
-import nextstep.subway.station.domain.model.Station;
+import nextstep.subway.station.domain.Station;
 
 @Getter
 @Entity
@@ -62,7 +62,7 @@ public class Section {
     public void changeUpStation(Section newSection) {
         verifyDistanceExceeded(newSection.distance);
 
-        distance = distance.sub(newSection.distance);
+        distance = distance.subtraction(newSection.distance);
         upStation = newSection.getDownStation();
     }
 

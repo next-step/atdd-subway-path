@@ -1,6 +1,7 @@
-package nextstep.subway.line.domain.model;
+package nextstep.subway.line.domain;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -9,11 +10,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import org.springframework.util.StringUtils;
-
 import lombok.Getter;
 import nextstep.subway.common.domain.model.BaseEntity;
-import nextstep.subway.station.domain.model.Station;
+import nextstep.subway.station.domain.Station;
 
 @Getter
 @Entity
@@ -60,10 +59,10 @@ public class Line extends BaseEntity {
     }
 
     public void edit(String name, String color) {
-        if (StringUtils.hasText(name)) {
+        if (Objects.nonNull(name)) {
             this.name = name;
         }
-        if (StringUtils.hasText(color)) {
+        if (Objects.nonNull(color)) {
             this.color = color;
         }
     }

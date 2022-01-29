@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.domain.dto.LineRequest;
-import nextstep.subway.line.domain.dto.LineResponse;
-import nextstep.subway.line.domain.dto.SectionRequest;
+import nextstep.subway.line.application.dto.LineRequest;
+import nextstep.subway.line.application.dto.LineResponse;
+import nextstep.subway.line.application.dto.SectionRequest;
 
 @RequiredArgsConstructor
 @RestController
@@ -40,7 +40,7 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
-        LineResponse lineResponse = lineService.findById(id);
+        LineResponse lineResponse = lineService.findLine(id);
         return ResponseEntity.ok().body(lineResponse);
     }
 
@@ -58,13 +58,13 @@ public class LineController {
 
     @PostMapping("/{lineId}/sections")
     public ResponseEntity<Void> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        lineService.addSection(lineId, sectionRequest);
+        lineService.isAddableSection(lineId, sectionRequest);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{lineId}/sections")
     public ResponseEntity<Void> deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
         lineService.deleteSection(lineId, stationId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

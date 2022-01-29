@@ -1,11 +1,9 @@
-package nextstep.subway.line.domain.model;
+package nextstep.subway.line.domain;
 
 import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-
-import com.fasterxml.jackson.annotation.JsonValue;
 
 import lombok.Getter;
 import nextstep.subway.common.domain.model.exception.ErrorMessage;
@@ -13,7 +11,6 @@ import nextstep.subway.common.domain.model.exception.ErrorMessage;
 @Getter
 @Embeddable
 public class Distance {
-    @JsonValue
     @Column(name = "DISTANCE", nullable = false)
     private int value;
 
@@ -27,9 +24,7 @@ public class Distance {
 
     private void verifyZero(int value) {
         if (value <= 0) {
-            throw new IllegalArgumentException(
-                ErrorMessage.INVALID_DISTANCE.getMessage()
-            );
+            throw new IllegalArgumentException(ErrorMessage.INVALID_DISTANCE.getMessage());
         }
     }
 
@@ -37,11 +32,11 @@ public class Distance {
         return this.value > distance.value;
     }
 
-    public Distance add(Distance thatDistance) {
+    public Distance addition(Distance thatDistance) {
         return new Distance(value + thatDistance.value);
     }
 
-    public Distance sub(Distance thatDistance) {
+    public Distance subtraction(Distance thatDistance) {
         return new Distance(value - thatDistance.value);
     }
 

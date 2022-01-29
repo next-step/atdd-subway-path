@@ -1,10 +1,10 @@
-package nextstep.subway.station.domain.dto;
+package nextstep.subway.station.application.dto;
 
 import java.time.LocalDateTime;
 
 import lombok.Builder;
 import lombok.Getter;
-import nextstep.subway.station.domain.model.Station;
+import nextstep.subway.station.domain.Station;
 
 @Getter
 public class StationResponse {

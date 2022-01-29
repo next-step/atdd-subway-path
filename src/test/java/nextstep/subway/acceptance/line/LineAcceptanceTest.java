@@ -3,15 +3,10 @@ package nextstep.subway.acceptance.line;
 import static nextstep.subway.acceptance.line.LineSteps.*;
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.acceptance.AcceptanceTest;
@@ -81,20 +76,17 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        Long 이호선 = 지하철_노선_생성_요청("2호선", "green").jsonPath().getLong("id");
 
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "red");
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put(createResponse.header("location"))
-                .then().log().all().extract();
+        String changedColor = "red";
+        ExtractableResponse<Response> editResponse = 지하철_노선_수정_요청(이호선, null, changedColor);
+        ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(이호선);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(editResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(getResponse.jsonPath().getString("color")).isEqualTo(changedColor);
     }
 
     /**
@@ -106,13 +98,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        Long 이호선 = 지하철_노선_생성_요청("2호선", "green").jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .when().delete(createResponse.header("location"))
-                .then().log().all().extract();
+        ExtractableResponse<Response> response = 지하철_노선_삭제_요청(이호선);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());

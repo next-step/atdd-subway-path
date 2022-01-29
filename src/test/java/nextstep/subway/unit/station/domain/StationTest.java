@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.station.domain.model.Station;
+import nextstep.subway.station.domain.Station;
 
 @DisplayName("Station 단위 테스트")
 public class StationTest {
@@ -20,16 +20,13 @@ public class StationTest {
     @DisplayName("ID Match")
     @Test
     void matchId() {
-        assertThat(station.matchId(1L))
-            .isTrue();
+        assertThat(station.matchId(1L)).isTrue();
     }
 
     @DisplayName("ID로 Equals")
     @Test
     void equals() {
-        assertThat(station)
-            .isEqualTo(station);
-        assertThat(station)
-            .isEqualTo(new Station(station.getId(), null));
+        assertThat(station).isEqualTo(station);
+        assertThat(station).isEqualTo(new Station(station.getId(), null));
     }
 }

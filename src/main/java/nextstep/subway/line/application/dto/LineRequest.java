@@ -1,10 +1,8 @@
-package nextstep.subway.line.domain.dto;
-
-import java.util.Objects;
+package nextstep.subway.line.application.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import nextstep.subway.line.domain.model.Distance;
+import nextstep.subway.line.domain.Distance;
 
 @Getter
 public class LineRequest {
@@ -24,9 +22,5 @@ public class LineRequest {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
-    }
-
-    public boolean hasSection() {
-        return Objects.nonNull(upStationId) && Objects.nonNull(downStationId) && Objects.nonNull(distance);
     }
 }

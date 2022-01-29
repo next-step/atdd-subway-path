@@ -1,8 +1,8 @@
-package nextstep.subway.line.domain.dto;
+package nextstep.subway.line.application.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import nextstep.subway.line.domain.model.Distance;
+import nextstep.subway.line.domain.Distance;
 
 @Getter
 public class SectionRequest {

@@ -6,10 +6,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.line.domain.model.Distance;
-import nextstep.subway.line.domain.model.Line;
-import nextstep.subway.line.domain.model.Section;
-import nextstep.subway.station.domain.model.Station;
+import nextstep.subway.line.domain.Distance;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.station.domain.Station;
 
 @DisplayName("Section 단위 테스트")
 class SectionTest {
@@ -21,6 +21,7 @@ class SectionTest {
         Station upStation = new Station(1L, "상행");
         Station downStation = new Station(2L, "하행");
         Distance distance = new Distance(100);
+
         this.line = new Line(1L, "노선", "bg-red-500");
         this.section = new Section(1L, line, upStation, downStation, distance);
     }
@@ -42,15 +43,11 @@ class SectionTest {
     void changeUpStation() {
         Station newUpStation = new Station(3L, "새로운 상행");
         Station newDownStation = new Station(4L, "새로운 하행");
-        Section newSection = new Section(
-            2L,  line, newUpStation, newDownStation, new Distance(10)
-        );
+        Section newSection = new Section(2L, line, newUpStation, newDownStation, new Distance(10));
 
         section.changeUpStation(newSection);
 
-        assertThat(section.getDistance().getValue())
-            .isEqualTo(90);
-        assertThat(section.getUpStation().getName())
-            .isEqualTo(newDownStation.getName());
+        assertThat(section.getDistance().getValue()).isEqualTo(90);
+        assertThat(section.getUpStation().getName()).isEqualTo(newDownStation.getName());
     }
 }

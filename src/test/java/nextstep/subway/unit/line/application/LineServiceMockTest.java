@@ -11,12 +11,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.domain.dto.SectionRequest;
-import nextstep.subway.line.domain.model.Distance;
-import nextstep.subway.line.domain.model.Line;
+import nextstep.subway.line.application.dto.SectionRequest;
+import nextstep.subway.line.domain.Distance;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.repository.LineRepository;
 import nextstep.subway.station.application.StationService;
-import nextstep.subway.station.domain.model.Station;
+import nextstep.subway.station.domain.Station;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
@@ -33,12 +33,9 @@ public class LineServiceMockTest {
         Station mockUpStation = new Station("초기 상행");
         Station mockDownStation = new Station("초기 하행");
 
-        when(lineRepository.findByIdWithStations(mockLine.getId()))
-            .thenReturn(Optional.of(mockLine));
-        when(stationService.findByIdOrThrow(mockUpStation.getId()))
-            .thenReturn(mockUpStation);
-        when(stationService.findByIdOrThrow(mockDownStation.getId()))
-            .thenReturn(mockDownStation);
+        when(lineRepository.findByIdWithStations(mockLine.getId())).thenReturn(Optional.of(mockLine));
+        when(stationService.findById(mockUpStation.getId())).thenReturn(mockUpStation);
+        when(stationService.findById(mockDownStation.getId())).thenReturn(mockDownStation);
         LineService lineService = new LineService(lineRepository, stationService);
 
         // when
@@ -48,7 +45,7 @@ public class LineServiceMockTest {
             .downStationId(mockDownStation.getId())
             .distance(new Distance(100))
             .build();
-        lineService.addSection(mockLine.getId(), sectionRequest);
+        lineService.isAddableSection(mockLine.getId(), sectionRequest);
 
         // then
         // line.findLineById 메서드를 통해 검증

@@ -1,6 +1,7 @@
 package nextstep.subway.line.application;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -9,13 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.common.domain.model.exception.EntityNotFoundException;
 import nextstep.subway.common.domain.model.exception.FieldDuplicateException;
-import nextstep.subway.line.domain.dto.LineRequest;
-import nextstep.subway.line.domain.dto.LineResponse;
-import nextstep.subway.line.domain.dto.SectionRequest;
-import nextstep.subway.line.domain.model.Line;
+import nextstep.subway.line.application.dto.LineRequest;
+import nextstep.subway.line.application.dto.LineResponse;
+import nextstep.subway.line.application.dto.SectionRequest;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.repository.LineRepository;
 import nextstep.subway.station.application.StationService;
-import nextstep.subway.station.domain.model.Station;
+import nextstep.subway.station.domain.Station;
 
 @RequiredArgsConstructor
 @Service
@@ -26,19 +27,19 @@ public class LineService {
     private final LineRepository lineRepository;
     private final StationService stationService;
 
-    public Line findByIdOrThrow(Long id) {
+    public Line findById(Long id) {
         return lineRepository.findById(id)
                              .orElseThrow(() -> new EntityNotFoundException(ENTITY_NAME_FOR_EXCEPTION));
     }
 
-    public Line findByIdWithStationsOrThrow(Long id) {
+    public Line findByIdWithStations(Long id) {
         return lineRepository.findByIdWithStations(id)
                              .orElseThrow(() -> new EntityNotFoundException(ENTITY_NAME_FOR_EXCEPTION));
     }
 
     @Transactional(readOnly = true)
-    public LineResponse findById(Long id) {
-        Line line = findByIdWithStationsOrThrow(id);
+    public LineResponse findLine(Long id) {
+        Line line = findByIdWithStations(id);
 
         return LineResponse.withStationsFrom(line);
     }
@@ -50,12 +51,18 @@ public class LineService {
         Line line = lineRepository.save(
             new Line(request.getName(), request.getColor())
         );
-        if (request.hasSection()) {
-            Station upStation = stationService.findByIdOrThrow(request.getUpStationId());
-            Station downStation = stationService.findByIdOrThrow(request.getDownStationId());
+        if (isAddableSection(request)) {
+            Station upStation = stationService.findById(request.getUpStationId());
+            Station downStation = stationService.findById(request.getDownStationId());
             line.addSection(upStation, downStation, request.getDistance());
         }
         return LineResponse.withStationsFrom(line);
+    }
+
+    private boolean isAddableSection(LineRequest request) {
+        return Objects.nonNull(request.getUpStationId())
+            && Objects.nonNull(request.getDownStationId())
+            && Objects.nonNull(request.getDistance());
     }
 
     @Transactional(readOnly = true)
@@ -68,7 +75,7 @@ public class LineService {
 
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = findByIdOrThrow(id);
+        Line line = findById(id);
 
         line.edit(lineRequest.getName(), lineRequest.getColor());
     }
@@ -78,16 +85,16 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public void addSection(Long lineId, SectionRequest request) {
-        Station upStation = stationService.findByIdOrThrow(request.getUpStationId());
-        Station downStation = stationService.findByIdOrThrow(request.getDownStationId());
-        Line line = findByIdWithStationsOrThrow(lineId);
+    public void isAddableSection(Long lineId, SectionRequest request) {
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+        Line line = findByIdWithStations(lineId);
 
         line.addSection(upStation, downStation, request.getDistance());
     }
 
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = findByIdOrThrow(lineId);
+        Line line = findById(lineId);
 
         line.deleteSection(stationId);
     }
