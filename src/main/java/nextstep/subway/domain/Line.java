@@ -35,7 +35,7 @@ public class Line extends BaseEntity {
         this(name, color, new Sections());
     }
 
-    public void addSection(final Station upStation, final Station downStation, final int distance) {
+    public void registerSection(final Station upStation, final Station downStation, final int distance) {
         sections.addSection(this, upStation, downStation, distance);
     }
 

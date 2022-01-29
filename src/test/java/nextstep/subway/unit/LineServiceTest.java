@@ -265,8 +265,8 @@ public class LineServiceTest {
             Station 삼성역 = stationRepository.save(new Station("삼성역"));
             Station 선릉역 = stationRepository.save(new Station("선릉역"));
             Line line = lineRepository.save(new Line("2호선", "갈매색"));
-            line.addSection(강남역, 삼성역, 100);
-            line.addSection(삼성역, 선릉역, 100);
+            line.registerSection(강남역, 삼성역, 100);
+            line.registerSection(삼성역, 선릉역, 100);
 
             // when
             lineService.deleteSection(line.getId(), 선릉역.getId());
@@ -289,8 +289,8 @@ public class LineServiceTest {
             Station 삼성역 = stationRepository.save(new Station("삼성역"));
             Station 선릉역 = stationRepository.save(new Station("선릉역"));
             Line line = lineRepository.save(new Line("2호선", "갈매색"));
-            line.addSection(강남역, 삼성역, 100);
-            line.addSection(삼성역, 선릉역, 100);
+            line.registerSection(강남역, 삼성역, 100);
+            line.registerSection(삼성역, 선릉역, 100);
 
             // when, then
             assertThrows(IllegalArgumentException.class, () -> lineService.deleteSection(line.getId(), 삼성역.getId()));

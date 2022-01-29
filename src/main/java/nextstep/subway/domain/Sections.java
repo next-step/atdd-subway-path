@@ -33,15 +33,15 @@ public class Sections {
             return;
         }
 
-        Section sectionByDownStation = getSectionByDownStation(downStation);
-        if (Objects.nonNull(sectionByDownStation)) {
-            addBetweenSection(sectionByDownStation, sectionByDownStation.getUpStation(), upStation, downStation, sectionByDownStation.getDistance() - distance, distance);
-            return;
-        }
-
         Section sectionByUpStation = getSectionByUpStation(upStation);
         if (Objects.nonNull(sectionByUpStation)) {
             addBetweenSection(sectionByUpStation, sectionByUpStation.getUpStation(), downStation, sectionByUpStation.getDownStation(), distance, sectionByUpStation.getDistance() - distance);
+            return;
+        }
+
+        Section sectionByDownStation = getSectionByDownStation(downStation);
+        if (Objects.nonNull(sectionByDownStation)) {
+            addBetweenSection(sectionByDownStation, sectionByDownStation.getUpStation(), upStation, downStation, sectionByDownStation.getDistance() - distance, distance);
         }
     }
 

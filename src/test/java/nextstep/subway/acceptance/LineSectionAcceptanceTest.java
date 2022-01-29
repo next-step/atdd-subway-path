@@ -76,6 +76,11 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 추가한 구간 사이에 새로운 구간을 등록하면
+     * Then 새로운 구간이 추가된다.
+     */
     @DisplayName("기존 구간 사이에 새로운 구간을 등록한다.")
     @Test
     void addLineSection2() {
@@ -91,6 +96,11 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역, 양재역);
     }
 
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 추가한 구간 사이보다 길이가 큰 새로운 구간을 등록하면
+     * Then 등록이 되지 않는다.
+     */
     @DisplayName("구간을 등록시 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록할 수 없다.")
     @Test
     void addLineSection3() {
@@ -107,7 +117,12 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
-    @DisplayName("구간을 등록시 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 상행역과 하행역이 이미 등록되어 있는 구간을 등록하면
+     * Then 등록이 되지 않는다.
+     */
+    @DisplayName("구간을 등록시 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 등록할 수 없다.")
     @Test
     void addLineSection4() {
         // when
@@ -117,7 +132,12 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    @DisplayName("구간을 등록시 상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 추가할 수 없다.")
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 상행역과 하행역이 모두 기존 노선에 등록되어 있지 않은 구간을 등록하면
+     * Then 등록이 되지 않는다.
+     */
+    @DisplayName("구간을 등록시 상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 등록할 수 없다.")
     @Test
     void addLineSection5() {
         // given
