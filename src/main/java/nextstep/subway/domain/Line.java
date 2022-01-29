@@ -1,9 +1,6 @@
 package nextstep.subway.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Line extends BaseEntity {
@@ -12,6 +9,9 @@ public class Line extends BaseEntity {
     private Long id;
     private String name;
     private String color;
+
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -36,6 +36,29 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public Sections getSections() {
+        return sections;
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
+        section.updateLine(this);
+    }
+
+    public boolean isNotDownStation(Long station) {
+        for (Section section : sections.getSections()) {
+            if (section.isSameDownStation(station)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void deleteSection(Long stationId) {
+
+        sections.deleteSection(stationId);
     }
 
 }

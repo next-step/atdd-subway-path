@@ -3,8 +3,8 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.exception.DuplicationException;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
+import nextstep.subway.applicaion.exception.NotFoundException;
+import nextstep.subway.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,24 +15,26 @@ import java.util.stream.Collectors;
 @Transactional
 public class LineService {
     private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
+    @Transactional
     public LineResponse saveLine(LineRequest request) {
         lineRepository.findByName(request.getName())
                 .ifPresent(l -> {
                     throw new DuplicationException();
                 });
-        Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-        return new LineResponse(
-                line.getId(),
-                line.getName(),
-                line.getColor(),
-                line.getCreatedDate(),
-                line.getModifiedDate()
-        );
+        Line line = request.toEntity();
+        Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(NotFoundException::new);
+        Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(NotFoundException::new);
+        line.addSection(Section.of(upStation, downStation, request.getDistance()));
+
+        line = lineRepository.save(line);
+        return LineResponse.of(line);
     }
 
     public List<LineResponse> findAll() {

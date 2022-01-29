@@ -12,7 +12,7 @@ public class Station extends BaseEntity {
     private Long id;
     private String name;
 
-    public Station() {
+    protected Station() {
     }
 
     public Station(String name) {
@@ -25,5 +25,9 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isSameStation(Long downStationId) {
+        return id.equals(downStationId);
     }
 }
