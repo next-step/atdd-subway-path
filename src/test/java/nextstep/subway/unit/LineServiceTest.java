@@ -23,6 +23,8 @@ public class LineServiceTest {
     void addSection() {
         // given
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
+        stationRepository.findById(1L);
+        stationRepository.findById(2L);
 
         // when
         // lineService.addSection 호출
