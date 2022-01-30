@@ -13,6 +13,10 @@ repositories {
 }
 
 dependencies {
+	// lombok
+	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
+	annotationProcessor 'org.projectlombok:lombok'
+
 	// spring
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
