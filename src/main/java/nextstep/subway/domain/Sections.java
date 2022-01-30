@@ -1,12 +1,17 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.InvalidSectionDistanceException;
+import nextstep.subway.exception.StationsExistException;
+import nextstep.subway.exception.StationsNotExistsException;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
+
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 @Embeddable
 public class Sections {
@@ -22,6 +27,8 @@ public class Sections {
             sections.add(newSection);
             return;
         }
+        validateStationsExists(newSection);
+
         // 역 사이에 새로운 역을 등록할 경우
         if (hasSameUpStation(newSection)) {
             addSectionBetweenSectionsBasedOnUpStation(newSection);
@@ -43,8 +50,37 @@ public class Sections {
         }
     }
 
+    /**
+     * 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
+     * 상행역과 하행역이 둘중 하나도 등록되어 있지 않으면 추가할 수 없음
+     */
+    private void validateStationsExists(Section newSection) {
+        validateUpDownStationsExists(newSection);
+        validateUpDownStationNotExists(newSection);
+    }
+
+    private void validateUpDownStationNotExists(Section newSection) {
+        Set<Station> allStations = sections.stream()
+                .map(section -> asList(section.getUpStation(), section.getDownStation()))
+                .flatMap(Collection::stream)
+                .collect(toSet());
+
+        if (!allStations.contains(newSection.getUpStation()) &&
+                !allStations.contains(newSection.getDownStation())) {
+            throw new StationsNotExistsException(
+                    newSection.getUpStationName(), newSection.getDownStationName());
+        }
+    }
+
+    private void validateUpDownStationsExists(Section newSection) {
+        if (hasSameDownStation(newSection) && hasSameUpStation(newSection)) {
+            throw new StationsExistException(
+                    newSection.getUpStationName(), newSection.getDownStationName());
+        }
+    }
+
     private void addSectionOntoLastDownStation(Section newSection) {
-        sections.add(sections.size() - 1, newSection);
+        sections.add(newSection);
     }
 
     private void addSectionOntoLastUpStation(Section newSection) {
@@ -52,20 +88,33 @@ public class Sections {
     }
 
     private void addSectionBetweenSectionsBasedOnUpStation(Section newSection) {
+
         Section oldSection = sections.stream()
                 .filter(section -> section.isUpStation(newSection.getUpStation()))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
+
+        validateSectionDistance(newSection.getDistance(), oldSection.getDistance());
+
         int appendIndex = sections.indexOf(oldSection);
         sections.remove(appendIndex);
         sections.add(appendIndex, newSection);
+
+        int oldSectionDistance = oldSection.getDistance() - newSection.getDistance();
         sections.add(
                 appendIndex + 1,
                 new Section(
                         oldSection.getLine(),
                         newSection.getDownStation(),
                         oldSection.getDownStation(),
-                        oldSection.getDistance() - newSection.getDistance()));
+                        oldSectionDistance));
+    }
+
+    private void validateSectionDistance(int newSectionDistance, int oldSectionDistance) {
+        if (newSectionDistance < oldSectionDistance) {
+            return;
+        }
+        throw new InvalidSectionDistanceException(newSectionDistance, oldSectionDistance);
     }
 
     private void addSectionBetweenSectionsBasedOnDownStation(Section newSection) {
@@ -74,7 +123,11 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
 
+        validateSectionDistance(newSection.getDistance(), oldSection.getDistance());
+
         int appendIndex = sections.indexOf(oldSection);
+        int oldSectionDistance = oldSection.getDistance() - newSection.getDistance();
+
         sections.remove(appendIndex);
         sections.add(appendIndex, newSection);
         sections.add(
@@ -83,7 +136,7 @@ public class Sections {
                         oldSection.getLine(),
                         oldSection.getUpStation(),
                         newSection.getUpStation(),
-                        oldSection.getDistance() - newSection.getDistance()));
+                        oldSectionDistance));
     }
 
     private boolean hasSameDownStation(Section otherSection) {
@@ -129,14 +182,14 @@ public class Sections {
         return sections
                 .stream()
                 .map(Section::getUpStation)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     private List<Station> findAllDownStations() {
         return sections
                 .stream()
                 .map(Section::getDownStation)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     public boolean isEmpty() {

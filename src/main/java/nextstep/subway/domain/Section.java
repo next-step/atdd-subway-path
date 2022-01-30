@@ -70,4 +70,12 @@ public class Section {
     public boolean isDownStation(Station station) {
         return downStation.equals(station);
     }
+
+    public String getUpStationName() {
+        return upStation.getName();
+    }
+
+    public String getDownStationName() {
+        return getDownStation().getName();
+    }
 }
