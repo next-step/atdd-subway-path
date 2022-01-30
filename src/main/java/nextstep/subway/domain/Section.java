@@ -23,7 +23,6 @@ public class Section {
     private int distance;
 
     public Section() {
-
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
@@ -33,12 +32,20 @@ public class Section {
         this.distance = distance;
     }
 
-    public Long getId() {
-        return id;
+    public static Section of(Line line, Station upStation, Station downStation, int distance) {
+        return new Section(line, upStation, downStation, distance);
     }
 
-    public Line getLine() {
-        return line;
+    public boolean isAddableLastSection(Section section) {
+        return downStation.equals(section.getUpStation());
+    }
+
+    public boolean containsStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Station getUpStation() {
@@ -49,7 +56,16 @@ public class Section {
         return downStation;
     }
 
+    public String upStationName() {
+        return upStation.getName();
+    }
+
+    public String downStationName() {
+        return downStation.getName();
+    }
+
     public int getDistance() {
         return distance;
     }
+
 }
