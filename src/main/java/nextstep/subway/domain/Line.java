@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
@@ -67,13 +68,27 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStation() {
-        // 1. 상행 종점을 찾는다.
-        // 1-2. 상행 종점의 상행역을 저장한다. List<Station>을 생성하여 추가한다.
-        // 2. 현 구간의 하행역과 구간의 상행역이 같은 구간을 찾는다.
-        // 2-2. 현 구간의 하행역을 List<Station>에 추가한다.
-        // 4. 2 번 과정을 반복한다. 구간의 마지막까지 반복한다.
+        Section section = getStartSection();
+        List<Station> stations = new ArrayList<>();
+        stations.add(section.getUpStation());
 
+        while (section != null) {
+            Station upStation = section.getUpStation();
+            Optional<Section> findSection = sections.stream()
+                    .filter(oldSection -> oldSection.getDownStation().equals(upStation))
+                    .findFirst();
 
-        return null;
+            stations.add(section.getDownStation());
+            section = findSection.orElseGet(() -> null);
+        }
+        return stations;
+    }
+
+    private Section getStartSection() {
+        return sections.stream()
+                .filter(section -> sections.stream()
+                        .noneMatch(s -> s.getDownStation().equals(section.getUpStation())))
+                .findFirst()
+                .orElseThrow(IllegalAccessError::new);
     }
 }
