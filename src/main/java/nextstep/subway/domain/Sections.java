@@ -23,8 +23,8 @@ public class Sections {
 
         List<Station> allStations = allStations();
 
-        if (allStations.contains(upStation) && allStations.contains(downStation)
-                || !(allStations.contains(upStation) || allStations.contains(downStation))) {
+        if (bothStationsAreAlreadyInExistingStations(upStation, downStation, allStations)
+                || nonStationsAreInExistingStations(upStation, downStation, allStations)) {
             throw new IllegalArgumentException();
         }
 
@@ -43,6 +43,14 @@ public class Sections {
         if (Objects.nonNull(sectionByDownStation)) {
             addBetweenSection(sectionByDownStation, sectionByDownStation.getUpStation(), upStation, downStation, sectionByDownStation.getDistance() - distance, distance);
         }
+    }
+
+    private boolean nonStationsAreInExistingStations(final Station upStation, final Station downStation, final List<Station> allStations) {
+        return !(allStations.contains(upStation) || allStations.contains(downStation));
+    }
+
+    private boolean bothStationsAreAlreadyInExistingStations(final Station upStation, final Station downStation, final List<Station> allStations) {
+        return allStations.contains(upStation) && allStations.contains(downStation);
     }
 
     private void addBetweenSection(Section section, Station upStation, Station middleStation, Station downStation, int distanceBetweenUpAndMiddleStation, int distanceBetweenMiddleAndDownStation) {
@@ -76,34 +84,58 @@ public class Sections {
     }
 
     public Station geUpStationEndpoint() {
-        List<Station> upStations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
-        List<Station> downStations = sections.stream().map(Section::getDownStation).collect(Collectors.toList());
+        List<Station> upStations = sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+        List<Station> downStations = sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
 
-        return upStations.stream().filter(it -> !downStations.contains(it)).findAny().orElse(null);
+        return upStations.stream()
+                .filter(it -> !downStations.contains(it))
+                .findAny()
+                .orElse(null);
     }
 
     private Station getDownStationEndpoint() {
-        List<Station> upStations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
-        List<Station> downStations = sections.stream().map(Section::getDownStation).collect(Collectors.toList());
+        List<Station> upStations = sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+        List<Station> downStations = sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
 
-        return downStations.stream().filter(it -> !upStations.contains(it)).findAny().orElseThrow(IllegalArgumentException::new);
+        return downStations.stream()
+                .filter(it -> !upStations.contains(it))
+                .findAny()
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     public Section getSectionByUpStation(Station station) {
-        return this.sections.stream().filter(it -> it.getUpStation().equals(station)).findAny().orElse(null);
+        return this.sections.stream()
+                .filter(it -> it.getUpStation().equals(station))
+                .findAny()
+                .orElse(null);
     }
 
     private Section getSectionByDownStation(Station station) {
-        return this.sections.stream().filter(it -> it.getDownStation().equals(station)).findAny().orElse(null);
+        return this.sections.stream()
+                .filter(it -> it.getDownStation().equals(station))
+                .findAny()
+                .orElse(null);
     }
 
     private List<Station> allStations() {
         List<Station> allStations = new ArrayList<>();
-        List<Station> upStations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
-        Station haHang = getDownStationEndpoint();
+
+        List<Station> upStations = sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+
+        Station downStation = getDownStationEndpoint();
 
         allStations.addAll(upStations);
-        allStations.add(haHang);
+        allStations.add(downStation);
 
         return allStations;
     }

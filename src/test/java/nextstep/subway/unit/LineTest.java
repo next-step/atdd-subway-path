@@ -1,12 +1,15 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.List;
 
@@ -35,6 +38,47 @@ class LineTest {
         line.registerSection(강남역, 신사역, 50);
 
         assertThat(line.getSections()).hasSize(2);
+    }
+
+    @DisplayName("추가하는 구간의 상행역과 하행역이 모두 기존 노선에 포함되어 있는 경우")
+    @Test
+    void addSection3() {
+        Line line = new Line("2호선", "빨간색");
+        Station 강남역 = new Station("강남역");
+        Station 양재역 = new Station("양재역");
+        line.registerSection(강남역, 양재역, 100);
+
+        assertThrows(IllegalArgumentException.class, () -> line.registerSection(강남역, 양재역, 50));
+    }
+
+    @DisplayName("추가하는 구간의 상행역과 하행역이 모두 기존 노선에 포함되어 있지 않은 경우")
+    @Test
+    void addSection4() {
+        Line line = new Line("2호선", "빨간색");
+        Station 강남역 = new Station("강남역");
+        Station 양재역 = new Station("양재역");
+        Station 신사역 = new Station("신사역");
+        Station 잠실역 = new Station("잠실역");
+        line.registerSection(강남역, 양재역, 100);
+
+        assertThrows(IllegalArgumentException.class, () -> line.registerSection(신사역, 잠실역, 100));
+    }
+
+    @DisplayName("구간 목록 사이에 새로운 구간을 등록할 때 새로운 구간의 길이가 기존의 구간보다 같거나 긴 경우")
+    @ParameterizedTest(name = "기존 구간의 길이 {0} , 새로운 구간의 길이 {1}")
+    @CsvSource(value = {
+            "100, 100",
+            "100, 101",
+            "100, 100000",
+    })
+    void addSection5(int existingDistance, int newDistance) {
+        Line line = new Line("2호선", "빨간색");
+        Station 강남역 = new Station("강남역");
+        Station 양재역 = new Station("양재역");
+        Station 신사역 = new Station("신사역");
+        line.registerSection(강남역, 양재역, existingDistance);
+
+        assertThrows(IllegalArgumentException.class, () -> line.registerSection(강남역, 신사역, newDistance));
     }
 
     @DisplayName("노선에 속해있는 역 목록 조회")
