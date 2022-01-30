@@ -52,4 +52,22 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public boolean isUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "line=" + line +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
+    }
+
+    public boolean isDownStation(Station station) {
+        return downStation.equals(station);
+    }
 }

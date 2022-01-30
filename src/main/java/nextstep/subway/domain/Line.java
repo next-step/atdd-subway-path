@@ -98,4 +98,16 @@ public class Line extends BaseEntity {
     private boolean isLastDownStation(Station station) {
         return sections.isLastDownStation(station);
     }
+
+    public Section getSectionAt(int i) {
+        return sections.get(i);
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                '}';
+    }
 }

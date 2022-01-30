@@ -27,11 +27,22 @@ npm install
 > `frontend` 디렉토리에서 수행해야 합니다.
 
 ### Usage
+
 #### webpack server 구동
+
 ```
 npm run dev
 ```
+
 #### application 구동
+
 ```
 ./gradlew bootRun
 ```
+
+## 🚀 1단계 - 구간 추가 기능 변경
+
+- 역 사이에 새로운 역을 등록할 경우
+- 새로운 역을 상행 종점으로 등록할 경우
+- 새로운 역을 하행 종점으로 등록할 경우
+- 노선 조회시 응답되는 역 목록 수정
