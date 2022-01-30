@@ -2,7 +2,6 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,42 +54,36 @@ public class Line extends BaseEntity {
     }
 
     public void add(Section section) {
-        // 1. 새로운 구간 상하행역이 노선에 전혀 포함되어 있지 않거나 둘 다 포함되어 있는 경우 IllegalArgumentException
-        // 2-1. 구간 내 상행역과 새로운 구간의 상행역이 같은경우
-        // 2-2. 새로운 구간의 Distance >= 현재 같은 상행역을 가진 구간의 Distance IllegalArgumentException
-        // 2-3. 2-2를 통과했다면, 새로운 구간 두개를 생성하고 원래 구간을 삭제한다. 이 때, 새로운 구간의 길이는 원래 구간의 길이를 나눠가진다.
-        // 3-1. 상행 종점의 상행역과 새로운 구간의 하행역이 같은 경우
-        // 3-2. 새로운 상행 종점 생성
-        // 4-1. 하행 종점의 하행역과 새로운 구간의 상행역이 같은 경우
-        // 4-2. 새로운 하행 종점 생성
-
+        if (isAllMatchOrNoneMach(section)) {
+            throw new IllegalArgumentException("구간을 생성할 수 없습니다.");
+        }
         Section startSection = getStartSection();
         Section endSection = getEndSection();
+        addSectionOnCenter(section);
+        addSectionStartOrEnd(section, startSection, endSection);
+    }
 
-        if (isAllMatchOrNoneMach(section)) {
-            throw new IllegalArgumentException();
-        }
-
-        sections.stream()
-                .filter(findSection -> findSection.getUpStation().equals(section.getUpStation()))
-                .findFirst()
-                .ifPresent((findSection) -> {
-                    if (section.getDistance() >= findSection.getDistance()) {
-                        throw new IllegalArgumentException();
-                    }
-                    sections.add(new Section(this,section.getUpStation(),section.getDownStation(), section.getDistance()));
-                    sections.add(new Section(this,section.getDownStation(),findSection.getDownStation(), findSection.getDistance() - section.getDistance()));
-                    sections.remove(findSection);
-                });
-
+    private void addSectionStartOrEnd(Section section, Section startSection, Section endSection) {
         sections.stream()
                 .filter((s) -> section.getDownStation().equals(startSection.getUpStation()) || section.getUpStation().equals(endSection.getDownStation()))
                 .findFirst()
                 .ifPresent((s)->{
                     sections.add(section);
                 });
+    }
 
-
+    private void addSectionOnCenter(Section section) {
+        sections.stream()
+                .filter(findSection -> findSection.getUpStation().equals(section.getUpStation()))
+                .findFirst()
+                .ifPresent((findSection) -> {
+                    if (section.getDistance() >= findSection.getDistance()) {
+                        throw new IllegalArgumentException("구간을 생성할 수 없습니다.");
+                    }
+                    sections.add(new Section(this, section.getUpStation(), section.getDownStation(), section.getDistance()));
+                    sections.add(new Section(this, section.getDownStation(),findSection.getDownStation(), findSection.getDistance() - section.getDistance()));
+                    sections.remove(findSection);
+                });
     }
 
     private boolean isAllMatchOrNoneMach(Section section) {

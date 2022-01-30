@@ -67,8 +67,7 @@ public class LineService {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
-
-        line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        line.add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
     private LineResponse createLineResponse(Line line) {
@@ -86,12 +85,7 @@ public class LineService {
         if (line.getSections().isEmpty()) {
             return Collections.emptyList();
         }
-
-        List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, line.getSections().get(0).getUpStation());
+        List<Station> stations = line.getStation();
 
         return stations.stream()
                 .map(it -> stationService.createStationResponse(it))
