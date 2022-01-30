@@ -3,6 +3,7 @@ package nextstep.subway.line.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.commons.AcceptanceTest;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineTestRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -125,8 +126,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .distance(7)
                 .build();
 
-        ExtractableResponse<Response> 지하철노선_생성_응답 = 지하철노선_생성_요청(request);
-        Long 이호선 = 지하철노선_생성_응답.jsonPath().getLong("id");
+        Long 이호선 = getLineId(지하철노선_생성_요청(request));
 
         // when
         ExtractableResponse<Response> response = 지하철노선_단건조회_요청(이호선);
@@ -152,8 +152,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .distance(7)
                 .build();
 
-        ExtractableResponse<Response> 지하철노선_생성_응답 = 지하철노선_생성_요청(request);
-        Long 이호선 = 지하철노선_생성_응답.jsonPath().getLong("id");
+        Long 이호선 = getLineId(지하철노선_생성_요청(request));
 
         Map<String, String> params = new HashMap<>();
         params.put("name", "신1호선");
@@ -183,12 +182,16 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .distance(7)
                 .build();
 
-        long 이호선 = 지하철노선_생성_요청(request).jsonPath().getLong("id");
+        long 이호선 = getLineId(지하철노선_생성_요청(request));
 
         // when
         ExtractableResponse<Response> response = 지하철노선_삭제_요청(이호선);
 
         // then
         삭제요청_성공(response);
+    }
+
+    private long getLineId(ExtractableResponse<Response> response) {
+        return response.as(LineResponse.class).getId();
     }
 }

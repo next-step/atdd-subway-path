@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
-import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.line.service.LineService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.ResourceBundle;
 
 @RequiredArgsConstructor
 @RestController

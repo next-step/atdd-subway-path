@@ -4,15 +4,11 @@ import lombok.RequiredArgsConstructor;
 import nextstep.subway.exceptions.BadRequestException;
 import nextstep.subway.exceptions.LineNotFoundException;
 import nextstep.subway.exceptions.StationNotFoundException;
-import nextstep.subway.line.domain.Sections;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
-import nextstep.subway.line.dto.SectionResponse;
-import nextstep.subway.station.dto.StationResponse;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.repository.LineRepository;
-import nextstep.subway.line.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.repository.StationRepository;
 import org.springframework.stereotype.Service;
@@ -25,6 +21,8 @@ import java.util.stream.Collectors;
 @Transactional
 @Service
 public class LineService {
+    public static final String DUPLICATE_LINE_EXCEPTION_MSG = "해당 노선은 이미 존재합니다.";
+
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
@@ -43,20 +41,8 @@ public class LineService {
 
     private void validateDuplicateLineName(String name) {
         lineRepository.findByName(name).ifPresent(line -> {
-            throw new BadRequestException("해당 노선은 이미 존재합니다.");
+            throw new BadRequestException(DUPLICATE_LINE_EXCEPTION_MSG);
         });
-    }
-
-    private Section createSection(Line line, LineRequest lineRequest) {
-        Station upStation = findStationById(lineRequest.getUpStationId());
-        Station downStation = findStationById(lineRequest.getDownStationId());
-
-        return Section.builder()
-                .line(line)
-                .upStation(upStation)
-                .downStation(downStation)
-                .distance(lineRequest.getDistance())
-                .build();
     }
 
     public List<LineResponse> findAllLines() {

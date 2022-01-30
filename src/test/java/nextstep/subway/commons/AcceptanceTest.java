@@ -9,10 +9,10 @@ import org.springframework.boot.web.server.LocalServerPort;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
     @LocalServerPort
-    public int port;
+    int port;
 
     @Autowired
-    public DatabaseCleanup databaseCleanup;
+    private DatabaseCleanup databaseCleanup;
 
     @BeforeEach
     public void setUp() {

@@ -8,15 +8,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class lineTest {
+public class LineTest {
+
+    static final Long 이호선_아이디 = 1L;
 
     static final Long 이호선_상행종점역_아이디 = 1L;
     static final Long 이호선_하행종점역_아이디 = 2L;
     static final Long 새로운구간_상행역_아이디 = 3L;
     static final Long 새로운구간_하행역_아이디 = 4L;
-
-    static final Long 이호선_첫구간_아이디 = 1L;
-    static final Long 이호선_두번째구간_아이디 = 2L;
 
     static final int 이호선_첫구간_길이 = 7;
 
@@ -27,7 +26,7 @@ public class lineTest {
     @BeforeEach
     void setUp() {
         Line line = Line.builder()
-                .id(1L)
+                .id(이호선_아이디)
                 .name("2호선")
                 .color("bg-green")
                 .build();
@@ -93,10 +92,10 @@ public class lineTest {
         Station 구간_하행역 = new Station(새로운구간_하행역_아이디, "합정역");
 
         // when, then
-        Assertions.assertThatThrownBy(() -> {
-            이호선.addSection(구간_상행역, 구간_하행역, 4);
-        }).isInstanceOf(BadRequestException.class)
-                .hasMessage(Sections.BOTH_NOT_EXIST_EXCEPTION_MESSAGE);
+        Assertions.assertThatThrownBy(() ->
+                        이호선.addSection(구간_상행역, 구간_하행역, 4))
+                        .isInstanceOf(BadRequestException.class)
+                        .hasMessage(Sections.BOTH_NOT_EXIST_EXCEPTION_MESSAGE);
     }
 
     @Test
@@ -105,10 +104,10 @@ public class lineTest {
         Station 구간_하행역 = new Station(새로운구간_하행역_아이디, "문래역");
 
         // when, then
-        Assertions.assertThatThrownBy(() -> {
-            이호선.addSection(이호선_상행종점역, 구간_하행역, 이호선_첫구간_길이);
-        }).isInstanceOf(BadRequestException.class)
-                .hasMessage(Sections.DISTANCE_EXCEPTION_MESSAGE);
+        Assertions.assertThatThrownBy(() ->
+                        이호선.addSection(이호선_상행종점역, 구간_하행역, 이호선_첫구간_길이))
+                        .isInstanceOf(BadRequestException.class)
+                        .hasMessage(Sections.DISTANCE_EXCEPTION_MESSAGE);
     }
 
 }

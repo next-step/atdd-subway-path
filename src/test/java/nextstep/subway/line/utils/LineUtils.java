@@ -51,7 +51,7 @@ public class LineUtils {
 
     public static void 지하철노선목록_조회_성공(ExtractableResponse<Response> response) {
         조회요청_성공(response);
-        assertThat(response.jsonPath().getList("id").size()).isEqualTo(2);
+        assertThat(response.jsonPath().getList("id")).hasSize(2);
     }
 
     public static ExtractableResponse<Response> 지하철노선_수정_요청(Long id, Map<String, String> params) {

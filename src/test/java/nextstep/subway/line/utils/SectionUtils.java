@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import static nextstep.subway.commons.AssertionsUtils.생성요청_성공;
-import static nextstep.subway.commons.RestAssuredUtils.delete_요청;
 import static nextstep.subway.commons.RestAssuredUtils.post_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 

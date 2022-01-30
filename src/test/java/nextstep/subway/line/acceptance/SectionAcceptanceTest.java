@@ -1,21 +1,18 @@
 package nextstep.subway.line.acceptance;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.commons.AcceptanceTest;
-import nextstep.subway.commons.DatabaseCleanup;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineTestRequest;
 import nextstep.subway.line.dto.SectionTestRequest;
-import nextstep.subway.line.utils.SectionUtils;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static nextstep.subway.commons.AssertionsUtils.삭제요청_성공;
 import static nextstep.subway.commons.AssertionsUtils.요청_실패;
 import static nextstep.subway.line.utils.LineUtils.지하철노선_단건조회_요청;
 import static nextstep.subway.line.utils.LineUtils.지하철노선_생성_요청;
@@ -31,9 +28,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     int 이호선_구간길이 = 7;
 
     @BeforeEach
+    @Override
     public void setUp() {
-        RestAssured.port = port;
-        databaseCleanup.execute();
+        super.setUp();
 
         LineTestRequest request = LineTestRequest.builder()
                  .lineName("2호선")
@@ -45,7 +42,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = 지하철노선_생성_요청(request);
 
-        이호선 = response.jsonPath().getLong("id");
+        이호선 = response.as(LineResponse.class).getId();
         List<Integer> 이호선_역목록 = response.jsonPath().getList("stations.id");
 
         이호선_상행종점역 =  Long.valueOf(이호선_역목록.get(0));
@@ -61,7 +58,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 새로운구간_하행역이_노선의_하행종점역이_된다() {
         // given
-        long 구간_하행역 = 지하철역_생성요청("당산역").jsonPath().getLong("id");
+        long 구간_하행역 = getStationId(지하철역_생성요청("당산역"));
 
         SectionTestRequest request = SectionTestRequest.builder()
                 .lineId(이호선)
@@ -88,7 +85,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 새로운구간_상행역이_노선의_상행종점역이_된다() {
         // given
-        long 구간_상행역 = 지하철역_생성요청("대림역").jsonPath().getLong("id");
+        long 구간_상행역 = getStationId(지하철역_생성요청("대림역"));
 
         SectionTestRequest request = SectionTestRequest.builder()
                 .lineId(이호선)
@@ -114,7 +111,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 구간_추가() {
         // given
-        long 문래역 = 지하철역_생성요청("문래역").jsonPath().getLong("id");
+        long 문래역 = getStationId(지하철역_생성요청("문래역"));
 
         SectionTestRequest request = SectionTestRequest.builder()
                 .lineId(이호선)
@@ -163,8 +160,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 새로운구간_상행역과_하행역이_모두_노선에_존재하지_않는다(){
         // given
-        long 당산역 = 지하철역_생성요청("당산역").jsonPath().getLong("id");
-        long 합정역 = 지하철역_생성요청("합정역").jsonPath().getLong("id");
+        long 당산역 = getStationId(지하철역_생성요청("당산역"));
+        long 합정역 = getStationId(지하철역_생성요청("합정역"));
 
         SectionTestRequest request = SectionTestRequest.builder()
                 .lineId(이호선)
@@ -189,7 +186,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 구간의_길이가_같으면_구간생성_실패한다() {
         // given
-        long 문래역 = 지하철역_생성요청("문래역").jsonPath().getLong("id");
+        long 문래역 = getStationId(지하철역_생성요청("문래역"));
 
         SectionTestRequest request = SectionTestRequest.builder()
                 .lineId(이호선)
@@ -205,4 +202,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         요청_실패(지하철노선_구간생성_응답);
     }
 
+    private long getStationId(ExtractableResponse<Response> response) {
+        return response.as(StationResponse.class).getId();
+    }
 }
