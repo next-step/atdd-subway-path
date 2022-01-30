@@ -23,7 +23,7 @@ class LineTest {
     void setUp() {
         line = new Line("간선", "blue");
         Section section = new Section(line, 수원역, 부산역, 1);
-        line.updateSections(section);
+        line.addSections(section);
     }
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
@@ -36,6 +36,18 @@ class LineTest {
 
         //then
         assertThat(line.getStations()).containsExactly(수원역, 부산역, 서울역);
+    }
+
+    @DisplayName("구간 목록 처음에 새로운 구간을 추가할 경우")
+    @Test
+    void addFirstSection() {
+        //when
+        Station 서울역 = new Station("서울역");
+        Section lastSection = new Section(line, 서울역, 수원역, 1);
+        line.addSections(lastSection);
+
+        //then
+        assertThat(line.getStations()).containsExactly(서울역, 수원역, 부산역);
     }
 
     @DisplayName("노선에 속해있는 역 목록 조회")

@@ -49,4 +49,31 @@ public class LineServiceMockTest {
         // line.findLineById 메서드를 통해 검증
         assertThat(line.getStations()).containsExactly(수원역, 수원중앙역);
     }
+
+    @Test
+    void addFirstSection() {
+        // given
+        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
+        LineService lineService = new LineService(lineRepository, stationService);
+        Line line = new Line(1L,"간선", "blue");
+        when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+        Station 수원역 = new Station(1L, "수원역");
+        Station 수원중앙역 = new Station(2L, "수원중앙역");
+        Station 강남역 = new Station(3L, "강남역");
+        when(stationService.findById(1L)).thenReturn(new Station(1L,"수원역"));
+        when(stationService.findById(2L)).thenReturn(new Station(2L, "수원중앙역"));
+        when(stationService.findById(3L)).thenReturn(new Station(3L, "강남역"));
+
+        // when
+        // lineService.addSection 호출
+        SectionRequest sectionRequest = new SectionRequest(수원역.getId(), 수원중앙역.getId(), 10);
+        lineService.addSection(line.getId(), sectionRequest);
+
+        SectionRequest sectionRequest2 = new SectionRequest(강남역.getId(), 수원역.getId(), 10);
+        lineService.addSection(line.getId(), sectionRequest2);
+
+        // then
+        // line.findLineById 메서드를 통해 검증
+        assertThat(line.getStations()).containsExactly(강남역, 수원역, 수원중앙역);
+    }
 }
