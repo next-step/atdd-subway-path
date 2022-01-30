@@ -27,6 +27,34 @@ class LineTest {
         노선에_구간이_한개_들어가있다();
     }
 
+    @DisplayName("노선을 이름과 색상으로 생성한다.")
+    @Test
+    void 노선_생성_테스트_1() {
+        final String 이름 = "노선이름";
+        final String 색상 = "노선색상";
+        노선 = Line.of(이름, 색상);
+
+        assertThat(노선.getName()).isEqualTo(이름);
+        assertThat(노선.getColor()).isEqualTo(색상);
+    }
+
+    @DisplayName("노선을 이름, 색상, 구간으로 생성한다.")
+    @Test
+    void 노선_생성_테스트_2() {
+        final String 노선이름 = "노선이름";
+        final String 노선색상 = "노선색상";
+        final Station 상행역 = Station.of("상행역");
+        final Station 하행역 = Station.of("하행역");
+        final int 거리 = 10;
+
+        Section 구간 = Section.of(상행역, 하행역, 거리);
+        노선 = Line.of(노선이름, 노선색상, 구간);
+
+        assertThat(노선.getName()).isEqualTo(노선이름);
+        assertThat(노선.getColor()).isEqualTo(노선색상);
+        assertThat(노선.getSections().size()).isEqualTo(1);
+    }
+
     @DisplayName("기존 지하철 노선 뒤에 구간 추가 성공하는 단순 케이스 (해피케이스)")
     @Test
     void addSection_성공케이스() {

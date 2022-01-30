@@ -10,26 +10,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class CommonExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Void> handleIllegalArgsException(DataIntegrityViolationException e) {
+    public ResponseEntity<Void> handleIDataIntegrityViolationException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(DuplicatedElementException.class)
-    public ResponseEntity handleDuplicatedElementExceptionException(DuplicatedElementException e) {
-        return ResponseEntity.badRequest().build();
-    }
-
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity handleNoSuchElementException(NoSuchElementException e) {
-        return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().build();
-    }
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity handleIllegalStateException(IllegalStateException e) {
         return ResponseEntity.badRequest().build();
     }
 

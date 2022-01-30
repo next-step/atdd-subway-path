@@ -87,6 +87,6 @@ public class Line extends BaseEntity {
     }
 
     public boolean alreadyHas(Section section) {
-        return sections.alreadyHasStationsOf(section);
+        return sections.hasAllStationsOf(section);
     }
 }

@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import static nextstep.subway.exception.CommonExceptionMessages.ALREADY_HAS_STATIONS;
+import static nextstep.subway.exception.CommonExceptionMessages.NOT_HAS_ANY_STATIONS;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,55 +19,76 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section newSection) {
-        if (!sections.isEmpty()) {
-            validateAddable(newSection);
+        if (sections.isEmpty()) {
+            sections.add(newSection);
+            return;
         }
+
+         sectionAdd(newSection);
+    }
+
+    private void sectionAdd(Section newSection) {
+        validateAddable(newSection);
+
+        // findConnectStation(newSection
 
         sections.stream()
             .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
             .forEach(section -> {
-                validateDistance(newSection, section);
+                section.hasEnoughDistanceForAddingOrElseThrow(newSection);
                 section.setUpStation(newSection.getDownStation());
             });
 
         sections.stream()
             .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
             .forEach(section -> {
-                validateDistance(newSection, section);
+                section.hasEnoughDistanceForAddingOrElseThrow(newSection);
                 section.setDownStation(newSection.getUpStation());
             });
 
         sections.add(newSection);
     }
 
-    private void validateDistance(Section newSection, Section section) {
-        if (newSection.hasSameOrLongerDistanceThan(section)) {
-            throw new DataIntegrityViolationException("유효하지 않은 구간 길이.");
-        }
-    }
-
-
     private void validateAddable(Section newSection) {
-        if (alreadyHasStationsOf(newSection)) {
-            throw new DataIntegrityViolationException("추가하려는 구간의 두 역 모두 이미 있음.");
+        if (hasAllStationsOf(newSection)) {
+            throw new DataIntegrityViolationException(ALREADY_HAS_STATIONS);
         }
 
-        if (notExistAnyStationsOf(newSection)) {
-            throw new DataIntegrityViolationException("추가하려는 구간의 두 역 중 하나도 없음.");
+        if (!existAnyStationsOf(newSection)) {
+            throw new DataIntegrityViolationException(NOT_HAS_ANY_STATIONS);
         }
     }
 
-    public boolean alreadyHasStationsOf(Section section) {
+//    public void add(Section newSection) {
+//        if (!sections.isEmpty()) {
+//            validateAddable(newSection);
+//        }
+//
+//        sections.stream()
+//            .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+//            .forEach(section -> {
+//                section.hasEnoughDistanceForAddingOrElseThrow(newSection);
+//                section.setUpStation(newSection.getDownStation());
+//            });
+//
+//        sections.stream()
+//            .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
+//            .forEach(section -> {
+//                section.hasEnoughDistanceForAddingOrElseThrow(newSection);
+//                section.setDownStation(newSection.getUpStation());
+//            });
+//
+//        sections.add(newSection);
+//    }
+
+    public boolean hasAllStationsOf(Section section) {
         return containsStation(section.getUpStation())
             && containsStation(section.getDownStation());
     }
 
-    private boolean notExistAnyStationsOf(Section section) {
-        if (!containsStation(section.getUpStation())
-            && !containsStation(section.getDownStation())) {
-            return true;
-        }
-        return false;
+    public boolean existAnyStationsOf(Section section) {
+        return containsStation(section.getUpStation())
+            || containsStation(section.getDownStation());
     }
 
     private boolean containsStation(Station station) {
@@ -105,8 +129,7 @@ public class Sections {
         stations.add(upStation);
 
         boolean found;
-        Boolean frontSideIsDone = false;
-        while (!frontSideIsDone) {
+        while (true) {
             found = false;
             for (Section section : sections) {
                 if (canBeConnectedFront(upStation, section)) {
@@ -115,8 +138,9 @@ public class Sections {
                     found = true;
                 }
             }
+
             if (!found) {
-                frontSideIsDone = true;
+                return;
             }
         }
     }
@@ -126,8 +150,7 @@ public class Sections {
         stations.add(downStation);
 
         boolean found;
-        boolean rearSideIsDone = false;
-        while (!rearSideIsDone) {
+        while (true) {
             found = false;
             for (Section section : sections) {
                 if (canBeConnectedRear(downStation, section)) {
@@ -136,8 +159,9 @@ public class Sections {
                     found = true;
                 }
             }
+
             if (!found) {
-                rearSideIsDone = true;
+                return;
             }
         }
     }

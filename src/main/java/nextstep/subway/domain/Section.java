@@ -1,7 +1,12 @@
 package nextstep.subway.domain;
 
+import static nextstep.subway.exception.CommonExceptionMessages.ALREADY_HAS_STATIONS;
+import static nextstep.subway.exception.CommonExceptionMessages.INVALID_SECTION_DISTANCE;
+import static nextstep.subway.exception.CommonExceptionMessages.NOT_HAS_ANY_STATIONS;
+
 import java.util.Objects;
 import javax.persistence.*;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @Entity
 public class Section {
@@ -91,8 +96,24 @@ public class Section {
         return Objects.hash(id, line, upStation, downStation, distance);
     }
 
-    public boolean hasSameOrLongerDistanceThan(Section section) {
-        return this.distance >= section.distance;
+    public boolean hasEnoughDistanceForAddingOrElseThrow(Section section) {
+        if (this.distance > section.distance) {
+            return true;
+        }
+
+        throw new DataIntegrityViolationException(INVALID_SECTION_DISTANCE);
+    }
+
+    public boolean checkValidConnectionOrElseThrow(Sections sections) {
+        if (sections.hasAllStationsOf(this)) {
+            throw new DataIntegrityViolationException(ALREADY_HAS_STATIONS);
+        }
+
+        if (!sections.existAnyStationsOf(this)) {
+            throw new DataIntegrityViolationException(NOT_HAS_ANY_STATIONS);
+        }
+
+        return true;
     }
 
 }
