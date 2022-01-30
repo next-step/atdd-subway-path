@@ -48,12 +48,7 @@ public class Line extends BaseEntity {
     }
 
     public boolean isNotDownStation(Long station) {
-        for (Section section : sections.getSections()) {
-            if (section.isSameDownStation(station)) {
-                return false;
-            }
-        }
-        return true;
+        return sections.isNotDownStation(station);
     }
 
     public void deleteSection(Long stationId) {

@@ -33,7 +33,7 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철역생성_테스트() {
         // when
-        // setUp
+        createResponse = 지하철역생성(기존지하철);
 
         // then
         상태_값_검사(createResponse, HttpStatus.CREATED);
@@ -65,6 +65,9 @@ class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역 삭제")
     @Test
     void 지하철역삭제_테스트() {
+        // given
+        createResponse = 지하철역생성(기존지하철);
+
         // when
         ExtractableResponse<Response> response = 지하철역삭제(createResponse.header(HttpHeaders.LOCATION));
 
@@ -80,6 +83,9 @@ class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("중복된 지하철 역은 생성이 실패한다")
     @Test
     void 중복된지하철역생성_테스트() {
+        // given
+        createResponse = 지하철역생성(기존지하철);
+
         //when
         ExtractableResponse<Response> response = 지하철역생성(기존지하철);
 

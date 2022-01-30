@@ -59,4 +59,12 @@ public class Sections {
         return Collections.unmodifiableList(sections);
     }
 
+    public boolean isNotDownStation(Long station) {
+        for (Section section : sections) {
+            if (section.isSameDownStation(station)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
