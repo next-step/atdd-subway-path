@@ -64,5 +64,16 @@ class LineTest {
     @DisplayName("구간이 목록에서 마지막 역 삭제")
     @Test
     void removeSection() {
+        // given
+        Section section = Section.of(loopLine, yeoksam, sunreoung, 10);
+        loopLine.addSection(section);
+
+        // when
+        loopLine.deleteSection(sunreoung);
+        List<Section> sections = loopLine.getSections();
+
+        //then
+        assertThat(sections).hasSize(1);
+
     }
 }

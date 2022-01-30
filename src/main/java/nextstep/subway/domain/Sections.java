@@ -60,4 +60,12 @@ public class Sections {
     public List<Section> get() {
         return Collections.unmodifiableList(sections);
     }
+
+    public void deleteSection(Station station) {
+        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
+            throw new IllegalArgumentException();
+        }
+
+        sections.remove(sections.size() - 1);
+    }
 }
