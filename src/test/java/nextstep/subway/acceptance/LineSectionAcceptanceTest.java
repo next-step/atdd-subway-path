@@ -16,8 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
-    private Long 신분당선;
 
+    private Long 신분당선;
     private Long 강남역;
     private Long 양재역;
 
@@ -49,7 +49,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).contains(강남역, 양재역, 정자역);
     }
 
     /**
@@ -91,4 +91,5 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         params.put("distance", 6 + "");
         return params;
     }
+
 }

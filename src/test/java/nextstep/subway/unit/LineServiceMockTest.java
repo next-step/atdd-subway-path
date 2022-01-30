@@ -40,7 +40,7 @@ public class LineServiceMockTest {
         강남역 = Station.of("강남역");
         판교역 = Station.of("판교역");
         정자역 = Station.of("정자역");
-        신분당선 = new Line("신분당선", "red");
+        신분당선 = Line.of("신분당선", "red");
         ReflectionTestUtils.setField(강남역, "id", 1L);
         ReflectionTestUtils.setField(판교역, "id", 2L);
         ReflectionTestUtils.setField(정자역, "id", 3L);

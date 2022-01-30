@@ -7,26 +7,21 @@ import java.util.Objects;
 
 @Entity
 public class Station extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
     private String name;
 
-    public Station() {
-    }
-
-    private Station(String name) {
-        this.name = name;
-    }
-
-    public Station(Long id, String name) {
-        this(name);
-        this.id = id;
+    protected Station() {
     }
 
     public static Station of(String name) {
-        return new Station(name);
+        Station result = new Station();
+        result.name = name;
+
+        return result;
     }
 
     public Long getId() {
@@ -48,7 +43,14 @@ public class Station extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name);
+    }
 
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 
 }

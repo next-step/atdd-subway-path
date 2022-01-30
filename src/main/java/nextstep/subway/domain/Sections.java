@@ -1,16 +1,18 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.*;
+import nextstep.subway.exception.ApplicationException;
 import nextstep.subway.exception.section.AlreadyRegisteredStationInLineException;
 import nextstep.subway.exception.section.DeleteLastDownStationException;
 import nextstep.subway.exception.section.DownStationNotMatchException;
 import nextstep.subway.exception.section.MinimumSectionException;
-import org.springframework.util.CollectionUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -55,13 +57,6 @@ public class Sections {
                 .flatMap(it -> it.getStations().stream())
                 .collect(Collectors.toSet());
         return new ArrayList<>(stations);
-
-//        List<Station> stations = sections.stream()
-//                .map(it -> it.getUpStation())
-//                .collect(Collectors.toList());
-//        stations.add(getLastDownStation());
-//
-//        return stations;
     }
 
     private boolean isEmpty() {

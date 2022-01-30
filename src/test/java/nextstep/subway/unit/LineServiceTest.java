@@ -56,7 +56,7 @@ public class LineServiceTest {
         // then
         Line line = lineQueryService.findLineById(신분당선.getId());
         assertThat(line.getId()).isEqualTo(신분당선.getId());
-        assertThat(line.getAllStations().size()).isEqualTo(3);
+        assertThat(line.getStations().size()).isEqualTo(3);
     }
 
 }

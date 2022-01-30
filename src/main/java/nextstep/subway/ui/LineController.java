@@ -36,14 +36,14 @@ public class LineController {
         return ResponseEntity.ok(lines);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<LineAndSectionResponse> showLine(@PathVariable("id") Long id) {
         LineAndSectionResponse line = lineQueryService.findLine(id);
 
         return ResponseEntity.ok(line);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable("id") Long id,
                                            @RequestBody UpdateLineRequest request) {
         lineCommandService.updateLine(id, request);
@@ -52,7 +52,7 @@ public class LineController {
                 .build();
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable("id") Long id) {
         lineCommandService.deleteLine(id);
 
@@ -60,7 +60,7 @@ public class LineController {
                 .build();
     }
 
-    @PostMapping("{id}/sections")
+    @PostMapping("/{id}/sections")
     public ResponseEntity<LineAndSectionResponse> addSection(@PathVariable("id") Long id, @RequestBody SectionRequest request) {
         LineAndSectionResponse lineResponse = lineCommandService.addSection(id, request);
 
@@ -68,7 +68,7 @@ public class LineController {
                 .body(lineResponse);
     }
 
-    @DeleteMapping("{id}/sections")
+    @DeleteMapping("/{id}/sections")
     public ResponseEntity<Void> deleteSection(@PathVariable("id") Long lineId, @RequestParam("stationId") Long stationId) {
         lineCommandService.deleteSection(lineId, stationId);
 

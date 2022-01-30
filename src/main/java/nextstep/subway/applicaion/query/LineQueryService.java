@@ -47,7 +47,7 @@ public class LineQueryService {
                 line.getColor(),
                 line.getCreatedDate(),
                 line.getModifiedDate(),
-                line.getAllStations()
+                line.getStations()
         );
     }
 
