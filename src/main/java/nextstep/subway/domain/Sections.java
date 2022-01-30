@@ -94,7 +94,7 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
 
-        validateSectionDistance(newSection.getDistance(), oldSection.getDistance());
+        validateSectionDistanceOrElseThrow(newSection.getDistance(), oldSection.getDistance());
 
         int appendIndex = sections.indexOf(oldSection);
         sections.remove(appendIndex);
@@ -110,7 +110,7 @@ public class Sections {
                         oldSectionDistance));
     }
 
-    private void validateSectionDistance(int newSectionDistance, int oldSectionDistance) {
+    private void validateSectionDistanceOrElseThrow(int newSectionDistance, int oldSectionDistance) {
         if (newSectionDistance < oldSectionDistance) {
             return;
         }
@@ -123,7 +123,7 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
 
-        validateSectionDistance(newSection.getDistance(), oldSection.getDistance());
+        validateSectionDistanceOrElseThrow(newSection.getDistance(), oldSection.getDistance());
 
         int appendIndex = sections.indexOf(oldSection);
         int oldSectionDistance = oldSection.getDistance() - newSection.getDistance();
