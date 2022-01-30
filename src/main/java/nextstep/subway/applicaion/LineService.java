@@ -31,7 +31,7 @@ public class LineService {
         if (!request.isSectionNull()) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.updateSections(new Section(line, upStation, downStation, request.getDistance()));
+            line.addSections(new Section(line, upStation, downStation, request.getDistance()));
         }
 
         return createLineResponse(line);

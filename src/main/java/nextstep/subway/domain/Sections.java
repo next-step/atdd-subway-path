@@ -18,8 +18,37 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public void add(Section section) {
-        this.sections.add(section);
+    public List<Section> getSections() {
+        return Collections.unmodifiableList(sections);
+    }
+
+    public void add(Section newSection) {
+        //method로 추출 추출해서 의도를 알수있게
+        //상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가 불가
+        if (this.sections.isEmpty()) {
+            this.sections.add(newSection);
+            return;
+        }
+
+        Section previousSection = getPreviousSection(newSection);
+        if (previousSection != null) {
+            addPreviousSection(previousSection, newSection);
+        }
+
+        Section nextSection = getNextSection(newSection);
+        if (nextSection != null) {
+            addNextSection(nextSection, newSection);
+        }
+    }
+
+    private void addNextSection(Section nextSection, Section newSection) {
+        int index = this.sections.indexOf(nextSection);
+        this.sections.add(index, newSection);
+    }
+
+    private void addPreviousSection(Section previousSection, Section newSection) {
+        int index = this.sections.indexOf(previousSection);
+        this.sections.add(index, newSection);
     }
 
     public List<Station> getStations() {
@@ -27,12 +56,33 @@ public class Sections {
             return Collections.emptyList();
         }
 
-        List<Station> stations = this.sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-        stations.add(0, this.sections.get(0).getUpStation());
+        Section section = this.sections.get(0);
+        List<Station> stations = new ArrayList<>();
+        stations.add(section.getUpStation());
+        stations.add(section.getDownStation());
+
+        while (true) {
+            section = getNextSection(section);
+            if (section == null) {
+                break;
+            }
+
+            stations.add(section.getDownStation());
+        }
 
         return stations;
+    }
+
+    private Section getNextSection(Section section) {
+        return this.sections.stream()
+                .filter(s -> s.isNextSection(section))
+                .findFirst().orElse(null);
+    }
+
+    private Section getPreviousSection(Section section) {
+        return this.sections.stream()
+                .filter(s -> s.isPreviousSection(section))
+                .findFirst().orElse(null);
     }
 
     public void remove(Station station) {
@@ -47,4 +97,5 @@ public class Sections {
     private Section getLastSection() {
         return this.sections.get(this.sections.size() - 1);
     }
+
 }
