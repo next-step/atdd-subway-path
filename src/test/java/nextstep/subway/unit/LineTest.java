@@ -110,18 +110,13 @@ class LineTest {
         assertThrows(IllegalArgumentException.class,()->_2호선.add(newSection));
     }
 
-
-
-
-
-
-
-
-
-
     @DisplayName("노선에 속해있는 역 목록 조회")
     @Test
     void getStations() {
+        //when
+        List<Station> stations = _2호선.getStation();
+        //then
+        assertThat(stations).containsExactly(강남역, 정자역);
     }
 
     @DisplayName("구간이 목록에서 마지막 역 삭제")
