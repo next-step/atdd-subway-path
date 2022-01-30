@@ -111,25 +111,61 @@ public class LineServiceTest {
         // given
         노선 = lineService.saveLine(
             LineRequest.of(노선이름, 노선색상, 상행역.getId(), 하행역.getId(), 역간거리)).getId();
+        Long 없는노선 = 노선+99L;
 
         // when // then
         assertThatThrownBy(() -> {
-            LineResponse 저장된노선 = lineService.findById(노선+99L);
+            lineService.findById(없는노선);
         }).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void updateLine() {
         // given
-        상행역Id = stationRepository.save(상행역).getId();
-        하행역Id = stationRepository.save(하행역).getId();
         노선 = lineService.saveLine(
             LineRequest.of(노선이름, 노선색상, 상행역.getId(), 하행역.getId(), 역간거리)).getId();
+        String 수정노선이름 = "수정"+노선이름;
+        String 수정노선색상 = "수정"+노선색상;
+
+        // when
+        lineService.updateLine(노선, LineRequest.of(수정노선이름, 수정노선색상));
+
+        // then
+        LineResponse 저장된노선 = lineService.findById(노선);
+        assertThat(저장된노선.getId()).isEqualTo(노선);
+        assertThat(저장된노선.getName()).isEqualTo(수정노선이름);
+        assertThat(저장된노선.getColor()).isEqualTo(수정노선색상);
     }
 
+    @DisplayName("노선의 정보를 수정하려는데 노선이 없으면 실패한다.")
     @Test
-    void deleteLine() {
+    void updateLine_2() {
+        // given
+        노선 = lineService.saveLine(
+            LineRequest.of(노선이름, 노선색상, 상행역.getId(), 하행역.getId(), 역간거리)).getId();
+        Long 없는노선 = 노선+99L;
+        String 수정노선이름 = "수정"+노선이름;
+        String 수정노선색상 = "수정"+노선색상;
 
+        // when // then
+        assertThatThrownBy(() -> {
+            lineService.updateLine(없는노선, LineRequest.of(수정노선이름, 수정노선색상));
+        }).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("노선을 삭제 성공한다.")
+    @Test
+    void deleteLine_1() {
+        노선 = lineService.saveLine(
+            LineRequest.of(노선이름, 노선색상, 상행역.getId(), 하행역.getId(), 역간거리)).getId();
+
+        // when
+        lineService.deleteLine(노선);
+
+        // then
+        assertThatThrownBy(() -> {
+            lineService.findById(노선);
+        }).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
