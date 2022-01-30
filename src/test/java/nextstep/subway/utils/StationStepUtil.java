@@ -13,6 +13,7 @@ public class StationStepUtil {
     public static final String 기본주소 = "/stations";
     public static final String 기존지하철 = "기존지하철";
     public static final String 새로운지하철 = "새로운지하철";
+    public static final int 역간_거리 = 10;
 
     public static final String 지하철_역_아이디_키 = "id";
     public static final String 지하철_역_이름_키 = "name";

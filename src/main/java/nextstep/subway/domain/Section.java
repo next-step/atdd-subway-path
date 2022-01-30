@@ -70,4 +70,12 @@ public class Section {
     public boolean isSameUpStation(Long stationId) {
         return upStation.isSameStation(stationId);
     }
+
+    public boolean isSameUpStation(Station station) {
+        return upStation.isSameStation(station.getName()) || upStation.isSameStation(station.getId());
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return downStation.isSameStation(station.getName()) || downStation.isSameStation(station.getId());
+    }
 }

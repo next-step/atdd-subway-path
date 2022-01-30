@@ -67,4 +67,17 @@ public class Sections {
         }
         return true;
     }
+
+    public int getSize() {
+        return sections.size();
+    }
+
+    public boolean contains(Section newSection) {
+        Station upStation = newSection.getUpStation();
+        Station downStation = newSection.getDownStation();
+        return sections.stream()
+                .filter(section -> section.isSameUpStation(upStation) && section.isSameDownStation(downStation))
+                .findFirst()
+                .isPresent();
+    }
 }

@@ -30,7 +30,7 @@ public class LineService {
         Line line = request.toEntity();
         Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(NotFoundException::new);
         Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(NotFoundException::new);
-        line.addSection(Section.of(upStation, downStation, request.getDistance()));
+        line.initSection(Section.of(upStation, downStation, request.getDistance()));
 
         line = lineRepository.save(line);
         return LineResponse.of(line);

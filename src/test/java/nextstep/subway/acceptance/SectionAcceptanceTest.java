@@ -4,6 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.applicaion.exception.NotLastSectionException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -17,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SectionAcceptanceTest extends AcceptanceTest {
 
-    final int 종점간거리 = 2;
+    final int 종점간거리 = 7;
     ExtractableResponse<Response> 노선_생성_결과;
     private Long 상행종점;
     private Long 하행종점;
@@ -55,9 +56,31 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * Given 상행과 하행 사이에 들어갈 역을 생성한다
+     * When  노선에 중간 구간 생성을 요청한다.
+     * Then  구간 생성이 성공한다.
+     */
+    @DisplayName("상행과 하행역 중간에 새로운 역을 등록할 수 있다.")
+    @Test
+    void 구간_사이에_구간을_등록할_수_있다() {
+        //given
+        ExtractableResponse<Response> 아무개 = 지하철역생성("아무개");
+        Long 지하철역_ID = 아무개.jsonPath().getLong(지하철_역_아이디_키);
+
+        //when
+        int 종점간거리 = 3;
+        ExtractableResponse<Response> response = 구간등록(상행종점, 지하철역_ID, 종점간거리);
+
+        //then
+        상태_값_검사(response, HttpStatus.CREATED);
+    }
+
+
+    /**
      * When  새로운 상행이 기존의 하행과 일치하지 않는 구간 등록을 요청한다
      * Then  구간 등록이 실패한다
      */
+    @Disabled
     @DisplayName("새로운 구간의 상행은 기존 구간의 하행과 일치해야한다.")
     @Test
     void 잘못된_상행_하행_구간_등록_테스트() {
