@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.section.MinimumDistanceException;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -9,6 +10,9 @@ import java.util.Objects;
 
 @Entity
 public class Section {
+
+    private static final int MIN_DISTANCE = 1;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,22 +27,42 @@ public class Section {
     private Station downStation;
     private int distance;
 
-    public Section() {
+    protected Section() {
+    }
 
+    private Section(Station upStation, Station downStation, int distance) {
+        validateDistance(distance);
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
     }
 
     public static Section of(Line line, Station upStation, Station downStation, int distance) {
-        Section result = new Section();
+        Section result = new Section(upStation, downStation, distance);
         result.line = line;
-        result.upStation = upStation;
-        result.downStation = downStation;
-        result.distance = distance;
 
         return result;
     }
 
+    public void updateDistance(int distance) {
+        validateDistance(distance);
+        this.distance = distance;
+    }
+
+    public String getUpStationName() {
+        return upStation.getName();
+    }
+
+    public String getDownStationName() {
+        return downStation.getName();
+    }
+
     public Station getUpStation() {
         return upStation;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     public Station getDownStation() {
@@ -47,6 +71,12 @@ public class Section {
 
     public List<Station> getStations() {
         return Arrays.asList(upStation, downStation);
+    }
+
+    private void validateDistance(int distance) {
+        if (distance < MIN_DISTANCE) {
+            throw new MinimumDistanceException(distance);
+        }
     }
 
     @Override
