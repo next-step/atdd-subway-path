@@ -28,8 +28,13 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(final Station upStation, final Station downStation, final int distance) {
-        Section newSection = new Section(this, upStation, downStation, distance);
-        this.sections.add(newSection);
+
+        if (sections.isEmpty()) {
+            sections.add(new Section(this, upStation, downStation, distance));
+
+            return;
+        }
+        sections.add(new Section(this, upStation, downStation, distance));
     }
 
     public void update(final String name, final String color) {
