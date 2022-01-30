@@ -27,7 +27,7 @@ public class Sections {
             sections.add(newSection);
             return;
         }
-        validateStationsExists(newSection);
+        validateStationsExistsOrElseThrow(newSection);
 
         // 역 사이에 새로운 역을 등록할 경우
         if (hasSameUpStation(newSection)) {
@@ -54,12 +54,12 @@ public class Sections {
      * 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
      * 상행역과 하행역이 둘중 하나도 등록되어 있지 않으면 추가할 수 없음
      */
-    private void validateStationsExists(Section newSection) {
-        validateUpDownStationsExists(newSection);
-        validateUpDownStationNotExists(newSection);
+    private void validateStationsExistsOrElseThrow(Section newSection) {
+        validateUpDownStationsExistsOrElseThrow(newSection);
+        validateUpDownStationNotExistsOrElseThrow(newSection);
     }
 
-    private void validateUpDownStationNotExists(Section newSection) {
+    private void validateUpDownStationNotExistsOrElseThrow(Section newSection) {
         Set<Station> allStations = sections.stream()
                 .map(section -> asList(section.getUpStation(), section.getDownStation()))
                 .flatMap(Collection::stream)
@@ -72,7 +72,7 @@ public class Sections {
         }
     }
 
-    private void validateUpDownStationsExists(Section newSection) {
+    private void validateUpDownStationsExistsOrElseThrow(Section newSection) {
         if (hasSameDownStation(newSection) && hasSameUpStation(newSection)) {
             throw new StationsExistException(
                     newSection.getUpStationName(), newSection.getDownStationName());
