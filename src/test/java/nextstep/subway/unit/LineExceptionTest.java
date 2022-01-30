@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@DisplayName("구간 도메인 예외 테스트")
 class LineExceptionTest {
 
     final int 강남_판교_거리 = 7;

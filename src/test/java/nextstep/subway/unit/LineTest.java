@@ -11,6 +11,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("구간 도메인 단위 테스트")
 class LineTest {
 
     Station 강남역;
