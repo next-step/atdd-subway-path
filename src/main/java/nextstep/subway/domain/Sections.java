@@ -9,10 +9,7 @@ import nextstep.subway.exception.section.MinimumSectionException;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -53,10 +50,12 @@ public class Sections {
     }
 
     public List<Station> getAllStations() {
-        Set<Station> stations = sections.stream()
-                .flatMap(it -> it.getStations().stream())
-                .collect(Collectors.toSet());
-        return new ArrayList<>(stations);
+        List<Station> stations = sections.stream()
+                .map(it -> it.getUpStation())
+                .collect(Collectors.toList());
+        stations.add(getLastDownStation());
+
+        return stations;
     }
 
     private boolean isEmpty() {
