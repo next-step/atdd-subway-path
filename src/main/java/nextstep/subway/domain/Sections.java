@@ -10,6 +10,9 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import nextstep.subway.domain.utils.StationConnector;
+import nextstep.subway.domain.utils.StationFrontConnector;
+import nextstep.subway.domain.utils.StationRearConnector;
 import org.springframework.dao.DataIntegrityViolationException;
 
 @Embeddable
@@ -30,23 +33,23 @@ public class Sections {
     private void sectionAdd(Section newSection) {
         validateAddable(newSection);
 
-        // findConnectStation(newSection
-
-        sections.stream()
-            .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
-            .forEach(section -> {
-                section.hasEnoughDistanceForAddingOrElseThrow(newSection);
-                section.setUpStation(newSection.getDownStation());
-            });
-
-        sections.stream()
-            .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
-            .forEach(section -> {
-                section.hasEnoughDistanceForAddingOrElseThrow(newSection);
-                section.setDownStation(newSection.getUpStation());
-            });
+        for (Section section : sections) {
+            handleMidCase(section, newSection);
+        }
 
         sections.add(newSection);
+    }
+
+    private void handleMidCase(Section section, Section newSection) {
+        if (section.hasSameUpStationWith(newSection)) {
+            section.checkEnoughDistanceForAddingOrElseThrow(newSection);
+            section.setUpStation(newSection.getDownStation());
+        }
+
+        if (section.hasSameDownStationWith(newSection)) {
+            section.checkEnoughDistanceForAddingOrElseThrow(newSection);
+            section.setDownStation(newSection.getUpStation());
+        }
     }
 
     private void validateAddable(Section newSection) {
@@ -58,28 +61,6 @@ public class Sections {
             throw new DataIntegrityViolationException(NOT_HAS_ANY_STATIONS);
         }
     }
-
-//    public void add(Section newSection) {
-//        if (!sections.isEmpty()) {
-//            validateAddable(newSection);
-//        }
-//
-//        sections.stream()
-//            .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
-//            .forEach(section -> {
-//                section.hasEnoughDistanceForAddingOrElseThrow(newSection);
-//                section.setUpStation(newSection.getDownStation());
-//            });
-//
-//        sections.stream()
-//            .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
-//            .forEach(section -> {
-//                section.hasEnoughDistanceForAddingOrElseThrow(newSection);
-//                section.setDownStation(newSection.getUpStation());
-//            });
-//
-//        sections.add(newSection);
-//    }
 
     public boolean hasAllStationsOf(Section section) {
         return containsStation(section.getUpStation())
@@ -128,49 +109,27 @@ public class Sections {
         Station upStation = sections.get(0).getUpStation();
         stations.add(upStation);
 
-        boolean found;
-        while (true) {
-            found = false;
-            for (Section section : sections) {
-                if (canBeConnectedFront(upStation, section)) {
-                    upStation = section.getUpStation();
-                    stations.add(0, upStation);
-                    found = true;
-                }
-            }
+        StationFrontConnector connector = new StationFrontConnector(
+            sections, stations, upStation
+        );
 
-            if (!found) {
-                return;
-            }
+        while (connector.hasNextStation()) {
+            stations.add(0, connector.nextStation());
         }
+
     }
 
     private void makeRearSideOf(List<Station> stations) {
         Station downStation = sections.get(0).getDownStation();
         stations.add(downStation);
 
-        boolean found;
-        while (true) {
-            found = false;
-            for (Section section : sections) {
-                if (canBeConnectedRear(downStation, section)) {
-                    downStation = section.getDownStation();
-                    stations.add(downStation);
-                    found = true;
-                }
-            }
+        StationConnector connector = new StationRearConnector(
+            sections, stations, downStation
+        );
 
-            if (!found) {
-                return;
-            }
+        while (connector.hasNextStation()) {
+            stations.add(connector.nextStation());
         }
     }
 
-    private boolean canBeConnectedFront(Station upStation, Section section) {
-        return upStation.equals(section.getDownStation());
-    }
-
-    private boolean canBeConnectedRear(Station downStation, Section section) {
-        return downStation.equals(section.getUpStation());
-    }
 }

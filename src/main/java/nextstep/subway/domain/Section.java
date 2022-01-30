@@ -73,6 +73,14 @@ public class Section {
         this.downStation = downStation;
     }
 
+    public boolean hasSameUpStationWith(Section section) {
+        return this.upStation.equals(section.getUpStation());
+    }
+
+    public boolean hasSameDownStationWith(Section section) {
+        return this.downStation.equals(section.getDownStation());
+    }
+
     public boolean hasStation(Station station) {
         return upStation.equals(station) || downStation.equals(station);
     }
@@ -96,24 +104,15 @@ public class Section {
         return Objects.hash(id, line, upStation, downStation, distance);
     }
 
-    public boolean hasEnoughDistanceForAddingOrElseThrow(Section section) {
+    public void checkEnoughDistanceForAddingOrElseThrow(Section section) {
         if (this.distance > section.distance) {
-            return true;
+            return;
         }
 
         throw new DataIntegrityViolationException(INVALID_SECTION_DISTANCE);
     }
 
-    public boolean checkValidConnectionOrElseThrow(Sections sections) {
-        if (sections.hasAllStationsOf(this)) {
-            throw new DataIntegrityViolationException(ALREADY_HAS_STATIONS);
-        }
-
-        if (!sections.existAnyStationsOf(this)) {
-            throw new DataIntegrityViolationException(NOT_HAS_ANY_STATIONS);
-        }
-
-        return true;
+    public Line getLine() {
+        return line;
     }
-
 }
