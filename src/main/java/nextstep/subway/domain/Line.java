@@ -1,8 +1,16 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Line extends BaseEntity {
@@ -13,14 +21,35 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections;
 
     public Line() {
     }
 
-    public Line(String name, String color) {
+    public Line(final String name, final String color, final Sections sections) {
         this.name = name;
+        this.color = color;
+        this.sections = sections;
+    }
+
+    public Line(String name, String color) {
+        this(name, color, new Sections());
+    }
+
+    public void registerSection(final Station upStation, final Station downStation, final int distance) {
+        sections.addSection(this, upStation, downStation, distance);
+    }
+
+    public void deleteSection(final Station station) {
+        sections.deleteSection(station);
+    }
+
+    public void updateName(final String name) {
+        this.name = name;
+    }
+
+    public void updateColor(final String color) {
         this.color = color;
     }
 
@@ -49,6 +78,18 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> getSections() {
-        return sections;
+        List<Section> sections = new ArrayList<>();
+        Station upStation = this.sections.geUpStationEndpoint();
+        if(Objects.isNull(upStation)){
+            return sections;
+        }
+
+        do {
+            Section section = this.sections.getSectionByUpStation(upStation);
+            sections.add(section);
+            upStation = section.getDownStation();
+        } while (!this.sections.isDownStationEndpoint(upStation));
+
+        return Collections.unmodifiableList(sections);
     }
 }
