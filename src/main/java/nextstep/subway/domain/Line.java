@@ -34,7 +34,21 @@ public class Line extends BaseEntity {
 
             return;
         }
-        sections.add(new Section(this, upStation, downStation, distance));
+
+        Section section = checkUpStationBySection(upStation);
+
+        if (!ObjectUtils.isEmpty(section)) {
+            Station baseDownStation = section.getDownStation();// 양재역 - 강남역, 정자역, 양재역
+            sections.remove(0);
+
+            sections.add(new Section(this, downStation, baseDownStation, distance));
+            sections.add(new Section(this, upStation, downStation, distance));
+        }
+    }
+
+    private Section checkUpStationBySection(Station newStation) {
+
+        return null;
     }
 
     public void update(final String name, final String color) {

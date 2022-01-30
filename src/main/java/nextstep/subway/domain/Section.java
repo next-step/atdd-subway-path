@@ -45,6 +45,11 @@ public class Section {
         return upStation;
     }
 
+    public boolean isUpStation(Station station) {
+
+        return upStation.equals(station);
+    }
+
     public Station getDownStation() {
         return downStation;
     }
