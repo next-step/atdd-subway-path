@@ -52,6 +52,13 @@ class LineTest {
     @DisplayName("노선에 속해있는 역 목록 조회")
     @Test
     void getStations() {
+        // when
+        List<String> namesOfStations = loopLine.stations().stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+
+        // then
+        assertThat(namesOfStations).containsExactly(gangnam.getName(), yeoksam.getName());
     }
 
     @DisplayName("구간이 목록에서 마지막 역 삭제")
