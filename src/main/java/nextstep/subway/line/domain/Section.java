@@ -70,7 +70,7 @@ public class Section {
         upStation = newSection.getDownStation();
     }
 
-    public void changeDownSection(Section oldSection, Section newSection) {
+    public void dockingInDownSection(Section oldSection, Section newSection) {
         newSection.distance = newSection.distance.addition(oldSection.distance);
 
         downStation = newSection.getDownStation();

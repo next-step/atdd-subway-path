@@ -74,7 +74,7 @@ public class Sections {
 
         Section upSectionOfDocking = regularizedByDownStation.get(stationForRemove);
         Section downSectionOfDocking = regularizedByUpStation.get(stationForRemove);
-        upSectionOfDocking.changeDownSection(sectionForRemove, downSectionOfDocking);
+        upSectionOfDocking.dockingInDownSection(sectionForRemove, downSectionOfDocking);
     }
 
     private void verifyRemovable() {
@@ -109,10 +109,10 @@ public class Sections {
         return stations;
     }
 
-    private <T> Map<T, Section> regularizedByStation(Function<Section, T> getStationFunc) {
+    private <T> Map<T, Section> regularizedByStation(Function<Section, T> getKeyFunc) {
         return values.stream()
                      .collect(Collectors.toMap(
-                         getStationFunc, eachSection -> eachSection
+                         getKeyFunc, eachSection -> eachSection
                      ));
     }
 

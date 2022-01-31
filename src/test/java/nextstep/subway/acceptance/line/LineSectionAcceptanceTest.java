@@ -158,7 +158,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
-     * When 지하철 노선의 마지막 역 제거를 요청 하면
+     * When 지하철 노선의 종점 제거를 요청 하면
      * Then 노선에 구간이 제거된다
      */
     @DisplayName("노선에 마지막 역을 제거")
@@ -179,6 +179,28 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 종점 제거를 요청 하면
+     * Then 노선에 구간이 제거된다
+     */
+    @DisplayName("노선에 첫번째 역을 제거")
+    @Test
+    void removeLineSectionCase2() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(노선, createSectionCreateParams(하행, 정자역));
+
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_노선에_지하철_구간_제거_요청(노선, 상행);
+        ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(노선);
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(getResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(하행, 정자역);
+    }
+
+    /**
      * Given (상행)A역-(하행)B역, (상행)B역-(하행)C역 구간이 있을때
      * When  중간 역인 B역을 제거하면
      * Then  노선에 포함된 구간은 (상행)A역-(하행)C역으로 변경 된다.
@@ -186,7 +208,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("노선에 중간 역을 제거")
     @Test
-    void removeLineSectionCase2() {
+    void removeLineSectionCase3() {
         // given
         Long A역 = 상행;
         Long B역 = 하행;

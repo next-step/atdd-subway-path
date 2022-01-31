@@ -111,9 +111,19 @@ class LineTest {
         assertThat(line.getStations()).containsExactly(upStation, downStation, insertNewDownStation);
     }
 
-    @DisplayName("구간 목록에서 중간 역 삭제")
+    @DisplayName("구간 목록에서 첫번째 역 삭제")
     @Test
     void deleteSectionCase2() {
+        Station newDownStation = new Station(3L, "새로운 구간의 하행");
+        line.addSection(downStation, newDownStation, distance);
+        line.deleteSection(upStation);
+
+        assertThat(line.getStations()).containsExactly(downStation, newDownStation);
+    }
+
+    @DisplayName("구간 목록에서 중간 역 삭제")
+    @Test
+    void deleteSectionCase3() {
         Station centerStation = downStation;
         Station newDownStation = new Station(3L, "새로운 구간의 하행");
         line.addSection(centerStation, newDownStation, new Distance(120));
@@ -123,6 +133,13 @@ class LineTest {
 
         assertThat(line.getStations()).containsExactly(upStation, newDownStation);
         assertThat(line.getLength()).isEqualTo(beforeLength);
+    }
+
+    @DisplayName("구간 목록이 1개만 있을땐 삭제할 수 없다.")
+    @Test
+    void deleteSectionFailCase1() {
+        assertThatThrownBy(() -> line.deleteSection(downStation))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("모든 구간의 길이를 더한 값 반환")
