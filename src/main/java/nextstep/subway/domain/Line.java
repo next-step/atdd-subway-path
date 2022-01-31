@@ -93,7 +93,12 @@ public class Line extends BaseEntity {
     }
 
     public void removeSection(Station station) {
-
+        // 1. 구간이 하나 뿐일 경우 IllegalArgumentException 을 내보낸다.
+        // 2. 존재하지 않는 구간으로 삭제하려고 했을 경우 IllegalArgumentException 을 내보낸다.
+        // 3. 삭제하는 역이 상행 종점 상행역일 경우 해당 구간을 삭제한다.
+        // 4. 삭제하는 역이 하행 종점 하행역일 경우 해당 구간을 삭제한다.
+        // 5. 삭제하는 역이 어떤 구간의 하행역이면서 상행역일 경우. 해당 역을 포함한 두 구간을 모두 삭제하며, 두 구간에 남은 역들을 연결하는 구간을 신설한다.
+        // 이 때 두 구간의 거리는 삭제한 두 구간의 합으로 결정한다.
 
     }
 
