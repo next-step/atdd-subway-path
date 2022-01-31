@@ -1,8 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.section.AlreadyRegisteredStationException;
-import nextstep.subway.exception.section.InvalidDistanceException;
-import nextstep.subway.exception.section.NotFoundConnectStationException;
+import nextstep.subway.exception.section.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -128,6 +126,44 @@ class SectionsTest {
         // then
         assertThatThrownBy(() -> sections.addSection(target))
                 .isInstanceOf(NotFoundConnectStationException.class);
+    }
+
+    @DisplayName("마지막 역을 삭제할 수 있다")
+    @Test
+    void deleteStation() {
+        // given
+        sections.addSection(강남역_정자역);
+        Section section = new Section(강남역, 판교역, 5);
+        sections.addSection(section);
+
+        // when
+        sections.deleteStation(정자역);
+
+        // then
+        assertThat(sections.getSections().size()).isEqualTo(1);
+        assertThat(sections.getAllStations()).containsExactly(강남역, 판교역);
+    }
+
+    @DisplayName("역을 삭제할 경우 구간이 최소 1개는 있어야 한다")
+    @Test
+    void deleteStation_validateMinimumSection() {
+        // given
+        sections.addSection(강남역_정자역);
+
+        // then
+        assertThatThrownBy(() -> sections.deleteStation(정자역))
+                .isInstanceOf(MinimumSectionException.class);
+    }
+
+    @DisplayName("마지막 하행역만 삭제 가능하")
+    @Test
+    void deleteStation_validateDeleteLastDownStation() {
+        // given
+        sections.addSection(강남역_정자역);
+
+        // then
+        assertThatThrownBy(() -> sections.deleteStation(강남역))
+                .isInstanceOf(DeleteLastDownStationException.class);
     }
 
 }
