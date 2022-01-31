@@ -1,21 +1,41 @@
 package nextstep.subway.acceptance;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import static nextstep.subway.acceptance.LineFixture.*;
 import static nextstep.subway.acceptance.LineSteps.*;
+import static nextstep.subway.acceptance.StationFixture.*;
+import static nextstep.subway.acceptance.StationSteps.지하철_역_생성_되어있음;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관리 기능")
 class LineAcceptanceTest extends AcceptanceTest {
+
+    private Long 강남역_번호;
+    private Long 양재역_번호;
+    private Long 사당역_번호;
+    private Long 낙성대역_번호;
+
+    /**
+     * Given 지하철역 생성을 요청 하고
+     */
+    @BeforeEach
+    void 지하철_역이_생성_되어있음() {
+        super.setUp();
+
+        강남역_번호 = 지하철_역_생성_되어있음(강남역);
+        양재역_번호 = 지하철_역_생성_되어있음(양재역);
+        사당역_번호 = 지하철_역_생성_되어있음(사당역);
+        낙성대역_번호 = 지하철_역_생성_되어있음(낙성대역);
+    }
+
     /**
      * When 지하철 노선 생성을 요청 하면
      * Then 지하철 노선 생성이 성공한다.
@@ -24,10 +44,107 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green");
+        ExtractableResponse<Response> response = 지하철_노선_생성을_요청한다(신분당선, 빨강색, 강남역_번호, 양재역_번호, 강남_양재_거리);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(response.header("Location")).isNotBlank()
+        );
+    }
+
+    /**
+     * Scenario: 지하철 역이 없는 상태에서 지하철 노선 생성
+     * When 지하철 노선 생성을 요청 하면
+     * Then 지하철 노선 생성이 실패한다.
+     */
+    @DisplayName("지하철역이 없을 때, 지하철 노선 생성")
+    @Test
+    void createLineExcludeStation() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_생성을_요청한다(신분당선, 빨강색, 1L, 2L, 강남_양재_거리);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().get("message").equals("empty station occurred"))
+        );
+    }
+
+    /**
+     * When 공백 이름을 가진 지하철역 생성을 요청 하면
+     * Then 지하철역 생성이 실패한다.
+     */
+    @DisplayName("지하철 노선 이름 공백")
+    @Test
+    void createBlankLineName() {
+        // when
+        final ExtractableResponse<Response> response = 지하철_노선_생성을_요청한다("  ", 빨강색, 강남역_번호, 양재역_번호, 강남_양재_거리);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().get("message").equals("blank line name occurred"))
+        );
+    }
+
+    /**
+     * When 공백 색깔을 가진 지하철역 생성을 요청 하면
+     * Then 지하철역 생성이 실패한다.
+     */
+    @DisplayName("지하철 노선 색깔 공백")
+    @Test
+    void createBlankLineColor() {
+        // when
+        final ExtractableResponse<Response> response = 지하철_노선_생성을_요청한다(신분당선, "  ", 강남역_번호, 양재역_번호, 강남_양재_거리);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().get("message").equals("blank line color occurred"))
+        );
+    }
+
+    /**
+     * Given 지하철 노선 생성을 요청 하고
+     * When 같은 이름으로 지하철 노선 생성을 요청 하면
+     * Then 지하철 노선 생성이 실패한다.
+     */
+    @DisplayName("지하철 노선 이름 중복")
+    @Test
+    void createDuplicateLineName() {
+        // given
+        지하철_노선_생성을_요청한다(신분당선, 빨강색, 강남역_번호, 양재역_번호, 강남_양재_거리);
+
+        // when
+        final ExtractableResponse<Response> response = 지하철_노선_생성을_요청한다(신분당선, 초록색, 사당역_번호, 낙성대역_번호, 사당_낙성대_거리);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value()),
+                () -> assertThat(response.body().jsonPath().get("message").equals("duplicate line name occurred"))
+        );
+    }
+
+    /**
+     * Given 지하철 노선 생성을 요청 하고
+     * When 같은 색깔로 지하철 노선 생성을 요청 하면
+     * Then 지하철 노선 생성이 실패한다.
+     */
+    @DisplayName("지하철 노선 색깔 중복")
+    @Test
+    void createDuplicateLineColor() {
+        // given
+        지하철_노선_생성을_요청한다(신분당선, 빨강색, 강남역_번호, 양재역_번호, 강남_양재_거리);
+
+        // when
+        final ExtractableResponse<Response> response = 지하철_노선_생성을_요청한다(이호선, 빨강색, 사당역_번호, 낙성대역_번호, 사당_낙성대_거리);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value()),
+                () -> assertThat(response.body().jsonPath().get("message").equals("duplicate line color occurred"))
+        );
     }
 
     /**
@@ -40,15 +157,21 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철_노선_생성_요청("2호선", "green");
-        지하철_노선_생성_요청("3호선", "orange");
+        지하철_노선_생성을_요청한다(신분당선, 빨강색, 강남역_번호, 양재역_번호, 강남_양재_거리);
+        지하철_노선_생성을_요청한다(이호선, 초록색, 사당역_번호, 낙성대역_번호, 사당_낙성대_거리);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
+        final ExtractableResponse<Response> response = 지하철_노선_목록_조회를_요청한다();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("name")).contains("2호선", "3호선");
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE),
+                () -> assertThat(response.header("Date")).isNotBlank(),
+                () -> assertThat(response.jsonPath().getList("id")).contains(1, 2),
+                () -> assertThat(response.jsonPath().getList(LINE_NAME)).contains(신분당선, 이호선),
+                () -> assertThat(response.jsonPath().getList(LINE_COLOR)).contains(빨강색, 초록색)
+        );
     }
 
     /**
@@ -60,14 +183,21 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        final Long 신분당선_번호 = 지하철_노선이_생성되어_있음(신분당선, 빨강색, 강남역_번호, 양재역_번호, 강남_양재_거리);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
+        final ExtractableResponse<Response> response = 지하철_노선_조회를_요청한다(신분당선_번호);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getString("name")).isEqualTo("2호선");
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE),
+                () -> assertThat(response.header("Date")).isNotBlank(),
+                () -> assertThat(response.body().jsonPath().get("id").equals(1)).isTrue(),
+                () -> assertThat(response.body().jsonPath().get(LINE_NAME).equals(신분당선)).isTrue(),
+                () -> assertThat(response.body().jsonPath().get(LINE_COLOR).equals(빨강색)).isTrue(),
+                () -> assertThat(response.jsonPath().getList("stations.name")).contains(강남역, 양재역)
+        );
     }
 
     /**
@@ -79,20 +209,16 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        final Long 신분당선_번호 = 지하철_노선이_생성되어_있음(신분당선, 빨강색, 강남역_번호, 양재역_번호, 강남_양재_거리);
 
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "red");
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put(createResponse.header("location"))
-                .then().log().all().extract();
+        final ExtractableResponse<Response> updateResponse = 지하철_노선_변경을_요청한다(신분당선_번호, 구분당선, 파랑색);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertAll(
+                () -> assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(updateResponse.header("Date")).isNotBlank()
+        );
     }
 
     /**
@@ -104,33 +230,15 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        final Long 신분당선_번호 = 지하철_노선이_생성되어_있음(신분당선, 빨강색, 강남역_번호, 양재역_번호, 강남_양재_거리);
 
         // when
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .when().delete(createResponse.header("location"))
-                .then().log().all().extract();
+        final ExtractableResponse<Response> response = 지하철_노선_삭제를_요청한다(신분당선_번호);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    /**
-     * Given 지하철 노선 생성을 요청 하고
-     * When 같은 이름으로 지하철 노선 생성을 요청 하면
-     * Then 지하철 노선 생성이 실패한다.
-     */
-    @DisplayName("중복이름으로 지하철 노선 생성")
-    @Test
-    void duplicateName() {
-        // given
-        지하철_노선_생성_요청("2호선", "green");
-
-        // when
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
-
-        // then
-        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(response.header("Date")).isNotBlank()
+        );
     }
 }
