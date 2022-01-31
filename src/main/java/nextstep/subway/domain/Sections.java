@@ -18,7 +18,7 @@ public class Sections {
     private List<Section> sectionList = new ArrayList<>();
 
     public void addSection(Section section) {
-        if (isAlreadyExistSection(section)) {
+        if (isAlreadyExistSection(section) || nonExistStation(section)) {
             throw new IllegalArgumentException("이미 존재하는 구간입니다.");
         }
         
@@ -28,6 +28,16 @@ public class Sections {
         }
 
         sectionList.add(section);
+    }
+
+    private boolean nonExistStation(Section section) {
+        return !sectionList.isEmpty() && sectionList.stream()
+                .noneMatch(otherSection ->
+                        section.getUpStation().equals(otherSection.getUpStation())
+                        || section.getUpStation().equals(otherSection.getDownStation())
+                        || section.getDownStation().equals(otherSection.getUpStation())
+                        || section.getDownStation().equals(otherSection.getDownStation())
+                );
     }
 
     private boolean isAlreadyExistSection(Section section) {
