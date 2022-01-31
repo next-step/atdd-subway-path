@@ -17,6 +17,9 @@ public enum ErrorCode {
     DOWN_STATION_MUST_NOT_CURRENTLY_REGISTERED_STATION_ERROR(HttpStatus.BAD_REQUEST, "-10011", "새로운 구간의 하행역은 현재 등록되어있는 역일 수 없습니다."),
     SECTION_MINIMUM_SIZE_ERROR(HttpStatus.BAD_REQUEST, "-10012", "구간은 2개이상 등록되어있는 경우 삭제 가능합니다."),
     ONLY_THE_LAST_SECTION_CAN_BE_DELETE_ERROR(HttpStatus.BAD_REQUEST, "-10013", "마지막 구간만 삭제 가능합니다."),
+    INVALID_SECTION_DISTANCE_ERROR(HttpStatus.BAD_REQUEST, "-10014", "역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다."),
+    ALREADY_EXISTS_STATIONS_ERROR(HttpStatus.BAD_REQUEST, "-10015", "상행역과 하행역이 이미 존재합니다."),
+    NOT_EXISTS_ANY_STATIONS_ERROR(HttpStatus.BAD_REQUEST, "-10016", "상행역과 하행역이 모두 존재하지 않습니다."),
     ;
 
     private final HttpStatus status;

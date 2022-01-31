@@ -8,6 +8,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.error.ErrorCode.*;
@@ -30,8 +31,11 @@ public class Sections {
     }
 
     public void add(Section section) {
-        validateSave(section.getUpStation().getId(), section.getDownStation().getId());
-        sections.add(section);
+        if(sections.isEmpty()) {
+            sections.add(section);
+            return;
+        }
+        save(section);
     }
 
     public void remove(final Long downStationId) {
@@ -39,16 +43,57 @@ public class Sections {
         sections.remove(getLastSection());
     }
 
-    private void validateSave(final Long upStationId, final Long downStationId) {
-        if(sections.isEmpty()) {
-            return;
+    private void save(final Section target) {
+        final Section up = findSectionByUpStation(target.getUpStation());
+        final Section down = findSectionByDownStation(target.getDownStation());
+
+        validateSave(up, down);
+
+        for (Section section : sections) {
+            if(up != null) {
+                section.checkTheDistanceToRegisterOrElseThrow(target);
+                section.changeUpStation(target.getDownStation());
+            }
+            if(down != null) {
+                section.checkTheDistanceToRegisterOrElseThrow(target);
+                section.changeDownStation(target.getUpStation());
+            }
         }
 
-        final List<Station> registeredDownStations = getRegisteredDownStation(sections);
-        final List<Station> registeredUpStations = getRegisteredUpStation(sections);
+        sections.add(target);
+    }
 
-        upStationMustSameLastRegisteredDownStation(registeredDownStations, upStationId);
-        downStationMustNotCurrentlyRegisteredStation(registeredDownStations, registeredUpStations, downStationId);
+    private Section findSectionByUpStation(Station upStation) {
+        Optional<Section> section = this.sections.stream()
+                .filter(s -> s.getUpStation().equals(upStation))
+                .collect(Collectors.toList())
+                .stream().findFirst();
+        return section.orElse(null);
+    }
+
+    private Section findSectionByDownStation(Station downStation) {
+        Optional<Section> section = this.sections.stream()
+                .filter(s -> s.getDownStation().equals(downStation))
+                .collect(Collectors.toList())
+                .stream().findFirst();
+        return section.orElse(null);
+    }
+
+    private void validateSave(final Section up, final Section down) {
+        if(isAlreadyExistStations(up, down)) {
+            throw new ValidationException(ALREADY_EXISTS_STATIONS_ERROR);
+        }
+        if(isNotExistsAnyStation(up, down)) {
+            throw new ValidationException(NOT_EXISTS_ANY_STATIONS_ERROR);
+        }
+    }
+
+    private boolean isNotExistsAnyStation(final Section up, final Section down) {
+        return up == null && down == null;
+    }
+
+    private boolean isAlreadyExistStations(final Section up, final Section down) {
+        return up != null && down != null;
     }
 
     private void validateDelete(final Long downStationId) {
@@ -57,30 +102,20 @@ public class Sections {
         validateOnlyTheLastSectionCanBeDelete(downStationId);
     }
 
-    private void upStationMustSameLastRegisteredDownStation(
-            final List<Station> registeredDownStations,
-            final Long upStationId
-    ) {
-        final Station lastRegisteredDownStation = registeredDownStations.get(registeredDownStations.size() - 1);
-        if(!lastRegisteredDownStation.getId().equals(upStationId)) {
-            throw new ValidationException(UP_STATION_MUST_SAME_LAST_REGISTERED_DOWN_STATION_ERROR);
-        }
-    }
-
-    private void downStationMustNotCurrentlyRegisteredStation(
-            final List<Station> registeredDownStations,
-            final List<Station> registeredUpStations,
-            final Long downStationId
-    ) {
-        if(getIds(registeredDownStations).contains(downStationId) || getIds(registeredUpStations).contains(downStationId)) {
-            throw new ValidationException(DOWN_STATION_MUST_NOT_CURRENTLY_REGISTERED_STATION_ERROR);
-        }
+    private Section getLastSection() {
+        return sections.get(sections.size() - 1);
     }
 
     private void validateNotExists(final Long downStationId) {
         if(isNotExists(downStationId)) {
             throw new NotFoundStationException();
         }
+    }
+
+    private boolean isNotExists(final Long id) {
+        final List<Station> registeredDownStations = getRegisteredDownStation(sections);
+        final List<Station> registeredUpStations = getRegisteredUpStation(sections);
+        return !getIds(registeredDownStations).contains(id) && !getIds(registeredUpStations).contains(id);
     }
 
     private void validateSectionMinimumSize() {
@@ -93,16 +128,6 @@ public class Sections {
         if(!getLastRegisteredDownStationId().equals(downStationId)) {
             throw new ValidationException(ONLY_THE_LAST_SECTION_CAN_BE_DELETE_ERROR);
         }
-    }
-
-    private Section getLastSection() {
-        return sections.get(sections.size() - 1);
-    }
-
-    private boolean isNotExists(Long id) {
-        final List<Station> registeredDownStations = getRegisteredDownStation(sections);
-        final List<Station> registeredUpStations = getRegisteredUpStation(sections);
-        return !getIds(registeredDownStations).contains(id) && !getIds(registeredUpStations).contains(id);
     }
 
     private Long getLastRegisteredDownStationId() {

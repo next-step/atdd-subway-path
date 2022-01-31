@@ -1,6 +1,10 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.ValidationException;
+
 import javax.persistence.*;
+
+import static nextstep.subway.error.ErrorCode.INVALID_SECTION_DISTANCE_ERROR;
 
 @Entity
 public class Section {
@@ -36,6 +40,13 @@ public class Section {
         this.distance = distance;
     }
 
+    public void checkTheDistanceToRegisterOrElseThrow(Section section) {
+        if(this.distance > section.distance) {
+            return;
+        }
+        throw new ValidationException(INVALID_SECTION_DISTANCE_ERROR);
+    }
+
     public Long getId() {
         return id;
     }
@@ -54,5 +65,13 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public void changeUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void changeDownStation(Station downStation) {
+        this.downStation = downStation;
     }
 }
