@@ -15,43 +15,72 @@ class SectionTest {
 
     private Station 강남역;
     private Station 판교역;
-    private Line 신분당선;
+    private Station 정자역;
 
     @BeforeEach
     void setUp() {
         강남역 = Station.of("강남역");
         판교역 = Station.of("판교역");
-        신분당선 = Line.of("신분당선", "red");
+        정자역 = Station.of("정자역");
 
         ReflectionTestUtils.setField(강남역, "id", 1L);
         ReflectionTestUtils.setField(판교역, "id", 2L);
-        ReflectionTestUtils.setField(신분당선, "id", 1L);
-
+        ReflectionTestUtils.setField(정자역, "id", 3L);
     }
 
-    @DisplayName("구간의 길이를 변경할 수 있다")
+    @DisplayName("상행역과 구간의 길이를 변경할 수 있다")
     @ValueSource(ints = {1, 2, 3, 10, 30, 100})
     @ParameterizedTest
-    void updateDistance(int distance) {
+    void updateUpStation(int distance) {
         // given
-        Section target = Section.of(신분당선, 강남역, 판교역, 10);
+        Section target = new Section(강남역, 판교역, 5);
 
         // when
-        target.updateDistance(distance);
+        target.updateUpStation(정자역, distance);
 
         // then
+        assertThat(target.getUpStation()).isEqualTo(정자역);
+        assertThat(target.getDownStation()).isEqualTo(판교역);
         assertThat(target.getDistance()).isEqualTo(distance);
     }
 
-    @DisplayName("구간의 길이는 1 이상이어야 한다")
+    @DisplayName("상행역 변경 시, 구간의 길이는 1 이상이어야 한다")
     @ValueSource(ints = {-100, -10, -5, -3, -2, -1, 0})
     @ParameterizedTest
-    void updateDistance_fail(int distance) {
+    void updateUpStation_fail(int distance) {
         // given
-        Section target = Section.of(신분당선, 강남역, 판교역, 10);
+        Section target = new Section(강남역, 판교역, 5);
 
         // then
-        assertThatThrownBy(() -> target.updateDistance(distance))
+        assertThatThrownBy(() -> target.updateUpStation(판교역, distance))
+                .isInstanceOf(MinimumDistanceException.class);
+    }
+
+    @DisplayName("하행역과 구간의 길이를 변경할 수 있다")
+    @ValueSource(ints = {1, 2, 3, 10, 30, 100})
+    @ParameterizedTest
+    void updateDownStation(int distance) {
+        // given
+        Section target = new Section(강남역, 판교역, 5);
+
+        // when
+        target.updateDownStation(정자역, distance);
+
+        // then
+        assertThat(target.getUpStation()).isEqualTo(강남역);
+        assertThat(target.getDownStation()).isEqualTo(정자역);
+        assertThat(target.getDistance()).isEqualTo(distance);
+    }
+
+    @DisplayName("상행역 변경 시, 구간의 길이는 1 이상이어야 한다")
+    @ValueSource(ints = {-100, -10, -5, -3, -2, -1, 0})
+    @ParameterizedTest
+    void updateDownStation_fail(int distance) {
+        // given
+        Section target = new Section(강남역, 판교역, 5);
+
+        // then
+        assertThatThrownBy(() -> target.updateDownStation(판교역, distance))
                 .isInstanceOf(MinimumDistanceException.class);
     }
 
