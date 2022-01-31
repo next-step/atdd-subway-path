@@ -19,8 +19,6 @@ public class ExceptionAdviser {
 
     @ExceptionHandler({
             DuplicateStationException.class,
-            AlreadyRegisteredStationInLineException.class,
-            DownStationNotMatchException.class,
             DuplicateLineException.class,
             MinimumSectionException.class,
             DeleteLastDownStationException.class,

@@ -30,7 +30,7 @@ public class Line extends BaseEntity {
 
     public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
         Line result = new Line(name, color);
-        result.sections.addFirstSection(Section.of(result, upStation, downStation, distance));
+        result.sections.addSection(Section.of(result, upStation, downStation, distance));
 
         return result;
     }

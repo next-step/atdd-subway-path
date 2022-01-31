@@ -220,44 +220,6 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 지하철 역을 생성한다
-     * Given 2개의 역을 이용하여 지하철 노선 생성한다
-     * When 새로운 구간의 상행역이 현재 등록되어있는 하행 종점역이 아닌 구간을 등록한다
-     * Then 구간 추가가 실패한다
-     */
-    @DisplayName("노선에 구간 추가 - 기존 하행역과, 새로운 상행선이 동일하지 않으면 실패")
-    @Test
-    void addSection_validateDownStation() {
-        // given
-        LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
-
-        // when
-        ExtractableResponse<Response> response = LineStepFeature.callAddSection(lineResponse.getLineId(), nonhyeon.getId(), gangnam.getId());
-
-        // then
-        LineStepFeature.checkResponseStatus(response.statusCode(), HttpStatus.BAD_REQUEST);
-    }
-
-    /**
-     * Given 지하철 역을 생성한다
-     * Given 2개의 역을 이용하여 지하철 노선 생성한다
-     * When 새로운 구간의 하행역은 현재 등록되어있는 역이다
-     * Then 구간 추가가 실패한다
-     */
-    @DisplayName("노선에 구간 추가 - 새로운 구간의 하행역이 현재 등록되어있는 역이면 실패")
-    @Test
-    void addSection_validateAlreadyRegisteredStation() {
-        // given
-        LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
-
-        // when
-        ExtractableResponse<Response> response = LineStepFeature.callAddSection(lineResponse.getLineId(), yeoksam.getId(), gangnam.getId());
-
-        // then
-        LineStepFeature.checkResponseStatus(response.statusCode(), HttpStatus.BAD_REQUEST);
-    }
-
-    /**
      * Given 3개의 역을 이용하여 지하철 노선 생성한다
      * When 마지막 역을 삭제한다
      * Then 구간 삭제 성공
@@ -275,7 +237,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         LineStepFeature.checkResponseStatus(response.statusCode(), HttpStatus.NO_CONTENT);
     }
-
 
     /**
      * Given 2개의 역을 이용하여 지하철 노선 생성한다

@@ -1,21 +1,18 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.ApplicationException;
-import nextstep.subway.exception.section.AlreadyRegisteredStationInLineException;
-import nextstep.subway.exception.section.DeleteLastDownStationException;
-import nextstep.subway.exception.section.DownStationNotMatchException;
-import nextstep.subway.exception.section.MinimumSectionException;
+import nextstep.subway.exception.section.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
 
-    private static final String SECTION_FIRST_ADD_ERROR_MESSAGE = "첫 구간 추가시에만 가능";
     private static final int MINIMUM_SIZE_SECTION = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
@@ -24,17 +21,28 @@ public class Sections {
     protected Sections() {
     }
 
-    public void addFirstSection(Section section) {
-        if (!sections.isEmpty()) {
-            throw new ApplicationException(SECTION_FIRST_ADD_ERROR_MESSAGE);
-        }
-        sections.add(section);
-    }
-
     public void addSection(Section section) {
-        validateDownStation(section.getUpStation());
-        validateAlreadyRegisteredStation(section.getDownStation());
-        sections.add(section);
+        if (isEmpty()) {
+            sections.add(section);
+            return;
+        }
+        validateAlreadyRegisteredSection(section);
+        validateConnectStation(section);
+
+        if (isRegisteredUpStation(section.getUpStation())) {
+            addMiddleSection(section);
+            return;
+        }
+
+        if (isRegisteredUpStation(section.getDownStation())) {
+            addFirstSection(section);
+            return;
+        }
+
+        if (isRegisteredDownStation(section.getUpStation())) {
+            addLastSection(section);
+            return;
+        }
     }
 
     public void deleteStation(Station deleteStation) {
@@ -58,19 +66,58 @@ public class Sections {
         return stations;
     }
 
-    private boolean isEmpty() {
-        return sections.isEmpty();
+    private void addFirstSection(Section section) {
+        sections.add(0, section);
     }
 
-    private void validateDownStation(Station upStation) {
-        if (!isAddableSection(upStation)) {
-            throw new DownStationNotMatchException(upStation.getName());
+    private void addMiddleSection(Section section) {
+        Section upSection = findUpSection(section);
+        int originDistance = upSection.getDistance();
+        int newSectionDistance = section.getDistance();
+        validateDistance(upSection, section);
+
+        int addIndex = sections.indexOf(upSection) + 1;
+        Section newSection = Section.of(section.getLine(),
+                section.getDownStation(),
+                upSection.getDownStation(),
+                originDistance - newSectionDistance);
+        sections.add(addIndex, newSection);
+
+        upSection.updateDownStation(section.getDownStation(), newSectionDistance);
+    }
+
+    private void addLastSection(Section section) {
+        sections.add(section);
+    }
+
+    private Section findUpSection(Section section) {
+        Station upStation = section.getUpStation();
+
+        return sections.stream()
+                .filter(it -> it.getUpStation().equals(upStation))
+                .findAny()
+                .orElseThrow(() -> new RuntimeException(""));
+    }
+
+    private void validateDistance(Section oldSection, Section newSection) {
+        if (oldSection.getDistance() <= newSection.getDistance()) {
+            throw new InvalidDistanceException(newSection.getDistance());
         }
     }
 
-    private void validateAlreadyRegisteredStation(Station dowStation) {
-        if (getAllStations().contains(dowStation)) {
-            throw new AlreadyRegisteredStationInLineException(dowStation.getName());
+    private void validateAlreadyRegisteredSection(Section section) {
+        List<Station> stations = getAllStations();
+        if (stations.contains(section.getUpStation())
+                && stations.contains(section.getDownStation())) {
+            throw new AlreadyRegisteredStationException();
+        }
+    }
+
+    private void validateConnectStation(Section section) {
+        List<Station> stations = getAllStations();
+        if (!stations.contains(section.getUpStation())
+                && !stations.contains(section.getDownStation())) {
+            throw new NotFoundConnectStationException();
         }
     }
 
@@ -91,19 +138,24 @@ public class Sections {
         }
     }
 
-    private boolean isAddableSection(Station upStation) {
-        if (isEmpty()) {
-            return true;
-        }
+    private boolean isRegisteredUpStation(Station station) {
+        return sections.stream()
+                .anyMatch(it -> it.getUpStation().equals(station));
+    }
 
-        Station lastDownStation = getLastDownStation();
-        return lastDownStation.equals(upStation);
+    private boolean isRegisteredDownStation(Station station) {
+        return sections.stream()
+                .anyMatch(it -> it.getDownStation().equals(station));
     }
 
     private Station getLastDownStation() {
         int lastIndex = sections.size() - 1;
         Section section = sections.get(lastIndex);
         return section.getDownStation();
+    }
+
+    private boolean isEmpty() {
+        return sections.isEmpty();
     }
 
 }
