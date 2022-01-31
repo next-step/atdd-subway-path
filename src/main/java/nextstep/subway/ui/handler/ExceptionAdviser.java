@@ -22,7 +22,8 @@ public class ExceptionAdviser {
             DuplicateLineException.class,
             MinimumSectionException.class,
             DeleteLastDownStationException.class,
-            MinimumDistanceException.class})
+            MinimumDistanceException.class,
+            InvalidDistanceException.class})
     public ResponseEntity<ErrorResponse> duplicateStationHandler(RuntimeException exception) {
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(exception.getMessage()));
