@@ -13,4 +13,10 @@ public class LineSectionSteps {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(startStationId, centerStationId, endStationId);
     }
+
+    public static void 노선_조회_검증(Long lineId, Long startStationId, Long endStationId) {
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineId);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(startStationId, endStationId);
+    }
 }
