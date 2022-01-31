@@ -20,7 +20,7 @@ class LineTest extends AcceptanceTest {
         Station 상행역 = new Station(1L,기존지하철);
         Station 하행역 = new Station(2L,새로운지하철);
         Station 중간역 = new Station(3L,"중간역");
-        line.initSection(Section.of(상행역,하행역, 역간_거리));
+        line.addSection(Section.of(상행역, 하행역, 역간_거리));
 
         line.addSection(Section.of(상행역,중간역,역간_거리-1));
         assertThat(line.getSectionSize()).isEqualTo(2);

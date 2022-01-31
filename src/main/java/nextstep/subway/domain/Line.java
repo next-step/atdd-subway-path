@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.applicaion.exception.DuplicationException;
-
 import javax.persistence.*;
 
 @Entity
@@ -44,25 +42,9 @@ public class Line extends BaseEntity {
         return sections;
     }
 
-    public void initSection(Section section) {
-        sections.addSection(section);
-        section.updateLine(this);
-    }
-
     public void addSection(Section section) {
-        duplicationSection(section);
         sections.addSection(section);
         section.updateLine(this);
-    }
-
-    private void duplicationSection(Section section) {
-        if (sections.contains(section)) {
-            throw new DuplicationException();
-        }
-    }
-
-    private boolean isNotDownStation(Station station) {
-        return sections.isNotDownStation(station.getId());
     }
 
     public void deleteSection(Long stationId) {

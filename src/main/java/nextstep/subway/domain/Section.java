@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import nextstep.subway.applicaion.exception.BusinessException;
 
 import javax.persistence.*;
 
@@ -30,6 +31,9 @@ public class Section {
     }
 
     private Section(Station upStation, Station downStation, int distance) {
+        if (distance < 0) {
+            throw new BusinessException();
+        }
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;

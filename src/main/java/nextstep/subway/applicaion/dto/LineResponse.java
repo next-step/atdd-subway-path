@@ -7,6 +7,7 @@ import nextstep.subway.domain.Sections;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 public class LineResponse {
@@ -29,7 +30,8 @@ public class LineResponse {
     public static LineResponse of(Line line) {
         Sections sections = line.getSections();
         Set<StationResponse> result = new LinkedHashSet<>();
-        for (Section section : sections.getSections()) {
+        List<Section> sections1 = sections.getSections();
+        for (Section section : sections1) {
             result.add(StationResponse.of(section.getUpStation()));
             result.add(StationResponse.of(section.getDownStation()));
         }

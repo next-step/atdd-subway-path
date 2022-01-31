@@ -22,14 +22,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     ExtractableResponse<Response> 노선_생성_결과;
     private Long 상행종점;
     private Long 하행종점;
+    private String 상행역_이름;
+    private String 하행역_이름;
 
     /**
      * Given 노선 생성을 요청한다.
      */
     @BeforeEach
     void setup() {
-        상행종점 = 지하철역생성(기존지하철).jsonPath().getLong(지하철_역_아이디_키);
-        하행종점 = 지하철역생성(새로운지하철).jsonPath().getLong(지하철_역_아이디_키);
+        ExtractableResponse<Response> 지하철역생성1 = 지하철역생성(기존지하철);
+        ExtractableResponse<Response> 지하철역생성2 = 지하철역생성(새로운지하철);
+
+        상행종점 = 지하철역생성1.jsonPath().getLong(지하철_역_아이디_키);
+        하행종점 = 지하철역생성2.jsonPath().getLong(지하철_역_아이디_키);
+        상행역_이름 = 지하철역생성1.jsonPath().getString(지하철_역_이름_키);
+        하행역_이름 = 지하철역생성2.jsonPath().getString(지하철_역_이름_키);
         노선_생성_결과 = 노선생성(노선파라미터생성(기존노선, 기존색상, 상행종점, 하행종점, 종점간거리));
     }
 
@@ -73,6 +80,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //then
         상태_값_검사(response, HttpStatus.CREATED);
+        ExtractableResponse<Response> 노선_조회_결과 = 노선조회(노선_생성_결과.header(HttpHeaders.LOCATION));
+        리스트_값_검사(노선_조회_결과, "stations." + 노선_이름_키, 상행역_이름, 하행역_이름, "아무개");
     }
 
 

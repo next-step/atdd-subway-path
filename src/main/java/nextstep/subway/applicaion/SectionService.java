@@ -25,7 +25,6 @@ public class SectionService {
     public Section createSection(Long lineId, SectionRequest request) {
         Line line = lineRepository.findById(lineId).orElseThrow(NotFoundException::new);
 
-
         Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(NotFoundException::new);
         Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(NotFoundException::new);
         Section section = Section.of(upStation, downStation, request.getDistance());
