@@ -11,14 +11,14 @@ public class RestAssuredUtils {
 
     private RestAssuredUtils() {}
 
-    public static ExtractableResponse<Response> get_요청(String url) {
+    public static ExtractableResponse<Response> get(String url) {
         return RestAssured
                 .given().log().all()
                 .when().get(url)
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> post_요청(String url, Map<String, String> params) {
+    public static ExtractableResponse<Response> post(String url, Map<String, String> params) {
         return RestAssured
                 .given().log().all()
                 .body(params)
@@ -27,7 +27,7 @@ public class RestAssuredUtils {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> put_요청(String url, Map<String, String> params) {
+    public static ExtractableResponse<Response> put(String url, Map<String, String> params) {
         return RestAssured
                 .given().log().all()
                 .body(params)
@@ -36,7 +36,7 @@ public class RestAssuredUtils {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> delete_요청(String url) {
+    public static ExtractableResponse<Response> delete(String url) {
         return RestAssured
                 .given().log().all()
                 .when().delete(url)

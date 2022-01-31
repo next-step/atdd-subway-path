@@ -47,10 +47,19 @@ public class LineController {
     }
 
     @PostMapping("/{id}/sections")
-    public ResponseEntity<Void> addSection(@RequestBody SectionRequest request,
-                                                      @PathVariable("id") Long lineId) {
+    public ResponseEntity<Void> addSection(
+            @RequestBody SectionRequest request,
+            @PathVariable("id") Long lineId) {
         lineService.addSection(lineId, request);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{id}/sections")
+    public ResponseEntity<Void> removeSectionByStationId(
+            @PathVariable("id") Long lindId,
+            @RequestParam Long stationId) {
+        lineService.removeSection(lindId, stationId);
+        return ResponseEntity.noContent().build();
     }
 
 }

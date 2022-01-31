@@ -152,4 +152,22 @@ public class LineServiceTest {
 
         assertThat(stationIds).containsExactly(이호선_상행종점역_코드, 문래역_코드, 이호선_하행종점역_코드);
     }
+
+    @Test
+    void 역_삭제() {
+        // given
+        Station 문래역 = new Station(새로운구간_하행역_코드, "문래역");
+        long 문래역_코드 = 문래역.getId();
+        when(stationRepository.findById(문래역_코드)).thenReturn(Optional.of(문래역));
+
+        SectionRequest request = new SectionRequest(이호선_상행종점역_코드, 문래역_코드, 새로운구간_길이);
+        lineService.addSection(이호선_코드, request);
+
+        // when
+        lineService.removeSection(이호선_코드, 문래역_코드);
+        LineResponse line = lineService.findLine(이호선_코드);
+
+        // then
+        assertThat(line.getStations()).hasSize(2);
+    }
 }

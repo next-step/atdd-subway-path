@@ -191,7 +191,5 @@ class LineAcceptanceTest extends AcceptanceTest {
         삭제요청_성공(response);
     }
 
-    private long getLineId(ExtractableResponse<Response> response) {
-        return response.as(LineResponse.class).getId();
-    }
+
 }

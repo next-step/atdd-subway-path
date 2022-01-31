@@ -2,11 +2,11 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.exceptions.BadRequestException;
 import nextstep.subway.station.domain.Station;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class LineTest {
 
@@ -79,7 +79,7 @@ public class LineTest {
 
     @Test
     void 새로운구간_상행역과_하행역이_모두_노선에_존재한다() {
-        Assertions.assertThatThrownBy(() -> {
+        assertThatThrownBy(() -> {
             이호선.addSection(이호선_상행종점역, 이호선_하행종점역, 4);
         }).isInstanceOf(BadRequestException.class)
                 .hasMessage(Sections.BOTH_EXIST_EXCEPTION_MESSAGE);
@@ -92,7 +92,7 @@ public class LineTest {
         Station 구간_하행역 = new Station(새로운구간_하행역_아이디, "합정역");
 
         // when, then
-        Assertions.assertThatThrownBy(() ->
+        assertThatThrownBy(() ->
                         이호선.addSection(구간_상행역, 구간_하행역, 4))
                         .isInstanceOf(BadRequestException.class)
                         .hasMessage(Sections.BOTH_NOT_EXIST_EXCEPTION_MESSAGE);
@@ -104,10 +104,71 @@ public class LineTest {
         Station 구간_하행역 = new Station(새로운구간_하행역_아이디, "문래역");
 
         // when, then
-        Assertions.assertThatThrownBy(() ->
+        assertThatThrownBy(() ->
                         이호선.addSection(이호선_상행종점역, 구간_하행역, 이호선_첫구간_길이))
                         .isInstanceOf(BadRequestException.class)
                         .hasMessage(Sections.DISTANCE_EXCEPTION_MESSAGE);
     }
 
+    @Test
+    void 역_삭제() {
+        // given
+        Station 문래역 = new Station(새로운구간_하행역_아이디, "문래역");
+        이호선.addSection(이호선_상행종점역, 문래역, 3);
+
+        // when
+        이호선.removeSection(문래역);
+
+        // then
+        assertThat(이호선.getAllStations()).hasSize(2);
+    }
+
+    @Test
+    void 상행종점역_삭제() {
+        // given
+        Station 문래역 = new Station(새로운구간_하행역_아이디, "문래역");
+        이호선.addSection(이호선_상행종점역, 문래역, 3);
+
+        // when
+        이호선.removeSection(이호선_상행종점역);
+
+        // then
+        assertThat(이호선.getAllStations()).contains(문래역, 이호선_하행종점역);
+    }
+
+    @Test
+    void 하행종점역_삭제() {
+        // given
+        Station 문래역 = new Station(새로운구간_하행역_아이디, "문래역");
+        이호선.addSection(이호선_상행종점역, 문래역, 3);
+
+        // when
+        이호선.removeSection(이호선_하행종점역);
+
+        // then
+        assertThat(이호선.getAllStations()).contains(이호선_상행종점역, 문래역);
+    }
+
+    @Test
+    void 구간이_하나일때_역삭제_안됨() {
+        assertThatThrownBy(() ->
+                이호선.removeSection(이호선_상행종점역))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage(Sections.ONE_SECTION_DELETE_EXCEPTION_MESSAGE);
+    }
+
+    @Test
+    void 노선에_존재하지않는_역삭제_안됨() {
+        // given
+        Station 문래역 = new Station(새로운구간_하행역_아이디, "문래역");
+        이호선.addSection(이호선_상행종점역, 문래역, 3);
+
+        Station 당산역 = new Station(5L, "당산역");
+
+        // when, then
+        assertThatThrownBy(() ->
+                이호선.removeSection(당산역))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage(Sections.NON_EXIST_DELETE_EXCEPTION_MESSAGE);
+    }
 }
