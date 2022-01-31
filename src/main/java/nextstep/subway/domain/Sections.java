@@ -47,16 +47,20 @@ public class Sections {
     }
 
     public void deleteSection(final Station station) {
-        Sections sectionsConnectedByStation = sectionsConnectedByStation(station);
+        validateDeleteSection(station);
 
-        validateDeleteSection(sectionsConnectedByStation);
+        if (isUpStationEndpoint(station)) {
+            this.sections.remove(getSectionByUpStation(station));
+            return;
+        }
 
-        if (isUpStationEndpoint(station) || isDownStationEndpoint(station)) {
-            this.sections.remove(sectionsConnectedByStation.getFirstSection());
+        if (isDownStationEndpoint(station)) {
+            this.sections.remove(getSectionByDownStation(station));
             return;
         }
 
         if (!(isUpStationEndpoint(station) || isDownStationEndpoint(station))) {
+            Sections sectionsConnectedByStation = sectionsConnectedByStation(station);
             Section firstSection = sectionsConnectedByStation.getFirstSection();
             Section secondSection = sectionsConnectedByStation.getSecondSection();
 
@@ -79,8 +83,8 @@ public class Sections {
         }
     }
 
-    private void validateDeleteSection(final Sections sectionsByStation) {
-        if (this.sections.size() <= MINIMUM_SECTION_SIZE || sectionsByStation.hasSize(0)) {
+    private void validateDeleteSection(final Station station) {
+        if (this.sections.size() <= MINIMUM_SECTION_SIZE || noExistsStation(station)) {
             throw new IllegalArgumentException();
         }
     }
@@ -101,6 +105,10 @@ public class Sections {
         return allStations.contains(upStation) && allStations.contains(downStation);
     }
 
+    private boolean noExistsStation(final Station station) {
+        return !allStations().contains(station);
+    }
+
     private void addBetweenSection(Section section, Station upStation, Station middleStation, Station downStation, int distanceBetweenUpAndMiddleStation, int distanceBetweenMiddleAndDownStation) {
         if (distanceBetweenUpAndMiddleStation <= 0 || distanceBetweenMiddleAndDownStation <= 0) {
             throw new IllegalArgumentException();
@@ -109,10 +117,6 @@ public class Sections {
         this.sections.remove(section);
         this.sections.add(new Section(section.getLine(), upStation, middleStation, distanceBetweenUpAndMiddleStation));
         this.sections.add(new Section(section.getLine(), middleStation, downStation, distanceBetweenMiddleAndDownStation));
-    }
-
-    private boolean hasSize(final int size) {
-        return this.sections.size() == size;
     }
 
     public boolean isDownStationEndpoint(Station station) {
