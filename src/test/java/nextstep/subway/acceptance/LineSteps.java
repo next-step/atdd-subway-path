@@ -59,4 +59,8 @@ public class LineSteps {
     public static ExtractableResponse<Response> 지하철_노선을_수정한다(Long lineId, LineRequest lineRequest) {
         return RestAssuredCRUD.putRequest("/lines/{lineId}", lineRequest, lineId);
     }
+
+    public static ExtractableResponse<Response> 지하철_노선에_지하철_역으로_구간_삭제_요청(Long lineId, Long stationId) {
+        return RestAssuredCRUD.delete("/lines/"+lineId+"/sections", "stationId", stationId);
+    }
 }

@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import static nextstep.subway.exception.CommonExceptionMessages.SECTION_COUNT_IS_LESS_THAN_TWO;
+
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.Column;
@@ -112,5 +114,17 @@ public class Line extends BaseEntity {
         if (Objects.nonNull(color)) {
             this.color = color;
         }
+    }
+
+    public void deleteSectionByStation(Station station) {
+        if (sections.isEqualOrLessThanOne()) {
+            throw new IllegalStateException(SECTION_COUNT_IS_LESS_THAN_TWO);
+        }
+
+        if (!this.sections.get(this.sections.size() - 1).getDownStation().equals(station)) {
+            throw new IllegalArgumentException();
+        }
+
+        this.sections.remove(this.sections.size() - 1);
     }
 }

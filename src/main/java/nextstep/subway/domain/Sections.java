@@ -137,4 +137,7 @@ public class Sections {
         }
     }
 
+    public boolean isEqualOrLessThanOne() {
+        return sections.size() <= 1;
+    }
 }

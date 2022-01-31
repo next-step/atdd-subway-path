@@ -63,15 +63,10 @@ public class LineService {
         line.addSection(Section.of(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
-    public void deleteSection(Long lineId, Long stationId) {
+    public void removeSectionByStationId(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        // TODO
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-
-        line.getSections().remove(line.getSections().size() - 1);
+        line.deleteSectionByStation(station);
     }
 }

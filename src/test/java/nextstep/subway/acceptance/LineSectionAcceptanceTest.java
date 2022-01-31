@@ -4,6 +4,7 @@ import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요�
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_조회_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_제거_요청;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_역으로_구간_삭제_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선을_수정한다;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청한다;
 import static nextstep.subway.common.LineSomething.DISTANCE_BASIC;
@@ -18,7 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
@@ -61,6 +64,87 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(신분당선, SectionRequest.of(삼번역3, 사번역4, DISTANCE_BASIC));
 
         신규역 = 지하철역_생성_요청한다(StationRequest.of("신규역")).as(StationResponse.class).getId();
+    }
+
+    @DisplayName("지하철 노선에서 (최하행) 역 아이디를 이용해서 구간을 삭제 성공 한다")
+    @Test
+    void deleteSection_성공케이스_1_해피케이스() {
+        // when
+        response = 지하철_노선에_지하철_역으로_구간_삭제_요청(신분당선, 사번역4);
+        // then
+        응답결과가_OK(response);
+
+        // when
+        response = 지하철_노선_조회_요청(신분당선);
+        // then
+        노선_구간의_역들이_기대하는_순서대로_등록_확인된다(response, Arrays.asList(일번역1, 이번역2, 삼번역3));
+    }
+
+    @DisplayName("지하철 노선에서 (중간역) 역 아이디를 이용해서 구간을 삭제 성공 한다")
+    @Test
+    void deleteSection_성공케이스_2() {
+        // when
+        response = 지하철_노선에_지하철_역으로_구간_삭제_요청(신분당선, 삼번역3);
+        // then
+        응답결과가_OK(response);
+
+        // when
+        response = 지하철_노선_조회_요청(신분당선);
+        // then
+        노선_구간의_역들이_기대하는_순서대로_등록_확인된다(response, Arrays.asList(일번역1, 이번역2, 사번역4));
+    }
+
+    @DisplayName("지하철 노선에서 (상행) 역 아이디를 이용해서 구간을 삭제 성공 한다")
+    @Test
+    void deleteSection_성공케이스_3() {
+        // when
+        response = 지하철_노선에_지하철_역으로_구간_삭제_요청(신분당선, 일번역1);
+        // then
+        응답결과가_OK(response);
+
+        // when
+        response = 지하철_노선_조회_요청(신분당선);
+        // then
+        노선_구간의_역들이_기대하는_순서대로_등록_확인된다(response, Arrays.asList(이번역2, 삼번역3, 사번역4));
+    }
+
+    @DisplayName("지하철 노선에서 역 아이디를 이용해서 구간을 삭제하는데, 노선이 없으면 실패한다")
+    @Test
+    void deleteSection_실패케이스_1() {
+        // when
+        response = 지하철_노선에_지하철_역으로_구간_삭제_요청(신분당선, 일번역1);
+
+        // then
+        응답결과가_BAD_REQUEST(response);
+    }
+
+    @DisplayName("지하철 노선에서 역 아이디를 이용해서 구간을 삭제하는데, 역 없으면 실패한다")
+    @Test
+    void deleteSection_실패케이스_2() {
+        // when
+        response = 지하철_노선에_지하철_역으로_구간_삭제_요청(신분당선, 일번역1);
+
+        // then
+        응답결과가_BAD_REQUEST(response);
+    }
+
+    @DisplayName("지하철 노선에서 역 아이디를 이용해서 구간을 삭제하는데, 구간이 1개면 실패한다")
+    @Test
+    void deleteSection_실패케이스_3() {
+        // when
+        response = 지하철_노선에_지하철_역으로_구간_삭제_요청(신분당선, 사번역4);
+        // then
+        응답결과가_OK(response);
+
+        // when
+        response = 지하철_노선에_지하철_역으로_구간_삭제_요청(신분당선, 삼번역3);
+        // then
+        응답결과가_OK(response);
+
+        // when
+        response = 지하철_노선에_지하철_역으로_구간_삭제_요청(신분당선, 이번역2);
+        // then
+        응답결과가_BAD_REQUEST(response);
     }
 
     @DisplayName("기존 지하철 노선 뒤에 구간 추가 성공하는 단순 케이스 (해피케이스)")
@@ -196,7 +280,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         LineRequest lineRequest = LineRequest.of("수정이름", "수정색상");
         response = 지하철_노선을_수정한다(신분당선, lineRequest);
         // then
-        응답결과가_NO_CONTENT(response);
+        응답결과가_OK(response);
 
         // then
         response = 지하철_노선_조회_요청(신분당선);

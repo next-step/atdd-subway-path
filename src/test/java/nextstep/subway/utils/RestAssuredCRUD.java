@@ -105,6 +105,16 @@ public class RestAssuredCRUD {
             .extract();
     }
 
+    public static ExtractableResponse<Response> delete(String path, String paramName, Object param) {
+        return RestAssured.given().log().all()
+            .param(paramName, param)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .delete(path)
+            .then().log().all()
+            .extract();
+    }
+
     public static ExtractableResponse<Response> deleteWithOAuth(String path, String token) {
         return RestAssured.given().log().all()
             .auth().oauth2(token)
