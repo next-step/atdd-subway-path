@@ -210,6 +210,33 @@ class LineTest {
     }
 
 
+    @DisplayName("상행역으로 구간 찾기")
+    @Test
+    void getSectionByUpStation() {
+        //given
+        Station 판교역 = new Station("판교역");
+        Section saveSection = new Section(_2호선, 정자역, 판교역, 5);
+        _2호선.addSection(saveSection);
 
+        //when
+        Section findSection = _2호선.getSectionByUpStation(정자역);
 
+        //then
+        assertThat(findSection).isEqualTo(saveSection);
+    }
+
+    @DisplayName("(예외) 존재하지 않는 상행역으로 구간 찾기")
+    @Test
+    void getSectionByUpStation_exception_case1() {
+        //given
+        Station 판교역 = new Station("판교역");
+        Station 삼성역 = new Station("삼성역");
+        _2호선.addSection(new Section(_2호선, 정자역, 판교역, 5));
+
+        //when
+        Section findSection = _2호선.getSectionByUpStation(삼성역);
+
+        //then
+        assertThat(findSection).isNull();
+    }
 }

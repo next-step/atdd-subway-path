@@ -138,6 +138,9 @@ public class Line extends BaseEntity {
 
 
     public Section getSectionByUpStation(Station upStation) {
-
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(upStation))
+                .findFirst()
+                .orElseGet(() -> null);
     }
 }
