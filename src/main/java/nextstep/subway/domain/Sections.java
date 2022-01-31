@@ -6,12 +6,12 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
+    private static final String NO_FIRST_STATION_MESSAGE = "상행 종점역이 존재하지 않습니다.";
     private static final int LAST_INDEX_VALUE = 1;
-    private static final int FIRST_INDEX = 0;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sectionList = new ArrayList<>();
@@ -29,12 +29,43 @@ public class Sections {
             return Collections.emptyList();
         }
 
-        List<Station> stations = sectionList.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
+        Section firstSection = findFirstSection();
+        List<Station> stations = makeStationList(firstSection);
 
-        stations.add(FIRST_INDEX, firstStation());
         return Collections.unmodifiableList(stations);
+    }
+
+    private List<Station> makeStationList(Section section) {
+        List<Station> stations = new ArrayList<>();
+        stations.add(section.getUpStation());
+
+        while (true) {
+            Section finalSection = section;
+            Optional<Section> nextSection = sectionList.stream()
+                    .filter(otherSection -> finalSection.getDownStation().equals(otherSection.getUpStation()))
+                    .findAny();
+
+            if (nextSection.isPresent()) {
+                stations.add(nextSection.get().getUpStation());
+                section = nextSection.get();
+                continue;
+            }
+
+            break;
+        }
+
+        stations.add(section.getDownStation());
+        return stations;
+    }
+
+    private Section findFirstSection() {
+        for (Section section : sectionList) {
+            if (sectionList.stream()
+                    .noneMatch(otherSection -> section.getUpStation().equals(otherSection.getDownStation()))) {
+                return section;
+            }
+        }
+        throw new IllegalArgumentException(NO_FIRST_STATION_MESSAGE);
     }
 
     public void deleteSection(Station station) {
@@ -43,10 +74,6 @@ public class Sections {
         }
 
         sectionList.remove(lastIndex());
-    }
-
-    private Station firstStation() {
-        return sectionList.get(FIRST_INDEX).getUpStation();
     }
 
     private Station lastStation() {
