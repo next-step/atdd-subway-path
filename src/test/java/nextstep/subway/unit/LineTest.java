@@ -170,11 +170,11 @@ class LineTest {
 
         //then
         List<Section> sections = _2호선.getSections();
-        List<Station> stations = _2호선.getStations();
+        Section 강남_판교_구간 = _2호선.getSectionByUpStation(강남역);
 
         assertThat(sections, hasSize(1));
-        assertThat(stations).containsExactly(강남역, 판교역);
-        Section 강남_판교_구간 = _2호선.getSectionByUpStation(강남역);
+        assertThat(강남_판교_구간.getUpStation()).isEqualTo(강남역);
+        assertThat(강남_판교_구간.getDownStation()).isEqualTo(판교역);
         assertThat(강남_판교_구간.getDistance()).isEqualTo(15);
     }
 
@@ -239,4 +239,6 @@ class LineTest {
         //then
         assertThat(findSection).isNull();
     }
+
+
 }

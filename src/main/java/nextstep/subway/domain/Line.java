@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -100,6 +101,43 @@ public class Line extends BaseEntity {
         // 5. 삭제하는 역이 어떤 구간의 하행역이면서 상행역일 경우. 해당 역을 포함한 두 구간을 모두 삭제하며, 두 구간에 남은 역들을 연결하는 구간을 신설한다.
         // 이 때 두 구간의 거리는 삭제한 두 구간의 합으로 결정한다.
 
+        //1
+        if (sections.size() < 2) {
+            throw new IllegalArgumentException("삭제할 수 있는 구간이 존재하지 않습니다.");
+        }
+
+        //2
+        if (!getStations().contains(station)) {
+            throw new IllegalArgumentException("삭제할 수 있는 구간이 존재하지 않습니다.");
+        }
+
+        //3 ,4
+        Section startSection = getStartSection();
+        Section endSection = getEndSection();
+        sections.stream()
+                .filter(section -> (section.equals(startSection) && station.equals(section.getUpStation())) || (section.equals(endSection) && station.equals(section.getDownStation())))
+                .findFirst()
+                .ifPresent(section -> {
+                    sections.remove(section);
+                });
+
+        //5
+        Section upStationSection = sections.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findFirst()
+                .orElseGet(() -> null);
+
+        Section downStationSection = sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst()
+                .orElseGet(() -> null);
+
+        if (upStationSection != null && downStationSection != null) {
+            Section newSection = new Section(this, upStationSection.getUpStation(), downStationSection.getDownStation(), upStationSection.getDistance() + downStationSection.getDistance());
+            sections.add(newSection);
+            sections.remove(upStationSection);
+            sections.remove(downStationSection);
+        }
     }
 
     public List<Station> getStations() {
