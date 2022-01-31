@@ -22,7 +22,6 @@ public class LineStepFeature {
     private static final String CREATE_LINE_UP_STATION_PARAM_KEY = "upStationId";
     private static final String CREATE_LINE_DOWN_STATION_PARAM_KEY = "downStationId";
     private static final String CREATE_LINE_DISTANCE_PARAM_KEY = "distance";
-    private static final String LINE_BASE_URI = "lines";
 
     public static LineAndSectionResponse callCreateAndFind(Map<String, String> lineParams) {
         ExtractableResponse<Response> createResponse = callCreateLines(lineParams);
@@ -39,7 +38,7 @@ public class LineStepFeature {
                 .body(lineParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post(LINE_BASE_URI)
+                .post("/lines")
                 .then()
                 .log()
                 .all()
@@ -52,7 +51,7 @@ public class LineStepFeature {
                 .all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .get(LINE_BASE_URI)
+                .get("/lines")
                 .then()
                 .log()
                 .all()
@@ -79,7 +78,7 @@ public class LineStepFeature {
                 .body(lineParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put(LINE_BASE_URI + "/" + lineParams.get("id"))
+                .put("/lines/{id}", lineParams.get("id"))
                 .then()
                 .log()
                 .all()
@@ -92,7 +91,7 @@ public class LineStepFeature {
                 .all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .delete(LINE_BASE_URI + "/" + id)
+                .delete("/lines/{id}", id)
                 .then()
                 .log()
                 .all()
@@ -111,7 +110,7 @@ public class LineStepFeature {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post(LINE_BASE_URI + "/" + lineId + "/sections")
+                .post("/lines/{id}/sections", lineId)
                 .then()
                 .log()
                 .all()
