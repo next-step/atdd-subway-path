@@ -17,7 +17,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.repository.LineRepository;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.repository.StationRepository;
 
 @RequiredArgsConstructor
 @Service
@@ -27,7 +26,6 @@ public class LineService {
 
     private final LineRepository lineRepository;
     private final StationService stationService;
-    private final StationRepository stationRepository;
 
     public Line findById(Long id) {
         return lineRepository.findById(id)
@@ -96,9 +94,8 @@ public class LineService {
     }
 
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = findById(lineId);
+        Station station = stationService.findById(stationId);
 
-        stationRepository.findById(stationId)
-                         .ifPresent(line::deleteSection);
+        findById(lineId).deleteSection(station);
     }
 }

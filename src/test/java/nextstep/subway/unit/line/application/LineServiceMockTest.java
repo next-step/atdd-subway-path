@@ -17,14 +17,11 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.repository.LineRepository;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.repository.StationRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
     @Mock
     private LineRepository lineRepository;
-    @Mock
-    private StationRepository stationRepository;
     @Mock
     private StationService stationService;
 
@@ -39,7 +36,7 @@ public class LineServiceMockTest {
         when(lineRepository.findByIdWithStations(mockLine.getId())).thenReturn(Optional.of(mockLine));
         when(stationService.findById(mockUpStation.getId())).thenReturn(mockUpStation);
         when(stationService.findById(mockDownStation.getId())).thenReturn(mockDownStation);
-        LineService lineService = new LineService(lineRepository, stationService, stationRepository);
+        LineService lineService = new LineService(lineRepository, stationService);
 
         // when
         // lineService.addSection 호출

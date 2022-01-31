@@ -62,7 +62,7 @@ public class Sections {
     }
 
     public void remove(Station stationForRemove) {
-        verifyRemovable();
+        verifyRemovable(stationForRemove);
 
         if (removeIfFirstSection(stationForRemove)) {
             return;
@@ -70,8 +70,16 @@ public class Sections {
         removeNotFirstSection(stationForRemove);
     }
 
-    private void verifyRemovable() {
-        if (values.size() <= 1) {
+    private void verifyRemovable(Station stationForRemove) {
+        Set<Station> stations = new HashSet<>(toStations());
+
+        boolean isNotExists = !stations.contains(stationForRemove);
+        if (isNotExists) {
+            throw new IllegalArgumentException(ErrorMessage.NOT_FOUND_SECTION.getMessage());
+        }
+
+        boolean isMinSize = values.size() <= 1;
+        if (isMinSize) {
             throw new IllegalArgumentException(ErrorMessage.INVALID_SECTION_SIZE.getMessage());
         }
     }

@@ -226,4 +226,42 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(getResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(A역, C역);
         assertThat(getResponse.jsonPath().getInt("length")).isEqualTo(beforeLength);
     }
+
+    /**
+     * When  노선에 등록되어 있지 않은 지하철 역 제거를 요청할때
+     * Then  요청은 실패한다.
+     */
+    @DisplayName("노선에 등록되어 있지 않은 지하철역 제거 요청")
+    @Test
+    void removeLineSectionFailCase1() {
+        // given
+        Long C역 = 지하철역_생성_요청("C역").jsonPath().getLong("id");
+        Long 등록되어_있지_않은_지하철_역 = 지하철역_생성_요청("등록되어 있지 않은 지하철 역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(노선, createSectionCreateParams(하행, C역));
+
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_노선에_지하철_구간_제거_요청(노선, 등록되어_있지_않은_지하철_역);
+        ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(노선);
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(getResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(상행, 하행, C역);
+    }
+
+    /**
+     * When  등록되어 있지 않은 노선으로 지하철 역 제거를 요청할때
+     * Then  요청은 실패한다.
+     */
+    @DisplayName("등록되어 있지 않은 노선으로 지하철 역 삭제 요청")
+    @Test
+    void removeLineSectionFailCase2() {
+        Long 등록되어_있지_않은_노선 = 2L;
+
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_노선에_지하철_구간_제거_요청(등록되어_있지_않은_노선, 상행);
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
 }
