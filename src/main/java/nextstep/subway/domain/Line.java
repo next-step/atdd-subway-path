@@ -1,9 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
@@ -25,7 +23,7 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Line(String name, String color, Station lastUpStation, Station lastDownStation, int distance) {
+    public Line(String name, String color, Station lastUpStation, Station lastDownStation, Distance distance) {
         this(name, color);
         sections.add(new Section(this, lastUpStation, lastDownStation, distance));
     }
@@ -59,25 +57,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        List<Station> allStations = new ArrayList<>();
-        Section lastUpSection = findLastUpSection();
-        allStations.add(lastUpSection.getUpStation());
-
-        Optional<Section> nextSection = Optional.ofNullable(lastUpSection);
-        while (nextSection.isPresent()) {
-            Section section = nextSection.get();
-            allStations.add(section.getDownStation());
-            nextSection = findSectionWithUpStation(section.getDownStation());
-        }
-        return allStations;
-    }
-
-    private Optional<Section> findSectionWithUpStation(Station downStation) {
-        return sections.findSectionWithUpStation(downStation);
-    }
-
-    private Section findLastUpSection() {
-        return sections.findLastUpSection();
+        return sections.getStations();
     }
 
     public boolean isSectionsEmpty() {
@@ -89,14 +69,7 @@ public class Line extends BaseEntity {
     }
 
     public void removeSectionByLastDownStation(Station station) {
-        if (!isLastDownStation(station)) {
-            throw new IllegalArgumentException();
-        }
         sections.remove(station);
-    }
-
-    private boolean isLastDownStation(Station station) {
-        return sections.isLastDownStation(station);
     }
 
     public Section getSectionAt(int i) {

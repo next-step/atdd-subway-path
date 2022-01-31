@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -42,7 +43,7 @@ public class LineServiceMockTest {
         Station 판교역 = new Station("판교역");
         Station 양재역 = new Station("양재역");
 
-        Line 신분당선 = new Line("신분당선", "yellow", 강남역, 판교역, 10);
+        Line 신분당선 = new Line("신분당선", "yellow", 강남역, 판교역, Distance.valueOf(10));
 
         when(lineRepository.findById(anyLong())).thenReturn(ofNullable(신분당선));
         when(stationService.findById(1L)).thenReturn(판교역);

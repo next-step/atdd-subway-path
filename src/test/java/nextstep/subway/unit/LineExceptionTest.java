@@ -1,5 +1,6 @@
 package nextstep.subway.unit;
 
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
@@ -15,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DisplayName("구간 도메인 예외 테스트")
 class LineExceptionTest {
 
-    final int 강남_판교_거리 = 7;
+    Distance 강남_판교_거리 = Distance.valueOf(7);
     Station 강남역;
     Station 판교역;
     Station 양재역;
@@ -55,7 +56,7 @@ class LineExceptionTest {
     @Test
     void addStationExceptionWhenStationsAreAlreadyAdded() {
         // given
-        Section 강남_판교 = new Section(신분당선, 강남역, 판교역, 강남_판교_거리 - 1);
+        Section 강남_판교 = new Section(신분당선, 강남역, 판교역, 강남_판교_거리.minus(Distance.valueOf(1)));
 
         // when, then
         assertThatThrownBy(() -> 신분당선.addSection(강남_판교))
@@ -68,7 +69,7 @@ class LineExceptionTest {
         // given
         Station 김포공항역 = new Station("김포공항역");
         Station 가양역 = new Station("가양역");
-        Section 김포공항_가양 = new Section(신분당선, 김포공항역, 가양역, 강남_판교_거리 - 1);
+        Section 김포공항_가양 = new Section(신분당선, 김포공항역, 가양역, 강남_판교_거리.minus(Distance.valueOf(1)));
 
         // when, then
         assertThatThrownBy(() -> 신분당선.addSection(김포공항_가양))

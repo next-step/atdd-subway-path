@@ -100,7 +100,8 @@ public class Sections {
         sections.remove(appendIndex);
         sections.add(appendIndex, newSection);
 
-        int oldSectionDistance = oldSection.getDistance() - newSection.getDistance();
+        Distance oldSectionDistance = oldSection.getDistance().minus(newSection.getDistance());
+
         sections.add(
                 appendIndex + 1,
                 new Section(
@@ -110,8 +111,8 @@ public class Sections {
                         oldSectionDistance));
     }
 
-    private void validateSectionDistanceOrElseThrow(int newSectionDistance, int oldSectionDistance) {
-        if (newSectionDistance < oldSectionDistance) {
+    private void validateSectionDistanceOrElseThrow(Distance newSectionDistance, Distance oldSectionDistance) {
+        if (newSectionDistance.isLessThan(oldSectionDistance)) {
             return;
         }
         throw new InvalidSectionDistanceException(newSectionDistance, oldSectionDistance);
@@ -126,7 +127,7 @@ public class Sections {
         validateSectionDistanceOrElseThrow(newSection.getDistance(), oldSection.getDistance());
 
         int appendIndex = sections.indexOf(oldSection);
-        int oldSectionDistance = oldSection.getDistance() - newSection.getDistance();
+        Distance oldSectionDistance = oldSection.getDistance().minus(newSection.getDistance());
 
         sections.remove(appendIndex);
         sections.add(appendIndex, newSection);
@@ -201,12 +202,20 @@ public class Sections {
     }
 
     public void remove(Station station) {
+        validateStationIsLastDownStationOrElseThrow(station);
+
         Section toRemoveSection = sections.stream()
                 .filter(section -> section.getDownStation().equals(station))
                 .findAny()
                 .orElseThrow(RuntimeException::new);
 
         sections.remove(toRemoveSection);
+    }
+
+    private void validateStationIsLastDownStationOrElseThrow(Station station) {
+        if (!isLastDownStation(station)) {
+            throw new IllegalArgumentException();
+        }
     }
 
     public boolean isLastDownStation(Station station) {
@@ -219,5 +228,19 @@ public class Sections {
 
     public Section get(int index) {
         return sections.get(index);
+    }
+
+    public List<Station> getStations() {
+        List<Station> allStations = new ArrayList<>();
+        Section lastUpSection = findLastUpSection();
+        allStations.add(lastUpSection.getUpStation());
+
+        Optional<Section> nextSection = Optional.ofNullable(lastUpSection);
+        while (nextSection.isPresent()) {
+            Section section = nextSection.get();
+            allStations.add(section.getDownStation());
+            nextSection = findSectionWithUpStation(section.getDownStation());
+        }
+        return allStations;
     }
 }
