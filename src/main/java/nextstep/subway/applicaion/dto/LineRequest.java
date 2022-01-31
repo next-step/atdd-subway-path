@@ -1,5 +1,9 @@
 package nextstep.subway.applicaion.dto;
 
+import nextstep.subway.domain.Line;
+
+import java.util.Objects;
+
 public class LineRequest {
     private String name;
     private String color;
@@ -25,5 +29,15 @@ public class LineRequest {
 
     public int getDistance() {
         return distance;
+    }
+
+    public Line toEntity() {
+        return new Line(name, color);
+    }
+
+    public boolean hasUpStationAndDownStation() {
+        return Objects.nonNull(upStationId) &&
+                Objects.nonNull(downStationId) &&
+                distance > 0;
     }
 }

@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,15 +12,20 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = new Sections();
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public Line(String name, String color, Station lastUpStation, Station lastDownStation, Distance distance) {
+        this(name, color);
+        sections.add(new Section(this, lastUpStation, lastDownStation, distance));
     }
 
     public Long getId() {
@@ -48,7 +52,35 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
+    public boolean isSectionsEmpty() {
+        return sections.isEmpty();
+    }
+
+    public int getSectionSize() {
+        return sections.getSize();
+    }
+
+    public void removeSectionByLastDownStation(Station station) {
+        sections.remove(station);
+    }
+
+    public Section getSectionAt(int i) {
+        return sections.get(i);
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                '}';
     }
 }
