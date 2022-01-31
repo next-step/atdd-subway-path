@@ -116,6 +116,24 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * When 지하철 노선에 새로운 역을 역 사이에 새로운 역을 등록 요청(구간에 없는 역) 하면
+     * Then 노선에 새로운 구간이 추가가 실패한다
+     */
+    @DisplayName("지하철 노선에 구간을 등록 실패(상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음)")
+    @Test
+    void addLineSectionFail3() {
+        // given
+        Long 대림역 = 지하철역_생성_요청("대림역").jsonPath().getLong("id");
+        Long 신풍역 = 지하철역_생성_요청("신풍역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(대림역, 신풍역, 6));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
      * Then 노선에 구간이 제거된다
