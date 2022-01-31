@@ -30,7 +30,7 @@ public class Section {
     protected Section() {
     }
 
-    private Section(Station upStation, Station downStation, int distance) {
+    protected Section(Station upStation, Station downStation, int distance) {
         validateDistance(distance);
         this.upStation = upStation;
         this.downStation = downStation;
@@ -44,17 +44,23 @@ public class Section {
         return result;
     }
 
-    public void updateDistance(int distance) {
+    public void updateUpStation(Station station, int distance) {
+        this.upStation = station;
+        updateDistance(distance);
+    }
+
+    public void updateDownStation(Station station, int distance) {
+        this.downStation = station;
+        updateDistance(distance);
+    }
+
+    private void updateDistance(int distance) {
         validateDistance(distance);
         this.distance = distance;
     }
 
-    public String getUpStationName() {
-        return upStation.getName();
-    }
-
-    public String getDownStationName() {
-        return downStation.getName();
+    public Line getLine() {
+        return line;
     }
 
     public Station getUpStation() {
