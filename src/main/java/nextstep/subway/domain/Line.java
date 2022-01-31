@@ -83,4 +83,8 @@ public class Line extends BaseEntity {
                 ", color='" + color + '\'' +
                 '}';
     }
+
+    public void removeSection(Station station) {
+        sections.remove(station);
+    }
 }

@@ -12,8 +12,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("구간 도메인 단위 테스트")
-class LineTest {
+@DisplayName("구간 추가에 대한 도메인 단위 테스트")
+class LineCreateTest {
 
     Station 강남역;
     Station 판교역;
@@ -42,35 +42,6 @@ class LineTest {
         // then
         assertThat(신분당선.getSectionSize()).isEqualTo(2);
         assertThat(신분당선.getStations()).containsExactly(강남역, 판교역, 양재역);
-    }
-
-    @DisplayName("노선에 속해있는 역 목록 조회")
-    @Test
-    void getStations() {
-        // given
-        Section 판교_양재 = new Section(신분당선, 판교역, 양재역, 판교_양재_거리);
-        신분당선.addSection(판교_양재);
-
-        // when
-        List<Station> stations = 신분당선.getStations();
-
-        // then
-        assertThat(stations).containsExactly(강남역, 판교역, 양재역);
-    }
-
-    @DisplayName("구간 목록에서 마지막 역 삭제")
-    @Test
-    void removeSection() {
-        // given
-        Section 판교_양재 = new Section(신분당선, 판교역, 양재역, 판교_양재_거리);
-        신분당선.addSection(판교_양재);
-
-        // when
-        신분당선.removeSectionByLastDownStation(양재역);
-
-        // then
-        assertThat(신분당선.getSectionSize()).isEqualTo(1);
-        assertThat(신분당선.getStations()).containsExactly(강남역, 판교역);
     }
 
     @DisplayName("상행역을 기준으로 역 사이에 새로운 역을 등록한다")

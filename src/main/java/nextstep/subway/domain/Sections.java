@@ -1,8 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.InvalidSectionDistanceException;
-import nextstep.subway.exception.StationsExistException;
-import nextstep.subway.exception.StationsNotExistsException;
+import nextstep.subway.exception.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -15,6 +13,8 @@ import static java.util.stream.Collectors.toSet;
 
 @Embeddable
 public class Sections {
+
+    private static final int SECTION_SIZE_LIMIT = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -197,19 +197,52 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        validateStationIsLastDownStationOrElseThrow(station);
+        validateMoreThanOneSectionOrElseThrow();
+        validateStationExistsOrElseThrow(station);
 
-        Section toRemoveSection = sections.stream()
-                .filter(section -> section.getDownStation().equals(station))
-                .findAny()
-                .orElseThrow(RuntimeException::new);
+        Optional<Section> toRemoveUpStationSection = findUpStationSection(station);
+        Optional<Section> toRemoveDownStationSection = findDownStationSection(station);
 
-        sections.remove(toRemoveSection);
+        toRemoveUpStationSection.ifPresent(section -> sections.remove(section));
+        toRemoveDownStationSection.ifPresent(section -> sections.remove(section));
+
+        if (toRemoveUpStationSection.isPresent() && toRemoveDownStationSection.isPresent()) {
+            connectTwoSections(toRemoveUpStationSection.get(), toRemoveDownStationSection.get());
+        }
     }
 
-    private void validateStationIsLastDownStationOrElseThrow(Station station) {
-        if (!isLastDownStation(station)) {
-            throw new IllegalArgumentException();
+    private void connectTwoSections(Section upStationSection, Section downStationSection) {
+        final Section newSection = new Section(
+                upStationSection.getLine(),
+                downStationSection.getUpStation(),
+                upStationSection.getDownStation(),
+                upStationSection.getDistance().plus(downStationSection.getDistance())
+        );
+        sections.add(newSection);
+    }
+
+    private Optional<Section> findUpStationSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findAny();
+    }
+
+    private Optional<Section> findDownStationSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findAny();
+    }
+
+    private void validateMoreThanOneSectionOrElseThrow() {
+        if (sections.size() == SECTION_SIZE_LIMIT) {
+            throw new InvalidSectionSizeLimitExecption(SECTION_SIZE_LIMIT);
+        }
+    }
+
+    private void validateStationExistsOrElseThrow(Station otherStation) {
+        boolean isStationExists = getStations().stream().anyMatch(station -> station.equals(otherStation));
+        if (!isStationExists) {
+            throw InvalidSectionDeleteException.ofNotExistStation(otherStation.getName());
         }
     }
 
