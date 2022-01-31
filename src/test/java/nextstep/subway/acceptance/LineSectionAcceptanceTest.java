@@ -95,10 +95,9 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     void addLineSectionFail() {
         // when
         Long 중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 중간역, 10));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 중간역, 10));
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 

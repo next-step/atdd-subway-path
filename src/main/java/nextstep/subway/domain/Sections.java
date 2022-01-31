@@ -11,6 +11,7 @@ import java.util.Optional;
 @Embeddable
 public class Sections {
     private static final String NO_FIRST_STATION_MESSAGE = "상행 종점역이 존재하지 않습니다.";
+    private static final String INVALID_DISTANCE_MESSAGE = "신규 역 사이의 길이가 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.";
     private static final int LAST_INDEX_VALUE = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
@@ -35,16 +36,24 @@ public class Sections {
     private void addMiddleSection(Section section) {
         for (Section otherSection : sectionList) {
             if (section.getUpStation().equals(otherSection.getUpStation())) {
+                validateDistance(section, otherSection);
                 otherSection.changeUpStation(section.getDownStation());
                 break;
             }
 
             if (section.getDownStation().equals(otherSection.getDownStation())) {
+                validateDistance(section, otherSection);
                 otherSection.changeDownStation(section.getUpStation());
                 break;
             }
         }
         sectionList.add(section);
+    }
+
+    private void validateDistance(Section section, Section otherSection) {
+        if (section.getDistance() >= otherSection.getDistance()) {
+            throw new IllegalArgumentException(INVALID_DISTANCE_MESSAGE);
+        }
     }
 
     public List<Section> getSectionList() {
