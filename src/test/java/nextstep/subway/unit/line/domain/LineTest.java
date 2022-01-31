@@ -2,8 +2,6 @@ package nextstep.subway.unit.line.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,9 +44,7 @@ class LineTest {
         Station newStation = new Station(3L, "새로운 하행");
         line.addSection(downStation, newStation, distance);
 
-        assertThat(line.getStations()).withFailMessage(
-                                          line.getStations().stream().map(Station::getName).collect(Collectors.joining(",")))
-                                      .containsExactly(upStation, downStation, newStation);
+        assertThat(line.getStations()).containsExactly(upStation, downStation, newStation);
     }
 
     @DisplayName("구간 목록 처음에 새로운 구간을 추가할 경우")
@@ -105,7 +101,7 @@ class LineTest {
 
     @DisplayName("구간 목록에서 마지막 역 삭제")
     @Test
-    void deleteSection() {
+    void deleteSectionCase1() {
         Station newDownStation = new Station(3L, "새로운 구간의 하행");
         Station insertNewDownStation = new Station(4L, "중간에 삽입될 하행");
         line.addSection(downStation, newDownStation, distance);
@@ -113,6 +109,20 @@ class LineTest {
         line.deleteSection(newDownStation.getId());
 
         assertThat(line.getStations()).containsExactly(upStation, downStation, insertNewDownStation);
+    }
+
+    @DisplayName("구간 목록에서 중간 역 삭제")
+    @Test
+    void deleteSectionCase2() {
+        Station centerStation = downStation;
+        Station newDownStation = new Station(3L, "새로운 구간의 하행");
+        line.addSection(centerStation, newDownStation, distance);
+        int beforeLength = line.getLength();
+
+        line.deleteSection(centerStation.getId());
+
+        assertThat(line.getStations()).containsExactly(upStation, newDownStation);
+        assertThat(line.getLength()).isEqualTo(beforeLength);
     }
 
     @DisplayName("모든 구간의 길이를 더한 값 반환")
