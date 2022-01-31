@@ -41,6 +41,10 @@ public class Section {
         return id;
     }
 
+    public Line getLine() {
+        return line;
+    }
+
     public Station getUpStation() {
         return upStation;
     }
@@ -53,12 +57,12 @@ public class Section {
         return distance;
     }
 
-    public boolean isNextSection(Section section) {
-        return this.upStation.equals(section.getDownStation());
+    public boolean isUpStation(Station station) {
+        return this.upStation.equals(station);
     }
 
-    public boolean isPreviousSection(Section section) {
-        return this.downStation.equals(section.getUpStation());
+    public boolean isDownStation(Station station) {
+        return this.downStation.equals(station);
     }
 
     public boolean isLast(Station station) {

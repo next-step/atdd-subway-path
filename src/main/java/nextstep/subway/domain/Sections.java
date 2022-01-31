@@ -22,33 +22,91 @@ public class Sections {
         return Collections.unmodifiableList(sections);
     }
 
-    public void add(Section newSection) {
-        //method로 추출 추출해서 의도를 알수있게
-        //상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가 불가
+    public void add(Line line, Section newSection) {
         if (this.sections.isEmpty()) {
             this.sections.add(newSection);
             return;
         }
 
-        Section previousSection = getPreviousSection(newSection);
-        if (previousSection != null) {
-            addPreviousSection(previousSection, newSection);
+        boolean isNext = isNextSection(newSection.getUpStation());
+        boolean isPrevious = isPreviousSection(newSection.getDownStation());
+
+        if (!isNext && !isPrevious) {
+            throw new IllegalSectionArgumentException("하나라도 지하철이 포함되어 있어야 합니다.");
         }
 
-        Section nextSection = getNextSection(newSection);
-        if (nextSection != null) {
-            addNextSection(nextSection, newSection);
+        if (isNext && isPrevious) {
+            throw new IllegalSectionArgumentException("상행과 하행이 모두 일치할수 없습니다.");
         }
+
+        if (isNext) {
+            Section section1 = this.sections.stream()
+                    .filter(section -> section.isUpStation(newSection.getUpStation()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (section1 == null) {
+                this.sections.add(newSection);
+                return;
+            }
+
+            int index = this.sections.indexOf(section1);
+            this.sections.set(index, newSection);
+            this.sections.add(index + 1,
+                    new Section(
+                            line,
+                            newSection.getDownStation(),
+                            section1.getDownStation(),
+                            section1.getDistance() - newSection.getDistance()));
+        }
+
+        if (isPrevious) {
+            Section section1 = this.sections.stream()
+                    .filter(section -> section.isDownStation(newSection.getDownStation()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (section1 == null) {
+                this.sections.add(0, newSection);
+                return;
+            }
+
+            int index = this.sections.indexOf(section1);
+            this.sections.set(index,
+                    new Section(
+                            line,
+                            section1.getUpStation(),
+                            newSection.getUpStation(),
+                            section1.getDistance() - newSection.getDistance()));
+            this.sections.add(index + 1, newSection);
+        }
+
     }
 
-    private void addNextSection(Section nextSection, Section newSection) {
-        int index = this.sections.indexOf(nextSection);
-        this.sections.add(index, newSection);
+    private boolean isNextSection(Station station) {
+        return this.sections.stream()
+                .anyMatch(section ->
+                        section.isUpStation(station) ||
+                                section.isDownStation(station));
     }
 
-    private void addPreviousSection(Section previousSection, Section newSection) {
-        int index = this.sections.indexOf(previousSection);
-        this.sections.add(index, newSection);
+    private boolean isPreviousSection(Station station) {
+        return this.sections.stream()
+                .anyMatch(section ->
+                        section.isUpStation(station) ||
+                                section.isDownStation(station));
+    }
+
+    private Section getNextSection(Station station) {
+        return this.sections.stream()
+                .filter(s -> s.isUpStation(station))
+                .findFirst().orElse(null);
+    }
+
+    private Section getPreviousSection(Station station) {
+        return this.sections.stream()
+                .filter(s -> s.isDownStation(station))
+                .findFirst().orElse(null);
     }
 
     public List<Station> getStations() {
@@ -57,32 +115,36 @@ public class Sections {
         }
 
         Section section = this.sections.get(0);
+        section = getFirstSection(section);
+
         List<Station> stations = new ArrayList<>();
         stations.add(section.getUpStation());
         stations.add(section.getDownStation());
 
         while (true) {
-            section = getNextSection(section);
+            Station downStation = section.getDownStation();
+            System.out.println("downStation = " + downStation.getName());
+            section = getNextSection(section.getDownStation());
             if (section == null) {
                 break;
             }
-
+            System.out.println("stations = " + section.getDownStation().getName());
             stations.add(section.getDownStation());
         }
 
         return stations;
     }
 
-    private Section getNextSection(Section section) {
-        return this.sections.stream()
-                .filter(s -> s.isNextSection(section))
-                .findFirst().orElse(null);
-    }
+    private Section getFirstSection(Section section) {
+        while (true) {
+            Section previousSection = getPreviousSection(section.getUpStation());
+            if (previousSection == null) {
+                break;
+            }
 
-    private Section getPreviousSection(Section section) {
-        return this.sections.stream()
-                .filter(s -> s.isPreviousSection(section))
-                .findFirst().orElse(null);
+            section = previousSection;
+        }
+        return section;
     }
 
     public void remove(Station station) {
