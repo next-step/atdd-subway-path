@@ -5,10 +5,12 @@ import java.util.Objects;
 
 @Entity
 public class Station extends BaseEntity {
-    @Id
+
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+
+	@Column(unique = true)
     private String name;
 
     public Station() {

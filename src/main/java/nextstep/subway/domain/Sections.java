@@ -5,11 +5,11 @@ import nextstep.subway.exception.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 
 @Embeddable
 public class Sections {
@@ -27,48 +27,46 @@ public class Sections {
             sections.add(newSection);
             return;
         }
-        validateStationsExistsOrElseThrow(newSection);
+        boolean doesUpStationExist = doesStationExist(newSection.getUpStation());
+        boolean doesDownStationExist = doesStationExist(newSection.getDownStation());
 
-        // 역 사이에 새로운 역을 등록할 경우
-        if (hasSameUpStation(newSection)) {
-            addSectionBetweenSectionsBasedOnUpStation(newSection);
-            return;
+        validateAddingSectionOrElseThrow(newSection, doesUpStationExist, doesDownStationExist);
+
+        if (doesDownStationExist) {
+            appendSection(newSection);
         }
-        if (hasSameDownStation(newSection)) {
-            addSectionBetweenSectionsBasedOnDownStation(newSection);
-            return;
+        if (doesUpStationExist) {
+            prependSection(newSection);
         }
-        // 새로운 역을 상행 종점으로 등록할 경우
+    }
+
+    private void appendSection(Section newSection) {
         if (isLastUpStation(newSection.getDownStation())) {
             addSectionOntoLastUpStation(newSection);
             return;
         }
-        // 새로운 역을 하행 종점으로 등록할 경우
+        addSectionBetweenSectionsBasedOnDownStation(newSection);
+    }
+
+    private void prependSection(Section newSection) {
         if (isLastDownStation(newSection.getUpStation())) {
             addSectionOntoLastDownStation(newSection);
+            return;
         }
+        addSectionBetweenSectionsBasedOnUpStation(newSection);
     }
 
-    private void validateStationsExistsOrElseThrow(Section newSection) {
-        validateUpDownStationsExistsOrElseThrow(newSection);
-        validateUpDownStationNotExistsOrElseThrow(newSection);
+
+    private boolean doesStationExist(Station otherStation) {
+        return getStations().stream().anyMatch(station -> station.equals(otherStation));
     }
 
-    private void validateUpDownStationNotExistsOrElseThrow(Section newSection) {
-        Set<Station> allStations = sections.stream()
-                .map(section -> asList(section.getUpStation(), section.getDownStation()))
-                .flatMap(Collection::stream)
-                .collect(toSet());
-
-        if (!allStations.contains(newSection.getUpStation()) &&
-                !allStations.contains(newSection.getDownStation())) {
+    private void validateAddingSectionOrElseThrow(Section newSection, boolean doesUpStationExist, boolean doesDownStationExist) {
+        if (!doesUpStationExist && !doesDownStationExist) {
             throw new StationsNotExistsException(
                     newSection.getUpStationName(), newSection.getDownStationName());
         }
-    }
-
-    private void validateUpDownStationsExistsOrElseThrow(Section newSection) {
-        if (hasSameDownStation(newSection) && hasSameUpStation(newSection)) {
+        if (doesUpStationExist && doesDownStationExist) {
             throw new StationsExistException(
                     newSection.getUpStationName(), newSection.getDownStationName());
         }
@@ -133,22 +131,6 @@ public class Sections {
                         oldSection.getUpStation(),
                         newSection.getUpStation(),
                         oldSectionDistance));
-    }
-
-    private boolean hasSameDownStation(Section otherSection) {
-        Station otherDownStation = otherSection.getDownStation();
-
-        return sections.stream()
-                .map(Section::getDownStation)
-                .anyMatch(station -> station.equals(otherDownStation));
-    }
-
-    private boolean hasSameUpStation(Section otherSection) {
-        Station otherUpStation = otherSection.getUpStation();
-
-        return sections.stream()
-                .map(Section::getUpStation)
-                .anyMatch(station -> station.equals(otherUpStation));
     }
 
     public Optional<Section> findSectionWithUpStation(Station downStation) {

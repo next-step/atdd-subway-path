@@ -15,6 +15,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Transactional
 public class LineServiceTest {
+
+    static final Distance 강남_판교_거리 = Distance.valueOf(10);
+    static final int 판교_양재_거리 = 9;
+
     @Autowired
     private StationRepository stationRepository;
     @Autowired
@@ -35,14 +39,14 @@ public class LineServiceTest {
         stationRepository.save(판교역);
         stationRepository.save(양재역);
 
-        Line 신분당선 = new Line("신분당선", "yellow", 강남역, 판교역, Distance.valueOf(10));
+        Line 신분당선 = new Line("신분당선", "yellow", 강남역, 판교역, 강남_판교_거리);
         lineRepository.save(신분당선);
 
         // when
         // lineService.addSection 호출
         lineService.addSection(
                 신분당선.getId(),
-                new SectionRequest(판교역.getId(), 양재역.getId(), 10));
+                new SectionRequest(판교역.getId(), 양재역.getId(), 판교_양재_거리));
 
         // then
         // line.getSections 메서드를 통해 검증
