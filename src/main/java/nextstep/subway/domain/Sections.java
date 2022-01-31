@@ -154,12 +154,12 @@ public class Sections {
         Station upStation = newSection.getUpStation();
         Station downStation = newSection.getDownStation();
         return sections.stream()
-                .filter(section -> section.isSameUpStation(upStation))
+                .filter(section -> section.isSameUpStation(upStation) || section.isSameDownStation(upStation))
                 .findFirst()
                 .isPresent()
                 &&
                 sections.stream()
-                        .filter(section -> section.isSameDownStation(downStation))
+                        .filter(section -> section.isSameUpStation(downStation) || section.isSameDownStation(downStation))
                         .findFirst()
                         .isPresent();
     }
@@ -168,12 +168,12 @@ public class Sections {
         Station upStation = newSection.getUpStation();
         Station downStation = newSection.getDownStation();
         return !(sections.stream()
-                .filter(section -> section.isSameUpStation(upStation))
+                .filter(section -> section.isSameUpStation(upStation) || section.isSameDownStation(upStation))
                 .findFirst()
                 .isPresent()
                 ||
                 sections.stream()
-                        .filter(section -> section.isSameDownStation(downStation))
+                        .filter(section -> section.isSameUpStation(downStation) || section.isSameDownStation(downStation))
                         .findFirst()
                         .isPresent());
     }
