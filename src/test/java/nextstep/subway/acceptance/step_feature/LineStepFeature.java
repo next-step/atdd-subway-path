@@ -99,11 +99,11 @@ public class LineStepFeature {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> callAddSection(long lineId, long upStationId, long downStationId) {
+    public static ExtractableResponse<Response> callAddSection(long lineId, long upStationId, long downStationId, int distance) {
         Map<Object, Object> params = new HashMap<>();
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);
-        params.put("distance", 10);
+        params.put("distance", distance);
 
         return RestAssured.given()
                 .log()
