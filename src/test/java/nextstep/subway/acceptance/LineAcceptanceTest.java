@@ -36,11 +36,11 @@ class LineAcceptanceTest extends AcceptanceTest {
         판교역 = StationStepFeature.callCreateAndFind(판교역_이름);
         정자역 = StationStepFeature.callCreateAndFind(정자역_이름);
         미금역 = StationStepFeature.callCreateAndFind(미금역_이름);
-        params = LineStepFeature.createLineParams(SHINBUNDANG_LINE_NAME,
-                SHINBUNDANG_LINE_COLOR,
+        params = LineStepFeature.createLineParams(신분당선_이름,
+                신분당선_색,
                 강남역.getId(),
-                판교역.getId(),
-                10);
+                정자역.getId(),
+                100);
     }
 
     /**
@@ -86,9 +86,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
-        LineStepFeature.callAddSection(lineResponse.getLineId(), 판교역.getId(), 정자역.getId());
+        LineStepFeature.callAddSection(lineResponse.getLineId(), 정자역.getId(), 미금역.getId());
 
-        Map<String, String> number2Line = createLineParams(NUMBER2_LINE_NAME, "green", 정자역.getId(), 미금역.getId(), 10);
+        Map<String, String> number2Line = createLineParams(이호선_이름, "green", 판교역.getId(), 미금역.getId(), 10);
         LineStepFeature.callCreateLines(number2Line);
 
         // when
@@ -101,8 +101,8 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .getList(".", LineAndSectionResponse.class);
         LineAndSectionResponse response1 = responses.get(0);
         LineAndSectionResponse response2 = responses.get(1);
-        assertThat(response1.getLineName()).isEqualTo(SHINBUNDANG_LINE_NAME);
-        assertThat(response2.getLineName()).isEqualTo(NUMBER2_LINE_NAME);
+        assertThat(response1.getLineName()).isEqualTo(신분당선_이름);
+        assertThat(response2.getLineName()).isEqualTo(이호선_이름);
         assertThat(response1.getStations().size()).isEqualTo(3);
         assertThat(response2.getStations().size()).isEqualTo(2);
     }
@@ -127,7 +127,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         String lineName = response.jsonPath()
                 .getString("name");
-        assertThat(lineName).contains(SHINBUNDANG_LINE_NAME);
+        assertThat(lineName).contains(신분당선_이름);
     }
 
     /**
@@ -159,7 +159,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .map(LineAndSectionResponse::getLineName)
                 .collect(toList());
         assertThat(lineNames).contains(modifyName);
-        assertThat(lineNames).doesNotContain(SHINBUNDANG_LINE_NAME);
+        assertThat(lineNames).doesNotContain(신분당선_이름);
     }
 
     /**
@@ -202,37 +202,73 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 지하철 역을 생성한다
-     * Given 2개의 역을 이용하여 지하철 노선 생성한다
-     * When 새로운 구간의 상행역이 현재 등록되어있는 하행 종점역이며, 새로운 구간의 하행역이 노선에 등록되지 않은 구간을 생성한다
+     * When 새로운 역을 상행 종점으로 등록한다
      * Then 지하철 노선 구간 추가가 성공한다
      */
-    @DisplayName("노선에 구간 추가")
+    @DisplayName("새로운 역을 기존 구간의 중간에 등록할 경우")
     @Test
-    void addSection() {
+    void addSection_middleStation() {
         // given
         LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
 
         // when
-        ExtractableResponse<Response> response = LineStepFeature.callAddSection(lineResponse.getLineId(), 판교역.getId(), 정자역.getId());
+        ExtractableResponse<Response> response = LineStepFeature.callAddSection(lineResponse.getLineId(), 강남역.getId(), 판교역.getId());
 
         // then
         LineStepFeature.checkCreateLine(response);
     }
 
     /**
+     * Given 지하철 역을 생성한다
+     * When 새로운 역을 상행 종점으로 등록한다
+     * Then 지하철 노선 구간 추가가 성공한다
+     */
+    @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
+    @Test
+    void addSection_upStation() {
+        // given
+        LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
+
+        // when
+        ExtractableResponse<Response> response = LineStepFeature.callAddSection(lineResponse.getLineId(), 판교역.getId(), 강남역.getId());
+
+        // then
+        LineStepFeature.checkCreateLine(response);
+    }
+
+    /**
+     * Given 지하철 역을 생성한다
+     * When 새로운 역을 하행 종점으로 등록한다
+     * Then 지하철 노선 구간 추가가 성공한다
+     */
+    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
+    @Test
+    void addSection_downStation() {
+        // given
+        LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
+
+        // when
+        ExtractableResponse<Response> response = LineStepFeature.callAddSection(lineResponse.getLineId(), 정자역.getId(), 미금역.getId());
+
+        // then
+        LineStepFeature.checkCreateLine(response);
+    }
+
+
+    /**
      * Given 3개의 역을 이용하여 지하철 노선 생성한다
      * When 마지막 역을 삭제한다
      * Then 구간 삭제 성공
      */
-    @DisplayName("노선의 마지막역은 삭제 가능하다")
+    @DisplayName("노선의 마지막 역은 삭제 가능하다")
     @Test
     void deleteSection() {
         // given
         LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
-        LineStepFeature.callAddSection(lineResponse.getLineId(), 판교역.getId(), 정자역.getId());
+        LineStepFeature.callAddSection(lineResponse.getLineId(), 정자역.getId(), 미금역.getId());
 
         // when
-        ExtractableResponse<Response> response = LineStepFeature.callDeleteSection(lineResponse.getLineId(), 정자역.getId());
+        ExtractableResponse<Response> response = LineStepFeature.callDeleteSection(lineResponse.getLineId(), 미금역.getId());
 
         // then
         LineStepFeature.checkResponseStatus(response.statusCode(), HttpStatus.NO_CONTENT);

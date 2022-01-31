@@ -14,9 +14,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineStepFeature {
 
-    public static final String SHINBUNDANG_LINE_NAME = "신분당선";
-    public static final String SHINBUNDANG_LINE_COLOR = "red";
-    public static final String NUMBER2_LINE_NAME = "2호선";
+    public static final String 신분당선_이름 = "신분당선";
+    public static final String 신분당선_색 = "red";
+    public static final String 이호선_이름 = "2호선";
     private static final String CREATE_LINE_NAME_PARAM_KEY = "name";
     private static final String CREATE_LINE_COLOR_PARAM_KEY = "color";
     private static final String CREATE_LINE_UP_STATION_PARAM_KEY = "upStationId";
