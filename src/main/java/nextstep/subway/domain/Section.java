@@ -71,4 +71,10 @@ public class Section {
     }
 
 
+    public boolean isSameUpStation(Station station) {
+        return upStation.getId() == station.getId();
+    }
+    public boolean isSameDownStation(Station station) {
+        return downStation.getId() == station.getId();
+    }
 }

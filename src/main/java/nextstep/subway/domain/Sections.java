@@ -1,19 +1,18 @@
 package nextstep.subway.domain;
 
-import org.springframework.util.Assert;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
 @Embeddable
 public class Sections {
-    private static final int MIN_SECTION_SIZE = 1;
-
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     @OrderBy("id")
     private List<Section> sections = new ArrayList<>();
@@ -27,14 +26,16 @@ public class Sections {
             Long upStationId = section.getUpStation().getId();
             Long downStationId = section.getDownStation().getId();
 
-            boolean isUpStationExisted = getStationIds().stream().anyMatch(it -> it == upStationId);
-            boolean isDownStationExisted = getStationIds().stream().anyMatch(it -> it == downStationId);
+            List<Long> stationIds = getStationIds();
+
+            boolean isUpStationExisted = stationIds.stream().anyMatch(it -> it == upStationId);
+            boolean isDownStationExisted = stationIds.stream().anyMatch(it -> it == downStationId);
 
             if (isUpStationExisted && isDownStationExisted) {
                 throw new RuntimeException("이미 등록된 구간 입니다.");
             }
 
-            if (getStationIds().stream().noneMatch(it -> it == upStationId) && getStationIds().stream().noneMatch(it -> it == downStationId)) {
+            if (stationIds.stream().noneMatch(it -> it == upStationId) && stationIds.stream().noneMatch(it -> it == downStationId)) {
                 throw new RuntimeException("등록할 수 없는 구간 입니다.");
             }
 
@@ -58,7 +59,7 @@ public class Sections {
         if (isEmpty())
             throw new IllegalArgumentException();
 
-        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
+        if (!sections.get(sections.size() - 1).isSameDownStation(station)) {
             throw new IllegalArgumentException();
         }
 
@@ -77,7 +78,7 @@ public class Sections {
         while (downStation != null) {
             Station finalDownStation = downStation;
             Optional<Section> nextLineStation = sections.stream()
-                    .filter(it -> it.getUpStation() == finalDownStation)
+                    .filter(it -> it.isSameUpStation(finalDownStation))
                     .findFirst();
             if (!nextLineStation.isPresent()) {
                 break;
@@ -89,7 +90,7 @@ public class Sections {
         return stations;
     }
 
-    public List<Long> getStationIds() {
+    private List<Long> getStationIds() {
         if (isEmpty()) {
             return Arrays.asList();
         }
@@ -97,20 +98,18 @@ public class Sections {
         return sections.stream().map(it -> Arrays.asList(it.getUpStation().getId(), it.getDownStation().getId()))
                 .flatMap(it -> it.stream()).distinct()
                 .collect(Collectors.toList());
-
     }
-
 
     private void updateDownSection(Section section) {
         sections.stream()
-                .filter(it -> it.getDownStation() == section.getDownStation())
+                .filter(it -> it.isSameDownStation(section.getDownStation()))
                 .findFirst()
                 .ifPresent(it -> it.updateDownStation(section.getUpStation(), section.getDistance()));
     }
 
     private void updateUpSection(Section section) {
         sections.stream()
-                .filter(it -> it.getUpStation() == section.getUpStation())
+                .filter(it -> it.isSameUpStation(section.getUpStation()))
                 .findFirst()
                 .ifPresent(it -> it.updateUpStation(section.getDownStation(), section.getDistance()));
     }
@@ -120,7 +119,7 @@ public class Sections {
         while (downStation != null) {
             Station finalDownStation = downStation;
             Optional<Section> nextLineStation = sections.stream()
-                    .filter(it -> it.getDownStation() == finalDownStation)
+                    .filter(it -> it.isSameDownStation(finalDownStation))
                     .findFirst();
             if (!nextLineStation.isPresent()) {
                 break;

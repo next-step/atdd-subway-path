@@ -1,26 +1,25 @@
 package nextstep.subway.unit;
 
-import io.restassured.RestAssured;
 import nextstep.subway.applicaion.LineService;
-import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationRequest;
-import nextstep.subway.domain.*;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
 @Transactional
@@ -36,13 +35,12 @@ public class LineServiceTest {
     @Autowired
     private DatabaseCleanup databaseCleanup;
 
-
     @BeforeEach
     public void setUp() {
         databaseCleanup.execute();
     }
 
-    @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
+    @DisplayName("구간 중간에 새로운 구간을 추가할 경우")
     @Test
     void addSection() {
         // given
