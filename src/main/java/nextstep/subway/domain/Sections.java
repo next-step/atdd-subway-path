@@ -25,6 +25,7 @@ public class Sections {
             return;
         }
         duplicationSection(newSection);
+        notInStationOfSections(newSection);
 
         if (isDownStation(newSection.getUpStation().getId())) {
             //맨 뒤에 붙는 경우
@@ -50,6 +51,12 @@ public class Sections {
             return;
         }
 
+    }
+
+    private void notInStationOfSections(Section newSection) {
+        if (containsNotStation(newSection)) {
+            throw new BusinessException("해당 노선에 등록된 역들이 없습니다", HttpStatus.BAD_REQUEST);
+        }
     }
 
     private void addSectionBetweenMatchDownStation(Section newSection) {
@@ -97,7 +104,7 @@ public class Sections {
     }
 
     private void duplicationSection(Section section) {
-        if (contains(section)) {
+        if (containsStation(section)) {
             throw new DuplicationException();
         }
     }
@@ -143,7 +150,7 @@ public class Sections {
         return sections.size();
     }
 
-    public boolean contains(Section newSection) {
+    public boolean containsStation(Section newSection) {
         Station upStation = newSection.getUpStation();
         Station downStation = newSection.getDownStation();
         return sections.stream()
@@ -155,6 +162,20 @@ public class Sections {
                         .filter(section -> section.isSameDownStation(downStation))
                         .findFirst()
                         .isPresent();
+    }
+
+    public boolean containsNotStation(Section newSection) {
+        Station upStation = newSection.getUpStation();
+        Station downStation = newSection.getDownStation();
+        return !(sections.stream()
+                .filter(section -> section.isSameUpStation(upStation))
+                .findFirst()
+                .isPresent()
+                ||
+                sections.stream()
+                        .filter(section -> section.isSameDownStation(downStation))
+                        .findFirst()
+                        .isPresent());
     }
 
     public Section findFirstSection() {
