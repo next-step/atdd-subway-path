@@ -102,6 +102,20 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * When 지하철 노선에 새로운 역을 역 사이에 새로운 역을 등록 요청(이미 존재하는 구간) 하면
+     * Then 노선에 새로운 구간이 추가가 실패한다
+     */
+    @DisplayName("지하철 노선에 구간을 등록 실패(상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음)")
+    @Test
+    void addLineSectionFail2() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 6));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
      * Then 노선에 구간이 제거된다
