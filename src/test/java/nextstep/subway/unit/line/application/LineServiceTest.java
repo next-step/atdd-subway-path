@@ -65,29 +65,36 @@ public class LineServiceTest {
 
     @Test
     void addSection() {
+        // then
         assertThat(line.getSections().toStations().size()).isEqualTo(2);
     }
 
 
     @Test
     void findById() {
+        // when
         lineRepository.save(line);
 
+        // then
         assertDoesNotThrow(() -> lineService.findById(1L));
     }
 
     @Test
     void findByIdWithStations() {
+        // when
         lineRepository.save(line);
 
+        // then
         assertDoesNotThrow(() -> lineService.findByIdWithStations(1L));
     }
 
     @DisplayName("findLine 호출시 Stations를 포함 한다.")
     @Test
     void findLine() {
+        // when
         LineResponse lineResponse = lineService.findLine(1L);
 
+        // then
         List<String> names = lineResponse.getStations()
                                          .stream()
                                          .map(StationResponse::getName)
@@ -98,18 +105,21 @@ public class LineServiceTest {
     @DisplayName("노선 저장 - 노선 정보를 같이 전달하지 않으면 노선만 저장한다.")
     @Test
     void saveLineCase1() {
+        // when
         LineRequest request = LineRequest.builder()
             .name("새로운 노선")
             .color(color)
             .build();
         LineResponse response = lineService.saveLine(request);
 
+        // then
         assertThat(response.getLength()).isZero();
     }
 
     @DisplayName("노선 저장 - 노선 정보를 같이 전달하면 노선도 같이 저장한다.")
     @Test
     void saveLineCase2() {
+        // when
         LineRequest request = LineRequest.builder()
             .name("새로운 노선")
             .upStationId(upStation.getId())
@@ -119,17 +129,21 @@ public class LineServiceTest {
             .build();
         LineResponse response = lineService.saveLine(request);
 
+        // then
         assertThat(response.getLength()).isNotZero();
     }
 
     @DisplayName("노선 목록 - 모든 노선 정보를 반환한다. 지하철역 정보를 포함하지 않는다.")
     @Test
     void showLines() {
+        // when
         List<LineResponse> response = lineService.showLines();
 
-        List<List<StationResponse>> allStations = response.stream()
-                                                       .map(LineResponse::getStations)
-                                                       .collect(Collectors.toList());
+        // then
+        List<List<StationResponse>> allStations =
+            response.stream()
+                    .map(LineResponse::getStations)
+                    .collect(Collectors.toList());
         assertThat(response.size()).isEqualTo(1);
         for (List<StationResponse> eachStations : allStations) {
             assertThat(eachStations).isNull();
@@ -138,6 +152,7 @@ public class LineServiceTest {
 
     @Test
     void updateLine() {
+        // then
         String changedName = "변경된 이름";
         String changedColor = "bg-red-500";
         LineRequest lineRequest = LineRequest.builder()
@@ -146,20 +161,24 @@ public class LineServiceTest {
             .build();
         lineService.updateLine(line.getId(), lineRequest);
 
+        // when
         assertThat(line.getName()).isEqualTo(changedName);
         assertThat(line.getColor()).isEqualTo(changedColor);
     }
 
     @Test
     void deleteLine() {
+        // when
         lineService.deleteLine(line.getId());
 
+        // then
         assertThatThrownBy(() -> lineService.findById(line.getId()))
             .isInstanceOf(EntityNotFoundException.class);
     }
 
     @Test
     void deleteSection() {
+        // given
         Station newDownStation = stationRepository.save(new Station("하행"));
         SectionRequest request = SectionRequest.builder()
             .upStationId(downStation.getId())
@@ -168,8 +187,10 @@ public class LineServiceTest {
             .build();
         lineService.addSection(line.getId(), request);
 
+        // when
         lineService.deleteSection(line.getId(), newDownStation.getId());
 
+        // then
         List<String> stationNames = lineService.findByIdWithStations(line.getId())
                                                .getStations()
                                                .stream()

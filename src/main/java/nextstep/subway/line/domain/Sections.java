@@ -72,7 +72,6 @@ public class Sections {
 
     private void verifyRemovable(Station stationForRemove) {
         Set<Station> stations = new HashSet<>(toStations());
-
         boolean isNotExists = !stations.contains(stationForRemove);
         if (isNotExists) {
             throw new IllegalArgumentException(ErrorMessage.NOT_FOUND_SECTION.getMessage());
@@ -107,6 +106,13 @@ public class Sections {
         upSectionOfDocking.dockingInDownSection(sectionForRemove, downSectionOfDocking);
     }
 
+    private <T> Map<T, Section> regularizedByStation(Function<Section, T> getKeyFunc) {
+        return values.stream()
+                     .collect(Collectors.toMap(
+                         getKeyFunc, eachSection -> eachSection
+                     ));
+    }
+
     private boolean isLastSection(Map<Station, Section> regularizedByUpStation, Section section) {
         return !regularizedByUpStation.containsKey(section.getDownStation());
     }
@@ -131,13 +137,6 @@ public class Sections {
             nextSection = regularizedByUpStation.get(nextSection.getDownStation());
         }
         return stations;
-    }
-
-    private <T> Map<T, Section> regularizedByStation(Function<Section, T> getKeyFunc) {
-        return values.stream()
-                     .collect(Collectors.toMap(
-                         getKeyFunc, eachSection -> eachSection
-                     ));
     }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")

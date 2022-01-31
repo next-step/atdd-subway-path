@@ -51,16 +51,8 @@ public class Section {
         this.distance = distance;
     }
 
-    public boolean matchId(long id) {
-        return this.id.equals(id);
-    }
-
     public boolean matchUpStation(Section section) {
         return upStation.equals(section.upStation);
-    }
-
-    public boolean matchUpStation(long id) {
-        return upStation.matchId(id);
     }
 
     public boolean matchUpStation(Station station) {
@@ -80,9 +72,8 @@ public class Section {
 
     public void dockingInDownSection(Section oldSection, Section newSection) {
         newSection.distance = newSection.distance.addition(oldSection.distance);
-
-        downStation = newSection.getDownStation();
         newSection.upStation = upStation;
+        downStation = newSection.getDownStation();
     }
 
     private void verifyDistanceExceeded(Distance newSectionDistance) {
