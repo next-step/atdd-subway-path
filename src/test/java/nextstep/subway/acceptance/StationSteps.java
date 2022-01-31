@@ -3,6 +3,8 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.applicaion.dto.StationRequest;
+import nextstep.subway.utils.RestAssuredCRUD;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
@@ -20,4 +22,9 @@ public class StationSteps {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철역_생성_요청한다(StationRequest stationRequest) {
+        return RestAssuredCRUD.postRequest("/stations", stationRequest);
+    }
+
 }

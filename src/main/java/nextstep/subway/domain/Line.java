@@ -1,8 +1,12 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 public class Line extends BaseEntity {
@@ -13,23 +17,44 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
 
-    public Line(String name, String color) {
+    private Line(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public Long getId() {
-        return id;
+    private Line(String name, String color, Section section) {
+        this.name = name;
+        this.color = color;
+        this.sections.add(section);
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Line(Long lineId, String name, String color, Section section) {
+        this.id = lineId;
+        this.name = name;
+        this.color = color;
+        this.sections.add(section);
+    }
+
+    public static Line of(String name, String color) {
+        return new Line(name, color);
+    }
+
+    public static Line of(String name, String color, Section section) {
+        return new Line(name, color, section);
+    }
+
+    public static Line of(Long lineId, String name, String color, Section section) {
+        return new Line(lineId, name, color, section);
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
@@ -48,7 +73,20 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return sections;
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+        section.setLine(this);
+    }
+
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
+    public boolean alreadyHas(Section section) {
+        return sections.hasAllStationsOf(section);
     }
 }
