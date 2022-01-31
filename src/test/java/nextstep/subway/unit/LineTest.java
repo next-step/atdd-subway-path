@@ -35,7 +35,7 @@ class LineTest {
         Section newSection = new Section(_2호선, 강남역, 판교역, 5);
 
         //when
-        _2호선.add(newSection);
+        _2호선.addSection(newSection);
 
         //then
         List<Station> stations = _2호선.getStations();
@@ -54,7 +54,7 @@ class LineTest {
         Section newSection = new Section(_2호선, 판교역, 강남역, 5);
 
         //when
-        _2호선.add(newSection);
+        _2호선.addSection(newSection);
 
         //then
         List<Station> stations = _2호선.getStations();
@@ -70,7 +70,7 @@ class LineTest {
         Section newSection = new Section(_2호선, 정자역, 판교역, 5);
 
         //when
-        _2호선.add(newSection);
+        _2호선.addSection(newSection);
 
         //then
         List<Station> stations = _2호선.getStations();
@@ -87,7 +87,7 @@ class LineTest {
         Section newSection = new Section(_2호선, 강남역, 판교역, 10);
 
         //when then
-        assertThrows(IllegalArgumentException.class,()->_2호선.add(newSection));
+        assertThrows(IllegalArgumentException.class,()->_2호선.addSection(newSection));
     }
 
     @DisplayName("(예외) 구간 목록을 추가 할 때, 이미 추가할 구간의 역이 노선 내에 존재할 ")
@@ -97,7 +97,7 @@ class LineTest {
         Section newSection = new Section(_2호선, 강남역, 정자역, 5);
 
         //when then
-        assertThrows(IllegalArgumentException.class,()->_2호선.add(newSection));
+        assertThrows(IllegalArgumentException.class,()->_2호선.addSection(newSection));
     }
 
 
@@ -110,7 +110,7 @@ class LineTest {
         Section newSection = new Section(_2호선, 판교역, 삼성역, 5);
 
         //when then
-        assertThrows(IllegalArgumentException.class,()->_2호선.add(newSection));
+        assertThrows(IllegalArgumentException.class,()->_2호선.addSection(newSection));
     }
 
     @DisplayName("노선에 속해있는 역 목록 조회")
@@ -122,8 +122,94 @@ class LineTest {
         assertThat(stations).containsExactly(강남역, 정자역);
     }
 
-    @DisplayName("구간이 목록에서 마지막 역 삭제")
+    @DisplayName("구간이 목록에서 하행 종점역 삭제")
+    @Test
+    void removeSectionWithDownStation() {
+        //given
+        Station 판교역 = new Station("판교역");
+        _2호선.addSection(new Section(_2호선, 정자역, 판교역, 5));
+
+        //when
+        _2호선.removeSection(판교역);
+
+        //then
+        List<Section> sections = _2호선.getSections();
+        List<Station> stations = _2호선.getStations();
+
+        assertThat(sections, hasSize(1));
+        assertThat(stations).containsExactly(강남역, 정자역);
+    }
+
+    @DisplayName("구간이 목록에서 상행 종점역 삭제")
+    @Test
+    void removeSectionWithUpStation() {
+        //given
+        Station 판교역 = new Station("판교역");
+        _2호선.addSection(new Section(_2호선, 정자역, 판교역, 5));
+
+        //when
+        _2호선.removeSection(강남역);
+
+        //then
+        List<Section> sections = _2호선.getSections();
+        List<Station> stations = _2호선.getStations();
+
+        assertThat(sections, hasSize(1));
+        assertThat(stations).containsExactly(정자역, 판교역);
+    }
+
+    @DisplayName("구간이 목록에서 중간 역 삭제")
     @Test
     void removeSection() {
+        //given
+        Station 판교역 = new Station("판교역");
+        _2호선.addSection(new Section(_2호선, 정자역, 판교역, 5));
+
+        //when
+        _2호선.removeSection(정자역);
+
+        //then
+        List<Section> sections = _2호선.getSections();
+        List<Station> stations = _2호선.getStations();
+
+        assertThat(sections, hasSize(1));
+        assertThat(stations).containsExactly(강남역, 판교역);
+        Section 강남_판교_구간 = _2호선.getSectionByUpStation(강남역);
+        assertThat(강남_판교_구간.getDistance()).isEqualTo(15);
     }
+
+    @DisplayName("(예외) 구간이 하나 인 목록에서 역 삭제")
+    @Test
+    void removeSection_exception_case1() {
+        //when then
+        assertThrows(IllegalArgumentException.class, () -> _2호선.removeSection(정자역));
+    }
+
+    @DisplayName("(예외) 노선에 등록되지 않은 역 삭제")
+    @Test
+    void removeSection_exception_case2() {
+      //given
+      Station 판교역 = new Station("판교역");
+      Station 삼성역 = new Station("삼성역");
+      _2호선.addSection(new Section(_2호선, 정자역, 판교역, 5));
+
+      //when then
+      assertThrows(IllegalArgumentException.class, () -> _2호선.removeSection(삼성역));
+    }
+
+    @DisplayName("(예외) 노선에 등록되지 않은 역 삭제")
+    @Test
+    void removeSection_exception_case3() {
+      //given
+      Station 판교역 = new Station("판교역");
+      Station 삼성역 = new Station("삼성역");
+      _2호선.addSection(new Section(_2호선, 정자역, 판교역, 5));
+
+      //when then
+      assertThrows(IllegalArgumentException.class, () -> _2호선.removeSection(삼성역));
+    }
+
+
+
+
 }

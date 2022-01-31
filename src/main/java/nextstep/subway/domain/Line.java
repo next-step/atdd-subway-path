@@ -59,7 +59,7 @@ public class Line extends BaseEntity {
         return sections;
     }
 
-    public void add(Section section) {
+    public void addSection(Section section) {
         if (isAllMatchOrNoneMach(section)) {
             throw new IllegalArgumentException("구간을 생성할 수 없습니다.");
         }
@@ -92,9 +92,9 @@ public class Line extends BaseEntity {
                 });
     }
 
-    private boolean isAllMatchOrNoneMach(Section section) {
-        return getStations().stream().noneMatch((s) -> s.equals(section.getUpStation()) || s.equals(section.getDownStation()))
-                || getStations().stream().filter((s) -> s.equals(section.getUpStation()) || s.equals(section.getDownStation())).count() == 2;
+    public void removeSection(Station station) {
+
+
     }
 
     public List<Station> getStations() {
@@ -114,6 +114,12 @@ public class Line extends BaseEntity {
         return stations;
     }
 
+
+    private boolean isAllMatchOrNoneMach(Section section) {
+        return getStations().stream().noneMatch((s) -> s.equals(section.getUpStation()) || s.equals(section.getDownStation()))
+                || getStations().stream().filter((s) -> s.equals(section.getUpStation()) || s.equals(section.getDownStation())).count() == 2;
+    }
+
     private Section getStartSection() {
         return sections.stream()
                 .filter(section -> sections.stream()
@@ -128,5 +134,10 @@ public class Line extends BaseEntity {
                         .noneMatch(s -> s.getUpStation().equals(section.getDownStation())))
                 .findFirst()
                 .orElseThrow(IllegalAccessError::new);
+    }
+
+
+    public Section getSectionByUpStation(Station upStation) {
+
     }
 }
