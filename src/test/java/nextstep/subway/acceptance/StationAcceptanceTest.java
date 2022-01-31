@@ -11,8 +11,8 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 import java.util.Map;
 
-import static nextstep.subway.acceptance.step_feature.StationStepFeature.GANGNAM_STATION_NAME;
-import static nextstep.subway.acceptance.step_feature.StationStepFeature.YEOKSAM_STATION_NAME;
+import static nextstep.subway.acceptance.step_feature.StationStepFeature.강남역_이름;
+import static nextstep.subway.acceptance.step_feature.StationStepFeature.판교역_이름;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관리 기능")
@@ -23,8 +23,8 @@ class StationAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void setUpStation() {
-        params = StationStepFeature.createStationParams(GANGNAM_STATION_NAME);
-        params2 = StationStepFeature.createStationParams(YEOKSAM_STATION_NAME);
+        params = StationStepFeature.createStationParams(강남역_이름);
+        params2 = StationStepFeature.createStationParams(판교역_이름);
     }
 
     /**
@@ -78,7 +78,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         StationStepFeature.checkFindStation(response);
 
         String stationName = response.jsonPath().getString("name");
-        assertThat(stationName).isEqualTo(GANGNAM_STATION_NAME);
+        assertThat(stationName).isEqualTo(강남역_이름);
     }
 
     /**
@@ -101,7 +101,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         StationStepFeature.checkFindStation(response);
 
         List<String> stationNames = response.jsonPath().getList("name");
-        assertThat(stationNames).contains(GANGNAM_STATION_NAME, YEOKSAM_STATION_NAME);
+        assertThat(stationNames).contains(강남역_이름, 판교역_이름);
     }
 
     /**

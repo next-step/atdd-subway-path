@@ -24,22 +24,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 노선 관리 기능")
 class LineAcceptanceTest extends AcceptanceTest {
 
-    private StationResponse gangnam;
-    private StationResponse yeoksam;
-    private StationResponse nonhyeon;
-    private StationResponse pangyo;
+    private StationResponse 강남역;
+    private StationResponse 판교역;
+    private StationResponse 정자역;
+    private StationResponse 미금역;
     private Map<String, String> params;
 
     @BeforeEach
     void setUpStation() {
-        gangnam = StationStepFeature.callCreateAndFind(GANGNAM_STATION_NAME);
-        yeoksam = StationStepFeature.callCreateAndFind(YEOKSAM_STATION_NAME);
-        nonhyeon = StationStepFeature.callCreateAndFind(NONHYEON_STATION_NAME);
-        pangyo = StationStepFeature.callCreateAndFind(PANGYO_STATION_NAME);
+        강남역 = StationStepFeature.callCreateAndFind(강남역_이름);
+        판교역 = StationStepFeature.callCreateAndFind(판교역_이름);
+        정자역 = StationStepFeature.callCreateAndFind(정자역_이름);
+        미금역 = StationStepFeature.callCreateAndFind(미금역_이름);
         params = LineStepFeature.createLineParams(SHINBUNDANG_LINE_NAME,
                 SHINBUNDANG_LINE_COLOR,
-                gangnam.getId(),
-                yeoksam.getId(),
+                강남역.getId(),
+                판교역.getId(),
                 10);
     }
 
@@ -86,9 +86,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     void getLines() {
         // given
         LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
-        LineStepFeature.callAddSection(lineResponse.getLineId(), yeoksam.getId(), nonhyeon.getId());
+        LineStepFeature.callAddSection(lineResponse.getLineId(), 판교역.getId(), 정자역.getId());
 
-        Map<String, String> number2Line = createLineParams(NUMBER2_LINE_NAME, "green", nonhyeon.getId(), pangyo.getId(), 10);
+        Map<String, String> number2Line = createLineParams(NUMBER2_LINE_NAME, "green", 정자역.getId(), 미금역.getId(), 10);
         LineStepFeature.callCreateLines(number2Line);
 
         // when
@@ -213,7 +213,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
 
         // when
-        ExtractableResponse<Response> response = LineStepFeature.callAddSection(lineResponse.getLineId(), yeoksam.getId(), nonhyeon.getId());
+        ExtractableResponse<Response> response = LineStepFeature.callAddSection(lineResponse.getLineId(), 판교역.getId(), 정자역.getId());
 
         // then
         LineStepFeature.checkCreateLine(response);
@@ -229,10 +229,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     void deleteSection() {
         // given
         LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
-        LineStepFeature.callAddSection(lineResponse.getLineId(), yeoksam.getId(), nonhyeon.getId());
+        LineStepFeature.callAddSection(lineResponse.getLineId(), 판교역.getId(), 정자역.getId());
 
         // when
-        ExtractableResponse<Response> response = LineStepFeature.callDeleteSection(lineResponse.getLineId(), nonhyeon.getId());
+        ExtractableResponse<Response> response = LineStepFeature.callDeleteSection(lineResponse.getLineId(), 정자역.getId());
 
         // then
         LineStepFeature.checkResponseStatus(response.statusCode(), HttpStatus.NO_CONTENT);
@@ -250,7 +250,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
 
         // when
-        ExtractableResponse<Response> response = LineStepFeature.callDeleteSection(lineResponse.getLineId(), yeoksam.getId());
+        ExtractableResponse<Response> response = LineStepFeature.callDeleteSection(lineResponse.getLineId(), 판교역.getId());
 
         // then
         LineStepFeature.checkResponseStatus(response.statusCode(), HttpStatus.BAD_REQUEST);
@@ -266,10 +266,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     void deleteSection_LastDownStation() {
         // given
         LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
-        LineStepFeature.callAddSection(lineResponse.getLineId(), yeoksam.getId(), nonhyeon.getId());
+        LineStepFeature.callAddSection(lineResponse.getLineId(), 판교역.getId(), 정자역.getId());
 
         // when
-        ExtractableResponse<Response> response = LineStepFeature.callDeleteSection(lineResponse.getLineId(), yeoksam.getId());
+        ExtractableResponse<Response> response = LineStepFeature.callDeleteSection(lineResponse.getLineId(), 판교역.getId());
 
         // then
         LineStepFeature.checkResponseStatus(response.statusCode(), HttpStatus.BAD_REQUEST);

@@ -14,10 +14,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class StationStepFeature {
 
-    public static final String GANGNAM_STATION_NAME = "강남역";
-    public static final String YEOKSAM_STATION_NAME = "역삼역";
-    public static final String NONHYEON_STATION_NAME = "논현역";
-    public static final String PANGYO_STATION_NAME = "판교역";
+    public static final String 강남역_이름 = "강남역";
+    public static final String 판교역_이름 = "판교역";
+    public static final String 정자역_이름 = "정자역";
+    public static final String 미금역_이름 = "미금역";
     private static final String CREATE_STATION_NAME_PARAM_KEY = "name";
     private static final String STATION_BASE_URI = "stations";
 
