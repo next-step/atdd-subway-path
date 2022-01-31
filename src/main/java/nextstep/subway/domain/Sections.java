@@ -18,12 +18,21 @@ public class Sections {
     private List<Section> sectionList = new ArrayList<>();
 
     public void addSection(Section section) {
+        if (isAlreadyExistSection(section)) {
+            throw new IllegalArgumentException("이미 존재하는 구간입니다.");
+        }
+        
         if (isMiddleSection(section)) {
             addMiddleSection(section);
             return;
         }
 
         sectionList.add(section);
+    }
+
+    private boolean isAlreadyExistSection(Section section) {
+        return sectionList.stream()
+                .anyMatch(section::equals);
     }
 
     private boolean isMiddleSection(Section section) {
