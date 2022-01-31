@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
@@ -59,6 +58,7 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    @Transactional
     public void update(Long id, LineRequest request) {
         Line line = lineRepository.findById(id).orElseThrow(() -> new RuntimeException("없는 노선"));
         line.update(request.toEntity());

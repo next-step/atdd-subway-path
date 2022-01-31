@@ -1,7 +1,6 @@
 package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.exception.IllegalSectionException;
 import nextstep.subway.applicaion.exception.NotFoundException;
 import nextstep.subway.domain.*;
 import org.springframework.stereotype.Service;
@@ -25,9 +24,6 @@ public class SectionService {
     @Transactional
     public Section createSection(Long lineId, SectionRequest request) {
         Line line = lineRepository.findById(lineId).orElseThrow(NotFoundException::new);
-        if (line.isNotDownStation(request.getUpStationId())) {
-            throw new IllegalSectionException();
-        }
 
         Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(NotFoundException::new);
         Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(NotFoundException::new);

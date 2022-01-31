@@ -50,7 +50,7 @@ class LineAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선 생성")
     @MethodSource("노선파라미터_제공")
-    @ParameterizedTest()
+    @ParameterizedTest
     void 노선생성_테스트(Map<String, Object> 노선_파라미터) {
         //when
         ExtractableResponse<Response> response = 노선생성(노선_파라미터);
@@ -85,7 +85,7 @@ class LineAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선 목록 조회")
     @MethodSource("노선파라미터_제공")
-    @ParameterizedTest()
+    @ParameterizedTest
     void 노선목록조회_테스트(Map<String, Object> 첫_노선_파라미터, Map<String, Object> 두번째_노선_파라미터) {
         //given
         노선생성(첫_노선_파라미터);
@@ -107,7 +107,7 @@ class LineAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선 조회")
     @MethodSource("노선파라미터_제공")
-    @ParameterizedTest()
+    @ParameterizedTest
     void 노선조회_테스트(Map<String, Object> 노선_파라미터) {
         //given
         ExtractableResponse<Response> createResponse = 노선생성(노선_파라미터);
@@ -128,7 +128,7 @@ class LineAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선 수정")
     @MethodSource("노선파라미터_제공")
-    @ParameterizedTest()
+    @ParameterizedTest
     void 노선업데이트_테스트(Map<String, Object> 노선_파라미터) {
         //given
         ExtractableResponse<Response> createResponse = 노선생성(노선_파라미터);

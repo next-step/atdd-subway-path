@@ -47,17 +47,13 @@ public class Line extends BaseEntity {
         section.updateLine(this);
     }
 
-    public boolean isNotDownStation(Long station) {
-        for (Section section : sections.getSections()) {
-            if (section.isSameDownStation(station)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public void deleteSection(Long stationId) {
 
         sections.deleteSection(stationId);
     }
+
+    public int getSectionSize() {
+        return sections.getSize();
+    }
+
 }
