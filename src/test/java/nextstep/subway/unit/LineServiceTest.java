@@ -9,9 +9,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -23,6 +25,9 @@ public class LineServiceTest {
     private static final String DEFAULT_LINE_COLOR = "bg-green-600";
     private static final String FIRST_LINE_NAME = "1호선";
     private static final String SECOND_LINE_NAME = "2호선";
+    private static final String FIRST_STATION_NAME = "강남역";
+    private static final String SECOND_STATION_NAME = "역삼역";
+
 
     @Autowired
     private StationRepository stationRepository;
@@ -44,6 +49,41 @@ public class LineServiceTest {
         assertAll(
                 () -> assertThat(lineResponse.getName()).isEqualTo(request.getName()),
                 () -> assertThat(lineResponse.getColor()).isEqualTo(request.getColor())
+        );
+    }
+
+    @DisplayName("노선 이름을 중복으로 저장하면 예외가 발생한다")
+    @Test
+    void duplicationLineNameException() {
+        // given
+        lineService.saveLine(createLineRequest(FIRST_LINE_NAME));
+
+        // when, then
+        assertThatThrownBy(() -> lineService.saveLine(createLineRequest(FIRST_LINE_NAME)))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @DisplayName("노선을 저장할 때 구간도 같이 저장한다")
+    @Test
+    void saveLineAndSaveSection() {
+        // given
+        Station upStation = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
+        Station downStation = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
+
+        LineRequest lineRequest = createLineRequest(FIRST_LINE_NAME, DEFAULT_LINE_COLOR, upStation.getId(), downStation.getId(), DEFAULT_DISTANCE);
+
+        // when
+        LineResponse lineResponse = lineService.saveLine(lineRequest);
+
+        // then
+        List<String> stationNames = lineResponse.getStations().stream()
+                                        .map(station -> station.getName())
+                                        .collect(Collectors.toList());
+
+        assertAll(
+                () -> assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName()),
+                () -> assertThat(lineResponse.getColor()).isEqualTo(lineRequest.getColor()),
+                () -> assertThat(stationNames).contains(upStation.getName(), downStation.getName())
         );
     }
 
@@ -78,6 +118,14 @@ public class LineServiceTest {
         );
     }
 
+    @DisplayName("조회할 노선이 없으면 예외 발생")
+    @Test
+    void findByIdException() {
+        // when, then
+        assertThatThrownBy(() -> lineService.findById(1L))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
     @DisplayName("노선 정보를 수정한다")
     @Test
     void updateLine() {
@@ -93,6 +141,32 @@ public class LineServiceTest {
 
         // then
         assertThat(updateLineResponse.getName()).isEqualTo(updateName);
+    }
+
+    @DisplayName("수정할 노선 이름이 중복이면 예외 발생")
+    @Test
+    void updateLineDuplicationNameException() {
+        // given
+        LineResponse firstLine = lineService.saveLine(createLineRequest(FIRST_LINE_NAME));
+        LineResponse secondLine = lineService.saveLine(createLineRequest(SECOND_LINE_NAME));
+        LineRequest duplicationNameLineRequest = createLineRequest(SECOND_LINE_NAME);
+
+        // TODO : 더티 체크 실행 시점이 assertThatThrownBy 끝나고인가?? 에러를 잡을 수 없다넹...
+        // when, then
+        assertThatThrownBy(() -> lineService.updateLine(firstLine.getId(), duplicationNameLineRequest))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @DisplayName("수정할 노선이 없으면 예외 발생")
+    @Test
+    void updateLineNotFindException() {
+        // given
+        LineResponse lineResponse = lineService.saveLine(createLineRequest(FIRST_LINE_NAME));
+        LineRequest updateLineRequest = createLineRequest(FIRST_LINE_NAME);
+
+        // when, then
+        assertThatThrownBy(() -> lineService.updateLine(100000L, updateLineRequest))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("선택한 노선을 삭제한다")
@@ -114,9 +188,9 @@ public class LineServiceTest {
     void addSection() {
         // given
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
-        Line line = lineRepository.save(new Line("2호선", "bg-red-600"));
-        Station upStation = stationRepository.save(new Station("강남역"));
-        Station downStation = stationRepository.save(new Station("역삼역"));
+        Line line = lineRepository.save(createLineEntity());
+        Station upStation = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
+        Station downStation = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
 
         SectionRequest request = createSectionRequest(upStation, downStation);
 
@@ -129,14 +203,105 @@ public class LineServiceTest {
         assertThat(line.getSections()).hasSize(1);
     }
 
+    @DisplayName("구간을 추가할 노선이 조회안되면 예외 발생.")
+    @Test
+    void addSectionNotLineException() {
+        // given
+        Line line = lineRepository.save(createLineEntity());
+        Station upStation = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
+        Station downStation = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
+
+        SectionRequest request = createSectionRequest(upStation, downStation);
+
+        // when, then
+        assertThatThrownBy(() -> lineService.addSection(100000L, request))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("추가할 구간의 역이 조회안되면 예외 발생.")
+    @Test
+    void addSectionNotStationException() {
+        // given
+        Line line = lineRepository.save(createLineEntity());
+
+        SectionRequest request = createSectionRequest(1L, 2L, DEFAULT_DISTANCE);
+
+        // when, then
+        assertThatThrownBy(() -> lineService.addSection(line.getId(), request))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("노선의 선택한 구간을 삭제한다")
+    @Test
+    void deleteSection() {
+        // given
+        Station upStation = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
+        Station downStation = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
+
+        LineRequest lineRequest = createLineRequest(FIRST_LINE_NAME, DEFAULT_LINE_COLOR, upStation.getId(), downStation.getId(), DEFAULT_DISTANCE);
+        LineResponse lineResponse = lineService.saveLine(lineRequest);
+
+        // when
+        lineService.deleteSection(lineResponse.getId(), lineResponse.getStations().get(1).getId());
+        LineResponse findLine = lineService.findById(lineResponse.getId());
+
+        // then
+        assertThat(findLine.getStations()).hasSize(0);
+    }
+
+    @DisplayName("구간을 삭제할 때 노선이 조회안되면 예외 발생")
+    @Test
+    void deleteSectionNotLineException() {
+        // given
+        Station upStation = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
+        Station downStation = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
+
+        LineRequest lineRequest = createLineRequest(FIRST_LINE_NAME, DEFAULT_LINE_COLOR, upStation.getId(), downStation.getId(), DEFAULT_DISTANCE);
+        LineResponse lineResponse = lineService.saveLine(lineRequest);
+
+        // when
+        assertThatThrownBy(() -> lineService.deleteSection(2L, lineResponse.getStations().get(1).getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("구간의 마지막 역이 아니면 삭제 요청 시 예외 발생")
+    @Test
+    void deleteNotLastSectionStException() {
+        // given
+        Station upStation = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
+        Station downStation = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
+
+        LineRequest lineRequest = createLineRequest(FIRST_LINE_NAME, DEFAULT_LINE_COLOR, upStation.getId(), downStation.getId(), DEFAULT_DISTANCE);
+        LineResponse lineResponse = lineService.saveLine(lineRequest);
+
+        // when
+        assertThatThrownBy(() -> lineService.deleteSection(lineResponse.getId(), upStation.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    private Line createLineEntity() {
+        return new Line(FIRST_STATION_NAME, DEFAULT_LINE_COLOR);
+    }
+
+    private Station createStationEntity(String name) {
+        return new Station(name);
+    }
+
     private LineRequest createLineRequest(String name) {
         return createLineRequest(name, DEFAULT_LINE_COLOR);
     }
 
     private LineRequest createLineRequest(String name, String color) {
+        return createLineRequest(name, color, null, null, DEFAULT_DISTANCE);
+    }
+
+    private LineRequest createLineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
         LineRequest request = new LineRequest();
         request.setName(name);
         request.setColor(color);
+        request.setUpStationId(upStationId);
+        request.setDownStationId(downStationId);
+        request.setDistance(distance);
         return request;
     }
 
@@ -148,6 +313,14 @@ public class LineServiceTest {
         SectionRequest request = new SectionRequest();
         request.setUpStationId(upStation.getId());
         request.setDownStationId(downStation.getId());
+        request.setDistance(distance);
+        return request;
+    }
+
+    private SectionRequest createSectionRequest(Long upStationId, Long downStationId, int distance) {
+        SectionRequest request = new SectionRequest();
+        request.setUpStationId(upStationId);
+        request.setDownStationId(downStationId);
         request.setDistance(distance);
         return request;
     }
