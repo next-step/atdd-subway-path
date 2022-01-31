@@ -13,15 +13,25 @@ const getters = {
 }
 
 const mutations = {
+<<<<<<< HEAD
   [SET_PATH](state, pathResult) {
+=======
+  setPath(state, pathResult) {
+>>>>>>> e5750e6ee6465a0a3ea638f28658c1dd6f6fd8c4
     state.pathResult = pathResult
   }
 }
 
 const actions = {
+<<<<<<< HEAD
   async [SEARCH_PATH]({ commit }, { source, target, type }) {
     return PathService.get({ source, target, type }).then(({ data }) => {
       commit(SET_PATH, data)
+=======
+  async searchPath({ commit }, {}) {
+    return PathService.get().then(({ data }) => {
+      commit('setPath', data)
+>>>>>>> e5750e6ee6465a0a3ea638f28658c1dd6f6fd8c4
     })
   }
 }

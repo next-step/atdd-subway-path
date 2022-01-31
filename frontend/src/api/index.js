@@ -9,7 +9,12 @@ const ApiService = {
   get(uri) {
     return Vue.axios.get(`${uri}`, {
       headers: {
+<<<<<<< HEAD
         Authorization: `Bearer ${localStorage.getItem('token')}` || ''
+=======
+        Authorization: `Bearer ${localStorage.getItem('token')}` || '',
+        Accept: 'application/json'
+>>>>>>> e5750e6ee6465a0a3ea638f28658c1dd6f6fd8c4
       }
     })
   },

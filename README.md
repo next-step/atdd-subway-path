@@ -34,4 +34,8 @@ npm run dev
 #### application 구동
 ```
 ./gradlew bootRun
+<<<<<<< HEAD
 ```
+=======
+```
+>>>>>>> e5750e6ee6465a0a3ea638f28658c1dd6f6fd8c4

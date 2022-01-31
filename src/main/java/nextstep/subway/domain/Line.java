@@ -9,12 +9,10 @@ public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
     private String name;
     private String color;
-
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -27,28 +25,39 @@ public class Line extends BaseEntity {
     public Long getId() {
         return id;
     }
-
-    public void setId(Long id) {
-        this.id = id;
+    public void update(Line updateLine) {
+        this.name = updateLine.getName();
+        this.color = updateLine.getColor();
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public Sections getSections() {
+        return sections;
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public void addSection(Section section) {
+        sections.addSection(section);
+        section.updateLine(this);
+    }
+
+    public boolean isNotDownStation(Long station) {
+        for (Section section : sections.getSections()) {
+            if (section.isSameDownStation(station)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void deleteSection(Long stationId) {
+
+        sections.deleteSection(stationId);
     }
 }

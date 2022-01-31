@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -8,6 +10,7 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "line_id")
     private Line line;
@@ -28,9 +31,20 @@ public class Section {
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
+    }
+
+    private Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public static Section of(Station upStation, Station downStation, int distance) {
+        return new Section(upStation, downStation, distance);
+    }
+
+    public void updateLine(Line line) {
+        this.line = line;
     }
 
     public Long getId() {
@@ -51,5 +65,13 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public boolean isSameDownStation(Long stationId) {
+        return downStation.isSameStation(stationId);
+    }
+
+    public boolean isSameUpStation(Long stationId) {
+        return upStation.isSameStation(stationId);
     }
 }

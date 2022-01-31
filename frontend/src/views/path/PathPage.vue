@@ -37,13 +37,20 @@
             <div v-if="pathResult" class="d-flex justify-center mt-4">
               <v-card width="400" flat>
                 <v-tabs v-model="tab" background-color="transparent" color="amber" grow>
+<<<<<<< HEAD
                   <v-tab>최단 거리</v-tab>
+=======
+                  <v-tab @click="onChangePathType(PATH_TYPE.DISTANCE)">최단 거리</v-tab>
+                  <v-tab @click="onChangePathType(PATH_TYPE.DURATION)">최소 시간</v-tab>
+                  <v-tab @click="onChangePathType(PATH_TYPE.ARRIVAL_TIME)">빠른 도착</v-tab>
+>>>>>>> e5750e6ee6465a0a3ea638f28658c1dd6f6fd8c4
                 </v-tabs>
                 <v-tabs-items v-model="tab">
                   <v-tab-item>
                     <v-simple-table>
                       <template v-slot:default>
                         <thead>
+<<<<<<< HEAD
                         <tr>
                           <th>거리</th>
                         </tr>
@@ -52,6 +59,20 @@
                         <tr>
                           <td>{{ pathResult.distance }}km</td>
                         </tr>
+=======
+                          <tr>
+                            <th>소요시간</th>
+                            <th>거리</th>
+                            <th>요금</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>{{ pathResult.duration }}분</td>
+                            <td>{{ pathResult.distance }}km</td>
+                            <td>{{ pathResult.fare }}원</td>
+                          </tr>
+>>>>>>> e5750e6ee6465a0a3ea638f28658c1dd6f6fd8c4
                         </tbody>
                       </template>
                     </v-simple-table>
@@ -60,6 +81,7 @@
                     <v-simple-table>
                       <template v-slot:default>
                         <thead>
+<<<<<<< HEAD
                         <tr>
                           <th>거리</th>
                         </tr>
@@ -68,6 +90,101 @@
                         <tr>
                           <td>{{ pathResult.distance }}km</td>
                         </tr>
+=======
+                          <tr>
+                            <th>소요시간</th>
+                            <th>거리</th>
+                            <th>요금</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>{{ pathResult.duration }}분</td>
+                            <td>{{ pathResult.distance }}km</td>
+                            <td>{{ pathResult.fare }}원</td>
+                          </tr>
+                        </tbody>
+                      </template>
+                    </v-simple-table>
+                  </v-tab-item>
+                  <v-tab-item>
+                    <Dialog :close="close">
+                      <template slot="trigger">
+                        <v-btn class="mt-4" depressed>
+                          {{ getCurrentTime }} 출발
+                          <v-icon>mdi-menu-down</v-icon>
+                        </v-btn>
+                      </template>
+                      <template slot="title">
+                        <div class="width-100 text-center mt-6">출발 시각 설정</div>
+                      </template>
+                      <template slot="text">
+                        <div class="px-2">
+                          <p>출발 시간을 기준으로 가장 빠른 경로를 안내해드립니다.</p>
+                          <v-form ref="sectionForm" v-model="valid" @submit.prevent>
+                            <v-row>
+                              <v-col cols="4">
+                                <v-select
+                                        v-model="departureTimeView.dayTime"
+                                        :items="departureTimeSelectView.dayTime"
+                                        width="400"
+                                        color="grey darken-1"
+                                        item-color="amber darken-3"
+                                        :rules="rules.departureTime.dayTime"
+                                        outlined
+                                        dense
+                                ></v-select>
+                              </v-col>
+                              <v-col cols="4">
+                                <v-select
+                                        v-model="departureTimeView.hour"
+                                        :items="departureTimeSelectView.hour"
+                                        label="시"
+                                        width="400"
+                                        color="grey darken-1"
+                                        item-color="amber darken-3"
+                                        :rules="rules.departureTime.hour"
+                                        outlined
+                                        dense
+                                ></v-select>
+                              </v-col>
+                              <v-col cols="4">
+                                <v-select
+                                        v-model="departureTimeView.minute"
+                                        :items="departureTimeSelectView.minute"
+                                        label="분"
+                                        width="400"
+                                        color="grey darken-1"
+                                        item-color="amber darken-3"
+                                        :rules="rules.departureTime.minute"
+                                        outlined
+                                        dense
+                                ></v-select>
+                              </v-col>
+                            </v-row>
+                          </v-form>
+                        </div>
+                      </template>
+                      <template slot="action">
+                        <v-btn :disabled="!valid" @click.prevent="onUpdateSearchResult" color="amber">확인</v-btn>
+                      </template>
+                    </Dialog>
+                    <v-simple-table>
+                      <template v-slot:default>
+                        <thead>
+                          <tr>
+                            <th>소요시간</th>
+                            <th>거리</th>
+                            <th>요금</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>{{ pathResult.duration }}분</td>
+                            <td>{{ pathResult.distance }}km</td>
+                            <td>{{ pathResult.fare }}원</td>
+                          </tr>
+>>>>>>> e5750e6ee6465a0a3ea638f28658c1dd6f6fd8c4
                         </tbody>
                       </template>
                     </v-simple-table>
@@ -90,6 +207,10 @@
                   </span>
                 </template>
               </v-card>
+<<<<<<< HEAD
+=======
+              <AddFavoriteButton :path="path" />
+>>>>>>> e5750e6ee6465a0a3ea638f28658c1dd6f6fd8c4
             </div>
           </div>
         </v-card-text>
@@ -99,6 +220,7 @@
 </template>
 
 <script>
+<<<<<<< HEAD
   import validator from '@/utils/validator'
   import { mapActions, mapGetters, mapMutations } from 'vuex'
   import { SHOW_SNACKBAR } from '@/store/shared/mutationTypes'
@@ -153,9 +275,127 @@
       }
     }
   }
+=======
+import validator from '@/utils/validator'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { SHOW_SNACKBAR } from '@/store/shared/mutationTypes'
+import { PATH_TYPE, SNACKBAR_MESSAGES } from '@/utils/constants'
+import { FETCH_STATIONS, SEARCH_PATH } from '@/store/shared/actionTypes'
+import AddFavoriteButton from '@/views/path/components/AddFavoriteButton'
+import dialog from '@/mixins/dialog'
+import Dialog from '@/components/dialogs/Dialog'
+
+export default {
+  name: 'PathPage',
+  components: { Dialog, AddFavoriteButton },
+  mixins: [dialog],
+  computed: {
+    ...mapGetters(['stations', 'pathResult']),
+    getCurrentTime() {
+      const { hour, minute } = this.departureTimeView
+      return `${hour > 12 ? '오후' : '오전'} ${hour < 10 ? `0${hour}` : hour}:${minute < 10 ? `0${minute}` : minute}`
+    }
+  },
+  async created() {
+    await this.initAllStationsView()
+    this.initDepartureTimeView()
+  },
+  methods: {
+    ...mapMutations([SHOW_SNACKBAR]),
+    ...mapActions([SEARCH_PATH, FETCH_STATIONS]),
+    async onSearchResult() {
+      try {
+      } catch (e) {
+        this.showSnackbar(SNACKBAR_MESSAGES.COMMON.FAIL)
+        console.error(e)
+      }
+    },
+    initDepartureTimeView() {
+      this.departureTimeSelectView.hour = Array.from(Array(24)).map((_, i) => this.getTimeSelectView(i))
+      this.departureTimeSelectView.minute = Array.from(Array(60)).map((_, i) => this.getTimeSelectView(i))
+      const today = new Date()
+      const hour = today.getHours()
+      const dayTime = hour > 12 ? 'pm' : 'am'
+      const minute = today.getMinutes()
+      this.departureTimeView = { dayTime, minute, hour }
+    },
+    getTimeSelectView(i) {
+      return {
+        text: i < 10 ? `0${i}` : i,
+        value: i
+      }
+    },
+    async onUpdateSearchResult() {
+      try {
+        await this.onSearchResult()
+        this.closeDialog()
+        this.showSnackbar(SNACKBAR_MESSAGES.PATH.ARRIVAL_TIME.SUCCESS)
+      } catch (e) {
+        this.showSnackbar(SNACKBAR_MESSAGES.PATH.ARRIVAL_TIME.FAIL)
+      }
+    },
+    async initAllStationsView() {
+      try {
+        await this.fetchStations()
+        if (this.stations.length <= 0) {
+          return
+        }
+        this.allStationsView = this.stations.map((station) => {
+          return {
+            text: station.name,
+            value: station.id
+          }
+        })
+      } catch (e) {
+        this.showSnackbar(SNACKBAR_MESSAGES.COMMON.FAIL)
+      }
+    },
+    onChangePathType(type) {
+      this.path.type = type
+      this.onSearchResult()
+    }
+  },
+  data() {
+    return {
+      path: {
+        source: '',
+        target: '',
+        type: PATH_TYPE.DISTANCE
+      },
+      allStationsView: [],
+      rules: { ...validator },
+      PATH_TYPE: { ...PATH_TYPE },
+      tab: null,
+      valid: false,
+      time: '',
+      departureTimeView: {
+        dayTime: '',
+        hour: '',
+        minute: ''
+      },
+      departureTimeSelectView: {
+        dayTime: [
+          {
+            text: '오전',
+            value: 'am'
+          },
+          {
+            text: '오후',
+            value: 'pm'
+          }
+        ]
+      }
+    }
+  }
+}
+>>>>>>> e5750e6ee6465a0a3ea638f28658c1dd6f6fd8c4
 </script>
 <style scoped>
 .path-station-select {
   width: 200px;
 }
+<<<<<<< HEAD
 </style>
+=======
+</style>
+>>>>>>> e5750e6ee6465a0a3ea638f28658c1dd6f6fd8c4

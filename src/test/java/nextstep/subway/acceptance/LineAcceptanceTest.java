@@ -1,136 +1,188 @@
 package nextstep.subway.acceptance;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.applicaion.exception.DuplicationException;
+import nextstep.subway.applicaion.exception.NotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
-import static nextstep.subway.acceptance.LineSteps.*;
-import static org.assertj.core.api.Assertions.assertThat;
+import static nextstep.subway.utils.LineStepUtil.기본주소;
+import static nextstep.subway.utils.LineStepUtil.*;
+import static nextstep.subway.utils.StationStepUtil.*;
 
 @DisplayName("지하철 노선 관리 기능")
 class LineAcceptanceTest extends AcceptanceTest {
+
+
+    static Stream<Arguments> 노선파라미터_제공() {
+        final int 종점간거리 = 2;
+        final Long 상행종점 = 1L;
+        final Long 하행종점 = 2L;
+
+        return Stream.of(
+                Arguments.of(노선파라미터생성(기존노선, 기존색상, 상행종점, 하행종점, 종점간거리),
+                        노선파라미터생성(새로운노선, 새로운색상, 상행종점, 하행종점, 종점간거리))
+        );
+    }
+
+    /**
+     * Given 지하철 역 (상행, 하행)생성을 요청한다.
+     */
+    @BeforeEach
+    void 사용될_지하철역들_생성() {
+        지하철역생성(기존지하철);
+        지하철역생성(새로운지하철);
+    }
+
     /**
      * When 지하철 노선 생성을 요청 하면
      * Then 지하철 노선 생성이 성공한다.
      */
     @DisplayName("지하철 노선 생성")
-    @Test
-    void createLine() {
-        // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green");
+    @MethodSource("노선파라미터_제공")
+    @ParameterizedTest()
+    void 노선생성_테스트(Map<String, Object> 노선_파라미터) {
+        //when
+        ExtractableResponse<Response> response = 노선생성(노선_파라미터);
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        //then
+        상태_값_검사(response, HttpStatus.CREATED);
+        ExtractableResponse<Response> 노선조회 = 노선조회(response.header(HttpHeaders.LOCATION));
+        단일_값_검사(노선조회, 노선_이름_키, 기존노선);
     }
 
     /**
-     * Given 지하철 노선 생성을 요청 하고
-     * Given 새로운 지하철 노선 생성을 요청 하고
-     * When 지하철 노선 목록 조회를 요청 하면
-     * Then 두 노선이 포함된 지하철 노선 목록을 응답받는다
-     */
-    @DisplayName("지하철 노선 목록 조회")
-    @Test
-    void getLines() {
-        // given
-        지하철_노선_생성_요청("2호선", "green");
-        지하철_노선_생성_요청("3호선", "orange");
-
-        // when
-        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("name")).contains("2호선", "3호선");
-    }
-
-    /**
-     * Given 지하철 노선 생성을 요청 하고
-     * When 생성한 지하철 노선 조회를 요청 하면
-     * Then 생성한 지하철 노선을 응답받는다
-     */
-    @DisplayName("지하철 노선 조회")
-    @Test
-    void getLine() {
-        // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
-
-        // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getString("name")).isEqualTo("2호선");
-    }
-
-    /**
-     * Given 지하철 노선 생성을 요청 하고
-     * When 지하철 노선의 정보 수정을 요청 하면
-     * Then 지하철 노선의 정보 수정은 성공한다.
-     */
-    @DisplayName("지하철 노선 수정")
-    @Test
-    void updateLine() {
-        // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
-
-        // when
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "red");
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put(createResponse.header("location"))
-                .then().log().all().extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    /**
-     * Given 지하철 노선 생성을 요청 하고
-     * When 생성한 지하철 노선 삭제를 요청 하면
-     * Then 생성한 지하철 노선 삭제가 성공한다.
-     */
-    @DisplayName("지하철 노선 삭제")
-    @Test
-    void deleteLine() {
-        // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
-
-        // when
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .when().delete(createResponse.header("location"))
-                .then().log().all().extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    /**
-     * Given 지하철 노선 생성을 요청 하고
-     * When 같은 이름으로 지하철 노선 생성을 요청 하면
+     * When 없는 역을 종점으로 선언하고 노선 생성 요청을 한다
      * Then 지하철 노선 생성이 실패한다.
      */
-    @DisplayName("중복이름으로 지하철 노선 생성")
+    @DisplayName("없는 역을 노선에 등록한다")
     @Test
-    void duplicateName() {
-        // given
-        지하철_노선_생성_요청("2호선", "green");
+    void notFoundSection() {
+        //when
+        ExtractableResponse<Response> response = 노선생성(노선파라미터생성(새로운노선, 새로운색상, Long.MAX_VALUE, Long.MIN_VALUE, Integer.MAX_VALUE));
 
-        // when
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
-
-        // then
-        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        //then
+        예외_검사(response, NotFoundException.MESSAGE);
     }
+
+
+    /**
+     * Given 지하철 역 (상행, 하행)생성을 요청한다.
+     * Given 지하철 노선을 생성한다.
+     * Given 새로운 지하철 노선을 생성한다.
+     * When 지하철 노선 조회를 요청한다.
+     * Then 지하철 노선을 반환한다.
+     */
+    @DisplayName("지하철 노선 목록 조회")
+    @MethodSource("노선파라미터_제공")
+    @ParameterizedTest()
+    void 노선목록조회_테스트(Map<String, Object> 첫_노선_파라미터, Map<String, Object> 두번째_노선_파라미터) {
+        //given
+        노선생성(첫_노선_파라미터);
+        노선생성(두번째_노선_파라미터);
+
+        //when
+        ExtractableResponse<Response> response = 노선조회(기본주소);
+
+        //then
+        리스트_값_검사(response, 노선_이름_키, String.valueOf(첫_노선_파라미터.get(노선_이름_키)), String.valueOf(두번째_노선_파라미터.get(노선_이름_키)));
+        리스트_값_검사(response, 노선_색상_키, String.valueOf(첫_노선_파라미터.get(노선_색상_키)), String.valueOf(두번째_노선_파라미터.get(노선_색상_키)));
+    }
+
+    /**
+     * Scenario 새로운 노선을 등록한다.
+     * Given 지하철 노선을 생성하고
+     * When 생성된 지하철 노선을 요청한다.
+     * Then 생성된 지하철 노선을 반환한다.
+     */
+    @DisplayName("지하철 노선 조회")
+    @MethodSource("노선파라미터_제공")
+    @ParameterizedTest()
+    void 노선조회_테스트(Map<String, Object> 노선_파라미터) {
+        //given
+        ExtractableResponse<Response> createResponse = 노선생성(노선_파라미터);
+
+        //when
+        ExtractableResponse<Response> response = 노선조회(createResponse.header(HttpHeaders.LOCATION));
+
+        //then
+        상태_값_검사(response, HttpStatus.OK);
+        단일_값_검사(response, 노선_이름_키, String.valueOf(노선_파라미터.get(노선_이름_키)));
+        리스트_값_검사(response, "stations." + 노선_이름_키, 기존지하철, 새로운지하철);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 지하철 노선 수정을 요청한다,
+     * Then 지하철 노선이 수정이 완료된다.
+     */
+    @DisplayName("지하철 노선 수정")
+    @MethodSource("노선파라미터_제공")
+    @ParameterizedTest()
+    void 노선업데이트_테스트(Map<String, Object> 노선_파라미터) {
+        //given
+        ExtractableResponse<Response> createResponse = 노선생성(노선_파라미터);
+
+        //when
+        ExtractableResponse<Response> updateResponse = 노선수정(createResponse);
+
+        //then
+        ExtractableResponse<Response> response = 노선조회(createResponse.header(HttpHeaders.LOCATION));
+
+        상태_값_검사(updateResponse, HttpStatus.OK);
+        상태_값_검사(response, HttpStatus.OK);
+        단일_값_검사(response, 노선_이름_키, 수정노선);
+    }
+
+
+    /**
+     * Given 지하철 노션을 생성을 요청한다.
+     * When 생성된 지하철 노션을 삭제를 요청한다.
+     * Then 지하철 노션이 삭제된다.
+     */
+    @DisplayName("지하철 노선 삭제")
+    @MethodSource("노선파라미터_제공")
+    @ParameterizedTest
+    void 노선삭제_테스트(Map<String, Object> 노선_파라미터) {
+        //given
+        ExtractableResponse<Response> createResponse = 노선생성(노선_파라미터);
+
+        //when
+        ExtractableResponse<Response> response = 노선삭제(createResponse.header(HttpHeaders.LOCATION));
+
+        //then
+        상태_값_검사(response, HttpStatus.NO_CONTENT);
+    }
+
+    /**
+     * Given 지하철 노선을 생성한다.
+     * When 중복된 이름의 지하철 노선 생성을 요청한다.
+     * Then 지하철 노선 생성이 실패한다.
+     */
+
+    @DisplayName("중복된 노선 생성은 실패한다")
+    @MethodSource("노선파라미터_제공")
+    @ParameterizedTest
+    void duplicationLine(Map<String, Object> 노선_파라미터) {
+        //given
+        노선생성(노선_파라미터);
+
+        //when
+        ExtractableResponse<Response> response = 노선생성(노선_파라미터);
+
+        //then
+        상태_값_검사(response, HttpStatus.CONFLICT);
+        예외_검사(response, DuplicationException.MESSAGE);
+    }
+
 }
