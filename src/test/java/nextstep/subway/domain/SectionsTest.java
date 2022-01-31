@@ -155,7 +155,7 @@ class SectionsTest {
                 .isInstanceOf(MinimumSectionException.class);
     }
 
-    @DisplayName("마지막 하행역만 삭제 가능하")
+    @DisplayName("마지막 하행역만 삭제 가능하다")
     @Test
     void deleteStation_validateDeleteLastDownStation() {
         // given
