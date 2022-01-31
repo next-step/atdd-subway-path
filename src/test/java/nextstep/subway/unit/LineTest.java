@@ -10,7 +10,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LineTest {
-    private final Line line = new Line();
+    private final Line line = new Line("2호선", "green");
     private final Station upStation = new Station("강남역");
     private final Station downStation = new Station("잠실역");
     private final int distance = 10;
