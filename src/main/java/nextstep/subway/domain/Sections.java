@@ -46,14 +46,9 @@ public class Sections {
         // 새로운 역을 하행 종점으로 등록할 경우
         if (isLastDownStation(newSection.getUpStation())) {
             addSectionOntoLastDownStation(newSection);
-            return;
         }
     }
 
-    /**
-     * 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
-     * 상행역과 하행역이 둘중 하나도 등록되어 있지 않으면 추가할 수 없음
-     */
     private void validateStationsExistsOrElseThrow(Section newSection) {
         validateUpDownStationsExistsOrElseThrow(newSection);
         validateUpDownStationNotExistsOrElseThrow(newSection);

@@ -42,19 +42,19 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(노선_생성_파라미터 params) {
         return RestAssured
                 .given().log().all()
-                .body(params)
+                .body(params.createLineCreateParams())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청(Long lineId, Map<String, String> params) {
+    public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청(Long lineId, 구간_생성_파라미터 params) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params)
+                .body(params.createSectionCreateParams())
                 .when().post("/lines/{lineId}/sections", lineId)
                 .then().log().all().extract();
     }
@@ -64,4 +64,59 @@ public class LineSteps {
                 .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then().log().all().extract();
     }
+
+    static class 노선_생성_파라미터 {
+
+        String name;
+        String color;
+        long upStationId;
+        long downStationId;
+        int distance;
+
+        public 노선_생성_파라미터(Long 상행역, Long 하행역, int 상행역_하행역_거리) {
+            name = "신분당선";
+            color = "bg-red-600";
+            upStationId = 상행역;
+            downStationId = 하행역;
+            distance = 상행역_하행역_거리;
+        }
+
+        private Map<String, String> createLineCreateParams() {
+            Map<String, String> lineCreateParams;
+            lineCreateParams = new HashMap<>();
+            lineCreateParams.put("name", name);
+            lineCreateParams.put("color", color);
+            lineCreateParams.put("upStationId", String.valueOf(upStationId));
+            lineCreateParams.put("downStationId", String.valueOf(downStationId));
+            lineCreateParams.put("distance", String.valueOf(distance));
+            return lineCreateParams;
+        }
+
+    }
+
+    static class 구간_생성_파라미터 {
+        static final int DEFAULT_DISTANCE = 5;
+        long upStationId;
+        long downStationId;
+        int distance;
+
+        public 구간_생성_파라미터(Long 상행역, Long 하행역) {
+            this(상행역, 하행역, DEFAULT_DISTANCE);
+        }
+
+        public 구간_생성_파라미터(Long 상행역, Long 하행역, int 상행역_하행역_거리) {
+            upStationId = 상행역;
+            downStationId = 하행역;
+            distance = 상행역_하행역_거리;
+        }
+
+        private Map<String, String> createSectionCreateParams() {
+            Map<String, String> params = new HashMap<>();
+            params.put("upStationId", String.valueOf(upStationId));
+            params.put("downStationId", String.valueOf(downStationId));
+            params.put("distance", String.valueOf(distance));
+            return params;
+        }
+    }
+
 }
