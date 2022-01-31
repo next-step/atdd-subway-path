@@ -34,7 +34,7 @@ public class LineUtils {
         params.put("downStationId", String.valueOf(downStationId));
         params.put("distance", String.valueOf(request.getDistance()));
 
-        return post_요청("/lines", params);
+        return post("/lines", params);
     }
 
     public static void 지하철노선_생성_성공(ExtractableResponse<Response> response) {
@@ -42,7 +42,7 @@ public class LineUtils {
     }
 
     public static ExtractableResponse<Response> 지하철노선_단건조회_요청(Long id) {
-        return get_요청("/lines/" + id);
+        return get("/lines/" + id);
     }
 
     public static void 지하철노선_단건조회_성공(ExtractableResponse<Response> response) {
@@ -51,7 +51,7 @@ public class LineUtils {
     }
 
     public static ExtractableResponse<Response> 지하철노선_목록조회_요청() {
-        return get_요청("/lines/");
+        return get("/lines/");
     }
 
     public static void 지하철노선목록_조회_성공(ExtractableResponse<Response> response) {
@@ -60,7 +60,7 @@ public class LineUtils {
     }
 
     public static ExtractableResponse<Response> 지하철노선_수정_요청(Long id, Map<String, String> params) {
-       return put_요청("/lines/" + id, params);
+       return put("/lines/" + id, params);
     }
 
     public static void 지하철노선_수정_성공(ExtractableResponse<Response> response, Map<String, String> params) {
@@ -70,7 +70,7 @@ public class LineUtils {
     }
 
     public static ExtractableResponse<Response> 지하철노선_삭제_요청(Long id) {
-        return delete_요청("/lines/" + id);
+        return delete("/lines/" + id);
     }
 
 }
