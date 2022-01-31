@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.exception.BusinessException;
 import nextstep.subway.applicaion.exception.DuplicationException;
+import nextstep.subway.applicaion.exception.NotFoundException;
 import nextstep.subway.applicaion.exception.NotLastSectionException;
 import org.springframework.http.HttpStatus;
 
@@ -118,8 +119,7 @@ public class Sections {
         if (count == lastDownStation) {
             Section findSection = sections
                     .stream()
-                    .filter(section ->
-                            section.isSameDownStation(stationId))
+                    .filter(section -> section.isSameDownStation(stationId))
                     .findFirst()
                     .orElse(null);
             sections.remove(findSection);
@@ -150,5 +150,19 @@ public class Sections {
                 .filter(section -> section.isSameUpStation(upStation) && section.isSameDownStation(downStation))
                 .findFirst()
                 .isPresent();
+    }
+
+    public Section findFirstSection() {
+        int lastOne = 1;
+        return sections.stream().filter(section -> countStation(section.getUpStation().getId()) == lastOne)
+                .findFirst()
+                .orElseThrow(BusinessException::new);
+    }
+
+    public Section findSectionByUpStation(Long id) {
+        return sections.stream()
+                .filter(section -> section.isSameUpStation(id))
+                .findFirst()
+                .orElseThrow(NotFoundException::new);
     }
 }

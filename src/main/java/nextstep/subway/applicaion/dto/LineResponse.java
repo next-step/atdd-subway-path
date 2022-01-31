@@ -5,9 +5,9 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 public class LineResponse {
@@ -29,13 +29,34 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         Sections sections = line.getSections();
-        Set<StationResponse> result = new LinkedHashSet<>();
-        List<Section> sections1 = sections.getSections();
-        for (Section section : sections1) {
-            result.add(StationResponse.of(section.getUpStation()));
-            result.add(StationResponse.of(section.getDownStation()));
+
+
+        if (sections.getSections().isEmpty()) {
+            return new LineResponse(line.getId(), line.getName(), line.getColor(), Collections.emptySet(), line.getCreatedDate(), line.getModifiedDate());
         }
+        Set<StationResponse> result = distinctDuplication(sections);
+
         return new LineResponse(line.getId(), line.getName(), line.getColor(), result, line.getCreatedDate(), line.getModifiedDate());
+    }
+
+    private static Set<StationResponse> distinctDuplication(Sections sections) {
+        Set<StationResponse> result = new LinkedHashSet<>();
+        Section firstSection = sections.findFirstSection();
+        result.add(StationResponse.of(firstSection.getUpStation()));
+        result.add(StationResponse.of(firstSection.getDownStation()));
+
+        while (true) {
+            try {
+                Section section = sections.findSectionByUpStation(firstSection.getDownStation().getId());
+                result.add(StationResponse.of(firstSection.getUpStation()));
+                result.add(StationResponse.of(firstSection.getDownStation()));
+                firstSection = section;
+            } catch (Exception e) {
+                result.add(StationResponse.of(firstSection.getDownStation()));
+                break;
+            }
+        }
+        return result;
     }
 
     public Long getId() {
