@@ -24,4 +24,18 @@ class SectionsTest {
         // then
         assertThat(신분당선.getStations()).containsExactly(신논현역, 강남역, 정자역);
     }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우")
+    @Test
+    void addSection2() {
+        // given
+        신분당선.addSection(강남역, 정자역, distance);
+        Station 중간역 = new Station("중간역");
+
+        // when
+        신분당선.addSection(강남역, 중간역, 6);
+
+        // then
+        assertThat(신분당선.getStations()).containsExactly(강남역, 중간역, 정자역);
+    }
 }
