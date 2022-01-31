@@ -17,6 +17,33 @@ public class Sections {
     private List<Section> sectionList = new ArrayList<>();
 
     public void addSection(Section section) {
+        if (isMiddleSection(section)) {
+            addMiddleSection(section);
+            return;
+        }
+
+        sectionList.add(section);
+    }
+
+    private boolean isMiddleSection(Section section) {
+        return sectionList.stream()
+                .anyMatch(otherSection ->
+                        section.getUpStation().equals(otherSection.getUpStation())
+                                || section.getDownStation().equals(otherSection.getDownStation()));
+    }
+
+    private void addMiddleSection(Section section) {
+        for (Section otherSection : sectionList) {
+            if (section.getUpStation().equals(otherSection.getUpStation())) {
+                otherSection.changeUpStation(section.getDownStation());
+                break;
+            }
+
+            if (section.getDownStation().equals(otherSection.getDownStation())) {
+                otherSection.changeDownStation(section.getUpStation());
+                break;
+            }
+        }
         sectionList.add(section);
     }
 

@@ -52,4 +52,12 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public void changeUpStation(Station station) {
+        upStation = station;
+    }
+
+    public void changeDownStation(Station station) {
+        downStation = station;
+    }
 }
