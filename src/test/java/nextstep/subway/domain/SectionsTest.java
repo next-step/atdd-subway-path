@@ -68,4 +68,17 @@ class SectionsTest {
         assertThatThrownBy(() -> 신분당선.addSection(강남역, 정자역, 6))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 실패 - 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void addSectionFail3() {
+        // given
+        Station 대림역 = new Station("대림역");
+        Station 신풍역 = new Station("신풍역");
+
+
+        // when & then
+        assertThatThrownBy(() -> 신분당선.addSection(대림역, 신풍역, 6))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }
