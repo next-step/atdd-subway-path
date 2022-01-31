@@ -48,10 +48,10 @@ public class Sections {
         boolean existsDownStation = stations.contains(section.getDownStation());
 
         if (existsUpStation && existsDownStation) {
-            throw new IllegalArgumentException(ErrorMessage.EXISTS_STATIONS.getMessage());
+            throw new IllegalArgumentException(ErrorMessage.STATIONS_EXISTS.getMessage());
         }
         if (!existsUpStation && !existsDownStation) {
-            throw new IllegalArgumentException(ErrorMessage.NOT_EXISTS_STATIONS.getMessage());
+            throw new IllegalArgumentException(ErrorMessage.STATIONS_NOT_EXISTS.getMessage());
         }
     }
 
@@ -61,24 +61,30 @@ public class Sections {
                      .findFirst();
     }
 
-    public void remove(long stationId) {
-        verifyRemovable(stationId);
+    public void remove(Station stationForRemove) {
+        verifyRemovable();
+        Map<Station, Section> regularizedByUpStation = regularizedByStation(Section::getUpStation);
+        Map<Station, Section> regularizedByDownStation = regularizedByStation(Section::getDownStation);
 
-        values.removeIf(
-            eachSection -> eachSection.matchDownStation(stationId)
-        );
+        Section sectionForRemove = regularizedByDownStation.get(stationForRemove);
+        values.remove(sectionForRemove);
+        if (isLastSection(regularizedByUpStation, sectionForRemove)) {
+            return;
+        }
+
+        Section upSectionOfDocking = regularizedByDownStation.get(stationForRemove);
+        Section downSectionOfDocking = regularizedByUpStation.get(stationForRemove);
+        upSectionOfDocking.changeDownSection(sectionForRemove, downSectionOfDocking);
     }
 
-    private void verifyRemovable(long downStationId) {
-        if (isNotLastStation(downStationId)) {
-            throw new IllegalArgumentException(ErrorMessage.NOT_LAST_STATION_DELETED.getMessage());
+    private void verifyRemovable() {
+        if (values.size() <= 1) {
+            throw new IllegalArgumentException(ErrorMessage.INVALID_SECTION_SIZE.getMessage());
         }
     }
 
-    private boolean isNotLastStation(long stationId) {
-        List<Station> stations = toStations();
-        Station lastStation = stations.get(stations.size() - 1);
-        return !lastStation.matchId(stationId);
+    private boolean isLastSection(Map<Station, Section> regularizedByUpStation, Section section) {
+        return !regularizedByUpStation.containsKey(section.getDownStation());
     }
 
     public List<Station> toStations() {
@@ -103,7 +109,7 @@ public class Sections {
         return stations;
     }
 
-    private Map<Station, Section> regularizedByStation(Function<Section, Station> getStationFunc) {
+    private <T> Map<T, Section> regularizedByStation(Function<Section, T> getStationFunc) {
         return values.stream()
                      .collect(Collectors.toMap(
                          getStationFunc, eachSection -> eachSection

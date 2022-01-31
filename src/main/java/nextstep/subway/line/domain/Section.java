@@ -51,6 +51,10 @@ public class Section {
         this.distance = distance;
     }
 
+    public boolean matchId(long id) {
+        return this.id.equals(id);
+    }
+
     public boolean matchUpStation(Section section) {
         return upStation.equals(section.upStation);
     }
@@ -64,6 +68,13 @@ public class Section {
 
         distance = distance.subtraction(newSection.distance);
         upStation = newSection.getDownStation();
+    }
+
+    public void changeDownSection(Section oldSection, Section newSection) {
+        newSection.distance = newSection.distance.addition(oldSection.distance);
+
+        downStation = newSection.getDownStation();
+        newSection.upStation = upStation;
     }
 
     private void verifyDistanceExceeded(Distance newSectionDistance) {

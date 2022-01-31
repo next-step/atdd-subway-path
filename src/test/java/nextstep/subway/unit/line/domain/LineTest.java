@@ -106,7 +106,7 @@ class LineTest {
         Station insertNewDownStation = new Station(4L, "중간에 삽입될 하행");
         line.addSection(downStation, newDownStation, distance);
         line.addSection(downStation, insertNewDownStation, new Distance(1));
-        line.deleteSection(newDownStation.getId());
+        line.deleteSection(newDownStation);
 
         assertThat(line.getStations()).containsExactly(upStation, downStation, insertNewDownStation);
     }
@@ -116,10 +116,10 @@ class LineTest {
     void deleteSectionCase2() {
         Station centerStation = downStation;
         Station newDownStation = new Station(3L, "새로운 구간의 하행");
-        line.addSection(centerStation, newDownStation, distance);
+        line.addSection(centerStation, newDownStation, new Distance(120));
         int beforeLength = line.getLength();
 
-        line.deleteSection(centerStation.getId());
+        line.deleteSection(centerStation);
 
         assertThat(line.getStations()).containsExactly(upStation, newDownStation);
         assertThat(line.getLength()).isEqualTo(beforeLength);
