@@ -33,18 +33,17 @@ public class Section {
         return new Section(line, upStation, downStation, distance);
     }
 
-    private Section(Line line, Station upStation, Station downStation, int distance) {
+    public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
-    public void checkTheDistanceToRegisterOrElseThrow(Section section) {
-        if(this.distance > section.distance) {
-            return;
+    public void validateSectionDistance(Section section) {
+        if(this.distance <= section.distance) {
+            throw new ValidationException(INVALID_SECTION_DISTANCE_ERROR);
         }
-        throw new ValidationException(INVALID_SECTION_DISTANCE_ERROR);
     }
 
     public Long getId() {

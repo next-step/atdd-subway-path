@@ -24,7 +24,7 @@ public class Line extends BaseEntity {
         return newLine;
     }
 
-    private Line(String name, String color) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
     }
