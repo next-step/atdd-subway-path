@@ -1,6 +1,7 @@
 package nextstep.subway.ui;
 
 import javassist.NotFoundException;
+import nextstep.subway.exception.IllegalSectionArgumentException;
 import nextstep.subway.exception.LineNotFoundException;
 import nextstep.subway.exception.StationNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -12,6 +13,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ControllerExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Void> handleIllegalArgsException(DataIntegrityViolationException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(IllegalSectionArgumentException.class)
+    public ResponseEntity<Void> handleIllegalSectionArgsException(IllegalSectionArgumentException e) {
         return ResponseEntity.badRequest().build();
     }
 }

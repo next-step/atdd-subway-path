@@ -50,6 +50,10 @@ public class Sections {
                 return;
             }
 
+            if (section1.getDistance() - newSection.getDistance() < 1) {
+                throw new IllegalSectionArgumentException("추가되는 구간의 거리가 기존의 거리보다 크거나 같을 수 없습니다.");
+            }
+
             int index = this.sections.indexOf(section1);
             this.sections.set(index, newSection);
             this.sections.add(index + 1,
@@ -69,6 +73,10 @@ public class Sections {
             if (section1 == null) {
                 this.sections.add(0, newSection);
                 return;
+            }
+
+            if (section1.getDistance() - newSection.getDistance() < 1) {
+                throw new IllegalSectionArgumentException("추가되는 구간의 거리가 기존의 거리보다 크거나 같을 수 없습니다.");
             }
 
             int index = this.sections.indexOf(section1);
