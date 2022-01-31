@@ -50,6 +50,25 @@ class LineTest {
         assertThat(line.getStations()).containsExactly(서울역, 수원역, 부산역);
     }
 
+    @DisplayName("구간 목록 두번째에 새로운 구간을 추가할 경우")
+    @Test
+    void addSecondSection() {
+        //when
+        Station 서울역 = new Station("서울역");
+        Station 부천역 = new Station("부천역");
+        Section lastSection = new Section(line, 서울역, 수원역, 2);
+        line.addSections(lastSection);
+        Section secondSection = new Section(line, 서울역, 부천역, 1);
+        line.addSections(secondSection);
+
+        for (Station station : line.getStations()) {
+            System.out.println(station.getName());
+        }
+
+        //then
+        assertThat(line.getStations()).containsExactly(서울역, 부천역, 수원역, 부산역);
+    }
+
     @DisplayName("노선에 속해있는 역 목록 조회")
     @Test
     void getStations() {
