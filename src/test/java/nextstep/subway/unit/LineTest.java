@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import static nextstep.subway.common.LineSomething.DISTANCE_BASIC;
 import static nextstep.subway.common.LineSomething.DISTANCE_INVALID;
 import static nextstep.subway.common.LineSomething.DISTANCE_VALID;
+import static nextstep.subway.unit.SectionTest.상행역_하행역_의_구간을_만든다;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -19,10 +20,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 class LineTest {
     private Line 노선;
 
-    private Long 노선Id = 1L;
-    private Long 역1Id = 1L;
-    private Long 역2Id = 2L;
-    private Long 추가역Id = 3L;
+    private final Long 노선Id = 1L;
+    private final Long 역1Id = 1L;
+    private final Long 역2Id = 2L;
+    private final Long 추가역Id = 3L;
+
+    private final String 노선이름 = "노선이름";
+    private final String 노선색상 = "노선색상";
 
     @BeforeEach
     void setUp() {
@@ -32,26 +36,24 @@ class LineTest {
     @DisplayName("노선을 이름과 색상으로 생성한다.")
     @Test
     void 노선_생성_테스트_1() {
-        final String 이름 = "노선이름";
-        final String 색상 = "노선색상";
-        노선 = Line.of(이름, 색상);
+        // when
+        노선 = Line.of(노선이름, 노선색상);
 
-        assertThat(노선.getName()).isEqualTo(이름);
-        assertThat(노선.getColor()).isEqualTo(색상);
+        // then
+        assertThat(노선.getName()).isEqualTo(노선이름);
+        assertThat(노선.getColor()).isEqualTo(노선색상);
     }
 
-    @DisplayName("노선을 이름, 색상, 구간으로 생성한다.")
+    @DisplayName("노선을 노선이름, 노선색상, 구간으로 생성한다.")
     @Test
     void 노선_생성_테스트_2() {
-        final String 노선이름 = "노선이름";
-        final String 노선색상 = "노선색상";
-        final Station 상행역 = Station.of("상행역");
-        final Station 하행역 = Station.of("하행역");
-        final int 거리 = 10;
+        // given
+        Section 구간 = 상행역_하행역_의_구간을_만든다();
 
-        Section 구간 = Section.of(상행역, 하행역, 거리);
+        // when
         노선 = Line.of(노선이름, 노선색상, 구간);
 
+        // then
         assertThat(노선.getName()).isEqualTo(노선이름);
         assertThat(노선.getColor()).isEqualTo(노선색상);
         assertThat(노선.getSections().size()).isEqualTo(1);
@@ -85,6 +87,8 @@ class LineTest {
             assertThat(노선.getStations().stream()
                 .mapToLong(Station::getId)
             ).containsExactly(3L, 1L, 2L);
+
+            assertThat(노선.getTotalDistance()).isEqualTo(DISTANCE_BASIC + DISTANCE_VALID);
         }
     }
 
@@ -101,6 +105,8 @@ class LineTest {
             assertThat(노선.getStations().stream()
                 .mapToLong(Station::getId)
             ).containsExactly(1L, 3L, 2L);
+
+            assertThat(노선.getTotalDistance()).isEqualTo(DISTANCE_BASIC);
         }
     }
 
@@ -117,6 +123,8 @@ class LineTest {
             assertThat(노선.getStations().stream()
                 .mapToLong(Station::getId)
             ).containsExactly(1L, 3L, 2L);
+
+            assertThat(노선.getTotalDistance()).isEqualTo(DISTANCE_BASIC);
         }
     }
 
@@ -133,6 +141,8 @@ class LineTest {
             assertThat(노선.getStations().stream()
                 .mapToLong(Station::getId)
             ).containsExactly(1L, 2L, 3L);
+
+            assertThat(노선.getTotalDistance()).isEqualTo(DISTANCE_BASIC + DISTANCE_VALID);
         }
     }
 
@@ -198,7 +208,7 @@ class LineTest {
         Station 역1 = Station.of(1L, "역1");
         Station 역2 = Station.of(2L, "역2");
         Section 구간1 = Section.of(노선, 역1, 역2, DISTANCE_BASIC);
-        노선 = Line.of(노선Id, "일호선", "색상", 구간1);
+        노선 = Line.of(노선Id, "일호선", "노선색상", 구간1);
     }
 
     private Section 상행역_앞쪽으로_추가성공_할_구간을_만든다() {

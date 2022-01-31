@@ -33,11 +33,6 @@ public class LineServiceTest {
     private LineService lineService;
 
     private Long 노선;
-    private Long 일번역1;
-    private Long 이번역2;
-    private Long 삼번역3;
-    private Long 사번역4;
-    private Long 신규역;
 
     private final String 노선이름 = "노선1";
     private final String 노선색상 = "노선색상1";

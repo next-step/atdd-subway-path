@@ -1,8 +1,11 @@
 package nextstep.subway.acceptance;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.utils.RestAssuredCRUD;
@@ -51,5 +54,9 @@ public class LineSteps {
         return RestAssured.given().log().all()
                 .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then().log().all().extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선을_수정한다(Long lineId, LineRequest lineRequest) {
+        return RestAssuredCRUD.putRequest("/lines/{lineId}", lineRequest, lineId);
     }
 }
