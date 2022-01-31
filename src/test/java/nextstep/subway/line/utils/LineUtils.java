@@ -2,6 +2,7 @@ package nextstep.subway.line.utils;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineTestRequest;
 
 import java.util.HashMap;
@@ -17,6 +18,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class LineUtils {
 
     private LineUtils() {}
+
+    public static long getLineId(ExtractableResponse<Response> response) {
+        return response.as(LineResponse.class).getId();
+    }
 
     public static ExtractableResponse<Response> 지하철노선_생성_요청(LineTestRequest request) {
         long upStationId = 지하철역_생성요청(request.getUpStationName()).jsonPath().getLong("id");

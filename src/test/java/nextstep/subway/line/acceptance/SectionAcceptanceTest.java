@@ -17,6 +17,7 @@ import static nextstep.subway.commons.AssertionsUtils.요청_실패;
 import static nextstep.subway.line.utils.LineUtils.지하철노선_단건조회_요청;
 import static nextstep.subway.line.utils.LineUtils.지하철노선_생성_요청;
 import static nextstep.subway.line.utils.SectionUtils.*;
+import static nextstep.subway.station.acceptance.StationUtils.getStationId;
 import static nextstep.subway.station.acceptance.StationUtils.지하철역_생성요청;
 
 @DisplayName("지하철 노선의 구간 관리 기능")
@@ -202,7 +203,5 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         요청_실패(지하철노선_구간생성_응답);
     }
 
-    private long getStationId(ExtractableResponse<Response> response) {
-        return response.as(StationResponse.class).getId();
-    }
+
 }
