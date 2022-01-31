@@ -63,6 +63,29 @@ public class Sections {
 
     public void remove(Station stationForRemove) {
         verifyRemovable();
+
+        if (removeIfFirstSection(stationForRemove)) {
+            return;
+        }
+        removeNotFirstSection(stationForRemove);
+    }
+
+    private void verifyRemovable() {
+        if (values.size() <= 1) {
+            throw new IllegalArgumentException(ErrorMessage.INVALID_SECTION_SIZE.getMessage());
+        }
+    }
+
+    private boolean removeIfFirstSection(Station stationForRemove) {
+        Section firstSection = firstSection();
+        if (!firstSection.matchUpStation(stationForRemove)) {
+            return false;
+        }
+        values.remove(firstSection);
+        return true;
+    }
+
+    private void removeNotFirstSection(Station stationForRemove) {
         Map<Station, Section> regularizedByUpStation = regularizedByStation(Section::getUpStation);
         Map<Station, Section> regularizedByDownStation = regularizedByStation(Section::getDownStation);
 
@@ -71,16 +94,9 @@ public class Sections {
         if (isLastSection(regularizedByUpStation, sectionForRemove)) {
             return;
         }
-
         Section upSectionOfDocking = regularizedByDownStation.get(stationForRemove);
         Section downSectionOfDocking = regularizedByUpStation.get(stationForRemove);
         upSectionOfDocking.dockingInDownSection(sectionForRemove, downSectionOfDocking);
-    }
-
-    private void verifyRemovable() {
-        if (values.size() <= 1) {
-            throw new IllegalArgumentException(ErrorMessage.INVALID_SECTION_SIZE.getMessage());
-        }
     }
 
     private boolean isLastSection(Map<Station, Section> regularizedByUpStation, Section section) {

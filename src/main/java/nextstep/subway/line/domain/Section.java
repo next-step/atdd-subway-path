@@ -59,6 +59,14 @@ public class Section {
         return upStation.equals(section.upStation);
     }
 
+    public boolean matchUpStation(long id) {
+        return upStation.matchId(id);
+    }
+
+    public boolean matchUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
     public boolean matchDownStation(long id) {
         return downStation.matchId(id);
     }
