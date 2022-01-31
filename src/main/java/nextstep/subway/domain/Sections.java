@@ -6,9 +6,9 @@ import static nextstep.subway.exception.CommonExceptionMessages.NOT_HAS_ANY_STAT
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import nextstep.subway.domain.utils.StationConnector;
 import nextstep.subway.domain.utils.StationFrontConnector;
@@ -18,7 +18,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 @Embeddable
 public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-        orphanRemoval = true, fetch = FetchType.LAZY)
+        orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section newSection) {
@@ -42,13 +42,11 @@ public class Sections {
 
     private void handleMidCase(Section section, Section newSection) {
         if (section.hasSameUpStationWith(newSection)) {
-            section.checkEnoughDistanceForAddingOrElseThrow(newSection);
-            section.setUpStation(newSection.getDownStation());
+            section.addUpMid(newSection);
         }
 
         if (section.hasSameDownStationWith(newSection)) {
-            section.checkEnoughDistanceForAddingOrElseThrow(newSection);
-            section.setDownStation(newSection.getUpStation());
+            section.addMidDown(newSection);
         }
     }
 
@@ -91,6 +89,13 @@ public class Sections {
 
     public void remove(int index) {
         sections.remove(index);
+    }
+
+    public int getTotalDistance() {
+        return sections.stream()
+            .mapToInt(Section::getDistance)
+            .sum();
+
     }
 
     public List<Station> getStations() {
