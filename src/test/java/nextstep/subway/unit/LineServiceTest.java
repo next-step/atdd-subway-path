@@ -3,7 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,7 +43,7 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        List<Station> stations = _2호선.getStation();
+        List<Station> stations = _2호선.getStations();
         assertThat(stations).containsExactly(합정역, 신도림역, 홍대입구역);
     }
 }

@@ -25,6 +25,12 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    public Line(String name, String color, Section section) {
+        this.name = name;
+        this.color = color;
+        this.sections.add(section);
+    }
+
     public Long getId() {
         return id;
     }
@@ -87,11 +93,11 @@ public class Line extends BaseEntity {
     }
 
     private boolean isAllMatchOrNoneMach(Section section) {
-        return getStation().stream().noneMatch((s) -> s.equals(section.getUpStation()) || s.equals(section.getDownStation()))
-                || getStation().stream().filter((s) -> s.equals(section.getUpStation()) || s.equals(section.getDownStation())).count() == 2;
+        return getStations().stream().noneMatch((s) -> s.equals(section.getUpStation()) || s.equals(section.getDownStation()))
+                || getStations().stream().filter((s) -> s.equals(section.getUpStation()) || s.equals(section.getDownStation())).count() == 2;
     }
 
-    public List<Station> getStation() {
+    public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
         Section section = getStartSection();
         stations.add(section.getUpStation());

@@ -10,8 +10,9 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import static org.hamcrest.MatcherAssert.assertThat;
 
 class LineTest {
     Line _2호선;
@@ -20,10 +21,9 @@ class LineTest {
 
     @BeforeEach
     void setUp() {
-        _2호선 = new Line();
         강남역 = new Station("강남역");
         정자역 = new Station("정자역");
-        _2호선.getSections().add(new Section(_2호선, 강남역, 정자역, 10));
+        _2호선 = new Line("2호선", "green", new Section(_2호선, 강남역, 정자역, 10));
     }
 
 
@@ -38,9 +38,12 @@ class LineTest {
         _2호선.add(newSection);
 
         //then
-        List<Station> stations = _2호선.getStation();
-        assertThat(_2호선.getSections().size()).isEqualTo(2);
+        List<Station> stations = _2호선.getStations();
+        Integer totalDistance = _2호선.getSections().stream().map(Section::getDistance).reduce(0, Integer::sum);
+
+        assertThat(_2호선.getSections(),hasSize(2));
         assertThat(stations).containsExactly(강남역, 판교역, 정자역);
+        assertThat(totalDistance).isEqualTo(10);
     }
 
     @DisplayName("구간 목록 처음에 새로운 구간을 추가할 경우")
@@ -54,8 +57,8 @@ class LineTest {
         _2호선.add(newSection);
 
         //then
-        List<Station> stations = _2호선.getStation();
-        assertThat(_2호선.getSections().size()).isEqualTo(2);
+        List<Station> stations = _2호선.getStations();
+        assertThat(_2호선.getSections(),hasSize(2));
         assertThat(stations).containsExactly(판교역, 강남역, 정자역);
     }
 
@@ -70,8 +73,8 @@ class LineTest {
         _2호선.add(newSection);
 
         //then
-        List<Station> stations = _2호선.getStation();
-//        assertThat(_2호선.getSections().size()).isEqualTo(2);
+        List<Station> stations = _2호선.getStations();
+        assertThat(_2호선.getSections(),hasSize(2));
         assertThat(stations).containsExactly(강남역, 정자역, 판교역);
     }
 
@@ -114,7 +117,7 @@ class LineTest {
     @Test
     void getStations() {
         //when
-        List<Station> stations = _2호선.getStation();
+        List<Station> stations = _2호선.getStations();
         //then
         assertThat(stations).containsExactly(강남역, 정자역);
     }
