@@ -18,29 +18,41 @@ import static org.springframework.http.HttpStatus.*;
 
 class SectionAcceptanceTest extends AcceptanceTest {
 
+    private Long 서초역_ID;
     private Long 교대역_ID;
     private Long 강남역_ID;
     private Long 역삼역_ID;
     private Long 선릉역_ID;
+    private Long 삼성역_ID;
     private String createdLineUri;
     private String requestUri;
     private String FIRST_SECTION_URI = "/lines/1/sections?downStationId=2";
     private static final String SECTION_URI = "/sections";
-    private Map<String, Object> 역삼_TO_강남 = new HashMap<>();
-    private Map<String, Object> 선릉_TO_역삼 = new HashMap<>();
+    private Map<String, Object> 서초_TO_교대 = new HashMap<>();
+    private Map<String, Object> 교대_TO_강남 = new HashMap<>();
+    private Map<String, Object> 강남_TO_역삼 = new HashMap<>();
+    private Map<String, Object> 역삼_TO_선릉 = new HashMap<>();
+    private Map<String, Object> 선릉_TO_삼성 = new HashMap<>();
     private Map<String, Object> 이호선 = new HashMap<>();
 
     @BeforeEach
     void setFixtures() {
+        서초역_ID = 지하철역_생성_요청후_아이디_조회(서초역);
         교대역_ID = 지하철역_생성_요청후_아이디_조회(교대역);
         강남역_ID = 지하철역_생성_요청후_아이디_조회(강남역);
         역삼역_ID = 지하철역_생성_요청후_아이디_조회(역삼역);
         선릉역_ID = 지하철역_생성_요청후_아이디_조회(선릉역);
-        이호선 = newLine("이호선", "bg-green-600", 교대역_ID, 강남역_ID, 2);
+        삼성역_ID = 지하철역_생성_요청후_아이디_조회(삼성역);
+
+        이호선 = newLine("이호선", "bg-green-600", 교대역_ID, 역삼역_ID, 8);
         createdLineUri = 노선_생성_요청(이호선).header(LOCATION);
         requestUri = createdLineUri + SECTION_URI;
-        역삼_TO_강남 = newSection(역삼역_ID, 강남역_ID, 3);
-        선릉_TO_역삼 = newSection(선릉역_ID, 역삼역_ID, 5);
+
+        서초_TO_교대 = newSection(서초역_ID, 교대역_ID, 3);
+        교대_TO_강남 = newSection(교대역_ID, 강남역_ID, 3);
+        강남_TO_역삼 = newSection(강남역_ID, 역삼역_ID, 3);
+        역삼_TO_선릉 = newSection(역삼역_ID, 선릉역_ID, 5);
+        선릉_TO_삼성 = newSection(선릉역_ID, 삼성역_ID, 5);
     }
 
     /**
@@ -50,7 +62,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간 생성")
     @Test
     void createSection() {
-        ExtractableResponse<Response> response = 구간_생성_요청(역삼_TO_강남, requestUri);
+        ExtractableResponse<Response> response = 구간_생성_요청(역삼_TO_선릉, requestUri);
         assertThat(response.statusCode()).isEqualTo(CREATED.value());
         assertThat(response.header(LOCATION)).isNotBlank();
     }
@@ -63,7 +75,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("새로운 구간의 상행역은 현재 등록되어있는 하행 종점역이어야 한다")
     @Test
     void theNewSectionMustBeTheUnderTerminateStationCurrentlyRegistered() {
-        구간_생성_요청(역삼_TO_강남, requestUri);
+        구간_생성_요청(역삼_TO_선릉, requestUri);
 
         Long 정자역_ID = 지하철역_생성_요청후_아이디_조회(정자역);
         Long 판교역_ID = 지하철역_생성_요청후_아이디_조회(판교역);
@@ -82,10 +94,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("새로운 구간의 하행역은 현재 등록되어있는 역일 수 없다")
     @Test
     void theNewDownSectionCannotBeRegistered() {
-        ExtractableResponse<Response> createResponse1 = 구간_생성_요청(역삼_TO_강남, requestUri);
-        ExtractableResponse<Response> createResponse2 = 구간_생성_요청(선릉_TO_역삼, requestUri);
+        ExtractableResponse<Response> createResponse1 = 구간_생성_요청(역삼_TO_선릉, requestUri);
+        ExtractableResponse<Response> createResponse2 = 구간_생성_요청(선릉_TO_삼성, requestUri);
 
-        Map<String, Object> params = newSection(선릉역_ID, 선릉역_ID, 5);
+        Map<String, Object> params = newSection(삼성역_ID, 삼성역_ID, 5);
         ExtractableResponse<Response> failResponse = 구간_생성_요청(params, requestUri);
 
         assertThat(createResponse1.header(LOCATION)).isNotNull();
@@ -113,7 +125,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("하행 종점역이 아닌 구간에 대한 삭제는 실패한다")
     @Test
     void deleteOfNonUnderTerminateSectionFails() {
-        구간_생성_요청(역삼_TO_강남, requestUri);
+        구간_생성_요청(역삼_TO_선릉, requestUri);
         ExtractableResponse<Response> failResponse = 구간_삭제_요청(FIRST_SECTION_URI);
         assertThat(failResponse.statusCode()).isEqualTo(BAD_REQUEST.value());
     }
@@ -126,7 +138,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("하행 종점역만 제거할 수 있다")
     @Test
     void onlyTheUnderTerminateStationCanBeRemoved() {
-        ExtractableResponse<Response> createResponse = 구간_생성_요청(역삼_TO_강남, requestUri);
+        ExtractableResponse<Response> createResponse = 구간_생성_요청(역삼_TO_선릉, requestUri);
         ExtractableResponse<Response> failResponse = 구간_삭제_요청(createResponse.header(LOCATION));
         assertThat(failResponse.statusCode()).isEqualTo(NO_CONTENT.value());
     }
@@ -139,8 +151,44 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("등록된 구간을 통해 역 목록 조회 기능")
     @Test
     void findStationsThroughRegisteredSectionsInLine() {
-        구간_생성_요청(역삼_TO_강남, requestUri);
+        구간_생성_요청(역삼_TO_선릉, requestUri);
         ExtractableResponse<Response> findResponse = 노선_단건_조회_요청(createdLineUri);
         assertThat(findResponse.jsonPath().getList("stations")).isNotEmpty();
+    }
+
+    /**
+     * Given 하나의 노선과 구간이 생성된 상태에서
+     * When 기존 구간의 역을 기준으로 새로운 구간을 추가하면
+     * Then 새로운 구간이 생성된다
+     */
+    @DisplayName("역 사이에 새로운 역을 등록")
+    @Test
+    void registerNewStationBetweenStations() {
+        ExtractableResponse<Response> response = 구간_생성_요청(교대_TO_강남, requestUri);
+        assertThat(response.header(LOCATION)).isNotNull();
+    }
+
+    /**
+     * Given 하나의 노선과 구간이 생성된 상태에서
+     * When 새로운 역을 상행 종점역으로 하는 새로운 구간을 추가하면
+     * Then 새로운 구간이 생성된다
+     */
+    @DisplayName("새로운 역을 상행 종점으로 등록")
+    @Test
+    void registerNewTerminateUpStation() {
+        ExtractableResponse<Response> response = 구간_생성_요청(서초_TO_교대, requestUri);
+        assertThat(response.header(LOCATION)).isNotNull();
+    }
+
+    /**
+     * Given 하나의 노선과 구간이 생성된 상태에서
+     * When 새로운 역을 하행 종점역으로 하는 새로운 구간을 추가하면
+     * Then 새로운 구간이 생성된다
+     */
+    @DisplayName("새로운 역을 하행 종점으로 등록")
+    @Test
+    void registerNewTerminateDownStation() {
+        ExtractableResponse<Response> response = 구간_생성_요청(역삼_TO_선릉, requestUri);
+        assertThat(response.header(LOCATION)).isNotNull();
     }
 }

@@ -33,7 +33,7 @@ public class ExceptionHandlerController {
     public ResponseEntity<ErrorResponse> validation(final ValidationException e) {
         return ResponseEntity
                 .status(e.getErrorCode().getStatus())
-                .body(ErrorResponse.of(e.getErrorCode(), e.getErrors(), e.getMessage()));
+                .body(ErrorResponse.of(e.getErrorCode(), e.getErrors()));
     }
 
     @ExceptionHandler(NextStepException.class)

@@ -28,10 +28,10 @@ public final class SectionEntitiesHelper {
                 .extract();
     }
 
-    public static Map<String, Object> newSection(Long downStationId, Long upStationId, int distance) {
+    public static Map<String, Object> newSection(Long upStationId, Long downStationId, int distance) {
         Map<String, Object> params = new HashMap<>();
-        params.put("downStationId", downStationId);
         params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
         params.put("distance", distance);
         return params;
     }
