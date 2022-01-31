@@ -6,11 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 public class Line extends BaseEntity {
@@ -78,18 +74,6 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> getSections() {
-        List<Section> sections = new ArrayList<>();
-        Station upStation = this.sections.geUpStationEndpoint();
-        if(Objects.isNull(upStation)){
-            return sections;
-        }
-
-        do {
-            Section section = this.sections.getSectionByUpStation(upStation);
-            sections.add(section);
-            upStation = section.getDownStation();
-        } while (!this.sections.isDownStationEndpoint(upStation));
-
-        return Collections.unmodifiableList(sections);
+        return this.sections.getSortedSections();
     }
 }
