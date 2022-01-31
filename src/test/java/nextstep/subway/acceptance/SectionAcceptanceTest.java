@@ -84,6 +84,67 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         리스트_값_검사(노선_조회_결과, "stations." + 노선_이름_키, 상행역_이름, 하행역_이름, "아무개");
     }
 
+    /**
+     * When 신규 구간을 기존 구간 맨 앞에 추가한다
+     * Then 신규 구간이 등록된다.
+     */
+    @DisplayName("신규 구간을 기존 구간 맨 앞에 추가할 수 있다")
+    @Test
+    void 구간_맨_앞에_구간을_등록할_수_있다() {
+        //given
+        ExtractableResponse<Response> 아무개 = 지하철역생성("아무개");
+        Long 지하철역_ID = 아무개.jsonPath().getLong(지하철_역_아이디_키);
+
+        //when
+        int 종점간거리 = 3;
+        ExtractableResponse<Response> response = 구간등록(지하철역_ID, 상행종점, 종점간거리);
+
+        //then
+        상태_값_검사(response, HttpStatus.CREATED);
+        ExtractableResponse<Response> 노선_조회_결과 = 노선조회(노선_생성_결과.header(HttpHeaders.LOCATION));
+        리스트_값_검사(노선_조회_결과, "stations." + 노선_이름_키, 상행역_이름, 하행역_이름, "아무개");
+    }
+
+    /**
+     * When 신규 구간을 기존 구간 맨 뒤에 추가한다
+     * Then 신규 구간이 등록된다.
+     */
+    @DisplayName("신규 구간을 기존 구간 맨 뒤에 추가할 수 있다")
+    @Test
+    void 구간_맨_뒤에_구간을_등록할_수_있다() {
+        //given
+        ExtractableResponse<Response> 아무개 = 지하철역생성("아무개");
+        Long 지하철역_ID = 아무개.jsonPath().getLong(지하철_역_아이디_키);
+
+        //when
+        int 종점간거리 = 3;
+        ExtractableResponse<Response> response = 구간등록(하행종점, 지하철역_ID, 종점간거리);
+
+        //then
+        상태_값_검사(response, HttpStatus.CREATED);
+        ExtractableResponse<Response> 노선_조회_결과 = 노선조회(노선_생성_결과.header(HttpHeaders.LOCATION));
+        리스트_값_검사(노선_조회_결과, "stations." + 노선_이름_키, 상행역_이름, 하행역_이름, "아무개");
+    }
+
+    /**
+     * When 신규 구간을 기존 구간 맨 뒤에 추가한다
+     * Then 신규 구간이 등록된다.
+     */
+    @DisplayName("구간을 중간에 추가 시 기존의 역간 거리를 넘을 수 없다")
+    @Test
+    void 구간을_중간에_추가_시_기존_길이를_넘을_수_없다() {
+        //given
+        ExtractableResponse<Response> 아무개 = 지하철역생성("아무개");
+        Long 지하철역_ID = 아무개.jsonPath().getLong(지하철_역_아이디_키);
+
+        //when
+        int 종점간거리 = Integer.MAX_VALUE;
+        ExtractableResponse<Response> response = 구간등록(상행종점, 지하철역_ID, 종점간거리);
+
+        //then
+        상태_값_검사(response, HttpStatus.BAD_REQUEST);
+    }
+
 
     /**
      * When  새로운 상행이 기존의 하행과 일치하지 않는 구간 등록을 요청한다
