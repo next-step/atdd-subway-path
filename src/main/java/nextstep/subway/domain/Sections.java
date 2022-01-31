@@ -147,9 +147,14 @@ public class Sections {
         Station upStation = newSection.getUpStation();
         Station downStation = newSection.getDownStation();
         return sections.stream()
-                .filter(section -> section.isSameUpStation(upStation) && section.isSameDownStation(downStation))
+                .filter(section -> section.isSameUpStation(upStation))
                 .findFirst()
-                .isPresent();
+                .isPresent()
+                &&
+                sections.stream()
+                        .filter(section -> section.isSameDownStation(downStation))
+                        .findFirst()
+                        .isPresent();
     }
 
     public Section findFirstSection() {

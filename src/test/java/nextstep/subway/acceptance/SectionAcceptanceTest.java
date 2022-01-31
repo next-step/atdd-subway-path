@@ -2,6 +2,7 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.applicaion.exception.DuplicationException;
 import nextstep.subway.applicaion.exception.NotLastSectionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -128,7 +129,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 신규 구간을 기존 구간 맨 뒤에 추가한다
-     * Then 신규 구간이 등록된다.
+     * Then 신규 구간등록이 실패한다.
      */
     @DisplayName("구간을 중간에 추가 시 기존의 역간 거리를 넘을 수 없다")
     @Test
@@ -143,6 +144,28 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //then
         상태_값_검사(response, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * When  상행역,하행역이 이미 노선에 등록된 구간 등록을 요청을 한다.
+     * Then  구간 등록이 실패한다.
+     */
+    @DisplayName("신규 구간 등록 시 이미 노선에 모두 등록된 역들이면 구간 등록이 실패한다")
+    @Test
+    void 모든_역이_이미_등록_되어있다면_실패한다() {
+        //given
+        ExtractableResponse<Response> 아무개 = 지하철역생성("아무개");
+        Long 지하철역_ID = 아무개.jsonPath().getLong(지하철_역_아이디_키);
+        int 종점간거리 = this.종점간거리 - 1;
+        구간등록(상행종점, 지하철역_ID, 종점간거리);
+
+        //when
+        ExtractableResponse<Response> response = 구간등록(상행종점, 하행종점, 종점간거리);
+
+        //then
+        상태_값_검사(response, HttpStatus.CONFLICT);
+        예외_검사(response, DuplicationException.MESSAGE);
+
     }
 
 
