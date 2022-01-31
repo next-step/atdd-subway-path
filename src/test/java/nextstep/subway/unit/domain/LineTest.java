@@ -9,6 +9,7 @@ import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
@@ -35,6 +36,12 @@ class LineTest {
         삼성역 = new Station("삼성역");
         section = new Section(line, 교대역, 역삼역, 10);
         line.addSection(section);
+
+        ReflectionTestUtils.setField(서초역, "id", 1L);
+        ReflectionTestUtils.setField(교대역, "id", 2L);
+        ReflectionTestUtils.setField(강남역, "id", 3L);
+        ReflectionTestUtils.setField(역삼역, "id", 4L);
+        ReflectionTestUtils.setField(삼성역, "id", 5L);
     }
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
@@ -81,8 +88,10 @@ class LineTest {
         // when
         LineResponse lineResponse = LineResponse.of(line);
         List<StationResponse> stations = lineResponse.getStations();
+
+        // then
         StationResponse lastStation = stations.get(stations.size() - 1);
-        assertThat(lastStation.getName()).isEqualTo(삼성역);
+        assertThat(lastStation.getName()).isEqualTo(삼성역.getName());
     }
 
     @DisplayName("구간이 목록에서 마지막 역 삭제")

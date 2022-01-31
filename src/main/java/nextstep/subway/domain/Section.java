@@ -41,7 +41,7 @@ public class Section {
     }
 
     public void validateSectionDistance(Section section) {
-        if(this.distance <= section.distance) {
+        if (this.distance <= section.distance) {
             throw new ValidationException(INVALID_SECTION_DISTANCE_ERROR);
         }
     }
