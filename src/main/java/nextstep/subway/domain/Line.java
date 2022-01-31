@@ -2,7 +2,6 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,6 +69,48 @@ public class Line extends BaseEntity {
         addSectionStartOrEnd(section, startSection, endSection);
     }
 
+    public void removeSection(Station station) {
+        // 네이밍... 괜찮은 걸까요? 혹시 이런 상황에서 추천 해 주실만한 메소드 네이밍이 있을까요?
+        // 이런 private method 를 인수테스트에서 Steps 분리하듯이 해당 Entity 에 종속적인 Util 로 나누어도 괜찮다고 생각하시나요?
+        // 약간 public method 를 제외하고는 전부 분리해 내고 싶은데...
+        validRemove(station);
+        removeTerminus(station);
+        removeMiddleComponent(station);
+    }
+
+
+
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+        Section section = getStartSection();
+        stations.add(section.getUpStation());
+
+        while (section != null) {
+            Station downStation = section.getDownStation();
+            Optional<Section> nextSection = sections.stream()
+                    .filter(oldSection -> oldSection.getUpStation().equals(downStation))
+                    .findFirst();
+
+            stations.add(downStation);
+            section = nextSection.orElseGet(() -> null);
+        }
+        return stations;
+    }
+
+
+    public Section getSectionByUpStation(Station upStation) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(upStation))
+                .findFirst()
+                .orElseGet(() -> null);
+    }
+
+
+
+
+
+
+
     private void addSectionStartOrEnd(Section section, Section startSection, Section endSection) {
         sections.stream()
                 .filter((s) -> section.getDownStation().equals(startSection.getUpStation()) || section.getUpStation().equals(endSection.getDownStation()))
@@ -91,70 +132,6 @@ public class Line extends BaseEntity {
                     sections.add(new Section(this, section.getDownStation(),findSection.getDownStation(), findSection.getDistance() - section.getDistance()));
                     sections.remove(findSection);
                 });
-    }
-
-    public void removeSection(Station station) {
-        // 1. 구간이 하나 뿐일 경우 IllegalArgumentException 을 내보낸다.
-        // 2. 존재하지 않는 구간으로 삭제하려고 했을 경우 IllegalArgumentException 을 내보낸다.
-        // 3. 삭제하는 역이 상행 종점 상행역일 경우 해당 구간을 삭제한다.
-        // 4. 삭제하는 역이 하행 종점 하행역일 경우 해당 구간을 삭제한다.
-        // 5. 삭제하는 역이 어떤 구간의 하행역이면서 상행역일 경우. 해당 역을 포함한 두 구간을 모두 삭제하며, 두 구간에 남은 역들을 연결하는 구간을 신설한다.
-        // 이 때 두 구간의 거리는 삭제한 두 구간의 합으로 결정한다.
-
-        //1
-        if (sections.size() < 2) {
-            throw new IllegalArgumentException("삭제할 수 있는 구간이 존재하지 않습니다.");
-        }
-
-        //2
-        if (!getStations().contains(station)) {
-            throw new IllegalArgumentException("삭제할 수 있는 구간이 존재하지 않습니다.");
-        }
-
-        //3 ,4
-        Section startSection = getStartSection();
-        Section endSection = getEndSection();
-        sections.stream()
-                .filter(section -> (section.equals(startSection) && station.equals(section.getUpStation())) || (section.equals(endSection) && station.equals(section.getDownStation())))
-                .findFirst()
-                .ifPresent(section -> {
-                    sections.remove(section);
-                });
-
-        //5
-        Section upStationSection = sections.stream()
-                .filter(section -> section.getDownStation().equals(station))
-                .findFirst()
-                .orElseGet(() -> null);
-
-        Section downStationSection = sections.stream()
-                .filter(section -> section.getUpStation().equals(station))
-                .findFirst()
-                .orElseGet(() -> null);
-
-        if (upStationSection != null && downStationSection != null) {
-            Section newSection = new Section(this, upStationSection.getUpStation(), downStationSection.getDownStation(), upStationSection.getDistance() + downStationSection.getDistance());
-            sections.add(newSection);
-            sections.remove(upStationSection);
-            sections.remove(downStationSection);
-        }
-    }
-
-    public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
-        Section section = getStartSection();
-        stations.add(section.getUpStation());
-
-        while (section != null) {
-            Station downStation = section.getDownStation();
-            Optional<Section> nextSection = sections.stream()
-                    .filter(oldSection -> oldSection.getUpStation().equals(downStation))
-                    .findFirst();
-
-            stations.add(downStation);
-            section = nextSection.orElseGet(() -> null);
-        }
-        return stations;
     }
 
 
@@ -179,11 +156,38 @@ public class Line extends BaseEntity {
                 .orElseThrow(IllegalAccessError::new);
     }
 
+    private void removeTerminus(Station station) {
+        sections.stream()
+                .filter(section -> (section.equals(getStartSection()) && station.equals(section.getUpStation())) || (section.equals(getEndSection()) && station.equals(section.getDownStation())))
+                .findFirst()
+                .ifPresent(section -> {
+                    sections.remove(section);
+                });
+    }
 
-    public Section getSectionByUpStation(Station upStation) {
-        return sections.stream()
-                .filter(section -> section.getUpStation().equals(upStation))
+    private void removeMiddleComponent(Station station) {
+        Section upStationSection = sections.stream()
+                .filter(section -> section.getDownStation().equals(station))
                 .findFirst()
                 .orElseGet(() -> null);
+
+        Section downStationSection = sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst()
+                .orElseGet(() -> null);
+
+        if (upStationSection != null && downStationSection != null) {
+            Section newSection = new Section(this, upStationSection.getUpStation(), downStationSection.getDownStation(), upStationSection.getDistance() + downStationSection.getDistance());
+            sections.add(newSection);
+            sections.remove(upStationSection);
+            sections.remove(downStationSection);
+        }
     }
+
+    private void validRemove(Station station) {
+        if (sections.size() < 2 || !getStations().contains(station)) {
+            throw new IllegalArgumentException("삭제할 수 있는 구간이 존재하지 않습니다.");
+        }
+    }
+
 }
