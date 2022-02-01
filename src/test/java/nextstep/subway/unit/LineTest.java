@@ -23,16 +23,19 @@ class LineTest {
     void setUp() {
         upStation = new Station("사당");
         downStation = new Station("방배");
-        line = new Line("2호선", "green");
-        section = new Section(upStation, downStation, 5);
+        section = new Section(upStation, downStation, 10);
+        line = new Line("2호선", "green", section);
     }
 
 
     @DisplayName("등록된 구간이 없을 때 새로운 구간을 추가할 경우")
     @Test
     void section_should_be_added_to_line_when_there_is_no_section() {
+        // given
+        Line newLine = new Line("2호선", "green");
+
         // when
-        line.addSection(section);
+        newLine.addSection(section);
 
         // then
         assertThat(line.getSections().size()).isEqualTo(1);
@@ -41,9 +44,8 @@ class LineTest {
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
     @Test
-    void section_should_be_added_to_line_when_there_is_section_that_is_able_to_connect() {
+    void section_should_be_added_to_line_when_there_is_last_section_that_is_able_to_connect() {
         // given
-        line.addSection(section);
         Station newStation = new Station("서초");
         Section newSection = new Section(downStation, newStation, 3);
 
@@ -58,7 +60,6 @@ class LineTest {
     @Test
     void add_section_should_throw_exception_when_there_is_section_that_is_not_able_to_connect() {
         // given
-        line.addSection(section);
         Station newUpStation = new Station("서초");
         Station newDownStation = new Station("교대");
         Section newSection = new Section(newUpStation, newDownStation, 5);
@@ -73,8 +74,6 @@ class LineTest {
     @Test
     void getStations() {
         // given
-        line.addSection(section);
-
         // when
         List<Station> stations = line.getStations();
 
@@ -86,7 +85,6 @@ class LineTest {
     @Test
     void should_be_success_when_last_section_is_removable() {
         // given
-        line.addSection(section);
         Station newStation = new Station("서초");
         Section newSection = new Section(downStation, newStation, 5);
         line.addSection(newSection);
@@ -101,9 +99,6 @@ class LineTest {
     @DisplayName("구간이 하나일 때 마지막 역 삭제 실패")
     @Test
     void should_be_fail_when_section_is_only_one() {
-        // given
-        line.addSection(section);
-
         // when & then
         assertThatIllegalArgumentException().isThrownBy(
                 () -> line.removeStation(downStation)
