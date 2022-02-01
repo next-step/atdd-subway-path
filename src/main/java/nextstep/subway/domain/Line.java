@@ -27,6 +27,11 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    public void updateLine(String name, String color){
+        this.name = name;
+        this.color = color;
+    }
+
     public void addSection(Section section) {
         if(sections.isEmpty()){
             sections.add(section);
@@ -37,7 +42,7 @@ public class Line extends BaseEntity {
         Section lastSection = sections.get(sections.size() - 1);
         Station endStation = lastSection.getDownStation();
         if(!endStation.equals(section.getUpStation())){
-            throw new IllegalArgumentException("");
+            throw new IllegalArgumentException("요청한 상행역이 하행종점역과 연결되지 않습니다.");
         }
 
         sections.add(section);
@@ -60,24 +65,12 @@ public class Line extends BaseEntity {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 
     public List<Section> getSections() {
