@@ -17,8 +17,8 @@ class SectionTest {
     private Station upStation;
     private Station downStation;
     private Line line;
-    private Section section;
     private int distance;
+    private Section section;
 
     @BeforeEach
     void setUp() {

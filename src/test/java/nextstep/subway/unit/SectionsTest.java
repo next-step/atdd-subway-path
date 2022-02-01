@@ -29,7 +29,7 @@ class SectionsTest {
 
     @DisplayName("구간 목록 맨뒤에 새로운 구간을 추가할 경우")
     @Test
-    void addSectionLast() {
+    void addSectionExtensionDownTerminalStation() {
         // given
         final Station extraStation = new Station("extraStation");
         final Section section = new Section(line, downStation, extraStation, 1);
@@ -43,7 +43,7 @@ class SectionsTest {
 
     @DisplayName("구간 목록 맨앞에 새로운 구간을 추가할 경우")
     @Test
-    void addSectionFirst() {
+    void addSectionExtensionUpTerminalStation() {
         // given
         final Station extraStation = new Station("extraStation");
         final Section section = new Section(line, extraStation, upStation, 1);
@@ -53,5 +53,19 @@ class SectionsTest {
 
         // then
         assertThat(sections.getStations()).containsExactly(extraStation, upStation, downStation);
+    }
+
+    @DisplayName("구간 목록 하행을 기준으로 중앙 방향의 새로운 구간을 추가할 경우")
+    @Test
+    void addSectionDownStation() {
+        // given
+        final Station extraStation = new Station("extraStation");
+        final Section section = new Section(line, extraStation, downStation, 1);
+
+        // when
+        sections.addSection(section);
+
+        // then
+        assertThat(sections.getStations()).containsExactly(upStation, extraStation, downStation);
     }
 }
