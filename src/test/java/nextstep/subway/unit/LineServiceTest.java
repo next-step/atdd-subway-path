@@ -2,10 +2,7 @@ package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,13 +28,16 @@ public class LineServiceTest {
         var upStation = stationRepository.save(new Station("신논현역"));
         var downStation = stationRepository.save(new Station("강남역"));
         var line = lineRepository.save(new Line("신분당선", "bg-red-600"));
+        line.init(new Section(upStation, downStation, 10));
+        var station = stationRepository.save(new Station("양재역"));
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(line.getId(), SectionRequest.of(upStation.getId(), downStation.getId(), 10));
+        var sectionRequest = SectionRequest.of(2L, 3L, 10);
+        lineService.addStationToLine(line.getId(), sectionRequest);
 
         // then
         // line.getSections 메서드를 통해 검증
-        assertThat(line.getSections().size()).isEqualTo(1);
+        assertThat(line.getSections().size()).isEqualTo(2);
     }
 }

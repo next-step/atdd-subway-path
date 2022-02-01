@@ -2,6 +2,7 @@ package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.StationRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.common.exception.DuplicateAttributeException;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,13 @@ public class StationService {
     }
 
     public StationResponse saveStation(StationRequest stationRequest) {
-        Station station = stationRepository.save(new Station(stationRequest.getName()));
-        return createStationResponse(station);
+        var name = stationRequest.getName();
+        if (isStationNamePresent(name)) {
+            throw new DuplicateAttributeException("이미 존재하는 역명: " + name);
+        }
+
+        Station station = stationRepository.save(new Station(name));
+        return StationResponse.from(station);
     }
 
     @Transactional(readOnly = true)
@@ -29,7 +35,7 @@ public class StationService {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-                .map(this::createStationResponse)
+                .map(StationResponse::from)
                 .collect(Collectors.toList());
     }
 
@@ -37,16 +43,9 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    public StationResponse createStationResponse(Station station) {
-        return new StationResponse(
-                station.getId(),
-                station.getName(),
-                station.getCreatedDate(),
-                station.getModifiedDate()
-        );
+    private boolean isStationNamePresent(String stationName) {
+        return stationRepository.findByName(stationName)
+                .isPresent();
     }
 
-    public Station findById(Long id) {
-        return stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-    }
 }

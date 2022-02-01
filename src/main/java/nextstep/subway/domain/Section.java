@@ -1,9 +1,11 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,16 +24,19 @@ public class Section {
 
     private int distance;
 
-    public Section() {
-
+    protected Section() {
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
-        this.line = line;
+    public Section(
+            Station upStation,
+            Station downStation,
+            int distance
+    ) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
+
 
     public Long getId() {
         return id;
@@ -51,5 +56,25 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (this.id == null || o == null || getClass() != o.getClass())
+            return false;
+
+        var section = (Section) o;
+        return id.equals(section.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
