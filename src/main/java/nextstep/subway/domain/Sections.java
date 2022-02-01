@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exception.CannotAddSectionException;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -18,6 +20,13 @@ public class Sections {
         if (sections.isEmpty()) {
             sections.add(section);
             return;
+        }
+
+        boolean hasUpStation = hasUpStation(section.getUpStation());
+        boolean hasDownStation = hasDownStation(section.getDownStation());
+
+        if (hasUpStation && hasDownStation) {
+            throw new CannotAddSectionException();
         }
 
         addFirstUpSection(section);
@@ -45,6 +54,17 @@ public class Sections {
     private boolean hasStation(Station station) {
         return sections.stream()
                 .anyMatch(section1 -> section1.containsStation(station));
+    }
+
+
+    private boolean hasUpStation(Station upStation) {
+        return sections.stream()
+                .anyMatch(section -> section.hasSameUpStation(upStation));
+    }
+
+    private boolean hasDownStation(Station downStation) {
+        return sections.stream()
+                .anyMatch(section -> section.hasSameDownStation(downStation));
     }
 
     private Station findFirstUpStation() {

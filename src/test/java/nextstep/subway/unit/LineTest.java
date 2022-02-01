@@ -3,6 +3,8 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.exception.CannotAddSectionException;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
 
@@ -68,6 +71,23 @@ class LineTest {
 
     }
 
+    @DisplayName("추가하려는 구간이 이미 존재하는 경우 구간 추가 실패")
+    @Test
+    void addSectionExistBothException() {
+        //given
+        Section existSection = Section.of(loopLine, yeoksam, sunreoung, 10);
+        loopLine.addSection(existSection);
+
+        Section sectionForAdd = Section.of(loopLine, gangnam, sunreoung, 10);
+
+        //when
+        ThrowableAssert.ThrowingCallable actual = () -> loopLine.addSection(sectionForAdd);
+
+        //then
+        assertThatThrownBy(actual)
+                .isInstanceOf(CannotAddSectionException.class)
+                .hasMessage("추가하려는 역이 이미 노선에 존재합니다");
+    }
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
     @Test
