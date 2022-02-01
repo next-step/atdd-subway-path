@@ -15,9 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관리 기능")
 class StationAcceptanceTest extends AcceptanceTest {
 
-
-    ExtractableResponse<Response> createResponse;
-
     /**
      * When 지하철역 생성을 요청 하면
      * Then 지하철역 생성이 성공한다.
@@ -26,11 +23,11 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철역생성_테스트() {
         // when
-        createResponse = 지하철역생성(기존지하철);
+        ExtractableResponse<Response> 지하철_생성_응답 = 지하철역생성(기존지하철);
 
         // then
-        상태_값_검사(createResponse, HttpStatus.CREATED);
-        assertThat(createResponse.header(HttpHeaders.LOCATION)).isNotBlank();
+        상태_값_검사(지하철_생성_응답, HttpStatus.CREATED);
+        assertThat(지하철_생성_응답.header(HttpHeaders.LOCATION)).isNotBlank();
     }
 
     /**
@@ -43,13 +40,13 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철역목록조회_테스트() {
         /// given
-        createResponse = 지하철역생성(기존지하철);
+        지하철역생성(기존지하철);
         지하철역생성(새로운지하철);
 
         // when
-        ExtractableResponse<Response> response = 지하철역조회(기본주소);
-        상태_값_검사(response, HttpStatus.OK);
-        리스트_값_검사(response, 지하철_역_이름_키, 기존지하철, 새로운지하철);
+        ExtractableResponse<Response> 지하철_조회_응답 = 지하철역조회(기본주소);
+        상태_값_검사(지하철_조회_응답, HttpStatus.OK);
+        리스트_값_검사(지하철_조회_응답, 지하철_역_이름_키, 기존지하철, 새로운지하철);
     }
 
     /**
@@ -61,13 +58,13 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철역삭제_테스트() {
         // given
-        createResponse = 지하철역생성(기존지하철);
+        ExtractableResponse<Response> 지하철_생성_응답 = 지하철역생성(기존지하철);
 
         // when
-        ExtractableResponse<Response> response = 지하철역삭제(createResponse.header(HttpHeaders.LOCATION));
+        ExtractableResponse<Response> 지하철_삭제_응답 = 지하철역삭제(지하철_생성_응답.header(HttpHeaders.LOCATION));
 
         // then
-        상태_값_검사(response, HttpStatus.NO_CONTENT);
+        상태_값_검사(지하철_삭제_응답, HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -79,13 +76,13 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void 중복된지하철역생성_테스트() {
         // given
-        createResponse = 지하철역생성(기존지하철);
+        지하철역생성(기존지하철);
 
         //when
-        ExtractableResponse<Response> response = 지하철역생성(기존지하철);
+        ExtractableResponse<Response> 지하철_생성_응답 = 지하철역생성(기존지하철);
 
         //then
-        상태_값_검사(response, HttpStatus.CONFLICT);
-        예외_검사(response, DuplicationException.MESSAGE);
+        상태_값_검사(지하철_생성_응답, HttpStatus.CONFLICT);
+        예외_검사(지하철_생성_응답, DuplicationException.MESSAGE);
     }
 }

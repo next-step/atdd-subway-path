@@ -53,11 +53,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @ParameterizedTest
     void 노선생성_테스트(Map<String, Object> 노선_파라미터) {
         //when
-        ExtractableResponse<Response> response = 노선생성(노선_파라미터);
+        ExtractableResponse<Response> 노선_생성_응답 = 노선생성(노선_파라미터);
 
         //then
-        상태_값_검사(response, HttpStatus.CREATED);
-        ExtractableResponse<Response> 노선조회 = 노선조회(response.header(HttpHeaders.LOCATION));
+        상태_값_검사(노선_생성_응답, HttpStatus.CREATED);
+        ExtractableResponse<Response> 노선조회 = 노선조회(노선_생성_응답.header(HttpHeaders.LOCATION));
         단일_값_검사(노선조회, 노선_이름_키, 기존노선);
     }
 
@@ -69,10 +69,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void notFoundSection() {
         //when
-        ExtractableResponse<Response> response = 노선생성(노선파라미터생성(새로운노선, 새로운색상, Long.MAX_VALUE, Long.MIN_VALUE, Integer.MAX_VALUE));
+        ExtractableResponse<Response> 노선_생성_응답 = 노선생성(노선파라미터생성(새로운노선, 새로운색상, Long.MAX_VALUE, Long.MIN_VALUE, Integer.MAX_VALUE));
 
         //then
-        예외_검사(response, NotFoundException.MESSAGE);
+        예외_검사(노선_생성_응답, NotFoundException.MESSAGE);
     }
 
 
@@ -92,11 +92,11 @@ class LineAcceptanceTest extends AcceptanceTest {
         노선생성(두번째_노선_파라미터);
 
         //when
-        ExtractableResponse<Response> response = 노선조회(기본주소);
+        ExtractableResponse<Response> 노선_조회_응답 = 노선조회(기본주소);
 
         //then
-        리스트_값_검사(response, 노선_이름_키, String.valueOf(첫_노선_파라미터.get(노선_이름_키)), String.valueOf(두번째_노선_파라미터.get(노선_이름_키)));
-        리스트_값_검사(response, 노선_색상_키, String.valueOf(첫_노선_파라미터.get(노선_색상_키)), String.valueOf(두번째_노선_파라미터.get(노선_색상_키)));
+        리스트_값_검사(노선_조회_응답, 노선_이름_키, String.valueOf(첫_노선_파라미터.get(노선_이름_키)), String.valueOf(두번째_노선_파라미터.get(노선_이름_키)));
+        리스트_값_검사(노선_조회_응답, 노선_색상_키, String.valueOf(첫_노선_파라미터.get(노선_색상_키)), String.valueOf(두번째_노선_파라미터.get(노선_색상_키)));
     }
 
     /**
@@ -110,15 +110,15 @@ class LineAcceptanceTest extends AcceptanceTest {
     @ParameterizedTest
     void 노선조회_테스트(Map<String, Object> 노선_파라미터) {
         //given
-        ExtractableResponse<Response> createResponse = 노선생성(노선_파라미터);
+        ExtractableResponse<Response> 노선_생성_응답 = 노선생성(노선_파라미터);
 
         //when
-        ExtractableResponse<Response> response = 노선조회(createResponse.header(HttpHeaders.LOCATION));
+        ExtractableResponse<Response> 노선_조회_응답 = 노선조회(노선_생성_응답.header(HttpHeaders.LOCATION));
 
         //then
-        상태_값_검사(response, HttpStatus.OK);
-        단일_값_검사(response, 노선_이름_키, String.valueOf(노선_파라미터.get(노선_이름_키)));
-        리스트_값_검사(response, "stations." + 노선_이름_키, 기존지하철, 새로운지하철);
+        상태_값_검사(노선_조회_응답, HttpStatus.OK);
+        단일_값_검사(노선_조회_응답, 노선_이름_키, String.valueOf(노선_파라미터.get(노선_이름_키)));
+        리스트_값_검사(노선_조회_응답, "stations." + 노선_이름_키, 기존지하철, 새로운지하철);
     }
 
     /**
@@ -131,15 +131,15 @@ class LineAcceptanceTest extends AcceptanceTest {
     @ParameterizedTest
     void 노선업데이트_테스트(Map<String, Object> 노선_파라미터) {
         //given
-        ExtractableResponse<Response> createResponse = 노선생성(노선_파라미터);
+        ExtractableResponse<Response> 노선_생성_응답 = 노선생성(노선_파라미터);
 
         //when
-        ExtractableResponse<Response> updateResponse = 노선수정(createResponse);
+        ExtractableResponse<Response> 노선_수정_응답 = 노선수정(노선_생성_응답);
 
         //then
-        ExtractableResponse<Response> response = 노선조회(createResponse.header(HttpHeaders.LOCATION));
+        ExtractableResponse<Response> response = 노선조회(노선_생성_응답.header(HttpHeaders.LOCATION));
 
-        상태_값_검사(updateResponse, HttpStatus.OK);
+        상태_값_검사(노선_수정_응답, HttpStatus.OK);
         상태_값_검사(response, HttpStatus.OK);
         단일_값_검사(response, 노선_이름_키, 수정노선);
     }
@@ -155,13 +155,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     @ParameterizedTest
     void 노선삭제_테스트(Map<String, Object> 노선_파라미터) {
         //given
-        ExtractableResponse<Response> createResponse = 노선생성(노선_파라미터);
+        ExtractableResponse<Response> 노선_생성_응답 = 노선생성(노선_파라미터);
 
         //when
-        ExtractableResponse<Response> response = 노선삭제(createResponse.header(HttpHeaders.LOCATION));
+        ExtractableResponse<Response> 노선_삭제_응답 = 노선삭제(노선_생성_응답.header(HttpHeaders.LOCATION));
 
         //then
-        상태_값_검사(response, HttpStatus.NO_CONTENT);
+        상태_값_검사(노선_삭제_응답, HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -178,11 +178,11 @@ class LineAcceptanceTest extends AcceptanceTest {
         노선생성(노선_파라미터);
 
         //when
-        ExtractableResponse<Response> response = 노선생성(노선_파라미터);
+        ExtractableResponse<Response> 노선_생성_응답 = 노선생성(노선_파라미터);
 
         //then
-        상태_값_검사(response, HttpStatus.CONFLICT);
-        예외_검사(response, DuplicationException.MESSAGE);
+        상태_값_검사(노선_생성_응답, HttpStatus.CONFLICT);
+        예외_검사(노선_생성_응답, DuplicationException.MESSAGE);
     }
 
 }

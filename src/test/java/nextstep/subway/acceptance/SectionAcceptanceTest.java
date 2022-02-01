@@ -55,10 +55,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Long 지하철역_ID = 아무개.jsonPath().getLong(지하철_역_아이디_키);
 
         //when
-        ExtractableResponse<Response> response = 구간등록(하행종점, 지하철역_ID, 종점간거리);
+        ExtractableResponse<Response> 구간_등록_응답 = 구간등록(하행종점, 지하철역_ID, 종점간거리);
 
         //then
-        상태_값_검사(response, HttpStatus.CREATED);
+        상태_값_검사(구간_등록_응답, HttpStatus.CREATED);
         ExtractableResponse<Response> 노선_조회_결과 = 노선조회(노선_생성_결과.header(HttpHeaders.LOCATION));
         assertThat(노선_조회_결과.jsonPath().getList("stations." + 노선_이름_키).size()).isEqualTo(3);
     }
@@ -77,10 +77,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //when
         int 종점간거리 = 3;
-        ExtractableResponse<Response> response = 구간등록(상행종점, 지하철역_ID, 종점간거리);
+        ExtractableResponse<Response> 구간_등록_응답 = 구간등록(상행종점, 지하철역_ID, 종점간거리);
 
         //then
-        상태_값_검사(response, HttpStatus.CREATED);
+        상태_값_검사(구간_등록_응답, HttpStatus.CREATED);
         ExtractableResponse<Response> 노선_조회_결과 = 노선조회(노선_생성_결과.header(HttpHeaders.LOCATION));
         리스트_값_검사(노선_조회_결과, "stations." + 노선_이름_키, 상행역_이름, 하행역_이름, "아무개");
     }
@@ -98,10 +98,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //when
         int 종점간거리 = 3;
-        ExtractableResponse<Response> response = 구간등록(지하철역_ID, 상행종점, 종점간거리);
+        ExtractableResponse<Response> 구간_등록_응답 = 구간등록(지하철역_ID, 상행종점, 종점간거리);
 
         //then
-        상태_값_검사(response, HttpStatus.CREATED);
+        상태_값_검사(구간_등록_응답, HttpStatus.CREATED);
         ExtractableResponse<Response> 노선_조회_결과 = 노선조회(노선_생성_결과.header(HttpHeaders.LOCATION));
         리스트_값_검사(노선_조회_결과, "stations." + 노선_이름_키, 상행역_이름, 하행역_이름, "아무개");
     }
@@ -119,10 +119,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //when
         int 종점간거리 = 3;
-        ExtractableResponse<Response> response = 구간등록(하행종점, 지하철역_ID, 종점간거리);
+        ExtractableResponse<Response> 구간_등록_응답 = 구간등록(하행종점, 지하철역_ID, 종점간거리);
 
         //then
-        상태_값_검사(response, HttpStatus.CREATED);
+        상태_값_검사(구간_등록_응답, HttpStatus.CREATED);
         ExtractableResponse<Response> 노선_조회_결과 = 노선조회(노선_생성_결과.header(HttpHeaders.LOCATION));
         리스트_값_검사(노선_조회_결과, "stations." + 노선_이름_키, 상행역_이름, 하행역_이름, "아무개");
     }
@@ -140,10 +140,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //when
         int 종점간거리 = Integer.MAX_VALUE;
-        ExtractableResponse<Response> response = 구간등록(상행종점, 지하철역_ID, 종점간거리);
+        ExtractableResponse<Response> 구간_등록_응답 = 구간등록(상행종점, 지하철역_ID, 종점간거리);
 
         //then
-        상태_값_검사(response, HttpStatus.BAD_REQUEST);
+        상태_값_검사(구간_등록_응답, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -160,11 +160,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간등록(상행종점, 지하철역_ID, 종점간거리);
 
         //when
-        ExtractableResponse<Response> response = 구간등록(상행종점, 하행종점, 종점간거리);
+        ExtractableResponse<Response> 구간_등록_응답 = 구간등록(상행종점, 하행종점, 종점간거리);
 
         //then
-        상태_값_검사(response, HttpStatus.CONFLICT);
-        예외_검사(response, DuplicationException.MESSAGE);
+        상태_값_검사(구간_등록_응답, HttpStatus.CONFLICT);
+        예외_검사(구간_등록_응답, DuplicationException.MESSAGE);
 
     }
 
@@ -178,9 +178,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 잘못된_상행_하행_구간_등록_테스트() {
         //when
-        ExtractableResponse<Response> response = 구간등록(상행종점, 하행종점, 종점간거리);
+        ExtractableResponse<Response> 구간_등록_응답 = 구간등록(상행종점, 하행종점, 종점간거리);
 
-        상태_값_검사(response, HttpStatus.BAD_REQUEST);
+        상태_값_검사(구간_등록_응답, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -192,10 +192,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 등록안된_하행구간_등록_테스트() {
         //when
         Long 없는지하철역 = Long.MAX_VALUE;
-        ExtractableResponse<Response> response = 구간등록(하행종점, 없는지하철역, 종점간거리);
+        ExtractableResponse<Response> 구간_등록_응답 = 구간등록(하행종점, 없는지하철역, 종점간거리);
 
         //ten
-        상태_값_검사(response, HttpStatus.NOT_FOUND);
+        상태_값_검사(구간_등록_응답, HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -209,14 +209,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         //given
         ExtractableResponse<Response> 아무개 = 지하철역생성("아무개");
         Long 지하철역_ID = 아무개.jsonPath().getLong(지하철_역_아이디_키);
-        ExtractableResponse<Response> 구간등록 = 구간등록(하행종점, 지하철역_ID, 종점간거리);
+        ExtractableResponse<Response> 구간_등록_응답 = 구간등록(하행종점, 지하철역_ID, 종점간거리);
 
         //when
-        Long 하행_지하철역_ID = 구간등록.jsonPath().getLong("downStation." + 지하철_역_아이디_키);
-        ExtractableResponse<Response> response = 구간삭제요청(하행_지하철역_ID);
+        Long 하행_지하철역_ID = 구간_등록_응답.jsonPath().getLong("downStation." + 지하철_역_아이디_키);
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간삭제요청(하행_지하철역_ID);
 
         //then
-        상태_값_검사(response, HttpStatus.NO_CONTENT);
+        상태_값_검사(구간_삭제_응답, HttpStatus.NO_CONTENT);
     }
 
 
@@ -234,11 +234,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간등록(하행종점, 지하철역_ID, 종점간거리);
 
         //when
-        ExtractableResponse<Response> response = 구간삭제요청(하행종점);
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간삭제요청(하행종점);
 
         //then
-        상태_값_검사(response, HttpStatus.BAD_REQUEST);
-        예외_검사(response, NotLastSectionException.MESSAGE);
+        상태_값_검사(구간_삭제_응답, HttpStatus.BAD_REQUEST);
+        예외_검사(구간_삭제_응답, NotLastSectionException.MESSAGE);
     }
 
     /**
@@ -249,11 +249,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 마지막_구간만_삭제가능() {
         //when
-        ExtractableResponse<Response> response = 구간삭제요청(하행종점);
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간삭제요청(하행종점);
 
         //then
-        상태_값_검사(response, HttpStatus.BAD_REQUEST);
-        예외_검사(response, "마지막 구간 삭제 불가");
+        상태_값_검사(구간_삭제_응답, HttpStatus.BAD_REQUEST);
+        예외_검사(구간_삭제_응답, "마지막 구간 삭제 불가");
     }
 
 }
