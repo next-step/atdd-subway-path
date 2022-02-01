@@ -5,6 +5,7 @@ import org.springframework.util.ObjectUtils;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
@@ -12,43 +13,26 @@ public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = new Sections();
 
     protected Line() {
+        //
     }
 
-    public Line(String name, String color) {
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this(name, color);
+        sections.add(0, new Section(this, upStation, downStation, distance));
+    }
+
+    private Line(String name, String color) {
         this.name = name;
         this.color = color;
-    }
-
-    public void addSection(final Station upStation, final Station downStation, final int distance) {
-
-        if (sections.isEmpty()) {
-            sections.add(new Section(this, upStation, downStation, distance));
-
-            return;
-        }
-
-        Section section = checkUpStationBySection(upStation);
-
-        if (!ObjectUtils.isEmpty(section)) {
-            Station baseDownStation = section.getDownStation();// 양재역 - 강남역, 정자역, 양재역
-            sections.remove(0);
-
-            sections.add(new Section(this, downStation, baseDownStation, distance));
-            sections.add(new Section(this, upStation, downStation, distance));
-        }
-    }
-
-    private Section checkUpStationBySection(Station newStation) {
-
-        return null;
     }
 
     public void update(final String name, final String color) {
@@ -60,17 +44,110 @@ public class Line extends BaseEntity {
         }
     }
 
-    public void deleteSection(final Station station) {
-        if (!this.sections.get(this.sections.size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
+    public boolean isSectionsEmpty() {
+
+        return sections.isEmpty();
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        // 만약 UpStation이 있는지 확인하기
+        Optional<Section> sectionWithUpStation = sections.findSectionWithUpStation(upStation);
+
+        if (sectionWithUpStation.isPresent()) {
+            // 비교하기
+            Section originalSection = sectionWithUpStation.get();
+            addSectionByCondition(originalSection, upStation, downStation, distance);
+
+            return ;
         }
 
-        this.sections.remove(this.sections.size() - 1);
+        Section lastDownSection = sections.findLastDownSection();
+
+        if (!lastDownSection.isDownStation(upStation)) {
+            throw new RuntimeException();
+        }
+
+        sections.add(sectionSize(), new Section(this, upStation, downStation, distance));
+    }
+
+    private void addSectionByCondition(Section originalSection, Station newUpStation, Station newDownStation, int newDistance) {
+
+        int originalDistance = originalSection.getDistance();
+
+        if (originalDistance == newDistance) {
+
+            throw new RuntimeException();
+        }
+
+        int index = sections.remove(originalSection.getDownStation());
+
+        if (originalSection.getDistance() > newDistance) {
+            sections.add(index, new Section(this, newUpStation, newDownStation, newDistance));
+            sections.add(index + 1, new Section(
+                    this,
+                    newDownStation,
+                    originalSection.getDownStation(),
+                    originalDistance - newDistance));
+
+            return ;
+        }
+        sections.add(index, new Section(this, newUpStation, originalSection.getDownStation(), originalDistance));
+        sections.add(index + 1, new Section(this,
+                originalSection.getDownStation(),
+                newDownStation,
+                newDistance - originalDistance));
+    }
+
+    public List<Station> getStations() {
+        List<Station> allStations = new ArrayList<>();
+        Section lastUpSection = findLastUpSection();
+        allStations.add(lastUpSection.getUpStation());
+
+        Optional<Section> nextSection = Optional.ofNullable(lastUpSection);
+
+        while (nextSection.isPresent()) {
+            Section section = nextSection.get();
+            allStations.add(section.getDownStation());
+            nextSection = findSectionWithUpStation(section.getDownStation());
+        }
+
+        return allStations;
+    }
+
+    private Optional<Section> findSectionWithUpStation(Station station) {
+
+        return sections.findSectionWithUpStation(station);
+    }
+
+    public int sectionSize() {
+
+        return sections.size();
+    }
+
+    public void deleteSection(Station station) {
+        if (!isLastDownStation(station)) {
+            throw new IllegalArgumentException();
+        }
+        sections.remove(station);
+    }
+
+    private boolean isLastDownStation(Station station) {
+        return sections.isLastDownStation(station);
+    }
+
+    private Section findLastUpSection() {
+
+        return sections.findLastUpSection();
+    }
+
+    private Section findLastDownSection() {
+
+        return sections.findLastDownSection();
     }
 
     public List<Section> getSections() {
 
-        return sections;
+        return sections.values();
     }
 
     public Long getId() {

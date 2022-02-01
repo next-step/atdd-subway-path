@@ -20,10 +20,9 @@ class LineTest {
     @BeforeEach
     void init() {
         final int distance = 10;
-        line = new Line("1호선","파랑색");
         upStation = new Station("수원역");
         downStation = new Station("사당역");
-        line.addSection(upStation, downStation, distance);
+        line = new Line("1호선","파랑색", upStation, downStation, distance);
     }
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
