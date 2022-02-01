@@ -94,21 +94,15 @@ public class Sections {
     }
 
     private boolean isDownStation(Long station) {
-        for (Section section : sections) {
-            if (section.isSameDownStation(station)) {
-                return true;
-            }
-        }
-        return false;
+        return sections.stream().anyMatch(
+                section -> section.isSameDownStation(station)
+        );
     }
 
     private boolean isUpStation(Long station) {
-        for (Section section : sections) {
-            if (section.isSameUpStation(station)) {
-                return true;
-            }
-        }
-        return false;
+        return sections.stream().anyMatch(
+                section -> section.isSameUpStation(station)
+        );
     }
 
     private void duplicationSection(Section section) {
