@@ -70,10 +70,10 @@ public class StationStepFeature {
     }
 
     public static Map<String, String> createStationParams(String name) {
-        Map<String, String> result = new HashMap();
-        result.put(CREATE_STATION_NAME_PARAM_KEY, name);
+        Map<String, String> params = new HashMap();
+        params.put(CREATE_STATION_NAME_PARAM_KEY, name);
 
-        return result;
+        return params;
     }
 
     public static void checkCreateStation(ExtractableResponse<Response> response) {

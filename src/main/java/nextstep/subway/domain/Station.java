@@ -18,10 +18,10 @@ public class Station extends BaseEntity {
     }
 
     public static Station of(String name) {
-        Station result = new Station();
-        result.name = name;
+        Station station = new Station();
+        station.name = name;
 
-        return result;
+        return station;
     }
 
     public Long getId() {

@@ -26,13 +26,13 @@ public class LineAndSectionResponse {
                                             LocalDateTime modifiedDate,
                                             List<Station> allStations) {
 
-        LineAndSectionResponse result = new LineAndSectionResponse();
-        result.lineResponse = new LineResponse(id, name, color, createdDate, modifiedDate);
-        result.stations = allStations.stream()
+        LineAndSectionResponse response = new LineAndSectionResponse();
+        response.lineResponse = new LineResponse(id, name, color, createdDate, modifiedDate);
+        response.stations = allStations.stream()
                 .map(it -> new StationResponse(it.getId(), it.getName(), it.getCreatedDate(), it.getModifiedDate()))
                 .collect(toList());
 
-        return result;
+        return response;
     }
 
     @JsonIgnore

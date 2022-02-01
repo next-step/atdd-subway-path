@@ -38,10 +38,10 @@ public class Section {
     }
 
     public static Section of(Line line, Station upStation, Station downStation, int distance) {
-        Section result = new Section(upStation, downStation, distance);
-        result.line = line;
+        Section section = new Section(upStation, downStation, distance);
+        section.line = line;
 
-        return result;
+        return section;
     }
 
     public void updateUpStation(Station station, int distance) {

@@ -10,12 +10,12 @@ public class SectionRequest {
     }
 
     public static SectionRequest of(long upStationId, long downStationId, int distance) {
-        SectionRequest result = new SectionRequest();
-        result.upStationId = upStationId;
-        result.downStationId = downStationId;
-        result.distance = distance;
+        SectionRequest request = new SectionRequest();
+        request.upStationId = upStationId;
+        request.downStationId = downStationId;
+        request.distance = distance;
 
-        return result;
+        return request;
     }
 
     public Long getUpStationId() {
