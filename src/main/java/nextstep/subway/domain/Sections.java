@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 @Embeddable
 public class Sections {
 
-    private static final int FIRST_POSITION = 0;
     private static final int GAP_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
@@ -30,22 +30,66 @@ public class Sections {
             sections.add(section);
             return;
         }
-        // 둘다 있거나 없을 경우
-        validateStations(section);
-        sections.add(section);
-    }
-
-    private void validateStations(final Section section) {
-        final boolean upStationExistence = findStationExistence(section.getUpStation());
-        final boolean downStationExistence = findStationExistence(section.getDownStation());
+        final boolean upStationExistence = isUpStationStation(section);
+        final boolean downStationExistence = isDownStationStation(section);
         if ((upStationExistence && downStationExistence) || (!upStationExistence && !downStationExistence)) {
             throw new IllegalArgumentException("station is not valid");
         }
+        if (upStationExistence) {
+            updateUpStation(section);
+        }
+        if (downStationExistence) {
+            updateDownStation(section);
+        }
+        sections.add(section); // 강남 논현
     }
 
-    private boolean findStationExistence(final Station station) {
+    private boolean isUpStationStation(final Section section) {
         return sections.stream()
-                .anyMatch(it -> it.isUpStation(station) || it.isDownStation(station));
+                .map(Section::getUpStation)
+                .anyMatch(isSameStationName(section));
+    }
+
+    private boolean isDownStationStation(final Section section) {
+        return sections.stream()
+                .map(Section::getDownStation)
+                .anyMatch(isSameStationName(section));
+    }
+
+    private Predicate<Station> isSameStationName(final Section section) {
+        return it -> it.isSameName(section.getUpStation()) || it.isSameName(section.getDownStation());
+    }
+
+    private void updateUpStation(final Section section) {
+        final Station upStation = section.getUpStation();
+        final Station downStation = section.getDownStation();
+        final Section alreadySection = findUpStationSection(upStation, downStation);
+        if (alreadySection.isUpStation(upStation)) {
+            final int updateDistance = alreadySection.getDistance() - section.getDistance();
+            alreadySection.updateUpStation(section.getDownStation(), updateDistance);
+        }
+    }
+
+    private Section findUpStationSection(final Station upStation, final Station downStation) {
+        return sections.stream().filter(it -> it.isUpStation(upStation) || it.isUpStation(downStation))
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("station is not found"));
+    }
+
+    private void updateDownStation(final Section section) {
+        final Station upStation = section.getUpStation();
+        final Station downStation = section.getDownStation();
+        final Section alreadySection = findDownStationSection(upStation, downStation);
+        if (alreadySection.isDownStation(downStation)) {
+            final int updateDistance = alreadySection.getDistance() - section.getDistance();
+            alreadySection.updateDownStation(section.getUpStation(), updateDistance);
+        }
+    }
+
+    private Section findDownStationSection(final Station upStation, final Station downStation) {
+        return sections.stream().filter(it -> it.isDownStation(upStation) || it.isDownStation(downStation))
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("station is not found"));
     }
 
     public void removeSection(final Station station) {
@@ -67,13 +111,9 @@ public class Sections {
         if (sections.isEmpty()) {
             return Collections.emptyList();
         }
-
-        // 상행 종점 찾기
         final List<Station> stations = new ArrayList<>();
         final Station endUpStation = findEndUpStation();
         stations.add(endUpStation);
-
-        // 다음 구간 찾기 -> 하행 종점까지 찾는다.
         Optional<Station> nextSection = findNextSection(endUpStation);
         while (nextSection.isPresent()) {
             final Station downStation = nextSection.get();
@@ -81,13 +121,6 @@ public class Sections {
             nextSection = findNextSection(downStation);
         }
         return Collections.unmodifiableList(stations);
-    }
-
-    private Optional<Station> findNextSection(final Station station) {
-        return sections.stream()
-                .filter(it -> it.isUpStation(station))
-                .map(Section::getDownStation)
-                .findAny();
     }
 
     private Station findEndUpStation() {
@@ -98,9 +131,15 @@ public class Sections {
                 .orElseThrow(() -> new IllegalStateException("no have end upStation"));
     }
 
-    // Predicate.not 으로 처리하려는 11버전 모듈로 사용해서 ! 사용 메서드로 변경
     private boolean isNotDownStation(final Station station) {
         return sections.stream()
                 .noneMatch(it -> it.isDownStation(station));
+    }
+
+    private Optional<Station> findNextSection(final Station station) {
+        return sections.stream()
+                .filter(it -> it.isUpStation(station))
+                .map(Section::getDownStation)
+                .findAny();
     }
 }

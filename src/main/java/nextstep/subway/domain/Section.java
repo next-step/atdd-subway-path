@@ -64,6 +64,16 @@ public class Section {
         }
     }
 
+    public void updateUpStation(final Station station, final int disatnce) {
+        this.upStation = station;
+        this.distance = disatnce;
+    }
+
+    public void updateDownStation(final Station station, final int distance) {
+        this.downStation = station;
+        this.distance = distance;
+    }
+
     // 추상화 수준을 맞추기 위해서 메서드를 정의했습니다.
     public boolean isUpStation(final Station station) {
         return upStation.equals(station);
@@ -92,5 +102,4 @@ public class Section {
     public int getDistance() {
         return distance;
     }
-
 }

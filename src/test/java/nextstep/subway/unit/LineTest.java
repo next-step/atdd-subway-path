@@ -26,6 +26,8 @@ class LineTest {
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
     @Test
     void addSection() {
+        // 강남 논현
+        // 논현 엑스트라
         // given
         final Station extraStation = new Station("extraStation");
         final Section section = new Section(line, downStation, extraStation, 1);
