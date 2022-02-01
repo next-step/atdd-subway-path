@@ -58,4 +58,23 @@ class SectionsTest {
         Section section = sections.getByDownStation(역삼역);
         assertThat(section).isEqualTo(section1);
     }
+
+    @Test
+    @DisplayName("기존 구간의 역을 기준으로 새로운 구간을 추가")
+    void addExistStationAddSection() {
+        Section section1 = new Section(line, 강남역, 역삼역, 7);
+        Section section2 = new Section(line, 강남역, 선릉역, 4);
+        Sections sections = new Sections();
+        sections.add(section1);
+
+        sections.add(section2);
+
+        List<Section> allSections = sections.getAllSections();
+        assertThat(allSections.get(0).getDistance()).isEqualTo(4);
+        assertThat(allSections.get(1).getDistance()).isEqualTo(3);
+        assertThat(allSections.get(0).getUpStation()).isEqualTo(강남역);
+        assertThat(allSections.get(0).getDownStation()).isEqualTo(선릉역);
+        assertThat(allSections.get(1).getUpStation()).isEqualTo(선릉역);
+        assertThat(allSections.get(1).getDownStation()).isEqualTo(역삼역);
+    }
 }
