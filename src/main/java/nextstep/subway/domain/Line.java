@@ -63,11 +63,19 @@ public class Line extends BaseEntity {
 
         Section lastDownSection = sections.findLastDownSection();
 
-        if (!lastDownSection.isDownStation(upStation)) {
-            throw new RuntimeException();
+        if (lastDownSection.isDownStation(upStation)) {
+            sections.add(sectionSize(), new Section(this, upStation, downStation, distance));
+
+            return;
         }
 
-        sections.add(sectionSize(), new Section(this, upStation, downStation, distance));
+        Section lastUpSection = sections.findLastUpSection();
+
+        if (lastUpSection.isUpStation(downStation)) {
+            sections.add(0, new Section(this, upStation, downStation, distance));
+
+            return;
+        }
     }
 
     private void addSectionByCondition(Section originalSection, Station newUpStation, Station newDownStation, int newDistance) {
