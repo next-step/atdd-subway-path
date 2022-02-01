@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -75,5 +76,12 @@ public class Line extends BaseEntity {
 
     public List<Section> getSections() {
         return this.sections.getSortedSections();
+    }
+
+    public List<Station> getAllStations() {
+        List<Station> stations = this.sections.getSortedSections().stream().map(Section::getUpStation).collect(Collectors.toList());
+        stations.add(this.sections.getDownStationEndpoint());
+
+        return stations;
     }
 }

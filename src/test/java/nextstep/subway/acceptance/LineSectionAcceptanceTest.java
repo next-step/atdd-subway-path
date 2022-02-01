@@ -85,9 +85,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> addSectionResponse = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 1_000_000));
 
         // then
-        assertThat(addSectionResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-
-        지하철_노선_응답_확인(신분당선, 강남역, 양재역);
+        구간_등록_실패(addSectionResponse.statusCode(), 신분당선, 강남역, 양재역);
     }
 
     /**
@@ -102,7 +100,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 6));
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        구간_등록_실패(response.statusCode(), 신분당선, 강남역, 양재역);
     }
 
     /**
@@ -121,8 +119,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> addSectionResponse = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 광교역, 6));
 
         // then
-        assertThat(addSectionResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        지하철_노선_응답_확인(신분당선, 강남역, 양재역);
+        구간_등록_실패(addSectionResponse.statusCode(), 신분당선, 강남역, 양재역);
     }
 
     /**
@@ -213,8 +210,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        지하철_노선_응답_확인(신분당선, 강남역, 양재역);
+        구간_제거_실패(response.statusCode(), 신분당선, 강남역, 양재역);
     }
 
     /**
@@ -232,8 +228,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        지하철_노선_응답_확인(신분당선, 강남역, 양재역);
+        구간_제거_실패(response.statusCode(), 신분당선, 강남역, 양재역);
     }
 
     /**
@@ -247,8 +242,17 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 100000L);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        지하철_노선_응답_확인(신분당선, 강남역, 양재역);
+        구간_제거_실패(response.statusCode(), 신분당선, 강남역, 양재역);
+    }
+
+    private void 구간_등록_실패(int actual, Long lineId, Long... stationIds) {
+        assertThat(actual).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철_노선_응답_확인(lineId, stationIds);
+    }
+
+    private void 구간_제거_실패(int actual, Long lineId, Long... stationIds) {
+        assertThat(actual).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철_노선_응답_확인(lineId, stationIds);
     }
 
     private void 지하철_노선_응답_확인(Long lineId, Long... expectedStationIds) {

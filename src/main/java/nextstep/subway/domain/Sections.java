@@ -36,13 +36,13 @@ public class Sections {
 
         Section sectionByUpStation = getSectionByUpStation(upStation);
         if (Objects.nonNull(sectionByUpStation)) {
-            addBetweenSection(sectionByUpStation, sectionByUpStation.getUpStation(), downStation, sectionByUpStation.getDownStation(), distance, sectionByUpStation.getDistance() - distance);
+            addBetweenSection(sectionByUpStation, sectionByUpStation.getUpStation(), downStation, sectionByUpStation.getDownStation(), distance, distanceDifference(sectionByUpStation.getDistance(), distance));
             return;
         }
 
         Section sectionByDownStation = getSectionByDownStation(downStation);
         if (Objects.nonNull(sectionByDownStation)) {
-            addBetweenSection(sectionByDownStation, sectionByDownStation.getUpStation(), upStation, downStation, sectionByDownStation.getDistance() - distance, distance);
+            addBetweenSection(sectionByDownStation, sectionByDownStation.getUpStation(), upStation, downStation, distanceDifference(sectionByDownStation.getDistance(), distance), distance);
         }
     }
 
@@ -59,7 +59,7 @@ public class Sections {
             return;
         }
 
-        if (!(isUpStationEndpoint(station) || isDownStationEndpoint(station))) {
+        if (isNotEndpointStation(station)) {
             Sections sectionsConnectedByStation = sectionsConnectedByStation(station);
             Section firstSection = sectionsConnectedByStation.getFirstSection();
             Section secondSection = sectionsConnectedByStation.getSecondSection();
@@ -119,12 +119,20 @@ public class Sections {
         this.sections.add(new Section(section.getLine(), middleStation, downStation, distanceBetweenMiddleAndDownStation));
     }
 
+    private int distanceDifference(final int originDistance, final int distance) {
+        return originDistance - distance;
+    }
+
     public boolean isDownStationEndpoint(Station station) {
         return getDownStationEndpoint().equals(station);
     }
 
     private boolean isUpStationEndpoint(Station station) {
         return getUpStationEndpoint().equals(station);
+    }
+
+    private boolean isNotEndpointStation(final Station station) {
+        return !(isUpStationEndpoint(station) || isDownStationEndpoint(station));
     }
 
     private Station getUpStationEndpoint() {
@@ -141,7 +149,7 @@ public class Sections {
                 .orElse(null);
     }
 
-    private Station getDownStationEndpoint() {
+    public Station getDownStationEndpoint() {
         List<Station> upStations = sections.stream()
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
