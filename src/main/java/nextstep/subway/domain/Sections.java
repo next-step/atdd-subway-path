@@ -8,6 +8,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -16,7 +17,32 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+
+        Optional<Section> optionalExistSection = findSectionByUpStation(upStation);
+
+        if (optionalExistSection.isPresent()) {
+            Section existSection = optionalExistSection.get();
+            Station existDownStation = existSection.getDownStation();
+            int existSectionDistance = existSection.getDistance();
+            int existSectionIndex = sections.indexOf(existSection);
+
+            existSection.changeDownStationDistance(downStation, section.getDistance());
+            section.changeStationDistance(downStation, existDownStation, existSectionDistance - section.getDistance());
+
+            this.sections.add(existSectionIndex + 1, section);
+            return;
+        }
+
         this.sections.add(section);
+    }
+
+    private Optional<Section> findSectionByUpStation(Station upStation) {
+        return sections
+            .stream()
+            .filter(it -> it.getUpStation().equals(upStation))
+            .findFirst();
     }
 
     public List<Section> getAllSections() {
