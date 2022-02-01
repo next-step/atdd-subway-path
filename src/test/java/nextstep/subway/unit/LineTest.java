@@ -45,5 +45,15 @@ class LineTest {
     @DisplayName("구간이 목록에서 마지막 역 삭제")
     @Test
     void removeSection() {
+        // given
+        final Station extraStation = new Station("extraStation");
+        final Section section = new Section(line, downStation, extraStation, 1);
+        line.addSection(section);
+
+        // when
+        line.removeSection(extraStation);
+
+        // then
+        assertThat(line.getStations()).containsExactly(upStation, downStation);
     }
 }
