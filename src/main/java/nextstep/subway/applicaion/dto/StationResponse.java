@@ -3,7 +3,6 @@ package nextstep.subway.applicaion.dto;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
-import nextstep.subway.exception.NotFoundStationException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,6 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class StationResponse {
+    private static final int IS_NOT_REQUIRED_RE_ORDER_COUNT = 1;
     private Long id;
     private String name;
     private LocalDateTime createdDate;
@@ -28,16 +28,9 @@ public class StationResponse {
     }
 
     public static List<StationResponse> toStations(final Sections sections) {
-        List<Section> sectionStorage = new ArrayList<>();
-
-        Section section = sections.findSectionHasUpStationEndPoint();
-        sectionStorage.add(section);
-        addListAtFindAnotherSectionWhereDownStationOfTheSectionIsTheUpStation(sections, section, sectionStorage);
-
-        List<Station> stations = Stream.concat(
-                sectionStorage.stream().map(Section::getUpStation),
-                sectionStorage.stream().map(Section::getDownStation)
-        ).distinct().collect(Collectors.toList());
+        List<Station> stations = isRequiredReOrdering(sections)
+                ? createStations(createReOrderedSections(sections))
+                : createStations(sections.getSections());
 
         return stations.stream()
                 .map(StationResponse::of)
@@ -68,18 +61,36 @@ public class StationResponse {
         return modifiedDate;
     }
 
-    private static void addListAtFindAnotherSectionWhereDownStationOfTheSectionIsTheUpStation(
+    private static boolean isRequiredReOrdering(final Sections sections) {
+        return sections.getSections().size() > IS_NOT_REQUIRED_RE_ORDER_COUNT;
+    }
+
+    private static List<Section> createReOrderedSections(final Sections sections) {
+        List<Section> sectionStorage = new ArrayList<>();
+        Section start = sections.findSectionHasUpStationEndPoint();
+        sectionStorage.add(start);
+        reOrderSections(sections, start, sectionStorage);
+        return sectionStorage;
+    }
+
+    private static void reOrderSections(
             final Sections sections,
-            final Section target,
+            final Section start,
             final List<Section> sectionStorage
     ) {
-        Section findSection = sections.findAnotherSectionWhereDownStationOfTheSectionIsTheUpStation(target);
+        Section findSection = sections.findAnotherSectionWhereDownStationOfTheSectionIsTheUpStation(start);
         sectionStorage.add(findSection);
-
         if(sections.getDownStationEndPoint().equals(findSection.getDownStation())) {
             return;
         }
 
-        addListAtFindAnotherSectionWhereDownStationOfTheSectionIsTheUpStation(sections, findSection, sectionStorage);
+        reOrderSections(sections, findSection, sectionStorage);
+    }
+
+    private static List<Station> createStations(final List<Section> sections) {
+        return Stream.concat(
+                sections.stream().map(Section::getUpStation),
+                sections.stream().map(Section::getDownStation)
+        ).distinct().collect(Collectors.toList());
     }
 }
