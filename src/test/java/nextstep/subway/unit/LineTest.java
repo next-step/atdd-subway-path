@@ -97,7 +97,7 @@ class LineTest {
     @DisplayName("기존 구간의 길이와 같거나 큰 길이의 구간 추가 실패")
     @ParameterizedTest(name = "구간 길이 추가 실패 [{index}] [{arguments}]")
     @ValueSource(ints = {10, 11})
-    void addSectionGraterThanDistanceException(int distance) {
+    void addSectionGreaterThanDistanceException(int distance) {
         //given
         Section sectionForAdd = Section.of(loopLine, gangnam, sunreoung, distance);
 
@@ -178,10 +178,10 @@ class LineTest {
 
         // when
         loopLine.deleteSection(sunreoung);
-        List<Section> sections = loopLine.getSections();
+        int sizeOfStations = loopLine.stations().size();
 
         //then
-        assertThat(sections).hasSize(1);
+        assertThat(sizeOfStations).isEqualTo(2);
 
     }
 }

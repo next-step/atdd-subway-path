@@ -23,7 +23,7 @@ public class Section {
 
     private int distance;
 
-    public Section() {
+    protected Section() {
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
@@ -45,16 +45,33 @@ public class Section {
         return downStation.equals(station);
     }
 
-    public boolean isAddableLastSection(Section section) {
-        return downStation.equals(section.getUpStation());
-    }
-
     public boolean containsStations(Section section) {
         return containsStation(section.getUpStation()) || containsStation(section.getDownStation());
     }
     
     public boolean containsStation(Station station) {
         return upStation.equals(station) || downStation.equals(station);
+    }
+
+    public Section divideSection(Section section) {
+        int differenceDistance = this.distance - section.getDistance();
+        if (hasSameUpStation(section.getUpStation())) {
+            return of(this.line, section.getDownStation(), this.downStation, differenceDistance);
+        }
+
+        return of(this.line, this.upStation, section.getUpStation(), differenceDistance);
+    }
+
+    public boolean isGreaterThanDistance(int distance) {
+        return this.distance >= distance;
+    }
+
+    public String upStationName() {
+        return upStation.getName();
+    }
+
+    public String downStationName() {
+        return downStation.getName();
     }
 
     public Long getId() {
@@ -67,14 +84,6 @@ public class Section {
 
     public Station getDownStation() {
         return downStation;
-    }
-
-    public String upStationName() {
-        return upStation.getName();
-    }
-
-    public String downStationName() {
-        return downStation.getName();
     }
 
     public int getDistance() {
@@ -94,17 +103,4 @@ public class Section {
         return Objects.hash(getId(), line, getUpStation(), getDownStation(), getDistance());
     }
 
-    public Section divideSection(Section section) {
-        if (hasSameUpStation(section.getUpStation())) {
-            upStation = section.getDownStation();
-        }
-
-        if (hasSameDownStation(section.getDownStation())) {
-            downStation = section.getUpStation();
-        }
-
-        distance = distance - section.distance;
-
-        return of(this.line, this.upStation, this.downStation, this.distance);
-    }
 }

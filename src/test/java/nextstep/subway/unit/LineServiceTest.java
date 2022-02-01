@@ -43,11 +43,7 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        List<String> namesOfStations = line.getSections().stream()
-                .flatMap(section -> Stream.of(
-                        section.getUpStation(), section.getDownStation()
-                ))
-                .distinct()
+        List<String> namesOfStations = line.stations().stream()
                 .map(Station::getName)
                 .collect(Collectors.toList());
 

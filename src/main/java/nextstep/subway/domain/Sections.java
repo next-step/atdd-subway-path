@@ -45,8 +45,8 @@ public class Sections {
             return;
         }
 
-        Section targetSection = findInsertSection(section);
-        if (targetSection.getDistance() <= section.getDistance() ) {
+        Section targetSection = findCombineSection(section);
+        if (section.isGreaterThanDistance(targetSection.getDistance())) {
             throw new CannotAddSectionException(targetSection.getDistance(), section.getDistance());
         }
 
@@ -56,13 +56,6 @@ public class Sections {
         sections.add(section);
     }
 
-    private boolean isAddLastDownStation(Section section) {
-        boolean addableLastStation = findLastDownStation().equals(section.getUpStation());
-        boolean hasStation = hasStation(section.getDownStation());
-
-        return addableLastStation && !hasStation;
-    }
-
     private boolean isAddFirstUpStation(Section section) {
         boolean addableFirstStation = findFirstUpStation().equals(section.getDownStation());
         boolean hasStation = hasStation(section.getUpStation());
@@ -70,7 +63,14 @@ public class Sections {
         return addableFirstStation && !hasStation;
     }
 
-    private Section findInsertSection(Section section) {
+    private boolean isAddLastDownStation(Section section) {
+        boolean addableLastStation = findLastDownStation().equals(section.getUpStation());
+        boolean hasStation = hasStation(section.getDownStation());
+
+        return addableLastStation && !hasStation;
+    }
+
+    private Section findCombineSection(Section section) {
         return sections.stream()
                 .filter(section1 -> section1.hasSameUpStation(section.getUpStation())
                         || section1.hasSameDownStation(section.getDownStation()))
@@ -78,30 +78,10 @@ public class Sections {
                 .orElseThrow(CannotAddSectionException::new);
     }
 
-
-    private void addFirstUpSection(Section section) {
-        boolean addableFirstStation = findFirstUpStation().equals(section.getDownStation());
-        boolean hasStation = hasStation(section.getUpStation());
-
-        if (addableFirstStation && !hasStation) {
-            sections.add(section);
-        }
-    }
-
-    private void addLastDownSection(Section section) {
-        boolean addableLastStation = findLastDownStation().equals(section.getUpStation());
-        boolean hasStation = hasStation(section.getDownStation());
-
-        if (addableLastStation && !hasStation) {
-            sections.add(section);
-        }
-    }
-
     private boolean hasStation(Station station) {
         return sections.stream()
                 .anyMatch(section1 -> section1.containsStation(station));
     }
-
 
     private boolean hasUpStation(Station upStation) {
         return sections.stream()
@@ -114,6 +94,7 @@ public class Sections {
     }
 
     private Station findFirstUpStation() {
+
         Station station = sections.get(0).getUpStation();
         return findFirstUpStation(station);
     }
@@ -142,6 +123,9 @@ public class Sections {
     }
 
     public List<Station> stations() {
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
         List<Station> stations = new ArrayList<>();
         Station findUpStation = findFirstUpStation();
         stations.add(findUpStation);
@@ -177,10 +161,6 @@ public class Sections {
             distances.add(distance);
         }
         return distances;
-    }
-
-    public List<Section> get() {
-        return Collections.unmodifiableList(sections);
     }
 
     public void deleteSection(Station station) {

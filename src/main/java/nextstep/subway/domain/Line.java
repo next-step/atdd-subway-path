@@ -1,9 +1,8 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 @Entity
 public class Line extends BaseEntity {
@@ -17,7 +16,7 @@ public class Line extends BaseEntity {
     @Embedded
     private Sections sections = new Sections();
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color) {
@@ -27,34 +26,6 @@ public class Line extends BaseEntity {
 
     public static Line of(String name, String color) {
         return new Line(name, color);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public List<Section> getSections() {
-        return sections.get();
     }
 
     public void addSection(Section section) {
@@ -72,4 +43,31 @@ public class Line extends BaseEntity {
     public void deleteSection(Station station) {
         sections.deleteSection(station);
     }
+
+    public void change(String name, String color) {
+        if (!Objects.isNull(name)) {
+            this.name = name;
+        }
+
+        if (!Objects.isNull(color)) {
+            this.color = color;
+        }
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
 }
