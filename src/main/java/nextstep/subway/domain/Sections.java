@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
 
+    private static final int FIRST_INDEX = 0;
     private static final int MINIMUM_SIZE_SECTION = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
@@ -27,23 +28,14 @@ public class Sections {
             return;
         }
 
-        validateAlreadyRegisteredSection(section);
-        validateConnectStation(section);
+        validateAddSection(section);
 
-        if (isRegisteredUpStation(section.getUpStation())) {
-            addMiddleSection(section);
+        if (isRegisteredUpStation(section)) {
+            addUpSection(section);
             return;
         }
 
-        if (isRegisteredUpStation(section.getDownStation())) {
-            addFirstSection(section);
-            return;
-        }
-
-        if (isRegisteredDownStation(section.getUpStation())) {
-            addLastSection(section);
-            return;
-        }
+        addDownSection(section);
     }
 
     public void deleteStation(Station deleteStation) {
@@ -63,43 +55,65 @@ public class Sections {
         return stations;
     }
 
-    private void addFirstSection(Section section) {
-        sections.add(0, section);
+    private void addUpSection(Section section) {
+        Section findSection = getRegisteredUpStation(section);
+        if (findSection.isMatchUpStation(section)) {
+            addMiddleUpSection(section);
+            return;
+        }
+        addFirstSection(section);
     }
 
-    private void addMiddleSection(Section section) {
-        Section upSection = findUpSection(section);
-        int originDistance = upSection.getDistance();
-        int newSectionDistance = section.getDistance();
-        validateDistance(upSection, section);
+    private void addDownSection(Section section) {
+        Section findSection = getRegisteredDownStation(section);
+        if (findSection.isMatchDownStation(section)) {
+            addMiddleDownSection(section);
+            return;
+        }
+        addLastSection(section);
+    }
 
-        int addIndex = sections.indexOf(upSection) + 1;
-        Section newSection = Section.of(section.getLine(),
-                section.getDownStation(),
-                upSection.getDownStation(),
-                originDistance - newSectionDistance);
-        sections.add(addIndex, newSection);
+    private void addMiddleUpSection(Section section) {
+        Section registeredUpSection = getRegisteredUpStation(section);
+        validateDistance(registeredUpSection, section);
 
-        upSection.updateDownStation(section.getDownStation(), newSectionDistance);
+        Line line = section.getLine();
+        int index = sections.indexOf(registeredUpSection);
+        int newSectionDistance = registeredUpSection.getDistance() - section.getDistance();
+
+        sections.set(index, Section.of(line, registeredUpSection.getUpStation(), section.getDownStation(), section.getDistance()));
+        sections.add(index + 1, Section.of(line, section.getDownStation(), registeredUpSection.getDownStation(), newSectionDistance));
+    }
+
+    private void addMiddleDownSection(Section section) {
+        Section registeredDownSection = getRegisteredDownStation(section);
+        validateDistance(registeredDownSection, section);
+
+        Line line = section.getLine();
+        int index = sections.indexOf(registeredDownSection);
+        int newSectionDistance = registeredDownSection.getDistance() - section.getDistance();
+
+        sections.set(index, Section.of(line, registeredDownSection.getUpStation(), section.getUpStation(), newSectionDistance));
+        sections.add(index + 1, Section.of(line, section.getUpStation(), registeredDownSection.getDownStation(), section.getDistance()));
+    }
+
+    private void addFirstSection(Section section) {
+        sections.add(FIRST_INDEX, section);
     }
 
     private void addLastSection(Section section) {
         sections.add(section);
     }
 
-    private Section findUpSection(Section section) {
-        Station upStation = section.getUpStation();
-
-        return sections.stream()
-                .filter(it -> it.getUpStation().equals(upStation))
-                .findAny()
-                .orElseThrow(() -> new RuntimeException(""));
-    }
-
     private void validateDistance(Section oldSection, Section newSection) {
         if (oldSection.getDistance() <= newSection.getDistance()) {
             throw new InvalidDistanceException(newSection.getDistance());
         }
+    }
+
+    public void validateAddSection(Section section) {
+        validateAlreadyRegisteredSection(section);
+        validateConnectStation(section);
     }
 
     private void validateAlreadyRegisteredSection(Section section) {
@@ -135,14 +149,23 @@ public class Sections {
         }
     }
 
-    private boolean isRegisteredUpStation(Station station) {
+    private boolean isRegisteredUpStation(Section section) {
         return sections.stream()
-                .anyMatch(it -> it.getUpStation().equals(station));
+                .anyMatch(it -> section.isContainStation(it.getUpStation()));
     }
 
-    private boolean isRegisteredDownStation(Station station) {
+    private Section getRegisteredUpStation(Section section) {
         return sections.stream()
-                .anyMatch(it -> it.getDownStation().equals(station));
+                .filter(it -> section.isContainStation(it.getUpStation()))
+                .findFirst()
+                .orElseThrow(NotFoundConnectStationException::new);
+    }
+
+    private Section getRegisteredDownStation(Section section) {
+        return sections.stream()
+                .filter(it -> section.isContainStation(it.getDownStation()))
+                .findFirst()
+                .orElseThrow(NotFoundConnectStationException::new);
     }
 
     private Station getLastDownStation() {

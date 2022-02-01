@@ -54,9 +54,22 @@ public class Section {
         updateDistance(distance);
     }
 
+    public boolean isMatchUpStation(Section section) {
+        return Objects.equals(this.upStation, section.upStation);
+    }
+
+    public boolean isMatchDownStation(Section section) {
+        return Objects.equals(this.downStation, section.downStation);
+    }
+
     private void updateDistance(int distance) {
         validateDistance(distance);
         this.distance = distance;
+    }
+
+    public boolean isContainStation(Station station) {
+        return Objects.equals(this.upStation, station)
+                || Objects.equals(this.downStation, station);
     }
 
     public Line getLine() {
