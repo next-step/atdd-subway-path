@@ -84,6 +84,29 @@ class LineTest {
 
     @DisplayName("구간이 목록에서 마지막 역 삭제")
     @Test
-    void removeSection() {
+    void should_be_success_when_last_section_is_removable() {
+        // given
+        line.addSection(section);
+        Station newStation = new Station("서초");
+        Section newSection = new Section(downStation, newStation, 5);
+        line.addSection(newSection);
+
+        // when
+        line.removeStation(newStation);
+
+        // then
+        assertThat(line.getStations()).doesNotContain(newStation);
+    }
+
+    @DisplayName("구간이 하나일 때 마지막 역 삭제 실패")
+    @Test
+    void should_be_fail_when_section_is_only_one() {
+        // given
+        line.addSection(section);
+
+        // when & then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> line.removeStation(downStation)
+        );
     }
 }

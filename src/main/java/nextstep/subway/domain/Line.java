@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
+    private static final int MIN_SIZE = 1;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -40,6 +42,18 @@ public class Line extends BaseEntity {
 
         sections.add(section);
         section.setLine(this);
+    }
+
+
+    public void removeStation(Station newStation) {
+        if(sections.size() == MIN_SIZE){
+            throw new IllegalArgumentException("구간이 1개일 경우 삭제가 불가능합니다.");
+        }
+        List<Station> stations = getStations();
+        if(!stations.get(stations.size()-1).equals(newStation)){
+            throw new IllegalArgumentException("마지막 역만 삭제가 가능합니다.");
+        }
+        sections.remove(sections.size()-1);
     }
 
     public Long getId() {
