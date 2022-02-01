@@ -84,6 +84,23 @@ class LineTest {
         Assertions.assertThrows(BusinessException.class, () ->
                 line.addSection(Section.of(모르는A역, 모르는B역, 역간_거리 - 2))
         );
+    }
 
+    /**
+     *   Given  노선을 등록한다
+     *   When   구간 삭제를 요청한다
+     *   Then   구간 삭제에 실패한다.
+     */
+    @DisplayName("하나 남은 구간은 삭제가 불가하다")
+    @Test
+    void 하나_남은_구간_삭제_불가하다(){
+        Line line = new Line();
+        Station 상행역 = new Station(1L, 기존지하철);
+        Station 하행역 = new Station(2L, 새로운지하철);
+        line.addSection(Section.of(상행역, 하행역, 역간_거리));
+
+        Assertions.assertThrows(BusinessException.class, () ->
+                line.deleteSection(하행역.getId())
+        );
     }
 }
