@@ -26,6 +26,7 @@ public class Sections {
             sections.add(section);
             return;
         }
+
         validateAlreadyRegisteredSection(section);
         validateConnectStation(section);
 
@@ -59,7 +60,7 @@ public class Sections {
 
     public List<Station> getAllStations() {
         List<Station> stations = sections.stream()
-                .map(it -> it.getUpStation())
+                .map(Section::getUpStation)
                 .collect(Collectors.toList());
         stations.add(getLastDownStation());
 

@@ -9,16 +9,10 @@ import nextstep.subway.applicaion.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static java.util.stream.Collectors.toList;
-import static nextstep.subway.acceptance.step_feature.LineStepFeature.callCreateAndFind;
 import static nextstep.subway.acceptance.step_feature.LineStepFeature.*;
 import static nextstep.subway.acceptance.step_feature.StationStepFeature.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,7 +33,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         판교역 = StationStepFeature.callCreateAndFind(판교역_이름);
         정자역 = StationStepFeature.callCreateAndFind(정자역_이름);
         미금역 = StationStepFeature.callCreateAndFind(미금역_이름);
-        params = LineStepFeature.createLineParams(신분당선_이름,
+        params = createLineParams(신분당선_이름,
                 신분당선_색,
                 강남역.getId(),
                 정자역.getId(),
@@ -54,7 +48,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = LineStepFeature.callCreateLines(params);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
         // then
         LineStepFeature.checkCreateLine(response);
@@ -69,10 +63,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine_duplicate_fail() {
         // given
-        LineStepFeature.callCreateLines(params);
+        지하철_노선_생성_요청(params);
 
         // when
-        ExtractableResponse<Response> response = LineStepFeature.callCreateLines(params);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
         // then
         LineStepFeature.checkCreateLineFail(response);
@@ -88,26 +82,18 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
-        LineStepFeature.callAddSection(lineResponse.getLineId(), 정자역.getId(), 미금역.getId(), DISTANCE);
+        LineAndSectionResponse lineResponse = 지하철_노선_생성_조회_요청(params);
+        지하철_노선에_지하철_구간_생성_요청(lineResponse.getLineId(), 정자역.getId(), 미금역.getId(), DISTANCE);
 
         Map<String, String> number2Line = createLineParams(이호선_이름, "green", 판교역.getId(), 미금역.getId(), 10);
-        LineStepFeature.callCreateLines(number2Line);
+        지하철_노선_생성_요청(number2Line);
 
         // when
-        ExtractableResponse<Response> response = LineStepFeature.callGetLines();
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
-        LineStepFeature.checkFindLine(response);
-
-        List<LineAndSectionResponse> responses = response.jsonPath()
-                .getList(".", LineAndSectionResponse.class);
-        LineAndSectionResponse response1 = responses.get(0);
-        LineAndSectionResponse response2 = responses.get(1);
-        assertThat(response1.getLineName()).isEqualTo(신분당선_이름);
-        assertThat(response2.getLineName()).isEqualTo(이호선_이름);
-        assertThat(response1.getStations().size()).isEqualTo(3);
-        assertThat(response2.getStations().size()).isEqualTo(2);
+        checkFindLine(response);
+        응답받은_노선의_상세_값_확인(response);
     }
 
     /**
@@ -119,14 +105,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> create = callCreateLines(params);
-        String location = create.header("Location");
+        LineAndSectionResponse createResponse = 지하철_노선_생성_조회_요청(params);
 
         // when
-        ExtractableResponse<Response> response = LineStepFeature.callGetLines(location);
+        ExtractableResponse<Response> response = LineStepFeature.지하철_노선_조회_요청(createResponse.getLineId());
 
         // then
-        LineStepFeature.checkFindLine(response);
+        checkFindLine(response);
 
         String lineName = response.jsonPath()
                 .getString("name");
@@ -143,26 +128,15 @@ class LineAcceptanceTest extends AcceptanceTest {
     void updateLine() {
         // given
         String modifyName = "구분당선";
-        LineAndSectionResponse createResponse = callCreateAndFind(params);
-        Map modifyParams = new HashMap();
-        modifyParams.put("id", String.valueOf(createResponse.getLineId()));
-        modifyParams.put("name", modifyName);
-        modifyParams.put("color", "blue");
+        LineAndSectionResponse createResponse = 지하철_노선_생성_조회_요청(params);
+        Map<String, String> modifyParams = modifyLineParams(createResponse.getLineId(), modifyName, "blue");
 
         // when
-        ExtractableResponse<Response> responseUpdate = LineStepFeature.callUpdateLines(modifyParams);
+        ExtractableResponse<Response> responseUpdate = 지하철_노선_수정_요청(modifyParams);
 
         // then
         LineStepFeature.checkResponseStatus(responseUpdate.statusCode(), HttpStatus.NO_CONTENT);
-
-        ExtractableResponse<Response> response = LineStepFeature.callGetLines();
-        List<String> lineNames = response.jsonPath()
-                .getList(".", LineAndSectionResponse.class)
-                .stream()
-                .map(LineAndSectionResponse::getLineName)
-                .collect(toList());
-        assertThat(lineNames).contains(modifyName);
-        assertThat(lineNames).doesNotContain(신분당선_이름);
+        노선의_이름_상세_값_확인(modifyName);
     }
 
     /**
@@ -173,13 +147,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine_fail() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("id", "1");
-        params.put("name", "구분당선");
-        params.put("color", "blue");
+        Map<String, String> params = modifyLineParams(1, "구분당선", "blue");
 
         // when
-        ExtractableResponse<Response> response = LineStepFeature.callUpdateLines(params);
+        ExtractableResponse<Response> response = 지하철_노선_수정_요청(params);
 
         // then
         LineStepFeature.checkResponseStatus(response.statusCode(), HttpStatus.NOT_FOUND);
@@ -194,179 +165,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineAndSectionResponse createResponse = callCreateAndFind(params);
+        LineAndSectionResponse createResponse = 지하철_노선_생성_조회_요청(params);
 
         // when
-        ExtractableResponse<Response> response = LineStepFeature.callDeleteLines(createResponse.getLineId());
+        ExtractableResponse<Response> response = 지하철_노선_삭제_요청(createResponse.getLineId());
 
         // then
         LineStepFeature.checkResponseStatus(response.statusCode(), HttpStatus.NO_CONTENT);
-    }
-
-    /**
-     * Given 지하철 역을 생성한다
-     * When 새로운 역을 상행 종점으로 등록한다
-     * Then 지하철 노선 구간 추가가 성공한다
-     */
-    @DisplayName("새로운 역을 기존 구간의 중간에 등록할 경우")
-    @Test
-    void addSection_middleStation() {
-        // given
-        LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
-
-        // when
-        ExtractableResponse<Response> response = LineStepFeature.callAddSection(lineResponse.getLineId(), 강남역.getId(), 판교역.getId(), 50);
-
-        // then
-        LineStepFeature.checkCreateLine(response);
-    }
-
-    /**
-     * Given 지하철 역을 생성한다
-     * When 새로운 역을 상행 종점으로 등록한다
-     * Then 지하철 노선 구간 추가가 성공한다
-     */
-    @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
-    @Test
-    void addSection_upStation() {
-        // given
-        LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
-
-        // when
-        ExtractableResponse<Response> response = LineStepFeature.callAddSection(lineResponse.getLineId(), 판교역.getId(), 강남역.getId(), DISTANCE);
-
-        // then
-        LineStepFeature.checkCreateLine(response);
-    }
-
-    /**
-     * Given 지하철 역을 생성한다
-     * When 새로운 역을 하행 종점으로 등록한다
-     * Then 지하철 노선 구간 추가가 성공한다
-     */
-    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
-    @Test
-    void addSection_downStation() {
-        // given
-        LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
-
-        // when
-        ExtractableResponse<Response> response = LineStepFeature.callAddSection(lineResponse.getLineId(), 정자역.getId(), 미금역.getId(), DISTANCE);
-
-        // then
-        LineStepFeature.checkCreateLine(response);
-    }
-
-    /**
-     * Given 지하철 역을 생성한다
-     * When 기존 구간과 길이가 같은 구간을 추가한다
-     * Then 지하철 노선 구간 추가 실패
-     */
-    @DisplayName("새로운 구간을 중간에 추가할 경우, 길이가 기존 구간의 길이와 같거나 크면, 구간 추가를 실패한다")
-    @ValueSource(ints = {100, 120, 500, 1000})
-    @ParameterizedTest
-    void addSection_distance_fail(int distance) {
-        // given
-        LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
-
-        // when
-        ExtractableResponse<Response> response = LineStepFeature.callAddSection(lineResponse.getLineId(), 강남역.getId(), 판교역.getId(), distance);
-
-        // then
-        LineStepFeature.checkCreateLineFail(response);
-    }
-
-    /**
-     * Given 지하철 역을 생성한다
-     * When 기존 구간에 등록된 역들을 새로 추가 한다
-     * Then 지하철 노선 구간 추가 실패
-     */
-    @DisplayName("기존 등록된 역을 상행, 하행역으로 가지는 구간은 추가 실패한다")
-    @Test
-    void addSection_station_registered_fail() {
-        // given
-        LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
-
-        // when
-        ExtractableResponse<Response> response = LineStepFeature.callAddSection(lineResponse.getLineId(), 정자역.getId(), 강남역.getId(), 50);
-
-        // then
-        LineStepFeature.checkCreateLineFail(response);
-    }
-
-    /**
-     * Given 지하철 역을 생성한다
-     * When 기존 구간에 등록되지 않은 역을 가지는 구간을 새로 추가 한다
-     * Then 지하철 노선 구간 추가 실패
-     */
-    @DisplayName("기존 등록된 역을 상행 또는 하행역으로 가지지 않은 구간은 추가 실패한다")
-    @Test
-    void addSection_connect_station__fail() {
-        // given
-        LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
-
-        // when
-        ExtractableResponse<Response> response = LineStepFeature.callAddSection(lineResponse.getLineId(), 판교역.getId(), 미금역.getId(), 50);
-
-        // then
-        LineStepFeature.checkCreateLineFail(response);
-    }
-
-
-    /**
-     * Given 3개의 역을 이용하여 지하철 노선 생성한다
-     * When 마지막 역을 삭제한다
-     * Then 구간 삭제 성공
-     */
-    @DisplayName("노선의 마지막 역은 삭제 가능하다")
-    @Test
-    void deleteSection() {
-        // given
-        LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
-        LineStepFeature.callAddSection(lineResponse.getLineId(), 정자역.getId(), 미금역.getId(), DISTANCE);
-
-        // when
-        ExtractableResponse<Response> response = LineStepFeature.callDeleteSection(lineResponse.getLineId(), 미금역.getId());
-
-        // then
-        LineStepFeature.checkResponseStatus(response.statusCode(), HttpStatus.NO_CONTENT);
-    }
-
-    /**
-     * Given 2개의 역을 이용하여 지하철 노선 생성한다
-     * When 노선의 구간(마지막 역)을 삭제한다
-     * Then 구간 삭제가 실패한다
-     */
-    @DisplayName("노선에 구간은 최소 1개가 유지되어야 한다")
-    @Test
-    void deleteSection_minimumSection() {
-        // given
-        LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
-
-        // when
-        ExtractableResponse<Response> response = LineStepFeature.callDeleteSection(lineResponse.getLineId(), 판교역.getId());
-
-        // then
-        LineStepFeature.checkResponseStatus(response.statusCode(), HttpStatus.BAD_REQUEST);
-    }
-
-    /**
-     * Given 3개의 역을 이용하여 지하철 노선 생성한다
-     * When 마지막 역이 아닌 역을 삭제한다
-     * Then 구간 삭제 실패
-     */
-    @DisplayName("마지막 역만 삭제 가능하다")
-    @Test
-    void deleteSection_LastDownStation() {
-        // given
-        LineAndSectionResponse lineResponse = LineStepFeature.callCreateAndFind(params);
-        LineStepFeature.callAddSection(lineResponse.getLineId(), 판교역.getId(), 정자역.getId(), DISTANCE);
-
-        // when
-        ExtractableResponse<Response> response = LineStepFeature.callDeleteSection(lineResponse.getLineId(), 판교역.getId());
-
-        // then
-        LineStepFeature.checkResponseStatus(response.statusCode(), HttpStatus.BAD_REQUEST);
     }
 
 }
