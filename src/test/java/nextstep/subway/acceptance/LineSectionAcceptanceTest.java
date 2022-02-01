@@ -150,6 +150,21 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+
+    /***
+     * When 지하철 노선에 기존 구간에 있는 역들로 새로운 구간 등록 요청을 하면
+     * Then 지하철 노선에 새로운 구간 추가가 실패한다.
+     */
+    @DisplayName("지하철 노선에 기존 구간에 있는 역들로 새로운 구간 등록")
+    @Test
+    void addLineSectionSameSectionException() {
+        // when
+        final ExtractableResponse<Response> response = 지하철_노선_구간_등록을_요청한다(신분당선_번호, 강남역_번호, 판교역_번호, 강남_판교_거리);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
