@@ -4,6 +4,7 @@ import nextstep.subway.domain.exception.CannotAddSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,6 +50,10 @@ public class Sections {
             throw new CannotAddSectionException(targetSection.getDistance(), section.getDistance());
         }
 
+        Section dividedSection = targetSection.divideSection(section);
+        sections.remove(targetSection);
+        sections.add(dividedSection);
+        sections.add(section);
     }
 
     private boolean isAddLastDownStation(Section section) {
@@ -157,6 +162,21 @@ public class Sections {
             stations.add(station);
             findUpStation = station;
         }
+    }
+
+    public List<Integer> distances() {
+        List<Integer> distances = new ArrayList<>();
+        List<Station> stations = stations();
+        for (int i = 0; i < stations.size() - 1; i++) {
+            Station station = stations.get(i);
+            Integer distance = sections.stream()
+                    .filter(section -> section.hasSameUpStation(station))
+                    .findFirst()
+                    .map(Section::getDistance)
+                    .orElseThrow(EntityNotFoundException::new);
+            distances.add(distance);
+        }
+        return distances;
     }
 
     public List<Section> get() {

@@ -98,13 +98,13 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @MethodSource
     void addLineSection(Long 상행역, Long 하행역) {
         // when
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(상행역, 하행역));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(상행역, 하행역, 5));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
 
         int 응답_상태_코드 = response.statusCode();
-        List<Long> 역_목록 = response.jsonPath().getList("stations.id");
+        List<Long> 역_목록 = response.jsonPath().getList("stations.id", Long.class);
 
         assertAll(
                 () -> 상태_코드_검증(응답_상태_코드, HttpStatus.OK),
@@ -176,11 +176,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeLineSection() {
         // given
-        Long 판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 판교역));
 
         // when
-        지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 판교역);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);

@@ -93,4 +93,18 @@ public class Section {
     public int hashCode() {
         return Objects.hash(getId(), line, getUpStation(), getDownStation(), getDistance());
     }
+
+    public Section divideSection(Section section) {
+        if (hasSameUpStation(section.getUpStation())) {
+            upStation = section.getDownStation();
+        }
+
+        if (hasSameDownStation(section.getDownStation())) {
+            downStation = section.getUpStation();
+        }
+
+        distance = distance - section.distance;
+
+        return of(this.line, this.upStation, this.downStation, this.distance);
+    }
 }
