@@ -16,6 +16,7 @@ public class LineServiceTest {
 
     @Autowired
     private StationRepository stationRepository;
+
     @Autowired
     private LineRepository lineRepository;
 
