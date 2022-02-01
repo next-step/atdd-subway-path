@@ -65,10 +65,19 @@ public class Section {
     }
 
     public boolean hasAnyStation(final Station station) {
-        if (upStation.equals(station) || downStation.equals(station)) {
+        if (hasUpStation(station) || hasDownStation(station)) {
             return true;
         }
         return false;
+    }
+
+    // 추상화 수준을 맞추기 위해서 메서드를 정의했습니다.
+    public boolean hasUpStation(final Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean hasDownStation(final Station station) {
+        return downStation.equals(station);
     }
 
     public Long getId() {
