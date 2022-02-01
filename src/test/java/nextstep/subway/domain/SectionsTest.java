@@ -35,7 +35,7 @@ class SectionsTest {
         sections.addSection(강남역_정자역);
 
         // then
-        assertThat(sections.getSections().size()).isEqualTo(1);
+        assertThat(sections.getAllStations()).containsExactly(강남역, 정자역);
     }
 
     @DisplayName("기존 구간의 상행역의 상향 방향에 구간 추가 - 첫 역에 추가")
@@ -49,9 +49,7 @@ class SectionsTest {
         sections.addSection(target);
 
         // then
-        assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(판교역);
-        assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(강남역);
-        assertThat(sections.getSections().size()).isEqualTo(2);
+        assertThat(sections.getAllStations()).containsExactly(판교역, 강남역, 정자역);
     }
 
     @DisplayName("기존 구간의 상행역의 하행 방향에 구간 추가 - 중간 추가")
@@ -65,9 +63,7 @@ class SectionsTest {
         sections.addSection(target);
 
         // then
-        assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(강남역);
-        assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(판교역);
-        assertThat(sections.getSections().size()).isEqualTo(2);
+        assertThat(sections.getAllStations()).containsExactly(강남역, 판교역, 정자역);
     }
 
     @DisplayName("기존 구간의 하행역의 하행 방향에 구간 추가 - 마지막 역에 추가")
@@ -75,15 +71,13 @@ class SectionsTest {
     void addDownSection_last() {
         // given
         sections.addSection(강남역_정자역);
-        Section target = new Section(정자역, 판교역, 4);
+        Section target = new Section(정자역, 미금역, 4);
 
         // when
         sections.addSection(target);
 
         // then
-        assertThat(sections.getSections().get(1).getUpStation()).isEqualTo(정자역);
-        assertThat(sections.getSections().get(1).getDownStation()).isEqualTo(판교역);
-        assertThat(sections.getSections().size()).isEqualTo(2);
+        assertThat(sections.getAllStations()).containsExactly(강남역, 정자역, 미금역);
     }
 
     @DisplayName("추가하려는 구간의 길이는 기존 구간의 길이 보다 길어야 한다")
@@ -134,7 +128,6 @@ class SectionsTest {
         sections.deleteStation(정자역);
 
         // then
-        assertThat(sections.getSections().size()).isEqualTo(1);
         assertThat(sections.getAllStations()).containsExactly(강남역, 판교역);
     }
 

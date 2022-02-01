@@ -54,10 +54,6 @@ public class Sections {
         sections.remove(lastIndex);
     }
 
-    public List<Section> getSections() {
-        return sections;
-    }
-
     public List<Station> getAllStations() {
         List<Station> stations = sections.stream()
                 .map(Section::getUpStation)
