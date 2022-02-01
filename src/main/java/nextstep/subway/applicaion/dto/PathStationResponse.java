@@ -7,6 +7,18 @@ public class PathStationResponse {
     private String name;
     private LocalDateTime createdAt;
 
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
     public PathStationResponse() {
     }
 

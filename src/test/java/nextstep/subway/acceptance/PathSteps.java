@@ -3,6 +3,7 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ public class PathSteps {
 
         return RestAssured
                 .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .params(params)
                 .when().get("/paths")
                 .then().log().all().extract();
@@ -28,7 +30,7 @@ public class PathSteps {
     public static void 최단_경로_검증(ExtractableResponse<Response> response, int pathSize, List<String> pathNames, int distance) {
         assertThat(response.jsonPath().getList("stations")).hasSize(pathSize);
         assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactlyElementsOf(pathNames);
-        assertThat(response.jsonPath().getInt("stations.distance")).isEqualTo(distance);
+        assertThat(response.jsonPath().getInt("distance")).isEqualTo(distance);
     }
 
     public static void 최단_경로_조회_예외_검증(ExtractableResponse<Response> response, String message) {
