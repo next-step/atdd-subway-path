@@ -33,6 +33,10 @@ public class Section {
         this.distance = distance;
     }
 
+    public static Section of(Line line, Station upStation, Station downStation, int distance) {
+        return null;
+    }
+
     public Long getId() {
         return id;
     }
