@@ -80,7 +80,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
 
         int 응답_상태_코드 = response.statusCode();
-        List<Long> 역_목록 = response.jsonPath().getList("stations.id");
+        List<Long> 역_목록 = response.jsonPath().getList("stations.id", Long.class);
 
         assertAll(
                 () -> 상태_코드_검증(응답_상태_코드, HttpStatus.OK),

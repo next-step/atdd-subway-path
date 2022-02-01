@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.domain.exception.CannotAddSectionException;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -23,28 +21,30 @@ public class Sections {
         }
 
         addFirstUpSection(section);
-
-        sections.add(section);
+        addLastDownSection(section);
     }
 
     private void addFirstUpSection(Section section) {
         boolean addableFirstStation = findFirstUpStation().equals(section.getDownStation());
-        boolean hasNoUpStation = sections.stream()
-                .anyMatch(section1 -> section1.containsStation(section.getUpStation()));
+        boolean hasStation = hasStation(section.getUpStation());
 
-        if (addableFirstStation && hasNoUpStation) {
+        if (addableFirstStation && !hasStation) {
             sections.add(section);
         }
     }
 
-    private boolean hasUpStation(Station upStation) {
-        return sections.stream()
-                .anyMatch(section -> section.hasSameUpStation(upStation));
+    private void addLastDownSection(Section section) {
+        boolean addableLastStation = findLastDownStation().equals(section.getUpStation());
+        boolean hasStation = hasStation(section.getDownStation());
+
+        if (addableLastStation && !hasStation) {
+            sections.add(section);
+        }
     }
 
-    private boolean hasDownStation(Station downStation) {
+    private boolean hasStation(Station station) {
         return sections.stream()
-                .anyMatch(section -> section.hasSameDownStation(downStation));
+                .anyMatch(section1 -> section1.containsStation(station));
     }
 
     private Station findFirstUpStation() {
@@ -61,27 +61,18 @@ public class Sections {
                 .orElse(upStation);
     }
 
-    private void addableUpStation(Section section) {
-        Section lastSection = getLastSection();
-
-        if (!lastSection.isAddableLastSection(section)) {
-            String lastStationName = lastSection.downStationName();
-            String addUpStationName = section.upStationName();
-            throw new CannotAddSectionException(lastStationName, addUpStationName);
-        }
+    private Station findLastDownStation() {
+        Station station = sections.get(0).getDownStation();
+        return findLastDownStation(station);
     }
 
-    private Section getLastSection() {
-        return sections.get(sections.size() - 1);
-    }
-
-    private void addableDownStation(Section addSection) {
-        Station downStation = addSection.getDownStation();
-        boolean containsStation = sections.stream()
-                .anyMatch(section -> section.containsStation(downStation));
-        if (containsStation) {
-            throw new CannotAddSectionException(addSection.downStationName());
-        }
+    private Station findLastDownStation(Station downStation) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(downStation))
+                .findFirst()
+                .map(Section::getDownStation)
+                .map(this::findLastDownStation)
+                .orElse(downStation);
     }
 
     public List<Station> stations() {

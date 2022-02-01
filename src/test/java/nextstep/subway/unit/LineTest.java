@@ -50,6 +50,25 @@ class LineTest {
 
     }
 
+    @DisplayName("하행 종점역 추가")
+    @Test
+    void addLastDownSection() {
+        // given
+        Section section = Section.of(loopLine, yeoksam, sunreoung, 10);
+
+        // when
+        loopLine.addSection(section);
+
+        List<String> namesOfStations = loopLine.stations().stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+
+        // then
+        assertThat(namesOfStations).containsExactly(gangnam.getName(), yeoksam.getName(), sunreoung.getName());
+
+    }
+
+
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
     @Test
     void addSection() {
