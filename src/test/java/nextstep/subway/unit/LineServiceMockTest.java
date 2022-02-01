@@ -33,11 +33,9 @@ public class LineServiceMockTest {
     @InjectMocks
     private LineService lineService;
 
-    @DisplayName("지하철 노선 마지막 역과 연결된 새로운 구간 등록")
     @Test
     void addSection() {
         // given
-        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         final Station upStation = new Station("upStation");
         final Station downStation = new Station("downStation");
         final Station extraStation = new Station("extraStation");
@@ -49,11 +47,9 @@ public class LineServiceMockTest {
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
         // when
-        // lineService.addSection 호출
         lineService.addSection(1L, new SectionRequest(2L, 3L, 1));
 
         // then
-        // line.findLineById 메서드를 통해 검증
         assertThat(line.getStations()).containsExactly(upStation, downStation, extraStation);
     }
 }

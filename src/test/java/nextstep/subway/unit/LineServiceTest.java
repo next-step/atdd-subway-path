@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Transactional
 public class LineServiceTest {
+
     @Autowired
     private StationRepository stationRepository;
     @Autowired
@@ -24,7 +25,6 @@ public class LineServiceTest {
     @Test
     void addSection() {
         // given
-        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         final Station upStation = new Station("upStation");
         final Station downStation = new Station("downStation");
         final Station extraStation = new Station("extraStation");
@@ -37,11 +37,9 @@ public class LineServiceTest {
         lineRepository.save(line);
 
         // when
-        // lineService.addSection 호출
         lineService.addSection(line.getId(), new SectionRequest(downStation.getId(), extraStation.getId(), 1));
 
         // then
-        // line.getSections 메서드를 통해 검증
         assertThat(line.getStations()).containsExactly(upStation, downStation, extraStation);
     }
 }

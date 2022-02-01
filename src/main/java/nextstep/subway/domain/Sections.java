@@ -30,8 +30,8 @@ public class Sections {
             sections.add(section);
             return;
         }
-        final boolean upStationExistence = isUpStationStation(section);
-        final boolean downStationExistence = isDownStationStation(section);
+        final boolean upStationExistence = isUpStation(section);
+        final boolean downStationExistence = isDownStation(section);
         if ((upStationExistence && downStationExistence) || (!upStationExistence && !downStationExistence)) {
             throw new IllegalArgumentException("station is not valid");
         }
@@ -41,16 +41,16 @@ public class Sections {
         if (downStationExistence) {
             updateDownStation(section);
         }
-        sections.add(section); // 강남 논현
+        sections.add(section);
     }
 
-    private boolean isUpStationStation(final Section section) {
+    private boolean isUpStation(final Section section) {
         return sections.stream()
                 .map(Section::getUpStation)
                 .anyMatch(isSameStationName(section));
     }
 
-    private boolean isDownStationStation(final Section section) {
+    private boolean isDownStation(final Section section) {
         return sections.stream()
                 .map(Section::getDownStation)
                 .anyMatch(isSameStationName(section));
@@ -65,8 +65,7 @@ public class Sections {
         final Station downStation = section.getDownStation();
         final Section alreadySection = findUpStationSection(upStation, downStation);
         if (alreadySection.isUpStation(upStation)) {
-            final int updateDistance = alreadySection.getDistance() - section.getDistance();
-            alreadySection.updateUpStation(section.getDownStation(), updateDistance);
+            alreadySection.updateUpStation(section.getDownStation(), alreadySection.subtractDistance(section));
         }
     }
 
@@ -81,8 +80,7 @@ public class Sections {
         final Station downStation = section.getDownStation();
         final Section alreadySection = findDownStationSection(upStation, downStation);
         if (alreadySection.isDownStation(downStation)) {
-            final int updateDistance = alreadySection.getDistance() - section.getDistance();
-            alreadySection.updateDownStation(section.getUpStation(), updateDistance);
+            alreadySection.updateDownStation(section.getUpStation(), alreadySection.subtractDistance(section));
         }
     }
 
@@ -98,7 +96,7 @@ public class Sections {
     }
 
     private void validateRemoveSection(final Station station) {
-        if (!sections.get(sections.size() - GAP_SIZE).getDownStation().equals(station)) {
+        if (!sections.get(sections.size() - GAP_SIZE).isDownStation(station)) {
             throw new IllegalArgumentException("invalid remove section");
         }
     }
@@ -112,18 +110,18 @@ public class Sections {
             return Collections.emptyList();
         }
         final List<Station> stations = new ArrayList<>();
-        final Station endUpStation = findEndUpStation();
-        stations.add(endUpStation);
-        Optional<Station> nextSection = findNextSection(endUpStation);
-        while (nextSection.isPresent()) {
-            final Station downStation = nextSection.get();
-            stations.add(downStation);
-            nextSection = findNextSection(downStation);
+        final Station upTerminalStation = findUpTerminalStation();
+        stations.add(upTerminalStation);
+        Optional<Station> nextStationOptional = findNextStation(upTerminalStation);
+        while (nextStationOptional.isPresent()) {
+            final Station nextStation = nextStationOptional.get();
+            stations.add(nextStation);
+            nextStationOptional = findNextStation(nextStation);
         }
         return Collections.unmodifiableList(stations);
     }
 
-    private Station findEndUpStation() {
+    private Station findUpTerminalStation() {
         return sections.stream()
                 .map(Section::getUpStation)
                 .filter(this::isNotDownStation)
@@ -136,7 +134,7 @@ public class Sections {
                 .noneMatch(it -> it.isDownStation(station));
     }
 
-    private Optional<Station> findNextSection(final Station station) {
+    private Optional<Station> findNextStation(final Station station) {
         return sections.stream()
                 .filter(it -> it.isUpStation(station))
                 .map(Section::getDownStation)

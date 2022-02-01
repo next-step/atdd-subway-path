@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class LineAcceptanceTest extends AcceptanceTest {
 
     private Long 강남역_번호;
-    private Long 양재역_번호;
+    private Long 판교역_번호;
     private Long 사당역_번호;
     private Long 낙성대역_번호;
 
@@ -31,7 +31,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         super.setUp();
 
         강남역_번호 = 지하철_역_생성_되어있음(강남역);
-        양재역_번호 = 지하철_역_생성_되어있음(양재역);
+        판교역_번호 = 지하철_역_생성_되어있음(판교역);
         사당역_번호 = 지하철_역_생성_되어있음(사당역);
         낙성대역_번호 = 지하철_역_생성_되어있음(낙성대역);
     }
@@ -44,7 +44,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성을_요청한다(신분당선, 빨강색, 강남역_번호, 양재역_번호, 강남_양재_거리);
+        ExtractableResponse<Response> response = 지하철_노선_생성을_요청한다(신분당선, 빨강색, 강남역_번호, 판교역_번호, 강남_판교_거리);
 
         // then
         assertAll(
@@ -63,7 +63,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철_노선_생성을_요청한다(신분당선, 빨강색, 강남역_번호, 양재역_번호, 강남_양재_거리);
+        지하철_노선_생성을_요청한다(신분당선, 빨강색, 강남역_번호, 판교역_번호, 강남_판교_거리);
         지하철_노선_생성을_요청한다(이호선, 초록색, 사당역_번호, 낙성대역_번호, 사당_낙성대_거리);
 
         // when
@@ -89,7 +89,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        final Long 신분당선_번호 = 지하철_노선이_생성되어_있음(신분당선, 빨강색, 강남역_번호, 양재역_번호, 강남_양재_거리);
+        final Long 신분당선_번호 = 지하철_노선이_생성되어_있음(신분당선, 빨강색, 강남역_번호, 판교역_번호, 강남_판교_거리);
 
         // when
         final ExtractableResponse<Response> response = 지하철_노선_조회를_요청한다(신분당선_번호);
@@ -102,7 +102,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.body().jsonPath().get("id").equals(1)).isTrue(),
                 () -> assertThat(response.body().jsonPath().get(LINE_NAME).equals(신분당선)).isTrue(),
                 () -> assertThat(response.body().jsonPath().get(LINE_COLOR).equals(빨강색)).isTrue(),
-                () -> assertThat(response.jsonPath().getList("stations.name")).contains(강남역, 양재역)
+                () -> assertThat(response.jsonPath().getList("stations.name")).contains(강남역, 판교역)
         );
     }
 
@@ -115,7 +115,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        final Long 신분당선_번호 = 지하철_노선이_생성되어_있음(신분당선, 빨강색, 강남역_번호, 양재역_번호, 강남_양재_거리);
+        final Long 신분당선_번호 = 지하철_노선이_생성되어_있음(신분당선, 빨강색, 강남역_번호, 판교역_번호, 강남_판교_거리);
 
         // when
         final ExtractableResponse<Response> updateResponse = 지하철_노선_변경을_요청한다(신분당선_번호, 구분당선, 파랑색);
@@ -136,7 +136,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        final Long 신분당선_번호 = 지하철_노선이_생성되어_있음(신분당선, 빨강색, 강남역_번호, 양재역_번호, 강남_양재_거리);
+        final Long 신분당선_번호 = 지하철_노선이_생성되어_있음(신분당선, 빨강색, 강남역_번호, 판교역_번호, 강남_판교_거리);
 
         // when
         final ExtractableResponse<Response> response = 지하철_노선_삭제를_요청한다(신분당선_번호);

@@ -74,7 +74,10 @@ public class Section {
         this.distance = distance;
     }
 
-    // 추상화 수준을 맞추기 위해서 메서드를 정의했습니다.
+    public int subtractDistance(final Section other) {
+        return Math.subtractExact(this.distance, other.distance);
+    }
+
     public boolean isUpStation(final Station station) {
         return upStation.equals(station);
     }
