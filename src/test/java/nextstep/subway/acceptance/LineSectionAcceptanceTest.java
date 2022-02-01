@@ -35,10 +35,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 지하철 노선에 새로운 구간 추가를 요청 하면
-     * Then 노선에 새로운 구간이 추가된다
+     * When 지하철 노선 하행 좀점역과 연결되는 새로운 구간 추가를 요청 하면
+     * Then 지하철 노선에 새로운 구간이 등록된다.
      */
-    @DisplayName("지하철 노선에 구간을 등록")
+    @DisplayName("지하철 노선에 마지막 구간과 연결되는 새로운 구간을 등록")
     @Test
     void addLineSection() {
         // when
@@ -52,6 +52,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역_번호, 양재역_번호, 정자역_번호)
         );
     }
+
 
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
