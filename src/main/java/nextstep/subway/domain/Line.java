@@ -25,6 +25,12 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    public Line(String name, String color, Section section) {
+        this.name = name;
+        this.color = color;
+        this.sections.add(section);
+    }
+
     public Long getId() {
         return id;
     }
@@ -53,7 +59,7 @@ public class Line extends BaseEntity {
         return sections;
     }
 
-    public void add(Section section) {
+    public void addSection(Section section) {
         if (isAllMatchOrNoneMach(section)) {
             throw new IllegalArgumentException("구간을 생성할 수 없습니다.");
         }
@@ -62,6 +68,48 @@ public class Line extends BaseEntity {
         addSectionOnCenter(section);
         addSectionStartOrEnd(section, startSection, endSection);
     }
+
+    public void removeSection(Station station) {
+        // 네이밍... 괜찮은 걸까요? 혹시 이런 상황에서 추천 해 주실만한 메소드 네이밍이 있을까요?
+        // 이런 private method 를 인수테스트에서 Steps 분리하듯이 해당 Entity 에 종속적인 Util 로 나누어도 괜찮다고 생각하시나요?
+        // 약간 public method 를 제외하고는 전부 분리해 내고 싶은데...
+        validRemove(station);
+        removeTerminus(station);
+        removeMiddleComponent(station);
+    }
+
+
+
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+        Section section = getStartSection();
+        stations.add(section.getUpStation());
+
+        while (section != null) {
+            Station downStation = section.getDownStation();
+            Optional<Section> nextSection = sections.stream()
+                    .filter(oldSection -> oldSection.getUpStation().equals(downStation))
+                    .findFirst();
+
+            stations.add(downStation);
+            section = nextSection.orElseGet(() -> null);
+        }
+        return stations;
+    }
+
+
+    public Section getSectionByUpStation(Station upStation) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(upStation))
+                .findFirst()
+                .orElseGet(() -> null);
+    }
+
+
+
+
+
+
 
     private void addSectionStartOrEnd(Section section, Section startSection, Section endSection) {
         sections.stream()
@@ -86,26 +134,10 @@ public class Line extends BaseEntity {
                 });
     }
 
+
     private boolean isAllMatchOrNoneMach(Section section) {
-        return getStation().stream().noneMatch((s) -> s.equals(section.getUpStation()) || s.equals(section.getDownStation()))
-                || getStation().stream().filter((s) -> s.equals(section.getUpStation()) || s.equals(section.getDownStation())).count() == 2;
-    }
-
-    public List<Station> getStation() {
-        List<Station> stations = new ArrayList<>();
-        Section section = getStartSection();
-        stations.add(section.getUpStation());
-
-        while (section != null) {
-            Station downStation = section.getDownStation();
-            Optional<Section> nextSection = sections.stream()
-                    .filter(oldSection -> oldSection.getUpStation().equals(downStation))
-                    .findFirst();
-
-            stations.add(downStation);
-            section = nextSection.orElseGet(() -> null);
-        }
-        return stations;
+        return getStations().stream().noneMatch((s) -> s.equals(section.getUpStation()) || s.equals(section.getDownStation()))
+                || getStations().stream().filter((s) -> s.equals(section.getUpStation()) || s.equals(section.getDownStation())).count() == 2;
     }
 
     private Section getStartSection() {
@@ -123,4 +155,39 @@ public class Line extends BaseEntity {
                 .findFirst()
                 .orElseThrow(IllegalAccessError::new);
     }
+
+    private void removeTerminus(Station station) {
+        sections.stream()
+                .filter(section -> (section.equals(getStartSection()) && station.equals(section.getUpStation())) || (section.equals(getEndSection()) && station.equals(section.getDownStation())))
+                .findFirst()
+                .ifPresent(section -> {
+                    sections.remove(section);
+                });
+    }
+
+    private void removeMiddleComponent(Station station) {
+        Section upStationSection = sections.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findFirst()
+                .orElseGet(() -> null);
+
+        Section downStationSection = sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst()
+                .orElseGet(() -> null);
+
+        if (upStationSection != null && downStationSection != null) {
+            Section newSection = new Section(this, upStationSection.getUpStation(), downStationSection.getDownStation(), upStationSection.getDistance() + downStationSection.getDistance());
+            sections.add(newSection);
+            sections.remove(upStationSection);
+            sections.remove(downStationSection);
+        }
+    }
+
+    private void validRemove(Station station) {
+        if (sections.size() < 2 || !getStations().contains(station)) {
+            throw new IllegalArgumentException("삭제할 수 있는 구간이 존재하지 않습니다.");
+        }
+    }
+
 }
