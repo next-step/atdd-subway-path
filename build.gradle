@@ -26,6 +26,12 @@ dependencies {
 	// jgraph
 	implementation 'org.jgrapht:jgrapht-core:1.0.1'
 
+	// validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// sql log
+	implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.0")
+
 	// test
 	testImplementation 'io.rest-assured:rest-assured:3.3.0'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
