@@ -143,4 +143,9 @@ public class Section {
     public void setDistance(int distance) {
         this.distance = distance;
     }
+
+    public void handleRemoveMidCase(Section connectedSection) {
+        this.upStation = connectedSection.getUpStation();
+        this.distance += connectedSection.getDistance();
+    }
 }
