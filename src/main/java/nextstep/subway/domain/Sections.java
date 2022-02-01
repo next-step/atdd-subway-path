@@ -26,6 +26,12 @@ public class Sections {
         boolean hasDownStation = hasDownStation(section.getDownStation());
 
         if (hasUpStation && hasDownStation) {
+            throw new CannotAddSectionException(section.upStationName(), section.downStationName());
+        }
+
+        boolean existsSection = sections.stream()
+                .anyMatch(section1 -> section1.containsStations(section));
+        if (!existsSection) {
             throw new CannotAddSectionException();
         }
 
@@ -38,12 +44,11 @@ public class Sections {
             return;
         }
 
-
         Section targetSection = findInsertSection(section);
-
         if (targetSection.getDistance() <= section.getDistance() ) {
             throw new CannotAddSectionException(targetSection.getDistance(), section.getDistance());
         }
+
     }
 
     private boolean isAddLastDownStation(Section section) {

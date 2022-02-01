@@ -88,7 +88,7 @@ class LineTest {
         //then
         assertThatThrownBy(actual)
                 .isInstanceOf(CannotAddSectionException.class)
-                .hasMessage("추가하려는 역이 이미 노선에 존재합니다");
+                .hasMessage(String.format("추가하려는 역이 이미 노선에 존재합니다. %s, %s", gangnam.getName(), sunreoung.getName()));
     }
 
     @DisplayName("기존 구간의 길이와 같거나 큰 길이의 구간 추가 실패")
@@ -105,6 +105,24 @@ class LineTest {
         assertThatThrownBy(actual)
                 .isInstanceOf(CannotAddSectionException.class)
                 .hasMessage("기존 구간의 길이보다 같거나 크면 추가할 수 없습니다. 기존 구간의 길이 : 10, 신규 구간의 길이 : " + distance);
+    }
+
+
+    @DisplayName("존재하지 않은 역을 추가하는 경우 구간 추가 실패")
+    @Test
+    void addSectionNonStationException() {
+        //given
+        Station cityHall = Station.from("시청역");
+        Station seoul = Station.from("서울역");
+        Section sectionForAdd = Section.of(loopLine, cityHall, seoul, 10);
+
+        //when
+        ThrowableAssert.ThrowingCallable actual = () -> loopLine.addSection(sectionForAdd);
+
+        //then
+        assertThatThrownBy(actual)
+                .isInstanceOf(CannotAddSectionException.class)
+                .hasMessage("기존 구간과 연결되는 역이 없습니다.");
     }
 
 

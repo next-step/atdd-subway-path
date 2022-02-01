@@ -49,7 +49,7 @@ public class Section {
         return downStation.equals(section.getUpStation());
     }
 
-    public boolean containsStation(Section section) {
+    public boolean containsStations(Section section) {
         return containsStation(section.getUpStation()) || containsStation(section.getDownStation());
     }
     

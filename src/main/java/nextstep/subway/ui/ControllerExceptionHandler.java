@@ -2,6 +2,7 @@ package nextstep.subway.ui;
 
 import nextstep.subway.domain.exception.CannotAddSectionException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,7 +15,8 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler(CannotAddSectionException.class)
-    public ResponseEntity<Void> handleICannotAddSectionException(CannotAddSectionException e) {
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<String> handleICannotAddSectionException(CannotAddSectionException e) {
+        return ResponseEntity.badRequest()
+                .body(e.getMessage());
     }
 }
