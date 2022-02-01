@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("구간 단위 테스트(Section)")
@@ -62,5 +63,20 @@ class SectionTest {
 
         // then
         assertThat(actual).isEqualTo(distance - otherDistance);
+    }
+
+    @DisplayName("세션간의 거리값 차이가 음수면 예외처리")
+    @Test
+    void subtractDistanceException() {
+        // given
+        final Station otherFirstStation = new Station("otherFirstStation");
+        final Station otherSecondStation = new Station("otherSecondStation");
+        final int otherDistance = 10;
+        final Section other = new Section(line, otherFirstStation, otherSecondStation, otherDistance);
+
+        // then
+        assertThatThrownBy(() -> section.subtractDistance(other))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("other distance is equal or bigger");
     }
 }
