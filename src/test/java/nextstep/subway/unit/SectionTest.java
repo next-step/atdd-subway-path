@@ -55,7 +55,7 @@ class SectionTest {
         final Station otherFirstStation = new Station("otherFirstStation");
         final Station otherSecondStation = new Station("otherSecondStation");
         final int otherDistance = 5;
-        final Section other = new Section(line, otherFirstStation, otherFirstStation, otherDistance);
+        final Section other = new Section(line, otherFirstStation, otherSecondStation, otherDistance);
 
         // when
         final int actual = section.subtractDistance(other);
