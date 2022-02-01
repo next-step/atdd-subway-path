@@ -1,8 +1,17 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
+import nextstep.subway.applicaion.dto.LineRequest;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -24,28 +33,47 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Long getId() {
-        return id;
+    public void addSection(Section section) {
+        sections.add(section);
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void removeSection(Station downStation) {
+        Section lastSection = sections.get(sections.size() - 1);
+        if (!lastSection.getDownStation().equals(downStation)) {
+            throw new IllegalArgumentException();
+        }
+
+        sections.remove(sections.size() - 1);
+    }
+
+    public void updateLine(LineRequest lineRequest) {
+        if (lineRequest.getName() != null) {
+            this.name = lineRequest.getName();
+        }
+        if (lineRequest.getColor() != null) {
+            this.color = lineRequest.getColor();
+        }
+    }
+
+    public List<Station> getStations() {
+        List<Station> stations = sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+
+        stations.add(0, sections.get(0).getUpStation());
+        return stations;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 
     public List<Section> getSections() {

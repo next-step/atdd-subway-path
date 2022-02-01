@@ -1,7 +1,9 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
+import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
@@ -56,5 +58,9 @@ class LineServiceTest {
 
         // then
         assertThat(line.getSections().size()).isEqualTo(1);
+        LineResponse response = lineService.findById(line.getId());
+        List<StationResponse> stations = response.getStations();
+        assertThat(stations.get(0).getId()).isEqualTo(upStation.getId());
+        assertThat(stations.get(1).getId()).isEqualTo(downStation.getId());
     }
 }
