@@ -30,4 +30,8 @@ public class AssertionsUtils {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    public static void 예외메세지_검증(ExtractableResponse<Response> response, String exceptionMessage) {
+        assertThat(response.jsonPath().getString("exceptionMessage")).isEqualTo(exceptionMessage);
+    }
+
 }

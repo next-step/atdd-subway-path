@@ -1,9 +1,12 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.exceptions.BadRequestException;
+import nextstep.subway.common.exception.BadRequestException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -75,6 +78,11 @@ public class LineTest {
 
         // then
         assertThat(이호선.getAllStations()).containsExactly(이호선_상행종점역, 구간_하행역, 이호선_하행종점역);
+
+        List<Integer> sectionDistances = 이호선.getSections().stream()
+                .map(Section::getDistance)
+                .collect(Collectors.toList());
+        assertThat(sectionDistances).containsExactly(4, 3);
     }
 
     @Test
@@ -121,6 +129,11 @@ public class LineTest {
 
         // then
         assertThat(이호선.getAllStations()).hasSize(2);
+
+        List<Integer> sectionDistances = 이호선.getSections().stream()
+                .map(Section::getDistance)
+                .collect(Collectors.toList());
+        assertThat(sectionDistances).contains(7);
     }
 
     @Test

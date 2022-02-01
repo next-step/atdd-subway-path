@@ -1,7 +1,18 @@
 package nextstep.study;
 
+import org.jgrapht.GraphPath;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.alg.shortestpath.KShortestPaths;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.WeightedMultigraph;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 class JgraphtTest {
-    /*@Test
+    @Test
     void getDijkstraShortestPath() {
         String source = "v3";
         String target = "v1";
@@ -18,9 +29,9 @@ class JgraphtTest {
         List<String> shortestPath = dijkstraShortestPath.getPath(source, target).getVertexList();
 
         assertThat(shortestPath.size()).isEqualTo(3);
-    }*/
+    }
 
-   /* @Test
+    @Test
     void getKShortestPaths() {
         String source = "v3";
         String target = "v1";
@@ -41,5 +52,5 @@ class JgraphtTest {
                     assertThat(it.getVertexList()).startsWith(source);
                     assertThat(it.getVertexList()).endsWith(target);
                 });
-    }*/
+    }
 }

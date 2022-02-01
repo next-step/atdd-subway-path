@@ -3,7 +3,6 @@ package nextstep.subway.line.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.commons.AcceptanceTest;
-import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineTestRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,7 @@ import java.util.Map;
 
 import static nextstep.subway.commons.AssertionsUtils.삭제요청_성공;
 import static nextstep.subway.commons.AssertionsUtils.요청_실패;
-import static nextstep.subway.line.utils.LineUtils.*;
+import static nextstep.subway.line.acceptance.LineUtils.*;
 
 @DisplayName("지하철 노선 관리 기능")
 class LineAcceptanceTest extends AcceptanceTest {

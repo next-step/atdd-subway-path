@@ -1,9 +1,9 @@
 package nextstep.subway.line.service;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.subway.exceptions.BadRequestException;
-import nextstep.subway.exceptions.LineNotFoundException;
-import nextstep.subway.exceptions.StationNotFoundException;
+import nextstep.subway.common.exception.BadRequestException;
+import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.station.exception.StationNotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;

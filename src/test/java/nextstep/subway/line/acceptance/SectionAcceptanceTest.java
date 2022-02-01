@@ -3,7 +3,6 @@ package nextstep.subway.line.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.commons.AcceptanceTest;
-import nextstep.subway.commons.RestAssuredUtils;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineTestRequest;
 import nextstep.subway.line.dto.SectionTestRequest;
@@ -13,14 +12,12 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static nextstep.subway.commons.AssertionsUtils.삭제요청_성공;
 import static nextstep.subway.commons.AssertionsUtils.요청_실패;
-import static nextstep.subway.line.utils.LineUtils.지하철노선_단건조회_요청;
-import static nextstep.subway.line.utils.LineUtils.지하철노선_생성_요청;
-import static nextstep.subway.line.utils.SectionUtils.*;
+import static nextstep.subway.line.acceptance.LineUtils.지하철노선_단건조회_요청;
+import static nextstep.subway.line.acceptance.LineUtils.지하철노선_생성_요청;
+import static nextstep.subway.line.acceptance.SectionUtils.*;
 import static nextstep.subway.station.acceptance.StationUtils.getStationId;
 import static nextstep.subway.station.acceptance.StationUtils.지하철역_생성요청;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선의 구간 관리 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
