@@ -65,7 +65,7 @@ public class LineCommandService {
 
     public void updateLine(long id, UpdateLineRequest request) {
         Line line = lineQueryService.findLineById(id);
-        line.updateInfo(request.getName(), request.getColor());
+        line.update(request.getName(), request.getColor());
     }
 
     public void deleteLine(long id) {
