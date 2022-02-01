@@ -66,14 +66,6 @@ public class Sections {
                 .orElseThrow(NotFoundStationException::new);
     }
 
-    public Station getDownStationEndPoint() {
-        List<Station> upStations = findUpStations();
-        return findDownStations().stream()
-                .filter(ds -> !upStations.contains(ds))
-                .findAny()
-                .orElseThrow(NotFoundStationException::new);
-    }
-
     private void save(final Section target) {
         validateSave(target);
         saveBetweenStations(target);
@@ -162,12 +154,15 @@ public class Sections {
     }
 
     private Long getLastRegisteredDownStationId() {
-        return getLastRegisteredDownStation().getId();
+        return getDownStationEndPoint().getId();
     }
 
-    private Station getLastRegisteredDownStation() {
-        final List<Station> registeredDownStations = getRegisteredDownStation();
-        return  registeredDownStations.get(registeredDownStations.size() - 1);
+    public Station getDownStationEndPoint() {
+        List<Station> upStations = findUpStations();
+        return findDownStations().stream()
+                .filter(ds -> !upStations.contains(ds))
+                .findAny()
+                .orElseThrow(NotFoundStationException::new);
     }
 
     private List<Long> getIds(List<Station> registeredStations) {

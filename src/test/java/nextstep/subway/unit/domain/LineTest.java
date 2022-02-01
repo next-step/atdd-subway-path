@@ -94,8 +94,15 @@ class LineTest {
         assertThat(lastStation.getName()).isEqualTo(삼성역.getName());
     }
 
-    @DisplayName("구간이 목록에서 마지막 역 삭제")
+    @DisplayName("구간 목록에서 마지막 역 삭제")
     @Test
     void removeSection() {
+        // given
+        line.addSection(new Section(line, 역삼역, 삼성역, 5));
+        line.addSection(new Section(line, 서초역, 교대역, 5));
+        line.addSection(new Section(line, 교대역, 강남역, 3));
+
+        line.removeSection(삼성역.getId());
+        assertThat(line.getSections().getSections()).hasSize(3);
     }
 }
