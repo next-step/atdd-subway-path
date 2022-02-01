@@ -40,7 +40,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선에 마지막 구간과 연결되는 새로운 구간을 등록")
     @Test
-    void addLineSection() {
+    void addLineSectionByDownStation() {
         // when
         final Long 정자역_번호 = 지하철_역_생성_되어있음(정자역);
         지하철_노선_구간_등록을_요청한다(신분당선_번호, 양재역_번호, 정자역_번호, 양재_정자_거리);
@@ -53,6 +53,24 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    /**
+     * When 지하철 노선 상행 종점역과 연결되는 새로운 구간 추가를 요청 하면
+     * Then 지하철 노선에 새로운 구간이 등록된다.
+     */
+    @DisplayName("지하철 노선에 상행 종점역과 연결되는 새로운 구간을 등록")
+    @Test
+    void addLineSectionByUpStation() {
+        // when
+        final Long 논현역_번호 = 지하철_역_생성_되어있음("논현역");
+        지하철_노선_구간_등록을_요청한다(신분당선_번호, 강남역_번호, 논현역_번호, 논현_강남_거리);
+
+        // then
+        final ExtractableResponse<Response> response = 지하철_노선_조회를_요청한다(신분당선_번호);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(논현역_번호, 강남역_번호, 양재역_번호)
+        );
+    }
 
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
