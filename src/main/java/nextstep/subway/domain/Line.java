@@ -84,7 +84,7 @@ public class Line extends BaseEntity {
 
         if (originalDistance == newDistance) {
 
-            throw new RuntimeException();
+            throw new RuntimeException("구간 사이 등록할 때, 길이가 같습니다.");
         }
 
         int index = sections.remove(originalSection.getDownStation());
