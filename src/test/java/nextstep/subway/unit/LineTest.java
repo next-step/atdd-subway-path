@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,16 +14,27 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 
 class LineTest {
+
+    Station 가양역;
+    Station 증미역;
+    Station 등촌역;
+    Line line;
+    int distance1;
+    int distance2;
+
+    @BeforeEach
+    void setUp() {
+        가양역 = new Station("가양역");
+        증미역 = new Station("증미역");
+        등촌역 = new Station("등촌역");
+        line = new Line("9호선", "금색");
+        distance1 = 10;
+        distance2 = 20;
+    }
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
     @Test
     void addSection() {
-        // given
-        Station upStation = new Station("가양역");
-        Station downStation = new Station("증미역");
-        Line line = new Line("9호선", "금색");
-        int distance = 10;
-
-        Section section = new Section(line, upStation, downStation, distance);
+        Section section = new Section(line, 가양역, 증미역, distance1);
 
         // when
         line.addSection(section);
@@ -30,22 +42,14 @@ class LineTest {
         // then
         List<Section> sections = line.getSections();
         assertThat(sections.size()).isEqualTo(1);
-        assertThat(sections.get(0).getUpStation()).isEqualTo(upStation);
-        assertThat(sections.get(0).getDownStation()).isEqualTo(downStation);
-        assertThat(sections.get(0).getDistance()).isEqualTo(distance);
+        assertThat(sections.get(0).getUpStation()).isEqualTo(가양역);
+        assertThat(sections.get(0).getDownStation()).isEqualTo(증미역);
+        assertThat(sections.get(0).getDistance()).isEqualTo(distance1);
     }
 
     @DisplayName("노선에 속해있는 역 목록 조회")
     @Test
     void getStations() {
-        // given
-        Station 가양역 = new Station("가양역");
-        Station 증미역 = new Station("증미역");
-        Station 등촌역 = new Station("등촌역");
-        Line line = new Line("9호선", "금색");
-        int distance1 = 10;
-        int distance2 = 20;
-
         line.addSection(new Section(line, 가양역, 증미역, distance1));
         line.addSection(new Section(line, 증미역, 등촌역, distance2));
 
@@ -61,13 +65,6 @@ class LineTest {
     @Test
     void removeSection() {
         // given
-        Station 가양역 = new Station("가양역");
-        Station 증미역 = new Station("증미역");
-        Station 등촌역 = new Station("등촌역");
-        Line line = new Line("9호선", "금색");
-        int distance1 = 10;
-        int distance2 = 20;
-
         line.addSection(new Section(line, 가양역, 증미역, distance1));
         line.addSection(new Section(line, 증미역, 등촌역, distance2));
 
