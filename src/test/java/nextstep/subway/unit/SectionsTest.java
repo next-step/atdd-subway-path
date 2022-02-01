@@ -68,4 +68,18 @@ class SectionsTest {
         // then
         assertThat(sections.getStations()).containsExactly(upStation, extraStation, downStation);
     }
+
+    @DisplayName("구간 목록 상항행을 기준으로 중앙 방향의 새로운 구간을 추가할 경우")
+    @Test
+    void addSectionUpStation() {
+        // given
+        final Station extraStation = new Station("extraStation");
+        final Section section = new Section(line, upStation, extraStation, 1);
+
+        // when
+        sections.addSection(section);
+
+        // then
+        assertThat(sections.getStations()).containsExactly(upStation, extraStation, downStation);
+    }
 }
