@@ -64,6 +64,13 @@ public class Section {
         }
     }
 
+    public boolean hasAnyStation(final Station station) {
+        if (upStation.equals(station) || downStation.equals(station)) {
+            return true;
+        }
+        return false;
+    }
+
     public Long getId() {
         return id;
     }
@@ -83,4 +90,5 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
 }
