@@ -69,6 +69,13 @@ public class Sections {
 		return sections.size();
 	}
 
+	public void isExist(Station upStation, Station downStation) {
+		if (!sections.contains(upStation) && !sections.contains(downStation)) {
+
+			throw new RuntimeException("등록하고자하는 구간의 역이 존재하지 않습니다.");
+		}
+	}
+
 	public int remove(Station station) {
 		Section toBeRemovedSection = sections.stream()
 						.filter(section -> section.getDownStation().equals(station))

@@ -105,6 +105,22 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void addLineBetweenSectionsByNoContain() {
+
+        //given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        Long 사당역 = 지하철역_생성_요청("사당역").jsonPath().getLong("id");
+
+        // when : 이미 노선은 만들어졌다. 강남역 - 양재역
+        ExtractableResponse<Response> response =
+                지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 사당역, 8));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 지하철 노선의 마지막 구간 제거를 요청 하면

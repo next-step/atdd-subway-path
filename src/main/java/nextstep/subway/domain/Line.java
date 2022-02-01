@@ -50,7 +50,9 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        // 만약 UpStation이 있는지 확인하기
+
+        sections.isExist(upStation, downStation);
+
         Optional<Section> sectionWithUpStation = sections.findSectionWithUpStation(upStation);
 
         if (sectionWithUpStation.isPresent()) {
