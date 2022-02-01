@@ -79,10 +79,11 @@ public class Sections {
 
         Line line = section.getLine();
         int index = sections.indexOf(registeredUpSection);
+        int nextIndex = index + 1;
         int newSectionDistance = registeredUpSection.getDistance() - section.getDistance();
 
         sections.set(index, Section.of(line, registeredUpSection.getUpStation(), section.getDownStation(), section.getDistance()));
-        sections.add(index + 1, Section.of(line, section.getDownStation(), registeredUpSection.getDownStation(), newSectionDistance));
+        sections.add(nextIndex, Section.of(line, section.getDownStation(), registeredUpSection.getDownStation(), newSectionDistance));
     }
 
     private void addMiddleDownSection(Section section) {
@@ -91,10 +92,11 @@ public class Sections {
 
         Line line = section.getLine();
         int index = sections.indexOf(registeredDownSection);
+        int nextIndex = index + 1;
         int newSectionDistance = registeredDownSection.getDistance() - section.getDistance();
 
         sections.set(index, Section.of(line, registeredDownSection.getUpStation(), section.getUpStation(), newSectionDistance));
-        sections.add(index + 1, Section.of(line, section.getUpStation(), registeredDownSection.getDownStation(), section.getDistance()));
+        sections.add(nextIndex, Section.of(line, section.getUpStation(), registeredDownSection.getDownStation(), section.getDistance()));
     }
 
     private void addFirstSection(Section section) {
