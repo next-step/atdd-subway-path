@@ -22,18 +22,18 @@ class SectionsTest {
         line = new Line("color", "name", upStation, downStation, distance);
     }
 
-    @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
+    @DisplayName("구간 목록 맨앞에 새로운 구간을 추가할 경우")
     @Test
     void addSectionLast() {
         // given
         final Sections sections = new Sections(line, upStation, downStation, distance);
         final Station extraStation = new Station("extraStation");
-        final Section section = new Section(line, downStation, extraStation, 1);
+        final Section section = new Section(line, extraStation, upStation, 1);
 
         // when
         sections.addSection(section);
 
         // then
-        assertThat(sections.getStations()).containsExactly(upStation, downStation, extraStation);
+        assertThat(sections.getStations()).containsExactly(extraStation, upStation, downStation);
     }
 }
