@@ -6,7 +6,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
@@ -45,7 +45,7 @@ public class Sections {
 
     private boolean findStationExistence(final Station station) {
         return sections.stream()
-                .anyMatch(it -> it.hasAnyStation(station));
+                .anyMatch(it -> it.isUpStation(station) || it.isDownStation(station));
     }
 
     public void removeSection(final Station station) {
@@ -63,25 +63,44 @@ public class Sections {
         return sections.size() - GAP_SIZE;
     }
 
-    // Stations 는 공수비용 + 만들 이유 없어서 일급 컬렉션화 하지 않았습니다.
     public List<Station> getStations() {
         if (sections.isEmpty()) {
             return Collections.emptyList();
         }
-        // 상행 종점 찾기
-        sections.stream()
-                .map(Section::getUpStation)
-                .filter(this::isDownStation)
 
-        final List<Station> stations = sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-        stations.add(FIRST_POSITION, sections.get(FIRST_POSITION).getUpStation());
+        // 상행 종점 찾기
+        final List<Station> stations = new ArrayList<>();
+        final Station endUpStation = findEndUpStation();
+        stations.add(endUpStation);
+
+        // 다음 구간 찾기 -> 하행 종점까지 찾는다.
+        Optional<Station> nextSection = findNextSection(endUpStation);
+        while (nextSection.isPresent()) {
+            final Station downStation = nextSection.get();
+            stations.add(downStation);
+            nextSection = findNextSection(downStation);
+        }
         return Collections.unmodifiableList(stations);
     }
 
-    private boolean isDownStation(final Station station) {
+    private Optional<Station> findNextSection(final Station station) {
         return sections.stream()
-                .anyMatch(it -> it.isDonwStation(station));
+                .filter(it -> it.isUpStation(station))
+                .map(Section::getDownStation)
+                .findAny();
+    }
+
+    private Station findEndUpStation() {
+        return sections.stream()
+                .map(Section::getUpStation)
+                .filter(this::isNotDownStation)
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("no have end upStation"));
+    }
+
+    // Predicate.not 으로 처리하려는 11버전 모듈로 사용해서 ! 사용 메서드로 변경
+    private boolean isNotDownStation(final Station station) {
+        return sections.stream()
+                .noneMatch(it -> it.isDownStation(station));
     }
 }

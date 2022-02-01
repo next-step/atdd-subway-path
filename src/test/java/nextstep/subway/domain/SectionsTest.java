@@ -23,9 +23,23 @@ class SectionsTest {
         sections.addSection(new Section(line, upStation, downStation, 10));
     }
 
-    @DisplayName("구간 목록 맨앞에 새로운 구간을 추가할 경우")
+    @DisplayName("구간 목록 맨뒤에 새로운 구간을 추가할 경우")
     @Test
     void addSectionLast() {
+        // given
+        final Station extraStation = new Station("extraStation");
+        final Section section = new Section(line, downStation, extraStation, 1);
+
+        // when
+        sections.addSection(section);
+
+        // then
+        assertThat(sections.getStations()).containsExactly(upStation, downStation, extraStation);
+    }
+
+    @DisplayName("구간 목록 맨앞에 새로운 구간을 추가할 경우")
+    @Test
+    void addSectionFirst() {
         // given
         final Station extraStation = new Station("extraStation");
         final Section section = new Section(line, extraStation, upStation, 1);

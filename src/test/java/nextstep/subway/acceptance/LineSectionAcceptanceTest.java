@@ -62,7 +62,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     void addLineSectionByUpStation() {
         // when
         final Long 논현역_번호 = 지하철_역_생성_되어있음("논현역");
-        지하철_노선_구간_등록을_요청한다(신분당선_번호, 강남역_번호, 논현역_번호, 논현_강남_거리);
+        지하철_노선_구간_등록을_요청한다(신분당선_번호, 논현역_번호, 강남역_번호, 논현_강남_거리);
 
         // then
         final ExtractableResponse<Response> response = 지하철_노선_조회를_요청한다(신분당선_번호);

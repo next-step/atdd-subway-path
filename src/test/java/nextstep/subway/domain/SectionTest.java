@@ -21,26 +21,6 @@ class SectionTest {
         distance = 10;
     }
 
-    @DisplayName("특정 역을 소유하고 있는지 반환")
-    @Test
-    void hasAnyStation() {
-        // given
-        final Station extraStation = new Station("extraStation");
-        final Section section = new Section(new Line("color", "name"), upStation, downStation, distance);
-
-        // when
-        boolean upStationExpected = section.hasAnyStation(upStation);
-        boolean downStationExpected = section.hasAnyStation(downStation);
-        boolean extraStationExpected = section.hasAnyStation(extraStation);
-
-        // then
-        assertAll(
-                () -> assertThat(upStationExpected).isTrue(),
-                () -> assertThat(downStationExpected).isTrue(),
-                () -> assertThat(extraStationExpected).isFalse()
-        );
-    }
-
     @DisplayName("특정 역이 상행선으로 등록되었는지 반환")
     @Test
     void hasUpStation() {
@@ -48,8 +28,8 @@ class SectionTest {
         final Section section = new Section(new Line("color", "name"), upStation, downStation, distance);
 
         // when
-        boolean upStationExpected = section.hasUpStation(upStation);
-        boolean downStationExpected = section.hasUpStation(downStation);
+        boolean upStationExpected = section.isUpStation(upStation);
+        boolean downStationExpected = section.isUpStation(downStation);
 
         // then
         assertAll(
@@ -65,8 +45,8 @@ class SectionTest {
         final Section section = new Section(new Line("color", "name"), upStation, downStation, distance);
 
         // when
-        boolean upStationExpected = section.hasDownStation(upStation);
-        boolean downStationExpected = section.hasDownStation(downStation);
+        boolean upStationExpected = section.isDownStation(upStation);
+        boolean downStationExpected = section.isDownStation(downStation);
 
         // then
         assertAll(
