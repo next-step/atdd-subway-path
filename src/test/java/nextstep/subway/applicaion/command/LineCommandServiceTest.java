@@ -22,6 +22,7 @@ import static nextstep.subway.acceptance.step_feature.LineStepFeature.신분당�
 import static nextstep.subway.acceptance.step_feature.LineStepFeature.신분당선_이름;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("노선 관련 서비스 로직 검증")
 @SpringBootTest
 @Transactional
 class LineCommandServiceTest {
