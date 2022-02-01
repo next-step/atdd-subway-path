@@ -31,7 +31,7 @@ public class LineService {
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.getSections().add(new Section(line, upStation, downStation, request.getDistance()));
+            line.getSections().add(Section.of(line, upStation, downStation, request.getDistance()));
         }
         return createLineResponse(line);
     }
@@ -45,11 +45,14 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        Line line = lineRepository.findById(id)
+                .orElseThrow(IllegalArgumentException::new);
+        return createLineResponse(line);
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(id)
+                .orElseThrow(IllegalArgumentException::new);
 
         if (lineRequest.getName() != null) {
             line.setName(lineRequest.getName());
@@ -68,7 +71,7 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
-        line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        line.getSections().add(Section.of(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
     private LineResponse createLineResponse(Line line) {
@@ -99,13 +102,21 @@ public class LineService {
     }
 
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
+        if (!isLastStation(line, station)) {
             throw new IllegalArgumentException();
         }
 
         line.getSections().remove(line.getSections().size() - 1);
+    }
+
+    private boolean isLastStation(Line line, Station station) {
+        return line.getSections()
+                .get(line.getSections().size() - 1)
+                .getDownStation()
+                .equals(station);
     }
 }

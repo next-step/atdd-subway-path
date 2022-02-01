@@ -40,7 +40,7 @@ public class LineServiceMockTest {
         SectionRequest request = new SectionRequest(upStationId, downStationId, distance);
 
         Line _5호선 = new Line("5호선", "보라색");
-        _5호선.getSections().add(new Section(_5호선, 군자역, 아차산역, request.getDistance()));
+        _5호선.getSections().add(Section.of(_5호선, 군자역, 아차산역, request.getDistance()));
 
         LineService lineService = new LineService(lineRepository, stationService);
         given(stationService.findById(upStationId)).willReturn(아차산역);

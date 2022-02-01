@@ -22,11 +22,11 @@ public class Section {
 
     private int distance;
 
-    public Section() {
+    protected Section() {
 
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    private Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -34,7 +34,7 @@ public class Section {
     }
 
     public static Section of(Line line, Station upStation, Station downStation, int distance) {
-        return null;
+        return new Section(line, upStation, downStation, distance);
     }
 
     public Long getId() {
@@ -55,5 +55,9 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
     }
 }

@@ -17,7 +17,7 @@ class LineTest {
         Station 아차산역 = new Station("아차산역");
         Station 광나루역 = new Station("광나루역");
         Line line = new Line("5호선", "보라색");
-        line.getSections().add(new Section(line, 군자역, 아차산역, 10));
+        line.getSections().add(Section.of(line, 군자역, 아차산역, 10));
 
         Section section = Section.of(line, 아차산역, 광나루역, 10);
 
