@@ -26,7 +26,7 @@ public class LineResponse {
         this.modifiedDate = modifiedDate;
     }
 
-    public static LineResponse of(Line line){
+    public static LineResponse of(Line line) {
         return new LineResponse(
                 line.getId(),
                 line.getName(),

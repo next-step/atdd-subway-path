@@ -27,13 +27,13 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void updateLine(String name, String color){
+    public void updateLine(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
     public void addSection(Section section) {
-        if(sections.isEmpty()){
+        if (sections.isEmpty()) {
             sections.add(section);
             section.setLine(this);
             return;
@@ -41,7 +41,7 @@ public class Line extends BaseEntity {
 
         Section lastSection = sections.get(sections.size() - 1);
         Station endStation = lastSection.getDownStation();
-        if(!endStation.equals(section.getUpStation())){
+        if (!endStation.equals(section.getUpStation())) {
             throw new IllegalArgumentException("요청한 상행역이 하행종점역과 연결되지 않습니다.");
         }
 
@@ -51,14 +51,14 @@ public class Line extends BaseEntity {
 
 
     public void removeStation(Station newStation) {
-        if(sections.size() == MIN_SIZE){
+        if (sections.size() == MIN_SIZE) {
             throw new IllegalArgumentException("구간이 1개일 경우 삭제가 불가능합니다.");
         }
         List<Station> stations = getStations();
-        if(!stations.get(stations.size()-1).equals(newStation)){
+        if (!stations.get(stations.size() - 1).equals(newStation)) {
             throw new IllegalArgumentException("마지막 역만 삭제가 가능합니다.");
         }
-        sections.remove(sections.size()-1);
+        sections.remove(sections.size() - 1);
     }
 
     public Long getId() {
@@ -82,7 +82,7 @@ public class Line extends BaseEntity {
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
 
-        stations.add(sections.get(sections.size()-1).getDownStation());
+        stations.add(sections.get(sections.size() - 1).getDownStation());
         return stations;
     }
 }

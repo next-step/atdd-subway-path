@@ -38,9 +38,9 @@ public class LineServiceMockTest {
 
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         사당역 = new Station("사당");
-        방배역= new Station("방배");
+        방배역 = new Station("방배");
         이호선 = new Line("2호선", "green");
         사당_방배_구간 = new Section(사당역, 방배역, 5);
         이호선.addSection(사당_방배_구간);
@@ -76,7 +76,6 @@ public class LineServiceMockTest {
 
         assertThat(stationNameList).contains("서초");
     }
-
 
 
 }

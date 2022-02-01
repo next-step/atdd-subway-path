@@ -20,10 +20,10 @@ class LineTest {
     private Section section;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         upStation = new Station("사당");
         downStation = new Station("방배");
-        line = new Line("2호선","green");
+        line = new Line("2호선", "green");
         section = new Section(upStation, downStation, 5);
     }
 
