@@ -4,19 +4,57 @@ import nextstep.subway.fixture.SectionFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static nextstep.subway.acceptance.LineSteps.노선_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.신분당선_생성_완료;
 import static nextstep.subway.acceptance.SectionSteps.*;
 import static nextstep.subway.acceptance.StationSteps.역_생성_요청;
+import static nextstep.subway.fixture.LineFixture.신분당선;
 import static nextstep.subway.fixture.StationFixture.*;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
 
+    @DisplayName("역 사이에 새로운 역을 등록")
+    @Test
+    void addSectionBetweenSection() {
+        // given
+        역_생성_요청(신논현역);
+        역_생성_요청(양재역);
+        var 노선_생성_응답 = 노선_생성_요청(신분당선);
+
+        역_생성_요청(강남역);
+
+        // when
+        var lineUri = 노선_생성_응답.header("Location");
+        var 구간_등록_응답 = 구간_등록_요청(lineUri, SectionFixture.of(3L, 2L, 5));
+
+        // then
+        구간_등록_성공(구간_등록_응답);
+    }
+
+    @DisplayName("새로운 역을 상행 종점으로 등록")
+    @Test
+    void addSectionToTop() {
+        // given
+        역_생성_요청(강남역);
+        역_생성_요청(양재역);
+        var 노선_생성_응답 = 노선_생성_요청(신분당선);
+
+        역_생성_요청(신논현역);
+
+        // when
+        var lineUri = 노선_생성_응답.header("Location");
+        var 구간_등록_응답 = 구간_등록_요청(lineUri, SectionFixture.of(3L, 1L, 5));
+
+        // then
+        구간_등록_성공(구간_등록_응답);
+    }
+
     /**
      * When 지하철 노선에 새로운 구간 추가를 요청 하면
      * Then 노선에 새로운 구간이 추가된다
      */
-    @DisplayName("지하철 노선에 구간을 등록")
+    @DisplayName("새로운 역을 하행 종점으로 등록")
     @Test
     void addLineSection() {
         // given
