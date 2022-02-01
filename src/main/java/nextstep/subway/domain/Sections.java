@@ -54,7 +54,7 @@ public class Sections {
     }
 
     private void notInStationOfSections(Section newSection) {
-        if (containsNotStation(newSection)) {
+        if (stationIsNotInSection(newSection)) {
             throw new BusinessException("해당 노선에 등록된 역들이 없습니다", HttpStatus.BAD_REQUEST);
         }
     }
@@ -164,7 +164,7 @@ public class Sections {
                         .isPresent();
     }
 
-    public boolean containsNotStation(Section newSection) {
+    public boolean stationIsNotInSection(Section newSection) {
         Station upStation = newSection.getUpStation();
         Station downStation = newSection.getDownStation();
         return !(sections.stream()
