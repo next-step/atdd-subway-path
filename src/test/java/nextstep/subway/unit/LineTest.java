@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,24 @@ class LineTest {
         loopLine = Line.of("이호선", "green");
         Section section = new Section(loopLine, gangnam, yeoksam, 10);
         loopLine.addSection(section);
+    }
+
+    @DisplayName("상행 종점역 추가")
+    @Test
+    void addFirstUpSection() {
+        // given
+        Section section = Section.of(loopLine, sunreoung, gangnam, 10);
+
+        // when
+        loopLine.addSection(section);
+
+        List<String> namesOfStations = loopLine.stations().stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+
+        // then
+        assertThat(namesOfStations).containsExactly(sunreoung.getName(), gangnam.getName(), yeoksam.getName());
+
     }
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
