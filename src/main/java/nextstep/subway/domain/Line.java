@@ -46,12 +46,12 @@ public class Line extends BaseEntity {
         sections.remove(sections.size() - 1);
     }
 
-    public void updateLine(LineRequest lineRequest) {
-        if (lineRequest.getName() != null) {
-            this.name = lineRequest.getName();
+    public void updateLine(String name,  String color) {
+        if (name != null) {
+            this.name = name;
         }
-        if (lineRequest.getColor() != null) {
-            this.color = lineRequest.getColor();
+        if (color != null) {
+            this.color = color;
         }
     }
 
