@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.Arrays.asList;
+
 @Embeddable
 public class Sections {
 
@@ -15,9 +17,22 @@ public class Sections {
     private static final int GAP_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private final List<Section> sections = new ArrayList<>();
+    private final List<Section> sections;
 
     public Sections() {
+        this(Collections.emptyList());
+    }
+
+    public Sections(final Line line, final Station upStation, final Station downStation, final int distance) {
+        this(new Section(line, upStation, downStation, distance));
+    }
+
+    public Sections(final Section section) {
+        this(new ArrayList<>(asList(section)));
+    }
+
+    public Sections(final List<Section> sections) {
+        this.sections = sections;
     }
 
     public void addSection(final Section section) {

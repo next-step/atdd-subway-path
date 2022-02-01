@@ -16,16 +16,17 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private Sections sections = new Sections();
+    private Sections sections;
 
     public Line() {
     }
 
-    public Line(String name, String color) {
+    public Line(final String name, final String color, final Station upStation, final Station downStation, final int distance) {
         validateName(name);
         validateColor(color);
         this.name = name;
         this.color = color;
+        this.sections = new Sections(this, upStation, downStation, distance);
     }
 
     public void addSection(final Section section) {
