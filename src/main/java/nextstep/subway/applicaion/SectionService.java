@@ -9,10 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class SectionService {
 
-
-    //todo url 질문
-    // section과 line controller service 분리?
-
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
