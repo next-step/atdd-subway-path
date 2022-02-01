@@ -27,7 +27,7 @@ public class PathSteps {
 
     public static void 최단_경로_검증(ExtractableResponse<Response> response, int pathSize, List<String> pathNames, int distance) {
         assertThat(response.jsonPath().getList("stations")).hasSize(pathSize);
-        assertThat(response.jsonPath().getList("stations.name")).containsExactly(pathNames);
+        assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactlyElementsOf(pathNames);
         assertThat(response.jsonPath().getInt("stations.distance")).isEqualTo(distance);
     }
 
