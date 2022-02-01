@@ -49,4 +49,12 @@ public class Distance {
 	public int hashCode() {
 		return Objects.hash(distance);
 	}
+
+	private int plus(int otherDistance) {
+		return distance + otherDistance;
+	}
+
+	public Distance plus(Distance otherDistance) {
+		return Distance.valueOf(otherDistance.plus(distance));
+	}
 }

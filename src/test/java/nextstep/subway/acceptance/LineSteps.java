@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class LineSteps {
@@ -63,6 +64,10 @@ public class LineSteps {
         return RestAssured.given().log().all()
                 .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then().log().all().extract();
+    }
+
+    public static List<Long> getStationList(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList("stations.id", Long.class);
     }
 
     static class 노선_생성_파라미터 {
