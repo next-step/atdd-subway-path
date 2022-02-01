@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
@@ -119,10 +120,11 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("역과 역사이 신규 역을 추가 실패 - 기존 구간의 거리보다 같거나 큰 경우")
-    @Test
-    void addLineSectionDistanceException() {
+    @ParameterizedTest(name = "구간 길이 이상 실패 [{index}] [{arguments}]")
+    @ValueSource(ints = {10, 11})
+    void addLineSectionDistanceException(int distance) {
         //given
-        Map<String, String> sectionCreateParams = createSectionCreateParams(양재역, 판교역, 10);
+        Map<String, String> sectionCreateParams = createSectionCreateParams(양재역, 판교역, distance);
 
         //when
         ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, sectionCreateParams);

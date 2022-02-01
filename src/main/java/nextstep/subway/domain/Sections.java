@@ -29,9 +29,45 @@ public class Sections {
             throw new CannotAddSectionException();
         }
 
-        addFirstUpSection(section);
-        addLastDownSection(section);
+        if (isAddFirstUpStation(section)) {
+            sections.add(section);
+            return;
+        }
+        if (isAddLastDownStation(section)) {
+            sections.add(section);
+            return;
+        }
+
+
+        Section targetSection = findInsertSection(section);
+
+        if (targetSection.getDistance() <= section.getDistance() ) {
+            throw new CannotAddSectionException(targetSection.getDistance(), section.getDistance());
+        }
     }
+
+    private boolean isAddLastDownStation(Section section) {
+        boolean addableLastStation = findLastDownStation().equals(section.getUpStation());
+        boolean hasStation = hasStation(section.getDownStation());
+
+        return addableLastStation && !hasStation;
+    }
+
+    private boolean isAddFirstUpStation(Section section) {
+        boolean addableFirstStation = findFirstUpStation().equals(section.getDownStation());
+        boolean hasStation = hasStation(section.getUpStation());
+
+        return addableFirstStation && !hasStation;
+    }
+
+    private Section findInsertSection(Section section) {
+        return sections.stream()
+                .filter(section1 -> section1.hasSameUpStation(section.getUpStation())
+                        || section1.hasSameDownStation(section.getDownStation()))
+                .findFirst()
+                .orElseThrow(CannotAddSectionException::new);
+    }
+
 
     private void addFirstUpSection(Section section) {
         boolean addableFirstStation = findFirstUpStation().equals(section.getDownStation());

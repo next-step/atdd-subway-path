@@ -8,6 +8,8 @@ import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,6 +90,23 @@ class LineTest {
                 .isInstanceOf(CannotAddSectionException.class)
                 .hasMessage("추가하려는 역이 이미 노선에 존재합니다");
     }
+
+    @DisplayName("기존 구간의 길이와 같거나 큰 길이의 구간 추가 실패")
+    @ParameterizedTest(name = "구간 길이 추가 실패 [{index}] [{arguments}]")
+    @ValueSource(ints = {10, 11})
+    void addSectionGraterThanDistanceException(int distance) {
+        //given
+        Section sectionForAdd = Section.of(loopLine, gangnam, sunreoung, distance);
+
+        //when
+        ThrowableAssert.ThrowingCallable actual = () -> loopLine.addSection(sectionForAdd);
+
+        //then
+        assertThatThrownBy(actual)
+                .isInstanceOf(CannotAddSectionException.class)
+                .hasMessage("기존 구간의 길이보다 같거나 크면 추가할 수 없습니다. 기존 구간의 길이 : 10, 신규 구간의 길이 : " + distance);
+    }
+
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
     @Test
