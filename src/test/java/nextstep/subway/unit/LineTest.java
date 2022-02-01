@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
@@ -70,6 +72,14 @@ class LineTest {
     @DisplayName("노선에 속해있는 역 목록 조회")
     @Test
     void getStations() {
+        // given
+        line.addSection(section);
+
+        // when
+        List<Station> stations = line.getStations();
+
+        // then
+        assertThat(stations).containsExactly(upStation, downStation);
     }
 
     @DisplayName("구간이 목록에서 마지막 역 삭제")
