@@ -46,7 +46,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(getStationList(response)).containsExactly(강남역, 정자역, 양재역);
+        assertThat(역_아이디_목록_추출(response)).containsExactly(강남역, 정자역, 양재역);
     }
 
     /**
@@ -63,7 +63,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(getStationList(response)).containsExactly(강남역, 정자역, 양재역);
+        assertThat(역_아이디_목록_추출(response)).containsExactly(강남역, 정자역, 양재역);
     }
 
     /**
@@ -79,7 +79,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(getStationList(response)).containsExactly(정자역, 강남역, 양재역);
+        assertThat(역_아이디_목록_추출(response)).containsExactly(정자역, 강남역, 양재역);
     }
 
     /**
@@ -95,7 +95,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(getStationList(response)).containsExactly(강남역, 양재역, 정자역);
+        assertThat(역_아이디_목록_추출(response)).containsExactly(강남역, 양재역, 정자역);
     }
 
     /**
@@ -114,7 +114,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(getStationList(response)).containsExactly(판교역, 정자역, 강남역, 양재역);
+        assertThat(역_아이디_목록_추출(response)).containsExactly(판교역, 정자역, 강남역, 양재역);
     }
 
 }

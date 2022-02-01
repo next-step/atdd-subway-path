@@ -1,6 +1,7 @@
 package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.LineResponse;
+import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,4 +28,7 @@ public class LineQueryService {
         return LineResponse.createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
     }
 
+    public List<Line> getAllLines() {
+        return lineRepository.findAll();
+    }
 }
