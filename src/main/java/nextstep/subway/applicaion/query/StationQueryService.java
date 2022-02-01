@@ -1,9 +1,9 @@
-package nextstep.subway.applicaion;
+package nextstep.subway.applicaion.query;
 
-import nextstep.subway.applicaion.dto.StationRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.exception.station.StationNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,20 +11,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
-public class StationService {
-    private StationRepository stationRepository;
+@Transactional(readOnly = true)
+public class StationQueryService {
 
-    public StationService(StationRepository stationRepository) {
+    private final StationRepository stationRepository;
+
+    public StationQueryService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
     }
 
-    public StationResponse saveStation(StationRequest stationRequest) {
-        Station station = stationRepository.save(new Station(stationRequest.getName()));
-        return createStationResponse(station);
-    }
-
-    @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
 
@@ -33,8 +28,15 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteStationById(Long id) {
-        stationRepository.deleteById(id);
+    public StationResponse showStationById(long id) {
+        Station station = findStationsById(id);
+        return new StationResponse(station.getId(), station.getName(),
+                station.getCreatedDate(), station.getModifiedDate());
+    }
+
+    private Station findStationsById(long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new StationNotFoundException(id));
     }
 
     public StationResponse createStationResponse(Station station) {
@@ -46,7 +48,4 @@ public class StationService {
         );
     }
 
-    public Station findById(Long id) {
-        return stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-    }
 }
