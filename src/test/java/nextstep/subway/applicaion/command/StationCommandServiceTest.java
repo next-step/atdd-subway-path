@@ -2,7 +2,6 @@ package nextstep.subway.applicaion.command;
 
 import nextstep.subway.applicaion.dto.StationRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
-import nextstep.subway.applicaion.query.StationQueryService;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.exception.station.DuplicateStationException;
@@ -26,18 +25,14 @@ class StationCommandServiceTest {
     @Autowired
     private StationRepository stationRepository;
     @Autowired
-    private StationQueryService stationQueryService;
-    @Autowired
     private StationCommandService stationCommandService;
 
     private Station 강남역;
-    private Station 판교역;
     private Station 정자역;
 
     @BeforeEach
     void setUp() {
         강남역 = Station.of("강남역");
-        판교역 = Station.of("판교역");
         정자역 = Station.of("정자역");
         stationRepository.save(강남역);
     }
