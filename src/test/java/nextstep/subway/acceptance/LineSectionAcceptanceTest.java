@@ -112,6 +112,36 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    /***
+     * When 하행을 기준으로 지하철 노선에 있는 역 사이 길이보다 같거나 긴 새로운 구간 등록 요청을 하면
+     * Then 지하철 노선에 새로운 구간 등록이 실패한다.
+     * 예시) 강남 판교 - 양재 판교
+     */
+    @DisplayName("하행을 기준으로 지하철 노선에 있는 역 사이 길이보다 같거나 긴 새로운 지하철 노선 구간 등록")
+    @Test
+    void test1() {
+        final Long 양재역_번호 = 지하철_역_생성_되어있음(양재역);
+        지하철_노선_구간_등록을_요청한다(신분당선_번호, 양재역_번호, 판교역_번호, 강남_판교_거리);
+
+        final ExtractableResponse<Response> response = 지하철_노선_조회를_요청한다(신분당선_번호);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /***
+     * When 상행을 기준으로 지하철 노선에 있는 역 사이 길이보다 같거나 긴 새로운 구간 등록 요청을 하면
+     * Then 지하철 노선에 새로운 구간 등록이 실패한다.
+     * 예시) 강남 판교 - 강남 양재
+     */
+    @DisplayName("상행을 기준으로 지하철 노선에 있는 역 사이 길이보다 같거나 긴 새로운 지하철 노선 구간 등록")
+    @Test
+    void test2() {
+        final Long 양재역_번호 = 지하철_역_생성_되어있음(양재역);
+        지하철_노선_구간_등록을_요청한다(신분당선_번호, 강남역_번호, 양재역_번호, 강남_판교_거리);
+
+        final ExtractableResponse<Response> response = 지하철_노선_조회를_요청한다(신분당선_번호);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
