@@ -5,14 +5,12 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
@@ -47,9 +45,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 6));
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+        지하철_노선에_구간등록됨(신분당선, 강남역, 양재역, 정자역);
     }
 
     /**
@@ -64,9 +60,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역, 6));
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신논현역, 강남역, 양재역);
+        지하철_노선에_구간등록됨(신분당선, 신논현역, 강남역, 양재역);
     }
 
     /**
@@ -81,9 +75,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 중간역, 4));
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 중간역, 양재역);
+        지하철_노선에_구간등록됨(신분당선, 강남역, 중간역, 양재역);
     }
 
     /**
@@ -98,7 +90,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 중간역, 10));
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철_노선에_구간등록_실패됨(response);
     }
 
     /**
@@ -112,7 +104,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 6));
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철_노선에_구간등록_실패됨(response);
     }
 
     /**
@@ -130,7 +122,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(대림역, 신풍역, 6));
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철_노선에_구간등록_실패됨(response);
     }
 
     /**
@@ -149,9 +141,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+        지하철_노선에_구간_제거됨(신분당선, 강남역, 양재역);
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
