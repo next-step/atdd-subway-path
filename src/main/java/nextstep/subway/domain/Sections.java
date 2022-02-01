@@ -61,6 +61,7 @@ public class Sections {
 
     private void addSectionBetweenMatchDownStation(Section newSection) {
         Section oldSection = sections.stream().filter(section -> section.isSameDownStation(newSection.getDownStation())).findFirst().orElseThrow(BusinessException::new);
+        isCanInsertBetweenSection(oldSection, newSection);
         int index = sections.indexOf(oldSection);
         Section firstSection = Section.of(oldSection.getUpStation(), newSection.getUpStation(), oldSection.getDistance() - newSection.getDistance());
         Section secondSection = Section.of(newSection.getUpStation(), newSection.getDownStation(), newSection.getDistance());
@@ -74,6 +75,7 @@ public class Sections {
 
     private void addSectionBetweenMatchUpStation(Section newSection) {
         Section oldSection = sections.stream().filter(section -> section.isSameUpStation(newSection.getUpStation())).findFirst().orElseThrow(BusinessException::new);
+        isCanInsertBetweenSection(oldSection, newSection);
         int index = sections.indexOf(oldSection);
         Section firstSection = Section.of(newSection.getUpStation(), newSection.getDownStation(), newSection.getDistance());
         Section secondSection = Section.of(newSection.getDownStation(), oldSection.getDownStation(), oldSection.getDistance() - newSection.getDistance());
@@ -83,6 +85,12 @@ public class Sections {
 
         sections.set(index, firstSection);
         sections.add(index + 1, secondSection);
+    }
+
+    private void isCanInsertBetweenSection(Section oldSection, Section newSection) {
+        if (oldSection.getDistance() - newSection.getDistance() < 0) {
+            throw new BusinessException("기존 구간을 넘었어요", HttpStatus.BAD_REQUEST);
+        }
     }
 
     private boolean isDownStation(Long station) {

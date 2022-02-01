@@ -1,13 +1,13 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.applicaion.exception.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static nextstep.subway.utils.StationStepUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SectionsTest {
 
@@ -117,7 +117,7 @@ public class SectionsTest {
     void 구간_모음에서_특정_역을_상행역으로_가지고_있는_구간을_찾는다(){
         //given
         Station 처음_보는_역1 = new Station(Long.MAX_VALUE,"처음_보는_역1");
-        구간_모음.addSection(Section.of(하행역,처음_보는_역1,역간_거리-1));
+        구간_모음.addSection(Section.of(하행역, 처음_보는_역1, 역간_거리 - 1));
 
         //when
         Section 상행_종점_구간 = 구간_모음.findSectionByUpStation(하행역.getId());
@@ -127,4 +127,79 @@ public class SectionsTest {
         assertThat(상행_종점_구간.getDownStation().getId()).isEqualTo(처음_보는_역1.getId());
     }
 
+    /**
+     * When  구간 앞에 하나의 구간을 추가한다.
+     * Then  구간이 추가된다
+     */
+    @DisplayName("구간 앞에 구간을 추가한다.")
+    @Test
+    void 구간_앞에_구간을_추가한다() {
+        //given
+        Station 처음_보는_역1 = new Station(Long.MAX_VALUE, "처음_보는_역1");
+        구간_모음.addSection(Section.of(처음_보는_역1, 상행역, 역간_거리 - 1));
+
+        //when
+        Section 상행_종점_구간 = 구간_모음.findFirstSection();
+
+        //then
+        assertThat(상행_종점_구간.getUpStation().getId()).isEqualTo(처음_보는_역1.getId());
+        assertThat(상행_종점_구간.getDownStation().getId()).isEqualTo(상행역.getId());
+    }
+
+    /**
+     * When  구간 중간에 구간을 추가한다.
+     * Then  구간이 추가된다
+     */
+    @DisplayName("구간 중간에 구간을 추가한다.")
+    @Test
+    void 구간_중간에_구간을_추가한다() {
+        //given
+        Station 처음_보는_역1 = new Station(Long.MAX_VALUE, "처음_보는_역1");
+        구간_모음.addSection(Section.of(상행역, 처음_보는_역1, 역간_거리 - 1));
+
+        //when
+        Section 상행_종점_구간 = 구간_모음.findFirstSection();
+
+        //then
+        assertThat(상행_종점_구간.getUpStation().getId()).isEqualTo(상행역.getId());
+        assertThat(상행_종점_구간.getDownStation().getId()).isEqualTo(처음_보는_역1.getId());
+    }
+
+    /**
+     * When  구간 끝에 구간을 추가한다.
+     * Then  구간이 추가된다
+     */
+    @DisplayName("구간 끝에 구간을 추가한다.")
+    @Test
+    void 구간_끝에_구간을_추가한다() {
+        //given
+        Station 처음_보는_역1 = new Station(Long.MAX_VALUE, "처음_보는_역1");
+        구간_모음.addSection(Section.of(하행역, 처음_보는_역1, 역간_거리 - 1));
+
+        //when
+        Section 하행_종점_구간 = 구간_모음.findSectionByUpStation(하행역.getId());
+
+        //then
+        assertThat(하행_종점_구간.getUpStation().getId()).isEqualTo(하행역.getId());
+        assertThat(하행_종점_구간.getDownStation().getId()).isEqualTo(처음_보는_역1.getId());
+    }
+
+    /**
+     * Given 기존 구간보다 긴 구간을 생성한다.
+     * When  신규 구간을 중간에 등록 요청한다.
+     * Then  구간 등록이 실패한다.
+     */
+    @DisplayName("기존 구간보다 긴 구간은 중간에 넣을 수 없다")
+    @Test
+    void 긴_구간은_중간에_넣을_수_없다() {
+        //given
+        Station 처음_보는_역1 = new Station(Long.MAX_VALUE, "처음_보는_역1");
+
+
+        //when //then
+        assertThrows(BusinessException.class, () -> {
+            구간_모음.addSection(Section.of(상행역, 처음_보는_역1, Integer.MAX_VALUE));
+            구간_모음.addSection(Section.of(처음_보는_역1, 하행역, Integer.MAX_VALUE));
+        });
+    }
 }
