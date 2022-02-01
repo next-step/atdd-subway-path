@@ -8,6 +8,8 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -28,6 +30,12 @@ public class LineServiceMockTest {
     @Mock
     private StationService stationService;
 
+    @BeforeEach
+    void setUp() {
+
+    }
+
+    @DisplayName("구간 등록")
     @Test
     void addSection() {
         // given
@@ -50,6 +58,7 @@ public class LineServiceMockTest {
         assertThat(line.getStations()).containsExactly(수원역, 수원중앙역);
     }
 
+    @DisplayName("첫번째 구간 등록")
     @Test
     void addFirstSection() {
         // given

@@ -8,6 +8,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.exception.IllegalSectionArgumentException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,31 +27,28 @@ public class LineServiceTest {
     @Autowired
     private LineService lineService;
 
+    @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
     @Test
     void addSection() {
         // given
-        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         Line line = new Line("간선", "blue");
         lineRepository.save(line);
 
         Station 수원역 = stationRepository.save(new Station("수원역"));
         Station 수원중앙역 = stationRepository.save(new Station("수원중앙역"));
 
-
         // when
-        // lineService.addSection 호출
         SectionRequest sectionRequest = new SectionRequest(수원역.getId(), 수원중앙역.getId(), 10);
         lineService.addSection(line.getId(), sectionRequest);
 
         // then
-        // line.getSections 메서드를 통해 검증
         assertThat(line.getStations()).containsExactly(수원역, 수원중앙역);
     }
 
+    @DisplayName("구간 목록 처음에 새로운 구간을 추가할 경우")
     @Test
     void addFistSection() {
         // given
-        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         Line line = new Line("간선", "blue");
         lineRepository.save(line);
 
@@ -58,23 +56,21 @@ public class LineServiceTest {
         Station 수원중앙역 = stationRepository.save(new Station("수원중앙역"));
         Station 강남역 = stationRepository.save(new Station("강남역"));
 
-
         // when
-        // lineService.addSection 호출
         SectionRequest sectionRequest = new SectionRequest(수원역.getId(), 수원중앙역.getId(), 10);
         lineService.addSection(line.getId(), sectionRequest);
 
-        SectionRequest sectionRequest2 = new SectionRequest(강남역.getId(), 수원역.getId(), 10);
-        lineService.addSection(line.getId(), sectionRequest2);
+        SectionRequest secondSectionRequest = new SectionRequest(강남역.getId(), 수원역.getId(), 10);
+        lineService.addSection(line.getId(), secondSectionRequest);
+
         // then
-        // line.getSections 메서드를 통해 검증
         assertThat(line.getStations()).containsExactly(강남역, 수원역, 수원중앙역);
     }
 
+    @DisplayName("구간 목록 두번째에 새로운 구간을 상행으로 추가할 경우")
     @Test
     void addSecondSectionByUpStation() {
         // given
-        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         Line line = new Line("간선", "blue");
         lineRepository.save(line);
 
@@ -83,21 +79,20 @@ public class LineServiceTest {
         Station 강남역 = stationRepository.save(new Station("강남역"));
 
         // when
-        // lineService.addSection 호출
         SectionRequest sectionRequest = new SectionRequest(수원역.getId(), 수원중앙역.getId(), 10);
         lineService.addSection(line.getId(), sectionRequest);
 
-        SectionRequest sectionRequest2 = new SectionRequest(수원역.getId(), 강남역.getId(), 9);
-        lineService.addSection(line.getId(), sectionRequest2);
+        SectionRequest secondSectionRequest = new SectionRequest(수원역.getId(), 강남역.getId(), 9);
+        lineService.addSection(line.getId(), secondSectionRequest);
+
         // then
-        // line.getSections 메서드를 통해 검증
         assertThat(line.getStations()).containsExactly(수원역, 강남역, 수원중앙역);
     }
 
+    @DisplayName("구간 목록 두번째에 새로운 구간을 하행으로 추가할 경우")
     @Test
     void addSecondSectionByDownStation() {
         // given
-        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         Line line = new Line("간선", "blue");
         lineRepository.save(line);
 
@@ -106,21 +101,20 @@ public class LineServiceTest {
         Station 강남역 = stationRepository.save(new Station("강남역"));
 
         // when
-        // lineService.addSection 호출
         SectionRequest sectionRequest = new SectionRequest(수원역.getId(), 수원중앙역.getId(), 10);
         lineService.addSection(line.getId(), sectionRequest);
 
-        SectionRequest sectionRequest2 = new SectionRequest(강남역.getId(), 수원중앙역.getId(), 9);
-        lineService.addSection(line.getId(), sectionRequest2);
+        SectionRequest secondSectionRequest = new SectionRequest(강남역.getId(), 수원중앙역.getId(), 9);
+        lineService.addSection(line.getId(), secondSectionRequest);
+
         // then
-        // line.getSections 메서드를 통해 검증
         assertThat(line.getStations()).containsExactly(수원역, 강남역, 수원중앙역);
     }
 
+    @DisplayName("구간 목록 두번째에 새로운 구간 추가시 distance가 기존의 구간보다 긴 경우 등록 실패")
     @Test
-    void addSecondSectionFailedByLongerDistance() {
+    void addSecondSectionFailedByLongDistance() {
         // given
-        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         Line line = new Line("간선", "blue");
         lineRepository.save(line);
 
@@ -129,15 +123,13 @@ public class LineServiceTest {
         Station 강남역 = stationRepository.save(new Station("강남역"));
 
         // when
-        // lineService.addSection 호출
         SectionRequest sectionRequest = new SectionRequest(수원역.getId(), 수원중앙역.getId(), 10);
         lineService.addSection(line.getId(), sectionRequest);
 
-        SectionRequest sectionRequest2 = new SectionRequest(강남역.getId(), 수원중앙역.getId(), 10);
         // then
-        // line.getSections 메서드를 통해 검증
+        SectionRequest secondSectionRequest = new SectionRequest(강남역.getId(), 수원중앙역.getId(), 10);
         Assertions.assertThrows(
                 IllegalSectionArgumentException.class,
-                () -> lineService.addSection(line.getId(), sectionRequest2));
+                () -> lineService.addSection(line.getId(), secondSectionRequest));
     }
 }
