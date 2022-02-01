@@ -3,29 +3,16 @@ package nextstep.subway.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.acceptance.step_feature.StationStepFeature;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Arrays;
 
-import static nextstep.subway.acceptance.step_feature.StationStepFeature.강남역_이름;
-import static nextstep.subway.acceptance.step_feature.StationStepFeature.판교역_이름;
-import static org.assertj.core.api.Assertions.assertThat;
+import static nextstep.subway.acceptance.step_feature.StationStepFeature.*;
 
 @DisplayName("지하철역 관리 기능")
 class StationAcceptanceTest extends AcceptanceTest {
-
-    private Map<String, String> params;
-    private Map<String, String> params2;
-
-    @BeforeEach
-    void setUpStation() {
-        params = StationStepFeature.createStationParams(강남역_이름);
-        params2 = StationStepFeature.createStationParams(판교역_이름);
-    }
 
     /**
      * When 지하철역 생성을 요청 하면
@@ -35,7 +22,7 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = StationStepFeature.callCreateStation(params);
+        ExtractableResponse<Response> response = 지하철역_생성_요청(강남역_이름);
 
         // then
         StationStepFeature.checkCreateStation(response);
@@ -50,10 +37,10 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation_duplicate_fail() {
         // given
-        StationStepFeature.callCreateStation(params);
+        지하철역_생성_요청(강남역_이름);
 
         // when
-        ExtractableResponse<Response> response = StationStepFeature.callCreateStation(params);
+        ExtractableResponse<Response> response = 지하철역_생성_요청(강남역_이름);
 
         // then
         StationStepFeature.checkCreateStationFail(response);
@@ -68,17 +55,15 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void showStation() {
         // given
-        ExtractableResponse<Response> createResponse = StationStepFeature.callCreateStation(params);
+        ExtractableResponse<Response> createResponse = 지하철역_생성_요청(강남역_이름);
         String location = createResponse.header("Location");
 
         // when
-        ExtractableResponse<Response> response = StationStepFeature.callFindStationByUri(location);
+        ExtractableResponse<Response> response = 지하쳘역_삭제_요청(location);
 
         // then
         StationStepFeature.checkFindStation(response);
-
-        String stationName = response.jsonPath().getString("name");
-        assertThat(stationName).isEqualTo(강남역_이름);
+        역_조회_검증(response, Arrays.asList(강남역_이름));
     }
 
     /**
@@ -91,17 +76,15 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         // given
-        StationStepFeature.callCreateStation(params);
-        StationStepFeature.callCreateStation(params2);
+        지하철역_생성_요청(강남역_이름);
+        지하철역_생성_요청(판교역_이름);
 
         // when
-        ExtractableResponse<Response> response = StationStepFeature.callFindAllStation();
+        ExtractableResponse<Response> response = StationStepFeature.모든_지하철역_조회_요청();
 
         // then
         StationStepFeature.checkFindStation(response);
-
-        List<String> stationNames = response.jsonPath().getList("name");
-        assertThat(stationNames).contains(강남역_이름, 판교역_이름);
+        역_조회_검증(response, Arrays.asList(강남역_이름, 판교역_이름));
     }
 
     /**
@@ -113,11 +96,11 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = StationStepFeature.callCreateStation(params);
+        ExtractableResponse<Response> createResponse = 지하철역_생성_요청(강남역_이름);
         String location = createResponse.header("Location");
 
         // when
-        ExtractableResponse<Response> response = StationStepFeature.callDeleteStation(location);
+        ExtractableResponse<Response> response = StationStepFeature.지하철역_삭제_요청(location);
 
         // then
         StationStepFeature.checkResponseStatus(response.statusCode(), HttpStatus.NO_CONTENT);

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,20 +22,20 @@ public class StationStepFeature {
     private static final String CREATE_STATION_NAME_PARAM_KEY = "name";
     private static final String STATION_BASE_URI = "stations";
 
-    public static StationResponse callCreateAndFind(String stationName) {
-        Map<String, String> params = createStationParams(stationName);
-
-        ExtractableResponse<Response> createResponse = callCreateStation(params);
+    public static StationResponse 지하철역_생성_조회_요청(String name) {
+        ExtractableResponse<Response> createResponse = 지하철역_생성_요청(name);
         String location = createResponse.header("Location");
 
-        ExtractableResponse<Response> response = callFindStationByUri(location);
+        ExtractableResponse<Response> response = 지하쳘역_삭제_요청(location);
         return response.as(StationResponse.class);
 
     }
 
-    public static ExtractableResponse<Response> callCreateStation(Map<String, String> StationParams) {
+    public static ExtractableResponse<Response> 지하철역_생성_요청(String name) {
+        Map<String, String> params = createStationParams(name);
+
         return RestAssured.given().log().all()
-                .body(StationParams)
+                .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post(STATION_BASE_URI)
@@ -42,7 +43,7 @@ public class StationStepFeature {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> callFindAllStation() {
+    public static ExtractableResponse<Response> 모든_지하철역_조회_요청() {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .get(STATION_BASE_URI)
@@ -51,7 +52,7 @@ public class StationStepFeature {
         return response;
     }
 
-    public static ExtractableResponse<Response> callFindStationByUri(String uri) {
+    public static ExtractableResponse<Response> 지하쳘역_삭제_요청(String uri) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .get(uri)
@@ -60,20 +61,13 @@ public class StationStepFeature {
         return response;
     }
 
-    public static ExtractableResponse<Response> callDeleteStation(String uri) {
+    public static ExtractableResponse<Response> 지하철역_삭제_요청(String uri) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .when()
                 .delete(uri)
                 .then().log().all()
                 .extract();
         return response;
-    }
-
-    public static Map<String, String> createStationParams(String name) {
-        Map<String, String> params = new HashMap();
-        params.put(CREATE_STATION_NAME_PARAM_KEY, name);
-
-        return params;
     }
 
     public static void checkCreateStation(ExtractableResponse<Response> response) {
@@ -91,6 +85,18 @@ public class StationStepFeature {
 
     public static void checkResponseStatus(int statusCode, HttpStatus httpStatus) {
         assertThat(statusCode).isEqualTo(httpStatus.value());
+    }
+
+    public static void 역_조회_검증(ExtractableResponse<Response> response, List<String> names) {
+        String stationName = response.jsonPath().getString("name");
+        assertThat(stationName).contains(names);
+    }
+
+    private static Map<String, String> createStationParams(String name) {
+        Map<String, String> params = new HashMap();
+        params.put(CREATE_STATION_NAME_PARAM_KEY, name);
+
+        return params;
     }
 
 }

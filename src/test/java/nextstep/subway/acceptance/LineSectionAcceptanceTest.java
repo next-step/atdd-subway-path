@@ -30,10 +30,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void setUpStation() {
-        강남역 = StationStepFeature.callCreateAndFind(강남역_이름);
-        판교역 = StationStepFeature.callCreateAndFind(판교역_이름);
-        정자역 = StationStepFeature.callCreateAndFind(정자역_이름);
-        미금역 = StationStepFeature.callCreateAndFind(미금역_이름);
+        강남역 = StationStepFeature.지하철역_생성_조회_요청(강남역_이름);
+        판교역 = StationStepFeature.지하철역_생성_조회_요청(판교역_이름);
+        정자역 = StationStepFeature.지하철역_생성_조회_요청(정자역_이름);
+        미금역 = StationStepFeature.지하철역_생성_조회_요청(미금역_이름);
         params = LineStepFeature.createLineParams(신분당선_이름,
                 신분당선_색,
                 강남역.getId(),
