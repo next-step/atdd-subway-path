@@ -75,6 +75,9 @@ public class Section {
     }
 
     public int subtractDistance(final Section other) {
+        if(distance <= other.distance) {
+            throw new IllegalArgumentException("other distance is equal or bigger");
+        }
         return Math.subtractExact(this.distance, other.distance);
     }
 
