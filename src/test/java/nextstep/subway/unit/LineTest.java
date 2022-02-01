@@ -19,7 +19,8 @@ class LineTest {
     void setUp() {
         upStation = new Station("upStation");
         downStation = new Station("downStation");
-        line = new Line("color", "name", upStation, downStation, 10);
+        line = new Line("color", "name");
+        line.addSection(new Section(line, upStation, downStation, 10));
     }
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")

@@ -12,21 +12,21 @@ class SectionsTest {
     private Station upStation;
     private Station downStation;
     private Line line;
-    private int distance;
+    private Sections sections;
 
     @BeforeEach
     void setUp() {
         upStation = new Station("upStation");
         downStation = new Station("downStation");
-        distance = 10;
-        line = new Line("color", "name", upStation, downStation, distance);
+        line = new Line("color", "name");
+        sections = new Sections();
+        sections.addSection(new Section(line, upStation, downStation, 10));
     }
 
     @DisplayName("구간 목록 맨앞에 새로운 구간을 추가할 경우")
     @Test
     void addSectionLast() {
         // given
-        final Sections sections = new Sections(line, upStation, downStation, distance);
         final Station extraStation = new Station("extraStation");
         final Section section = new Section(line, extraStation, upStation, 1);
 

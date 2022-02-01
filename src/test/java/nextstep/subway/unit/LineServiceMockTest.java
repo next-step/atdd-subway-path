@@ -5,6 +5,7 @@ import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,8 @@ public class LineServiceMockTest {
         final Station upStation = new Station("upStation");
         final Station downStation = new Station("downStation");
         final Station extraStation = new Station("extraStation");
-        final Line line = new Line("name", "color", upStation, downStation, 10);
+        final Line line = new Line("name", "color");
+        line.addSection(new Section(line, upStation, downStation, 10));
 
         given(stationService.findById(2L)).willReturn(downStation);
         given(stationService.findById(3L)).willReturn(extraStation);

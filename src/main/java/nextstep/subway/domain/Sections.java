@@ -20,15 +20,7 @@ public class Sections {
     private final List<Section> sections;
 
     public Sections() {
-        this(Collections.emptyList());
-    }
-
-    public Sections(final Line line, final Station upStation, final Station downStation, final int distance) {
-        this(new Section(line, upStation, downStation, distance));
-    }
-
-    public Sections(final Section section) {
-        this(new ArrayList<>(asList(section)));
+        this(new ArrayList<>());
     }
 
     public Sections(final List<Section> sections) {
@@ -36,6 +28,19 @@ public class Sections {
     }
 
     public void addSection(final Section section) {
+        if(sections.isEmpty()) {
+            sections.add(section);
+            return;
+        }
+        final Station upStation = section.getUpStation();
+        final Station downStation = section.getDownStation();
+
+        // 둘다 없을 경우
+
+
+        // 둘다 있을 경우
+
+
         sections.add(section);
     }
 

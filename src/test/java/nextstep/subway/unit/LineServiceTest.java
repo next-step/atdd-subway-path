@@ -2,10 +2,7 @@ package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,7 +28,8 @@ public class LineServiceTest {
         final Station upStation = new Station("upStation");
         final Station downStation = new Station("downStation");
         final Station extraStation = new Station("extraStation");
-        final Line line = new Line("name", "color", upStation, downStation, 10);
+        final Line line = new Line("name", "color");
+        line.addSection(new Section(line, upStation, downStation, 10));
 
         stationRepository.save(upStation);
         stationRepository.save(downStation);
