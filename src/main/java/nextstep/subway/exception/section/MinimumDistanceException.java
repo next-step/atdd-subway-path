@@ -1,6 +1,8 @@
 package nextstep.subway.exception.section;
 
-public class MinimumDistanceException extends RuntimeException {
+import nextstep.subway.exception.ServiceException;
+
+public class MinimumDistanceException extends ServiceException {
 
     private static final String MESSAGE = "구간의 길이는 1 이상이어야 합니다. - %s";
 

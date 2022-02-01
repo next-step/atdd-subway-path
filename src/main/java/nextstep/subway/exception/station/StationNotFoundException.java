@@ -1,6 +1,8 @@
 package nextstep.subway.exception.station;
 
-public class StationNotFoundException extends RuntimeException {
+import nextstep.subway.exception.ServiceException;
+
+public class StationNotFoundException extends ServiceException {
 
     private static final String MESSAGE = "역을 찾을 수 없습니다. - %s";
 

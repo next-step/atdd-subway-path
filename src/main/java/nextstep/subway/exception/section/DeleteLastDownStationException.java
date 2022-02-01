@@ -1,6 +1,8 @@
 package nextstep.subway.exception.section;
 
-public class DeleteLastDownStationException extends RuntimeException {
+import nextstep.subway.exception.ServiceException;
+
+public class DeleteLastDownStationException extends ServiceException {
 
     private static final String MESSAGE = "마지막역(하행 종점역)만 삭제 가능합니다. - %s";
 

@@ -1,5 +1,6 @@
 package nextstep.subway.ui.handler;
 
+import nextstep.subway.exception.ServiceException;
 import nextstep.subway.exception.line.DuplicateLineException;
 import nextstep.subway.exception.line.LineNotFoundException;
 import nextstep.subway.exception.section.*;
@@ -17,16 +18,17 @@ public class ExceptionAdviser {
                 .build();
     }
 
-    @ExceptionHandler({
-            DuplicateStationException.class,
-            DuplicateLineException.class,
-            MinimumSectionException.class,
-            DeleteLastDownStationException.class,
-            MinimumDistanceException.class,
-            InvalidDistanceException.class,
-            AlreadyRegisteredStationException.class,
-            NotFoundConnectStationException.class})
-    public ResponseEntity<ErrorResponse> duplicateStationHandler(RuntimeException exception) {
+//    @ExceptionHandler({
+//            DuplicateStationException.class,
+//            DuplicateLineException.class,
+//            MinimumSectionException.class,
+//            DeleteLastDownStationException.class,
+//            MinimumDistanceException.class,
+//            InvalidDistanceException.class,
+//            AlreadyRegisteredStationException.class,
+//            NotFoundConnectStationException.class})
+    @ExceptionHandler(ServiceException.class)
+    public ResponseEntity<ErrorResponse> serviceHandler(RuntimeException exception) {
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(exception.getMessage()));
     }

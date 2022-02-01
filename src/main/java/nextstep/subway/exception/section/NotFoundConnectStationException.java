@@ -1,6 +1,8 @@
 package nextstep.subway.exception.section;
 
-public class NotFoundConnectStationException extends RuntimeException {
+import nextstep.subway.exception.ServiceException;
+
+public class NotFoundConnectStationException extends ServiceException {
 
     private static final String MESSAGE = "연결할 역을 찾지 못했습니다.";
 

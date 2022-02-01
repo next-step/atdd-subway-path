@@ -1,6 +1,8 @@
 package nextstep.subway.exception.section;
 
-public class AlreadyRegisteredStationException extends RuntimeException {
+import nextstep.subway.exception.ServiceException;
+
+public class AlreadyRegisteredStationException extends ServiceException {
 
     private static final String MESSAGE = "이미 추가된 구간입니다.";
 
