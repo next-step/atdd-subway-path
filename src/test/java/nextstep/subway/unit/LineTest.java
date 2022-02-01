@@ -48,6 +48,7 @@ class LineTest {
         노선.addSection(추가구간);
 
         // when
+        int distanceBefore = 노선.getSections().getTotalDistance();
         노선.deleteSectionByStation(역1);
 
         // then
@@ -55,6 +56,8 @@ class LineTest {
             .map(Station::getName)
             .collect(Collectors.toList()))
             .containsExactly("역2이름", "추가역");
+        assertThat(노선.getSections().getTotalDistance())
+            .isEqualTo(distanceBefore - DISTANCE_BASIC);
     }
 
     @DisplayName("노선에서 (중간역) 역ID 를 사용해서 구간을 삭제 성공한다.")
@@ -65,6 +68,7 @@ class LineTest {
         노선.addSection(추가구간);
 
         // when
+        int distanceBefore = 노선.getSections().getTotalDistance();
         노선.deleteSectionByStation(역2);
 
         // then
@@ -72,6 +76,8 @@ class LineTest {
             .map(Station::getName)
             .collect(Collectors.toList()))
             .containsExactly("역1이름", "추가역");
+        assertThat(노선.getSections().getTotalDistance())
+            .isEqualTo(distanceBefore);
     }
 
     @DisplayName("노선에서 (하행역) 역ID 를 사용해서 구간을 삭제 성공한다.")
@@ -82,6 +88,7 @@ class LineTest {
         노선.addSection(추가구간);
 
         // when
+        int distanceBefore = 노선.getSections().getTotalDistance();
         노선.deleteSectionByStation(추가역);
 
         // then
@@ -89,6 +96,8 @@ class LineTest {
             .map(Station::getName)
             .collect(Collectors.toList()))
             .containsExactly("역1이름", "역2이름");
+        assertThat(노선.getSections().getTotalDistance())
+            .isEqualTo(distanceBefore - 추가구간.getDistance());
     }
 
     @DisplayName("노선에서 역ID 로 구간을 삭제 시, 구간이 1개 이하면 실패한다.")

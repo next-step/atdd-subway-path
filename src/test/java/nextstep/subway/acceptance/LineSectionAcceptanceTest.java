@@ -43,6 +43,9 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     private Long 신규역;
 
     private ExtractableResponse<Response> response;
+    private Long 없는노선 = 99L;
+    private Long 없는역 = 99L;
+
     /**
      * Given 지하철역과 노선 생성을 요청 하고
      */
@@ -112,7 +115,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSection_실패케이스_1() {
         // when
-        response = 지하철_노선에_지하철_역으로_구간_삭제_요청(신분당선, 일번역1);
+        response = 지하철_노선에_지하철_역으로_구간_삭제_요청(없는노선, 일번역1);
 
         // then
         응답결과가_BAD_REQUEST(response);
@@ -122,7 +125,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSection_실패케이스_2() {
         // when
-        response = 지하철_노선에_지하철_역으로_구간_삭제_요청(신분당선, 일번역1);
+        response = 지하철_노선에_지하철_역으로_구간_삭제_요청(신분당선, 없는역);
 
         // then
         응답결과가_BAD_REQUEST(response);

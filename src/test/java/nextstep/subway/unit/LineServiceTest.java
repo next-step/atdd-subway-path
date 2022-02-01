@@ -77,7 +77,7 @@ public class LineServiceTest {
     @DisplayName("지하철 노선에서 (중간역) 역 아이디를 이용해서 구간을 삭제 성공 한다")
     @Test
     void deleteSection_2() {
-// given
+        // given
         lineService.addSection(노선Id, SectionRequest.of(중간역Id, 하행역Id, 5));
 
         // when
@@ -93,7 +93,7 @@ public class LineServiceTest {
     @DisplayName("지하철 노선에서 (상행) 역 아이디를 이용해서 구간을 삭제 성공 한다")
     @Test
     void deleteSection_3() {
-// given
+        // given
         lineService.addSection(노선Id, SectionRequest.of(중간역Id, 하행역Id, 5));
 
         // when
@@ -127,7 +127,7 @@ public class LineServiceTest {
     void deleteSection_6() {
         assertThatThrownBy(() -> {
             lineService.removeSectionByStationId(노선Id, 상행역Id);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(IllegalStateException.class);
     }
 
     @DisplayName("노선을 등록하는데 성공한다.")

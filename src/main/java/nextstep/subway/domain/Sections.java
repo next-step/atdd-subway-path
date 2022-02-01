@@ -6,7 +6,6 @@ import static nextstep.subway.exception.CommonExceptionMessages.NOT_HAS_ANY_STAT
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -137,7 +136,72 @@ public class Sections {
         }
     }
 
-    public boolean isEqualOrLessThanOne() {
-        return sections.size() <= 1;
+    public boolean isLessThanTwo() {
+        return sections.size() < 2;
+    }
+
+    public void removeSectionBy(Station station) {
+        List<Section> sectionListIncluding = findSectionListIncluding(station);
+
+        // 최상행
+        // // 구간 1개에서 -> 상행 1개
+        // 중간
+        // // 구간 2개에서 -> 하행1, 상행1
+        // 최하행
+        // // 구간 1개에서 -> 하행 1개
+
+        if (sectionListIncluding.size() == 0) {
+            throw new IllegalArgumentException("노선에 등록되지 않은 역은 삭제 할 수 없음.");
+        }
+
+        if (sectionListIncluding.size() == 1) {
+            if (sectionListIncluding.get(0).getUpStation().equals(station)) {
+                // 최상행
+                sections.remove(sectionListIncluding.get(0));
+                return;
+            }
+
+            if (sectionListIncluding.get(0).getDownStation().equals(station)) {
+                // 최하행
+                sections.remove(sectionListIncluding.get(0));
+                return;
+            }
+        }
+
+        if (sectionListIncluding.size() == 2) {
+            // 중간
+            Section section1 = sectionListIncluding.get(0);
+            Section section2 = sectionListIncluding.get(1);
+
+            if (section1.getDownStation().equals(station)) {
+                section1.setDownStation(section2.getDownStation());
+                section1.setDistance(section1.getDistance() + section2.getDistance());
+                sections.remove(section2);
+                return;
+            }
+
+            if (section1.getUpStation().equals(station)) {
+                section1.setUpStation(section2.getUpStation());
+                section1.setDistance(section1.getDistance() + section2.getDistance());
+                sections.remove(section2);
+                return;
+            }
+        }
+    }
+
+    private List<Section> findSectionListIncluding(Station station) {
+        List<Section> sectionList = new ArrayList<>();
+
+        for (Section section : sections) {
+            if (section.getUpStation().equals(station)) {
+                sectionList.add(section);
+            }
+
+            if (section.getDownStation().equals(station)) {
+                sectionList.add(section);
+            }
+        }
+
+        return sectionList;
     }
 }

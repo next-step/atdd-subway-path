@@ -117,14 +117,29 @@ public class Line extends BaseEntity {
     }
 
     public void deleteSectionByStation(Station station) {
-        if (sections.isEqualOrLessThanOne()) {
+        if (sections.isLessThanTwo()) {
             throw new IllegalStateException(SECTION_COUNT_IS_LESS_THAN_TWO);
         }
 
-        if (!this.sections.get(this.sections.size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
+        sections.removeSectionBy(station);
+    }
 
-        this.sections.remove(this.sections.size() - 1);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Line line = (Line) o;
+        return Objects.equals(id, line.id) && Objects.equals(name, line.name)
+            && Objects.equals(color, line.color) && Objects.equals(sections,
+            line.sections);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, color, sections);
     }
 }
