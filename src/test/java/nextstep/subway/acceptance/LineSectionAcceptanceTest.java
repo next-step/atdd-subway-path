@@ -86,7 +86,20 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // when : 이미 노선은 만들어졌다. 강남역 - 양재역 Todo : 강남역 - 정자역 - 양재역  expected : 1L -> 3L -> 2L
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 10));
+        ExtractableResponse<Response> response =
+                지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 10));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void addLineBetweenSectionsBySameStation() {
+
+        // when : 이미 노선은 만들어졌다. 강남역 - 양재역 Todo : 강남역 - 정자역 - 양재역  expected : 1L -> 3L -> 2L
+        ExtractableResponse<Response> response =
+                지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 8));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());

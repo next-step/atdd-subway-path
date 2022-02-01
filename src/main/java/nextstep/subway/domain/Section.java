@@ -39,6 +39,11 @@ public class Section {
         return section.equals(section);
     }
 
+    public boolean isEqual(Station upStation, Station downStation) {
+
+        return this.upStation.equals(upStation) && this.downStation.equals(downStation);
+    }
+
     public Long getId() {
         return id;
     }
