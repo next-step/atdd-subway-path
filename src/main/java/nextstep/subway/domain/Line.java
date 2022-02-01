@@ -24,6 +24,23 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    public void addSection(Section section) {
+        if(sections.isEmpty()){
+            sections.add(section);
+            section.setLine(this);
+            return;
+        }
+
+        Section lastSection = sections.get(sections.size() - 1);
+        Station endStation = lastSection.getDownStation();
+        if(!endStation.equals(section.getUpStation())){
+            throw new IllegalArgumentException("");
+        }
+
+        sections.add(section);
+        section.setLine(this);
+    }
+
     public Long getId() {
         return id;
     }
