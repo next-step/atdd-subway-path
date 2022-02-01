@@ -16,6 +16,7 @@ class SectionsTest {
     private Station 정자역;
     private Station 미금역;
     private Section 강남역_정자역;
+    private Line 신분당선;
     private Sections sections;
 
     @BeforeEach
@@ -24,7 +25,7 @@ class SectionsTest {
         판교역 = Station.of("판교역");
         정자역 = Station.of("정자역");
         미금역 = Station.of("미금역");
-        강남역_정자역 = new Section(강남역, 정자역, 10);
+        강남역_정자역 = Section.of(신분당선, 강남역, 정자역, 10);
         sections = new Sections();
     }
 
@@ -43,7 +44,7 @@ class SectionsTest {
     void addDownSection_first() {
         // given
         sections.addSection(강남역_정자역);
-        Section target = new Section(판교역, 강남역, 10);
+        Section target = Section.of(신분당선, 판교역, 강남역, 10);
 
         // when
         sections.addSection(target);
@@ -57,7 +58,7 @@ class SectionsTest {
     void addDownSection_middle() {
         // given
         sections.addSection(강남역_정자역);
-        Section target = new Section(강남역, 판교역, 4);
+        Section target = Section.of(신분당선, 강남역, 판교역, 4);
 
         // when
         sections.addSection(target);
@@ -71,7 +72,7 @@ class SectionsTest {
     void addDownSection_last() {
         // given
         sections.addSection(강남역_정자역);
-        Section target = new Section(정자역, 미금역, 4);
+        Section target = Section.of(신분당선, 정자역, 미금역, 4);
 
         // when
         sections.addSection(target);
@@ -85,7 +86,7 @@ class SectionsTest {
     void addDownSection_fail_distance() {
         // given
         sections.addSection(강남역_정자역);
-        Section target = new Section(강남역, 판교역, 20);
+        Section target = Section.of(신분당선, 강남역, 판교역, 20);
 
         // then
         assertThatThrownBy(() -> sections.addSection(target))
@@ -97,7 +98,7 @@ class SectionsTest {
     void addDownSection_fail_alreadyRegisteredSection() {
         // given
         sections.addSection(강남역_정자역);
-        Section target = new Section(강남역, 정자역, 5);
+        Section target = Section.of(신분당선, 강남역, 정자역, 5);
 
         // then
         assertThatThrownBy(() -> sections.addSection(target))
@@ -109,7 +110,7 @@ class SectionsTest {
     void addDownSection_fail_ConnectStation() {
         // given
         sections.addSection(강남역_정자역);
-        Section target = new Section(판교역, 미금역, 5);
+        Section target = Section.of(신분당선, 판교역, 미금역, 5);
 
         // then
         assertThatThrownBy(() -> sections.addSection(target))
@@ -121,7 +122,7 @@ class SectionsTest {
     void deleteStation() {
         // given
         sections.addSection(강남역_정자역);
-        Section section = new Section(강남역, 판교역, 5);
+        Section section = Section.of(신분당선, 강남역, 판교역, 5);
         sections.addSection(section);
 
         // when

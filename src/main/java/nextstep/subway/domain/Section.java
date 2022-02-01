@@ -30,7 +30,7 @@ public class Section {
     protected Section() {
     }
 
-    protected Section(Station upStation, Station downStation, int distance) {
+    private Section(Station upStation, Station downStation, int distance) {
         validateDistance(distance);
         this.upStation = upStation;
         this.downStation = downStation;

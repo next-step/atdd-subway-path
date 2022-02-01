@@ -15,12 +15,16 @@ class SectionTest {
     private Station 강남역;
     private Station 판교역;
     private Station 정자역;
+    private Station 미금역;
+    private Line 신분당선;
 
     @BeforeEach
     void setUp() {
         강남역 = Station.of("강남역");
         판교역 = Station.of("판교역");
         정자역 = Station.of("정자역");
+        미금역 = Station.of("미금역");
+        신분당선 = Line.of("신분당선", "red", 강남역, 정자역, 100);
     }
 
     @DisplayName("상행역과 구간의 길이를 변경할 수 있다")
@@ -28,7 +32,7 @@ class SectionTest {
     @ParameterizedTest
     void updateUpStation(int distance) {
         // given
-        Section target = new Section(강남역, 판교역, 5);
+        Section target = Section.of(신분당선, 강남역, 판교역, 5);
 
         // when
         target.updateUpStation(정자역, distance);
@@ -44,7 +48,7 @@ class SectionTest {
     @ParameterizedTest
     void updateUpStation_fail(int distance) {
         // given
-        Section target = new Section(강남역, 판교역, 5);
+        Section target = Section.of(신분당선, 강남역, 판교역, 5);
 
         // then
         assertThatThrownBy(() -> target.updateUpStation(판교역, distance))
@@ -56,7 +60,7 @@ class SectionTest {
     @ParameterizedTest
     void updateDownStation(int distance) {
         // given
-        Section target = new Section(강남역, 판교역, 5);
+        Section target = Section.of(신분당선, 강남역, 판교역, 5);
 
         // when
         target.updateDownStation(정자역, distance);
@@ -72,7 +76,7 @@ class SectionTest {
     @ParameterizedTest
     void updateDownStation_fail(int distance) {
         // given
-        Section target = new Section(강남역, 판교역, 5);
+        Section target = Section.of(신분당선, 강남역, 판교역, 5);
 
         // then
         assertThatThrownBy(() -> target.updateDownStation(판교역, distance))
