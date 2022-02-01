@@ -53,12 +53,14 @@ public class Section {
         return distance;
     }
 
-    public void changeUpStation(Station station) {
+    public void changeUpStation(Station station, int distance) {
         upStation = station;
+        this.distance -= distance;
     }
 
-    public void changeDownStation(Station station) {
+    public void changeDownStation(Station station, int distance) {
         downStation = station;
+        this.distance -= distance;
     }
 
     @Override

@@ -56,13 +56,13 @@ public class Sections {
         for (Section otherSection : sectionList) {
             if (section.getUpStation().equals(otherSection.getUpStation())) {
                 validateDistance(section, otherSection);
-                otherSection.changeUpStation(section.getDownStation());
+                otherSection.changeUpStation(section.getDownStation(), section.getDistance());
                 break;
             }
 
             if (section.getDownStation().equals(otherSection.getDownStation())) {
                 validateDistance(section, otherSection);
-                otherSection.changeDownStation(section.getUpStation());
+                otherSection.changeDownStation(section.getUpStation(), section.getDistance());
                 break;
             }
         }

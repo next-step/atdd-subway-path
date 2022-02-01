@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,6 +49,7 @@ class SectionsTest {
 
         // then
         assertThat(신분당선.getStations()).containsExactly(강남역, 중간역, 정자역);
+        assertThat(신분당선.getSections().stream().mapToInt(Section::getDistance).sum()).isEqualTo(distance);
     }
 
     @DisplayName("역 사이에 새로운 역을 등록할 경우 실패 - 신규 역 사이 길이가 기존 역 사이 길이보다 길거나 같으면 실패")
