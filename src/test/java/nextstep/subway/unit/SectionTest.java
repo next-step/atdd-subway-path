@@ -15,13 +15,17 @@ class SectionTest {
 
     private Station upStation;
     private Station downStation;
+    private Line line;
     private Section section;
+    private int distance;
 
     @BeforeEach
     void setUp() {
         upStation = new Station("upStation");
         downStation = new Station("downStation");
-        section = new Section(new Line("color", "name"), upStation, downStation, 10);
+        line = new Line("color", "name");
+        distance = 10;
+        section = new Section(line, upStation, downStation, distance);
     }
 
     @DisplayName("특정 역이 상행선으로 등록되었는지 반환")
@@ -42,5 +46,21 @@ class SectionTest {
                 () -> assertThat(section.isDownStation(upStation)).isFalse(),
                 () -> assertThat(section.isDownStation(downStation)).isTrue()
         );
+    }
+
+    @DisplayName("세션간의 거리값 차이 계산")
+    @Test
+    void subtractDistance() {
+        // given
+        final Station otherFirstStation = new Station("otherFirstStation");
+        final Station otherSecondStation = new Station("otherSecondStation");
+        final int otherDistance = 5;
+        final Section other = new Section(line, otherFirstStation, otherFirstStation, otherDistance);
+
+        // when
+        final int actual = section.subtractDistance(other);
+
+        // then
+        assertThat(actual).isEqualTo(distance - otherDistance);
     }
 }
