@@ -1,9 +1,13 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section {
+
+    private static final int DISTANCE_MINIMUM_CONDITION = 1;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,10 +31,38 @@ public class Section {
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
+        validateLine(line);
+        validateUpStationId(upStation);
+        validateDownStationId(downStation);
+        validateDistance(distance);
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private void validateLine(final Line line) {
+        if (Objects.isNull(line)) {
+            throw new IllegalArgumentException("section line is not valid");
+        }
+    }
+
+    private void validateUpStationId(final Station upStation) {
+        if (Objects.isNull(upStation)) {
+            throw new IllegalArgumentException("section upStation is not valid");
+        }
+    }
+
+    private void validateDownStationId(final Station downStation) {
+        if (Objects.isNull(downStation)) {
+            throw new IllegalArgumentException("section downStation is not valid");
+        }
+    }
+
+    private void validateDistance(final int distance) {
+        if (distance < DISTANCE_MINIMUM_CONDITION) {
+            throw new IllegalArgumentException("section distance is not valid");
+        }
     }
 
     public Long getId() {

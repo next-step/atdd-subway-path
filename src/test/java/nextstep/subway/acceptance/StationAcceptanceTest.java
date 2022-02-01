@@ -32,44 +32,6 @@ class StationAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 공백 이름을 가진 지하철역 생성을 요청 하면
-     * Then 지하철역 생성이 실패한다.
-     */
-    @DisplayName("지하철역 이름 공백")
-    @Test
-    void createBlankStationName() {
-        // when
-        final ExtractableResponse<Response> response = 지하철_역_생성을_요청한다("  ");
-
-        // then
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().jsonPath().get("message").equals("blank station name occurred"))
-        );
-    }
-
-    /**
-     * Given 지하철역 생성을 요청 하고
-     * When 같은 이름으로 지하철역 생성을 요청 하면
-     * Then 지하철역 생성이 실패한다.
-     */
-    @DisplayName("지하철역 중복 이름")
-    @Test
-    void createDuplicateStationName() {
-        // given
-        지하철_역_생성을_요청한다(강남역);
-
-        // when
-        final ExtractableResponse<Response> response = 지하철_역_생성을_요청한다(강남역);
-
-        // then
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value()),
-                () -> assertThat(response.body().jsonPath().get("message").equals("duplicate station name occurred"))
-        );
-    }
-
-    /**
      * Given 지하철역 생성을 요청 하고
      * Given 새로운 지하철역 생성을 요청 하고
      * When 지하철역 목록 조회를 요청 하면
