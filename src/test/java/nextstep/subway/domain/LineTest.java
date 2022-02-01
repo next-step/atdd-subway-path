@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,12 +19,6 @@ class LineTest {
         판교역 = Station.of("판교역");
         정자역 = Station.of("정자역");
         신분당선 = Line.of("신분당선", "red");
-
-        ReflectionTestUtils.setField(강남역, "id", 1L);
-        ReflectionTestUtils.setField(판교역, "id", 2L);
-        ReflectionTestUtils.setField(정자역, "id", 3L);
-        ReflectionTestUtils.setField(신분당선, "id", 1L);
-
     }
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우 - 첫 구간 추가")

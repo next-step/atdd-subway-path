@@ -4,7 +4,6 @@ import nextstep.subway.exception.section.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -27,11 +26,6 @@ class SectionsTest {
         미금역 = Station.of("미금역");
         강남역_정자역 = new Section(강남역, 정자역, 10);
         sections = new Sections();
-
-        ReflectionTestUtils.setField(강남역, "id", 1L);
-        ReflectionTestUtils.setField(판교역, "id", 2L);
-        ReflectionTestUtils.setField(정자역, "id", 3L);
-        ReflectionTestUtils.setField(미금역, "id", 4L);
     }
 
     @DisplayName("첫 구간 등록")

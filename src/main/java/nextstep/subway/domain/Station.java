@@ -45,12 +45,4 @@ public class Station extends BaseEntity {
         return Objects.hash(id, name);
     }
 
-    @Override
-    public String toString() {
-        return "Station{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
-    }
-
 }
