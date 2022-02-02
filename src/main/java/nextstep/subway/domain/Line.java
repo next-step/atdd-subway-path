@@ -2,8 +2,6 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -15,8 +13,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -65,7 +63,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.get();
     }
 
     public void addSection(Station startingStation, Station endingStation, int distance) {
@@ -73,37 +71,11 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        Map<Station, Station> stationMap = sections.stream()
-                .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
-        Set<Station> downStationSet = new HashSet<>(stationMap.values());
-        Station startingStation = stationMap.keySet().stream()
-                .filter(Predicate.not(downStationSet::contains))
-                .findAny().orElseThrow(IllegalStateException::new);
-
-        List<Station> stations = new ArrayList<>();
-        stations.add(startingStation);
-        while (stationMap.containsKey(startingStation)) {
-            startingStation = stationMap.get(startingStation);
-            stations.add(startingStation);
-        }
-        return stations;
+        return sections.getStations();
     }
 
     public void removeSection(Station station) {
-        Map<Station, Station> stationMap = sections.stream()
-                .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
-        Set<Station> upStationSet = stationMap.keySet();
-        Station endingStation = stationMap.values().stream()
-                .filter(Predicate.not(upStationSet::contains))
-                .findAny().orElseThrow(IllegalStateException::new);
-        if (!endingStation.equals(station)) {
-            throw new IllegalArgumentException("구간이 목록에서 마지막 역이 아닙니다.");
-        }
-
-        Section section = sections.stream()
-                .filter(_section -> _section.getDownStation().equals(station))
-                .findAny().orElseThrow(() -> new IllegalArgumentException("구간에 존재하지 않는 역입니다."));
-        sections.remove(section);
+        sections.remove(station);
     }
 
     @Override
