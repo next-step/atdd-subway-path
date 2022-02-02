@@ -264,4 +264,19 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
+
+    /**
+     * Given 노선에 구간이 1개만 있을때
+     * When  구간 삭제를 요청하면
+     * Then  요청은 실패한다.
+     */
+    @DisplayName("구간이 1개만 있을때 지하철 역 삭제 요청")
+    @Test
+    void removeLineSectionFailCase3() {
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_노선에_지하철_구간_제거_요청(노선, 하행);
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

@@ -1,7 +1,6 @@
 package nextstep.subway.unit.line.application;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import nextstep.subway.common.domain.model.exception.EntityNotFoundException;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.application.dto.LineRequest;
 import nextstep.subway.line.application.dto.LineResponse;
@@ -42,7 +40,6 @@ public class LineServiceTest {
 
     private Station upStation;
     private Station downStation;
-    private Line line;
 
     private final  String color = "bg-red-500";
     private final Distance distance = new Distance(100);
@@ -53,7 +50,7 @@ public class LineServiceTest {
 
         upStation = stationRepository.save(new Station("초기 상행"));
         downStation = stationRepository.save(new Station("초기 하행"));
-        line = lineRepository.save(new Line("초기 라인", "bg-red-500"));
+        Line line = lineRepository.save(new Line("초기 라인", "bg-red-500"));
 
         SectionRequest request = SectionRequest.builder()
             .upStationId(upStation.getId())
@@ -61,31 +58,6 @@ public class LineServiceTest {
             .distance(distance)
             .build();
         lineService.addSection(line.getId(), request);
-    }
-
-    @Test
-    void addSection() {
-        // then
-        assertThat(line.getSections().toStations().size()).isEqualTo(2);
-    }
-
-
-    @Test
-    void findById() {
-        // when
-        lineRepository.save(line);
-
-        // then
-        assertDoesNotThrow(() -> lineService.findById(1L));
-    }
-
-    @Test
-    void findByIdWithStations() {
-        // when
-        lineRepository.save(line);
-
-        // then
-        assertDoesNotThrow(() -> lineService.findByIdWithStations(1L));
     }
 
     @DisplayName("findLine 호출시 Stations를 포함 한다.")
@@ -148,54 +120,5 @@ public class LineServiceTest {
         for (List<StationResponse> eachStations : allStations) {
             assertThat(eachStations).isNull();
         }
-    }
-
-    @Test
-    void updateLine() {
-        // then
-        String changedName = "변경된 이름";
-        String changedColor = "bg-red-500";
-        LineRequest lineRequest = LineRequest.builder()
-            .name(changedName)
-            .color(changedColor)
-            .build();
-        lineService.updateLine(line.getId(), lineRequest);
-
-        // when
-        assertThat(line.getName()).isEqualTo(changedName);
-        assertThat(line.getColor()).isEqualTo(changedColor);
-    }
-
-    @Test
-    void deleteLine() {
-        // when
-        lineService.deleteLine(line.getId());
-
-        // then
-        assertThatThrownBy(() -> lineService.findById(line.getId()))
-            .isInstanceOf(EntityNotFoundException.class);
-    }
-
-    @Test
-    void deleteSection() {
-        // given
-        Station newDownStation = stationRepository.save(new Station("하행"));
-        SectionRequest request = SectionRequest.builder()
-            .upStationId(downStation.getId())
-            .downStationId(newDownStation.getId())
-            .distance(distance)
-            .build();
-        lineService.addSection(line.getId(), request);
-
-        // when
-        lineService.deleteSection(line.getId(), newDownStation.getId());
-
-        // then
-        List<String> stationNames = lineService.findByIdWithStations(line.getId())
-                                               .getStations()
-                                               .stream()
-                                               .map(Station::getName)
-                                               .collect(Collectors.toList());
-        assertThat(stationNames).containsExactly(upStation.getName(), downStation.getName());
     }
 }

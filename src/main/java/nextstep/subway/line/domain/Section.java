@@ -43,7 +43,7 @@ public class Section {
     }
 
     @Builder
-    public Section(Long id, Line line, Station upStation, Station downStation, Distance distance) {
+    private Section(Long id, Line line, Station upStation, Station downStation, Distance distance) {
         this.id = id;
         this.line = line;
         this.upStation = upStation;
@@ -70,10 +70,9 @@ public class Section {
         upStation = newSection.getDownStation();
     }
 
-    public void dockingInDownSection(Section oldSection, Section newSection) {
-        newSection.distance = newSection.distance.addition(oldSection.distance);
-        newSection.upStation = upStation;
-        downStation = newSection.getDownStation();
+    public void combineUpSection(Section upSection) {
+        this.upStation = upSection.getUpStation();
+        distance = distance.addition(upSection.distance);
     }
 
     private void verifyDistanceExceeded(Distance newSectionDistance) {

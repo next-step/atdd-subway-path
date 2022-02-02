@@ -32,6 +32,10 @@ public class Sections {
     protected Sections() {
     }
 
+    public Sections(List<Section> values) {
+        this.values = values;
+    }
+
     public void add(Section newSection) {
         if (!values.isEmpty()) {
             verifyAddable(newSection);
@@ -61,7 +65,7 @@ public class Sections {
                      .findFirst();
     }
 
-    public void remove(Station stationForRemove) {
+    public void delete(Station stationForRemove) {
         verifyRemovable(stationForRemove);
 
         if (removeIfFirstSection(stationForRemove)) {
@@ -93,28 +97,27 @@ public class Sections {
     }
 
     private void removeNotFirstSection(Station stationForRemove) {
-        Map<Station, Section> regularizedByUpStation = regularizedByStation(Section::getUpStation);
-        Map<Station, Section> regularizedByDownStation = regularizedByStation(Section::getDownStation);
+        Map<Station, Section> byUpStation = toBasedOnKey(Section::getUpStation);
+        Map<Station, Section> byDownStation = toBasedOnKey(Section::getDownStation);
 
-        Section sectionForRemove = regularizedByDownStation.get(stationForRemove);
+        Section sectionForRemove = byDownStation.get(stationForRemove);
         values.remove(sectionForRemove);
-        if (isLastSection(regularizedByUpStation, sectionForRemove)) {
+        if (isLastSection(byUpStation, sectionForRemove)) {
             return;
         }
-        Section upSectionOfDocking = regularizedByDownStation.get(stationForRemove);
-        Section downSectionOfDocking = regularizedByUpStation.get(stationForRemove);
-        upSectionOfDocking.dockingInDownSection(sectionForRemove, downSectionOfDocking);
+        Section downSectionOfChange = byUpStation.get(stationForRemove);
+        downSectionOfChange.combineUpSection(sectionForRemove);
     }
 
-    private <T> Map<T, Section> regularizedByStation(Function<Section, T> getKeyFunc) {
+    private <T> Map<T, Section> toBasedOnKey(Function<Section, T> getKeyFunc) {
         return values.stream()
                      .collect(Collectors.toMap(
                          getKeyFunc, eachSection -> eachSection
                      ));
     }
 
-    private boolean isLastSection(Map<Station, Section> regularizedByUpStation, Section section) {
-        return !regularizedByUpStation.containsKey(section.getDownStation());
+    private boolean isLastSection(Map<Station, Section> byUpStation, Section section) {
+        return !byUpStation.containsKey(section.getDownStation());
     }
 
     public List<Station> toStations() {
@@ -125,27 +128,27 @@ public class Sections {
     }
 
     private List<Station> followSectionsLink(Section startSection) {
-        Map<Station, Section> regularizedByUpStation = regularizedByStation(Section::getUpStation);
+        Map<Station, Section> byUpStation = toBasedOnKey(Section::getUpStation);
 
         List<Station> stations = new ArrayList<>();
         stations.add(startSection.getUpStation());
         stations.add(startSection.getDownStation());
 
-        Section nextSection = regularizedByUpStation.get(startSection.getDownStation());
+        Section nextSection = byUpStation.get(startSection.getDownStation());
         while (Objects.nonNull(nextSection)) {
             stations.add(nextSection.getDownStation());
-            nextSection = regularizedByUpStation.get(nextSection.getDownStation());
+            nextSection = byUpStation.get(nextSection.getDownStation());
         }
         return stations;
     }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     private Section firstSection() {
-        Map<Station, Section> regularizedByUpStation = regularizedByStation(Section::getUpStation);
-        Map<Station, Section> regularizedByDownStation = regularizedByStation(Section::getDownStation);
+        Map<Station, Section> byUpStation = toBasedOnKey(Section::getUpStation);
+        Map<Station, Section> byDownStation = toBasedOnKey(Section::getDownStation);
 
-        return regularizedByUpStation.entrySet().stream()
-                                 .filter(eachEntry -> !regularizedByDownStation.containsKey(eachEntry.getKey()))
+        return byUpStation.entrySet().stream()
+                                 .filter(eachEntry -> !byDownStation.containsKey(eachEntry.getKey()))
                                  .map(Map.Entry::getValue)
                                  .findFirst().get();
     }
