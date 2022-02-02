@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 class LineTest {
@@ -289,7 +290,7 @@ class LineTest {
 
     @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
     @Test
-    void addSection5(){
+    void addSection5() {
         // given
         String 일호선 = "일호선";
         String 노란색 = "노란색";
@@ -334,6 +335,36 @@ class LineTest {
                 () -> assertThat(AC구간_거리).isEqualTo(7),
                 () -> assertThat(CB구간_거리).isEqualTo(3)
         );
+
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @Test
+    void addSection6() {
+        // given
+        String 일호선 = "일호선";
+        String 노란색 = "노란색";
+        Station A역 = new Station("A역");
+        Station B역 = new Station("B역");
+        Station C역 = new Station("C역");
+
+        Line 일호선_라인 = new Line(
+                일호선,
+                노란색,
+                A역,
+                C역,
+                7
+        );
+
+        // when, then
+        assertThatThrownBy(() -> 일호선_라인.addSection(
+                new Section(
+                        일호선_라인,
+                        B역,
+                        C역,
+                        7
+                )
+        )).isInstanceOf(RuntimeException.class);
 
     }
 }

@@ -80,7 +80,12 @@ public class Line extends BaseEntity {
 
         AtomicBoolean normalCondition = new AtomicBoolean(true);
 
-        insertStationInBetween(
+        insertBetweenSameUpStations(
+                newSection,
+                normalCondition
+        );
+
+        insertBetweenSameDownStations(
                 newSection,
                 normalCondition
         );
@@ -118,7 +123,48 @@ public class Line extends BaseEntity {
                 });
     }
 
-    private void insertStationInBetween(Section newSection, AtomicBoolean normalCondition) {
+    private void insertBetweenSameDownStations(Section newSection, AtomicBoolean normalCondition) {
+        sections.stream()
+                .filter(unused -> normalCondition.get())
+                .filter(oldSection -> oldSection.getDownStation()
+                                                .equals(newSection.getDownStation()))
+                .findFirst()
+                .ifPresent(oldSection -> {
+
+                    normalCondition.set(false);
+
+                    if (newSection.getDistance() < oldSection.getDistance()) {
+                        sections.add(new Section(
+                                this,
+                                newSection.getUpStation(),
+                                oldSection.getDownStation(),
+                                newSection.getDistance()
+                        ));
+                        oldSection.update(new Section(
+                                this,
+                                oldSection.getUpStation(),
+                                newSection.getUpStation(),
+                                (oldSection.getDistance() - newSection.getDistance())
+                        ));
+                    } else if (newSection.getDistance() > oldSection.getDistance()) {
+                        int index = sections.indexOf(oldSection);
+
+                        sections.add(
+                                index,
+                                new Section(
+                                        this,
+                                        newSection.getUpStation(),
+                                        oldSection.getUpStation(),
+                                        (newSection.getDistance() - oldSection.getDistance())
+                                )
+                        );
+                    } else {
+                        throw new RuntimeException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
+                    }
+                });
+    }
+
+    private void insertBetweenSameUpStations(Section newSection, AtomicBoolean normalCondition) {
         sections.stream()
                 .filter(oldSection -> oldSection.getUpStation()
                                                 .equals(newSection.getUpStation()))
@@ -145,6 +191,8 @@ public class Line extends BaseEntity {
                                 newSection.getDownStation(),
                                 (newSection.getDistance() - oldSection.getDistance())
                         ));
+                    } else {
+                        throw new RuntimeException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
                     }
                 });
     }
