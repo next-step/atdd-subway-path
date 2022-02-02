@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DataJpaTest
@@ -108,7 +109,7 @@ class LineServiceTest {
 
     @Test
     @DisplayName("특정 노선을 검색한다.")
-    void findById(){
+    void findById() {
         // given
         Long 동암역_ID = 역_생성_요청("동암역");
         Long 부평역_ID = 역_생성_요청("부평역");
@@ -126,7 +127,15 @@ class LineServiceTest {
 
         LineResponse 찾은_노선 = lineService.findById(저장된_노선.getId());
 
-        assertThat(찾은_노선).usingRecursiveComparison().isEqualTo(저장된_노선);
+        assertThat(찾은_노선).usingRecursiveComparison()
+                         .isEqualTo(저장된_노선);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 노선을 검색한다.")
+    void findById2() {
+        Long 존재하지_않는_노선_ID = 9999999L;
+        assertThatThrownBy(() -> lineService.findById(존재하지_않는_노선_ID)).isInstanceOf(IllegalArgumentException.class);
     }
 
     private LineResponse 노선_생성_요청(Long 상행역_ID, Long 하행역_ID, String 노선_이름, String 노선_색상, int 노선_거리) {
