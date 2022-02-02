@@ -5,6 +5,9 @@ import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -62,6 +65,39 @@ class LineTest {
     @DisplayName("노선에 속해있는 역 목록 조회")
     @Test
     void getStations() {
+        // given
+        Station 동암역 = new Station("동암역");
+        Station 부평역 = new Station("부평역");
+        String 일호선 = "1호선";
+        String 파란섹 = "파란색";
+
+
+        Line 일호선_라인 = new Line(
+                일호선,
+                파란섹
+        );
+
+        일호선_라인.addSection(
+                일호선_라인,
+                동암역,
+                부평역,
+                10
+        );
+
+        //when
+        List<Station> 실제_일호선_역_목록 = 일호선_라인.getStations();
+
+        // then
+        int 실제_일호선_역_개수 = 실제_일호선_역_목록.size();
+
+        assertAll(
+                () -> assertThat(실제_일호선_역_개수).isEqualTo(2),
+                () -> assertThat(실제_일호선_역_목록).usingRecursiveComparison()
+                                         .isEqualTo(Arrays.asList(
+                                                 동암역,
+                                                 부평역
+                                         ))
+        );
     }
 
     @DisplayName("구간이 목록에서 마지막 역 삭제")

@@ -62,4 +62,21 @@ public class Line extends BaseEntity {
         line.getSections()
             .add(section);
     }
+
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+
+        sections.forEach(section -> {
+            Station upStation = section.getUpStation();
+            Station downStation = section.getDownStation();
+            if (upStation != null && !stations.contains(upStation)) {
+                stations.add(upStation);
+            }
+            if (downStation != null && !stations.contains(downStation)) {
+                stations.add(downStation);
+            }
+        });
+
+        return stations;
+    }
 }
