@@ -6,6 +6,8 @@ import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LineTest {
@@ -25,12 +27,15 @@ class LineTest {
         line.addSection(section);
 
         // then
-        assertThat(line.getSections()).hasSize(2);
+        List<Section> sections = line.getSections();
+        Section lastSection = sections.get(sections.size() - 1);
+        assertThat(lastSection.getDownStation()).isEqualTo(광나루역);
     }
 
     @DisplayName("노선에 속해있는 역 목록 조회")
     @Test
     void getStations() {
+        // Line line =
     }
 
     @DisplayName("구간이 목록에서 마지막 역 삭제")
