@@ -179,6 +179,20 @@ class SectionsTest {
         assertThat(sections.getAllStations()).containsExactly(강남역, 판교역);
     }
 
+    @DisplayName("중간 역을 삭제할 수 있다")
+    @Test
+    void deleteStation_middle() {
+        // given
+        Section section = Section.of(신분당선, 강남역, 판교역, 5);
+        sections.addSection(section);
+
+        // when
+        sections.deleteStation(판교역);
+
+        // then
+        assertThat(sections.getAllStations()).containsExactly(강남역, 정자역);
+    }
+
     @DisplayName("역을 삭제할 경우 구간이 최소 1개는 있어야 한다")
     @Test
     void deleteStation_validateMinimumSection() {
