@@ -54,7 +54,9 @@ public class Sections {
     }
 
     public List<Station> getAllStations() {
-        List<Station> stations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
+        List<Station> stations = sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
         stations.add(getLastDownStation());
 
         return stations;

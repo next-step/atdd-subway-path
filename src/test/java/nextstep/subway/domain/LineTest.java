@@ -56,7 +56,7 @@ class LineTest {
         assertThat(신분당선.getStations()).contains(강남역, 판교역, 정자역);
     }
 
-    @DisplayName("구간이 목록에서 마지막 역 삭제")
+    @DisplayName("노선에 등록된 역 중 하나를 삭제")
     @Test
     void deleteStation() {
         // given
