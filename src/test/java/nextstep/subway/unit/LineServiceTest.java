@@ -282,7 +282,7 @@ public class LineServiceTest {
         }
 
         @Test
-        @DisplayName("하행 종점역이 아니면 불가능하다.")
+        @DisplayName("하행 종점이 아니여도 가능하다.")
         void deleteSection2() {
             // given
             Station 강남역 = stationRepository.save(new Station("강남역"));
@@ -292,8 +292,17 @@ public class LineServiceTest {
             line.registerSection(강남역, 삼성역, 100);
             line.registerSection(삼성역, 선릉역, 100);
 
-            // when, then
-            assertThrows(IllegalArgumentException.class, () -> lineService.deleteSection(line.getId(), 삼성역.getId()));
+            // when
+            lineService.deleteSection(line.getId(), 삼성역.getId());
+
+            //then
+            List<Section> sections = line.getSections();
+            assertAll(
+                    () -> assertThat(sections.size()).isEqualTo(1),
+                    () -> assertThat(sections.get(0).getUpStation()).isEqualTo(강남역),
+                    () -> assertThat(sections.get(0).getDownStation()).isEqualTo(선릉역),
+                    () -> assertThat(sections.get(0).getDistance()).isEqualTo(200)
+            );
         }
     }
 }
