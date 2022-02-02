@@ -2,6 +2,8 @@ package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
+import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
@@ -11,7 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -231,6 +235,52 @@ class LineServiceTest {
 
         //then
         assertThatThrownBy(() -> lineService.findById(저장된_노선.getId())).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("노선에 구간을 추가한다.")
+    @Test
+    void addSection() {
+        // given
+        Long 동암역_ID = 역_생성_요청("동암역");
+        Long 부평역_ID = 역_생성_요청("부평역");
+
+        String 일호선 = "1호선";
+        String 파란색 = "파란색";
+
+        LineResponse 저장된_노선 = 노선_생성_요청(
+                동암역_ID,
+                부평역_ID,
+                일호선,
+                파란색,
+                10
+        );
+
+
+        //when
+        Long 주안역_ID = 역_생성_요청("주안역");
+        lineService.addSection(
+                저장된_노선.getId(),
+                new SectionRequest(
+                        부평역_ID,
+                        주안역_ID,
+                        10
+                )
+        );
+
+        //then
+        LineResponse 찾은_노선 = lineService.findById(저장된_노선.getId());
+        List<String> 실제_노선_목록 = 찾은_노선.getStations()
+                                     .stream()
+                                     .map(StationResponse::getName)
+                                     .collect(Collectors.toList());
+
+        List<String> 예상_노선_목록 = Arrays.asList(
+                "동암역",
+                "부평역",
+                "주안역"
+        );
+        assertThat(실제_노선_목록).usingRecursiveComparison()
+                            .isEqualTo(예상_노선_목록);
     }
 
     private Long 역_생성_요청(String 동암역) {
