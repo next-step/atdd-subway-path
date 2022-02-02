@@ -16,8 +16,4 @@ public class SubwayApplication {
         SpringApplication.run(SubwayApplication.class, args);
     }
 
-    @Bean
-    public PathFinder pathFinder(){
-        return new PathFinder();
-    }
 }

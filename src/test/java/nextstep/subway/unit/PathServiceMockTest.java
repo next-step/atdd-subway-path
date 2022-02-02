@@ -56,9 +56,6 @@ public class PathServiceMockTest {
     @Test
     @DisplayName("Stub - 최단 경로 찾기 서비스 레이어 테스트")
     void showShortestPath() {
-        // lineAll.stream.map(Line::getStations).collect(toSet());
-        // lineAll.stream.map(Line::getSections).collect(toSet());
-
         //given
         PathService pathService = new PathService(lineRepository, stationRepository, pathFinder);
         when(lineRepository.findAll()).thenReturn(Arrays.asList(이호선, 신분당선, 삼호선));

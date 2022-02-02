@@ -32,17 +32,7 @@ public class PathController {
     public ResponseEntity<PathResponse> showShortestPath(@RequestParam("source") Long source,
                                                          @RequestParam("target") Long target) {
         PathResponse body = pathService.showShortestPath(source, target);
-
-        PathStationResponse 교대역 = new PathStationResponse(1L, "교대역", LocalDateTime.now());
-        PathStationResponse 남부터미널역 = new PathStationResponse(2L, "남부터미널역", LocalDateTime.now());
-        PathStationResponse 양재역 = new PathStationResponse(3L, "양재역", LocalDateTime.now());
-        List<PathStationResponse> pathStationResponses = new ArrayList<>();
-        pathStationResponses.add(교대역);
-        pathStationResponses.add(남부터미널역);
-        pathStationResponses.add(양재역);
-        PathResponse mockBody = new PathResponse(pathStationResponses, 5);
-
         return ResponseEntity.ok()
-                .body(mockBody);
+                .body(body);
     }
 }

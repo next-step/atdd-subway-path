@@ -48,7 +48,6 @@ public class PathAcceptanceTest extends AcceptanceTest {
         이호선 = 지하철_노선_생성_요청("2호선", "green", 교대역, 강남역, 10);
         신분당선 = 지하철_노선_생성_요청("신분당선", "red", 강남역, 양재역, 10);
         삼호선 = 지하철_노선_생성_요청("3호선", "orange", 교대역, 남부터미널역, 2);
-
         지하철_노선에_지하철_구간_생성_요청(삼호선, createSectionCreateParams(남부터미널역, 양재역, 3));
     }
 
