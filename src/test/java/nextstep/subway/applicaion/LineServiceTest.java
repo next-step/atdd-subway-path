@@ -208,6 +208,31 @@ class LineServiceTest {
         )).isInstanceOf(IllegalArgumentException.class);
     }
 
+    @DisplayName("노선을 삭제한다.")
+    @Test
+    void deleteLine() {
+        // given
+        Long 동암역_ID = 역_생성_요청("동암역");
+        Long 부평역_ID = 역_생성_요청("부평역");
+
+        String 일호선 = "1호선";
+        String 파란색 = "파란색";
+
+        LineResponse 저장된_노선 = 노선_생성_요청(
+                동암역_ID,
+                부평역_ID,
+                일호선,
+                파란색,
+                10
+        );
+
+        //when
+        lineService.deleteLine(저장된_노선.getId());
+
+        //then
+        assertThatThrownBy(() -> lineService.findById(저장된_노선.getId())).isInstanceOf(IllegalArgumentException.class);
+    }
+
     private Long 역_생성_요청(String 동암역) {
         return stationRepository
                 .save(new Station(동암역))
