@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -160,7 +162,7 @@ class LineTest {
 
     @DisplayName("구간이 목록에서 중간 역 삭제")
     @Test
-    void removeSection() {
+    void removeSection() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         //given
         Station 판교역 = new Station("판교역");
         _2호선.addSection(new Section(_2호선, 정자역, 판교역, 5));
@@ -169,9 +171,9 @@ class LineTest {
         _2호선.removeSection(정자역);
 
         //then
-        List<Section> sections = _2호선.getSections();
-        Section 강남_판교_구간 = _2호선.getSectionByUpStation(강남역);
+        Section 강남_판교_구간 = getSectionByUpStation(_2호선, 강남역);
 
+        List<Section> sections = _2호선.getSections();
         assertThat(sections, hasSize(1));
         assertThat(강남_판교_구간.getUpStation()).isEqualTo(강남역);
         assertThat(강남_판교_구간.getDownStation()).isEqualTo(판교역);
@@ -212,14 +214,14 @@ class LineTest {
 
     @DisplayName("상행역으로 구간 찾기")
     @Test
-    void getSectionByUpStation() {
+    void getSectionByUpStation() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         //given
         Station 판교역 = new Station("판교역");
         Section saveSection = new Section(_2호선, 정자역, 판교역, 5);
         _2호선.addSection(saveSection);
 
         //when
-        Section findSection = _2호선.getSectionByUpStation(정자역);
+        Section findSection = getSectionByUpStation(_2호선, 정자역);
 
         //then
         assertThat(findSection).isEqualTo(saveSection);
@@ -227,17 +229,26 @@ class LineTest {
 
     @DisplayName("(예외) 존재하지 않는 상행역으로 구간 찾기")
     @Test
-    void getSectionByUpStation_exception_case1() {
+    void getSectionByUpStation_exception_case1() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         //given
         Station 판교역 = new Station("판교역");
         Station 삼성역 = new Station("삼성역");
         _2호선.addSection(new Section(_2호선, 정자역, 판교역, 5));
 
         //when
-        Section findSection = _2호선.getSectionByUpStation(삼성역);
+        Section findSection = getSectionByUpStation(_2호선, 삼성역);
 
         //then
         assertThat(findSection).isNull();
+    }
+
+    private Section getSectionByUpStation(Line line, Station upStation) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        List<Section> sections = line.getSections();
+        Class<? extends Line> lineClass = line.getClass();
+        Method getSectionByUpStation = lineClass.getDeclaredMethod("getSectionByUpStation", Station.class);
+        getSectionByUpStation.setAccessible(true);
+        Section findSection = (Section) getSectionByUpStation.invoke(line, upStation);
+        return findSection;
     }
 
 

@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 @Entity
 public class Line extends BaseEntity {
@@ -95,7 +96,7 @@ public class Line extends BaseEntity {
     }
 
 
-    public Section getSectionByUpStation(Station upStation) {
+    protected Section getSectionByUpStation(Station upStation) {
         return sections.stream()
                 .filter(section -> section.getUpStation().equals(upStation))
                 .findFirst()
@@ -155,11 +156,15 @@ public class Line extends BaseEntity {
 
     private void removeTerminus(Station station) {
         sections.stream()
-                .filter(section -> (section.equals(getStartSection()) && station.equals(section.getUpStation())) || (section.equals(getEndSection()) && station.equals(section.getDownStation())))
+                .filter(isStartStationOrEndStation(station))
                 .findFirst()
                 .ifPresent(section -> {
                     sections.remove(section);
                 });
+    }
+
+    private Predicate<Section> isStartStationOrEndStation(Station station) {
+        return section -> (section.equals(getStartSection()) && station.equals(section.getUpStation())) || (section.equals(getEndSection()) && station.equals(section.getDownStation()));
     }
 
     private void removeMiddleComponent(Station station) {
