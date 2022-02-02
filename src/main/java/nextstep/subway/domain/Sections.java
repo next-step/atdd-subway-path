@@ -25,7 +25,9 @@ public class Sections {
         return Collections.unmodifiableList(sections);
     }
 
-    public void add(Line line, Section newSection) {
+    public void add(Line line, Station upStation, Station downStation, int distance) {
+        Section newSection = new Section(line, upStation, downStation, distance);
+
         if (this.sections.isEmpty()) {
             this.sections.add(newSection);
             return;
@@ -183,5 +185,4 @@ public class Sections {
     private Section getLastSection() {
         return this.sections.get(this.sections.size() - 1);
     }
-
 }
