@@ -1,0 +1,176 @@
+package nextstep.subway.domain;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+
+@Embeddable
+public class Sections {
+    private static final int MIN_SIZE = 1;
+
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<Section> sections = new ArrayList<>();
+
+    public Sections() {
+    }
+
+    public Sections(Section section) {
+        this.sections.add(section);
+    }
+
+    public void addSection(Section section) {
+        if (sections.isEmpty()) {
+            sections.add(section);
+            return;
+        }
+
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+        int newDistance = section.getDistance();
+        List<Station> stations = getStations();
+
+        boolean hasUpStation = stations.contains(upStation);
+        boolean hasDownStation = stations.contains(downStation);
+
+        if (hasUpStation && hasDownStation) {
+            throw new IllegalArgumentException("이미 등록된 구간입니다.");
+        }
+
+        if (!hasUpStation && !hasDownStation) {
+            throw new IllegalArgumentException("요청한 상/하행역이 모두 노선에 등록되지 않았습니다.");
+        }
+
+        if (hasUpStation) {
+            int index = indexOfUpStation(upStation);
+
+            // 중간에 등록하는 경우 ex.기존: 강남 - 양재 / 요청: 강남 - 정자
+            if (index != -1) {
+                Section oldSection = sections.get(index);
+                if (oldSection.getDistance() <= newDistance) {
+                    throw new IllegalArgumentException("길이가 더 긴 구간은 추가할 수 없습니다.");
+                }
+                oldSection.updateSection(downStation, oldSection.getDownStation(), oldSection.getDistance() - newDistance);
+            }
+        }
+
+        if (hasDownStation) {
+            int index = indexOfDownStation(downStation);
+
+            // 중간에 등록하는 경우 ex.기존: 강남 - 양재 / 요청: 정자 - 양재
+            if (index != -1) {
+                Section oldSection = sections.get(index);
+                if (oldSection.getDistance() <= newDistance) {
+                    throw new IllegalArgumentException("길이가 더 긴 구간은 추가할 수 없습니다.");
+                }
+                oldSection.updateSection(oldSection.getUpStation(), upStation, oldSection.getDistance() - newDistance);
+            }
+        }
+
+        sections.add(section);
+    }
+
+    public void removeStation(Station newStation) {
+        if (sections.size() == MIN_SIZE) {
+            throw new IllegalArgumentException("구간이 1개일 경우 삭제가 불가능합니다.");
+        }
+        List<Station> stations = getStations();
+        if (!stations.get(stations.size() - 1).equals(newStation)) {
+            throw new IllegalArgumentException("마지막 역만 삭제가 가능합니다.");
+        }
+        sections.remove(sections.size() - 1);
+    }
+
+    public List<Station> getStations() {
+        List<Section> sorted = sort();
+        List<Station> stations = sorted.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+
+        stations.add(sorted.get(sorted.size() - 1).getDownStation());
+
+        return stations;
+    }
+
+    public List<Section> getSections() {
+        return sections;
+    }
+
+    private int indexOfUpStation(Station station) {
+        return indexOf(station, x -> sections.get(x).getUpStation());
+    }
+
+    private int indexOfDownStation(Station station) {
+        return indexOf(station, x -> sections.get(x).getDownStation());
+    }
+
+    private int indexOf(Station station, Function<Integer, Station> func){
+        for (int i = 0; i < sections.size(); i++) {
+            Station nowStation = func.apply(i);
+            if (nowStation.equals(station)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private List<Section> sort() {
+        List<Section> sorted = new ArrayList<>();
+        Station first = findFirstStation();
+        Station last = findLastStation();
+
+        Station now = first;
+
+        do {
+            Section section = findOneByUpStation(now);
+            sorted.add(section);
+            now = section.getDownStation();
+        } while (!now.equals(last));
+
+        return sorted;
+    }
+
+    private Section findOneByUpStation(Station station) {
+        return sections.stream()
+                .filter(section -> station.equals(section.getUpStation()))
+                .findFirst()
+                .get();
+    }
+
+    private Station findFirstStation() {
+        List<Station> upStations = getUpStations();
+        List<Station> downStations = getDownStations();
+
+        return upStations.stream()
+                .filter(station -> !downStations.contains(station))
+                .findFirst()
+                .get();
+    }
+
+    private Station findLastStation() {
+        List<Station> upStations = getUpStations();
+        List<Station> downStations = getDownStations();
+
+        return downStations.stream()
+                .filter(station -> !upStations.contains(station))
+                .findFirst()
+                .get();
+    }
+
+    private List<Station> getUpStations() {
+        return sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+    }
+
+    private List<Station> getDownStations() {
+        return sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+    }
+
+}
