@@ -79,7 +79,12 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getAllStations() {
-        List<Station> stations = this.sections.getSortedSections().stream().map(Section::getUpStation).collect(Collectors.toList());
+        List<Station> stations =
+                this.sections
+                        .getSortedSections().stream()
+                        .map(Section::getUpStation)
+                        .collect(Collectors.toList());
+
         stations.add(this.sections.getDownStationEndpoint());
 
         return stations;
