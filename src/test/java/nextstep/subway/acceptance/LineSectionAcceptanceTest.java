@@ -143,6 +143,26 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 등록되지 않는 상행역을 생성하고,
+     * AND 등록되지 않는 하행역을 생성하고,
+     * When 구간 추가 요청하면,
+     * Then 구간 추가가 실패한다.
+     */
+    @DisplayName("구간 추가 시 상행역과 하행역 중 하나도 구간에 등록되어 있지 않으면 등록 불가.(구간이 1개 이상일 경우)")
+    @Test
+    void exceptionAddSectionNotFoundStation() {
+        // given
+        Long 논현역 = 지하철역_생성_요청("논현").jsonPath().getLong("id");
+        Long 신논현역 = 지하철역_생성_요청("신논현").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(논현역, 신논현역, 10));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId, int distance) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();

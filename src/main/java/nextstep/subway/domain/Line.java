@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.ui.exception.AddSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -45,10 +46,21 @@ public class Line extends BaseEntity {
      * @param 새로운_구간
      */
     public void addSection(Section newSection) {
+        dd(newSection);
         for (Section existingSection : sections) {
             existingSection.addLineBetweenSection(newSection);
         }
         sections.add(newSection);
+    }
+
+    private void dd(Section newSection) {
+        if (!getUpStations().contains(newSection.getUpStation()) &&
+            !getUpStations().contains(newSection.getDownStation()) &&
+            !getDownStations().contains(newSection.getUpStation()) &&
+            !getDownStations().contains(newSection.getDownStation()) &&
+            !sections.isEmpty()) {
+            throw new AddSectionException("dd");
+        }
     }
 
     public void removeSection(Station downStation) {
@@ -113,6 +125,12 @@ public class Line extends BaseEntity {
             }
         }
         return sections.get(0);
+    }
+
+    private List<Station> getUpStations() {
+        return sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
     }
 
     private List<Station> getDownStations() {

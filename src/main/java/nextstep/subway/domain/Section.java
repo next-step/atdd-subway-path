@@ -41,6 +41,7 @@ public class Section {
                     String.format("상행역과 하행역 모두 등록된 역입니다. 상행역 = %s, 하행역 = %s",
                             this.upStation.getName(), this.downStation.getName()));
         }
+        // 역 사이에 구간 추가 시
         if (this.upStation.equals(newSection.getUpStation())) {
             if (this.distance <= newSection.distance) {
                 throw new AddSectionException(

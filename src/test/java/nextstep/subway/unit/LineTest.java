@@ -129,4 +129,18 @@ class LineTest {
                 // then
                 .isInstanceOf(AddSectionException.class);
     }
+
+    @DisplayName("구간 추가 시 상행역과 하행역 중 하나도 구간에 등록되어 있지 않으면 등록 불가.(구간이 1개 이상일 경우)")
+    @Test
+    void exceptionAddSectionNotFoundStation() {
+        // given
+        Section section1 = new Section(line, 가양역, 증미역, tenDistance);
+        Section section2 = new Section(line, 등촌역, 신목동역, tenDistance);
+        line.addSection(section1);
+
+        // when
+        assertThatThrownBy(() -> line.addSection(section2))
+                // then
+                .isInstanceOf(AddSectionException.class);
+    }
 }
