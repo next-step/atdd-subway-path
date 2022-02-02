@@ -42,7 +42,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 지하철 노선 생성을 요청 하면
-     * Then 지하철 노선 생성이 성공한다.
+     * Then 노선 생성 응답을 받는다
      */
     @DisplayName("지하철 노선 생성")
     @Test
@@ -51,13 +51,13 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
         // then
-        LineStepFeature.노선_생성_응답상태_검증(response);
+        노선_생성_응답상태_검증(response);
     }
 
     /**
      * Given 노선을 생성한다.
      * When 같은 이름의 지하철 노선 생성을 요청 하면
-     * Then 400 status code를 응답한다.
+     * Then 생성 실패 상태를 응답 받는다
      */
     @DisplayName("중복된 이름의 지하철 노선 생성은 실패한다")
     @Test
@@ -69,14 +69,16 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
         // then
-        노성_생성_실패_응답상태_검증(response);
+        노선_생성_실패_응답상태_검증(response);
     }
 
     /**
-     * Given 지하철 노선 생성을 요청 하고
-     * Given 새로운 지하철 노선 생성을 요청 하고
-     * When 지하철 노선 목록 조회를 요청 하면
-     * Then 두 노선이 포함된 지하철 노선 목록을 응답받는다
+     * Given 지하철 노선1을 생성을 요청 하고
+     * Given 노선1에  새로운 구간을 추가한다
+     * Given 새로운 지하철 노선 생성을 요청 한다
+     * When 지하철 노선 전체 목록 조회를 요청 하면
+     * Then 조회 성공 상태를 응답 받는다
+     * Then 두 노선이 포함된 지하철 목록을 응답받는다
      */
     @DisplayName("지하철 노선 목록 조회")
     @Test
@@ -99,6 +101,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     /**
      * Given 지하철 노선 생성을 요청 하고
      * When 생성한 지하철 노선 조회를 요청 하면
+     * Then 생성 성공 상태를 응답 받는다
      * Then 생성한 지하철 노선을 응답받는다
      */
     @DisplayName("지하철 노선 조회")
@@ -121,7 +124,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     /**
      * Given 지하철 노선 생성을 요청 하고
      * When 지하철 노선의 정보 수정을 요청 하면
-     * Then 지하철 노선의 정보 수정은 성공한다.
+     * Then 노선 수정 성공 상태를 응답 받는다
+     * Then 수정된 노선의 이름을 확인 한다
      */
     @DisplayName("지하철 노선 수정")
     @Test
@@ -141,7 +145,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 없는 지하철 노선의 정보 수정을 요청 하면
-     * Then 400 응답
+     * Then 잘못된 요청 응답을 받는다
      */
     @DisplayName("지하철 노선 수정 요청 시 노선을 못 찾으면 400응답 처리")
     @Test
@@ -159,7 +163,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     /**
      * Given 지하철 노선 생성을 요청 하고
      * When 생성한 지하철 노선 삭제를 요청 하면
-     * Then 생성한 지하철 노선 삭제가 성공한다.
+     * Then 상제 성공 상태를 응답 받는다
      */
     @DisplayName("지하철 노선 삭제")
     @Test

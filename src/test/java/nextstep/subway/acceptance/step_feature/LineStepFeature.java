@@ -115,13 +115,12 @@ public class LineStepFeature {
     }
 
     public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_제거_요청(long lineId, long stationId) {
-        String deleteSectionUri = "/lines/%s/sections?stationId=%s";
         return RestAssured.given()
                 .log()
                 .all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .delete(String.format(deleteSectionUri, lineId, stationId))
+                .delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then()
                 .log()
                 .all()
@@ -154,12 +153,16 @@ public class LineStepFeature {
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    public static void 노성_생성_실패_응답상태_검증(ExtractableResponse<Response> response) {
+    public static void 노선_생성_실패_응답상태_검증(ExtractableResponse<Response> response) {
         노선_응답_상태코드_검증(response.statusCode(), HttpStatus.BAD_REQUEST);
     }
 
     public static void 노선_조회_응답상태_검증(ExtractableResponse<Response> response) {
         노선_응답_상태코드_검증(response.statusCode(), HttpStatus.OK);
+    }
+
+    public static void 노선_삭제_응답상태_검증(ExtractableResponse<Response> response) {
+        노선_응답_상태코드_검증(response.statusCode(), HttpStatus.NO_CONTENT);
     }
 
     public static void 응답받은_노선의_상세_값_확인(ExtractableResponse<Response> response) {
