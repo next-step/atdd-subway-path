@@ -46,9 +46,11 @@ public class LineServiceMockTest {
     @Test
     void saveLine() {
         // given
-        when(lineRepository.save(any())).thenReturn(new Line(lineName, lineColor));
+        Station upStation = new Station(upStationName);
+        Station downStation = new Station(downStationName);
         when(stationService.findById(upStationId)).thenReturn(new Station(upStationName));
         when(stationService.findById(downStationId)).thenReturn(new Station(downStationName));
+        when(lineRepository.save(any())).thenReturn(new Line(lineName, lineColor, upStation, downStation, distance));
 
         // when
         LineService lineService = new LineService(lineRepository, stationService);

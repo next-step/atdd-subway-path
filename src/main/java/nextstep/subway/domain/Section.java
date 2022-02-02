@@ -23,10 +23,13 @@ public class Section {
     private int distance;
 
     public Section() {
-
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
+        if (distance <= 0) {
+            throw new IllegalArgumentException("구간의 거리는 0 초과 이어야 합니다.");
+        }
+
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
