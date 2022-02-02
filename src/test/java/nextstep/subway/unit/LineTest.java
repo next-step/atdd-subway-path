@@ -3,9 +3,11 @@ package nextstep.subway.unit;
 import static nextstep.subway.common.LineSomething.DISTANCE_BASIC;
 import static nextstep.subway.common.LineSomething.DISTANCE_INVALID;
 import static nextstep.subway.common.LineSomething.DISTANCE_VALID;
+import static nextstep.subway.unit.SectionTest.상행역_하행역_의_구간을_만든다;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
@@ -19,39 +21,115 @@ import org.springframework.dao.DataIntegrityViolationException;
 class LineTest {
     private Line 노선;
 
-    private Long 노선Id = 1L;
-    private Long 역1Id = 1L;
-    private Long 역2Id = 2L;
-    private Long 추가역Id = 3L;
+    private final Long 노선Id = 1L;
+    private final Long 역1Id = 1L;
+    private final String 역1이름 = "역1이름";
+    private final Long 역2Id = 2L;
+    private final String 역2이름 = "역2이름";
+    private final Long 추가역Id = 3L;
+
+    private final String 노선이름 = "노선이름";
+    private final String 노선색상 = "노선색상";
+    private Station 역1;
+    private Station 역2;
+    private Section 구간1;
+    private Station 추가역;
 
     @BeforeEach
     void setUp() {
         노선에_구간이_한개_들어가있다();
     }
 
+    @DisplayName("노선에서 (상행역) 역ID 를 사용해서 구간을 삭제 성공한다.")
+    @Test
+    void lineDeleteSectionByStation_테스트_1() {
+        // given
+        Section 추가구간 = 하행역_뒤쪽으로_추가성공_할_구간을_만든다();
+        노선.addSection(추가구간);
+
+        // when
+        int distanceBefore = 노선.getSections().getTotalDistance();
+        노선.deleteSectionByStation(역1);
+
+        // then
+        assertThat(노선.getStations().stream()
+            .map(Station::getName)
+            .collect(Collectors.toList()))
+            .containsExactly("역2이름", "추가역");
+        assertThat(노선.getSections().getTotalDistance())
+            .isEqualTo(distanceBefore - DISTANCE_BASIC);
+    }
+
+    @DisplayName("노선에서 (중간역) 역ID 를 사용해서 구간을 삭제 성공한다.")
+    @Test
+    void lineDeleteSectionByStation_테스트_2() {
+    // given
+        Section 추가구간 = 하행역_뒤쪽으로_추가성공_할_구간을_만든다();
+        노선.addSection(추가구간);
+
+        // when
+        int distanceBefore = 노선.getSections().getTotalDistance();
+        노선.deleteSectionByStation(역2);
+
+        // then
+        assertThat(노선.getStations().stream()
+            .map(Station::getName)
+            .collect(Collectors.toList()))
+            .containsExactly("역1이름", "추가역");
+        assertThat(노선.getSections().getTotalDistance())
+            .isEqualTo(distanceBefore);
+    }
+
+    @DisplayName("노선에서 (하행역) 역ID 를 사용해서 구간을 삭제 성공한다.")
+    @Test
+    void lineDeleteSectionByStation_테스트_3() {
+        // given
+        Section 추가구간 = 하행역_뒤쪽으로_추가성공_할_구간을_만든다();
+        노선.addSection(추가구간);
+
+        // when
+        int distanceBefore = 노선.getSections().getTotalDistance();
+        노선.deleteSectionByStation(추가역);
+
+        // then
+        assertThat(노선.getStations().stream()
+            .map(Station::getName)
+            .collect(Collectors.toList()))
+            .containsExactly("역1이름", "역2이름");
+        assertThat(노선.getSections().getTotalDistance())
+            .isEqualTo(distanceBefore - 추가구간.getDistance());
+    }
+
+    @DisplayName("노선에서 역ID 로 구간을 삭제 시, 구간이 1개 이하면 실패한다.")
+    @Test
+    void lineDeleteSectionByStation_테스트_4() {
+        // when // then
+        assertThatThrownBy(() -> {
+            노선.deleteSectionByStation(역1);
+        }).isInstanceOf(IllegalStateException.class);
+    }
+
     @DisplayName("노선을 이름과 색상으로 생성한다.")
     @Test
     void 노선_생성_테스트_1() {
-        final String 이름 = "노선이름";
-        final String 색상 = "노선색상";
-        노선 = Line.of(이름, 색상);
+        // when
+        노선 = Line.of(노선이름, 노선색상);
 
-        assertThat(노선.getName()).isEqualTo(이름);
-        assertThat(노선.getColor()).isEqualTo(색상);
+        // then
+        assertThat(노선.getName()).isEqualTo(노선이름);
+        assertThat(노선.getColor()).isEqualTo(노선색상);
     }
 
-    @DisplayName("노선을 이름, 색상, 구간으로 생성한다.")
+    @DisplayName("노선을 노선이름, 노선색상, 구간으로 생성한다.")
     @Test
     void 노선_생성_테스트_2() {
-        final String 노선이름 = "노선이름";
-        final String 노선색상 = "노선색상";
-        final Station 상행역 = Station.of("상행역");
-        final Station 하행역 = Station.of("하행역");
-        final int 거리 = 10;
+        // given
+        Section 구간 = 상행역_하행역_의_구간을_만든다();
 
-        Section 구간 = Section.of(상행역, 하행역, 거리);
+        // when
         노선 = Line.of(노선이름, 노선색상, 구간);
 
+        // then
         assertThat(노선.getName()).isEqualTo(노선이름);
         assertThat(노선.getColor()).isEqualTo(노선색상);
         assertThat(노선.getSections().size()).isEqualTo(1);
@@ -85,6 +163,8 @@ class LineTest {
             assertThat(노선.getStations().stream()
                 .mapToLong(Station::getId)
             ).containsExactly(3L, 1L, 2L);
+
+            assertThat(노선.getTotalDistance()).isEqualTo(DISTANCE_BASIC + DISTANCE_VALID);
         }
     }
 
@@ -101,6 +181,8 @@ class LineTest {
             assertThat(노선.getStations().stream()
                 .mapToLong(Station::getId)
             ).containsExactly(1L, 3L, 2L);
+
+            assertThat(노선.getTotalDistance()).isEqualTo(DISTANCE_BASIC);
         }
     }
 
@@ -117,6 +199,8 @@ class LineTest {
             assertThat(노선.getStations().stream()
                 .mapToLong(Station::getId)
             ).containsExactly(1L, 3L, 2L);
+
+            assertThat(노선.getTotalDistance()).isEqualTo(DISTANCE_BASIC);
         }
     }
 
@@ -133,6 +217,8 @@ class LineTest {
             assertThat(노선.getStations().stream()
                 .mapToLong(Station::getId)
             ).containsExactly(1L, 2L, 3L);
+
+            assertThat(노선.getTotalDistance()).isEqualTo(DISTANCE_BASIC + DISTANCE_VALID);
         }
     }
 
@@ -195,39 +281,39 @@ class LineTest {
     }
 
     private void 노선에_구간이_한개_들어가있다() {
-        Station 역1 = Station.of(1L, "역1");
-        Station 역2 = Station.of(2L, "역2");
-        Section 구간1 = Section.of(노선, 역1, 역2, DISTANCE_BASIC);
-        노선 = Line.of(노선Id, "일호선", "색상", 구간1);
+        역1 = Station.of(역1Id, 역1이름);
+        역2 = Station.of(역2Id, 역2이름);
+        구간1 = Section.of(노선, 역1, 역2, DISTANCE_BASIC);
+        노선 = Line.of(노선Id, "일호선", "노선색상", 구간1);
     }
 
     private Section 상행역_앞쪽으로_추가성공_할_구간을_만든다() {
-        Station 추가역 = Station.of(추가역Id, "추가역");
-        Station 역1 = Station.of(역1Id, "역1");
+        추가역 = Station.of(추가역Id, "추가역");
+        역1 = Station.of(역1Id, 역1이름);
         return Section.of(추가역, 역1, DISTANCE_VALID);
     }
 
     private Section 상행역_쪽_중간으로_추가성공_할_구간을_만든다() {
-        Station 역1 = Station.of(역1Id, "역1");
-        Station 추가역 = Station.of(추가역Id, "추가역");
+        역1 = Station.of(역1Id, 역1이름);
+        추가역 = Station.of(추가역Id, "추가역");
         return Section.of(역1, 추가역, DISTANCE_VALID);
     }
 
     private Section 하행역_쪽_중간으로_추가성공_할_구간을_만든다() {
-        Station 추가역 = Station.of(추가역Id, "추가역");
-        Station 역2 = Station.of(역2Id, "역2");
+        추가역 = Station.of(추가역Id, "추가역");
+        역2 = Station.of(역2Id, 역2이름);
         return Section.of(추가역, 역2, DISTANCE_VALID);
     }
 
     private Section 하행역_뒤쪽으로_추가성공_할_구간을_만든다() {
-        Station 역2 = Station.of(역2Id, "역2");
-        Station 추가역 = Station.of(추가역Id, "추가역");
+        역2 = Station.of(역2Id, 역2이름);
+        추가역 = Station.of(추가역Id, "추가역");
         return Section.of(역2, 추가역, DISTANCE_VALID);
     }
 
     private Section 거리가_크거나_같아서_실패하도록_추가할_구간을_만든다() {
-        Station 역1 = Station.of(역1Id, "역1");
-        Station 추가역 = Station.of(추가역Id, "추가역");
+        역1 = Station.of(역1Id, 역1이름);
+        추가역 = Station.of(추가역Id, "추가역");
         return Section.of(역1, 추가역, DISTANCE_INVALID);
     }
 
@@ -238,8 +324,8 @@ class LineTest {
     }
 
     private Section 역들이_둘다_등록되어있어서_실패하도록_추가할_구간을_만든다() {
-        Station 역1 = Station.of(1L, "역1");
-        Station 역2 = Station.of(2L, "역2");
+        역1 = Station.of(역1Id, 역1이름);
+        역2 = Station.of(역2Id, 역2이름);
         return Section.of(역1, 역2, DISTANCE_VALID);
     }
 

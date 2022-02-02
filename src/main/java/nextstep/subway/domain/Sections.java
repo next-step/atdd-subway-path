@@ -2,13 +2,13 @@ package nextstep.subway.domain;
 
 import static nextstep.subway.exception.CommonExceptionMessages.ALREADY_HAS_STATIONS;
 import static nextstep.subway.exception.CommonExceptionMessages.NOT_HAS_ANY_STATIONS;
+import static nextstep.subway.exception.CommonExceptionMessages.NOT_RESISTERED_STATION_IN_LINE;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import nextstep.subway.domain.utils.StationConnector;
 import nextstep.subway.domain.utils.StationFrontConnector;
@@ -18,7 +18,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 @Embeddable
 public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-        orphanRemoval = true, fetch = FetchType.LAZY)
+        orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section newSection) {
@@ -42,13 +42,11 @@ public class Sections {
 
     private void handleMidCase(Section section, Section newSection) {
         if (section.hasSameUpStationWith(newSection)) {
-            section.checkEnoughDistanceForAddingOrElseThrow(newSection);
-            section.setUpStation(newSection.getDownStation());
+            section.addUpMid(newSection);
         }
 
         if (section.hasSameDownStationWith(newSection)) {
-            section.checkEnoughDistanceForAddingOrElseThrow(newSection);
-            section.setDownStation(newSection.getUpStation());
+            section.addMidDown(newSection);
         }
     }
 
@@ -93,6 +91,17 @@ public class Sections {
         sections.remove(index);
     }
 
+    public void remove(Section section) {
+        sections.remove(section);
+    }
+
+    public int getTotalDistance() {
+        return sections.stream()
+            .mapToInt(Section::getDistance)
+            .sum();
+
+    }
+
     public List<Station> getStations() {
         if (sections.isEmpty()) {
             return Collections.emptyList();
@@ -132,4 +141,30 @@ public class Sections {
         }
     }
 
+    public boolean isLessThanTwo() {
+        return sections.size() < 2;
+    }
+
+    public void removeSectionBy(Station station) {
+        SectionsIncludingRemoveStation sectionListIncluding = findSectionListIncluding(station);
+
+        if (sectionListIncluding.isEmpty()) {
+            throw new IllegalArgumentException(NOT_RESISTERED_STATION_IN_LINE);
+        }
+
+        if (sectionListIncluding.hasEndSideSection()) {
+            sections.remove(sectionListIncluding.getEndSection());
+            return;
+        }
+
+        sectionListIncluding.handleRemoveMidCaseSection(this);
+    }
+
+    private SectionsIncludingRemoveStation findSectionListIncluding(Station station) {
+        SectionsIncludingRemoveStation sectionsIncludingRemoveStation = new SectionsIncludingRemoveStation();
+
+        sectionsIncludingRemoveStation.find(sections, station);
+
+        return sectionsIncludingRemoveStation;
+    }
 }

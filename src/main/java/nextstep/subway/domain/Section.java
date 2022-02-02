@@ -1,11 +1,15 @@
 package nextstep.subway.domain;
 
-import static nextstep.subway.exception.CommonExceptionMessages.ALREADY_HAS_STATIONS;
 import static nextstep.subway.exception.CommonExceptionMessages.INVALID_SECTION_DISTANCE;
-import static nextstep.subway.exception.CommonExceptionMessages.NOT_HAS_ANY_STATIONS;
 
 import java.util.Objects;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import org.springframework.dao.DataIntegrityViolationException;
 
 @Entity
@@ -104,7 +108,7 @@ public class Section {
         return Objects.hash(id, line, upStation, downStation, distance);
     }
 
-    public void checkEnoughDistanceForAddingOrElseThrow(Section section) {
+    private void checkEnoughDistanceForAddingOrElseThrow(Section section) {
         if (this.distance > section.distance) {
             return;
         }
@@ -114,5 +118,34 @@ public class Section {
 
     public Line getLine() {
         return line;
+    }
+
+    public void addUpMid(Section newSection) {
+        this.checkEnoughDistanceForAddingOrElseThrow(newSection);
+        this.handleDistanceBy(newSection);
+        this.upStation = newSection.getDownStation();
+    }
+
+    public void addMidDown(Section newSection) {
+        this.checkEnoughDistanceForAddingOrElseThrow(newSection);
+        this.handleDistanceBy(newSection);
+        this.downStation = newSection.getUpStation();
+    }
+
+    private void handleDistanceBy(Section newSection) {
+        this.distance -= newSection.distance;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public void handleRemoveMidCase(Section connectedSection) {
+        this.upStation = connectedSection.getUpStation();
+        this.distance += connectedSection.getDistance();
     }
 }

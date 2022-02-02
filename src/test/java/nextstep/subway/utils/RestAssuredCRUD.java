@@ -76,6 +76,16 @@ public class RestAssuredCRUD {
             .extract();
     }
 
+    public static ExtractableResponse<Response> putRequest(String path, Object request, Object... pathParam) {
+        return RestAssured.given().log().all()
+            .body(request)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put(path, pathParam)
+            .then().log().all()
+            .extract();
+    }
+
     public static ExtractableResponse<Response> putRequestWithAOuth(String path, Object request, String token) {
         return RestAssured.given().log().all()
             .body(request)
@@ -89,6 +99,16 @@ public class RestAssuredCRUD {
 
     public static ExtractableResponse<Response> delete(String path) {
         return RestAssured.given().log().all()
+            .when()
+            .delete(path)
+            .then().log().all()
+            .extract();
+    }
+
+    public static ExtractableResponse<Response> delete(String path, String paramName, Object param) {
+        return RestAssured.given().log().all()
+            .param(paramName, param)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .delete(path)
             .then().log().all()
