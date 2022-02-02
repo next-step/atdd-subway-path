@@ -36,7 +36,12 @@ public class Section {
     }
 
     void addLineBetweenSection(Section newSection) {
-        if (this.getUpStation().equals(newSection.getUpStation())) {
+        if (this.upStation.equals(newSection.upStation) && this.downStation.equals(newSection.getDownStation())) {
+            throw new AddSectionException(
+                    String.format("상행역과 하행역 모두 등록된 역입니다. 상행역 = %s, 하행역 = %s",
+                            this.upStation.getName(), this.downStation.getName()));
+        }
+        if (this.upStation.equals(newSection.getUpStation())) {
             if (this.distance <= newSection.distance) {
                 throw new AddSectionException(
                         String.format("새로 추가되는 구간 거리는 기존 구간의 거리 이상일 수 없습니다. 기존 구간 거리 = %d, 신규 구간 거리 = %d",

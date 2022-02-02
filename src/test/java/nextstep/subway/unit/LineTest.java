@@ -107,12 +107,26 @@ class LineTest {
         // given
         Section section1 = new Section(line, 가양역, 등촌역, tenDistance);
         Section section2 = new Section(line, 가양역, 증미역, tenDistance);
-
-        // when
         line.addSection(section1);
 
-        // then
+
+        // when
         assertThatThrownBy(() -> line.addSection(section2))
+                // then
+                .isInstanceOf(AddSectionException.class);
+    }
+
+    @DisplayName("구간 추가 시 상행역과 하행역이 모두 등록된 역일 수 없음.")
+    @Test
+    void exceptionAddSectionDuplicate() {
+        // given
+        Section section1 = new Section(line, 가양역, 증미역, tenDistance);
+        Section section2 = new Section(line, 가양역, 증미역, tenDistance);
+        line.addSection(section1);
+
+        // when
+        assertThatThrownBy(() -> line.addSection(section2))
+                // then
                 .isInstanceOf(AddSectionException.class);
     }
 }

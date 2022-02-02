@@ -113,8 +113,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 역 사이에 새로운 구간 추가를 요청하면,
-     * Then 사이에 새로운 구간이 추가되고, 조회 시 상행 종점부터 하행 종점까지 순서대로 조회된다.
+     * When 역 사이에 새로운 구간 추가 시 기존 역 사이 거리 이상으로 구간 추가 요청을 하면,
+     * Then 구간 추가가 실패한다.
      */
     @DisplayName("지하철역 사이에 새로운 구간 추가 시 기존 역 사이 길이 이상일 수 없음.")
     @Test
@@ -124,6 +124,20 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(논현역, 강남역, 10));
         Long 신논현역 = 지하철역_생성_요청("신논현").jsonPath().getLong("id");
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(논현역, 신논현역, 10));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 상행역과 하행역이 모두 존재하는 역을 구간추가 요청이면,
+     * Then 구간 추가가 실패한다.
+     */
+    @DisplayName("구간 추가 시 상행역과 하행역이 모두 등록된 역일 수 없음.")
+    @Test
+    void exceptionAddSectionDuplicate() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 10));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
