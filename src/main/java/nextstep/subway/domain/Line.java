@@ -46,16 +46,64 @@ public class Line extends BaseEntity {
             return;
         }
 
-        Section lastSection = sections.get(sections.size() - 1);
-        Station endStation = lastSection.getDownStation();
-        if (!endStation.equals(section.getUpStation())) {
-            throw new IllegalArgumentException("요청한 상행역이 하행종점역과 연결되지 않습니다.");
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+        int newDistance = section.getDistance();
+
+        List<Station> stations = getStations();
+
+        boolean hasUpStation = stations.contains(upStation);
+        boolean hasDownStation = stations.contains(downStation);
+
+        if (hasUpStation && hasDownStation) {
+            throw new IllegalArgumentException("");
+        }
+
+        if (!hasUpStation && !hasDownStation) {
+            throw new IllegalArgumentException("");
+        }
+
+        if (hasUpStation) {
+            int index = indexOfUpStation(upStation);
+
+            if(index != -1){
+                Section oldSection = sections.get(index);
+                oldSection.updateSection(downStation, oldSection.getDownStation(), oldSection.getDistance() - newDistance);
+            }
+        }
+
+        if(hasDownStation) {
+            int index = indexOfDownStation(downStation);
+
+            if(index != -1){
+                Section oldSection = sections.get(index);
+                oldSection.updateSection(oldSection.getUpStation(), upStation, oldSection.getDistance() - newDistance);
+            }
         }
 
         sections.add(section);
         section.setLine(this);
     }
 
+    private int indexOfUpStation(Station station) {
+        for (int i = 0; i < sections.size(); i++) {
+            Station upStation = sections.get(i).getUpStation();
+            if (upStation.equals(station)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int indexOfDownStation(Station station) {
+        for (int i = 0; i < sections.size(); i++) {
+            Station downStation = sections.get(i).getDownStation();
+            if (downStation.equals(station)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     public void removeStation(Station newStation) {
         if (sections.size() == MIN_SIZE) {
@@ -85,11 +133,68 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        List<Station> stations = sections.stream()
+        List<Section> sorted = sort();
+        List<Station> stations = sorted.stream()
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
 
-        stations.add(sections.get(sections.size() - 1).getDownStation());
+        stations.add(sorted.get(sorted.size() - 1).getDownStation());
+
         return stations;
+    }
+
+    private List<Section> sort() {
+        List<Section> sorted = new ArrayList<>();
+        Station first = findFirst();
+        Station last = findLast();
+
+        Station now = first;
+
+        do {
+            Section section = find(now);
+            sorted.add(section);
+            now = section.getDownStation();
+        } while (!now.equals(last));
+
+        return sorted;
+    }
+
+    private Section find(Station station) {
+        return sections.stream()
+                .filter(section -> station.equals(section.getUpStation()))
+                .findFirst()
+                .get();
+    }
+
+    private Station findFirst() {
+        List<Station> upStations = getUpStations();
+        List<Station> downStations = getDownStations();
+
+        return upStations.stream()
+                .filter(station -> !downStations.contains(station))
+                .findFirst()
+                .get();
+    }
+
+    private Station findLast() {
+        List<Station> upStations = getUpStations();
+        List<Station> downStations = getDownStations();
+
+        return downStations.stream()
+                .filter(station -> !upStations.contains(station))
+                .findFirst()
+                .get();
+    }
+
+    private List<Station> getUpStations() {
+        return sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+    }
+
+    private List<Station> getDownStations() {
+        return sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
     }
 }

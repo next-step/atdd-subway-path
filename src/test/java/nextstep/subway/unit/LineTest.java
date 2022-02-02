@@ -53,7 +53,49 @@ class LineTest {
         line.addSection(newSection);
 
         // then
-        assertThat(line.getSections()).contains(newSection);
+        assertThat(line.getStations()).containsExactly(upStation, downStation, newStation);
+    }
+
+    @DisplayName("구간 목록 중간에 상행역이 등록되어 있는 새로운 구간을 추가할 경우")
+    @Test
+    void section_should_be_added_to_line_when_there_is_middle_section_that_up_station_is_registered() {
+        // given
+        Station newStation = new Station("서초");
+        Section newSection = new Section(upStation, newStation, 3);
+
+        // when
+        line.addSection(newSection);
+
+        // then
+        assertThat(line.getStations()).containsExactly(upStation, newStation, downStation);
+    }
+
+    @DisplayName("구간 목록 중간에 하행역이 등록되어 있는 새로운 구간을 추가할 경우")
+    @Test
+    void section_should_be_added_to_line_when_there_is_middle_section_that_down_station_is_registered() {
+        // given
+        Station newStation = new Station("서초");
+        Section newSection = new Section(newStation, downStation, 3);
+
+        // when
+        line.addSection(newSection);
+
+        // then
+        assertThat(line.getStations()).containsExactly(upStation, newStation, downStation);
+    }
+
+    @DisplayName("구간 목록 처음에 새로운 구간을 상행 종점역으로 추가할 경우")
+    @Test
+    void section_should_be_added_to_line_when_request_to_connect_as_first_up_station() {
+        // given
+        Station newStation = new Station("서초");
+        Section newSection = new Section(newStation, upStation, 3);
+
+        // when
+        line.addSection(newSection);
+
+        // then
+        assertThat(line.getStations()).containsExactly(newStation, upStation, downStation);
     }
 
     @DisplayName("마지막 구간과 새로운 구간이 연결되지 못할 때 새로운 구간을 추가할 경우")
