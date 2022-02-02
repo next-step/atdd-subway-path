@@ -99,6 +99,13 @@ public class Line extends BaseEntity {
                         ));
                         //기존 구간을 새로운 구간으로 교체한다.
                         oldSection.update(newSection);
+                    }else if(newSection.getDistance() > oldSection.getDistance()){
+                        sections.add(new Section(
+                                this,
+                                oldSection.getDownStation(),
+                                newSection.getDownStation(),
+                                (newSection.getDistance() - oldSection.getDistance())
+                        ));
                     }
                 });
 
