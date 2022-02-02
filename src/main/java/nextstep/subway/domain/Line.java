@@ -43,24 +43,13 @@ public class Line extends BaseEntity {
      *    ex) 가양역 ~ 등촌역 구간 거리 10m이면, 신규 구간이 가양역 ~ 증미역 거리 3m이면,
      *        가양역 ~ 증미역 구간 거리는 3m 그대로 저장, 증미역 ~ 등촌역 구간 거리는 7m로 변경된다.
      * 세부 로직은 addLineBetweenSection()에서 수행한다.
-     * @param 새로운_구간
      */
     public void addSection(Section newSection) {
-        dd(newSection);
+        validateStationNotExistInSection(newSection);
         for (Section existingSection : sections) {
             existingSection.addLineBetweenSection(newSection);
         }
         sections.add(newSection);
-    }
-
-    private void dd(Section newSection) {
-        if (!getUpStations().contains(newSection.getUpStation()) &&
-            !getUpStations().contains(newSection.getDownStation()) &&
-            !getDownStations().contains(newSection.getUpStation()) &&
-            !getDownStations().contains(newSection.getDownStation()) &&
-            !sections.isEmpty()) {
-            throw new AddSectionException("dd");
-        }
     }
 
     public void removeSection(Station downStation) {
@@ -87,25 +76,8 @@ public class Line extends BaseEntity {
 
     private List<Station> getStations(Section firstSection) {
         List<Station> stations = new ArrayList<>();
-        Station firstUpStation = firstSection.getUpStation();
-        Station firstDownStation = firstSection.getDownStation();
-        stations.add(firstUpStation);
-
-        // 2. 상행 종점 구간 역 추가
-        for (Section section : sections) {
-            if (firstDownStation.equals(section.getUpStation())) {
-                stations.add(section.getUpStation());
-            }
-        }
-
-        // 3. 하행 종점역과 구간의 상행역이 같은 역을 하행 종점역으로 추가
-        for (int i = 0; i < stations.size(); i++) {
-            for (Section section : sections) {
-                if (stations.get(stations.size() - 1).equals(section.getUpStation())) {
-                    stations.add(section.getDownStation());
-                }
-            }
-        }
+        addEndUpSectionStation(firstSection, stations);
+        addEndDownStation(stations);
         return stations;
     }
 
@@ -127,6 +99,31 @@ public class Line extends BaseEntity {
         return sections.get(0);
     }
 
+    /**
+     *
+     * @param firstSection : getFirstSection()에서 가져온 상행 종점 구간이다.
+     * @param stations : 빈 객체로 최초로 상행 종점 구간의 역을 추가할 객체이다.
+     */
+    private void addEndUpSectionStation(Section firstSection, List<Station> stations) {
+        stations.add(firstSection.getUpStation());
+        stations.add(firstSection.getDownStation());
+    }
+
+    /**
+     * 상행 종점 구간의 하행 종점역 부터 시작하여 추가되는 하행 종점역과 각 구간의 상행역이 같으면 각 구간의 하행역을 추가한다.
+     * @param stations : getFirstSection()에서 가져온 상행 종점 구간의 상행 종점역과 하행 종점역
+     */
+    private void addEndDownStation(List<Station> stations) {
+        for (int i = 0; i < stations.size(); i++) {
+            for (Section section : sections) {
+                Station endDownStation = stations.get(stations.size() - 1);
+                if (endDownStation.equals(section.getUpStation())) {
+                    stations.add(section.getDownStation());
+                }
+            }
+        }
+    }
+
     private List<Station> getUpStations() {
         return sections.stream()
                 .map(Section::getUpStation)
@@ -137,6 +134,18 @@ public class Line extends BaseEntity {
         return sections.stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
+    }
+
+    private void validateStationNotExistInSection(Section newSection) {
+        if (!getUpStations().contains(newSection.getUpStation()) &&
+                !getUpStations().contains(newSection.getDownStation()) &&
+                !getDownStations().contains(newSection.getUpStation()) &&
+                !getDownStations().contains(newSection.getDownStation()) &&
+                !sections.isEmpty()) {
+            throw new AddSectionException(
+                    String.format("상행역과 하행역 모두 구간에 존재하지 않는 역입니다. 상행역 = %s, 하행역 = %s",
+                            newSection.getUpStation().getName(), newSection.getDownStation().getName()));
+        }
     }
 
     public Long getId() {

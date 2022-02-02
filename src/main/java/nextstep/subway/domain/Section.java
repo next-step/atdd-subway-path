@@ -36,20 +36,31 @@ public class Section {
     }
 
     void addLineBetweenSection(Section newSection) {
+        if (isBetweenSection(newSection)) {
+            validateDuplicationSection(newSection);
+            validateDistance(newSection);
+            this.upStation = newSection.getDownStation();
+            this.distance -= newSection.getDistance();
+        }
+    }
+
+    private boolean isBetweenSection(Section newSection) {
+        return this.upStation.equals(newSection.getUpStation());
+    }
+
+    private void validateDuplicationSection(Section newSection) {
         if (this.upStation.equals(newSection.upStation) && this.downStation.equals(newSection.getDownStation())) {
             throw new AddSectionException(
                     String.format("상행역과 하행역 모두 등록된 역입니다. 상행역 = %s, 하행역 = %s",
                             this.upStation.getName(), this.downStation.getName()));
         }
-        // 역 사이에 구간 추가 시
-        if (this.upStation.equals(newSection.getUpStation())) {
-            if (this.distance <= newSection.distance) {
-                throw new AddSectionException(
-                        String.format("새로 추가되는 구간 거리는 기존 구간의 거리 이상일 수 없습니다. 기존 구간 거리 = %d, 신규 구간 거리 = %d",
-                                this.distance, newSection.distance));
-            }
-            this.upStation = newSection.getDownStation();
-            this.distance -= newSection.getDistance();
+    }
+
+    private void validateDistance(Section newSection) {
+        if (this.distance <= newSection.distance) {
+            throw new AddSectionException(
+                    String.format("새로 추가되는 구간 거리는 기존 구간의 거리 이상일 수 없습니다. 기존 구간 거리 = %d, 신규 구간 거리 = %d",
+                            this.distance, newSection.distance));
         }
     }
 
