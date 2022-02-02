@@ -18,8 +18,22 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public void addSection(Section section) {
-        this.sections.add(section);
+    public void addSection(Section newSection) {
+        if (sections.isEmpty()) {
+            sections.add(newSection);
+            return;
+        }
+
+        Section section = sections.stream()
+                .filter(s -> {
+                            return s.getUpStation().equals(newSection.getUpStation())
+                                    || s.getDownStation().equals(newSection.getUpStation());
+                        }
+                )
+                .findAny()
+                .orElseThrow(IllegalArgumentException::new);
+
+        this.sections.add(sections.indexOf(section), newSection);
     }
 
     public List<Section> getSections() {
