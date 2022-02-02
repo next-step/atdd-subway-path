@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
     private static final int MIN_SIZE = 1;
+    private static final int INDEX_OF_END_SECTION = -1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -49,26 +50,14 @@ public class Sections {
             int index = indexOfUpStation(upStation);
 
             // 중간에 등록하는 경우 ex.기존: 강남 - 양재 / 요청: 강남 - 정자
-            if (index != -1) {
-                Section oldSection = sections.get(index);
-                if (oldSection.getDistance() <= newDistance) {
-                    throw new IllegalArgumentException("길이가 더 긴 구간은 추가할 수 없습니다.");
-                }
-                oldSection.updateSection(downStation, oldSection.getDownStation(), oldSection.getDistance() - newDistance);
-            }
+            addBetweenSectionsByUpStation(index, section);
         }
 
         if (hasDownStation) {
             int index = indexOfDownStation(downStation);
 
             // 중간에 등록하는 경우 ex.기존: 강남 - 양재 / 요청: 정자 - 양재
-            if (index != -1) {
-                Section oldSection = sections.get(index);
-                if (oldSection.getDistance() <= newDistance) {
-                    throw new IllegalArgumentException("길이가 더 긴 구간은 추가할 수 없습니다.");
-                }
-                oldSection.updateSection(oldSection.getUpStation(), upStation, oldSection.getDistance() - newDistance);
-            }
+            addBetweenSectionsByDownStation(index, section);
         }
 
         sections.add(section);
@@ -100,6 +89,39 @@ public class Sections {
         return sections;
     }
 
+    private void addBetweenSectionsByDownStation(int index, Section section) {
+        if (index == INDEX_OF_END_SECTION) {
+            return;
+        }
+
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+        int newDistance = section.getDistance();
+
+        Section oldSection = sections.get(index);
+        if (oldSection.getDistance() <= newDistance) {
+            throw new IllegalArgumentException("길이가 더 긴 구간은 추가할 수 없습니다.");
+        }
+        oldSection.updateSection(oldSection.getUpStation(), upStation, oldSection.getDistance() - newDistance);
+    }
+
+    private void addBetweenSectionsByUpStation(int index, Section section) {
+        if (index == INDEX_OF_END_SECTION) {
+            return;
+        }
+
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+        int newDistance = section.getDistance();
+
+        Section oldSection = sections.get(index);
+        if (oldSection.getDistance() <= newDistance) {
+            throw new IllegalArgumentException("길이가 더 긴 구간은 추가할 수 없습니다.");
+        }
+        oldSection.updateSection(downStation, oldSection.getDownStation(), oldSection.getDistance() - newDistance);
+
+    }
+
     private int indexOfUpStation(Station station) {
         return indexOf(station, x -> sections.get(x).getUpStation());
     }
@@ -108,14 +130,14 @@ public class Sections {
         return indexOf(station, x -> sections.get(x).getDownStation());
     }
 
-    private int indexOf(Station station, Function<Integer, Station> func){
+    private int indexOf(Station station, Function<Integer, Station> func) {
         for (int i = 0; i < sections.size(); i++) {
             Station nowStation = func.apply(i);
             if (nowStation.equals(station)) {
                 return i;
             }
         }
-        return -1;
+        return INDEX_OF_END_SECTION;
     }
 
     private List<Section> sort() {
