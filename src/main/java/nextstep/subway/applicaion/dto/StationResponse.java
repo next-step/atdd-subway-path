@@ -30,4 +30,14 @@ public class StationResponse {
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
     }
+
+    @Override
+    public String toString() {
+        return "StationResponse{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", createdDate=" + createdDate +
+                ", modifiedDate=" + modifiedDate +
+                '}';
+    }
 }

@@ -59,4 +59,19 @@ class SectionsTest {
 
         assertThat(sections.getSections()).containsExactly(section, newSection);
     }
+
+    @DisplayName("역 목록 조회")
+    @Test
+    void getStations() {
+        assertThat(sections.getStations()).hasSize(2);
+    }
+
+    @DisplayName("역 목록 조회")
+    @Test
+    void getStations2() {
+        Section newSection = Section.of(_5호선, 아차산역, 광나루역, distance);
+        sections.addSection(newSection);
+
+        assertThat(sections.getStations()).hasSize(3);
+    }
 }

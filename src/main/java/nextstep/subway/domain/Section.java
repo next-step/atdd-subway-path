@@ -68,4 +68,8 @@ public class Section {
     public boolean isDownStation(Station station) {
         return downStation.equals(station);
     }
+
+    public void changeUpStation(Station station) {
+        this.upStation = station;
+    }
 }

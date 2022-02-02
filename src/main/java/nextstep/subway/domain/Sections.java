@@ -71,6 +71,7 @@ public class Sections {
                 .findAny()
                 .orElseThrow(IllegalArgumentException::new);
         sections.add(sections.indexOf(targetSection), newSection);
+        targetSection.changeUpStation(newSection.getDownStation());
     }
 
     public List<Section> getSections() {
@@ -82,17 +83,36 @@ public class Sections {
             return Collections.emptyList();
         }
 
-        List<Station> stations = sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-        stations.add(FIRST_INDEX, getFirstStation());
+        List<Station> stations = new ArrayList<>();
+        Section firstSection = findFirstSection();
+
+        stations.add(firstSection.getUpStation());
+        stations.add(firstSection.getDownStation());
+
+        Station downStation = firstSection.getDownStation();
+
+        while (sections.size() >= stations.size()) {
+            downStation = findNextStation(downStation);
+            stations.add(downStation);
+        }
 
         return stations;
     }
 
-    private Station getFirstStation() {
-        return sections.get(FIRST_INDEX)
-                .getUpStation();
+    private Station findNextStation(Station downStation) {
+        return sections.stream()
+                .filter(s -> s.isUpStation(downStation))
+                .findFirst()
+                .orElseThrow(RuntimeException::new)
+                .getDownStation();
+    }
+
+    private Section findFirstSection() {
+        return sections.stream()
+                .filter(s1 -> sections.stream()
+                        .noneMatch(s2 -> s2.getDownStation().equals(s1.getUpStation())))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
     }
 
     public void removeSection(Long stationId) {
