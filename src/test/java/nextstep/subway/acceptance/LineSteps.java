@@ -72,7 +72,7 @@ public class LineSteps {
 
     public static ExtractableResponse<Response> 지하철역_경로_검색_요청(Long sourceStationId, Long targetStationId) {
         return RestAssured.given().log().all()
-                .when().get("/path?source={sourceStationId}&target={targetStationId}", sourceStationId, targetStationId)
+                .when().get("/paths?source={sourceStationId}&target={targetStationId}", sourceStationId, targetStationId)
                 .then().log().all().extract();
     }
 

@@ -15,7 +15,7 @@ public class PathController {
 		this.pathService = pathService;
 	}
 
-	@GetMapping("/path")
+	@GetMapping("/paths")
 	public ShortestPathResponse getShortestPath(@RequestParam long source, @RequestParam long target) {
 		return pathService.findPath(source, target);
 	}
