@@ -79,4 +79,9 @@ public class Line extends BaseEntity {
 
         return stations;
     }
+
+    public void removeSection() {
+        Section lastSection = sections.get(sections.size() - 1);
+        sections.remove(lastSection);
+    }
 }

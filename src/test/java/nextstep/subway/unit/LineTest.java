@@ -93,15 +93,57 @@ class LineTest {
         assertAll(
                 () -> assertThat(실제_일호선_역_개수).isEqualTo(2),
                 () -> assertThat(실제_일호선_역_목록).usingRecursiveComparison()
-                                         .isEqualTo(Arrays.asList(
-                                                 동암역,
-                                                 부평역
-                                         ))
+                                             .isEqualTo(Arrays.asList(
+                                                     동암역,
+                                                     부평역
+                                             ))
         );
     }
 
     @DisplayName("구간이 목록에서 마지막 역 삭제")
     @Test
     void removeSection() {
+
+        Station 동암역 = new Station("동암역");
+        Station 부평역 = new Station("부평역");
+        Station 주안역 = new Station("주안역");
+        Station 백운역 = new Station("백운역");
+        String 일호선 = "1호선";
+        String 파란섹 = "파란색";
+
+
+        Line 일호선_라인 = new Line(
+                일호선,
+                파란섹
+        );
+
+        일호선_라인.addSection(
+                일호선_라인,
+                동암역,
+                부평역,
+                10
+        );
+
+        일호선_라인.addSection(
+                일호선_라인,
+                부평역,
+                주안역,
+                5
+        );
+
+        일호선_라인.addSection(
+                일호선_라인,
+                주안역,
+                백운역,
+                7
+        );
+
+        // when
+        일호선_라인.removeSection();
+
+        // then
+        int 실제_일호선_역_개수 = 일호선_라인.getStations()
+                                .size();
+        assertThat(실제_일호선_역_개수).isEqualTo(3);
     }
 }
