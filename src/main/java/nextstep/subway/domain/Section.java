@@ -22,7 +22,8 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     public Section() {
 
@@ -32,15 +33,14 @@ public class Section {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     void addLineBetweenSection(Section newSection) {
         if (isBetweenSection(newSection)) {
             validateDuplicationSection(newSection);
-            validateDistance(newSection);
             this.upStation = newSection.getDownStation();
-            this.distance -= newSection.getDistance();
+            this.distance = this.distance.calculate(newSection);
         }
     }
 
@@ -53,14 +53,6 @@ public class Section {
             throw new AddSectionException(
                     String.format("상행역과 하행역 모두 등록된 역입니다. 상행역 = %s, 하행역 = %s",
                             this.upStation.getName(), this.downStation.getName()));
-        }
-    }
-
-    private void validateDistance(Section newSection) {
-        if (this.distance <= newSection.distance) {
-            throw new AddSectionException(
-                    String.format("새로 추가되는 구간 거리는 기존 구간의 거리 이상일 수 없습니다. 기존 구간 거리 = %d, 신규 구간 거리 = %d",
-                            this.distance, newSection.distance));
         }
     }
 
@@ -81,6 +73,6 @@ public class Section {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.getDistance();
     }
 }
