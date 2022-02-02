@@ -286,4 +286,54 @@ class LineTest {
                 () -> assertThat(AC구간_거리).isEqualTo(7)
         );
     }
+
+    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
+    @Test
+    void addSection5(){
+        // given
+        String 일호선 = "일호선";
+        String 노란색 = "노란색";
+        Station A역 = new Station("A역");
+        Station B역 = new Station("B역");
+        Station C역 = new Station("C역");
+
+        Line 일호선_라인 = new Line(
+                일호선,
+                노란색,
+                A역,
+                C역,
+                7
+        );
+
+        // when
+        일호선_라인.addSection(
+                new Section(
+                        일호선_라인,
+                        C역,
+                        B역,
+                        3
+                )
+        );
+
+        // then
+        int AC구간_거리 = 일호선_라인.getSections()
+                            .get(0)
+                            .getDistance();
+        int CB구간_거리 = 일호선_라인.getSections()
+                            .get(1)
+                            .getDistance();
+
+
+        assertAll(
+                () -> assertThat(일호선_라인.getStations()).usingRecursiveComparison()
+                                                      .isEqualTo(Arrays.asList(
+                                                              A역,
+                                                              C역,
+                                                              B역
+                                                      )),
+                () -> assertThat(AC구간_거리).isEqualTo(7),
+                () -> assertThat(CB구간_거리).isEqualTo(3)
+        );
+
+    }
 }

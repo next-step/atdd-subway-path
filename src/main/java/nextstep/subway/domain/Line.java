@@ -80,7 +80,7 @@ public class Line extends BaseEntity {
 
         AtomicBoolean normalCondition = new AtomicBoolean(true);
 
-        insertSameUpStation(
+        insertStationInBetween(
                 newSection,
                 normalCondition
         );
@@ -90,12 +90,18 @@ public class Line extends BaseEntity {
                 normalCondition
         );
 
+        insertLastDownStation(
+                newSection,
+                normalCondition
+        );
 
+        return sections;
+    }
+
+    private void insertLastDownStation(Section newSection, AtomicBoolean normalCondition) {
         if (normalCondition.get()) {
             sections.add(newSection);
         }
-
-        return sections;
     }
 
     private void insertLastUpStation(Section newSection, AtomicBoolean normalCondition) {
@@ -112,7 +118,7 @@ public class Line extends BaseEntity {
                 });
     }
 
-    private void insertSameUpStation(Section newSection, AtomicBoolean normalCondition) {
+    private void insertStationInBetween(Section newSection, AtomicBoolean normalCondition) {
         sections.stream()
                 .filter(oldSection -> oldSection.getUpStation()
                                                 .equals(newSection.getUpStation()))
