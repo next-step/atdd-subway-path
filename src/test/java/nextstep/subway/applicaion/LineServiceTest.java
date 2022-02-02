@@ -151,6 +151,63 @@ class LineServiceTest {
         return 저장된_노선;
     }
 
+    @DisplayName("노선 정보를 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        Long 동암역_ID = 역_생성_요청("동암역");
+        Long 부평역_ID = 역_생성_요청("부평역");
+
+        String 일호선 = "1호선";
+        String 파란색 = "파란색";
+
+        LineResponse 저장된_노선 = 노선_생성_요청(
+                동암역_ID,
+                부평역_ID,
+                일호선,
+                파란색,
+                10
+        );
+
+        //when
+        String 이호선 = "이호선";
+        String 노란색 = "노란색";
+        LineRequest 노선_수정_정보 = new LineRequest(
+                이호선,
+                노란색
+        );
+        lineService.updateLine(
+                저장된_노선.getId(),
+                노선_수정_정보
+        );
+
+        // then
+        LineResponse 수정된_노선 = lineService.findById(저장된_노선.getId());
+        assertAll(
+                () -> assertThat(수정된_노선.getName()).isEqualTo(이호선),
+                () -> assertThat(수정된_노선.getColor()).isEqualTo(노란색)
+        );
+    }
+
+    @DisplayName("존재하지 않는 노선 정보를 수정한다.")
+    @Test
+    void updateLine2() {
+        // when
+        Long 존재하지_않는_노선_ID = 9999999L;
+        String 이호선 = "이호선";
+        String 노란색 = "노란색";
+        LineRequest 노선_수정_정보 = new LineRequest(
+                이호선,
+                노란색
+        );
+
+        //then
+        assertThatThrownBy(() -> lineService.updateLine(
+                존재하지_않는_노선_ID,
+                노선_수정_정보
+        )).isInstanceOf(IllegalArgumentException.class);
+    }
+
     private Long 역_생성_요청(String 동암역) {
         return stationRepository
                 .save(new Station(동암역))
