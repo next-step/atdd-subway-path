@@ -20,10 +20,10 @@ public class Sections {
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
 
-        Optional<Section> optionalExistSection = findSectionByUpStation(upStation);
+        Optional<Section> sameUpStation = findSectionEqualsUpStation(upStation);
 
-        if (optionalExistSection.isPresent()) {
-            Section existSection = optionalExistSection.get();
+        if (sameUpStation.isPresent()) {
+            Section existSection = sameUpStation.get();
             Station existDownStation = existSection.getDownStation();
             int existSectionDistance = existSection.getDistance();
             int existSectionIndex = sections.indexOf(existSection);
@@ -38,7 +38,7 @@ public class Sections {
         this.sections.add(section);
     }
 
-    private Optional<Section> findSectionByUpStation(Station upStation) {
+    private Optional<Section> findSectionEqualsUpStation(Station upStation) {
         return sections
             .stream()
             .filter(it -> it.getUpStation().equals(upStation))
@@ -58,14 +58,50 @@ public class Sections {
     }
 
     public List<Station> getAllStations() {
-        List<Station> allStations = sections.
-            stream()
-            .map(Section::getUpStation)
-            .collect(Collectors.toList());
+        List<Station> downStations = getAllDownStations();
+        Section section = findFirstSection(downStations);
 
-        allStations.add(getLastDownStation());
+        List<Station> allStations = new ArrayList<>();
+        allStations.add(section.getUpStation());
+
+        while (true) {
+            Station downStation = section.getDownStation();
+            Optional<Section> optionalFindSection = sections
+                .stream()
+                .filter(it -> it.getUpStation().equals(downStation))
+                .findFirst();
+
+            boolean findResult = optionalFindSection.isPresent();
+
+            if (findResult) {
+                section = optionalFindSection.get();
+                Station upStation = section.getUpStation();
+
+                allStations.add(upStation);
+                continue;
+            }
+
+            allStations.add(section.getDownStation());
+
+            break;
+        }
 
         return allStations;
+    }
+
+    private Section findFirstSection(List<Station> downStations) {
+        return sections
+            .stream()
+            .filter(it -> !downStations.contains(it.getUpStation()))
+            .findFirst()
+            .orElseThrow(() -> new NoSuchElementException("상행 종점이 상행역인 구간이 없습니다."));
+    }
+
+    private List<Station> getAllDownStations() {
+        return sections.
+            stream()
+            .map(Section::getDownStation)
+            .collect(Collectors.toList());
     }
 
     public boolean isAvailableDelete() {
