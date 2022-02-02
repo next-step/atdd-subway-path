@@ -20,7 +20,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @DisplayName("구간 서비스 목 테스트")
-@SuppressWarnings("ALL")
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
     @Mock

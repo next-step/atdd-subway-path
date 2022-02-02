@@ -19,6 +19,6 @@ public class PathService {
 		final Station sourceStation = stationService.findById(source);
 		final Station targetStation = stationService.findById(target);
 
-		return PathFinder.findShortestPath(lineQueryService.getAllLines(), sourceStation, targetStation);
+		return PathFinder.findShortestPath(lineQueryService.findAllLines(), sourceStation, targetStation);
 	}
 }

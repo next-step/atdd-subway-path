@@ -28,7 +28,7 @@ public class LineQueryService {
         return LineResponse.createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
     }
 
-    public List<Line> getAllLines() {
+    public List<Line> findAllLines() {
         return lineRepository.findAll();
     }
 }
