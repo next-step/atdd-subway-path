@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Entity
 public class Line extends BaseEntity {
@@ -27,7 +28,11 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        this.sections = addSection(upStation, downStation, distance);
+        this.sections = addSection(
+                upStation,
+                downStation,
+                distance
+        );
     }
 
     public Long getId() {
@@ -67,6 +72,39 @@ public class Line extends BaseEntity {
         );
         this.getSections()
             .add(newSection);
+
+        return sections;
+    }
+
+    public List<Section> addSection(Section newSection) {
+
+        AtomicBoolean normalCondition = new AtomicBoolean(true);
+
+        sections.stream()
+                .filter(oldSection -> oldSection.getUpStation()
+                                                .equals(newSection.getUpStation()))
+                .findFirst()
+                .ifPresent(oldSection -> {
+
+                    normalCondition.set(false);
+
+                    //새로운 구간의 거리가 작은 경우
+                    if (newSection.getDistance() < oldSection.getDistance()) {
+                        //[기존구간-새로운 구간]으로 구간을 생성한다.
+                        sections.add(new Section(
+                                this,
+                                newSection.getDownStation(),
+                                oldSection.getDownStation(),
+                                (oldSection.getDistance() - newSection.getDistance())
+                        ));
+                        //기존 구간을 새로운 구간으로 교체한다.
+                        oldSection.update(newSection);
+                    }
+                });
+
+        if (normalCondition.get()) {
+            sections.add(newSection);
+        }
 
         return sections;
     }

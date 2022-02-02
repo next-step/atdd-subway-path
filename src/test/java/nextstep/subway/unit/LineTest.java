@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -133,5 +134,56 @@ class LineTest {
         int 실제_일호선_역_개수 = 일호선_라인.getStations()
                                 .size();
         assertThat(실제_일호선_역_개수).isEqualTo(3);
+    }
+
+    @DisplayName("구간 추가 - 상행역이 같은 경우 / 새로운 구간의 거리가 작은 경우")
+    @Test
+    void addSection2() {
+
+        // given
+        String 일호선 = "일호선";
+        String 노란색 = "노란색";
+        Station A역 = new Station("A역");
+        Station B역 = new Station("B역");
+        Station C역 = new Station("C역");
+
+        Line 일호선_라인 = new Line(
+                일호선,
+                노란색,
+                A역,
+                C역,
+                7
+        );
+
+        // when
+        일호선_라인.addSection(
+                new Section(
+                        일호선_라인,
+                        A역,
+                        B역,
+                        4
+                )
+        );
+
+        // then
+        int AB구간_거리 = 일호선_라인.getSections()
+                            .get(0)
+                            .getDistance();
+        int BC구간_거리 = 일호선_라인.getSections()
+                            .get(1)
+                            .getDistance();
+
+
+        assertAll(
+                () -> assertThat(일호선_라인.getStations()).usingRecursiveComparison()
+                                                      .isEqualTo(Arrays.asList(
+                                                              A역,
+                                                              B역,
+                                                              C역
+                                                      )),
+                () -> assertThat(AB구간_거리).isEqualTo(4),
+                () -> assertThat(BC구간_거리).isEqualTo(3)
+        );
+
     }
 }
