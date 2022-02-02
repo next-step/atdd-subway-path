@@ -5,10 +5,7 @@ import nextstep.subway.exception.DeleteSectionException;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -58,6 +55,10 @@ public class Sections {
     }
 
     public List<Station> getAllStations() {
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         List<Station> downStations = getAllDownStations();
         Section section = findFirstSection(downStations);
 
