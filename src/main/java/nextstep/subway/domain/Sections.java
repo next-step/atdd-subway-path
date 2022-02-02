@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.DeleteSectionException;
+import nextstep.subway.exception.SectionDistanceNotValidException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -24,6 +25,10 @@ public class Sections {
             Station existDownStation = existSection.getDownStation();
             int existSectionDistance = existSection.getDistance();
 
+            if (section.getDistance() >= existSectionDistance) {
+                throw new SectionDistanceNotValidException();
+            }
+
             existSection.changeDownStationDistance(downStation, section.getDistance());
             section.changeStationDistance(downStation, existDownStation, existSectionDistance - section.getDistance());
 
@@ -35,6 +40,11 @@ public class Sections {
         if (betweenUpStation.isPresent()) {
             Section existSection = betweenUpStation.get();
             int existSectionDistance = existSection.getDistance();
+
+            if (section.getDistance() >= existSectionDistance) {
+                throw new SectionDistanceNotValidException();
+            }
+
             existSection.changeDownStationDistance(upStation, existSectionDistance - section.getDistance());
             section.changeDistance(existSectionDistance - existSection.getDistance());
 
