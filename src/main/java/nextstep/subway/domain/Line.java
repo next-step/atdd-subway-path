@@ -18,8 +18,7 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    public static Line of(final LineRequest lineRequest, final Station upStation, final Station downStation, int distance) {
-        Line newLine = new Line(lineRequest.getName(), lineRequest.getColor());
+    public static Line of(final Line newLine, final Station upStation, final Station downStation, int distance) {
         newLine.sections.addFirst(Section.of(newLine, upStation, downStation, distance));
         return newLine;
     }
