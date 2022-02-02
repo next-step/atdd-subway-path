@@ -22,7 +22,7 @@ class SectionTest {
         판교역 = Station.of("판교역");
         정자역 = Station.of("정자역");
         미금역 = Station.of("미금역");
-        신분당선 = Line.of("신분당선", "red", 강남역, 정자역, 100);
+        신분당선 = new Line();
         강남역_정자역 = Section.of(신분당선, 강남역, 정자역, 40);
     }
 
