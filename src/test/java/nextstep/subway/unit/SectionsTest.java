@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.SectionDistanceNotValidException;
 import nextstep.subway.exception.SectionNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SectionsTest {
     private static final Line line = new Line("2호선", "bg-green-600");
@@ -145,6 +147,20 @@ class SectionsTest {
         assertThat(secondSection.getDistance()).isEqualTo(4);
         assertThat(secondSection.getUpStation()).isEqualTo(역삼역);
         assertThat(secondSection.getDownStation()).isEqualTo(선릉역);
+    }
+
+    @Test
+    @DisplayName("기존 역 사이 길이보다 크거나 같으면 에러가 발생한다")
+    void validSectionDistance() {
+        Section section1 = new Section(line, 강남역, 선릉역, 7);
+        Section section2 = new Section(line, 역삼역, 선릉역, 7);
+        Sections sections = new Sections();
+        sections.add(section1);
+
+        assertThatThrownBy(() -> {
+            sections.add(section2);
+        }).isInstanceOf(SectionDistanceNotValidException.class)
+            .hasMessageMatching("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
     }
 
     private Section getFirstSection(List<Section> allSections, Station station) {
