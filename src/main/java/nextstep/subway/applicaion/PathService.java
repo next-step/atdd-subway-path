@@ -38,7 +38,10 @@ public class PathService {
         List<Line> lines = lineRepository.findAll();
 
         GraphPath<Long, DefaultWeightedEdge> path = pathFinder.getPath(lines, sourceStation, targetStation);
-        Map<Long, Station> stationIdToStation = stationRepository.findAllById(path.getVertexList()).stream().collect(Collectors.toMap(Station::getId, it -> it));
+        Map<Long, Station> stationIdToStation = stationRepository.findAllById(path.getVertexList())
+                .stream()
+                .collect(Collectors.toMap(Station::getId, it -> it));
+
         List<Station> stations = path.getVertexList().stream()
                 .map(stationIdToStation::get)
                 .collect(Collectors.toList());

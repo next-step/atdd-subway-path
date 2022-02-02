@@ -21,7 +21,9 @@ public class PathResponse {
     }
 
     private static List<PathStation> toPathStations(final List<Station> stations) {
-        return stations.stream().map(PathStation::new).collect(Collectors.toList());
+        return stations.stream()
+                .map(PathStation::new)
+                .collect(Collectors.toList());
     }
 
     public static class PathStation {
