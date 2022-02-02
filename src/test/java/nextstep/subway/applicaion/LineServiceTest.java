@@ -106,6 +106,29 @@ class LineServiceTest {
 
     }
 
+    @Test
+    @DisplayName("특정 노선을 검색한다.")
+    void findById(){
+        // given
+        Long 동암역_ID = 역_생성_요청("동암역");
+        Long 부평역_ID = 역_생성_요청("부평역");
+
+        String 일호선 = "1호선";
+        String 파란색 = "파란색";
+
+        LineResponse 저장된_노선 = 노선_생성_요청(
+                동암역_ID,
+                부평역_ID,
+                일호선,
+                파란색,
+                10
+        );
+
+        LineResponse 찾은_노선 = lineService.findById(저장된_노선.getId());
+
+        assertThat(찾은_노선).usingRecursiveComparison().isEqualTo(저장된_노선);
+    }
+
     private LineResponse 노선_생성_요청(Long 상행역_ID, Long 하행역_ID, String 노선_이름, String 노선_색상, int 노선_거리) {
         LineRequest 노선_생성_정보 = new LineRequest(
                 노선_이름,
