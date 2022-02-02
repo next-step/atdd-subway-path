@@ -41,4 +41,13 @@ class SectionsTest {
 
         assertThat(sections.getSections()).containsExactly(newSection, section);
     }
+
+    @DisplayName("새로운 역을 상행 종점으로 추가")
+    @Test
+    void addSection2() {
+        Section newSection = Section.of(_5호선, 광나루역, 군자역, distance);
+        sections.addSection(newSection);
+
+        assertThat(sections.getSections()).containsExactly(newSection, section);
+    }
 }
