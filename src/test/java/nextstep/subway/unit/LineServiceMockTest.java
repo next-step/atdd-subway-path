@@ -394,10 +394,7 @@ public class LineServiceMockTest {
     }
 
     private Line createLineEntity(String name, String color) {
-        Line line = new Line();
-        line.setName(name);
-        line.setColor(color);
-        return line;
+        return new Line(name, color);
     }
 
     private Station createStationEntity(String name) {
