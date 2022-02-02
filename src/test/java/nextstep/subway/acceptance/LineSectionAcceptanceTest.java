@@ -91,4 +91,23 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         params.put("distance", 6 + "");
         return params;
     }
+
+    /**
+     * when 노선 구간의 시작역을 기준으로 새로운 구간을 추가하면
+     * then 새로운 구간이 추가된다.
+     */
+    @DisplayName("지하철 노선 구간의 시작 역을 기준으로 구간을 추가")
+    @Test
+    void addLineSection2() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+
+        // when
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역, 양재역);
+    }
 }
