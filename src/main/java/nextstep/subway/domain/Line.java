@@ -56,11 +56,11 @@ public class Line extends BaseEntity {
         boolean hasDownStation = stations.contains(downStation);
 
         if (hasUpStation && hasDownStation) {
-            throw new IllegalArgumentException("");
+            throw new IllegalArgumentException("이미 등록된 구간입니다.");
         }
 
         if (!hasUpStation && !hasDownStation) {
-            throw new IllegalArgumentException("");
+            throw new IllegalArgumentException("요청한 상/하행역이 모두 노선에 등록되지 않았습니다.");
         }
 
         if (hasUpStation) {
@@ -68,6 +68,9 @@ public class Line extends BaseEntity {
 
             if(index != -1){
                 Section oldSection = sections.get(index);
+                if(oldSection.getDistance() <= newDistance){
+                    throw new IllegalArgumentException("길이가 더 긴 구간은 추가할 수 없습니다.");
+                }
                 oldSection.updateSection(downStation, oldSection.getDownStation(), oldSection.getDistance() - newDistance);
             }
         }
@@ -77,6 +80,9 @@ public class Line extends BaseEntity {
 
             if(index != -1){
                 Section oldSection = sections.get(index);
+                if(oldSection.getDistance() <= newDistance){
+                    throw new IllegalArgumentException("길이가 더 긴 구간은 추가할 수 없습니다.");
+                }
                 oldSection.updateSection(oldSection.getUpStation(), upStation, oldSection.getDistance() - newDistance);
             }
         }

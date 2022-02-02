@@ -90,6 +90,54 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 하나의 구간이 등록되어 있는 경우
+     * When 기존 구간 사이에 하행역이 등록되어 있고 기존 구간과 길이가 같거나 큰 새로운 구간 추가를 요청 하면
+     * Then 노선에 새로운 구간이 추가되지 않는다.
+     */
+    @DisplayName("기존 구간 사이에 길이가 더 긴 새로운 구간 등록 실패")
+    @Test
+    void addLineSection5() {
+        // when
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 양재역, 10));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 하나의 구간이 등록되어 있는 경우
+     * When 이미 노선에 등록된 구간을 등록 요청할 경우
+     * Then 노선에 새로운 구간이 추가되지 않는다.
+     */
+    @DisplayName("이미 등록된 구간을 등록할 경우 실패")
+    @Test
+    void addLineSection6() {
+        // when
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        Long 판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 판교역, 10));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 하나의 구간이 등록되어 있는 경우
+     * When 상/하행역이 모두 노선에 등록되지 않은 구간을 등록 요청할 경우
+     * Then 노선에 새로운 구간이 추가되지 않는다.
+     */
+    @DisplayName("상하행역 모두 노선에 등록되지 않은 경우 등록 실패")
+    @Test
+    void addLineSection7() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 10));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 하나의 구간이 등록되어 있는 경우
      * When 첫 구간 앞에 새로운 구간 추가를 요청 하면
      * Then 노선에 새로운 구간이 추가된다
      */

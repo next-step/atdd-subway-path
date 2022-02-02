@@ -84,6 +84,45 @@ class LineTest {
         assertThat(line.getStations()).containsExactly(upStation, newStation, downStation);
     }
 
+    @DisplayName("구간 목록 중간에 길이가 더 긴 새로운 구간을 추가할 경우 실패")
+    @Test
+    void section_should_throw_exception_when_request_with_longer_section() {
+        // given
+        Station newStation = new Station("서초");
+        Section newSection = new Section(newStation, downStation, 10);
+
+        // when & then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> line.addSection(newSection)
+        );
+    }
+
+    @DisplayName("요청한 구간의 상하행역 모두 노선에 등록된 경우 구간 등록시 실패")
+    @Test
+    void section_should_throw_exception_when_request_with_both_already_registered_station() {
+        // given
+        Section newSection = new Section(upStation, downStation, 10);
+
+        // when & then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> line.addSection(newSection)
+        );
+    }
+
+    @DisplayName("요청한 구간의 상하행역 모두 노선에 등록되지 않은 경우 구간 등록시 실패")
+    @Test
+    void section_should_throw_exception_when_request_with_both_unregistered_station() {
+        // given
+        Station 서초역 = new Station("서초");
+        Station 교대역 = new Station("교대");
+        Section newSection = new Section(서초역, 교대역, 10);
+
+        // when & then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> line.addSection(newSection)
+        );
+    }
+
     @DisplayName("구간 목록 처음에 새로운 구간을 상행 종점역으로 추가할 경우")
     @Test
     void section_should_be_added_to_line_when_request_to_connect_as_first_up_station() {
