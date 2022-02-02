@@ -25,7 +25,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_생성_요청(강남역_이름);
 
         // then
-        StationStepFeature.checkCreateStation(response);
+        역_생성_응답상태_검증(response);
     }
 
     /**
@@ -43,7 +43,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_생성_요청(강남역_이름);
 
         // then
-        StationStepFeature.checkCreateStationFail(response);
+        역_생성_실패_응답상태_검증(response);
     }
 
     /**
@@ -62,7 +62,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하쳘역_삭제_요청(location);
 
         // then
-        StationStepFeature.checkFindStation(response);
+        역_조회_응답상태_검증(response);
         역_조회_검증(response, Arrays.asList(강남역_이름));
     }
 
@@ -83,7 +83,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = StationStepFeature.모든_지하철역_조회_요청();
 
         // then
-        StationStepFeature.checkFindStation(response);
+        역_조회_응답상태_검증(response);
         역_조회_검증(response, Arrays.asList(강남역_이름, 판교역_이름));
     }
 
@@ -103,7 +103,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = StationStepFeature.지하철역_삭제_요청(location);
 
         // then
-        StationStepFeature.checkResponseStatus(response.statusCode(), HttpStatus.NO_CONTENT);
+        역_응답상태_검증(response.statusCode(), HttpStatus.NO_CONTENT);
     }
 
 }

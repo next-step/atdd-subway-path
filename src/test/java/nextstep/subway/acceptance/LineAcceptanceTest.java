@@ -33,7 +33,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         판교역 = StationStepFeature.지하철역_생성_조회_요청(판교역_이름);
         정자역 = StationStepFeature.지하철역_생성_조회_요청(정자역_이름);
         미금역 = StationStepFeature.지하철역_생성_조회_요청(미금역_이름);
-        params = createLineParams(신분당선_이름,
+        params = 노선_생성_Param_생성(신분당선_이름,
                 신분당선_색,
                 강남역.getId(),
                 정자역.getId(),
@@ -51,7 +51,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
         // then
-        LineStepFeature.checkCreateLine(response);
+        LineStepFeature.노선_생성_응답상태_검증(response);
     }
 
     /**
@@ -69,7 +69,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
 
         // then
-        LineStepFeature.checkCreateLineFail(response);
+        노성_생성_실패_응답상태_검증(response);
     }
 
     /**
@@ -85,14 +85,14 @@ class LineAcceptanceTest extends AcceptanceTest {
         LineAndSectionResponse lineResponse = 지하철_노선_생성_조회_요청(params);
         지하철_노선에_지하철_구간_생성_요청(lineResponse.getLineId(), 정자역.getId(), 미금역.getId(), DISTANCE);
 
-        Map<String, String> number2Line = createLineParams(이호선_이름, "green", 판교역.getId(), 미금역.getId(), 10);
+        Map<String, String> number2Line = 노선_생성_Param_생성(이호선_이름, "green", 판교역.getId(), 미금역.getId(), 10);
         지하철_노선_생성_요청(number2Line);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
-        checkFindLine(response);
+        노선_조회_응답상태_검증(response);
         응답받은_노선의_상세_값_확인(response);
     }
 
@@ -111,7 +111,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = LineStepFeature.지하철_노선_조회_요청(createResponse.getLineId());
 
         // then
-        checkFindLine(response);
+        노선_조회_응답상태_검증(response);
 
         String lineName = response.jsonPath()
                 .getString("name");
@@ -129,13 +129,13 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         String modifyName = "구분당선";
         LineAndSectionResponse createResponse = 지하철_노선_생성_조회_요청(params);
-        Map<String, String> modifyParams = modifyLineParams(createResponse.getLineId(), modifyName, "blue");
+        Map<String, String> modifyParams = 노성_수정_Param_생성(createResponse.getLineId(), modifyName, "blue");
 
         // when
         ExtractableResponse<Response> responseUpdate = 지하철_노선_수정_요청(modifyParams);
 
         // then
-        LineStepFeature.checkResponseStatus(responseUpdate.statusCode(), HttpStatus.NO_CONTENT);
+        노선_응답_상태코드_검증(responseUpdate.statusCode(), HttpStatus.NO_CONTENT);
         노선의_이름_상세_값_확인(modifyName);
     }
 
@@ -147,13 +147,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine_fail() {
         // given
-        Map<String, String> params = modifyLineParams(1, "구분당선", "blue");
+        Map<String, String> params = 노성_수정_Param_생성(1, "구분당선", "blue");
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_수정_요청(params);
 
         // then
-        LineStepFeature.checkResponseStatus(response.statusCode(), HttpStatus.NOT_FOUND);
+        노선_응답_상태코드_검증(response.statusCode(), HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -171,7 +171,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_삭제_요청(createResponse.getLineId());
 
         // then
-        LineStepFeature.checkResponseStatus(response.statusCode(), HttpStatus.NO_CONTENT);
+        노선_응답_상태코드_검증(response.statusCode(), HttpStatus.NO_CONTENT);
     }
 
 }

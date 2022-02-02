@@ -34,7 +34,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         판교역 = StationStepFeature.지하철역_생성_조회_요청(판교역_이름);
         정자역 = StationStepFeature.지하철역_생성_조회_요청(정자역_이름);
         미금역 = StationStepFeature.지하철역_생성_조회_요청(미금역_이름);
-        params = LineStepFeature.createLineParams(신분당선_이름,
+        params = LineStepFeature.노선_생성_Param_생성(신분당선_이름,
                 신분당선_색,
                 강남역.getId(),
                 정자역.getId(),
@@ -56,7 +56,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(lineResponse.getLineId(), 강남역.getId(), 판교역.getId(), 50);
 
         // then
-        LineStepFeature.checkCreateLine(response);
+        노선_생성_응답상태_검증(response);
     }
 
     /**
@@ -74,7 +74,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(lineResponse.getLineId(), 판교역.getId(), 강남역.getId(), DISTANCE);
 
         // then
-        LineStepFeature.checkCreateLine(response);
+        노선_생성_응답상태_검증(response);
     }
 
     /**
@@ -92,7 +92,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(lineResponse.getLineId(), 정자역.getId(), 미금역.getId(), DISTANCE);
 
         // then
-        LineStepFeature.checkCreateLine(response);
+        노선_생성_응답상태_검증(response);
     }
 
     /**
@@ -111,7 +111,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(lineResponse.getLineId(), 강남역.getId(), 판교역.getId(), distance);
 
         // then
-        LineStepFeature.checkCreateLineFail(response);
+        노성_생성_실패_응답상태_검증(response);
     }
 
     /**
@@ -129,7 +129,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(lineResponse.getLineId(), 정자역.getId(), 강남역.getId(), 50);
 
         // then
-        LineStepFeature.checkCreateLineFail(response);
+        노성_생성_실패_응답상태_검증(response);
     }
 
     /**
@@ -147,7 +147,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(lineResponse.getLineId(), 판교역.getId(), 미금역.getId(), 50);
 
         // then
-        LineStepFeature.checkCreateLineFail(response);
+        노성_생성_실패_응답상태_검증(response);
     }
 
     /**
@@ -166,7 +166,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(lineResponse.getLineId(), 미금역.getId());
 
         // then
-        LineStepFeature.checkResponseStatus(response.statusCode(), HttpStatus.NO_CONTENT);
+        노선_응답_상태코드_검증(response.statusCode(), HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -184,7 +184,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(lineResponse.getLineId(), 판교역.getId());
 
         // then
-        LineStepFeature.checkResponseStatus(response.statusCode(), HttpStatus.BAD_REQUEST);
+        노선_응답_상태코드_검증(response.statusCode(), HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -203,7 +203,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(lineResponse.getLineId(), 판교역.getId());
 
         // then
-        LineStepFeature.checkResponseStatus(response.statusCode(), HttpStatus.BAD_REQUEST);
+        노선_응답_상태코드_검증(response.statusCode(), HttpStatus.BAD_REQUEST);
     }
 
 }

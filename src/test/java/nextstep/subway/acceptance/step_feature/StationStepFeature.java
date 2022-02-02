@@ -70,20 +70,20 @@ public class StationStepFeature {
         return response;
     }
 
-    public static void checkCreateStation(ExtractableResponse<Response> response) {
+    public static void 역_생성_응답상태_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    public static void checkCreateStationFail(ExtractableResponse<Response> response) {
-        checkResponseStatus(response.statusCode(), HttpStatus.BAD_REQUEST);
+    public static void 역_생성_실패_응답상태_검증(ExtractableResponse<Response> response) {
+        역_응답상태_검증(response.statusCode(), HttpStatus.BAD_REQUEST);
     }
 
-    public static void checkFindStation(ExtractableResponse<Response> response) {
-        checkResponseStatus(response.statusCode(), HttpStatus.OK);
+    public static void 역_조회_응답상태_검증(ExtractableResponse<Response> response) {
+        역_응답상태_검증(response.statusCode(), HttpStatus.OK);
     }
 
-    public static void checkResponseStatus(int statusCode, HttpStatus httpStatus) {
+    public static void 역_응답상태_검증(int statusCode, HttpStatus httpStatus) {
         assertThat(statusCode).isEqualTo(httpStatus.value());
     }
 
