@@ -1,5 +1,7 @@
 package nextstep.subway.applicaion;
 
+import nextstep.fake.LineFakeRepository;
+import nextstep.fake.StationFakeRepository;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.domain.LineRepository;
@@ -15,14 +17,12 @@ import static nextstep.subway.utils.LineStepUtil.기존색상;
 import static nextstep.subway.utils.StationStepUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
 class LineServiceTest {
 
-    @Autowired
-    LineRepository lineRepository;
 
-    @Autowired
-    StationRepository stationRepository;
+    LineFakeRepository lineFakeRepository = new LineFakeRepository();
+
+    StationFakeRepository stationFakeRepository = new StationFakeRepository();
 
     LineService lineService;
 
@@ -31,9 +31,9 @@ class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        기존_지하철 = stationRepository.save(new Station(기존지하철));
-        새로운_지하철 = stationRepository.save(new Station(새로운지하철));
-        lineService = new LineService(lineRepository, stationRepository);
+        기존_지하철 = stationFakeRepository.save(new Station(기존지하철));
+        새로운_지하철 = stationFakeRepository.save(new Station(새로운지하철));
+        lineService = new LineService(lineFakeRepository, stationFakeRepository);
     }
 
     /**
