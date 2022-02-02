@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -28,6 +29,9 @@ public class PathServiceTest {
 
     @Mock
     private LineRepository lineRepository;
+
+    @Mock
+    private StationRepository stationRepository;
 
     @Mock
     private PathFinder pathFinder;
@@ -51,16 +55,18 @@ public class PathServiceTest {
     @Test
     void showShortestPath() {
         //given
-        PathService pathService = new PathService(lineRepository);
+        PathService pathService = new PathService(lineRepository, stationRepository, pathFinder);
         when(lineRepository.findAll()).thenReturn(Arrays.asList(이호선, 신분당선, 삼호선));
         when(pathFinder.shortestPath(any(), any(), any()))
                 .thenReturn(new PathResponse(Arrays.asList(new PathStationResponse(), new PathStationResponse(), new PathStationResponse()), 7));
+        when(stationRepository.findById(강남역.getId())).thenReturn(Optional.of(강남역));
+        when(stationRepository.findById(삼성역.getId())).thenReturn(Optional.of(삼성역));
 
         //when
         PathResponse pathResponse = pathService.showShortestPath(강남역.getId(), 삼성역.getId());
 
         //then
         assertThat(pathResponse.getDistance()).isEqualTo(7);
-        assertThat(pathResponse.getStations()).hasSize(2);
+        assertThat(pathResponse.getStations()).hasSize(3);
     }
 }
