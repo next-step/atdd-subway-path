@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import nextstep.subway.applicaion.exception.BusinessException;
 import nextstep.subway.applicaion.exception.DuplicationException;
 import nextstep.subway.applicaion.exception.NotFoundException;
-import nextstep.subway.applicaion.exception.NotLastSectionException;
 import org.springframework.http.HttpStatus;
 
 import javax.persistence.CascadeType;
@@ -12,10 +11,13 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.IntStream;
 
 @Embeddable
 public class Sections {
+
+    private static final int LAST_ONE = 1;
+    private static final int NO_ONE = 0;
+
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -56,17 +58,17 @@ public class Sections {
 
     private boolean isLastDownSection(Long id) {
         return sections.stream().filter(section ->
-                section.isSameDownStation(id)).count() == 1 &&
+                section.isSameDownStation(id)).count() == LAST_ONE &&
                 sections.stream().filter(section ->
-                        section.isSameUpStation(id)).count() == 0
+                        section.isSameUpStation(id)).count() == NO_ONE
                 ;
     }
 
     private boolean isLastUpSection(Long id) {
         return sections.stream().filter(section ->
-                section.isSameDownStation(id)).count() == 0 &&
+                section.isSameDownStation(id)).count() == NO_ONE &&
                 sections.stream().filter(section ->
-                        section.isSameUpStation(id)).count() == 1
+                        section.isSameUpStation(id)).count() == LAST_ONE
                 ;
     }
 
@@ -129,13 +131,17 @@ public class Sections {
     }
 
     public boolean isLastSection() {
-        return sections.size() == 1;
+        return sections.size() == LAST_ONE;
     }
 
     public void deleteSection(Long stationId) {
         if (isLastSection()) {
-            throw new BusinessException("마지막 구간 삭제 불가", HttpStatus.BAD_REQUEST);
+            throw new BusinessException("하나 남은 구간 삭제 불가", HttpStatus.BAD_REQUEST);
         }
+        if (countStation(stationId) == NO_ONE) {
+            throw new BusinessException("노선에 없는 역은 삭제 불가", HttpStatus.BAD_REQUEST);
+        }
+
         //마지막 역 삭제
         if (isLastDownSection(stationId)) {
             Section sectionByUpStation = findLastSection();
@@ -160,7 +166,7 @@ public class Sections {
         int frontIndex = index - 1;
         int behindIndex = index + 1;
 
-        if(frontIndex < 0 || behindIndex >= sections.size()){
+        if (frontIndex < 0 || behindIndex >= sections.size()) {
             sections.remove(findSection);
             return;
         }
@@ -220,15 +226,13 @@ public class Sections {
     }
 
     public Section findFirstSection() {
-        int lastOne = 1;
-        return sections.stream().filter(section -> countStation(section.getUpStation().getId()) == lastOne)
+        return sections.stream().filter(section -> countStation(section.getUpStation().getId()) == LAST_ONE)
                 .findFirst()
                 .orElseThrow(BusinessException::new);
     }
 
     private Section findLastSection() {
-        int lastOne = 1;
-        return sections.stream().filter(section -> countStation(section.getDownStation().getId()) == lastOne)
+        return sections.stream().filter(section -> countStation(section.getDownStation().getId()) == LAST_ONE)
                 .findFirst()
                 .orElseThrow(BusinessException::new);
     }

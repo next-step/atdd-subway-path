@@ -200,62 +200,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 구간 등록을 요청한다
-     * When  하행 종점인 구간 삭제를 요청한다.
-     * Then 삭제 된다.
-     */
-    @DisplayName("마지막 구간만 삭제가 가능하다.")
-    @Test
-    void 하행종점_구간_삭제() {
-        //given
-        ExtractableResponse<Response> 아무개 = 지하철역생성("아무개");
-        Long 지하철역_ID = 아무개.jsonPath().getLong(지하철_역_아이디_키);
-        ExtractableResponse<Response> 구간_등록_응답 = 구간등록(하행종점, 지하철역_ID, 종점간거리);
-
-        //when
-        Long 하행_지하철역_ID = 구간_등록_응답.jsonPath().getLong("downStation." + 지하철_역_아이디_키);
-        ExtractableResponse<Response> 구간_삭제_응답 = 구간삭제요청(하행_지하철역_ID);
-
-        //then
-        상태_값_검사(구간_삭제_응답, HttpStatus.NO_CONTENT);
-    }
-
-
-    /**
-     * Given 구간 등록을 요청한다
-     * When  하행 종점이 아닌 구간 삭제를 요청한다.
-     * Then 삭제 되지 않는다.
-     */
-    @Disabled
-    @DisplayName("마지막 구간만 삭제가 가능하다.")
-    @Test
-    void 하행종점_구간만_삭제가능() {
-        //given
-        ExtractableResponse<Response> 아무개 = 지하철역생성("아무개");
-        Long 지하철역_ID = 아무개.jsonPath().getLong(지하철_역_아이디_키);
-        구간등록(하행종점, 지하철역_ID, 종점간거리);
-
-        //when
-        ExtractableResponse<Response> 구간_삭제_응답 = 구간삭제요청(하행종점);
-
-        //then
-        상태_값_검사(구간_삭제_응답, HttpStatus.BAD_REQUEST);
-        예외_검사(구간_삭제_응답, NotLastSectionException.MESSAGE);
-    }
-
-    /**
      * When  하나 남은 구간을 삭제 요청한다.
      * Then 삭제 요청이 실패한다.
      */
     @DisplayName("하나 남은 구간은 삭제가 불가능하다")
     @Test
-    void 마지막_구간만_삭제가능() {
+    void 하나_남은_구간은_삭제_불가_하다() {
         //when
         ExtractableResponse<Response> 구간_삭제_응답 = 구간삭제요청(하행종점);
 
         //then
         상태_값_검사(구간_삭제_응답, HttpStatus.BAD_REQUEST);
-        예외_검사(구간_삭제_응답, "마지막 구간 삭제 불가");
+        예외_검사(구간_삭제_응답, "하나 남은 구간 삭제 불가");
     }
 
     /**
@@ -305,6 +261,24 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> 노선_조회_결과 = 노선조회(노선_생성_결과.header(HttpHeaders.LOCATION));
         리스트_값_검사(노선_조회_결과, "stations." + 노선_이름_키, "처음보는역1", "처음보는역2");
+    }
+
+    /**
+     * When  노선에 없는 역을 삭제 요청한다
+     * Then  역이 삭제되지 않는다
+     */
+    @DisplayName("노선에 없는 역은 삭제가 불가능하다")
+    @Test
+    void 노선에_없는_역은_삭제가_불가능하다(){
+        //given
+        ExtractableResponse<Response> 아무개 = 지하철역생성("아무개");
+        Long 지하철역_ID = 아무개.jsonPath().getLong(지하철_역_아이디_키);
+
+        //when
+        ExtractableResponse<Response> 구간_삭제_요청_응답 = 구간삭제요청(지하철역_ID);
+
+        //then
+        상태_값_검사(구간_삭제_요청_응답,HttpStatus.BAD_REQUEST);
     }
 
 }
