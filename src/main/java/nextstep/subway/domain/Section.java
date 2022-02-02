@@ -40,6 +40,10 @@ public class Section {
         return new Section(line, upStation, downStation, distance);
     }
 
+    public static Section of(Line line, Section section) {
+        return new Section(line, section.upStation, section.downStation, section.distance);
+    }
+
     public boolean isMatchUpStation(Section section) {
         return Objects.equals(this.upStation, section.upStation);
     }

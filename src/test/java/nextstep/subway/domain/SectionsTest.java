@@ -18,6 +18,7 @@ class SectionsTest {
     private Station 판교역;
     private Station 정자역;
     private Station 미금역;
+    private Station 양재역;
     private Line 신분당선;
     private Section 강남역_정자역;
     private Sections sections;
@@ -28,6 +29,7 @@ class SectionsTest {
         판교역 = Station.of("판교역");
         정자역 = Station.of("정자역");
         미금역 = Station.of("미금역");
+        양재역 = Station.of("동천역");
         신분당선 = new Line();
         강남역_정자역 = Section.of(신분당선, 강남역, 정자역, 10);
         sections = new Sections();
@@ -60,7 +62,20 @@ class SectionsTest {
         assertThat(sections.getAllStations()).containsExactly(판교역, 강남역, 정자역);
     }
 
-    @DisplayName("기존 구간의 상행역의 하행 방향에 구간 추가 - 중간 추가")
+    @DisplayName("기존 구간의 하행역의 상향 방향에 구간 추가 - 중간 구간 상행 방향 추가")
+    @Test
+    void addDownSection_middle_upSection() {
+        // given
+        Section section = Section.of(신분당선, 판교역, 정자역, 4);
+
+        // when
+        sections.addSection(section);
+
+        // then
+        assertThat(sections.getAllStations()).containsExactly(강남역, 판교역, 정자역);
+    }
+
+    @DisplayName("기존 구간의 상행역의 하행 방향에 구간 추가 - 중간 구간 하행 방향 추가")
     @Test
     void addDownSection_middle() {
         // given
@@ -84,6 +99,23 @@ class SectionsTest {
 
         // then
         assertThat(sections.getAllStations()).containsExactly(강남역, 정자역, 미금역);
+    }
+
+    @DisplayName("기존 구간에 역을 추가한다 - 복합 추가")
+    @Test
+    void addDownSection_all() {
+        // given
+        Section section1 = Section.of(신분당선, 정자역, 미금역, 4);
+        Section section2 = Section.of(신분당선, 판교역, 정자역, 4);
+        Section section3 = Section.of(신분당선, 강남역, 양재역, 4);
+
+        // when
+        sections.addSection(section1);
+        sections.addSection(section2);
+        sections.addSection(section3);
+
+        // then
+        assertThat(sections.getAllStations()).containsExactly(강남역, 양재역, 판교역, 정자역, 미금역);
     }
 
     @DisplayName("추가하려는 구간의 길이는 기존 구간의 길이 보다 길어야 한다")
