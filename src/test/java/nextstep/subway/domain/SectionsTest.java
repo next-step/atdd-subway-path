@@ -1,6 +1,9 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.section.*;
+import nextstep.subway.exception.section.AlreadyRegisteredStationException;
+import nextstep.subway.exception.section.InvalidDistanceException;
+import nextstep.subway.exception.section.MinimumSectionException;
+import nextstep.subway.exception.section.NotFoundConnectStationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,8 +18,9 @@ class SectionsTest {
     private Station 판교역;
     private Station 정자역;
     private Station 미금역;
-    private Section 강남역_정자역;
+    private Station 양재역;
     private Line 신분당선;
+    private Section 강남역_정자역;
     private Sections sections;
 
     @BeforeEach
@@ -25,13 +29,19 @@ class SectionsTest {
         판교역 = Station.of("판교역");
         정자역 = Station.of("정자역");
         미금역 = Station.of("미금역");
+        양재역 = Station.of("동천역");
+        신분당선 = new Line();
         강남역_정자역 = Section.of(신분당선, 강남역, 정자역, 10);
         sections = new Sections();
+        sections.addSection(강남역_정자역);
     }
 
     @DisplayName("첫 구간 등록")
     @Test
     void addSection_first() {
+        // given
+        Sections sections = new Sections();
+
         // when
         sections.addSection(강남역_정자역);
 
@@ -43,25 +53,36 @@ class SectionsTest {
     @Test
     void addDownSection_first() {
         // given
-        sections.addSection(강남역_정자역);
-        Section target = Section.of(신분당선, 판교역, 강남역, 10);
+        Section section = Section.of(신분당선, 판교역, 강남역, 10);
 
         // when
-        sections.addSection(target);
+        sections.addSection(section);
 
         // then
         assertThat(sections.getAllStations()).containsExactly(판교역, 강남역, 정자역);
     }
 
-    @DisplayName("기존 구간의 상행역의 하행 방향에 구간 추가 - 중간 추가")
+    @DisplayName("기존 구간의 하행역의 상향 방향에 구간 추가 - 중간 구간 상행 방향 추가")
+    @Test
+    void addDownSection_middle_upSection() {
+        // given
+        Section section = Section.of(신분당선, 판교역, 정자역, 4);
+
+        // when
+        sections.addSection(section);
+
+        // then
+        assertThat(sections.getAllStations()).containsExactly(강남역, 판교역, 정자역);
+    }
+
+    @DisplayName("기존 구간의 상행역의 하행 방향에 구간 추가 - 중간 구간 하행 방향 추가")
     @Test
     void addDownSection_middle() {
         // given
-        sections.addSection(강남역_정자역);
-        Section target = Section.of(신분당선, 강남역, 판교역, 4);
+        Section section = Section.of(신분당선, 강남역, 판교역, 4);
 
         // when
-        sections.addSection(target);
+        sections.addSection(section);
 
         // then
         assertThat(sections.getAllStations()).containsExactly(강남역, 판교역, 정자역);
@@ -71,25 +92,40 @@ class SectionsTest {
     @Test
     void addDownSection_last() {
         // given
-        sections.addSection(강남역_정자역);
-        Section target = Section.of(신분당선, 정자역, 미금역, 4);
+        Section section = Section.of(신분당선, 정자역, 미금역, 4);
 
         // when
-        sections.addSection(target);
+        sections.addSection(section);
 
         // then
         assertThat(sections.getAllStations()).containsExactly(강남역, 정자역, 미금역);
+    }
+
+    @DisplayName("기존 구간에 역을 추가한다 - 복합 추가")
+    @Test
+    void addDownSection_all() {
+        // given
+        Section section1 = Section.of(신분당선, 정자역, 미금역, 4);
+        Section section2 = Section.of(신분당선, 판교역, 정자역, 4);
+        Section section3 = Section.of(신분당선, 강남역, 양재역, 4);
+
+        // when
+        sections.addSection(section1);
+        sections.addSection(section2);
+        sections.addSection(section3);
+
+        // then
+        assertThat(sections.getAllStations()).containsExactly(강남역, 양재역, 판교역, 정자역, 미금역);
     }
 
     @DisplayName("추가하려는 구간의 길이는 기존 구간의 길이 보다 길어야 한다")
     @Test
     void addDownSection_fail_distance() {
         // given
-        sections.addSection(강남역_정자역);
-        Section target = Section.of(신분당선, 강남역, 판교역, 20);
+        Section section = Section.of(신분당선, 강남역, 판교역, 20);
 
         // then
-        assertThatThrownBy(() -> sections.addSection(target))
+        assertThatThrownBy(() -> sections.addSection(section))
                 .isInstanceOf(InvalidDistanceException.class);
     }
 
@@ -97,11 +133,10 @@ class SectionsTest {
     @Test
     void addDownSection_fail_alreadyRegisteredSection() {
         // given
-        sections.addSection(강남역_정자역);
-        Section target = Section.of(신분당선, 강남역, 정자역, 5);
+        Section section = Section.of(신분당선, 강남역, 정자역, 5);
 
         // then
-        assertThatThrownBy(() -> sections.addSection(target))
+        assertThatThrownBy(() -> sections.addSection(section))
                 .isInstanceOf(AlreadyRegisteredStationException.class);
     }
 
@@ -109,19 +144,31 @@ class SectionsTest {
     @Test
     void addDownSection_fail_ConnectStation() {
         // given
-        sections.addSection(강남역_정자역);
-        Section target = Section.of(신분당선, 판교역, 미금역, 5);
+        Section section = Section.of(신분당선, 판교역, 미금역, 5);
 
         // then
-        assertThatThrownBy(() -> sections.addSection(target))
+        assertThatThrownBy(() -> sections.addSection(section))
                 .isInstanceOf(NotFoundConnectStationException.class);
+    }
+
+    @DisplayName("첫 번째 역을 삭제할 수 있다")
+    @Test
+    void deleteStation_firstStation() {
+        // given
+        Section section = Section.of(신분당선, 강남역, 판교역, 5);
+        sections.addSection(section);
+
+        // when
+        sections.deleteStation(강남역);
+
+        // then
+        assertThat(sections.getAllStations()).containsExactly(판교역, 정자역);
     }
 
     @DisplayName("마지막 역을 삭제할 수 있다")
     @Test
-    void deleteStation() {
+    void deleteStation_lastStation() {
         // given
-        sections.addSection(강남역_정자역);
         Section section = Section.of(신분당선, 강남역, 판교역, 5);
         sections.addSection(section);
 
@@ -132,26 +179,26 @@ class SectionsTest {
         assertThat(sections.getAllStations()).containsExactly(강남역, 판교역);
     }
 
+    @DisplayName("중간 역을 삭제할 수 있다")
+    @Test
+    void deleteStation_middle() {
+        // given
+        Section section = Section.of(신분당선, 강남역, 판교역, 5);
+        sections.addSection(section);
+
+        // when
+        sections.deleteStation(판교역);
+
+        // then
+        assertThat(sections.getAllStations()).containsExactly(강남역, 정자역);
+    }
+
     @DisplayName("역을 삭제할 경우 구간이 최소 1개는 있어야 한다")
     @Test
     void deleteStation_validateMinimumSection() {
-        // given
-        sections.addSection(강남역_정자역);
-
         // then
         assertThatThrownBy(() -> sections.deleteStation(정자역))
                 .isInstanceOf(MinimumSectionException.class);
-    }
-
-    @DisplayName("마지막 하행역만 삭제 가능하다")
-    @Test
-    void deleteStation_validateDeleteLastDownStation() {
-        // given
-        sections.addSection(강남역_정자역);
-
-        // then
-        assertThatThrownBy(() -> sections.deleteStation(강남역))
-                .isInstanceOf(DeleteLastDownStationException.class);
     }
 
 }

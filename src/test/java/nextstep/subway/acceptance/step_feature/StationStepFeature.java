@@ -20,7 +20,7 @@ public class StationStepFeature {
     public static final String 정자역_이름 = "정자역";
     public static final String 미금역_이름 = "미금역";
     private static final String CREATE_STATION_NAME_PARAM_KEY = "name";
-    private static final String STATION_BASE_URI = "stations";
+    private static final String STATION_BASE_URI = "/stations";
 
     public static StationResponse 지하철역_생성_조회_요청(String name) {
         ExtractableResponse<Response> createResponse = 지하철역_생성_요청(name);
@@ -70,20 +70,20 @@ public class StationStepFeature {
         return response;
     }
 
-    public static void checkCreateStation(ExtractableResponse<Response> response) {
+    public static void 역_생성_응답상태_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    public static void checkCreateStationFail(ExtractableResponse<Response> response) {
-        checkResponseStatus(response.statusCode(), HttpStatus.BAD_REQUEST);
+    public static void 역_생성_실패_응답상태_검증(ExtractableResponse<Response> response) {
+        역_응답상태_검증(response.statusCode(), HttpStatus.BAD_REQUEST);
     }
 
-    public static void checkFindStation(ExtractableResponse<Response> response) {
-        checkResponseStatus(response.statusCode(), HttpStatus.OK);
+    public static void 역_조회_응답상태_검증(ExtractableResponse<Response> response) {
+        역_응답상태_검증(response.statusCode(), HttpStatus.OK);
     }
 
-    public static void checkResponseStatus(int statusCode, HttpStatus httpStatus) {
+    public static void 역_응답상태_검증(int statusCode, HttpStatus httpStatus) {
         assertThat(statusCode).isEqualTo(httpStatus.value());
     }
 

@@ -115,35 +115,20 @@ public class LineStepFeature {
     }
 
     public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_제거_요청(long lineId, long stationId) {
-        String deleteSectionUri = "/lines/%s/sections?stationId=%s";
         return RestAssured.given()
                 .log()
                 .all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .delete(String.format(deleteSectionUri, lineId, stationId))
+                .delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then()
                 .log()
                 .all()
                 .extract();
     }
 
-
-    private static ExtractableResponse<Response> callGetLinesByUri(String uri) {
-        return RestAssured.given()
-                .log()
-                .all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get(uri)
-                .then()
-                .log()
-                .all()
-                .extract();
-    }
-
-    public static Map<String, String> createLineParams(String name, String color, Long upStationId,
-                                                       Long downStationId, int distance) {
+    public static Map<String, String> 노선_생성_Param_생성(String name, String color, Long upStationId,
+                                                     Long downStationId, int distance) {
         Map<String, String> params = new HashMap();
         params.put("name", name);
         params.put("color", color);
@@ -154,8 +139,8 @@ public class LineStepFeature {
         return params;
     }
 
-    public static Map<String, String> modifyLineParams(long id, String name, String color) {
-        Map params = new HashMap();
+    public static Map<String, String> 노성_수정_Param_생성(long id, String name, String color) {
+        Map<String, String> params = new HashMap();
         params.put("id", String.valueOf(id));
         params.put("name", name);
         params.put("color", "blue");
@@ -163,17 +148,21 @@ public class LineStepFeature {
         return params;
     }
 
-    public static void checkCreateLine(ExtractableResponse<Response> response) {
-        checkResponseStatus(response.statusCode(), HttpStatus.CREATED);
+    public static void 노선_생성_응답상태_검증(ExtractableResponse<Response> response) {
+        노선_응답_상태코드_검증(response.statusCode(), HttpStatus.CREATED);
         assertThat(response.header("Location")).isNotBlank();
     }
 
-    public static void checkCreateLineFail(ExtractableResponse<Response> response) {
-        checkResponseStatus(response.statusCode(), HttpStatus.BAD_REQUEST);
+    public static void 노선_생성_실패_응답상태_검증(ExtractableResponse<Response> response) {
+        노선_응답_상태코드_검증(response.statusCode(), HttpStatus.BAD_REQUEST);
     }
 
-    public static void checkFindLine(ExtractableResponse<Response> response) {
-        checkResponseStatus(response.statusCode(), HttpStatus.OK);
+    public static void 노선_조회_응답상태_검증(ExtractableResponse<Response> response) {
+        노선_응답_상태코드_검증(response.statusCode(), HttpStatus.OK);
+    }
+
+    public static void 노선_삭제_응답상태_검증(ExtractableResponse<Response> response) {
+        노선_응답_상태코드_검증(response.statusCode(), HttpStatus.NO_CONTENT);
     }
 
     public static void 응답받은_노선의_상세_값_확인(ExtractableResponse<Response> response) {
@@ -197,8 +186,21 @@ public class LineStepFeature {
         assertThat(lineNames).contains(name);
     }
 
-    public static void checkResponseStatus(int statusCode, HttpStatus httpStatus) {
+    public static void 노선_응답_상태코드_검증(int statusCode, HttpStatus httpStatus) {
         assertThat(statusCode).isEqualTo(httpStatus.value());
+    }
+
+    private static ExtractableResponse<Response> callGetLinesByUri(String uri) {
+        return RestAssured.given()
+                .log()
+                .all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get(uri)
+                .then()
+                .log()
+                .all()
+                .extract();
     }
 
 }
