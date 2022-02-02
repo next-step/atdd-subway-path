@@ -3,7 +3,6 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
@@ -11,9 +10,7 @@ import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -42,21 +39,19 @@ public class LineService {
                         request.getDistance()
                 ));
         }
-        return createLineResponse(line);
+        return LineResponse.from(line);
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> showLines() {
-        return lineRepository.findAll()
-                             .stream()
-                             .map(this::createLineResponse)
-                             .collect(Collectors.toList());
+        return LineResponse.from(lineRepository.findAll());
     }
 
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        return createLineResponse(lineRepository.findById(id)
-                                                .orElseThrow(IllegalArgumentException::new));
+        Line findLine = lineRepository.findById(id)
+                                      .orElseThrow(IllegalArgumentException::new);
+        return LineResponse.from(findLine);
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
@@ -89,39 +84,6 @@ public class LineService {
         );
     }
 
-    private LineResponse createLineResponse(Line line) {
-        return new LineResponse(
-                line.getId(),
-                line.getName(),
-                line.getColor(),
-                createStationResponses(line),
-                line.getCreatedDate(),
-                line.getModifiedDate()
-        );
-    }
-
-    private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections()
-                .isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Station> stations = line.getSections()
-                                     .stream()
-                                     .map(Section::getDownStation)
-                                     .collect(Collectors.toList());
-
-        stations.add(
-                0,
-                line.getSections()
-                    .get(0)
-                    .getUpStation()
-        );
-
-        return stations.stream()
-                       .map(it -> stationService.createStationResponse(it))
-                       .collect(Collectors.toList());
-    }
 
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId)

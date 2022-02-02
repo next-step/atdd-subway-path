@@ -4,7 +4,6 @@ import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
-import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
@@ -14,8 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +20,6 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @DataJpaTest
 class LineServiceTest {
@@ -285,44 +281,6 @@ class LineServiceTest {
         );
         assertThat(실제_노선_목록).usingRecursiveComparison()
                             .isEqualTo(예상_노선_목록);
-    }
-
-    @DisplayName("Line 엔티티를 LineResponse로 변환한다.")
-    @Test
-    void createLineResponse() {
-        String 일호선 = "1호선";
-        String 파란색 = "파란색";
-
-        Line line = new Line(
-                일호선,
-                파란색
-        );
-        lineService = new LineService(
-                lineRepository,
-                new StationService(stationRepository)
-        );
-
-        try {
-            Method method = lineService.getClass()
-                                       .getDeclaredMethod(
-                                               "createLineResponse",
-                                               Line.class
-                                       );
-            method.setAccessible(true);
-            LineResponse lineResponse = (LineResponse) method.invoke(
-                    lineService,
-                    line
-            );
-
-            assertAll(
-                    () -> assertThat(lineResponse.getName()).isEqualTo(line.getName()),
-                    () -> assertThat(lineResponse.getColor()).isEqualTo(line.getColor())
-            );
-
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            fail("리플렉션 예외: "+e.getMessage());
-        }
-
     }
 
     private Long 역_생성_요청(String 동암역) {
