@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.DuplicateSectionException;
 import nextstep.subway.exception.SectionDistanceNotValidException;
 import nextstep.subway.exception.SectionNotFoundException;
 import org.junit.jupiter.api.DisplayName;
@@ -161,6 +162,19 @@ class SectionsTest {
             sections.add(section2);
         }).isInstanceOf(SectionDistanceNotValidException.class)
             .hasMessageMatching("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("구간 등록시 같은 구간이 있다면 에러가 발생한다")
+    void hasSameSection() {
+        Section section1 = new Section(line, 강남역, 선릉역, 7);
+        Section section2 = new Section(line, 강남역, 선릉역, 7);
+        Sections sections = new Sections();
+        sections.add(section1);
+
+        assertThatThrownBy(() -> {
+            sections.add(section2);
+        }).isInstanceOf(DuplicateSectionException.class);
     }
 
     private Section getFirstSection(List<Section> allSections, Station station) {

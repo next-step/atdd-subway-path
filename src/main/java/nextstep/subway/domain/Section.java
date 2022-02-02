@@ -67,4 +67,8 @@ public class Section {
     public void changeDistance(int distance) {
         this.distance = distance;
     }
+
+    public boolean isSameSection(Section section) {
+        return upStation.equals(section.getUpStation()) && downStation.equals(section.getDownStation());
+    }
 }

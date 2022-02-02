@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.DeleteSectionException;
+import nextstep.subway.exception.DuplicateSectionException;
 import nextstep.subway.exception.SectionDistanceNotValidException;
 
 import javax.persistence.CascadeType;
@@ -15,6 +16,10 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
+        if (hasSameSection(section)) {
+            throw new DuplicateSectionException();
+        }
+
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
 
@@ -53,6 +58,12 @@ public class Sections {
         }
 
         this.sections.add(section);
+    }
+
+    private boolean hasSameSection(Section section) {
+        return sections
+            .stream()
+            .anyMatch(it -> it.isSameSection(section));
     }
 
     private Optional<Section> findSectionEqualsUpStation(Station station) {
