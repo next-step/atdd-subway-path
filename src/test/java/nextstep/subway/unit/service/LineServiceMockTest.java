@@ -1,6 +1,7 @@
 package nextstep.subway.unit.service;
 
 import nextstep.subway.applicaion.LineService;
+import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +22,7 @@ class LineServiceMockTest {
     @Mock
     private LineRepository lineRepository;
     @Mock
-    private StationRepository stationRepository;
+    private StationService stationService;
     private LineService lineService;
     private Station 교대역;
     private Station 역삼역;
@@ -31,7 +32,7 @@ class LineServiceMockTest {
     @BeforeEach
     void setFixtures() {
         // given
-        lineService = new LineService(lineRepository, stationRepository);
+        lineService = new LineService(lineRepository, stationService);
 
         교대역 = new Station("교대역");
         역삼역 = new Station("역삼역");
@@ -49,8 +50,8 @@ class LineServiceMockTest {
     @Test
     void addSection() {
         // given
-        when(stationRepository.findById(1L)).thenReturn(Optional.of(교대역));
-        when(stationRepository.findById(2L)).thenReturn(Optional.of(역삼역));
+        when(stationService.findStationById(1L)).thenReturn(교대역);
+        when(stationService.findStationById(2L)).thenReturn(역삼역);
         when(lineRepository.findById(1L)).thenReturn(Optional.of(이호선));
 
         // when

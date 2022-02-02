@@ -4,15 +4,16 @@ import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.SectionResponse;
-import nextstep.subway.domain.*;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
 import nextstep.subway.exception.DuplicateException;
 import nextstep.subway.exception.NotFoundLineException;
-import nextstep.subway.exception.NotFoundStationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -20,20 +21,20 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
+    private final StationService stationService;
 
-    public LineService(final LineRepository lineRepository, final StationRepository stationRepository) {
+    public LineService(final LineRepository lineRepository, final StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
     public LineResponse saveLine(final LineRequest request) {
-        if (isDuplicate(request.getName())) {
+        if (isDuplicatedLineName(request.getName())) {
             throw new DuplicateException();
         }
 
-        Station upStation = findStationById(request.getUpStationId());
-        Station downStation = findStationById(request.getDownStationId());
+        Station upStation = stationService.findStationById(request.getUpStationId());
+        Station downStation = stationService.findStationById(request.getDownStationId());
 
         Line line = Line.of(request.toEntity(), upStation, downStation, request.getDistance());
         Line createdLine = lineRepository.save(line);
@@ -64,8 +65,8 @@ public class LineService {
 
     public SectionResponse addSection(final SectionRequest request, final Long id) {
         Line line = getLineById(id);
-        Station upStation = findStationById(request.getUpStationId());
-        Station downStation = findStationById(request.getDownStationId());
+        Station upStation = stationService.findStationById(request.getUpStationId());
+        Station downStation = stationService.findStationById(request.getDownStationId());
 
         Section newSection = Section.of(line, upStation, downStation, request.getDistance());
         line.addSection(newSection);
@@ -82,13 +83,8 @@ public class LineService {
                 .orElseThrow(NotFoundLineException::new);
     }
 
-    private boolean isDuplicate(final String lineName) {
-        Optional<Line> station = lineRepository.findByName(lineName);
-        return station.isPresent();
-    }
-
-    private Station findStationById(final Long id) {
-        return stationRepository.findById(id)
-                .orElseThrow(NotFoundStationException::new);
+    private boolean isDuplicatedLineName(final String lineName) {
+        return lineRepository.findByName(lineName)
+                .isPresent();
     }
 }

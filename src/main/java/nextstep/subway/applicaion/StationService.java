@@ -40,10 +40,9 @@ public class StationService {
     }
 
     @Transactional(readOnly = true)
-    public StationResponse findStationByName(final String name) {
-        Station station = findByName(name)
+    public Station findStationById(final Long id) {
+        return stationRepository.findById(id)
                 .orElseThrow(NotFoundStationException::new);
-        return StationResponse.of(station);
     }
 
     public void deleteStationById(final Long id) {
