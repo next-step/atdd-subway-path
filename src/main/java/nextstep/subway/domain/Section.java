@@ -33,6 +33,13 @@ public class Section {
         this.distance = distance;
     }
 
+    void addLineBetweenSection(Section newSection) {
+        if (this.getUpStation().equals(newSection.getUpStation())) {
+            this.upStation = newSection.getDownStation();
+            this.distance -= newSection.getDistance();
+        }
+    }
+
     public Long getId() {
         return id;
     }
