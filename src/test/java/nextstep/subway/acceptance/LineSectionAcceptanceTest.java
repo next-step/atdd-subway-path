@@ -111,6 +111,25 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(정자역, 강남역, 양재역);
     }
 
+    /**
+     * Given 지하철역과 노선 생성을 요청 하고
+     * Given 구간 추가를 요청하고 (A-C)
+     * When 지하철 노선에 상행역을 기준으로 구간을 추가하면 (C-B)
+     * Then 노선에 새로운 구간이 추가된다. (A-C-B)
+     */
+    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
+    @Test
+    void addDownStationLineSection() {
+        // when
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 7));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();

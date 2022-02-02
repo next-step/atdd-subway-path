@@ -109,4 +109,36 @@ class SectionsTest {
         assertThat(secondSection.getUpStation()).isEqualTo(강남역);
         assertThat(secondSection.getDownStation()).isEqualTo(역삼역);
     }
+
+    @Test
+    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
+    void addSectionDownStation() {
+        Section section1 = new Section(line, 강남역, 역삼역, 7);
+        Sections sections = new Sections();
+        sections.add(section1);
+
+        Section section2 = new Section(line, 역삼역, 선릉역, 4);
+        sections.add(section2);
+
+        List<Section> allSections = sections.getAllSections();
+        Section firstSection = allSections
+            .stream()
+            .filter(it -> it.getUpStation().equals(강남역))
+            .findFirst()
+            .orElseThrow(SectionNotFoundException::new);
+
+        Section secondSection = allSections
+            .stream()
+            .filter(it -> !it.equals(firstSection))
+            .findFirst()
+            .orElseThrow(SectionNotFoundException::new);
+
+
+        assertThat(firstSection.getDistance()).isEqualTo(7);
+        assertThat(firstSection.getUpStation()).isEqualTo(강남역);
+        assertThat(firstSection.getDownStation()).isEqualTo(역삼역);
+        assertThat(secondSection.getDistance()).isEqualTo(4);
+        assertThat(secondSection.getUpStation()).isEqualTo(역삼역);
+        assertThat(secondSection.getDownStation()).isEqualTo(선릉역);
+    }
 }
