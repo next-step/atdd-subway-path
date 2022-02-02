@@ -105,8 +105,8 @@ public class Sections {
         if (isLastSection(byUpStation, sectionForRemove)) {
             return;
         }
-        Section downSectionOfChange = byUpStation.get(stationForRemove);
-        downSectionOfChange.combineUpSection(sectionForRemove);
+        Section downSectionOfCombine = byUpStation.get(stationForRemove);
+        downSectionOfCombine.combineOfUpSection(sectionForRemove);
     }
 
     private <T> Map<T, Section> toBasedOnKey(Function<Section, T> getKeyFunc) {

@@ -70,7 +70,7 @@ public class Section {
         upStation = newSection.getDownStation();
     }
 
-    public void combineUpSection(Section upSection) {
+    public void combineOfUpSection(Section upSection) {
         this.upStation = upSection.getUpStation();
         distance = distance.addition(upSection.distance);
     }

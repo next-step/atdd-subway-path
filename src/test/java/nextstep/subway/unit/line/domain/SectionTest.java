@@ -78,7 +78,7 @@ class SectionTest {
             .build();
 
         int expectChangedDistance = section.getDistance().getValue() + newSection.getDistance().getValue();
-        section.combineUpSection(newSection);
+        section.combineOfUpSection(newSection);
 
         assertThat(section.getDistance().getValue()).isEqualTo(expectChangedDistance);
         assertThat(section.getUpStation().getName()).isEqualTo(newUpStation.getName());
