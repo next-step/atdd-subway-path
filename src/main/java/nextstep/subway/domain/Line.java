@@ -152,16 +152,22 @@ public class Line extends BaseEntity {
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
 
-        sections.forEach(section -> {
-            Station upStation = section.getUpStation();
-            Station downStation = section.getDownStation();
-            if (upStation != null && !stations.contains(upStation)) {
+        Station prevDownStation = null;
+
+        for (int idx = 0; idx < sections.size(); idx++) {
+            Station upStation = sections.get(idx)
+                                        .getUpStation();
+            Station downStation = sections.get(idx)
+                                          .getDownStation();
+            if (idx == 0) {
                 stations.add(upStation);
-            }
-            if (downStation != null && !stations.contains(downStation)) {
                 stations.add(downStation);
             }
-        });
+            if (upStation.equals(prevDownStation)) {
+                stations.add(downStation);
+            }
+            prevDownStation = downStation;
+        }
 
         return stations;
     }
