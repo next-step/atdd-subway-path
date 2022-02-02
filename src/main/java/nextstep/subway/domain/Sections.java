@@ -24,17 +24,53 @@ public class Sections {
             return;
         }
 
-        Section section = sections.stream()
-                .filter(s -> {
-                            return s.getUpStation().equals(newSection.getUpStation())
-                                    || s.getDownStation().equals(newSection.getUpStation())
-                                    || s.getUpStation().equals(newSection.getDownStation());
-                        }
-                )
+        if (canAddToBetweenSections(newSection)) {
+            addToBetweenSections(newSection);
+            return;
+        }
+
+        if (canAddToFirstSection(newSection)) {
+            addToFirstSection(newSection);
+            return;
+        }
+
+        if (canAddToLastSection(newSection)) {
+            addToLastSection(newSection);
+            return;
+        }
+
+        throw new IllegalArgumentException("역을 추가할 수 없음");
+    }
+
+    private void addToLastSection(Section newSection) {
+        sections.add(newSection);
+    }
+
+    private boolean canAddToLastSection(Section newSection) {
+        return sections.stream()
+                .anyMatch(section -> section.isDownStation(newSection.getUpStation()));
+    }
+
+    private void addToFirstSection(Section newSection) {
+        sections.add(0, newSection);
+    }
+
+    private boolean canAddToFirstSection(Section newSection) {
+        return sections.stream()
+                .anyMatch(section -> section.isUpStation(newSection.getDownStation()));
+    }
+
+    private boolean canAddToBetweenSections(Section newSection) {
+        return sections.stream()
+                .anyMatch(section -> section.isUpStation(newSection.getUpStation()));
+    }
+
+    private void addToBetweenSections(Section newSection) {
+        Section targetSection = sections.stream()
+                .filter(section -> section.isUpStation(newSection.getUpStation()))
                 .findAny()
                 .orElseThrow(IllegalArgumentException::new);
-
-        this.sections.add(sections.indexOf(section), newSection);
+        sections.add(sections.indexOf(targetSection), newSection);
     }
 
     public List<Section> getSections() {

@@ -60,4 +60,12 @@ public class Section {
     public void setLine(Line line) {
         this.line = line;
     }
+
+    public boolean isUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isDownStation(Station station) {
+        return downStation.equals(station);
+    }
 }
