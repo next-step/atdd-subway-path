@@ -21,8 +21,8 @@ public class PathSteps {
 
         return RestAssured
                 .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .params(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/paths")
                 .then().log().all().extract();
     }
@@ -34,7 +34,7 @@ public class PathSteps {
     }
 
     public static void 최단_경로_조회_예외_검증(ExtractableResponse<Response> response, String message) {
-        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST);
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
         assertThat(response.jsonPath().getString("message")).isEqualTo(message);
     }
 }
