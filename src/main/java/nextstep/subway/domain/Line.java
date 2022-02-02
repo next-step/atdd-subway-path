@@ -80,6 +80,39 @@ public class Line extends BaseEntity {
 
         AtomicBoolean normalCondition = new AtomicBoolean(true);
 
+        insertSameUpStation(
+                newSection,
+                normalCondition
+        );
+
+        insertLastUpStation(
+                newSection,
+                normalCondition
+        );
+
+
+        if (normalCondition.get()) {
+            sections.add(newSection);
+        }
+
+        return sections;
+    }
+
+    private void insertLastUpStation(Section newSection, AtomicBoolean normalCondition) {
+        sections.stream()
+                .filter(unused -> normalCondition.get())
+                .filter(oldSection -> oldSection.getUpStation()
+                                                .equals(newSection.getDownStation()))
+                .findFirst()
+                .ifPresent(oldSection -> {
+                    sections.add(
+                            sections.indexOf(oldSection),
+                            newSection
+                    );
+                });
+    }
+
+    private void insertSameUpStation(Section newSection, AtomicBoolean normalCondition) {
         sections.stream()
                 .filter(oldSection -> oldSection.getUpStation()
                                                 .equals(newSection.getUpStation()))
@@ -99,7 +132,7 @@ public class Line extends BaseEntity {
                         ));
                         //기존 구간을 새로운 구간으로 교체한다.
                         oldSection.update(newSection);
-                    }else if(newSection.getDistance() > oldSection.getDistance()){
+                    } else if (newSection.getDistance() > oldSection.getDistance()) {
                         sections.add(new Section(
                                 this,
                                 oldSection.getDownStation(),
@@ -108,12 +141,6 @@ public class Line extends BaseEntity {
                         ));
                     }
                 });
-
-        if (normalCondition.get()) {
-            sections.add(newSection);
-        }
-
-        return sections;
     }
 
     public List<Station> getStations() {
