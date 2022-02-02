@@ -253,4 +253,8 @@ public class Sections {
         }
         return allStations;
     }
+
+    public List<Section> getAllSections() {
+        return sections;
+    }
 }

@@ -52,6 +52,10 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
+    public static Long 아이디_추출(ExtractableResponse<Response> response) {
+        return response.jsonPath().getLong("id");
+    }
+
     public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청(Long lineId, 구간_생성_파라미터 params) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -66,8 +70,18 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
-    public static List<Long> getStationList(ExtractableResponse<Response> response) {
+    public static ExtractableResponse<Response> 지하철역_경로_검색_요청(Long sourceStationId, Long targetStationId) {
+        return RestAssured.given().log().all()
+                .when().get("/paths?source={sourceStationId}&target={targetStationId}", sourceStationId, targetStationId)
+                .then().log().all().extract();
+    }
+
+    public static List<Long> 역_아이디_목록_추출(ExtractableResponse<Response> response) {
         return response.jsonPath().getList("stations.id", Long.class);
+    }
+
+    public static int 최단_경로_거리_추출(ExtractableResponse<Response> response) {
+        return response.jsonPath().getInt("distance");
     }
 
     static class 노선_생성_파라미터 {
@@ -81,6 +95,14 @@ public class LineSteps {
         public 노선_생성_파라미터(Long 상행역, Long 하행역, int 상행역_하행역_거리) {
             name = "신분당선";
             color = "bg-red-600";
+            upStationId = 상행역;
+            downStationId = 하행역;
+            distance = 상행역_하행역_거리;
+        }
+
+        public 노선_생성_파라미터(String 노선이름, String 노선색상, Long 상행역, Long 하행역, int 상행역_하행역_거리) {
+            name = 노선이름;
+            color = 노선색상;
             upStationId = 상행역;
             downStationId = 하행역;
             distance = 상행역_하행역_거리;

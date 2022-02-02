@@ -1,7 +1,9 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -26,6 +28,13 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Station lastUpStation, Station lastDownStation, Distance distance) {
         this(name, color);
         sections.add(new Section(this, lastUpStation, lastDownStation, distance));
+    }
+
+    public static List<Section> getAllSections(List<Line> lines) {
+        return lines.stream()
+                .map(Line::getAllSections)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -86,5 +95,9 @@ public class Line extends BaseEntity {
 
     public void removeSection(Station station) {
         sections.remove(station);
+    }
+
+    public List<Section> getAllSections() {
+        return sections.getAllSections();
     }
 }

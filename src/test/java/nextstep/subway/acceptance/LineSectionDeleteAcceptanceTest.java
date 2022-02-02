@@ -89,7 +89,7 @@ class LineSectionDeleteAcceptanceTest extends AcceptanceTest {
 
 		// then
 		assertThat(제거_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
-		assertThat(getStationList(목록_응답)).containsExactly(강남역, 판교역);
+		assertThat(역_아이디_목록_추출(목록_응답)).containsExactly(강남역, 판교역);
 	}
 
 	/**
@@ -105,7 +105,7 @@ class LineSectionDeleteAcceptanceTest extends AcceptanceTest {
 
 		// then
 		assertThat(제거_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
-		assertThat(getStationList(목록_응답)).containsExactly(양재역, 판교역);
+		assertThat(역_아이디_목록_추출(목록_응답)).containsExactly(양재역, 판교역);
 	}
 
 	/**
@@ -121,7 +121,7 @@ class LineSectionDeleteAcceptanceTest extends AcceptanceTest {
 
 		// then
 		assertThat(제거_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
-		assertThat(getStationList(목록_응답)).containsExactly(강남역, 양재역);
+		assertThat(역_아이디_목록_추출(목록_응답)).containsExactly(강남역, 양재역);
 	}
 
 }
