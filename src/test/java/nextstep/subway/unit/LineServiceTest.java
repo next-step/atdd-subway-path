@@ -151,7 +151,6 @@ public class LineServiceTest {
         LineResponse secondLine = lineService.saveLine(createLineRequest(SECOND_LINE_NAME));
         LineRequest duplicationNameLineRequest = createLineRequest(SECOND_LINE_NAME);
 
-        // TODO : 더티 체크 실행 시점이 assertThatThrownBy 끝나고인가?? 에러를 잡을 수 없다넹...
         // when, then
         assertThatThrownBy(() -> lineService.updateLine(firstLine.getId(), duplicationNameLineRequest))
                 .isInstanceOf(DataIntegrityViolationException.class);
