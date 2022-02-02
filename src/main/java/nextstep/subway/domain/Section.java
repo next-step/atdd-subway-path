@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.ui.exception.AddSectionException;
+
 import javax.persistence.*;
 
 @Entity
@@ -34,6 +36,11 @@ public class Section {
     }
 
     void addLineBetweenSection(Section newSection) {
+        if (this.distance <= newSection.distance) {
+            throw new AddSectionException(
+                    String.format("새로 추가되는 구간 거리는 기존 구간의 거리 이상일 수 없습니다. 기존 구간 거리 = %d, 신규 구간 거리 = %d",
+                            this.distance, newSection.distance));
+        }
         if (this.getUpStation().equals(newSection.getUpStation())) {
             this.upStation = newSection.getDownStation();
             this.distance -= newSection.getDistance();

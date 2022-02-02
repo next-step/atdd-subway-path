@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.ui.exception.AddSectionException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,8 +21,8 @@ class LineTest {
     Station 등촌역;
     Station 신목동역;
     Line line;
-    int distance1;
-    int distance2;
+    int tenDistance;
+    int fourDistance2;
 
     @BeforeEach
     void setUp() {
@@ -30,16 +31,16 @@ class LineTest {
         등촌역 = new Station("등촌역");
         신목동역 = new Station("신목동역");
         line = new Line("9호선", "금색");
-        distance1 = 10;
-        distance2 = 4;
+        tenDistance = 10;
+        fourDistance2 = 4;
     }
 
     @DisplayName("지하철역 사이에 새로운 구간 추가")
     @Test
     void addLineBetweenSection() {
         // given
-        Section section1 = new Section(line, 가양역, 등촌역, distance1);
-        Section section2 = new Section(line, 가양역, 증미역, distance2);
+        Section section1 = new Section(line, 가양역, 등촌역, tenDistance);
+        Section section2 = new Section(line, 가양역, 증미역, fourDistance2);
 
         // when
         line.addSection(section1);
@@ -50,14 +51,14 @@ class LineTest {
         assertThat(sections.size()).isEqualTo(2);
         assertThat(section1.getUpStation()).isEqualTo(증미역);
         assertThat(section1.getDownStation()).isEqualTo(등촌역);
-        assertThat(section1.getDistance()).isEqualTo(distance1 - distance2);
+        assertThat(section1.getDistance()).isEqualTo(tenDistance - fourDistance2);
     }
 
     @DisplayName("지하철 노선의 하행 종점역에 구간을 추가")
     @Test
     void addLineDownEndStationSection() {
         // given
-        Section section = new Section(line, 가양역, 증미역, distance1);
+        Section section = new Section(line, 가양역, 증미역, tenDistance);
 
         // when
         line.addSection(section);
@@ -67,15 +68,15 @@ class LineTest {
         assertThat(sections.size()).isEqualTo(1);
         assertThat(section.getUpStation()).isEqualTo(가양역);
         assertThat(section.getDownStation()).isEqualTo(증미역);
-        assertThat(section.getDistance()).isEqualTo(distance1);
+        assertThat(section.getDistance()).isEqualTo(tenDistance);
     }
 
     @DisplayName("노선에 속해있는 역 목록 조회")
     @Test
     void getStations() {
-        line.addSection(new Section(line, 등촌역, 신목동역, distance1));
-        line.addSection(new Section(line, 증미역, 등촌역, distance2));
-        line.addSection(new Section(line, 가양역, 증미역, distance2));
+        line.addSection(new Section(line, 등촌역, 신목동역, tenDistance));
+        line.addSection(new Section(line, 증미역, 등촌역, fourDistance2));
+        line.addSection(new Section(line, 가양역, 증미역, fourDistance2));
 
         // when
         List<Station> stations = line.getStations();
@@ -88,8 +89,8 @@ class LineTest {
     @Test
     void removeSection() {
         // given
-        line.addSection(new Section(line, 가양역, 증미역, distance1));
-        line.addSection(new Section(line, 증미역, 등촌역, distance2));
+        line.addSection(new Section(line, 가양역, 증미역, tenDistance));
+        line.addSection(new Section(line, 증미역, 등촌역, fourDistance2));
 
         // when
         line.removeSection(등촌역);
@@ -98,5 +99,20 @@ class LineTest {
         List<Section> sections = line.getSections();
         assertThat(sections.size()).isEqualTo(1);
         assertThat(sections.get(0).getDownStation()).isEqualTo(증미역);
+    }
+
+    @DisplayName("지하철역 사이에 새로운 구간 추가 시 기존 역 사이 길이 이상일 수 없음.")
+    @Test
+    void exceptionAddLineBetweenSection() {
+        // given
+        Section section1 = new Section(line, 가양역, 등촌역, tenDistance);
+        Section section2 = new Section(line, 가양역, 증미역, tenDistance);
+
+        // when
+        line.addSection(section1);
+
+        // then
+        assertThatThrownBy(() -> line.addSection(section2))
+                .isInstanceOf(AddSectionException.class);
     }
 }

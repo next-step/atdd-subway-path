@@ -112,6 +112,23 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
+    /**
+     * When 역 사이에 새로운 구간 추가를 요청하면,
+     * Then 사이에 새로운 구간이 추가되고, 조회 시 상행 종점부터 하행 종점까지 순서대로 조회된다.
+     */
+    @DisplayName("지하철역 사이에 새로운 구간 추가 시 기존 역 사이 길이 이상일 수 없음.")
+    @Test
+    void exceptionAddLineBetweenSection() {
+        // when
+        Long 논현역 = 지하철역_생성_요청("논현").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(논현역, 강남역, 10));
+        Long 신논현역 = 지하철역_생성_요청("신논현").jsonPath().getLong("id");
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(논현역, 신논현역, 10));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId, int distance) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
