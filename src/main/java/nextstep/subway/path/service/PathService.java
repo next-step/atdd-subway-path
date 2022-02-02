@@ -9,6 +9,7 @@ import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.exception.StationNotFoundException;
 import nextstep.subway.station.repository.StationRepository;
 import org.jgrapht.GraphPath;
+import org.jgrapht.graph.DefaultWeightedEdge;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +24,7 @@ public class PathService {
     private final StationRepository stationRepository;
     private final LineRepository lineRepository;
 
-    public PathResponse findShortestPath(Long source, Long target) {
+    public PathResponse findShortestPath(long source, long target) {
 
         Station startStation = findStationById(source);
         Station endStation = findStationById(target);
@@ -35,7 +36,7 @@ public class PathService {
                 .edgeList(lineRepository.findAll())
                 .build();
 
-        GraphPath graphPath = PathFinder.of(pathFinderRequest).searchShortestPath();
+        GraphPath<Station, DefaultWeightedEdge> graphPath = PathFinder.of(pathFinderRequest).searchShortestPath();
         List<Station> resultStations = graphPath.getVertexList();
 
         List<StationResponse> stationResponses = resultStations.stream()

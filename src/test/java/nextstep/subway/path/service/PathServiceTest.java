@@ -123,6 +123,7 @@ public class PathServiceTest {
         assertThat(stationIds).containsExactly(교대역.getId(), 남부터미널역.getId(), 양재역.getId());
     }
 
+    // 이 부분은 PathFinderTest에 있으므로 이제 필요하지 않다고 느껴짐
     @Test
     void 출발역_도착역_같은경우() {
         // given
@@ -135,6 +136,7 @@ public class PathServiceTest {
                 .hasMessage(PathFinder.SAME_STATION_MESSAGE);
     }
 
+    // 이 부분은 PathFinderTest로 검증을 할 수 없으므로 serviceTest에서 검증할 테스트로 보임
     @Test
     void 등록되지_않은_역을_조회하는_경우() {
         // given
@@ -148,6 +150,7 @@ public class PathServiceTest {
                 .hasMessage(StationNotFoundException.MESSAGE + 구로역.getId());
     }
 
+    // 이 부분은 PathFinderTest에 있으므로 이제 필요하지 않다고 느껴짐
     @Test
     void 출발역_도착역이_연결되지않은_경우() {
         // given

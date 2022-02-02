@@ -29,12 +29,12 @@ public class PathFinder {
         return new PathFinder(request);
     }
 
-    public GraphPath searchShortestPath() {
+    public GraphPath<Station, DefaultWeightedEdge> searchShortestPath() {
         validateFindBefore(request);
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = getGraphByRequest(request);
 
-        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-        GraphPath graphPath = dijkstraShortestPath.getPath(request.startStation, request.endStation);
+        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
+        GraphPath<Station, DefaultWeightedEdge> graphPath = dijkstraShortestPath.getPath(request.startStation, request.endStation);
         validateFindAfter(graphPath);
 
         return graphPath;
