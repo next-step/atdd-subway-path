@@ -1,5 +1,7 @@
 package nextstep.subway.applicaion;
 
+import nextstep.fake.LineFakeRepository;
+import nextstep.fake.StationFakeRepository;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
@@ -18,16 +20,14 @@ import static nextstep.subway.utils.LineStepUtil.기존색상;
 import static nextstep.subway.utils.StationStepUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
 class SectionServiceTest {
 
-    @Autowired
-    LineRepository lineRepository;
+    LineFakeRepository lineFakeRepository = new LineFakeRepository();
 
-    @Autowired
-    StationRepository stationRepository;
+    StationFakeRepository stationFakeRepository = new StationFakeRepository();
 
     SectionService sectionService;
+    LineService lineService;
 
     Station 기존_지하철;
     Station 새로운_지하철;
@@ -35,11 +35,11 @@ class SectionServiceTest {
 
     @BeforeEach
     void setUp() {
-        기존_지하철 = stationRepository.save(new Station(기존지하철));
-        새로운_지하철 = stationRepository.save(new Station(새로운지하철));
+        기존_지하철 = stationFakeRepository.save(new Station(기존지하철));
+        새로운_지하철 = stationFakeRepository.save(new Station(새로운지하철));
 
-        sectionService = new SectionService(lineRepository, stationRepository);
-        LineService lineService = new LineService(lineRepository, stationRepository);
+        sectionService = new SectionService(lineFakeRepository, stationFakeRepository);
+        lineService = new LineService(lineFakeRepository, stationFakeRepository);
 
         LineRequest 라인_등록_파라미터 = LineRequest.of(기존노선, 기존색상,기존_지하철,새로운_지하철, 역간_거리);
 
@@ -55,7 +55,7 @@ class SectionServiceTest {
     @Test
     void 구간_등록() {
         //given
-        Station 처음_보는_지하철_1 = stationRepository.save(new Station("처음보는지하철1"));
+        Station 처음_보는_지하철_1 = stationFakeRepository.save(new Station("처음보는지하철1"));
         SectionRequest 구간_등록_파라미터 = new SectionRequest(기존_지하철.getId(),처음_보는_지하철_1.getId(),1);
 
         //when
@@ -63,5 +63,28 @@ class SectionServiceTest {
 
         //then
         assertThat(section.getUpStation().getId()).isEqualTo(기존_지하철.getId());
+    }
+
+    /**
+     * Given 노선에 구간을 2개 등록한다.
+     * When  구간에 등록된 역을 하나 삭제한다
+     * Then  구간이 삭제된다
+     */
+    @DisplayName("구간에 등록된 역을 삭제한다")
+    @Test
+    void 구간_삭제() {
+        //given
+        Station 처음_보는_지하철_1 = stationFakeRepository.save(new Station("처음보는지하철1"));
+        Station 처음_보는_지하철_2 = stationFakeRepository.save(new Station("처음보는지하철2"));
+        SectionRequest 구간_등록_파라미터 = new SectionRequest(기존_지하철.getId(),처음_보는_지하철_1.getId(),역간_거리/2);
+        SectionRequest 구간_등록_파라미터2 = new SectionRequest(처음_보는_지하철_1.getId(),처음_보는_지하철_2.getId(),역간_거리/4);
+        Section 구간_등록_응답_1 = sectionService.createSection(라인_등록_응답.getId(), 구간_등록_파라미터);
+        Section 구간_등록_응답_2 = sectionService.createSection(라인_등록_응답.getId(), 구간_등록_파라미터2);
+
+        //when
+        sectionService.deleteSection(라인_등록_응답.getId(),처음_보는_지하철_1.getId());
+
+        //then
+        assertThat(lineService.findById(라인_등록_응답.getId()).getStations().size()).isEqualTo(2);
     }
 }
