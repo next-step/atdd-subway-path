@@ -5,10 +5,17 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static nextstep.subway.model.StationEntitiesHelper.*;
+import static nextstep.subway.model.StationEntitiesHelper.강남역;
+import static nextstep.subway.model.StationEntitiesHelper.역삼역;
+import static nextstep.subway.model.StationEntitiesHelper.지하철역_목록_조회_요청;
+import static nextstep.subway.model.StationEntitiesHelper.지하철역_삭제_요청;
+import static nextstep.subway.model.StationEntitiesHelper.지하철역_생성_요청;
 import static org.apache.http.HttpHeaders.LOCATION;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 
 @DisplayName("지하철역 관리 기능")
 class StationAcceptanceTest extends AcceptanceTest {
