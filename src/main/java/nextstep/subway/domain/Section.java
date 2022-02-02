@@ -4,8 +4,6 @@ import nextstep.subway.exception.section.MinimumDistanceException;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -30,28 +28,16 @@ public class Section {
     protected Section() {
     }
 
-    private Section(Station upStation, Station downStation, int distance) {
+    private Section(Line line, Station upStation, Station downStation, int distance) {
         validateDistance(distance);
+        this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
     public static Section of(Line line, Station upStation, Station downStation, int distance) {
-        Section section = new Section(upStation, downStation, distance);
-        section.line = line;
-
-        return section;
-    }
-
-    public void updateUpStation(Station station, int distance) {
-        this.upStation = station;
-        updateDistance(distance);
-    }
-
-    public void updateDownStation(Station station, int distance) {
-        this.downStation = station;
-        updateDistance(distance);
+        return new Section(line, upStation, downStation, distance);
     }
 
     public boolean isMatchUpStation(Section section) {
@@ -60,11 +46,6 @@ public class Section {
 
     public boolean isMatchDownStation(Section section) {
         return Objects.equals(this.downStation, section.downStation);
-    }
-
-    private void updateDistance(int distance) {
-        validateDistance(distance);
-        this.distance = distance;
     }
 
     public boolean isContainStation(Station station) {
@@ -80,16 +61,12 @@ public class Section {
         return upStation;
     }
 
-    public int getDistance() {
-        return distance;
-    }
-
     public Station getDownStation() {
         return downStation;
     }
 
-    public List<Station> getStations() {
-        return Arrays.asList(upStation, downStation);
+    public int getDistance() {
+        return distance;
     }
 
     private void validateDistance(int distance) {
