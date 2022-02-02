@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.exception.DeleteSectionException;
 import nextstep.subway.exception.DuplicateSectionException;
 import nextstep.subway.exception.SectionDistanceNotValidException;
+import nextstep.subway.exception.SectionValidException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -18,6 +19,10 @@ public class Sections {
     public void add(Section section) {
         if (hasSameSection(section)) {
             throw new DuplicateSectionException();
+        }
+
+        if (!isValidateSection(section)) {
+            throw new SectionValidException();
         }
 
         Station upStation = section.getUpStation();
@@ -58,6 +63,19 @@ public class Sections {
         }
 
         this.sections.add(section);
+    }
+
+    private boolean isValidateSection(Section section) {
+        if (sections.isEmpty()) {
+            return true;
+        }
+
+        List<Station> allStations = getAllStations();
+
+        boolean containsUpStation = allStations.contains(section.getUpStation());
+        boolean containsDownStation = allStations.contains(section.getDownStation());
+
+        return containsUpStation || containsDownStation;
     }
 
     private boolean hasSameSection(Section section) {
