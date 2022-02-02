@@ -124,12 +124,12 @@ public class LineSteps {
     }
 
     public static void 지하철_노선에_구간등록_실패됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertStatus(response, HttpStatus.BAD_REQUEST);
     }
 
     public static void 지하철_노선에_구간_제거됨(Long lineId, Long ... stationIds) {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineId);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertStatus(response, HttpStatus.OK);
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(stationIds);
     }
 
