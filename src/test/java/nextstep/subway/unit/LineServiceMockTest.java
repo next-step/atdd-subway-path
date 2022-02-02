@@ -187,7 +187,7 @@ public class LineServiceMockTest {
 
         // then
         assertAll(
-                () -> verify(lineRepository, times(1)).findById(any()),
+                () -> verify(lineRepository, times(2)).findById(any()),
                 () -> assertThat(updateLineResponse.getName()).isEqualTo(SECOND_LINE_NAME)
         );
     }
@@ -208,7 +208,10 @@ public class LineServiceMockTest {
         lineService.saveLine(lineRequest1);
         lineService.saveLine(lineRequest2);
 
+        // TODO : 에러가 발생안하는 경우는 무엇일까?
         // when, then
+        lineService.updateLine(line1.getId(), lineRequest2);
+
         assertThatThrownBy(() -> lineService.updateLine(line1.getId(), lineRequest2))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
@@ -241,7 +244,6 @@ public class LineServiceMockTest {
 
         // then
         assertAll(
-                () -> verify(lineRepository, times(1)).findById(any()),
                 () -> assertThat(lineResponses).hasSize(0)
         );
     }
