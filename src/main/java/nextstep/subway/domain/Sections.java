@@ -27,7 +27,8 @@ public class Sections {
         Section section = sections.stream()
                 .filter(s -> {
                             return s.getUpStation().equals(newSection.getUpStation())
-                                    || s.getDownStation().equals(newSection.getUpStation());
+                                    || s.getDownStation().equals(newSection.getUpStation())
+                                    || s.getUpStation().equals(newSection.getDownStation());
                         }
                 )
                 .findAny()
