@@ -68,6 +68,7 @@ class LineServiceMockTest {
         // line.findLineById 메서드를 통해 검증
         LineResponse response = lineService.findById(구호선_ID);
         List<StationResponse> stations = response.getStations();
+        System.out.println(stations);
         assertThat(stations.size()).isEqualTo(2);
         assertThat(response.getStations().get(0).getName()).isEqualTo("가양역");
     }

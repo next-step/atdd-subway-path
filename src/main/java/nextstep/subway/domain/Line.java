@@ -56,12 +56,55 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        List<Station> stations = sections.stream()
+        return getStations(getFirstSection());
+    }
+
+    private List<Station> getStations(Section firstSection) {
+        List<Station> stations = new ArrayList<>();
+        Station firstUpStation = firstSection.getUpStation();
+        Station firstDownStation = firstSection.getDownStation();
+        stations.add(firstUpStation);
+
+        // 2. 상행 종점 구간 역 추가
+        for (Section section : sections) {
+            if (firstDownStation.equals(section.getUpStation())) {
+                stations.add(section.getUpStation());
+            }
+        }
+
+        // 3. 하행 종점역과 구간의 상행역이 같은 역을 하행 종점역으로 추가
+        for (int i = 0; i < stations.size(); i++) {
+            for (Section section : sections) {
+                if (stations.get(stations.size() - 1).equals(section.getUpStation())) {
+                    stations.add(section.getDownStation());
+                }
+            }
+        }
+        return stations;
+    }
+
+    // 1. 상행 종점 구간 조회
+    private Section getFirstSection() {
+        List<Station> downStations = getDownStations();
+        for (Section section : sections) {
+            int count = 0;
+            for (Station downStation : downStations) {
+                if (section.getUpStation().equals(downStation)) {
+                    count++;
+                    break;
+                }
+            }
+            if (count == 0) {
+                return section;
+            }
+        }
+        return sections.get(0);
+    }
+
+    private List<Station> getDownStations() {
+        return sections.stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
-
-        stations.add(0, sections.get(0).getUpStation());
-        return stations;
     }
 
     public Long getId() {

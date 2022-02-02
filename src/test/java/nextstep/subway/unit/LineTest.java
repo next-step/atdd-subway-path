@@ -18,6 +18,7 @@ class LineTest {
     Station 가양역;
     Station 증미역;
     Station 등촌역;
+    Station 신목동역;
     Line line;
     int distance1;
     int distance2;
@@ -27,10 +28,12 @@ class LineTest {
         가양역 = new Station("가양역");
         증미역 = new Station("증미역");
         등촌역 = new Station("등촌역");
+        신목동역 = new Station("신목동역");
         line = new Line("9호선", "금색");
         distance1 = 10;
         distance2 = 20;
     }
+
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
     @Test
     void addSection() {
@@ -50,14 +53,15 @@ class LineTest {
     @DisplayName("노선에 속해있는 역 목록 조회")
     @Test
     void getStations() {
-        line.addSection(new Section(line, 가양역, 증미역, distance1));
+        line.addSection(new Section(line, 등촌역, 신목동역, distance1));
         line.addSection(new Section(line, 증미역, 등촌역, distance2));
+        line.addSection(new Section(line, 가양역, 증미역, distance2));
 
         // when
         List<Station> stations = line.getStations();
 
         // then
-        List<Station> exceptedStations = Arrays.asList(가양역, 증미역, 등촌역);
+        List<Station> exceptedStations = Arrays.asList(가양역, 증미역, 등촌역, 신목동역);
         assertThat(stations).isEqualTo(exceptedStations);
     }
 

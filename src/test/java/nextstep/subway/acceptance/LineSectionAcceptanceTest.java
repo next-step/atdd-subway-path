@@ -64,19 +64,21 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 기존 상행 종점역에 새로운 구간 추가를 요청하면,
-     * Then 상행 종점역에 새로운 구간이 추가된다.
+     * Then 상행 종점역에 새로운 구간이 추가되고, 조회 시 상행 종점부터 하행 종점까지 순서대로 조회된다.
      */
     @DisplayName("지하철 노선의 상행 종점역으로 새로운 구간 추가")
     @Test
     void addLineUpEndStationSection() {
         // when
-//        Long 신논현역 = 지하철역_생성_요청("신논현").jsonPath().getLong("id");
-//        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역));
-//
-//        // then
-//        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-//        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신논현역, 강남역, 양재역);
+        Long 신논현역 = 지하철역_생성_요청("신논현").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역));
+        Long 논현역 = 지하철역_생성_요청("논현").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(논현역, 신논현역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).contains(신논현역, 논현역, 강남역, 양재역);
     }
 
     /**

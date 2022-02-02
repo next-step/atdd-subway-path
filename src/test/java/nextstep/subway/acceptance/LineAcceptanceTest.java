@@ -31,12 +31,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선 생성을 요청 하고,
-     * Given 역 사이에 구간 추가 요청을 하고,
-     * Given 새로운 지하철 노선 생성을 요청 하고,
-     * Given 역 사이에 구간 추가 요청을 하고,
+     * Given 지하철 노선 생성을 요청 하고
+     * Given 새로운 지하철 노선 생성을 요청 하고
      * When 지하철 노선 목록 조회를 요청 하면
-     * Then 두 노선이 포함된 지하철 노선 목록을 응답하고, 상행 종점역 부터 하행 종점역 순으로 역 정보를 응답한다.
+     * Then 두 노선이 포함된 지하철 노선 목록을 응답받는다
      */
     @DisplayName("지하철 노선 목록 조회")
     @Test
@@ -54,10 +52,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선 생성을 요청 하고,
-     * Given 역 사이에 구간 추가 요청을 하고,
+     * Given 지하철 노선 생성을 요청 하고
      * When 생성한 지하철 노선 조회를 요청 하면
-     * Then 생성한 지하철 노선의 역을 상행 종점역 부터 하행 종점역 순으로 역 정보를 응답한다.
+     * Then 생성한 지하철 노선을 응답받는다
      */
     @DisplayName("지하철 노선 조회")
     @Test
