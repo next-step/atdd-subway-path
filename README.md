@@ -35,3 +35,9 @@ npm run dev
 ```
 ./gradlew bootRun
 ```
+
+---
+### step0 생각해보기
+LineServiceMockTest와 LineServiceTest의 addSection테스트를 완성시켜야한다.
+같은 테스트지만 mock테스트는 stub이용, 그냥 테스트는 실제 객체를 이용하는 차이가 있다.
+결과적으로 협력객체만 차이가 생길 뿐, 전체 테스트 로직의 흐름은 동일하다.
