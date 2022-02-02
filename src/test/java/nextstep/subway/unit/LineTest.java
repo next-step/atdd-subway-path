@@ -28,10 +28,8 @@ class LineTest {
                 파란색
         );
 
-
         // when
         일호선_노선.addSection(
-                일호선_노선,
                 new Station(동암역),
                 new Station(부평역),
                 10
@@ -74,11 +72,7 @@ class LineTest {
 
         Line 일호선_라인 = new Line(
                 일호선,
-                파란섹
-        );
-
-        일호선_라인.addSection(
-                일호선_라인,
+                파란섹,
                 동암역,
                 부평역,
                 10
@@ -114,25 +108,19 @@ class LineTest {
 
         Line 일호선_라인 = new Line(
                 일호선,
-                파란섹
-        );
-
-        일호선_라인.addSection(
-                일호선_라인,
+                파란섹,
                 동암역,
                 부평역,
                 10
         );
 
         일호선_라인.addSection(
-                일호선_라인,
                 부평역,
                 주안역,
                 5
         );
 
         일호선_라인.addSection(
-                일호선_라인,
                 주안역,
                 백운역,
                 7

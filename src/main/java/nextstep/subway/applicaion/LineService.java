@@ -73,11 +73,10 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId)
+        Line findLine = lineRepository.findById(lineId)
                                   .orElseThrow(IllegalArgumentException::new);
 
-        line.addSection(
-                line,
+        findLine.addSection(
                 upStation,
                 downStation,
                 sectionRequest.getDistance()
