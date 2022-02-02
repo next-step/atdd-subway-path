@@ -28,6 +28,7 @@ public class SectionService {
         return section;
     }
 
+    @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(NotFoundException::new);
         line.deleteSection(stationId);

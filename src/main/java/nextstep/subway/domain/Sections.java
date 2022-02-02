@@ -12,6 +12,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Embeddable
 public class Sections {
@@ -27,13 +28,13 @@ public class Sections {
         duplicationSection(newSection);
         notInStationOfSections(newSection);
 
-        if (isDownStation(newSection.getUpStation().getId())) {
+        if (isLastDownSection(newSection.getUpStation().getId())) {
             //맨 뒤에 붙는 경우
             sections.add(newSection);
             return;
         }
 
-        if (isUpStation(newSection.getDownStation().getId())) {
+        if (isLastUpSection(newSection.getDownStation().getId())) {
             //맨 앞에 붙는 경우
             sections.add(0, newSection);
             return;
@@ -51,6 +52,22 @@ public class Sections {
             return;
         }
 
+    }
+
+    private boolean isLastDownSection(Long id) {
+        return sections.stream().filter(section ->
+                section.isSameDownStation(id)).count() == 1 &&
+                sections.stream().filter(section ->
+                        section.isSameUpStation(id)).count() == 0
+                ;
+    }
+
+    private boolean isLastUpSection(Long id) {
+        return sections.stream().filter(section ->
+                section.isSameDownStation(id)).count() == 0 &&
+                sections.stream().filter(section ->
+                        section.isSameUpStation(id)).count() == 1
+                ;
     }
 
     private void notInStationOfSections(Section newSection) {
@@ -119,25 +136,47 @@ public class Sections {
         if (isLastSection()) {
             throw new BusinessException("마지막 구간 삭제 불가", HttpStatus.BAD_REQUEST);
         }
-        int count = countStation(stationId);
-        deleteSection(stationId, count);
+        //마지막 역 삭제
+        if (isLastDownSection(stationId)) {
+            Section sectionByUpStation = findLastSection();
+            sections.remove(sectionByUpStation);
+            return;
+        }
+
+        //처음 역 삭제
+        if (isLastUpSection(stationId)) {
+            Section sectionByUpStation = findFirstSection();
+            sections.remove(sectionByUpStation);
+            return;
+        }
+
+        //중간 역 삭제
+        deleteAndSutureSection(stationId);
     }
 
-    private void deleteSection(Long stationId, int count) {
-        int lastDownStation = 1;
-        if (count == lastDownStation) {
-            Section findSection = sections
-                    .stream()
-                    .filter(section -> section.isSameDownStation(stationId))
-                    .findFirst()
-                    .orElse(null);
+    private void deleteAndSutureSection(Long stationId) {
+        Section findSection = findSectionByUpStation(stationId);
+        int index = sections.indexOf(findSection);
+        int frontIndex = index - 1;
+        int behindIndex = index + 1;
+
+        if(frontIndex < 0 || behindIndex >= sections.size()){
             sections.remove(findSection);
             return;
         }
-        throw new NotLastSectionException();
+
+
+        Section frontSection = sections.get(frontIndex);
+
+        sections.remove(findSection);
+        sections.remove(frontSection);
+
+        Section newSection = Section.of(frontSection.getUpStation(), findSection.getDownStation(), frontSection.getDistance() + findSection.getDistance());
+        newSection.updateLine(findSection.getLine());
+        sections.add(frontIndex, newSection);
     }
 
-    public int countStation(Long stationId){
+    public int countStation(Long stationId) {
         return (int) sections.stream()
                 .filter(section ->
                         section.isSameUpStation(stationId) || section.isSameDownStation(stationId))
@@ -183,6 +222,13 @@ public class Sections {
     public Section findFirstSection() {
         int lastOne = 1;
         return sections.stream().filter(section -> countStation(section.getUpStation().getId()) == lastOne)
+                .findFirst()
+                .orElseThrow(BusinessException::new);
+    }
+
+    private Section findLastSection() {
+        int lastOne = 1;
+        return sections.stream().filter(section -> countStation(section.getDownStation().getId()) == lastOne)
                 .findFirst()
                 .orElseThrow(BusinessException::new);
     }

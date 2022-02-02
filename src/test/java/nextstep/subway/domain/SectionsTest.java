@@ -202,4 +202,47 @@ public class SectionsTest {
             구간_모음.addSection(Section.of(처음_보는_역1, 하행역, Integer.MAX_VALUE));
         });
     }
+
+    /**
+     * Given 2개의 구간을 추가한다
+     * When  구간의 중간역을 삭제한다
+     * Then  삭제가 완료된다
+     */
+    @DisplayName("구간의 중간역도 삭제가 가능하다")
+    @Test
+    void 구간의_중간역은_삭제가_가능하다(){
+        //given
+        Station 처음_보는_역1 = new Station(Long.MAX_VALUE, "처음_보는_역1");
+        Station 처음_보는_역2 = new Station(Long.MIN_VALUE, "처음_보는_역2");
+        구간_모음.addSection(Section.of(상행역, 처음_보는_역1, 역간_거리 /2));
+        구간_모음.addSection(Section.of(처음_보는_역1, 처음_보는_역2, 역간_거리 /4));
+
+        //when
+        구간_모음.deleteSection(처음_보는_역1.getId());
+
+        //
+        assertThat(구간_모음.getSize()).isEqualTo(2);
+    }
+
+    /**
+     * Given 2개의 구간을 추가한다
+     * When  구간의 처음역과 마지막역을 삭제한다
+     * Then  삭제가 완료된다
+     */
+    @DisplayName("구간의 처음역도 삭제가 가능하다")
+    @Test
+    void 구간의_처음역은_삭제가_가능하다(){
+        //given
+        Station 처음_보는_역1 = new Station(Long.MAX_VALUE, "처음_보는_역1");
+        Station 처음_보는_역2 = new Station(Long.MIN_VALUE, "처음_보는_역2");
+        구간_모음.addSection(Section.of(상행역, 처음_보는_역1, 역간_거리 /2));
+        구간_모음.addSection(Section.of(처음_보는_역1, 처음_보는_역2, 역간_거리 /4));
+
+        //when
+        구간_모음.deleteSection(상행역.getId());
+        구간_모음.deleteSection(하행역.getId());
+
+        //
+        assertThat(구간_모음.getSize()).isEqualTo(1);
+    }
 }
