@@ -4,6 +4,9 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.springframework.http.HttpStatus;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_조회_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,4 +22,13 @@ public class LineSectionSteps {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(startStationId, endStationId);
     }
+
+    public static Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", upStationId + "");
+        params.put("downStationId", downStationId + "");
+        params.put("distance", distance + "");
+        return params;
+    }
+
 }

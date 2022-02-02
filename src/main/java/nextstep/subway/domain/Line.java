@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 @Entity
 public class Line extends BaseEntity {
@@ -70,9 +71,6 @@ public class Line extends BaseEntity {
     }
 
     public void removeSection(Station station) {
-        // 네이밍... 괜찮은 걸까요? 혹시 이런 상황에서 추천 해 주실만한 메소드 네이밍이 있을까요?
-        // 이런 private method 를 인수테스트에서 Steps 분리하듯이 해당 Entity 에 종속적인 Util 로 나누어도 괜찮다고 생각하시나요?
-        // 약간 public method 를 제외하고는 전부 분리해 내고 싶은데...
         validRemove(station);
         removeTerminus(station);
         removeMiddleComponent(station);
@@ -98,7 +96,7 @@ public class Line extends BaseEntity {
     }
 
 
-    public Section getSectionByUpStation(Station upStation) {
+    protected Section getSectionByUpStation(Station upStation) {
         return sections.stream()
                 .filter(section -> section.getUpStation().equals(upStation))
                 .findFirst()
@@ -158,11 +156,15 @@ public class Line extends BaseEntity {
 
     private void removeTerminus(Station station) {
         sections.stream()
-                .filter(section -> (section.equals(getStartSection()) && station.equals(section.getUpStation())) || (section.equals(getEndSection()) && station.equals(section.getDownStation())))
+                .filter(isStartStationOrEndStation(station))
                 .findFirst()
                 .ifPresent(section -> {
                     sections.remove(section);
                 });
+    }
+
+    private Predicate<Section> isStartStationOrEndStation(Station station) {
+        return section -> (section.equals(getStartSection()) && station.equals(section.getUpStation())) || (section.equals(getEndSection()) && station.equals(section.getDownStation()));
     }
 
     private void removeMiddleComponent(Station station) {
