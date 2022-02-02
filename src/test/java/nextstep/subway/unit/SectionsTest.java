@@ -60,8 +60,8 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("기존 구간의 역을 기준으로 새로운 구간을 추가")
-    void addExistStationAddSection() {
+    @DisplayName("기존 구간의 역을 기준으로 새로운 구간을 추가 (하행역이 사이에 들어가는 경우)")
+    void addBetweenDownStationSection() {
         Section section1 = new Section(line, 강남역, 역삼역, 7);
         Section section2 = new Section(line, 강남역, 선릉역, 4);
         Sections sections = new Sections();
@@ -70,12 +70,36 @@ class SectionsTest {
         sections.add(section2);
 
         List<Section> allSections = sections.getAllSections();
-        assertThat(allSections.get(0).getDistance()).isEqualTo(4);
-        assertThat(allSections.get(0).getUpStation()).isEqualTo(강남역);
-        assertThat(allSections.get(0).getDownStation()).isEqualTo(선릉역);
-        assertThat(allSections.get(1).getDistance()).isEqualTo(3);
-        assertThat(allSections.get(1).getUpStation()).isEqualTo(선릉역);
-        assertThat(allSections.get(1).getDownStation()).isEqualTo(역삼역);
+        Section firstSection = getFirstSection(allSections, 선릉역);
+        Section secondSection = getSecondSection(allSections, firstSection);
+
+        assertThat(firstSection.getDistance()).isEqualTo(3);
+        assertThat(firstSection.getUpStation()).isEqualTo(선릉역);
+        assertThat(firstSection.getDownStation()).isEqualTo(역삼역);
+        assertThat(secondSection.getDistance()).isEqualTo(4);
+        assertThat(secondSection.getUpStation()).isEqualTo(강남역);
+        assertThat(secondSection.getDownStation()).isEqualTo(선릉역);
+    }
+
+    @Test
+    @DisplayName("기존 구간의 역을 기준으로 새로운 구간을 추가 (상행역이 사이에 들어가는 경우)")
+    void addBetweenUpStationSection() {
+        Section section1 = new Section(line, 강남역, 선릉역, 7);
+        Section section2 = new Section(line, 역삼역, 선릉역, 4);
+        Sections sections = new Sections();
+        sections.add(section1);
+        sections.add(section2);
+
+        List<Section> allSections = sections.getAllSections();
+        Section firstSection = getFirstSection(allSections, 강남역);
+        Section secondSection = getSecondSection(allSections, firstSection);
+
+        assertThat(firstSection.getDistance()).isEqualTo(3);
+        assertThat(firstSection.getUpStation()).isEqualTo(강남역);
+        assertThat(firstSection.getDownStation()).isEqualTo(역삼역);
+        assertThat(secondSection.getDistance()).isEqualTo(4);
+        assertThat(secondSection.getUpStation()).isEqualTo(역삼역);
+        assertThat(secondSection.getDownStation()).isEqualTo(선릉역);
     }
 
     @Test
@@ -89,17 +113,8 @@ class SectionsTest {
         sections.add(section2);
 
         List<Section> allSections = sections.getAllSections();
-        Section firstSection = allSections
-            .stream()
-            .filter(it -> it.getUpStation().equals(선릉역))
-            .findFirst()
-            .orElseThrow(SectionNotFoundException::new);
-
-        Section secondSection = allSections
-            .stream()
-            .filter(it -> !it.equals(firstSection))
-            .findFirst()
-            .orElseThrow(SectionNotFoundException::new);
+        Section firstSection = getFirstSection(allSections, 선릉역);
+        Section secondSection = getSecondSection(allSections, firstSection);
 
 
         assertThat(firstSection.getDistance()).isEqualTo(4);
@@ -121,18 +136,8 @@ class SectionsTest {
         sections.add(section2);
 
         List<Section> allSections = sections.getAllSections();
-        Section firstSection = allSections
-            .stream()
-            .filter(it -> it.getUpStation().equals(강남역))
-            .findFirst()
-            .orElseThrow(SectionNotFoundException::new);
-
-        Section secondSection = allSections
-            .stream()
-            .filter(it -> !it.equals(firstSection))
-            .findFirst()
-            .orElseThrow(SectionNotFoundException::new);
-
+        Section firstSection = getFirstSection(allSections, 강남역);
+        Section secondSection = getSecondSection(allSections, firstSection);
 
         assertThat(firstSection.getDistance()).isEqualTo(7);
         assertThat(firstSection.getUpStation()).isEqualTo(강남역);
@@ -140,5 +145,21 @@ class SectionsTest {
         assertThat(secondSection.getDistance()).isEqualTo(4);
         assertThat(secondSection.getUpStation()).isEqualTo(역삼역);
         assertThat(secondSection.getDownStation()).isEqualTo(선릉역);
+    }
+
+    private Section getFirstSection(List<Section> allSections, Station station) {
+        return allSections
+            .stream()
+            .filter(it -> it.getUpStation().equals(station))
+            .findFirst()
+            .orElseThrow(SectionNotFoundException::new);
+    }
+
+    private Section getSecondSection(List<Section> allSections, Section firstSection) {
+        return allSections
+            .stream()
+            .filter(it -> !it.equals(firstSection))
+            .findFirst()
+            .orElseThrow(SectionNotFoundException::new);
     }
 }

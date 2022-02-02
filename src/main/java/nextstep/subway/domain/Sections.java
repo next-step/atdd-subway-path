@@ -17,28 +17,45 @@ public class Sections {
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
 
-        Optional<Section> sameUpStation = findSectionEqualsUpStation(upStation);
+        Optional<Section> betweenDownStation = findSectionEqualsUpStation(upStation);
 
-        if (sameUpStation.isPresent()) {
-            Section existSection = sameUpStation.get();
+        if (betweenDownStation.isPresent()) {
+            Section existSection = betweenDownStation.get();
             Station existDownStation = existSection.getDownStation();
             int existSectionDistance = existSection.getDistance();
-            int existSectionIndex = sections.indexOf(existSection);
 
             existSection.changeDownStationDistance(downStation, section.getDistance());
             section.changeStationDistance(downStation, existDownStation, existSectionDistance - section.getDistance());
 
-            this.sections.add(existSectionIndex + 1, section);
+            this.sections.add(section);
+            return;
+        }
+
+        Optional<Section> betweenUpStation = findSectionEqualsDownStation(downStation);
+        if (betweenUpStation.isPresent()) {
+            Section existSection = betweenUpStation.get();
+            int existSectionDistance = existSection.getDistance();
+            existSection.changeDownStationDistance(upStation, existSectionDistance - section.getDistance());
+            section.changeDistance(existSectionDistance - existSection.getDistance());
+
+            this.sections.add(section);
             return;
         }
 
         this.sections.add(section);
     }
 
-    private Optional<Section> findSectionEqualsUpStation(Station upStation) {
+    private Optional<Section> findSectionEqualsUpStation(Station station) {
         return sections
             .stream()
-            .filter(it -> it.getUpStation().equals(upStation))
+            .filter(it -> it.getUpStation().equals(station))
+            .findFirst();
+    }
+
+    private Optional<Section> findSectionEqualsDownStation(Station station) {
+        return sections
+            .stream()
+            .filter(it -> it.getDownStation().equals(station))
             .findFirst();
     }
 
