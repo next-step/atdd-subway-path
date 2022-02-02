@@ -4,9 +4,11 @@ import javax.persistence.*;
 
 @Entity
 public class Station extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
 
@@ -23,5 +25,9 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isSameName(final Station other) {
+        return name.equals(other.name);
     }
 }
