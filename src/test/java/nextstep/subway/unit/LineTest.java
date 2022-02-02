@@ -20,9 +20,9 @@ class LineTest {
 
     @BeforeEach
     void setup() {
-        군자역 = new Station("군자역");
-        아차산역 = new Station("아차산역");
-        광나루역 = new Station("광나루역");
+        군자역 = new Station(1L, "군자역");
+        아차산역 = new Station(2L, "아차산역");
+        광나루역 = new Station(3L, "광나루역");
         line = new Line("5호선", "보라색");
         line.getSections().add(Section.of(line, 군자역, 아차산역, 10));
     }
@@ -58,5 +58,14 @@ class LineTest {
     @DisplayName("구간이 목록에서 마지막 역 삭제")
     @Test
     void removeSection() {
+        // given
+        Section section = Section.of(line, 아차산역, 광나루역, 10);
+        line.addSection(section);
+
+        // when
+        line.removeSection(광나루역.getId());
+
+        // then
+        assertThat(line.getStations()).containsExactly(군자역, 아차산역);
     }
 }
