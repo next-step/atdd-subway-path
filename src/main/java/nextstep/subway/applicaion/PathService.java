@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -37,15 +35,8 @@ public class PathService {
         Station targetStation = stationRepository.findById(targetStationId).orElseThrow(IllegalArgumentException::new);
         List<Line> lines = lineRepository.findAll();
 
-        GraphPath<Long, DefaultWeightedEdge> path = pathFinder.getPath(lines, sourceStation, targetStation);
-        Map<Long, Station> stationIdToStation = stationRepository.findAllById(path.getVertexList())
-                .stream()
-                .collect(Collectors.toMap(Station::getId, it -> it));
+        GraphPath<Station, DefaultWeightedEdge> path = pathFinder.getPath(lines, sourceStation, targetStation);
 
-        List<Station> stations = path.getVertexList().stream()
-                .map(stationIdToStation::get)
-                .collect(Collectors.toList());
-
-        return new PathResponse(stations, path.getWeight());
+        return new PathResponse(path.getVertexList(), path.getWeight());
     }
 }

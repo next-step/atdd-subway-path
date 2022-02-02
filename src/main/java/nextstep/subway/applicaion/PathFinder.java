@@ -16,43 +16,43 @@ import java.util.stream.Collectors;
 @Component
 public class PathFinder {
 
-    public GraphPath<Long, DefaultWeightedEdge> getPath(List<Line> lines, Station sourceStation, Station targetStation) {
-        WeightedMultigraph<Long, DefaultWeightedEdge> graph = makeGraph(lines);
+    public GraphPath<Station, DefaultWeightedEdge> getPath(List<Line> lines, Station sourceStation, Station targetStation) {
+        WeightedMultigraph<Station, DefaultWeightedEdge> graph = makeGraph(lines);
 
-        DijkstraShortestPath<Long, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
-        GraphPath<Long, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(sourceStation.getId(), targetStation.getId());
+        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
+        GraphPath<Station, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(sourceStation, targetStation);
         validatePath(path);
 
         return path;
     }
 
-    private WeightedMultigraph<Long, DefaultWeightedEdge> makeGraph(final List<Line> lines) {
+    private WeightedMultigraph<Station, DefaultWeightedEdge> makeGraph(final List<Line> lines) {
         List<Section> sections = lines.stream()
                 .flatMap(it -> it.getSections().stream())
                 .collect(Collectors.toList());
 
-        WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         addVertexes(sections, graph);
         addEdges(sections, graph);
 
         return graph;
     }
 
-    private void addVertexes(final List<Section> sections, final WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
+    private void addVertexes(final List<Section> sections, final WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
         sections.stream()
-                .map(it -> it.getUpStation().getId())
+                .map(Section::getUpStation)
                 .forEach(graph::addVertex);
 
         sections.stream()
-                .map(it -> it.getDownStation().getId())
+                .map(Section::getDownStation)
                 .forEach(graph::addVertex);
     }
 
-    private void addEdges(final List<Section> sections, final WeightedMultigraph<Long, DefaultWeightedEdge> graph) {
-        sections.forEach(it -> graph.setEdgeWeight(graph.addEdge(it.getUpStation().getId(), it.getDownStation().getId()), it.getDistance()));
+    private void addEdges(final List<Section> sections, final WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
+        sections.forEach(it -> graph.setEdgeWeight(graph.addEdge(it.getUpStation(), it.getDownStation()), it.getDistance()));
     }
 
-    private void validatePath(final GraphPath<Long, DefaultWeightedEdge> path) {
+    private void validatePath(final GraphPath<Station, DefaultWeightedEdge> path) {
         if (Objects.isNull(path)) {
             throw new IllegalArgumentException();
         }
