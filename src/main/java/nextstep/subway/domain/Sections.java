@@ -17,13 +17,7 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
-        if (hasSameSection(section)) {
-            throw new DuplicateSectionException();
-        }
-
-        if (!isValidateSection(section)) {
-            throw new SectionValidException();
-        }
+        validateAddSection(section);
 
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
@@ -63,6 +57,16 @@ public class Sections {
         }
 
         this.sections.add(section);
+    }
+
+    private void validateAddSection(Section section) {
+        if (hasSameSection(section)) {
+            throw new DuplicateSectionException();
+        }
+
+        if (!isValidateSection(section)) {
+            throw new SectionValidException();
+        }
     }
 
     private boolean isValidateSection(Section section) {
