@@ -67,7 +67,7 @@ class LineTest {
         assertThat(sections.count()).isEqualTo(4);
     }
 
-    @DisplayName("구간이 목록에서 마지막 역 삭제")
+    @DisplayName("구간 목록에서 마지막 역 삭제")
     @Test
     void removeSection() {
         // given
@@ -83,6 +83,27 @@ class LineTest {
         // then
         assertThat(line.getSections().count()).isEqualTo(1);
     }
+
+    @DisplayName("구간 목록에서 중간역 삭제")
+    @Test
+    void removeSectionMiddle() {
+        // given
+        Line line = 지하철_라인_역_샘플();
+        Station newUpStation = StationSteps.사당역();
+        Station newDownStation = StationSteps.대림역();
+        line.addSection(newUpStation, newDownStation, 50);
+
+        Station newUpStation2 = StationSteps.대림역();
+        Station newDownStation2 = StationSteps.신도림역();
+        line.addSection(newUpStation2, newDownStation2, 40);
+
+        // when
+        line.removeSection(newUpStation);
+
+        // then
+        assertThat(line.getSections().count()).isEqualTo(2);
+    }
+
 
     private Line 지하철_라인_역_샘플() {
         Station upStation = StationSteps.강남역();

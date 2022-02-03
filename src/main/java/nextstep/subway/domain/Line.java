@@ -1,10 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.applicaion.dto.LineRequest;
-
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -28,7 +24,7 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        sections.add(new Section(this, upStation, downStation, distance));
+        sections.addSection(new Section(this, upStation, downStation, distance));
     }
 
     public void update(String name, String color) {
@@ -41,7 +37,7 @@ public class Line extends BaseEntity {
     }
 
     public void removeSection(Station station) {
-        sections.removeLastStation(station);
+        sections.removeSection(station);
     }
 
     public Long getId() {

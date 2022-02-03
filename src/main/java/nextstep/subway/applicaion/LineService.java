@@ -62,11 +62,12 @@ public class LineService {
         line.addSection(upStation, downStation, sectionRequest.getDistance());
     }
 
-    public void deleteSection(Long lineId, Long stationId) {
+    public void removeSectionByStationId(Long lineId, Long stationId) {
         Line line = getLine(lineId);
         Station station = stationService.findById(stationId);
         line.removeSection(station);
     }
+
 
     private Line getLine(Long lineId) {
         return lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);

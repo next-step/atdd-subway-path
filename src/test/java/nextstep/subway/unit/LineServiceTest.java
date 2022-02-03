@@ -70,7 +70,6 @@ public class LineServiceTest {
         lineService.addSection(노선_ID, newSectionRequest3);
         LineResponse lineResponse = lineService.findById(노선_ID);
 
-        System.out.println(lineResponse.toString());
         // then
         assertAll(
                 () -> assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName()),
