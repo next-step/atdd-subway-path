@@ -8,7 +8,6 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -17,6 +16,7 @@ public class Sections {
     public static final String WRONG_DISTANCE = "추가되는 구간의 거리가 기존의 거리보다 크거나 같을 수 없습니다.";
     public static final String REQUIRED_STATION = "하나라도 지하철이 포함되어 있어야 합니다.";
     public static final String UP_AND_DOWN_STATION_BOTH_CANNOT_EXISTS = "상행과 하행이 모두 존재할수 없습니다.";
+    public static final int MINIMUN_DISTANCE = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -54,10 +54,8 @@ public class Sections {
         }
 
         Section section = getFirstSection(this.sections.get(0));
-        List<Station> stations = new ArrayList<>();
-        addStations(section, stations);
 
-        return stations;
+        return getSortStations(section);
     }
 
     public void remove(Station station) {
@@ -114,8 +112,8 @@ public class Sections {
         addPreviousSectionByDownStation(line, newSection, section);
     }
 
-    private void validateDistance(Section newSection, Section section1) {
-        if ((section1.getDistance() - newSection.getDistance()) < 1) {
+    private void validateDistance(Section newSection, Section section) {
+        if ((section.getDistance() - newSection.getDistance()) < MINIMUN_DISTANCE) {
             throw new IllegalSectionArgumentException(WRONG_DISTANCE);
         }
     }
@@ -131,7 +129,8 @@ public class Sections {
         this.sections.add(index + 1, newSection);
     }
 
-    private void addStations(Section section, List<Station> stations) {
+    private List<Station> getSortStations(Section section) {
+        List<Station> stations = new ArrayList<>();
         stations.add(section.getUpStation());
         stations.add(section.getDownStation());
 
@@ -142,6 +141,8 @@ public class Sections {
             }
             stations.add(section.getDownStation());
         }
+
+        return stations;
     }
 
     private boolean isNextSection(Station station) {

@@ -73,10 +73,6 @@ public class Section {
         return this.upStation.equals(station);
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public void validationDownStation(Section section) {
         if (this.downStation == section.getDownStation() && this.upStation == section.getDownStation()) {
             throw new IllegalSectionArgumentException("추가되는 구간의 상행역 과 하행역이 현재 등록되어있는 역일 수 없습니다.");
