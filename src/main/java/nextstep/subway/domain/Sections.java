@@ -182,7 +182,7 @@ public class Sections {
 
     public Section getByDownStation(Station station) {
         return sections.stream()
-            .filter(section -> section.getDownStation() == station)
+            .filter(section -> section.getDownStation().equals(station))
             .findFirst()
             .orElseThrow(() -> new NoSuchElementException("일치하는 구간을 찾을 수 없습니다."));
     }
