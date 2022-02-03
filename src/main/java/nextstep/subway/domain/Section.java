@@ -81,6 +81,10 @@ public class Section {
         return Math.subtractExact(this.distance, other.distance);
     }
 
+    public int addDistance(final Section other) {
+        return Math.addExact(this.distance, other.distance);
+    }
+
     public boolean isUpStation(final Station station) {
         return upStation.equals(station);
     }
@@ -108,4 +112,5 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
 }
