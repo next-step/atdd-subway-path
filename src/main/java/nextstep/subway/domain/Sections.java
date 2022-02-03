@@ -160,7 +160,7 @@ public class Sections {
             .collect(Collectors.toList());
     }
 
-    public boolean isAvailableDelete() {
+    private boolean isAvailableDelete() {
         return sections.size() > 1;
     }
 
