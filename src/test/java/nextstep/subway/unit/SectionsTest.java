@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.AddSectionFailException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -73,7 +74,7 @@ class SectionsTest {
         Section newSection = Section.of(_5호선, 군자역, 광나루역, newSectionDistance);
 
         assertThatThrownBy(() -> sections.addSection(newSection))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(AddSectionFailException.class);
     }
 
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다")
@@ -83,7 +84,7 @@ class SectionsTest {
         Section newSection = Section.of(_5호선, 군자역, 아차산역, newSectionDistance);
 
         assertThatThrownBy(() -> sections.addSection(newSection))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(AddSectionFailException.class);
     }
 
     @DisplayName("상행역과 하행역이 노선에 모두 등록되어 있지 않다면 추가할 수 없다")
@@ -93,7 +94,7 @@ class SectionsTest {
         Section newSection = Section.of(_5호선, 광나루역, 천호역, newSectionDistance);
 
         assertThatThrownBy(() -> sections.addSection(newSection))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(AddSectionFailException.class);
     }
 
     @DisplayName("역 목록 조회")
