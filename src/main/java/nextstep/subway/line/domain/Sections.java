@@ -17,6 +17,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.common.domain.exception.ErrorMessage;
+import nextstep.subway.line.infrastructure.PathFinder;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -30,6 +31,10 @@ public class Sections {
     private List<Section> values = new ArrayList<>();
 
     protected Sections() {
+    }
+
+    public Sections(List<Section> values) {
+        this.values = values;
     }
 
     public void add(Section newSection) {
@@ -127,6 +132,16 @@ public class Sections {
                      .reduce(Distance::addition)
                      .map(Distance::getValue)
                      .orElse(0);
+    }
+
+    public Sections union(Sections thatSections) {
+        List<Section> newSections = new ArrayList<>(values);
+        newSections.addAll(thatSections.values);
+        return new Sections(newSections);
+    }
+
+    public Sections shortestPaths(PathFinder pathFinder) {
+        return pathFinder.findShortestPaths(values);
     }
 
     public int size() {
