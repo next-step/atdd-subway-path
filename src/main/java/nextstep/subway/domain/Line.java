@@ -80,6 +80,8 @@ public class Line extends BaseEntity {
 
         AtomicBoolean normalCondition = new AtomicBoolean(true);
 
+        checkDuplicateSections(newSection);
+
         insertBetweenSameUpStations(
                 newSection,
                 normalCondition
@@ -101,6 +103,31 @@ public class Line extends BaseEntity {
         );
 
         return sections;
+    }
+
+    private void checkDuplicateSections(Section newSection) {
+
+        Station prevDownStation = null;
+
+
+        for (Section section : sections) {
+            Station upStation = section
+                    .getUpStation();
+            Station downStation = section
+                    .getDownStation();
+
+            if (upStation.equals(newSection.getUpStation()) && downStation.equals(newSection.getDownStation())) {
+                throw new RuntimeException("이미 동일한 구간정보가 등록돼있어서 취소됐습니다.");
+            }
+
+            if (upStation.equals(prevDownStation)) {
+                if (downStation.equals(newSection.getDownStation())) {
+                    throw new RuntimeException("요청한 구간정보가 이미 간접적으로 연결돼있어서 취소됐습니다.");
+                }
+            }
+            prevDownStation = downStation;
+        }
+
     }
 
     private void insertLastDownStation(Section newSection, AtomicBoolean normalCondition) {

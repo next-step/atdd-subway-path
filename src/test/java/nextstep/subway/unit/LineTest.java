@@ -367,4 +367,62 @@ class LineTest {
         )).isInstanceOf(RuntimeException.class);
 
     }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void addSection7() {
+        // given
+        String 일호선 = "일호선";
+        String 노란색 = "노란색";
+        Station A역 = new Station("A역");
+        Station B역 = new Station("B역");
+        Station C역 = new Station("C역");
+
+        Line 일호선_라인 = new Line(
+                일호선,
+                노란색,
+                A역,
+                B역,
+                4
+        );
+
+        일호선_라인.addSection(
+                new Section(
+                        일호선_라인,
+                        B역,
+                        C역,
+                        3
+                ));
+
+        // when, then
+        assertAll(
+                () -> assertThatThrownBy(() -> 일호선_라인.addSection(
+                        new Section(
+                                일호선_라인,
+                                B역,
+                                C역,
+                                5
+                        )
+                )).isInstanceOf(RuntimeException.class),
+
+                () -> assertThatThrownBy(() -> 일호선_라인.addSection(
+                        new Section(
+                                일호선_라인,
+                                B역,
+                                C역,
+                                3
+                        )
+                )).isInstanceOf(RuntimeException.class),
+
+                () -> assertThatThrownBy(() -> 일호선_라인.addSection(
+                        new Section(
+                                일호선_라인,
+                                A역,
+                                C역,
+                                3
+                        )
+                )).isInstanceOf(RuntimeException.class)
+        );
+
+    }
 }
