@@ -74,6 +74,16 @@ class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다")
+    @Test
+    void addSectionFail2() {
+        int newSectionDistance = 3;
+        Section newSection = Section.of(_5호선, 군자역, 아차산역, newSectionDistance);
+
+        assertThatThrownBy(() -> sections.addSection(newSection))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
     @DisplayName("역 목록 조회")
     @Test
     void getStations() {
