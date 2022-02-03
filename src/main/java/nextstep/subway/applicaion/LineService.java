@@ -56,7 +56,7 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public SectionResponse saveSection(SectionRequest request, Long lineId) {
+    public SectionResponse addSection(SectionRequest request, Long lineId) {
         Line line = findLineById(lineId);
         Station upStation = findStationById(request.getUpStationId());
         Station downStation = findStationById(request.getDownStationId());
