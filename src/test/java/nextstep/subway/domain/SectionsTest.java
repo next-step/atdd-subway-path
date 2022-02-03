@@ -25,6 +25,17 @@ class SectionsTest {
         return Stream.of(Arguments.of(line, startingStation, endingStation, section));
     }
 
+    private static Stream<Arguments> provideArgumentsForVerifyingToAdd() {
+        Sections sections = new Sections();
+        Line line = new Line();
+        Station startingStation = new Station(1L, "강남역");
+        Station endingStation = new Station(2L, "사당역");
+        int distance = 10;
+        sections.add(new Section(line, startingStation, endingStation, distance));
+
+        return Stream.of(Arguments.of(sections, line, startingStation, endingStation, distance));
+    }
+
     @DisplayName("구간 추가")
     @ParameterizedTest
     @MethodSource("provideLineStationsAndSection")
@@ -36,6 +47,123 @@ class SectionsTest {
 
         // then
         assertThat(sections.getStations()).isEqualTo(List.of(startingStation, endingStation));
+    }
+
+    @DisplayName("노선 기점 역을 신규 구간의 하행 역으로 구간 추가")
+    @ParameterizedTest
+    @MethodSource("provideArgumentsForVerifyingToAdd")
+    void addWithNewStartingStation(Sections sections, Line line, Station startingStation, Station endingStation, int distance) {
+        // given
+        Station newStartingStation = new Station(3L, "역삼역");
+
+        // when
+        sections.add(new Section(line, newStartingStation, startingStation, distance));
+
+        // then
+        assertThat(sections.getStations()).isEqualTo(List.of(newStartingStation, startingStation, endingStation));
+    }
+
+    @DisplayName("노선 종점 역을 신규 구간의 상행 역으로 구간 추가")
+    @ParameterizedTest
+    @MethodSource("provideArgumentsForVerifyingToAdd")
+    void addWithNewEndingStation(Sections sections, Line line, Station startingStation, Station endingStation, int distance) {
+        // given
+        Station newEndingStation = new Station(3L, "역삼역");
+
+        // when
+        sections.add(new Section(line, endingStation, newEndingStation, distance));
+
+        // then
+        assertThat(sections.getStations()).isEqualTo(List.of(startingStation, endingStation, newEndingStation));
+    }
+
+    @DisplayName("노선 구간에 추가된 역을 상행 역으로 구간 추가")
+    @ParameterizedTest
+    @MethodSource("provideArgumentsForVerifyingToAdd")
+    void addWithNewDownStation(Sections sections, Line line, Station startingStation, Station endingStation, int distance) {
+        // given
+        Station newDownStation = new Station(3L, "역삼역");
+        int newDistance = distance - 1;
+
+        // when
+        sections.add(new Section(line, startingStation, newDownStation, newDistance));
+
+        // then
+        assertThat(sections.getStations()).isEqualTo(List.of(startingStation, newDownStation, endingStation));
+    }
+
+    @DisplayName("노선 구간에 추가된 역을 상행 역으로 기존 거리 이상 구간 추가")
+    @ParameterizedTest
+    @MethodSource("provideArgumentsForVerifyingToAdd")
+    void addWithNewDownStationButDistanceIsOver(Sections sections, Line line, Station startingStation, Station endingStation, int distance) {
+        // given
+        Station newDownStation = new Station(3L, "역삼역");
+
+        // when
+        Section newSection = new Section(line, startingStation, newDownStation, distance);
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() -> sections.add(newSection))
+                .withMessage("기존 구간 거리 이상 구간은 사이에 추가할 수 없습니다.");
+    }
+
+    @DisplayName("노선 구간에 추가된 역을 하행 역으로 구간 추가")
+    @ParameterizedTest
+    @MethodSource("provideArgumentsForVerifyingToAdd")
+    void addWithNewUpStation(Sections sections, Line line, Station startingStation, Station endingStation, int distance) {
+        // given
+        Station newUpStation = new Station(3L, "역삼역");
+        int newDistance = distance - 1;
+
+        // when
+        sections.add(new Section(line, newUpStation, endingStation, newDistance));
+
+        // then
+        assertThat(sections.getStations()).isEqualTo(List.of(startingStation, newUpStation, endingStation));
+    }
+
+    @DisplayName("노선 구간에 추가된 역을 하행 역으로 기존 거리 이상 구간 추가")
+    @ParameterizedTest
+    @MethodSource("provideArgumentsForVerifyingToAdd")
+    void addWithNewUpStationButDistanceIsOver(Sections sections, Line line, Station startingStation, Station endingStation, int distance) {
+        // given
+        Station newUpStation = new Station(3L, "역삼역");
+
+        // when
+        Section newSection = new Section(line, newUpStation, endingStation, distance);
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() -> sections.add(newSection))
+                .withMessage("기존 구간 거리 이상 구간은 사이에 추가할 수 없습니다.");
+    }
+
+    @DisplayName("노선 구간에 추가된 역을 상행, 하행 역으로 구간 추가")
+    @ParameterizedTest
+    @MethodSource("provideArgumentsForVerifyingToAdd")
+    void addWithDuplicatedStations(Sections sections, Line line, Station startingStation, Station endingStation, int distance) {
+        // given
+        // when
+        Section newSection = new Section(line, startingStation, endingStation, distance);
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() -> sections.add(newSection))
+                .withMessage("기존 구간에 속하는 역 만으로 구간의 상행, 하행 역을 지정할 수 없습니다.");
+    }
+
+    @DisplayName("노선 구간에 추가 되지 않은 역을 상행, 하행 역으로 구간 추가")
+    @ParameterizedTest
+    @MethodSource("provideArgumentsForVerifyingToAdd")
+    void addWithAllNewStations(Sections sections, Line line, Station startingStation, Station endingStation, int distance) {
+        // given
+        Station newUpStation = new Station(3L, "역삼역");
+        Station newDownStation = new Station(4L, "잠실역");
+
+        // when
+        Section newSection = new Section(line, newUpStation, newDownStation, distance);
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() -> sections.add(newSection))
+                .withMessage("기존 구간에 속하지 않는 역 만으로 구간의 상행, 하행 역을 지정할 수 없습니다.");
     }
 
     @DisplayName("역 목록 조회")
