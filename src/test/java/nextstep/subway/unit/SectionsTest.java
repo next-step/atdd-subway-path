@@ -97,4 +97,12 @@ class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("removed station is not include sections");
     }
+
+    @DisplayName("구간 목록에 구간이 1개일 때의 기준으로 구간을 삭제할 경우")
+    void removeSectionWhenOnlyOne() {
+        // when and then
+        assertThatThrownBy(() -> sections.removeSection(new Station(강남역)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("sections is not removable state");
+    }
 }
