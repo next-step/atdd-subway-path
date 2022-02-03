@@ -59,49 +59,6 @@ public class Sections {
         this.sections.add(section);
     }
 
-    private void validateAddSection(Section section) {
-        if (hasSameSection(section)) {
-            throw new DuplicateSectionException();
-        }
-
-        if (!isValidateSection(section)) {
-            throw new SectionValidException();
-        }
-    }
-
-    private boolean isValidateSection(Section section) {
-        if (sections.isEmpty()) {
-            return true;
-        }
-
-        List<Station> allStations = getAllStations();
-
-        boolean containsUpStation = allStations.contains(section.getUpStation());
-        boolean containsDownStation = allStations.contains(section.getDownStation());
-
-        return containsUpStation || containsDownStation;
-    }
-
-    private boolean hasSameSection(Section section) {
-        return sections
-            .stream()
-            .anyMatch(it -> it.isSameSection(section));
-    }
-
-    private Optional<Section> findSectionEqualsUpStation(Station station) {
-        return sections
-            .stream()
-            .filter(it -> it.getUpStation().equals(station))
-            .findFirst();
-    }
-
-    private Optional<Section> findSectionEqualsDownStation(Station station) {
-        return sections
-            .stream()
-            .filter(it -> it.getDownStation().equals(station))
-            .findFirst();
-    }
-
     public List<Section> getAllSections() {
         return sections;
     }
@@ -149,25 +106,6 @@ public class Sections {
         return allStations;
     }
 
-    private Section findFirstSection(List<Station> downStations) {
-        return sections
-            .stream()
-            .filter(it -> !downStations.contains(it.getUpStation()))
-            .findFirst()
-            .orElseThrow(() -> new NoSuchElementException("상행 종점이 상행역인 구간이 없습니다."));
-    }
-
-    private List<Station> getAllDownStations() {
-        return sections.
-            stream()
-            .map(Section::getDownStation)
-            .collect(Collectors.toList());
-    }
-
-    private boolean isNotAvailableDelete() {
-        return sections.size() <= 1;
-    }
-
     public void removeSection(Station station) {
         Station lastDownStation = getLastDownStation();
 
@@ -189,5 +127,67 @@ public class Sections {
             .filter(section -> section.getDownStation().equals(station))
             .findFirst()
             .orElseThrow(() -> new NoSuchElementException("일치하는 구간을 찾을 수 없습니다."));
+    }
+
+    private void validateAddSection(Section section) {
+        if (hasSameSection(section)) {
+            throw new DuplicateSectionException();
+        }
+
+        if (!isValidateSection(section)) {
+            throw new SectionValidException();
+        }
+    }
+
+    private boolean isValidateSection(Section section) {
+        if (sections.isEmpty()) {
+            return true;
+        }
+
+        List<Station> allStations = getAllStations();
+
+        boolean containsUpStation = allStations.contains(section.getUpStation());
+        boolean containsDownStation = allStations.contains(section.getDownStation());
+
+        return containsUpStation || containsDownStation;
+    }
+
+    private boolean hasSameSection(Section section) {
+        return sections
+            .stream()
+            .anyMatch(it -> it.isSameSection(section));
+    }
+
+    private Optional<Section> findSectionEqualsUpStation(Station station) {
+        return sections
+            .stream()
+            .filter(it -> it.getUpStation().equals(station))
+            .findFirst();
+    }
+
+    private Optional<Section> findSectionEqualsDownStation(Station station) {
+        return sections
+            .stream()
+            .filter(it -> it.getDownStation().equals(station))
+            .findFirst();
+    }
+
+    private Section findFirstSection(List<Station> downStations) {
+        return sections
+            .stream()
+            .filter(it -> !downStations.contains(it.getUpStation()))
+            .findFirst()
+            .orElseThrow(() -> new NoSuchElementException("상행 종점이 상행역인 구간이 없습니다."));
+    }
+
+    private List<Station> getAllDownStations() {
+        return sections.
+            stream()
+            .map(Section::getDownStation)
+            .collect(Collectors.toList());
+    }
+
+    private boolean isNotAvailableDelete() {
+        return sections.size() <= 1;
     }
 }
