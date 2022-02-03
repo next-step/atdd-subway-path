@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 public class Sections {
     private static final String ALREADY_EXIST_SECTION_MESSAGE = "이미 존재하는 구간입니다.";
     private static final String NO_FIRST_STATION_MESSAGE = "상행 종점역이 존재하지 않습니다.";
+    private static final String NO_LAST_STATION_MESSAGE = "하행 종점역이 존재하지 않습니다.";
     private static final String CANNOT_DELETE_MIN_SIZE_SECTION_MESSAGE = "구간이 1개일 때는 제거할 수 없습니다.";
     private static final int LAST_INDEX_VALUE = 1;
     private static final int MIN_SECTION_SIZE = 1;
@@ -126,11 +127,26 @@ public class Sections {
             return;
         }
 
-        if (!lastStation().equals(station)) {
-            throw new IllegalArgumentException();
+        if (isLastStation(station)) {
+            sectionList.remove(findLastSection());
+            return;
         }
+    }
 
-        sectionList.remove(lastIndex());
+    private Section findLastSection() {
+        return sectionList.stream()
+                .filter(this::lastSectionCondition)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(NO_LAST_STATION_MESSAGE));
+    }
+
+    private boolean lastSectionCondition(Section section) {
+        return sectionList.stream()
+                .noneMatch(section::isPreviousSection);
+    }
+
+    private boolean isLastStation(Station station) {
+        return findLastSection().getDownStation().equals(station);
     }
 
     private boolean isFirstStation(Station station) {
