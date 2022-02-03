@@ -72,7 +72,7 @@ class SectionsTest {
         assertThat(sections.getStations()).containsExactly(upStation, extraStation, downStation);
     }
 
-    @DisplayName("구간 목록 상항행을 기준으로 중앙 방향의 새로운 구간을 추가할 경우")
+    @DisplayName("구간 목록 상행을 기준으로 중앙 방향의 새로운 구간을 추가할 경우")
     @Test
     void addSectionUpStation() {
         // given
@@ -92,6 +92,20 @@ class SectionsTest {
         // given
         final Station extraStation = new Station(정자역);
         sections.addSection(new Section(line, downStation, extraStation, 판교_정자_거리));
+
+        // when
+        sections.removeSection(extraStation);
+
+        // then
+        assertThat(sections.getStations()).containsExactly(upStation, downStation);
+    }
+
+    @DisplayName("구간 목록에 상행종점 구간 삭제")
+    @Test
+    void removeSectionByUpTerminalSection() {
+        // given
+        final Station extraStation = new Station(논현역);
+        sections.addSection(new Section(line, extraStation, upStation, 논현_강남_거리));
 
         // when
         sections.removeSection(extraStation);
