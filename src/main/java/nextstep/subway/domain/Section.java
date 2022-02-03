@@ -3,27 +3,19 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 
 @Entity
-public class Section {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class Section extends BaseEntity {
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "line_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Line line;
-
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "up_station_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Station upStation;
-
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "down_station_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Station downStation;
-
     private int distance;
 
     public Section() {
-
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
@@ -31,6 +23,16 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public Section(Station upStation, Station downStation, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
+    public void updateLine(Line line) {
+        this.line = line;
     }
 
     public Long getId() {
