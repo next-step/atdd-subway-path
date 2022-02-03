@@ -30,10 +30,6 @@ public class LineServiceMockTest {
     @Mock
     private StationService stationService;
 
-    @BeforeEach
-    void setUp() {
-
-    }
 
     @DisplayName("구간 등록")
     @Test
