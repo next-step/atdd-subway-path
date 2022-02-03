@@ -20,13 +20,13 @@ import nextstep.subway.utils.RestAssuredCRUD;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public class PathAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> response;
-    private Long 출발역Id = 1L;
-    private Long 목적지역Id = 5L;
+    private Long 없는역Id = Long.MAX_VALUE;
 
     private LineResponse 신분당선;
     private LineResponse 이호선;
@@ -86,9 +86,9 @@ public class PathAcceptanceTest extends AcceptanceTest {
         }
     }
 
-    @DisplayName("시작역 ID 와 목적지 역 ID 로 최단경로를 조회한다.")
+    @DisplayName("출발역 ID 와 목적지역 ID 로 최단경로를 조회 성공한다.")
     @Test
-    void findPath() {
+    void findPath_1() {
         when_출발역과_도착역으로_최단경로를_조회한다: {
             response = 출발역과_도착역으로_최단경로를_조회한다(대교역.getId(), 널미터부남역.getId());
         }
@@ -97,6 +97,36 @@ public class PathAcceptanceTest extends AcceptanceTest {
             출발역과_도착역_최단경로_사이의_역들이_조회된다(response, Arrays.asList(대교역, 강남역, 남강역, 양재역, 널미터부남역));
             출발역과_도착역_최단경로_거리가_예상과_같다(response, 40);
         }
+    }
+
+    @DisplayName("출발역 ID 와 목적지역 ID 가 같은데 최단경로를 찾으면 실패한다.")
+    @Test
+    void findPath_2() {
+        // when
+        response = 출발역과_도착역으로_최단경로를_조회한다(대교역.getId(), 널미터부남역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("출발역 ID 와 목적지역 ID 가 연결되어 있지 않은데 최단경로를 찾으면 실패한다.")
+    @Test
+    void findPath_3() {
+        // when
+        response = 출발역과_도착역으로_최단경로를_조회한다(노원역.getId(), 널미터부남역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("출발역 ID 와 목적지역 ID 가 하나라도 존재하지 않으면 최단경로를 찾으면 실패한다.")
+    @Test
+    void findPath_4() {
+        // when
+        response = 출발역과_도착역으로_최단경로를_조회한다(없는역Id, 널미터부남역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> 출발역과_도착역으로_최단경로를_조회한다(Long srcStationId, Long dstStationId) {
