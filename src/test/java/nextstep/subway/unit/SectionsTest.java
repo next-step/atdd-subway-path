@@ -13,16 +13,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class SectionsTest {
     private Line 신분당선;
     private Station 강남역;
-    private Station 정자역;
+    private Station 양재역;
     private int distance;
 
     @BeforeEach
     void setUp() {
         신분당선 = new Line("신분당선", "red");
         강남역 = new Station("강남역");
-        정자역 = new Station("정자역");
+        양재역 = new Station("양재역");
         distance = 10;
-        신분당선.addSection(강남역, 정자역, distance);
+        신분당선.addSection(강남역, 양재역, distance);
     }
 
     @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
@@ -35,7 +35,7 @@ class SectionsTest {
         신분당선.addSection(신논현역, 강남역, distance);
 
         // then
-        assertThat(신분당선.getStations()).containsExactly(신논현역, 강남역, 정자역);
+        assertThat(신분당선.getStations()).containsExactly(신논현역, 강남역, 양재역);
     }
 
     @DisplayName("역 사이에 새로운 역을 등록할 경우")
@@ -48,7 +48,7 @@ class SectionsTest {
         신분당선.addSection(강남역, 중간역, 6);
 
         // then
-        assertThat(신분당선.getStations()).containsExactly(강남역, 중간역, 정자역);
+        assertThat(신분당선.getStations()).containsExactly(강남역, 중간역, 양재역);
         assertThat(신분당선.getSections().stream().mapToInt(Section::getDistance).sum()).isEqualTo(distance);
     }
 
@@ -61,7 +61,7 @@ class SectionsTest {
         // when & then
         assertThatThrownBy(() -> 신분당선.addSection(강남역, 중간역, distance))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> 신분당선.addSection(중간역, 정자역, distance))
+        assertThatThrownBy(() -> 신분당선.addSection(중간역, 양재역, distance))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -69,7 +69,7 @@ class SectionsTest {
     @Test
     void addSectionFail2() {
         // when & then
-        assertThatThrownBy(() -> 신분당선.addSection(강남역, 정자역, 6))
+        assertThatThrownBy(() -> 신분당선.addSection(강남역, 양재역, 6))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -80,9 +80,25 @@ class SectionsTest {
         Station 대림역 = new Station("대림역");
         Station 신풍역 = new Station("신풍역");
 
-
         // when & then
         assertThatThrownBy(() -> 신분당선.addSection(대림역, 신풍역, 6))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("지하철 노선에서 상행 종점역을 제거")
+    @Test
+    void deleteSection() {
+        // given
+        Station 정자역 = new Station("정자역");
+        신분당선.addSection(양재역, 정자역, distance);
+
+        // when
+        신분당선.deleteSection(강남역);
+
+        // then
+        assertThat(신분당선.getStations()).containsExactly(양재역, 정자역);
+        assertThat(신분당선.getSections().get(0).getUpStation()).isEqualTo(양재역);
+        assertThat(신분당선.getSections().get(0).getDownStation()).isEqualTo(정자역);
+        assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(distance);
     }
 }
