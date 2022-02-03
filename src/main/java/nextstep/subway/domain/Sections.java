@@ -115,11 +115,20 @@ public class Sections {
     }
 
     public void deleteSection(Station station) {
+        if (isFirstStation(station)) {
+            sectionList.remove(findFirstSection());
+            return;
+        }
+
         if (!lastStation().equals(station)) {
             throw new IllegalArgumentException();
         }
 
         sectionList.remove(lastIndex());
+    }
+
+    private boolean isFirstStation(Station station) {
+        return findFirstSection().getUpStation().equals(station);
     }
 
     private Station lastStation() {
