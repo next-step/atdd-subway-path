@@ -91,6 +91,9 @@ public class Sections {
     }
 
     public void removeSection(final Station station) {
+        if(sections.size() <= 1) {
+            throw new IllegalStateException("sections is not removable state");
+        }
         final boolean up = sections.stream().anyMatch(it -> it.isUpStation(station));
         final boolean down = sections.stream().anyMatch(it -> it.isDownStation(station));
         if(up == false && down == false) {
