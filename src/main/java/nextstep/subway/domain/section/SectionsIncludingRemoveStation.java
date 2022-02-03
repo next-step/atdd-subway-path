@@ -1,8 +1,7 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.section;
 
 import static nextstep.subway.exception.CommonExceptionMessages.NOT_EXIST_UP_DOWN_END_STATION;
 
-import java.util.List;
 import java.util.Objects;
 
 public class SectionsIncludingRemoveStation {

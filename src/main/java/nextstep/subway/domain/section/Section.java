@@ -1,4 +1,4 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.section;
 
 import static nextstep.subway.exception.CommonExceptionMessages.INVALID_SECTION_DISTANCE;
 
@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.station.Station;
 import org.springframework.dao.DataIntegrityViolationException;
 
 @Entity

@@ -1,4 +1,4 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.section;
 
 import static nextstep.subway.exception.CommonExceptionMessages.ALREADY_HAS_STATIONS;
 import static nextstep.subway.exception.CommonExceptionMessages.NOT_HAS_ANY_STATIONS;
@@ -10,6 +10,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.utils.StationConnector;
 import nextstep.subway.domain.utils.StationFrontConnector;
 import nextstep.subway.domain.utils.StationRearConnector;

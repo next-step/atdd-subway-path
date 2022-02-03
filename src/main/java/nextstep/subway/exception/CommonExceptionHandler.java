@@ -24,4 +24,9 @@ public class CommonExceptionHandler {
         return ResponseEntity.badRequest().build();
     }
 
+    @ExceptionHandler(InvalidPathSearchingException.class)
+    public ResponseEntity handleInvalidPathSearchingExceptionException(InvalidPathSearchingException e) {
+        return ResponseEntity.ok(e);
+    }
+
 }
