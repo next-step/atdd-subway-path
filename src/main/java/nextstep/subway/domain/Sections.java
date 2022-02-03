@@ -104,6 +104,10 @@ public class Sections {
             throw new IllegalArgumentException(CANNOT_DELETE_MIN_SIZE_SECTION_MESSAGE);
         }
 
+        if (nonExistStation(station)) {
+            return;
+        }
+
         if (isFirstStation(station)) {
             sectionList.remove(findFirstSection());
             return;
@@ -115,6 +119,13 @@ public class Sections {
         }
 
         removeMiddleSection(station);
+    }
+
+    private boolean nonExistStation(Station station) {
+        return noneMatch(section ->
+                station.equals(section.getUpStation())
+                        || station.equals(section.getDownStation())
+        );
     }
 
     private Section findFirstSection() {
