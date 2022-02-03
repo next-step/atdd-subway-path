@@ -144,6 +144,21 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_구간_제거됨(신분당선, 양재역, 정자역);
     }
 
+    /**
+     * Given 지하철 노선에 구간이 1개일 때
+     * When 지하철 노선의 구간 제거를 요청 하면
+     * Then 노선에 구간 제거 실패한다.
+     */
+    @DisplayName("지하철 노선에 구간 1개일 때, 구간을 제거 - 실패")
+    @Test
+    void removeLineSectionFail() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        // then
+        지하철_노선_구간_제거_실패됨(response);
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();

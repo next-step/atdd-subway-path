@@ -133,6 +133,10 @@ public class LineSteps {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(stationIds);
     }
 
+    public static void 지하철_노선_구간_제거_실패됨(ExtractableResponse<Response> response) {
+        assertStatus(response, HttpStatus.BAD_REQUEST);
+    }
+
     private static void assertStatus(ExtractableResponse<Response> response, HttpStatus status) {
         assertThat(response.statusCode()).isEqualTo(status.value());
     }
