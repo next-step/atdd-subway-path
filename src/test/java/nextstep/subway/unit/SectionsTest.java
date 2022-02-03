@@ -17,6 +17,7 @@ class SectionsTest {
     private Station 군자역;
     private Station 아차산역;
     private Station 광나루역;
+    private Station 천호역;
     private int distance;
     private Section section;
     private Sections sections;
@@ -29,6 +30,7 @@ class SectionsTest {
         군자역 = new Station("군자역");
         아차산역 = new Station("아차산역");
         광나루역 = new Station("광나루역");
+        천호역 = new Station("천호역");
         distance = 10;
         section = Section.of(_5호선, 군자역, 아차산역, distance);
         sections.addSection(section);
@@ -79,6 +81,16 @@ class SectionsTest {
     void addSectionFail2() {
         int newSectionDistance = 3;
         Section newSection = Section.of(_5호선, 군자역, 아차산역, newSectionDistance);
+
+        assertThatThrownBy(() -> sections.addSection(newSection))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("상행역과 하행역이 노선에 모두 등록되어 있지 않다면 추가할 수 없다")
+    @Test
+    void addSectionFail3() {
+        int newSectionDistance = 3;
+        Section newSection = Section.of(_5호선, 광나루역, 천호역, newSectionDistance);
 
         assertThatThrownBy(() -> sections.addSection(newSection))
                 .isInstanceOf(IllegalArgumentException.class);
