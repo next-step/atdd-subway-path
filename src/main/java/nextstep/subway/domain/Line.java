@@ -53,7 +53,7 @@ public class Line extends BaseEntity {
             this.name = name;
         }
 
-        if (this.color != null) {
+        if (color != null) {
             this.color = color;
         }
     }
