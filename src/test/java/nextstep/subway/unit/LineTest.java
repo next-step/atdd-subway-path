@@ -65,4 +65,15 @@ class LineTest {
         assertThat(line.getName()).isEqualTo("3호선");
         assertThat(line.getColor()).isEqualTo("bg-orange-600");
     }
+
+    @Test
+    @DisplayName("라인의 이름과 색상이 null이라면 업데이트 되지 않는다.")
+    void updateLineNull() {
+        Line line = new Line("2호선", "bg-green-600");
+
+        line.update(null, null);
+
+        assertThat(line.getName()).isEqualTo("2호선");
+        assertThat(line.getColor()).isEqualTo("bg-green-600");
+    }
 }
