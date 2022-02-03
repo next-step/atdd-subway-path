@@ -29,7 +29,7 @@ public class Sections {
             Station existDownStation = existSection.getDownStation();
             int existSectionDistance = existSection.getDistance();
 
-            if (section.getDistance() >= existSectionDistance) {
+            if (section.isNotValidateSectionDistance(existSectionDistance)) {
                 throw new SectionDistanceNotValidException();
             }
 
@@ -45,7 +45,7 @@ public class Sections {
             Section existSection = betweenUpStation.get();
             int existSectionDistance = existSection.getDistance();
 
-            if (section.getDistance() >= existSectionDistance) {
+            if (section.isNotValidateSectionDistance(existSectionDistance)) {
                 throw new SectionDistanceNotValidException();
             }
 

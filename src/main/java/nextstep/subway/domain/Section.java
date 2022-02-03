@@ -71,4 +71,8 @@ public class Section {
     public boolean isSameSection(Section section) {
         return upStation.equals(section.getUpStation()) && downStation.equals(section.getDownStation());
     }
+
+    public boolean isNotValidateSectionDistance(int existSectionDistance) {
+        return getDistance() >= existSectionDistance;
+    }
 }
