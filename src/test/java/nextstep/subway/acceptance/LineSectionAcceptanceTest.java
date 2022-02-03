@@ -2,6 +2,7 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,6 +51,78 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+    }
+
+    /**
+     * Scenario : 한 구간에 대해 상행역이 같고 하행역이 다른 경우 구간을 분할하여 등록한다.
+     * given    : 새로운 역이 생성되고
+     * when     : 기존 구간의 상행을 상행, 새로운 역을 하행역으로 갖는 구간을 등록하면
+     * then     : 구간이 새롭게 등록된다.
+     * (기존상행-새로운하행) - (새로운하행-기존하행)
+     */
+    @DisplayName("구간 사이에 구간을 새롭게 등록한다. - 상행역이 같은경우")
+    @Test
+    void addDividedSection() {
+        // given
+        long 역삼역 = 지하철역_생성_요청("역삼역").jsonPath().getLong("id");
+
+        // when
+        Map<String, Object> postRequest = createSectionCreateParams(강남역, 역삼역, 8);
+        ExtractableResponse<Response> postResponse = 지하철_노선에_지하철_구간_생성_요청(신분당선, postRequest);
+
+        // then
+        assertThat(postResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.jsonPath().getList("stations.name"))
+                .containsExactly(Arrays.array("강남역", "역삼역", "양재역"));
+    }
+
+    /**
+     * Scenario : 한 구간에 대해 하행역이 같고 상행역이 다른 경우 구간을 분할하여 등록한다.
+     * given    : 새로운 역이 생성되고
+     * when     : 새로운 역을 상행역, 기존 구간의 하행역을 하행역으로 갖는 구간을 등록하면
+     * then     : 구간이 새롭게 등록된다.
+     * (기존상행-새로운하행) - (새로운하행-기존하행)
+     */
+    @DisplayName("구간 사이에 구간을 새롭게 등록한다. - 하행역이 같은경우")
+    @Test
+    void addDividedSection2() {
+        // given
+        long 역삼역 = 지하철역_생성_요청("역삼역").jsonPath().getLong("id");
+
+        // when
+        Map<String, Object> postRequest = createSectionCreateParams(역삼역, 양재역, 8);
+        ExtractableResponse<Response> postResponse = 지하철_노선에_지하철_구간_생성_요청(신분당선, postRequest);
+
+        // then
+        assertThat(postResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.jsonPath().getList("stations.name"))
+                .containsExactly(Arrays.array("강남역", "역삼역", "양재역"));
+    }
+
+    /**
+     * Scenario : 한 구간에 대해 상행역에 새로운 구간이 추가되는 경우
+     * given    : 새로운 역이 생성되고
+     * when     : 새로운 역이 기존 구간의 상행역인 경우 구간을 등록하면
+     * then     : 구간이 새롭게 등록된다.
+     * (새로운상행-기존상행) - (기존상행-기존하행)
+     */
+    @DisplayName("구간의 상행역에 새로운 상행역이 추가되는 구간을 등록한다.")
+    @Test
+    void addSection() {
+        // given
+        long 역삼역 = 지하철역_생성_요청("역삼역").jsonPath().getLong("id");
+
+        // when
+        Map<String, Object> postRequest = createSectionCreateParams(역삼역, 강남역, 8);
+        ExtractableResponse<Response> postResponse = 지하철_노선에_지하철_구간_생성_요청(신분당선, postRequest);
+
+        // then
+        assertThat(postResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.jsonPath().getList("stations.name"))
+                .containsExactly(Arrays.array("역삼역", "강남역", "양재역"));
     }
 
     /**
