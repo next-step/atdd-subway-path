@@ -99,12 +99,6 @@ public class Sections {
         this.sections.remove(lastIndex());
     }
 
-    private void validateRemoveSection(final Station station) {
-        if (!sections.get(sections.size() - GAP_SIZE).isDownStation(station)) {
-            throw new IllegalArgumentException("invalid remove section");
-        }
-    }
-
     private int lastIndex() {
         return sections.size() - GAP_SIZE;
     }
