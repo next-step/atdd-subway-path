@@ -36,6 +36,7 @@ class LineTest {
         List<Station> stations = line.getAllStations();
 
         assertThat(stations).hasSize(2);
+        assertThat(stations).containsExactly(강남역, 역삼역);
     }
 
     @DisplayName("구간이 목록에서 마지막 역 삭제")
