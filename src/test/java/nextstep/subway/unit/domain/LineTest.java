@@ -6,6 +6,9 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
+import nextstep.subway.error.ErrorCode;
+import nextstep.subway.exception.NotFoundStationException;
+import nextstep.subway.exception.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +17,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
 
@@ -104,5 +108,49 @@ class LineTest {
 
         line.removeSection(삼성역.getId());
         assertThat(line.getSections().getSections()).hasSize(3);
+    }
+
+    @DisplayName("구간 목록에 존재하지 않는 역 삭제시 실패")
+    @Test
+    void removeNotExistSectionIsFailed() {
+        // given
+        line.addSection(new Section(line, 역삼역, 삼성역, 5));
+        line.addSection(new Section(line, 서초역, 교대역, 5));
+        line.addSection(new Section(line, 교대역, 강남역, 3));
+
+        // when then
+        assertThatThrownBy(() -> {
+            line.removeSection(Long.MAX_VALUE);
+        }).isInstanceOf(NotFoundStationException.class);
+    }
+
+    @DisplayName("구간 목록에서 중간역 삭제")
+    @Test
+    void removeMiddleSection() {
+        // given
+        // 서초-교대-강남-역삼-삼성
+        line.addSection(new Section(line, 역삼역, 삼성역, 5));
+        line.addSection(new Section(line, 서초역, 교대역, 5));
+        line.addSection(new Section(line, 교대역, 강남역, 3));
+
+        // when
+        line.removeSection(교대역.getId());
+        Sections sections = line.getSections();
+
+        // then
+        assertThat(sections.getSections()).hasSize(3);
+        Section firstSection = sections.findSectionHasUpStationEndPoint();
+        assertThat(firstSection.getDownStation()).isEqualTo(강남역);
+        assertThat(firstSection.getDistance()).isEqualTo(8);
+    }
+
+    @DisplayName("구간 목록이 1개일때 삭제시 실패")
+    @Test
+    void ifThereIsOneListOfIntervalsTheDeletionFails() {
+        // when then
+        assertThatThrownBy(() -> {
+            line.removeSection(교대역.getId());
+        }).isInstanceOf(ValidationException.class)
+          .hasMessage(ErrorCode.SECTION_MINIMUM_SIZE_ERROR.getMessage());
     }
 }
