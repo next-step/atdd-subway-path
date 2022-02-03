@@ -29,16 +29,26 @@ public class Sections {
         this.values.add(section);
     }
 
-    public Section last() {
-        return this.values.get(this.values.size() - 1);
+    public Section lastSection() {
+        Station lastStation = getLastStation();
+        return this.values.stream()
+                .filter(value ->
+                        value.getDownStation().equals(lastStation)
+                ).findFirst()
+                .orElse(null);
+    }
+
+    private Station getLastStation() {
+        List<Station> stations = getAllStations();
+        return stations.get(stations.size() - 1);
     }
 
     public Station lastDownStation() {
-        return last().getDownStation();
+        return lastSection().getDownStation();
     }
 
     public Long lastDownStationId() {
-        return last().getDownStationId();
+        return lastSection().getDownStationId();
     }
 
     public List<Station> getAllStations() {
@@ -132,7 +142,7 @@ public class Sections {
         if (!validateRemoveSection(stationId)) {
             throw new InvalidParameterException();
         }
-        this.values.remove(last());
+        this.values.remove(lastSection());
     }
 
     public boolean validateRemoveSection(Long stationId) {
