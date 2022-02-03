@@ -88,7 +88,7 @@ class SectionsTest {
 
     @DisplayName("구간 목록에 하행종점 구간 삭제")
     @Test
-    void removeSectionByDownTerminalSection() {
+    void removeSectionByDownTerminalStation() {
         // given
         final Station extraStation = new Station(정자역);
         sections.addSection(new Section(line, downStation, extraStation, 판교_정자_거리));
@@ -102,7 +102,7 @@ class SectionsTest {
 
     @DisplayName("구간 목록에 상행종점 구간 삭제")
     @Test
-    void removeSectionByUpTerminalSection() {
+    void removeSectionByUpTerminalStation() {
         // given
         final Station extraStation = new Station(논현역);
         sections.addSection(new Section(line, extraStation, upStation, 논현_강남_거리));
@@ -112,6 +112,23 @@ class SectionsTest {
 
         // then
         assertThat(sections.getStations()).containsExactly(upStation, downStation);
+    }
+
+    @DisplayName("구간 목록에 중간 구간 삭제")
+    @Test
+    void removeSectionByMiddleStation() {
+        // given
+        final Station newUpTerminalStation = new Station(논현역);
+        final Station newDownTerminalStation = new Station(정자역);
+
+        sections.addSection(new Section(line, newUpTerminalStation, upStation, 논현_강남_거리));
+        sections.addSection(new Section(line, downStation, newDownTerminalStation, 판교_정자_거리));
+
+        // when
+        sections.removeSection(upStation);
+
+        // then
+        assertThat(sections.getStations()).containsExactly(newUpTerminalStation, downStation, newDownTerminalStation);
     }
 
     @DisplayName("구간 목록에 없는 역을 기준으로 구간을 삭제할 경우")
