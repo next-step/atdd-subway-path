@@ -85,7 +85,7 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public void isAddableSection(Long lineId, SectionRequest request) {
+    public void addSection(Long lineId, SectionRequest request) {
         Station upStation = stationService.findById(request.getUpStationId());
         Station downStation = stationService.findById(request.getDownStationId());
         Line line = findByIdWithStations(lineId);
@@ -94,8 +94,8 @@ public class LineService {
     }
 
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = findById(lineId);
+        Station station = stationService.findById(stationId);
 
-        line.deleteSection(stationId);
+        findById(lineId).deleteSection(station);
     }
 }

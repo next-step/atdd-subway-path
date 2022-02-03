@@ -56,10 +56,10 @@ public class Sections {
         boolean existsDownStation = stations.contains(section.getDownStation());
 
         if (existsUpStation && existsDownStation) {
-            throw new IllegalArgumentException(ErrorMessage.EXISTS_STATIONS.getMessage());
+            throw new IllegalArgumentException(ErrorMessage.STATIONS_EXISTS.getMessage());
         }
         if (!existsUpStation && !existsDownStation) {
-            throw new IllegalArgumentException(ErrorMessage.NOT_EXISTS_STATIONS.getMessage());
+            throw new IllegalArgumentException(ErrorMessage.STATIONS_NOT_EXISTS.getMessage());
         }
     }
 
@@ -69,24 +69,59 @@ public class Sections {
                      .findFirst();
     }
 
-    public void remove(long stationId) {
-        verifyRemovable(stationId);
+    public void delete(Station stationForRemove) {
+        verifyRemovable(stationForRemove);
 
-        values.removeIf(
-            eachSection -> eachSection.matchDownStation(stationId)
-        );
+        if (removeIfFirstSection(stationForRemove)) {
+            return;
+        }
+        removeNotFirstSection(stationForRemove);
     }
 
-    private void verifyRemovable(long downStationId) {
-        if (isNotLastStation(downStationId)) {
-            throw new IllegalArgumentException(ErrorMessage.NOT_LAST_STATION_DELETED.getMessage());
+    private void verifyRemovable(Station stationForRemove) {
+        Set<Station> stations = new HashSet<>(toStations());
+        boolean isNotExists = !stations.contains(stationForRemove);
+        if (isNotExists) {
+            throw new IllegalArgumentException(ErrorMessage.NOT_FOUND_SECTION.getMessage());
+        }
+
+        boolean isMinSize = values.size() <= 1;
+        if (isMinSize) {
+            throw new IllegalArgumentException(ErrorMessage.INVALID_SECTION_SIZE.getMessage());
         }
     }
 
-    private boolean isNotLastStation(long stationId) {
-        List<Station> stations = toStations();
-        Station lastStation = stations.get(stations.size() - 1);
-        return !lastStation.matchId(stationId);
+    private boolean removeIfFirstSection(Station stationForRemove) {
+        Section firstSection = firstSection();
+        if (!firstSection.matchUpStation(stationForRemove)) {
+            return false;
+        }
+        values.remove(firstSection);
+        return true;
+    }
+
+    private void removeNotFirstSection(Station stationForRemove) {
+        Map<Station, Section> byUpStation = toBasedOnKey(Section::getUpStation);
+        Map<Station, Section> byDownStation = toBasedOnKey(Section::getDownStation);
+
+        Section sectionForRemove = byDownStation.get(stationForRemove);
+        values.remove(sectionForRemove);
+        if (isLastSection(byUpStation, sectionForRemove)) {
+            return;
+        }
+        Section downSectionOfCombine = byUpStation.get(stationForRemove);
+        downSectionOfCombine.combineOfUpSection(sectionForRemove);
+    }
+
+    private <T> Map<T, Section> toBasedOnKey(Function<Section, T> getKeyFunc) {
+        return values.stream()
+                     .collect(Collectors.toMap(
+                         getKeyFunc, eachSection -> eachSection
+                     ));
+    }
+
+    private boolean isLastSection(Map<Station, Section> byUpStation, Section section) {
+        return !byUpStation.containsKey(section.getDownStation());
     }
 
     public List<Station> toStations() {
@@ -97,34 +132,27 @@ public class Sections {
     }
 
     private List<Station> followSectionsLink(Section startSection) {
-        Map<Station, Section> regularizedByUpStation = regularizedByStation(Section::getUpStation);
+        Map<Station, Section> byUpStation = toBasedOnKey(Section::getUpStation);
 
         List<Station> stations = new ArrayList<>();
         stations.add(startSection.getUpStation());
         stations.add(startSection.getDownStation());
 
-        Section nextSection = regularizedByUpStation.get(startSection.getDownStation());
+        Section nextSection = byUpStation.get(startSection.getDownStation());
         while (Objects.nonNull(nextSection)) {
             stations.add(nextSection.getDownStation());
-            nextSection = regularizedByUpStation.get(nextSection.getDownStation());
+            nextSection = byUpStation.get(nextSection.getDownStation());
         }
         return stations;
     }
 
-    private Map<Station, Section> regularizedByStation(Function<Section, Station> getStationFunc) {
-        return values.stream()
-                     .collect(Collectors.toMap(
-                         getStationFunc, eachSection -> eachSection
-                     ));
-    }
-
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     private Section firstSection() {
-        Map<Station, Section> regularizedByUpStation = regularizedByStation(Section::getUpStation);
-        Map<Station, Section> regularizedByDownStation = regularizedByStation(Section::getDownStation);
+        Map<Station, Section> byUpStation = toBasedOnKey(Section::getUpStation);
+        Map<Station, Section> byDownStation = toBasedOnKey(Section::getDownStation);
 
-        return regularizedByUpStation.entrySet().stream()
-                                 .filter(eachEntry -> !regularizedByDownStation.containsKey(eachEntry.getKey()))
+        return byUpStation.entrySet().stream()
+                                 .filter(eachEntry -> !byDownStation.containsKey(eachEntry.getKey()))
                                  .map(Map.Entry::getValue)
                                  .findFirst().get();
     }
