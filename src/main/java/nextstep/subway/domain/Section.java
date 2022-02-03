@@ -1,6 +1,16 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
+import nextstep.subway.exception.ValidationException;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import static nextstep.subway.error.ErrorCode.INVALID_SECTION_DISTANCE_ERROR;
 
 @Entity
 public class Section {
@@ -8,22 +18,25 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
     private Line line;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
     private int distance;
 
     public Section() {
+    }
 
+    public static Section of(Line line, Station upStation, Station downStation, int distance) {
+        return new Section(line, upStation, downStation, distance);
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
@@ -31,6 +44,12 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public void validateSectionDistance(Section section) {
+        if (this.distance <= section.distance) {
+            throw new ValidationException(INVALID_SECTION_DISTANCE_ERROR);
+        }
     }
 
     public Long getId() {
@@ -51,5 +70,13 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public void changeUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void changeDownStation(Station downStation) {
+        this.downStation = downStation;
     }
 }

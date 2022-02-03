@@ -1,16 +1,23 @@
 package nextstep.subway.applicaion.dto;
 
-public class SectionRequest {
-    private Long upStationId;
-    private Long downStationId;
-    private int distance;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
-    public Long getUpStationId() {
-        return upStationId;
-    }
+public class SectionRequest {
+
+    @NotNull
+    private Long downStationId;
+    @NotNull
+    private Long upStationId;
+    @Positive
+    private int distance;
 
     public Long getDownStationId() {
         return downStationId;
+    }
+
+    public Long getUpStationId() {
+        return upStationId;
     }
 
     public int getDistance() {
