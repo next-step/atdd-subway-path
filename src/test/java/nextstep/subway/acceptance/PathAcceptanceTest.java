@@ -95,7 +95,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         then_출발역과_도착역_최단경로_사이의_역들이_조회된다: {
             출발역과_도착역_최단경로_사이의_역들이_조회된다(response, Arrays.asList(대교역, 강남역, 남강역, 양재역, 널미터부남역));
-            출발역과_도착역_최단경로_거리가_예상과_같다(response, 40);
+            출발역과_도착역_최단경로_거리가_예상과_같다(response, 59);
         }
     }
 
@@ -103,7 +103,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void findPath_2() {
         // when
-        response = 출발역과_도착역으로_최단경로를_조회한다(대교역.getId(), 널미터부남역.getId());
+        response = 출발역과_도착역으로_최단경로를_조회한다(널미터부남역.getId(), 널미터부남역.getId());
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -126,7 +126,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         response = 출발역과_도착역으로_최단경로를_조회한다(없는역Id, 널미터부남역.getId());
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     private ExtractableResponse<Response> 출발역과_도착역으로_최단경로를_조회한다(Long srcStationId, Long dstStationId) {

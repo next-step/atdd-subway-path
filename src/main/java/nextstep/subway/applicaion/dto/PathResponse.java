@@ -1,10 +1,10 @@
 package nextstep.subway.applicaion.dto;
 
 import com.google.common.collect.ImmutableList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import nextstep.subway.domain.path.ShortestPath;
 import nextstep.subway.domain.station.Station;
 
 public class PathResponse {
@@ -28,11 +28,16 @@ public class PathResponse {
             distance);
     }
 
+    public static PathResponse of(ShortestPath shortestPath) {
+        return PathResponse.of(shortestPath.get().stations(),
+            shortestPath.totalDistance());
+    }
+
     public List<StationResponse> getStations() {
-        return Collections.emptyList();
+        return stations;
     }
 
     public int getDistance() {
-        return 0;
+        return distance;
     }
 }
