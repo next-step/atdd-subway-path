@@ -25,6 +25,10 @@ public class Sections {
     public Sections() {
     }
 
+    public Sections(Section section) {
+        this.sections.add(section);
+    }
+
     public Section addSection(Section section) {
         checkPossibleAddingSection(section);
         sections.add(section);

@@ -1,21 +1,66 @@
 package nextstep.subway.unit;
 
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 class LineTest {
+
+    private Station 강남역;
+    private Station 판교역;
+    private Station 정자역;
+    private Line 신분당선;
+
+    @BeforeEach
+    public void setUp() {
+        강남역 = new Station("강남역");
+        판교역 = new Station("판교역");
+        정자역 = new Station("정자역");
+        신분당선 = new Line("신분당선", "red", 강남역, 판교역, 8);
+    }
+
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
     @Test
     void addSection() {
+        // when
+        Section section = 신분당선.addSection(판교역, 정자역, 3);
+
+        // then
+        assertThat(section.getUpStation()).isEqualTo(판교역);
+        assertThat(section.getDownStation()).isEqualTo(정자역);
+        assertThat(section.getDistance()).isGreaterThan(0);
     }
 
     @DisplayName("노선에 속해있는 역 목록 조회")
     @Test
     void getStations() {
+        // given
+        신분당선.addSection(판교역, 정자역, 3);
+
+        // when
+        List<Station> stations = 신분당선.getAllStations();
+
+        // then
+        assertThat(stations).containsExactly(강남역, 판교역, 정자역);
     }
 
     @DisplayName("구간이 목록에서 마지막 역 삭제")
     @Test
     void removeSection() {
+        // given
+        신분당선.addSection(판교역, 정자역, 3);
+
+        // when
+        신분당선.removeSection(정자역);
+
+        // then
+        assertThat(신분당선.getAllStations()).containsExactly(강남역, 판교역);
     }
 }
