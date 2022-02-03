@@ -13,7 +13,9 @@ import java.util.function.Predicate;
 public class Sections {
     private static final String ALREADY_EXIST_SECTION_MESSAGE = "이미 존재하는 구간입니다.";
     private static final String NO_FIRST_STATION_MESSAGE = "상행 종점역이 존재하지 않습니다.";
+    private static final String CANNOT_DELETE_MIN_SIZE_SECTION_MESSAGE = "구간이 1개일 때는 제거할 수 없습니다.";
     private static final int LAST_INDEX_VALUE = 1;
+    private static final int MIN_SECTION_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private final List<Section> sectionList = new ArrayList<>();
@@ -115,6 +117,10 @@ public class Sections {
     }
 
     public void deleteSection(Station station) {
+        if (sectionList.size() == MIN_SECTION_SIZE) {
+            throw new IllegalArgumentException(CANNOT_DELETE_MIN_SIZE_SECTION_MESSAGE);
+        }
+
         if (isFirstStation(station)) {
             sectionList.remove(findFirstSection());
             return;
