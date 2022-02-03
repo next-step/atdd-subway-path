@@ -106,7 +106,7 @@ public class Sections {
         return sections
             .stream()
             .map(Section::getDownStation)
-            .reduce((a, b) -> b)
+            .reduce((first, second) -> second)
             .orElseThrow(() -> new NoSuchElementException("하행 종점역이 없습니다."));
     }
 
