@@ -14,8 +14,8 @@ public class LineFixture {
     public static final Map<String, Object> 이호선 = Map.of(
             "name", "이호선",
             "color", "bg-green-600",
-            "upStationId", 2L,
-            "downStationId", 3L,
+            "upStationId", 1L,
+            "downStationId", 2L,
             "distance", 10
     );
 }

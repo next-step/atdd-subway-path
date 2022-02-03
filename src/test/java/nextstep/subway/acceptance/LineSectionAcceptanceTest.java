@@ -4,8 +4,7 @@ import nextstep.subway.fixture.SectionFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static nextstep.subway.acceptance.LineSteps.노선_생성_요청;
-import static nextstep.subway.acceptance.LineSteps.신분당선_생성_완료;
+import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.SectionSteps.*;
 import static nextstep.subway.acceptance.StationSteps.역_생성_요청;
 import static nextstep.subway.fixture.LineFixture.신분당선;
@@ -95,4 +94,38 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         구간_삭제_성공(구간_삭제_응답);
     }
 
+
+    @DisplayName("역 사이에 새로운 역을 생성")
+    @Test
+    void addSectionBetween() {
+        // given
+        var 노선_생성_응답 = 이호선_생성_완료();
+
+        역_생성_요청(강남역);
+
+        // when
+        var lineUri = 노선_생성_응답.header("Location");
+        var 구간1 = SectionFixture.of(3L, 2L, 4);
+        var 구간_등록_응답 = 구간_등록_요청(lineUri, 구간1);
+
+        // then
+        구간_등록_성공(구간_등록_응답);
+    }
+
+    @DisplayName("역 사이에 기존 구간보다 더 긴 구간을 추가")
+    @Test
+    void addSectionBetweenLong() {
+        // given
+        var 노선_생성_응답 = 이호선_생성_완료();
+
+        역_생성_요청(강남역);
+
+        // when
+        var lineUri = 노선_생성_응답.header("Location");
+        var 구간1 = SectionFixture.of(3L, 2L, 11);
+        var 구간_등록_응답 = 구간_등록_요청(lineUri, 구간1);
+
+        // then
+        구간_생성_예외(구간_등록_응답);
+    }
 }

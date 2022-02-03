@@ -74,6 +74,16 @@ public class LineSteps {
         return LineSteps.노선_생성_요청(params);
     }
 
+    public static ExtractableResponse<Response> 이호선_생성_완료() {
+        var station1 = StationFixture.서초역;
+        var station2 = StationFixture.방배역;
+        역_생성_요청(station1);
+        역_생성_요청(station2);
+
+        var params = LineFixture.이호선;
+        return LineSteps.노선_생성_요청(params);
+    }
+
 
     public static void 노선_생성_완료(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
