@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.AddSectionFailException;
+
 import javax.persistence.*;
 
 @Entity
@@ -77,7 +79,7 @@ public class Section {
 
     private void validateDistance(int distance) {
         if (this.distance - distance <= 0) {
-            throw new IllegalArgumentException("구간 길이가 기존 길이보다 크거나 같음");
+            throw new AddSectionFailException("구간 길이가 기존 길이보다 크거나 같음");
         }
     }
 }

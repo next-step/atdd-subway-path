@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.AddSectionFailException;
 import nextstep.subway.exception.RemoveSectionFailException;
 
 import javax.persistence.CascadeType;
@@ -39,12 +40,12 @@ public class Sections {
             return;
         }
 
-        throw new IllegalArgumentException("역을 추가할 수 없음");
+        throw new AddSectionFailException("역이 존재하지 않음");
     }
 
     private void validateSection(Section newSection) {
         if (containsStation(newSection.getUpStation()) && containsStation(newSection.getDownStation())) {
-            throw new IllegalArgumentException("잘못된 구간입니다");
+            throw new AddSectionFailException("이미 존재하는 역");
         }
     }
 
