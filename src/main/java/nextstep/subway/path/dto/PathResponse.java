@@ -12,14 +12,14 @@ import java.util.List;
 public class PathResponse {
 
     private List<StationResponse> stations;
-    private double distance;
+    private int distance;
 
-    private PathResponse(List<StationResponse> stations, double distance) {
+    private PathResponse(List<StationResponse> stations, int distance) {
         this.stations = stations;
         this.distance = distance;
     }
 
-    public static PathResponse of(List<StationResponse> stations, double distance) {
+    public static PathResponse of(List<StationResponse> stations, int distance) {
         return new PathResponse(stations, distance);
     }
 }

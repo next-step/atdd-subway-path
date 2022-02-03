@@ -14,15 +14,12 @@ import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
-
-    public static final String DISTANCE_EXCEPTION_MESSAGE = "기존 구간의 길이보다 작은 길이의 구간만 추가할 수 있습니다.";
     public static final String BOTH_EXIST_EXCEPTION_MESSAGE = "상행역과 하행역 모두 이미 노선에 등록되어 있습니다.";
     public static final String BOTH_NOT_EXIST_EXCEPTION_MESSAGE = "상행역과 하행역 중 최소 하나는 노선에 등록되어 있어야 합니다.";
     public static final String NON_EXIST_DELETE_EXCEPTION_MESSAGE = "노선에 등록된 역만 삭제할 수 있습니다.";
     public static final String ONE_SECTION_DELETE_EXCEPTION_MESSAGE = "노선에 구간이 하나인 경우 역 삭제를 할 수 없습니다.";
 
     public static final int VALIDATE_DELETE_SECTION_CRITERIA = 1;
-    public static final int VALIDATE_DISTANCE_CRITERIA = 0;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -100,8 +97,7 @@ public class Sections {
 
     private Section createSectionForAdd(Section findSection, Section section, boolean isBasedOnUpStation) {
         Line line = findSection.getLine();
-        int distance = findSection.getDistance() - section.getDistance();
-        validateDistance(distance);
+        Distance distance = Distance.of(findSection.getDistance() - section.getDistance());
 
         if(isBasedOnUpStation) {
             return Section.builder()
@@ -118,13 +114,6 @@ public class Sections {
                 .downStation(section.getUpStation())
                 .distance(distance)
                 .build();
-    }
-
-
-    public void validateDistance(int distance) {
-        if(distance <= VALIDATE_DISTANCE_CRITERIA) {
-            throw new BadRequestException(DISTANCE_EXCEPTION_MESSAGE);
-        }
     }
 
     private boolean isExistStation(Station station) {
@@ -196,7 +185,7 @@ public class Sections {
 
     private Section createSectionForRemove(Section prevSection, Section nextSection) {
         Line line = prevSection.getLine();
-        int distance = prevSection.getDistance() + nextSection.getDistance();
+        Distance distance = Distance.of(prevSection.getDistance() + nextSection.getDistance());
         Station upStation = prevSection.getUpStation();
         Station downStation = nextSection.getDownStation();
 

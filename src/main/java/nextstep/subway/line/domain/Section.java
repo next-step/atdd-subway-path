@@ -30,10 +30,11 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     @Builder
-    private Section(Long id, Line line, Station upStation, Station downStation, int distance) {
+    private Section(Long id, Line line, Station upStation, Station downStation, Distance distance) {
         this.id = id;
         this.line = line;
         this.upStation = upStation;
@@ -41,5 +42,8 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
+    public int getDistance() {
+        return this.distance.getValue();
+    }
 
 }

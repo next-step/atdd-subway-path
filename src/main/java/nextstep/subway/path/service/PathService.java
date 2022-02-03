@@ -43,7 +43,7 @@ public class PathService {
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
 
-        return PathResponse.of(stationResponses, graphPath.getWeight());
+        return PathResponse.of(stationResponses, (int) graphPath.getWeight());
     }
 
     private Station findStationById(Long id) {

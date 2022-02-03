@@ -46,7 +46,7 @@ public class Line extends BaseEntity {
                 .line(this)
                 .upStation(upStation)
                 .downStation(downStation)
-                .distance(distance)
+                .distance(Distance.of(distance))
                 .build();
 
         sections.add(section);

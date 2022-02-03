@@ -115,7 +115,7 @@ public class LineTest {
         assertThatThrownBy(() ->
                         이호선.addSection(이호선_상행종점역, 구간_하행역, 이호선_첫구간_길이))
                         .isInstanceOf(BadRequestException.class)
-                        .hasMessage(Sections.DISTANCE_EXCEPTION_MESSAGE);
+                        .hasMessage(Distance.DISTANCE_EXCEPTION_MESSAGE);
     }
 
     @Test
