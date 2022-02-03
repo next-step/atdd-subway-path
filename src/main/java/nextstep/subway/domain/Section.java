@@ -69,14 +69,6 @@ public class Section {
         this.line.addSection(this);
     }
 
-    public void setUpStation(Station upStation) {
-        this.upStation = upStation;
-    }
-
-    public void setDownStation(Station downStation) {
-        this.downStation = downStation;
-    }
-
     public boolean hasSameUpStationWith(Section section) {
         return this.upStation.equals(section.getUpStation());
     }
@@ -138,10 +130,6 @@ public class Section {
 
     public int getDistance() {
         return distance;
-    }
-
-    public void setDistance(int distance) {
-        this.distance = distance;
     }
 
     public void handleRemoveMidCase(Section connectedSection) {
