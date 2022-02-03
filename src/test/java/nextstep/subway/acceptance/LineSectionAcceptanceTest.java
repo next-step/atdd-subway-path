@@ -186,7 +186,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 새로운 지하철 노선 구간을 등록하고
-     * When 지하철 노선에 상행 종점역 구간 삭제 요청 하면
+     * When 지하철 노선에 하행 종점역 구간 삭제 요청 하면
      * Then 지하철 노선에 구간이 삭제된다.
      */
     @DisplayName("지하철 노선에 하행 종점역 구간을 제거")
@@ -201,7 +201,29 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회를_요청한다(신분당선_번호);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역_번호, 판교역_번호)
+        );
+    }
 
+    /**
+     * Given 새로운 지하철 노선 구간을 등록하고
+     * When 지하철 노선에 상행 종점역 구간 삭제 요청 하면
+     * Then 지하철 노선에 구간이 삭제된다.
+     */
+    @DisplayName("지하철 노선에 상행 종점역 구간을 제거")
+    @Test
+    void removeLineSectionByUpTerminalStation() {
+        // given
+        Long 논현역_번호 = 지하철_역_생성_되어있음(논현역);
+        지하철_노선_구간_등록을_요청한다(신분당선_번호, 논현역_번호, 강남역_번호, 논현_강남_거리);
+
+        // when
+        지하철_노선_구간을_삭제_요청한다(신분당선_번호, 논현역_번호);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회를_요청한다(신분당선_번호);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역_번호, 판교역_번호)
