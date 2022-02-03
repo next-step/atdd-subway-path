@@ -53,14 +53,14 @@ class SectionsTest {
     @Test
     @DisplayName("하행역에 해당하는 구간 조회")
     void getByDownStation() {
-        Section section1 = new Section(line, 강남역, 역삼역, 10);
-        Section section2 = new Section(line, 역삼역, 선릉역, 10);
+        Section 강남역삼구간 = new Section(line, 강남역, 역삼역, 10);
+        Section 역삼선릉구간 = new Section(line, 역삼역, 선릉역, 10);
         Sections sections = new Sections();
-        sections.add(section1);
-        sections.add(section2);
+        sections.add(강남역삼구간);
+        sections.add(역삼선릉구간);
 
         Section section = sections.getByDownStation(역삼역);
-        assertThat(section).isEqualTo(section1);
+        assertThat(section).isEqualTo(강남역삼구간);
     }
 
     @Test
