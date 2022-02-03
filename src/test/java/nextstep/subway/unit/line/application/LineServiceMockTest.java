@@ -45,7 +45,7 @@ public class LineServiceMockTest {
             .downStationId(mockDownStation.getId())
             .distance(new Distance(100))
             .build();
-        lineService.isAddableSection(mockLine.getId(), sectionRequest);
+        lineService.addSection(mockLine.getId(), sectionRequest);
 
         // then
         // line.findLineById 메서드를 통해 검증

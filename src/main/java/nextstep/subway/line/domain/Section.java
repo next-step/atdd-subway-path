@@ -43,7 +43,7 @@ public class Section {
     }
 
     @Builder
-    public Section(Long id, Line line, Station upStation, Station downStation, Distance distance) {
+    private Section(Long id, Line line, Station upStation, Station downStation, Distance distance) {
         this.id = id;
         this.line = line;
         this.upStation = upStation;
@@ -55,6 +55,10 @@ public class Section {
         return upStation.equals(section.upStation);
     }
 
+    public boolean matchUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
     public boolean matchDownStation(long id) {
         return downStation.matchId(id);
     }
@@ -64,6 +68,11 @@ public class Section {
 
         distance = distance.subtraction(newSection.distance);
         upStation = newSection.getDownStation();
+    }
+
+    public void combineOfUpSection(Section upSection) {
+        this.upStation = upSection.getUpStation();
+        distance = distance.addition(upSection.distance);
     }
 
     private void verifyDistanceExceeded(Distance newSectionDistance) {
