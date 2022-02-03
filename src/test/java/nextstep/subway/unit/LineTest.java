@@ -24,7 +24,7 @@ class LineTest {
     @BeforeEach
     void setUp() {
         line = new Line("간선", "blue");
-        line.addSections(수원역, 부산역, 1);
+        line.addSections(수원역, 부산역, 10);
     }
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
@@ -99,7 +99,6 @@ class LineTest {
     void removeSection() {
         //given
         Station 서울역 = new Station("서울역");
-        Section lastSection = new Section(line, 부산역, 서울역, 1);
         line.addSections(부산역, 서울역, 1);
 
         //when
@@ -107,6 +106,21 @@ class LineTest {
 
         //then
         assertThat(line.getStations()).containsExactly(수원역, 부산역);
+    }
+
+    @DisplayName("노선에서 중간역 삭제")
+    @Test
+    void 중간역_삭제() {
+        Station 서울역 = new Station("서울역");
+        Station 남서울역 = new Station("남서울역");
+        line.addSections(부산역, 서울역, 5);
+        line.addSections(부산역, 남서울역, 1);
+
+        //when
+        line.removeSection(부산역);
+
+        //then
+        assertThat(line.getStations()).containsExactly(수원역, 남서울역, 서울역);
     }
 
 }

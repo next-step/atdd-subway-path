@@ -137,7 +137,22 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         지하철_노선_조회_요청_응답(response, 서울역, 강남역 ,양재역);
+    }
 
+    @DisplayName("지하철 노선에 두번째 역을 제거")
+    @Test
+    void 두번째역을_제거() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        int 구간거리 = 4;
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(서울역, 정자역, 구간거리));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_노선_조회_요청_응답(response, 서울역, 강남역 ,양재역);
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
