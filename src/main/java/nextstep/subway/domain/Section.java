@@ -60,6 +60,11 @@ public class Section {
 
     public void setLine(Line line) {
         this.line = line;
+        line.getSections().add(this);
+    }
+
+    public boolean hasStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
     }
 
     @Override

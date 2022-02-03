@@ -25,4 +25,10 @@ public class ControllerExceptionHandler {
     public void handleDuplicateAttributeException(DuplicateAttributeException e) {
         logger.info(e.getMessage());
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public void handleIllegalArgumentException(IllegalArgumentException e) {
+        logger.info(e.getMessage());
+    }
 }

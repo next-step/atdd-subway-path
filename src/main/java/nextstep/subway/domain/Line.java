@@ -1,10 +1,9 @@
 package nextstep.subway.domain;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -24,7 +23,109 @@ public class Line extends BaseEntity {
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
-    private List<Section> sections = new ArrayList<>();
+    private List<Section> sections = new LinkedList<>();
+
+    public void init(Section section) {
+        section.setLine(this);
+    }
+
+    public void addSection(Section section) {
+        verifyCanBeAdded(section);
+
+        var stations = getStations();
+        if (stations.get(0).equals(section.getDownStation())) {
+            section.setLine(this);
+            return;
+        }
+
+        if (stations.get(stations.size() - 1).equals(section.getUpStation())) {
+            section.setLine(this);
+            return;
+        }
+
+        addSectionToBetween(section);
+    }
+
+    public List<Station> getStations() {
+        if (sections.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        var ret = new ArrayList<Station>();
+        var top = firstSection();
+        ret.add(top.getUpStation());
+
+        var curSection = top;
+        while (curSection != null) {
+            ret.add(curSection.getDownStation());
+            curSection = nextSection(curSection);
+        }
+
+        return ret;
+    }
+
+    private Section firstSection() {
+        var downStations = sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+
+        return sections.stream()
+                .filter(it -> !downStations.contains(it.getUpStation()))
+                .findAny()
+                .orElseThrow(RuntimeException::new);
+    }
+
+    private Section nextSection(Section section) {
+        return sections.stream()
+                .filter(it -> it.getUpStation().equals(section.getDownStation()))
+                .findAny()
+                .orElse(null);
+    }
+
+    private void addSectionToBetween(Section section) {
+        var betweenSectionUp = sections.stream()
+                .filter(it -> it.getUpStation().equals(section.getUpStation()))
+                .findAny()
+                .orElse(null);
+
+        if (betweenSectionUp != null) {
+            if (betweenSectionUp.getDistance() <= section.getDistance()) {
+                throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같아서 추가할 수 없습니다.");
+            }
+
+            section.setLine(this);
+            var newSection = new Section(
+                    section.getDownStation(),
+                    betweenSectionUp.getDownStation(),
+                    betweenSectionUp.getDistance() - section.getDistance()
+            );
+            newSection.setLine(this);
+
+            sections.remove(betweenSectionUp);
+            return;
+        }
+
+        var betweenSectionDown = sections.stream()
+                .filter(it -> it.getDownStation().equals(section.getDownStation()))
+                .findAny()
+                .orElse(null);
+
+        if (betweenSectionDown != null) {
+            if (betweenSectionDown.getDistance() <= section.getDistance()) {
+                throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같아서 추가할 수 없습니다.");
+            }
+
+            section.setLine(this);
+            var newSection = new Section(
+                    betweenSectionDown.getUpStation(),
+                    section.getUpStation(),
+                    betweenSectionDown.getDistance() - section.getDistance()
+            );
+            newSection.setLine(this);
+
+            sections.remove(betweenSectionDown);
+        }
+    }
 
     protected Line() {
     }
@@ -47,32 +148,12 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> getSections() {
-        return Collections.unmodifiableList(sections);
-    }
-
-    public List<Station> getStations() {
-        var stations = sections.stream()
-                .map(Section::getUpStation)
-                .collect(Collectors.toList());
-        stations.add(sections.get(sections.size() - 1).getDownStation());
-
-        return Collections.unmodifiableList(stations);
+        return sections;
     }
 
     public void update(String name, String color) {
         this.name = name;
         this.color = color;
-    }
-
-    public void init(Section section) {
-        section.setLine(this);
-        sections.add(section);
-    }
-
-    public void addSection(Section section) {
-        verifyCanBeAdded(section);
-        section.setLine(this);
-        sections.add(section);
     }
 
     public void remove(Station station) {
@@ -81,19 +162,16 @@ public class Line extends BaseEntity {
     }
 
     private void verifyCanBeAdded(Section section) {
-        if (sections.isEmpty()) {
-            throw new IllegalArgumentException("비어있는 노선에 구간을 추가할 수 없습니다.");
+        if (sections.stream().filter(it -> it.hasStation(section.getUpStation())).findAny().isEmpty()
+                && sections.stream().filter(it -> it.hasStation(section.getDownStation())).findAny().isEmpty()) {
+            throw new IllegalArgumentException("상행역과 하행역 모두 등록되어 있지 않아서 추가할 수 없습니다.");
         }
 
-        var lastStop = sections.get(sections.size() - 1);
-        if (!lastStop.getDownStation().equals(section.getUpStation())) {
-            throw new IllegalArgumentException("새로운 구간의 상행역이 해당 노선의 하행 종점역이 아닙니다.");
-        }
-
-        var downStation = section.getDownStation();
-        if (sections.stream().map(Section::getUpStation).anyMatch(station -> station.equals(downStation))
-                || sections.stream().map(Section::getDownStation).anyMatch(station -> station.equals(downStation))) {
-            throw new IllegalArgumentException("새로운 구간의 하행역이 해당 노선에 이미 등록되어있습니다.");
+        if (sections.stream().anyMatch(it ->
+                it.getUpStation().equals(section.getUpStation())
+                        && it.getDownStation().equals(section.getDownStation()))
+        ) {
+            throw new IllegalArgumentException("상행역과 하행역이 모두 등록되어 있어서 추가할 수 없습니다.");
         }
     }
 
@@ -111,15 +189,15 @@ public class Line extends BaseEntity {
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (this.id == null || obj == null || getClass() != obj.getClass())
+        if (obj == null || getClass() != obj.getClass())
             return false;
 
         var line = (Line) obj;
-        return id.equals(line.id);
+        return StringUtils.equals(this.name, line.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(name);
     }
 }

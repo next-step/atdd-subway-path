@@ -49,13 +49,11 @@ public class LineResponse {
     }
 
     public static LineResponse from(Line line) {
-        var sections = line.getSections();
+        var stations = line.getStations();
 
-        var stationResponses = sections.stream()
-                .map(Section::getUpStation)
+        var stationResponses = stations.stream()
                 .map(StationResponse::from)
                 .collect(Collectors.toList());
-        stationResponses.add(StationResponse.from(sections.get(sections.size() - 1).getDownStation()));
 
         return new LineResponse(
                 line.getId(),
