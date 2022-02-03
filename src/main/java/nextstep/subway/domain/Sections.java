@@ -7,6 +7,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -78,22 +79,15 @@ public class Sections {
         return stations;
     }
 
-    // 1. 상행 종점 구간 조회
     private Section getFirstSection() {
-        List<Station> downStations = getDownStations();
-        for (Section section : sections) {
-            int count = 0;
-            for (Station downStation : downStations) {
-                if (section.getUpStation().equals(downStation)) {
-                    count++;
-                    break;
-                }
-            }
-            if (count == 0) {
-                return section;
-            }
-        }
-        return sections.get(0);
+        return sections.stream()
+                .filter(section -> getDownStations().stream().noneMatch(equalsUpAndDownStation(section)))
+                .findFirst()
+                .orElse(sections.get(0));
+    }
+
+    private Predicate<Station> equalsUpAndDownStation(Section section) {
+        return downStation -> downStation.equals(section.getUpStation());
     }
 
     /**
