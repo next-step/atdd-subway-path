@@ -185,13 +185,13 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
-     * When 지하철 노선의 마지막 구간 제거를 요청 하면
-     * Then 노선에 구간이 제거된다
+     * Given 새로운 지하철 노선 구간을 등록하고
+     * When 지하철 노선에 상행 종점역 구간 삭제 요청 하면
+     * Then 지하철 노선에 구간이 삭제된다.
      */
-    @DisplayName("지하철 노선에 구간을 제거")
+    @DisplayName("지하철 노선에 하행 종점역 구간을 제거")
     @Test
-    void removeLineSection() {
+    void removeLineSectionByDownTerminalStation() {
         // given
         Long 정자역_번호 = 지하철_역_생성_되어있음(정자역);
         지하철_노선_구간_등록을_요청한다(신분당선_번호, 판교역_번호, 정자역_번호, 판교_정자_거리);
@@ -215,7 +215,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선에 등록되지 않은 역을 기준으로 구간 제거")
     @Test
-    void removeSectionExcludeStationException() {
+    void removeLineSectionExcludeStationException() {
         // given
         final Long 정자역_번호 = 지하철_역_생성_되어있음(정자역);
         final Long 논현역_번호 = 지하철_역_생성_되어있음(논현역);
@@ -234,7 +234,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선에 등록된 구간이 1개일때 구간 제거")
     @Test
-    void removeSectionByUpStationWhenOnlyOne() {
+    void removeLineSectionByUpStationWhenOnlyOne() {
         // when
         final ExtractableResponse<Response> response = 지하철_노선_구간을_삭제_요청한다(신분당선_번호, 강남역_번호);
 
@@ -248,7 +248,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선에 등록된 구간이 1개일때 구간 제거")
     @Test
-    void removeSectionByDownStationWhenOnlyOne() {
+    void removeLineSectionByDownStationWhenOnlyOne() {
         // when
         final ExtractableResponse<Response> response = 지하철_노선_구간을_삭제_요청한다(신분당선_번호, 판교역_번호);
 
