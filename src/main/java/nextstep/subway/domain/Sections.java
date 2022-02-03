@@ -91,7 +91,11 @@ public class Sections {
     }
 
     public void removeSection(final Station station) {
-        validateRemoveSection(station);
+        final boolean up = sections.stream().anyMatch(it -> it.isUpStation(station));
+        final boolean down = sections.stream().anyMatch(it -> it.isDownStation(station));
+        if(up == false && down == false) {
+            throw new IllegalArgumentException("removed station is not include sections");
+        }
         this.sections.remove(lastIndex());
     }
 
