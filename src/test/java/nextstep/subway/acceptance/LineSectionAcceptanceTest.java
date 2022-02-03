@@ -207,4 +207,24 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역_번호, 판교역_번호)
         );
     }
+
+    /***
+     * Given 새로운 지하철 노선 구간을 등록하고
+     * When 지하철 노선에 등록되지 않은 역을 기준으로 구간 삭제 요청 하면
+     * Then 지하철 노선에 구간이 삭제가 실패한다.
+     */
+    @DisplayName("지하철 노선에 등록되지 않은 역을 기준으로 구간을 삭제한다.")
+    @Test
+    void removeExcludeStationException() {
+        // given
+        final Long 정자역_번호 = 지하철_역_생성_되어있음(정자역);
+        final Long 논현역_번호 = 지하철_역_생성_되어있음(논현역);
+        지하철_노선_구간_등록을_요청한다(신분당선_번호, 판교역_번호, 정자역_번호, 판교_정자_거리);
+
+        // when
+        final ExtractableResponse<Response> response = 지하철_노선_구간을_삭제_요청한다(신분당선_번호, 논현역_번호);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
