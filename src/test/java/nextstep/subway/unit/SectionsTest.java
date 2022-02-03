@@ -102,6 +102,23 @@ class SectionsTest {
         assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(distance);
     }
 
+    @DisplayName("지하철 노선에서 하행 종점역을 제거")
+    @Test
+    void deleteSection2() {
+        // given
+        Station 정자역 = new Station("정자역");
+        신분당선.addSection(양재역, 정자역, distance);
+
+        // when
+        신분당선.deleteSection(정자역);
+
+        // then
+        assertThat(신분당선.getStations()).containsExactly(강남역, 양재역);
+        assertThat(신분당선.getSections().get(0).getUpStation()).isEqualTo(강남역);
+        assertThat(신분당선.getSections().get(0).getDownStation()).isEqualTo(양재역);
+        assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(distance);
+    }
+
     @DisplayName("지하철 노선에서 구간이 1개일 때, 구간을 제거 - 실패")
     @Test
     void deleteSectionFail() {
