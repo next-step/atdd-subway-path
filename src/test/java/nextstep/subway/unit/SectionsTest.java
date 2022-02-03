@@ -86,7 +86,22 @@ class SectionsTest {
         assertThat(sections.getStations()).containsExactly(upStation, extraStation, downStation);
     }
 
+    @DisplayName("구간 목록에 하행종점 구간 삭제")
+    @Test
+    void removeSectionByDownTerminalSection() {
+        // given
+        final Station extraStation = new Station(정자역);
+        sections.addSection(new Section(line, downStation, extraStation, 판교_정자_거리));
+
+        // when
+        sections.removeSection(extraStation);
+
+        // then
+        assertThat(sections.getStations()).containsExactly(upStation, downStation);
+    }
+
     @DisplayName("구간 목록에 없는 역을 기준으로 구간을 삭제할 경우")
+    @Test
     void removeSectionExcludeStation() {
         // given
         final Station extraStation = new Station(정자역);
@@ -99,10 +114,11 @@ class SectionsTest {
     }
 
     @DisplayName("구간 목록에 구간이 1개일 때의 기준으로 구간을 삭제할 경우")
+    @Test
     void removeSectionWhenOnlyOne() {
         // when and then
         assertThatThrownBy(() -> sections.removeSection(new Station(강남역)))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalStateException.class)
                 .hasMessage("sections is not removable state");
     }
 }
