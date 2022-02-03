@@ -146,6 +146,60 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
+    /**
+     * Scenario: 역 사이에 새로운 역 등록시 기존 구간의 길이보다 길이가 같거나 크면 에러를 반환한다.
+     * given   : 새로운 역을 생성하고
+     * when    : 기존 구간의 길이보다 큰 거리의 구간을 기존 구간 사이에 추가 요청을 하면
+     * then    : 구간 추가가 되지 않는다. (400에러)
+     */
+    @DisplayName("역 사이에 새로운 역 등록시 기존 구간의 길이보다 크거나 같으면 안된다.")
+    @Test
+    void validateAddSection() {
+        // given
+        long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> postResponse = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 11));
+
+        // then
+        assertThat(postResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Scenario: 추가될 구간의 두 역이 모두 기존 노선에 포함되어 있다면 에러를 반환한다.
+     * when    : 기존 노선의 두 역으로 새로운 구간 생성을 요청하면
+     * then    : 구간 추가가 되지 않는다. (409 에러)
+     */
+    @DisplayName("추가될 구간의 두 역이 노선에 이미 모두 등록된 상태면 안된다.")
+    @Test
+    void validateAddSection2() {
+        // when
+        ExtractableResponse<Response> postResponse = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 강남역, 10));
+
+        // then
+        assertThat(postResponse.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+    }
+
+    /**
+     * Scenario: 추가될 구간의 두 역이 모두 기존 노선에 존재하지 않다면 에러를 반환한다.
+     * given   : 새로운 역을 2개 생성하고
+     * when    : 두 역으로 새로운 구간 생성을 요청하면
+     * then    : 구간 추가가 되지 않는다. (404 에러)
+     */
+    @DisplayName("추가될 구간의 두 역이 노선에 모두 없어서는 안된다.")
+    @Test
+    void validateAddSection3() {
+        // given
+        Long 역삼역 = 지하철역_생성_요청("역삼역").jsonPath().getLong("id");
+        Long 선릉역 = 지하철역_생성_요청("선릉역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> postResponse = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(역삼역, 선릉역, 10));
+
+        // then
+        assertThat(postResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
     private Map<String, Object> createLineCreateParams(Long upStationId, Long downStationId, int distance) {
         Map<String, Object> lineCreateParams;
         lineCreateParams = new HashMap<>();

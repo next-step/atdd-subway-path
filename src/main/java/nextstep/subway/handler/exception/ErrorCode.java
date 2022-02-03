@@ -1,8 +1,13 @@
 package nextstep.subway.handler.exception;
 
 public enum ErrorCode {
+    INVALID_DISTANCE(400, "[ERROR] 거리는 1보다 작을수 없습니다."),
+
     STATION_NOT_FOUND_BY_ID(404, "[ERROR] 입력한 id의 지하철역을 찾을 수 없습니다."),
     LINE_NOT_FOUND_BY_ID(404, "[ERROR] 입력한 id의 노선을 찾을 수 없습니다."),
+    STATIONS_NOT_FOUND_FROM_LINE(404, "[ERROR] 입력한 구간의 두 역을 노선에서 모두 찾을 수 없습니다."),
+
+    STATIONS_ALL_EXISTS(409, "[ERROR] 입력한 구간의 두 역은 이미 노선에 존재합니다."),
     ;
 
     private final int status;

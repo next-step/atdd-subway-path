@@ -11,4 +11,14 @@ public class BusinessExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBusinessException(StationException e) {
         return ErrorResponse.convert(e.getErrorCode());
     }
+
+    @ExceptionHandler(value = LineException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessException(LineException e) {
+        return ErrorResponse.convert(e.getErrorCode());
+    }
+
+    @ExceptionHandler(value = SectionException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessException(SectionException e) {
+        return ErrorResponse.convert(e.getErrorCode());
+    }
 }

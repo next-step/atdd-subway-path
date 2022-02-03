@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.handler.validator.SectionValidator;
+
 import javax.persistence.*;
 
 @Entity
@@ -34,6 +36,7 @@ public class Section {
     }
 
     public static Section of(Line line, Station upStation, Station downStation, int distance) {
+        SectionValidator.validateDistance(distance);
         return new Section(line, upStation, downStation, distance);
     }
 
@@ -71,5 +74,9 @@ public class Section {
 
     public boolean isNotUpStation(Station station) {
         return !this.upStation.equals(station);
+    }
+
+    public boolean hasStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
     }
 }

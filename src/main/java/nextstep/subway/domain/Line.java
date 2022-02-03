@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.handler.validator.SectionValidator;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -106,6 +108,7 @@ public class Line extends BaseEntity {
     }
 
     private void pushSection(Station upStation, Station downStation, int newDistance) {
+        SectionValidator.validateDistance(newDistance);
         sections.add(Section.of(this, upStation, downStation, newDistance));
     }
 
@@ -146,5 +149,9 @@ public class Line extends BaseEntity {
 
     public boolean isDownStation(Station station) {
         return downStation.equals(station);
+    }
+
+    public boolean hasStation(Station station) {
+        return sections.stream().anyMatch(section -> section.hasStation(station));
     }
 }
