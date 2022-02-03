@@ -69,7 +69,8 @@ public class Section {
         return downStation.equals(station);
     }
 
-    public void changeUpStation(Station station) {
+    public void changeUpStation(Station station, int distance) {
         this.upStation = station;
+        this.distance -= distance;
     }
 }

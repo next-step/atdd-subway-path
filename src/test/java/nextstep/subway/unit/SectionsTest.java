@@ -36,10 +36,13 @@ class SectionsTest {
     @DisplayName("새로운 역을 구간의 중간에 추가")
     @Test
     void addSection() {
-        Section newSection = Section.of(_5호선, 군자역, 광나루역, distance);
+        int newSectionDistance = 3;
+        Section newSection = Section.of(_5호선, 군자역, 광나루역, newSectionDistance);
         sections.addSection(newSection);
 
         assertThat(sections.getSections()).containsExactly(newSection, section);
+        assertThat(sections.getSections().get(0).getDistance()).isEqualTo(newSectionDistance);
+        assertThat(sections.getSections().get(1).getDistance()).isEqualTo(distance - newSectionDistance);
     }
 
     @DisplayName("새로운 역을 상행 종점으로 추가")

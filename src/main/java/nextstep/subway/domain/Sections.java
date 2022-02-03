@@ -71,7 +71,7 @@ public class Sections {
                 .findAny()
                 .orElseThrow(IllegalArgumentException::new);
         sections.add(sections.indexOf(targetSection), newSection);
-        targetSection.changeUpStation(newSection.getDownStation());
+        targetSection.changeUpStation(newSection.getDownStation(), newSection.getDistance());
     }
 
     public List<Section> getSections() {
