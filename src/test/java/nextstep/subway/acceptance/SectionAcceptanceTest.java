@@ -41,7 +41,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     private String createdLineUri;
     private String requestUri;
     private String FIRST_LINE_URI = "/lines/1";
-    private String FIRST_SECTION_URI = "/lines/1/sections?downStationId=2";
+    private String FIRST_SECTION_URI = "/lines/1/sections?stationId=2";
     private static final String SECTION_URI = "/sections";
     private Map<String, Object> 서초_TO_교대 = new HashMap<>();
     private Map<String, Object> 교대_TO_강남 = new HashMap<>();
@@ -154,7 +154,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void ifYouRequestDeletionForAnUnCreatedSectionItCanNotBeDelete() {
         구간_생성_요청(역삼_TO_선릉, requestUri);
-        String uri = "/lines/1/sections?downStationId=10";
+        String uri = "/lines/1/sections?stationId=" + Long.MAX_VALUE;
         ExtractableResponse<Response> response = 구간_삭제_요청(uri);
         assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
     }
