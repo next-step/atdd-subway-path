@@ -57,7 +57,7 @@ class LineServiceTest {
         lineService.addSection(line.getId(), sectionRequest);
 
         // then
-        assertThat(line.getSections().size()).isEqualTo(1);
+        assertThat(line.sectionsSize()).isEqualTo(1);
         LineResponse response = lineService.findById(line.getId());
         List<StationResponse> stations = response.getStations();
         assertThat(stations).extracting(StationResponse::getId)

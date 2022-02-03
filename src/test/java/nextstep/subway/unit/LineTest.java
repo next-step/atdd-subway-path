@@ -47,8 +47,7 @@ class LineTest {
         line.addSection(section2);
 
         // then
-        List<Section> sections = line.getSections();
-        assertThat(sections.size()).isEqualTo(2);
+        assertThat(line.sectionsSize()).isEqualTo(2);
         assertThat(section1.getUpStation()).isEqualTo(증미역);
         assertThat(section1.getDownStation()).isEqualTo(등촌역);
         assertThat(section1.getDistance()).isEqualTo(6);
@@ -65,8 +64,7 @@ class LineTest {
         line.addSection(section);
 
         // then
-        List<Section> sections = line.getSections();
-        assertThat(sections.size()).isEqualTo(1);
+        assertThat(line.sectionsSize()).isEqualTo(1);
         assertThat(section.getUpStation()).isEqualTo(가양역);
         assertThat(section.getDownStation()).isEqualTo(증미역);
         assertThat(section.getDistance()).isEqualTo(tenDistance);
@@ -97,9 +95,8 @@ class LineTest {
         line.removeSection(등촌역);
 
         // then
-        List<Section> sections = line.getSections();
-        assertThat(sections.size()).isEqualTo(1);
-        assertThat(sections.get(0).getDownStation()).isEqualTo(증미역);
+        assertThat(line.sectionsSize()).isEqualTo(1);
+        assertThat(line.getDownStation(0)).isEqualTo(증미역);
     }
 
     @DisplayName("지하철역 사이에 새로운 구간 추가 시 기존 역 사이 길이 이상일 수 없음.")
