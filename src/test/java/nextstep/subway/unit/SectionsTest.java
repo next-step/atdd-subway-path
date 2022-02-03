@@ -136,6 +136,21 @@ class SectionsTest {
         assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(2 * distance);
     }
 
+    @DisplayName("지하철 노선에 존재하지 않는 역으로 제거")
+    @Test
+    void deleteSection4() {
+        // given
+        Station 정자역 = new Station("정자역");
+        신분당선.addSection(양재역, 정자역, distance);
+        Station 신풍역 = new Station("정자역");
+
+        // when
+        신분당선.deleteSection(신풍역);
+
+        // then
+        assertThat(신분당선.getStations()).containsExactly(강남역, 양재역, 정자역);
+    }
+
     @DisplayName("지하철 노선에서 구간이 1개일 때, 구간을 제거 - 실패")
     @Test
     void deleteSectionFail() {
