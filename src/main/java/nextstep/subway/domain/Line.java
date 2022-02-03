@@ -16,12 +16,29 @@ public class Line extends BaseEntity {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
+    @OneToOne(fetch = FetchType.LAZY)
+    private Station upStation;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private Station downStation;
+
     public Line() {
     }
 
-    public Line(String name, String color) {
+    private Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        sections.add(initSection(upStation, downStation, distance));
+    }
+
+    private Section initSection(Station upStation, Station downStation, int distance) {
+        return Section.of(this, upStation, downStation, distance);
+    }
+
+    public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
+        return new Line(name, color, upStation, downStation, distance);
     }
 
     public Long getId() {
