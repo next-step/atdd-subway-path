@@ -2,6 +2,7 @@ package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.StationRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.applicaion.exception.NotExistStationException;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class StationService {
     }
 
     public StationResponse saveStation(StationRequest stationRequest) {
-        Station station = stationRepository.save(new Station(stationRequest.getName()));
+        Station station = stationRepository.save(Station.of(stationRequest.getName()));
         return createStationResponse(station);
     }
 
@@ -47,6 +48,7 @@ public class StationService {
     }
 
     public Station findById(Long id) {
-        return stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new NotExistStationException(id));
     }
 }
