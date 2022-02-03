@@ -64,9 +64,9 @@ public class Section {
         }
     }
 
-    public void updateUpStation(final Station station, final int disatnce) {
+    public void updateUpStation(final Station station, final int distance) {
         this.upStation = station;
-        this.distance = disatnce;
+        this.distance = distance;
     }
 
     public void updateDownStation(final Station station, final int distance) {

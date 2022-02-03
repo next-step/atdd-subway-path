@@ -13,6 +13,9 @@ import static nextstep.subway.acceptance.LineFixture.*;
 
 public class LineSteps {
 
+    private static final String LINE_BASE_PATH = "/lines/";
+    private static final String SECTION_BASE_PATH = "/lines/%s/sections";
+
     public static Long 지하철_노선이_생성되어_있음(final String name, final String color,
                                        final Long upStationId, final Long downStationId, final int distance) {
         return 지하철_노선_생성을_요청한다(name, color, upStationId, downStationId, distance).jsonPath().getLong("id");
@@ -26,7 +29,7 @@ public class LineSteps {
                 .accept(ContentType.ANY)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines")
+                .post(LINE_BASE_PATH)
                 .then().log().all()
                 .extract();
     }
@@ -47,7 +50,7 @@ public class LineSteps {
                 .accept(ContentType.JSON)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .get("/lines")
+                .get(LINE_BASE_PATH)
                 .then().log().all()
                 .extract();
     }
@@ -57,7 +60,7 @@ public class LineSteps {
                 .accept(ContentType.JSON)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .get("/lines/" + lineId)
+                .get(LINE_BASE_PATH + lineId)
                 .then().log().all()
                 .extract();
     }
@@ -69,7 +72,7 @@ public class LineSteps {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
                 .when()
-                .put("/lines/" + lineId)
+                .put(LINE_BASE_PATH + lineId)
                 .then().log().all()
                 .extract();
     }
@@ -85,13 +88,13 @@ public class LineSteps {
         return RestAssured.given().log().all()
                 .accept(ContentType.ANY)
                 .when()
-                .delete("/lines/" + lineId)
+                .delete(LINE_BASE_PATH + lineId)
                 .then().log().all()
                 .extract();
     }
 
-    public static String 지하철_노선이_구간_등록되어_있음(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
-        return 지하철_노선_구간_등록을_요청한다(lineId, upStationId, downStationId, distance).jsonPath().get("id").toString();
+    public static Long 지하철_노선이_구간_등록되어_있음(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
+        return 지하철_노선_구간_등록을_요청한다(lineId, upStationId, downStationId, distance).jsonPath().getLong("id");
     }
 
     public static ExtractableResponse<Response> 지하철_노선_구간_등록을_요청한다(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
@@ -101,7 +104,7 @@ public class LineSteps {
                 .accept(ContentType.ANY)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post(String.format("/lines/%s/sections", lineId))
+                .post(String.format(SECTION_BASE_PATH, lineId))
                 .then().log().all()
                 .extract();
     }
@@ -120,7 +123,7 @@ public class LineSteps {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .queryParam("stationId", stationId)
-                .delete(String.format("/lines/%s/sections", lineId))
+                .delete(String.format(SECTION_BASE_PATH, lineId))
                 .then().log().all()
                 .extract();
     }

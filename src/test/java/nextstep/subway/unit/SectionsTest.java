@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static nextstep.subway.acceptance.LineFixture.*;
+import static nextstep.subway.acceptance.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("구간들 단위 테스트(Sections)")
@@ -20,19 +22,19 @@ class SectionsTest {
 
     @BeforeEach
     void setUp() {
-        upStation = new Station("upStation");
-        downStation = new Station("downStation");
-        line = new Line("color", "name");
+        upStation = new Station(강남역);
+        downStation = new Station(판교역);
+        line = new Line(신분당선, 빨강색);
         sections = new Sections();
-        sections.addSection(new Section(line, upStation, downStation, 10));
+        sections.addSection(new Section(line, upStation, downStation, 강남_판교_거리));
     }
 
     @DisplayName("구간 목록 맨뒤에 새로운 구간을 추가할 경우")
     @Test
     void addSectionExtensionDownTerminalStation() {
         // given
-        final Station extraStation = new Station("extraStation");
-        final Section section = new Section(line, downStation, extraStation, 1);
+        final Station extraStation = new Station(정자역);
+        final Section section = new Section(line, downStation, extraStation, 판교_정자_거리);
 
         // when
         sections.addSection(section);
@@ -45,8 +47,8 @@ class SectionsTest {
     @Test
     void addSectionExtensionUpTerminalStation() {
         // given
-        final Station extraStation = new Station("extraStation");
-        final Section section = new Section(line, extraStation, upStation, 1);
+        final Station extraStation = new Station(논현역);
+        final Section section = new Section(line, extraStation, upStation, 논현_강남_거리);
 
         // when
         sections.addSection(section);
@@ -59,8 +61,8 @@ class SectionsTest {
     @Test
     void addSectionDownStation() {
         // given
-        final Station extraStation = new Station("extraStation");
-        final Section section = new Section(line, extraStation, downStation, 1);
+        final Station extraStation = new Station(양재역);
+        final Section section = new Section(line, extraStation, downStation, 양재_판교_거리);
 
         // when
         sections.addSection(section);
@@ -73,8 +75,8 @@ class SectionsTest {
     @Test
     void addSectionUpStation() {
         // given
-        final Station extraStation = new Station("extraStation");
-        final Section section = new Section(line, upStation, extraStation, 1);
+        final Station extraStation = new Station(양재역);
+        final Section section = new Section(line, upStation, extraStation, 강남_양재_거리);
 
         // when
         sections.addSection(section);

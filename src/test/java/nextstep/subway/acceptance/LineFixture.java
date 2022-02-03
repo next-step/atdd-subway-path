@@ -13,6 +13,7 @@ public class LineFixture {
     public static final int 논현_강남_거리 = 1;
     public static final int 강남_판교_거리 = 10;
     public static final int 강남_양재_거리 = 4;
+    public static final int 논현_양재_거리 = 5;
     public static final int 양재_판교_거리 = 6;
     public static final int 판교_정자_거리 = 3;
 

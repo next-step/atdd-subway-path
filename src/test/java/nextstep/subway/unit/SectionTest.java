@@ -7,6 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static nextstep.subway.acceptance.LineFixture.*;
+import static nextstep.subway.acceptance.StationFixture.강남역;
+import static nextstep.subway.acceptance.StationFixture.판교역;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -22,10 +25,10 @@ class SectionTest {
 
     @BeforeEach
     void setUp() {
-        upStation = new Station("upStation");
-        downStation = new Station("downStation");
-        line = new Line("color", "name");
-        distance = 10;
+        upStation = new Station(강남역);
+        downStation = new Station(판교역);
+        line = new Line(신분당선, 빨강색);
+        distance = 강남_판교_거리;
         section = new Section(line, upStation, downStation, distance);
     }
 

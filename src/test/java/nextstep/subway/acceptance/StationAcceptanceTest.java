@@ -33,6 +33,24 @@ class StationAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 지하철역 생성을 요청 하고
+     * When 같은 이름으로 지하철역 생성을 요청 하면
+     * Then 지하철역 생성이 실패한다.
+     */
+    @DisplayName("중복이름으로 지하철역 생성")
+    @Test
+    void duplicateName() {
+        // given
+        지하철_역_생성을_요청한다("강남역");
+
+        // when
+        ExtractableResponse<Response> createResponse = 지하철_역_생성을_요청한다("강남역");
+
+        // then
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 지하철역 생성을 요청 하고
      * Given 새로운 지하철역 생성을 요청 하고
      * When 지하철역 목록 조회를 요청 하면
      * Then 두 지하철역이 포함된 지하철역 목록을 응답받는다

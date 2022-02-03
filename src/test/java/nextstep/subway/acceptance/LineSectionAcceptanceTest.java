@@ -128,7 +128,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     void addLineSectionDownStationException() {
         // when
         final Long 양재역_번호 = 지하철_역_생성_되어있음(양재역);
-        final ExtractableResponse<Response> response = 지하철_노선_구간_등록을_요청한다(신분당선_번호, 양재역_번호, 판교역_번호, 강남_판교_거리);
+        final int 비정상적인_양재_판교_거리 = 10;
+        final ExtractableResponse<Response> response = 지하철_노선_구간_등록을_요청한다(신분당선_번호, 양재역_번호, 판교역_번호, 비정상적인_양재_판교_거리);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -144,7 +145,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     void addLineSectionByUpStationException() {
         // when
         final Long 양재역_번호 = 지하철_역_생성_되어있음(양재역);
-        final ExtractableResponse<Response> response = 지하철_노선_구간_등록을_요청한다(신분당선_번호, 강남역_번호, 양재역_번호, 강남_판교_거리);
+        final int 비정상적인_강남_양재_거리 = 10;
+        final ExtractableResponse<Response> response = 지하철_노선_구간_등록을_요청한다(신분당선_번호, 강남역_번호, 양재역_번호, 비정상적인_강남_양재_거리);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -176,7 +178,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         final Long 논현역_번호 = 지하철_역_생성_되어있음(논현역);
         final Long 양재역_번호 = 지하철_역_생성_되어있음(양재역);
 
-        final ExtractableResponse<Response> response = 지하철_노선_구간_등록을_요청한다(신분당선_번호, 논현역_번호, 양재역_번호, 1);
+        final ExtractableResponse<Response> response = 지하철_노선_구간_등록을_요청한다(신분당선_번호, 논현역_번호, 양재역_번호, 논현_양재_거리);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
