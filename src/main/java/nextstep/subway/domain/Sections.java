@@ -12,7 +12,7 @@ import java.util.function.Predicate;
 @Embeddable
 public class Sections {
 
-    private static final int GAP_SIZE = 1;
+    private static final int REMOVABLE_CONDITION = 2;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private final List<Section> sections;
@@ -91,19 +91,26 @@ public class Sections {
     }
 
     public void removeSection(final Station station) {
-        if(sections.size() <= 1) {
-            throw new IllegalStateException("sections is not removable state");
-        }
+        validateRemovableState();
         final boolean up = sections.stream().anyMatch(it -> it.isUpStation(station));
         final boolean down = sections.stream().anyMatch(it -> it.isDownStation(station));
-        if(up == false && down == false) {
+        if (up == false && down == false) {
             throw new IllegalArgumentException("removed station is not include sections");
         }
-        this.sections.remove(lastIndex());
+        if (up) {
+            final Section section = sections.stream().filter(it -> it.isUpStation(station)).findAny().get();
+            this.sections.remove(section);
+        }
+        if (down) {
+            final Section section = sections.stream().filter(it -> it.isDownStation(station)).findAny().get();
+            this.sections.remove(section);
+        }
     }
 
-    private int lastIndex() {
-        return sections.size() - GAP_SIZE;
+    private void validateRemovableState() {
+        if (sections.size() < REMOVABLE_CONDITION) {
+            throw new IllegalStateException("sections is not removable state");
+        }
     }
 
     public List<Station> getStations() {
