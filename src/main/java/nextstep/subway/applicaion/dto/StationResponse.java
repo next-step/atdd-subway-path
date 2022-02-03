@@ -1,5 +1,7 @@
 package nextstep.subway.applicaion.dto;
 
+import lombok.Builder;
+
 import java.time.LocalDateTime;
 
 public class StationResponse {
@@ -8,6 +10,7 @@ public class StationResponse {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
+    @Builder
     public StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;

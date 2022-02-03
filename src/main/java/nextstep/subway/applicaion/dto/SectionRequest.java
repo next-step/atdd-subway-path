@@ -1,19 +1,27 @@
 package nextstep.subway.applicaion.dto;
 
-public class SectionRequest {
-    private Long upStationId;
-    private Long downStationId;
-    private int distance;
+import nextstep.subway.domain.object.Distance;
 
-    public Long getUpStationId() {
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+public class SectionRequest {
+    @NotNull
+    private Long upStationId;
+    @NotNull
+    private Long downStationId;
+    @Valid
+    private Distance distance;
+
+    public long getUpStationId() {
         return upStationId;
     }
 
-    public Long getDownStationId() {
+    public long getDownStationId() {
         return downStationId;
     }
 
-    public int getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 }

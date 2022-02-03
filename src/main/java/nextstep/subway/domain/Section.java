@@ -1,9 +1,20 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
+import lombok.Builder;
+import nextstep.subway.domain.object.Distance;
+
+import javax.persistence.CascadeType;
+
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
-public class Section {
+public class Section extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,13 +31,14 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     public Section() {
-
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    @Builder
+    public Section(Line line, Station upStation, Station downStation, Distance distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -37,10 +49,6 @@ public class Section {
         return id;
     }
 
-    public Line getLine() {
-        return line;
-    }
-
     public Station getUpStation() {
         return upStation;
     }
@@ -49,7 +57,11 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
+    public Long getDownStationId() {
+        return downStation.getId();
+    }
+
+    public Distance getDistance() {
         return distance;
     }
 }
