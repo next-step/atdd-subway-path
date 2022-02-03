@@ -70,7 +70,6 @@ public class Section {
         return distance;
     }
 
-
     public boolean isSameUpStation(Station station) {
         return upStation.getId() == station.getId();
     }
