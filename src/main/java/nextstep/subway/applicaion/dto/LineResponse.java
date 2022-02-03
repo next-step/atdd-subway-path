@@ -36,7 +36,8 @@ public class LineResponse {
     }
 
     private static List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
+//        if (line.getSections().isEmpty()) {
+        if (line.isEmptySections()) {
             return Collections.emptyList();
         }
 
@@ -67,6 +68,18 @@ public class LineResponse {
 
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
+    }
+
+    @Override
+    public String toString() {
+        return "LineResponse{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", stations=" + stations +
+                ", createdDate=" + createdDate +
+                ", modifiedDate=" + modifiedDate +
+                '}';
     }
 }
 

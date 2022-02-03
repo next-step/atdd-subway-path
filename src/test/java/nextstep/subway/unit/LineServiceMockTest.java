@@ -8,7 +8,6 @@ import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -68,11 +67,8 @@ class LineServiceMockTest {
         // then
         // line.findLineById 메서드를 통해 검증
         LineResponse response = lineService.findById(구호선_ID);
-        System.out.println(response.getName());
         List<StationResponse> stations = response.getStations();
         assertThat(stations.size()).isEqualTo(2);
-        // 이 부분까지 검증하고 싶은데 station이 null이 뜨는데 가짜 객체를 잘못 만든걸까요??
-//        assertThat(response.getStations().get(0).getName()).isEqualTo("가양역");
-//        assertThat(response.getStations().get(1).getId()).isEqualTo(증미역_ID);
+        assertThat(response.getStations().get(0).getName()).isEqualTo("가양역");
     }
 }

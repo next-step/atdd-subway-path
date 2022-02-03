@@ -57,10 +57,10 @@ class LineServiceTest {
         lineService.addSection(line.getId(), sectionRequest);
 
         // then
-        assertThat(line.getSections().size()).isEqualTo(1);
+        assertThat(line.sectionsSize()).isEqualTo(1);
         LineResponse response = lineService.findById(line.getId());
         List<StationResponse> stations = response.getStations();
-        assertThat(stations.get(0).getId()).isEqualTo(upStation.getId());
-        assertThat(stations.get(1).getId()).isEqualTo(downStation.getId());
+        assertThat(stations).extracting(StationResponse::getId)
+                .containsExactly(upStation.getId(), downStation.getId());
     }
 }

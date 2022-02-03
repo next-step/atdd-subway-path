@@ -1,17 +1,12 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.applicaion.dto.LineRequest;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -22,8 +17,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -33,35 +28,25 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void addSection(Section section) {
-        sections.add(section);
+    public void addSection(Section newSection) {
+        sections.addSection(newSection);
     }
 
     public void removeSection(Station downStation) {
-        Section lastSection = sections.get(sections.size() - 1);
-        if (!lastSection.getDownStation().equals(downStation)) {
-            throw new IllegalArgumentException();
-        }
-
-        sections.remove(sections.size() - 1);
+        sections.remove(downStation);
     }
 
-    public void updateLine(LineRequest lineRequest) {
-        if (lineRequest.getName() != null) {
-            this.name = lineRequest.getName();
+    public void updateLine(String name,  String color) {
+        if (name != null) {
+            this.name = name;
         }
-        if (lineRequest.getColor() != null) {
-            this.color = lineRequest.getColor();
+        if (color != null) {
+            this.color = color;
         }
     }
 
     public List<Station> getStations() {
-        List<Station> stations = sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, sections.get(0).getUpStation());
-        return stations;
+        return sections.getStations();
     }
 
     public Long getId() {
@@ -76,7 +61,16 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
-        return sections;
+
+    public Station getDownStation(int sectionIndex) {
+        return sections.getDownStation(sectionIndex);
+    }
+
+    public int sectionsSize() {
+        return sections.size();
+    }
+
+    public boolean isEmptySections() {
+        return sections.isEmpty();
     }
 }
