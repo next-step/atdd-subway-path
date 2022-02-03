@@ -425,4 +425,43 @@ class LineTest {
         );
 
     }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void addSection8() {
+        // given
+        String 일호선 = "일호선";
+        String 노란색 = "노란색";
+        Station A역 = new Station("A역");
+        Station B역 = new Station("B역");
+        Station C역 = new Station("C역");
+        Station X역 = new Station("X역");
+        Station Y역 = new Station("Y역");
+
+        Line 일호선_라인 = new Line(
+                일호선,
+                노란색,
+                A역,
+                B역,
+                7
+        );
+
+        일호선_라인.addSection(
+                new Section(
+                        일호선_라인,
+                        B역,
+                        C역,
+                        3
+                ));
+
+        // when
+        assertThatThrownBy(() -> 일호선_라인.addSection(
+                new Section(
+                        일호선_라인,
+                        X역,
+                        Y역,
+                        7
+                )
+        )).isInstanceOf(RuntimeException.class);
+    }
 }

@@ -80,6 +80,8 @@ public class Line extends BaseEntity {
 
         AtomicBoolean normalCondition = new AtomicBoolean(true);
 
+        isIncludingOne(newSection);
+
         checkDuplicateSections(newSection);
 
         insertBetweenSameUpStations(
@@ -103,6 +105,16 @@ public class Line extends BaseEntity {
         );
 
         return sections;
+    }
+
+    private void isIncludingOne(Section newSection) {
+        getStations().stream()
+                     .filter(station -> !getStations().contains(newSection.getUpStation()))
+                     .filter(section -> !getStations().contains(newSection.getDownStation()))
+                     .findAny()
+                     .ifPresent(unused -> {
+                         throw new RuntimeException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음");
+                     });
     }
 
     private void checkDuplicateSections(Section newSection) {
