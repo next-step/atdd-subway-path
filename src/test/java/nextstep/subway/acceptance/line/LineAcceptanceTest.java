@@ -76,7 +76,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Long 이호선 = 지하철_노선_생성_요청("2호선", "green").jsonPath().getLong("id");
+        Long 이호선 = 지하철_노선_생성_요청_하고_ID_반환("2호선", "green");
 
         // when
         String changedColor = "red";
@@ -98,7 +98,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Long 이호선 = 지하철_노선_생성_요청("2호선", "green").jsonPath().getLong("id");
+        Long 이호선 = 지하철_노선_생성_요청_하고_ID_반환("2호선", "green");
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_삭제_요청(이호선);

@@ -22,6 +22,10 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
+    public static Long 지하철_노선_생성_요청_하고_ID_반환(String name, String color) {
+        return 지하철_노선_생성_요청(name, color).jsonPath().getLong("id");
+    }
+
     public static ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);

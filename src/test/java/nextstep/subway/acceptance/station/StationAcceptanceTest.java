@@ -60,7 +60,7 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Long 강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
+        Long 강남역 = 지하철역_생성_요청_하고_ID_반환("강남역");
 
         // when
         ExtractableResponse<Response> deleteResponse = 지하철역_삭제_요청(강남역);
