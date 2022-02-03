@@ -71,6 +71,13 @@ public class Section {
 
     public void changeUpStation(Station station, int distance) {
         this.upStation = station;
+        validateDistance(distance);
         this.distance -= distance;
+    }
+
+    private void validateDistance(int distance) {
+        if (this.distance - distance <= 0) {
+            throw new IllegalArgumentException("구간 길이가 기존 길이보다 크거나 같음");
+        }
     }
 }
