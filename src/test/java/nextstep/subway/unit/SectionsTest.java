@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SectionsTest {
 
@@ -61,6 +62,16 @@ class SectionsTest {
         sections.addSection(newSection);
 
         assertThat(sections.getSections()).containsExactly(section, newSection);
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다")
+    @Test
+    void addSectionFail() {
+        int newSectionDistance = 11;
+        Section newSection = Section.of(_5호선, 군자역, 광나루역, newSectionDistance);
+
+        assertThatThrownBy(() -> sections.addSection(newSection))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("역 목록 조회")
