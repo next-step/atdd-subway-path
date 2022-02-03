@@ -131,6 +131,25 @@ public class Sections {
             sectionList.remove(findLastSection());
             return;
         }
+
+        removeMiddleSection(station);
+    }
+
+    private void removeMiddleSection(Station station) {
+        Section upSection = findSectionBy(section -> section.getDownStation().equals(station))
+                .orElseThrow(() -> new IllegalArgumentException("해당 역이 하행역인 구간이 존재하지 않습니다."));
+
+        Section downSection = findSectionBy(section -> section.getUpStation().equals(station))
+                .orElseThrow(() -> new IllegalArgumentException("해당 역이 상행역인 구간이 존재하지 않습니다."));
+
+        combineSections(upSection, downSection);
+    }
+
+    private void combineSections(Section upSection, Section downSection) {
+        int index = sectionList.indexOf(upSection);
+        Section combinedUpSection = upSection.combine(downSection);
+        sectionList.set(index, combinedUpSection);
+        sectionList.remove(downSection);
     }
 
     private Section findLastSection() {

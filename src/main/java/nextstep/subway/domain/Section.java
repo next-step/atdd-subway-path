@@ -45,6 +45,10 @@ public class Section {
         return new Section(line, upStation, otherSection.upStation, distance - otherSection.distance);
     }
 
+    public Section combine(Section downSection) {
+        return new Section(line, upStation, downSection.downStation, distance + downSection.distance);
+    }
+
     public boolean equalsUpAndDownStation(Section section) {
         return hasSameUpStation(section) && hasSameDownStation(section);
     }
