@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import static nextstep.subway.acceptance.LineFixture.*;
 import static nextstep.subway.acceptance.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("구간들 단위 테스트(Sections)")
 class SectionsTest {
@@ -83,5 +84,17 @@ class SectionsTest {
 
         // then
         assertThat(sections.getStations()).containsExactly(upStation, extraStation, downStation);
+    }
+
+    @DisplayName("구간 목록에 없는 역을 기준으로 구간을 삭제할 경우")
+    void removeSectionExcludeStation() {
+        // given
+        final Station extraStation = new Station(정자역);
+        sections.addSection(new Section(line, downStation, extraStation, 판교_정자_거리));
+
+        // when and then
+        assertThatThrownBy(() -> sections.removeSection(new Station(논현역)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("removed station is not include sections");
     }
 }
