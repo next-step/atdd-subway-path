@@ -160,14 +160,14 @@ public class Sections {
             .collect(Collectors.toList());
     }
 
-    private boolean isAvailableDelete() {
-        return sections.size() > 1;
+    private boolean isNotAvailableDelete() {
+        return sections.size() <= 1;
     }
 
     public void removeSection(Station station) {
         Station lastDownStation = getLastDownStation();
 
-        if (!isAvailableDelete()) {
+        if (isNotAvailableDelete()) {
             throw new DeleteSectionException("구간이 1개 이하인 경우 역을 삭제할 수 없습니다.");
         }
 
