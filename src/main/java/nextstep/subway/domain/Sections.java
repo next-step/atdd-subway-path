@@ -14,6 +14,8 @@ public class Sections {
     private static final String ALREADY_EXIST_SECTION_MESSAGE = "이미 존재하는 구간입니다.";
     private static final String NO_FIRST_STATION_MESSAGE = "상행 종점역이 존재하지 않습니다.";
     private static final String NO_LAST_STATION_MESSAGE = "하행 종점역이 존재하지 않습니다.";
+    private static final String NO_SAME_UP_STATION_SECTION_EXIST_MESSAGE = "해당 역이 상행역인 구간이 존재하지 않습니다.";
+    private static final String NO_SAME_DOWN_STATION_SECTION_EXIST_MESSAGE = "해당 역이 하행역인 구간이 존재하지 않습니다.";
     private static final String CANNOT_DELETE_MIN_SIZE_SECTION_MESSAGE = "구간이 1개일 때는 제거할 수 없습니다.";
     private static final int LAST_INDEX_VALUE = 1;
     private static final int MIN_SECTION_SIZE = 1;
@@ -34,9 +36,12 @@ public class Sections {
         sectionList.add(section);
     }
 
+    private boolean isAlreadyExistSection(Section section) {
+        return anyMatch(section::equalsUpAndDownStation);
+    }
+
     private boolean nonExistStation(Section section) {
-        return !sectionList.isEmpty() && sectionList.stream()
-                .noneMatch(otherSection ->
+        return !sectionList.isEmpty() && noneMatch(otherSection ->
                         section.getUpStation().equals(otherSection.getUpStation())
                         || section.getUpStation().equals(otherSection.getDownStation())
                         || section.getDownStation().equals(otherSection.getUpStation())
@@ -44,14 +49,8 @@ public class Sections {
                 );
     }
 
-    private boolean isAlreadyExistSection(Section section) {
-        return sectionList.stream()
-                .anyMatch(section::equalsUpAndDownStation);
-    }
-
     private boolean isMiddleSection(Section section) {
-        return sectionList.stream()
-                .anyMatch(otherSection ->
+        return anyMatch(otherSection ->
                         section.getUpStation().equals(otherSection.getUpStation())
                                 || section.getDownStation().equals(otherSection.getDownStation()));
     }
@@ -81,40 +80,23 @@ public class Sections {
         sectionList.set(index, changedSection);
     }
 
-    private Optional<Section> findSectionBy(Predicate<Section> sameStationSectionPredicate) {
+    private Optional<Section> findSectionBy(Predicate<Section> sectionPredicate) {
         return sectionList.stream()
-                .filter(sameStationSectionPredicate)
+                .filter(sectionPredicate)
                 .findFirst();
     }
 
-    private List<Station> makeStationList(Section section) {
-        List<Station> stations = new ArrayList<>();
-        stations.add(section.getUpStation());
-
-        addNextSection(section, stations);
-        return stations;
+    private Section findSectionBy(Predicate<Section> sectionPredicate, String message) {
+        return findSectionBy(sectionPredicate)
+                .orElseThrow(() -> new IllegalArgumentException(message));
     }
 
     private void addNextSection(Section section, List<Station> stations) {
         stations.add(section.getDownStation());
 
-        Optional<Section> nextSection = sectionList.stream()
-                .filter(section::isPreviousSection)
-                .findFirst();
+        Optional<Section> nextSection = findSectionBy(section::isPreviousSection);
 
         nextSection.ifPresent(sectionNext -> addNextSection(nextSection.get(), stations));
-    }
-
-    private Section findFirstSection() {
-        return sectionList.stream()
-                .filter(this::firstSectionCondition)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(NO_FIRST_STATION_MESSAGE));
-    }
-
-    private boolean firstSectionCondition(Section section) {
-        return sectionList.stream()
-                .noneMatch(section::isNextSection);
     }
 
     public void deleteSection(Station station) {
@@ -135,12 +117,25 @@ public class Sections {
         removeMiddleSection(station);
     }
 
-    private void removeMiddleSection(Station station) {
-        Section upSection = findSectionBy(section -> section.getDownStation().equals(station))
-                .orElseThrow(() -> new IllegalArgumentException("해당 역이 하행역인 구간이 존재하지 않습니다."));
+    private Section findFirstSection() {
+        return findSectionBy(this::firstSectionCondition, NO_FIRST_STATION_MESSAGE);
+    }
 
-        Section downSection = findSectionBy(section -> section.getUpStation().equals(station))
-                .orElseThrow(() -> new IllegalArgumentException("해당 역이 상행역인 구간이 존재하지 않습니다."));
+    private boolean firstSectionCondition(Section section) {
+        return noneMatch(section::isNextSection);
+    }
+
+    private Section findLastSection() {
+        return findSectionBy(this::lastSectionCondition, NO_LAST_STATION_MESSAGE);
+    }
+
+    private boolean lastSectionCondition(Section section) {
+        return noneMatch(section::isPreviousSection);
+    }
+
+    private void removeMiddleSection(Station station) {
+        Section upSection = findSectionBy(section -> section.getDownStation().equals(station), NO_SAME_DOWN_STATION_SECTION_EXIST_MESSAGE);
+        Section downSection = findSectionBy(section -> section.getUpStation().equals(station), NO_SAME_UP_STATION_SECTION_EXIST_MESSAGE);
 
         combineSections(upSection, downSection);
     }
@@ -152,32 +147,20 @@ public class Sections {
         sectionList.remove(downSection);
     }
 
-    private Section findLastSection() {
-        return sectionList.stream()
-                .filter(this::lastSectionCondition)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(NO_LAST_STATION_MESSAGE));
+    private boolean anyMatch(Predicate<Section> sectionPredicate) {
+        return sectionList.stream().anyMatch(sectionPredicate);
     }
 
-    private boolean lastSectionCondition(Section section) {
-        return sectionList.stream()
-                .noneMatch(section::isPreviousSection);
-    }
-
-    private boolean isLastStation(Station station) {
-        return findLastSection().getDownStation().equals(station);
+    private boolean noneMatch(Predicate<Section> sectionPredicate) {
+        return sectionList.stream().noneMatch(sectionPredicate);
     }
 
     private boolean isFirstStation(Station station) {
         return findFirstSection().getUpStation().equals(station);
     }
 
-    private Station lastStation() {
-        return sectionList.get(lastIndex()).getDownStation();
-    }
-
-    private int lastIndex() {
-        return sectionList.size() - LAST_INDEX_VALUE;
+    private boolean isLastStation(Station station) {
+        return findLastSection().getDownStation().equals(station);
     }
 
     public List<Section> getSectionList() {
@@ -193,5 +176,13 @@ public class Sections {
         List<Station> stations = makeStationList(firstSection);
 
         return Collections.unmodifiableList(stations);
+    }
+
+    private List<Station> makeStationList(Section section) {
+        List<Station> stations = new ArrayList<>();
+        stations.add(section.getUpStation());
+
+        addNextSection(section, stations);
+        return stations;
     }
 }
