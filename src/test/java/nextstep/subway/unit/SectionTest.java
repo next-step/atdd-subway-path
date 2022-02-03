@@ -68,6 +68,22 @@ class SectionTest {
         assertThat(actual).isEqualTo(distance - otherDistance);
     }
 
+    @DisplayName("세션간의 거리값 합 계산")
+    @Test
+    void addDistance() {
+        // given
+        final Station otherFirstStation = new Station("otherFirstStation");
+        final Station otherSecondStation = new Station("otherSecondStation");
+        final int otherDistance = 5;
+        final Section other = new Section(line, otherFirstStation, otherSecondStation, otherDistance);
+
+        // when
+        final int actual = section.addDistance(other);
+
+        // then
+        assertThat(actual).isEqualTo(distance + otherDistance);
+    }
+
     @DisplayName("세션간의 거리값 차이가 음수면 예외처리")
     @Test
     void subtractDistanceException() {

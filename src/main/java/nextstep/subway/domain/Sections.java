@@ -97,6 +97,13 @@ public class Sections {
         if (up == false && down == false) {
             throw new IllegalArgumentException("removed station is not include sections");
         }
+        if (up == true && down == true) {
+            final Section upStationSection = sections.stream().filter(it -> it.isUpStation(station)).findAny().get();
+            final Section downStationSection = sections.stream().filter(it -> it.isDownStation(station)).findAny().get();
+            downStationSection.updateDownStation(upStationSection.getDownStation(), upStationSection.getDistance() + downStationSection.getDistance());
+            this.sections.remove(upStationSection);
+            return;
+        }
         if (up) {
             final Section section = sections.stream().filter(it -> it.isUpStation(station)).findAny().get();
             this.sections.remove(section);
