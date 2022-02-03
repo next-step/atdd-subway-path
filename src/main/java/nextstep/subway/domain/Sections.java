@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 @Embeddable
 public class Sections {
@@ -30,68 +29,32 @@ public class Sections {
             sections.add(section);
             return;
         }
-        final boolean upStationExistence = isUpStation(section);
-        final boolean downStationExistence = isDownStation(section);
+        final boolean upStationExistence = getStations().stream().anyMatch(it -> it.isSameName(section.getUpStation()));
+        final boolean downStationExistence = getStations().stream().anyMatch(it -> it.isSameName(section.getDownStation()));
         if ((upStationExistence && downStationExistence) || (!upStationExistence && !downStationExistence)) {
             throw new IllegalArgumentException("station is not valid");
         }
+        final Station upStation = section.getUpStation();
+        final Station downStation = section.getDownStation();
         if (upStationExistence) {
-            updateUpStation(section);
+            sections.stream()
+                    .filter(it -> it.getUpStation().isSameName(upStation))
+                    .findFirst()
+                    .ifPresent(it -> it.updateUpStation(downStation, it.subtractDistance(section)));
         }
         if (downStationExistence) {
-            updateDownStation(section);
+            sections.stream()
+                    .filter(it -> it.getDownStation().isSameName(downStation))
+                    .findAny()
+                    .ifPresent(it -> it.updateDownStation(upStation, it.subtractDistance(section)));
         }
         sections.add(section);
     }
 
-    private boolean isUpStation(final Section section) {
-        return sections.stream()
-                .map(Section::getUpStation)
-                .anyMatch(isSameStationName(section));
-    }
-
-    private boolean isDownStation(final Section section) {
-        return sections.stream()
-                .map(Section::getDownStation)
-                .anyMatch(isSameStationName(section));
-    }
-
-    private Predicate<Station> isSameStationName(final Section section) {
-        return it -> it.isSameName(section.getUpStation()) || it.isSameName(section.getDownStation());
-    }
-
-    private void updateUpStation(final Section section) {
-        final Station upStation = section.getUpStation();
-        final Station downStation = section.getDownStation();
-        final Section alreadySection = findUpStationSection(upStation, downStation);
-        if (alreadySection.isUpStation(upStation)) {
-            alreadySection.updateUpStation(section.getDownStation(), alreadySection.subtractDistance(section));
-        }
-    }
-
-    private Section findUpStationSection(final Station upStation, final Station downStation) {
-        return sections.stream().filter(it -> it.isUpStation(upStation) || it.isUpStation(downStation))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("station is not found"));
-    }
-
-    private void updateDownStation(final Section section) {
-        final Station upStation = section.getUpStation();
-        final Station downStation = section.getDownStation();
-        final Section alreadySection = findDownStationSection(upStation, downStation);
-        if (alreadySection.isDownStation(downStation)) {
-            alreadySection.updateDownStation(section.getUpStation(), alreadySection.subtractDistance(section));
-        }
-    }
-
-    private Section findDownStationSection(final Station upStation, final Station downStation) {
-        return sections.stream().filter(it -> it.isDownStation(upStation) || it.isDownStation(downStation))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("station is not found"));
-    }
-
     public void removeSection(final Station station) {
-        validateRemovableState();
+        if (sections.size() < REMOVABLE_CONDITION) {
+            throw new IllegalStateException("sections is not removable state");
+        }
         final boolean up = sections.stream().anyMatch(it -> it.isUpStation(station));
         final boolean down = sections.stream().anyMatch(it -> it.isDownStation(station));
         if (up == false && down == false) {
@@ -114,45 +77,30 @@ public class Sections {
         }
     }
 
-    private void validateRemovableState() {
-        if (sections.size() < REMOVABLE_CONDITION) {
-            throw new IllegalStateException("sections is not removable state");
-        }
-    }
-
     public List<Station> getStations() {
         if (sections.isEmpty()) {
             return Collections.emptyList();
         }
         final List<Station> stations = new ArrayList<>();
-        final Station upTerminalStation = findUpTerminalStation();
+        final Station upTerminalStation = sections.stream()
+                .map(Section::getUpStation)
+                .filter(it -> sections.stream().noneMatch(it2 -> it2.isDownStation(it)))
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("no have end upStation"));
+
         stations.add(upTerminalStation);
-        Optional<Station> nextStationOptional = findNextStation(upTerminalStation);
+        Optional<Station> nextStationOptional = sections.stream()
+                .filter(it -> it.isUpStation(upTerminalStation))
+                .map(Section::getDownStation)
+                .findAny();
         while (nextStationOptional.isPresent()) {
             final Station nextStation = nextStationOptional.get();
             stations.add(nextStation);
-            nextStationOptional = findNextStation(nextStation);
+            nextStationOptional = sections.stream()
+                    .filter(it -> it.isUpStation(nextStation))
+                    .map(Section::getDownStation)
+                    .findAny();
         }
         return Collections.unmodifiableList(stations);
-    }
-
-    private Station findUpTerminalStation() {
-        return sections.stream()
-                .map(Section::getUpStation)
-                .filter(this::isNotDownStation)
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("no have end upStation"));
-    }
-
-    private boolean isNotDownStation(final Station station) {
-        return sections.stream()
-                .noneMatch(it -> it.isDownStation(station));
-    }
-
-    private Optional<Station> findNextStation(final Station station) {
-        return sections.stream()
-                .filter(it -> it.isUpStation(station))
-                .map(Section::getDownStation)
-                .findAny();
     }
 }

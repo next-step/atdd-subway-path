@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static nextstep.subway.acceptance.LineFixture.*;
 import static nextstep.subway.acceptance.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DisplayName("구간들 단위 테스트(Sections)")
 class SectionsTest {
 
+    public static final String 양재_시민의_숲 = "양재 시민의 숲";
     private Station upStation;
     private Station downStation;
     private Line line;
@@ -28,6 +31,21 @@ class SectionsTest {
         line = new Line(신분당선, 빨강색);
         sections = new Sections();
         sections.addSection(new Section(line, upStation, downStation, 강남_판교_거리));
+    }
+
+    @DisplayName("구간 목록에 새로운 구간을 추가한다.")
+    @Test
+    void addSectionByStationInMultipleSections() {
+        // given
+        final Station firstExtraStation = new Station(양재역);
+        final Station secondExtraStation = new Station(양재_시민의_숲);
+
+        // when
+        sections.addSection(new Section(line, upStation, firstExtraStation, 강남_양재_거리));
+        sections.addSection(new Section(line, firstExtraStation, secondExtraStation, 양재_양재시민의숲_거리));
+
+        // then
+        assertThat(sections.getStations()).containsExactly(upStation, firstExtraStation, secondExtraStation, downStation);
     }
 
     @DisplayName("구간 목록 맨뒤에 새로운 구간을 추가할 경우")
