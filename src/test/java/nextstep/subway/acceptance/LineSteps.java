@@ -133,6 +133,10 @@ public class LineSteps {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(stationIds);
     }
 
+    public static void 지하철_노선에_구간_제거되지_않음(Long lineId, Long ... stationIds) {
+        지하철_노선에_구간_제거됨(lineId, stationIds);
+    }
+
     public static void 지하철_노선_구간_제거_실패됨(ExtractableResponse<Response> response) {
         assertStatus(response, HttpStatus.BAD_REQUEST);
     }
