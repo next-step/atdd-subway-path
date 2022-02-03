@@ -21,10 +21,9 @@ class DistanceTest {
         Station 가양역 = new Station("가양역");
         Station 증미역 = new Station("증미역");
         Line line = new Line("9호선", "금색");
-        Section section = new Section(line, 가양역, 증미역, 10);
 
         // when
-        assertThatThrownBy(() -> distance.calculate(section))
+        assertThatThrownBy(() -> distance.calculate(10))
                 // then
                 .isInstanceOf(AddSectionException.class)
                 .hasMessage("새로 추가되는 구간 거리는 기존 구간의 거리 이상일 수 없습니다. 기존 구간 거리 = 10, 신규 구간 거리 = 10");

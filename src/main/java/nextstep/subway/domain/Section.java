@@ -40,7 +40,7 @@ public class Section {
         if (isBetweenSection(newSection)) {
             validateDuplicationSection(newSection);
             this.upStation = newSection.getDownStation();
-            this.distance = this.distance.calculate(newSection);
+            this.distance = this.distance.calculate(newSection.getDistance());
         }
     }
 

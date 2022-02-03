@@ -14,16 +14,16 @@ public class Distance {
         this.distance = distance;
     }
 
-    public Distance calculate(Section newSection) {
-        validateDistance(newSection);
-        return new Distance(distance - newSection.getDistance());
+    public Distance calculate(int newDistance) {
+        validateDistance(newDistance);
+        return new Distance(distance - newDistance);
     }
 
-    private void validateDistance(Section newSection) {
-        if (this.distance <= newSection.getDistance()) {
+    private void validateDistance(int newDistance) {
+        if (this.distance <= newDistance) {
             throw new AddSectionException(
                     String.format("새로 추가되는 구간 거리는 기존 구간의 거리 이상일 수 없습니다. 기존 구간 거리 = %d, 신규 구간 거리 = %d",
-                            this.distance, newSection.getDistance()));
+                            this.distance, newDistance));
         }
     }
 
