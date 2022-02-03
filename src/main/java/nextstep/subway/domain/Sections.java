@@ -123,8 +123,7 @@ public class Sections {
 
         while (true) {
             Station downStation = section.getDownStation();
-            Optional<Section> optionalFindSection = sections
-                .stream()
+            Optional<Section> optionalFindSection = sections.stream()
                 .filter(it -> it.getUpStation().equals(downStation))
                 .findFirst();
 
