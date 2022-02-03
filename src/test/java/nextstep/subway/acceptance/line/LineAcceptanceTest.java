@@ -254,12 +254,35 @@ class LineAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선 구간 등록 테스트")
     @Test
-    void 지하철_노선_구간_등록_테스트() {
+    void 지하철_노선_구간_하행_등록_테스트() {
         //given
         ApiUtil.지하철역_생성_API(Stations.연신내역);
         ApiUtil.지하철역_생성_API(Stations.서울역);
         ApiUtil.지하철역_생성_API(Stations.삼성역);
         ApiUtil.지하철_노선_생성_API(Lines.GTXA노선_연신내_서울역);
+
+        // when
+        ExtractableResponse<Response> response = ApiUtil.지하철_노선_구간_등록_API(1L, Lines.GTXA노선_구간_서울역_삼성역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    /**
+     * Given 연신내역, 서울역, 삼성역을 생성하고,
+     * Given 연신내, 삼성역을 연결하는 10거리의 GTX-A 노선 생성 후,
+     * When 연신내, 서울역을 구간으로 하는 GTX-A 노선을 추가하면,
+     * Then 지하철 노선 구간 생성이 성공한다.
+     * @see nextstep.subway.ui.LineController#createSection
+     */
+    @DisplayName("지하철 노선 구간 중간 등록 테스트")
+    @Test
+    void 지하철_노선_구간_중간_등록_테스트() {
+        //given
+        ApiUtil.지하철역_생성_API(Stations.연신내역);
+        ApiUtil.지하철역_생성_API(Stations.서울역);
+        ApiUtil.지하철역_생성_API(Stations.삼성역);
+        ApiUtil.지하철_노선_생성_API(Lines.GTXA노선_연신내_삼성역);
 
         // when
         ExtractableResponse<Response> response = ApiUtil.지하철_노선_구간_등록_API(1L, Lines.GTXA노선_구간_서울역_삼성역);
