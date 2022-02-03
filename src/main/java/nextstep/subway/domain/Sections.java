@@ -26,7 +26,24 @@ public class Sections {
 
     public void addSection(Section section) {
         validationSection(section);
+
+        int addIndex = existingSectionIndex(section);
+        if (addIndex > -1) {
+            sections.get(addIndex).changeDistance(section);
+            sections.add(addIndex, section);
+            return;
+        }
+
         sections.add(section);
+    }
+
+    private int existingSectionIndex(Section section) {
+        Section findSection = sections.stream()
+                .filter(sec -> sec.anyMatchUpStation(section))
+                .findFirst()
+                .orElse(new Section());
+
+        return sections.indexOf(findSection);
     }
 
     public List<Station> getStations() {
@@ -50,7 +67,6 @@ public class Sections {
 
         sections.remove(sections.size() - 1);
     }
-
 
     public List<Section> getSections() {
         return Collections.unmodifiableList(sections);

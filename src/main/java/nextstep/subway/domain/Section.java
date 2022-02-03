@@ -5,6 +5,8 @@ import java.util.Objects;
 
 @Entity
 public class Section {
+    private static final String DISTANCE_ERROR_MESSAGE = "새로운 구간의 길이가 기존 구간 사이의 길이보다 큽니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,9 +25,7 @@ public class Section {
 
     private int distance;
 
-    public Section() {
-
-    }
+    public Section() { }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
@@ -39,7 +39,7 @@ public class Section {
                 || anyMatchDownStation(section);
     }
 
-    private boolean anyMatchUpStation(Section section) {
+    public boolean anyMatchUpStation(Section section) {
         return upStation.equals(section.getUpStation())
                 || upStation.equals(section.getDownStation());
     }
@@ -67,6 +67,17 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public void changeDistance(Section section) {
+        validationDistance(section.getDistance());
+        this.distance = this.distance - section.distance;
+    }
+
+    private void validationDistance(int distance) {
+        if (this.distance <= distance) {
+            throw new IllegalArgumentException(DISTANCE_ERROR_MESSAGE);
+        }
     }
 
     @Override

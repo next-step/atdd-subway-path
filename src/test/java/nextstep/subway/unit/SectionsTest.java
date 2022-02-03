@@ -4,7 +4,6 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SectionsTest {
     private static final int DEFAULT_DISTANCE = 5;
@@ -21,27 +21,31 @@ public class SectionsTest {
     private static final String THIRD_STATION_NAME = "삼성역";
     private static final String FOURTH_STATION_NAME = "잠실역";
 
-    private Line line;
+    private static final Line DEFAULT_LINE = new Line("2호선", "bg-green-700");
 
-    @BeforeEach
-    void setUp() {
-        line = createLine();
-    }
-
-    @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
+    @DisplayName("구간 목록 마지막에 새로운 구간을 추가한다.")
     @Test
     void addSection() {
         // given
         Sections sections = createSections();
         Station 강남역 = createStation(FIRST_STATION_NAME);
         Station 역삼역 = createStation(SECOND_STATION_NAME);
+        Station 삼성역 = createStation(THIRD_STATION_NAME);
         Section section = createSection(강남역, 역삼역);
 
         // when
         sections.addSection(section);
+        sections.addSection(createSection(역삼역, 삼성역));
 
         // then
-        assertThat(sections.getSections()).hasSize(1);
+        List<Station> stations = sections.getStations();
+        assertAll(
+                () -> assertThat(sections.getSections()).hasSize(2),
+                () -> assertThat(stations).hasSize(3),
+                () -> assertThat(stations.get(0)).isEqualTo(강남역),
+                () -> assertThat(stations.get(1)).isEqualTo(역삼역),
+                () -> assertThat(stations.get(2)).isEqualTo(삼성역)
+        );
     }
 
     @DisplayName("구간을 추가할 때 상행역과 하행역 모두 등록되어있지 않으면 예외 처리")
@@ -77,6 +81,33 @@ public class SectionsTest {
         assertThatThrownBy(() -> sections.addSection(section))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상행역과 하행역이 모두 등록된 상태입니다.");
+    }
+
+    @DisplayName("기존 구간(A-C) 중간에 새로운 구간(A-B)을 추가할 경우, A-B-C로 정렬이 되어야한다.")
+    @Test
+    void addSectionInTheMiddle() {
+        // given
+        Sections sections = createSections();
+        Station 강남역 = createStation(FIRST_STATION_NAME);
+        Station 역삼역 = createStation(SECOND_STATION_NAME);
+        Station 삼성역 = createStation(THIRD_STATION_NAME);
+        sections.addSection(createSection(강남역, 삼성역));
+
+        Section newSection = createSection(강남역, 역삼역, 2);
+
+        // when
+        sections.addSection(newSection);
+
+        // then
+        List<Station> stations = sections.getStations();
+        assertAll(
+                () -> assertThat(stations).hasSize(3),
+                () -> assertThat(stations.get(0)).isEqualTo(강남역),
+                () -> assertThat(stations.get(1)).isEqualTo(역삼역),
+                () -> assertThat(stations.get(2)).isEqualTo(삼성역),
+                () -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(2),
+                () -> assertThat(sections.getSections().get(1).getDistance()).isEqualTo(3)
+        );
     }
 
     @DisplayName("노선에 속해있는 역 목록 조회")
@@ -117,24 +148,20 @@ public class SectionsTest {
         assertThat(sections.getSections()).hasSize(0);
     }
 
-
     private Station createStation(String name) {
         return new Station(name);
     }
 
     private Section createSection(Station upStation, Station downStation) {
-        return new Section(line, upStation, downStation, DEFAULT_DISTANCE);
+        return createSection(upStation, downStation, DEFAULT_DISTANCE);
     }
 
-    private Line createLine() {
-        return new Line("2호선", "bg-green-700");
+    private Section createSection(Station upStation, Station downStation, int distance) {
+        return createSection(DEFAULT_LINE, upStation, downStation, distance);
     }
 
-    private Sections setUpSections() {
-        Station 강남역 = createStation(FIRST_STATION_NAME);
-        Station 역삼역 = createStation(SECOND_STATION_NAME);
-        Station 잠실역 = createStation(THIRD_STATION_NAME);
-        return createSections(createSection(강남역, 역삼역), createSection(역삼역, 잠실역));
+    private Section createSection(Line line, Station upStation, Station downStation, int distance) {
+        return new Section(line, upStation, downStation, distance);
     }
 
     private Sections createSections(Section ...sections) {
