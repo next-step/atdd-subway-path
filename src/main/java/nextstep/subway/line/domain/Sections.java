@@ -18,6 +18,7 @@ import javax.persistence.OneToMany;
 
 import nextstep.subway.common.domain.exception.ErrorMessage;
 import nextstep.subway.line.infrastructure.PathFinder;
+import nextstep.subway.line.infrastructure.dto.StationPath;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -140,8 +141,8 @@ public class Sections {
         return new Sections(newSections);
     }
 
-    public Sections shortestPaths(PathFinder pathFinder) {
-        return pathFinder.findShortestPaths(values);
+    public StationPath shortestPaths(PathFinder pathFinder, Station source, Station target) {
+        return pathFinder.findShortestPaths(values, source, target);
     }
 
     public int size() {

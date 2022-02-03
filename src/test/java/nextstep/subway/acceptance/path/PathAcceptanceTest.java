@@ -110,7 +110,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
      * When  출발역이나 도착역이 존재하지 않은 경로로 조회를 요청하면
      * Then  최단 거리 조회가 실패한다.
      */
-    @DisplayName("경로 조회 - 존재하지 않은 출발역이나 도착역을 조회할 경우")
+    @DisplayName("경로 조회 - 존재하지 않는 출발역이나 도착역을 조회할 경우")
     @Test
     void findFailCase3() {
         // When
