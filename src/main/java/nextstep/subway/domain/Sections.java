@@ -12,8 +12,11 @@ import java.util.stream.Collectors;
 public class Sections {
     private static final int ALL_MATCH_COUNT = 2;
     private static final int NONE_MATCH_COUNT = 0;
+    private static final int FIRST_SECTION_INDEX = 0;
+    private static final int NONE_SECTION_INDEX = -1;
     private static final String ALL_MATCH_SECTION_ERROR_MESSAGE = "상행역과 하행역이 모두 등록된 상태입니다.";
     private static final String NONE_MATCH_SECTION_ERROR_MESSAGE = "상행역과 하행역이 모두 등록되지 않았습니다.";
+
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -28,13 +31,23 @@ public class Sections {
         validationSection(section);
 
         int addIndex = existingSectionIndex(section);
-        if (addIndex > -1) {
-            sections.get(addIndex).changeDistance(section);
+
+        if (isFirstSection(addIndex, section)) {
+            sections.add(addIndex, section);
+            return;
+        }
+
+        if (addIndex > NONE_SECTION_INDEX) {
+            sections.get(addIndex).changeSection(section);
             sections.add(addIndex, section);
             return;
         }
 
         sections.add(section);
+    }
+
+    private boolean isFirstSection(int addIndex, Section section) {
+        return addIndex == FIRST_SECTION_INDEX && sections.get(addIndex).isUpStation(section);
     }
 
     private int existingSectionIndex(Section section) {
@@ -55,7 +68,7 @@ public class Sections {
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
 
-        stations.add(0, sections.get(0).getUpStation());
+        stations.add(FIRST_SECTION_INDEX, sections.get(FIRST_SECTION_INDEX).getUpStation());
 
         return Collections.unmodifiableList(stations);
     }

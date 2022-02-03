@@ -110,6 +110,33 @@ public class SectionsTest {
         );
     }
 
+    @DisplayName("기존 구간(A-B) 앞에 새로운 구간(C-A)을 추가할 경우, C-A-B로 정렬이 되어야한다.")
+    @Test
+    void addFirstSection() {
+        // given
+        Sections sections = createSections();
+        Station 강남역 = createStation(FIRST_STATION_NAME);
+        Station 역삼역 = createStation(SECOND_STATION_NAME);
+        Station 삼성역 = createStation(THIRD_STATION_NAME);
+        sections.addSection(createSection(역삼역, 삼성역));
+
+        Section newSection = createSection(강남역, 역삼역, 2);
+
+        // when
+        sections.addSection(newSection);
+
+        // then
+        List<Station> stations = sections.getStations();
+        assertAll(
+                () -> assertThat(stations).hasSize(3),
+                () -> assertThat(stations.get(0)).isEqualTo(강남역),
+                () -> assertThat(stations.get(1)).isEqualTo(역삼역),
+                () -> assertThat(stations.get(2)).isEqualTo(삼성역),
+                () -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(2),
+                () -> assertThat(sections.getSections().get(1).getDistance()).isEqualTo(5)
+        );
+    }
+
     @DisplayName("노선에 속해있는 역 목록 조회")
     @Test
     void getStations() {

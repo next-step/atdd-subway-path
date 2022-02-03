@@ -44,9 +44,23 @@ public class Section {
                 || upStation.equals(section.getDownStation());
     }
 
+    public boolean isUpStation(Section section) {
+        return this.upStation.equals(section.getDownStation());
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
     private boolean anyMatchDownStation(Section section) {
         return downStation.equals(section.getUpStation())
                 || downStation.equals(section.getDownStation());
+    }
+
+    public void changeSection(Section section) {
+        validationDistance(section.getDistance());
+        this.upStation = section.getUpStation();
+        this.distance = this.distance - section.distance;
     }
 
     public Long getId() {
@@ -63,15 +77,6 @@ public class Section {
 
     public Station getDownStation() {
         return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
-    public void changeDistance(Section section) {
-        validationDistance(section.getDistance());
-        this.distance = this.distance - section.distance;
     }
 
     private void validationDistance(int distance) {
