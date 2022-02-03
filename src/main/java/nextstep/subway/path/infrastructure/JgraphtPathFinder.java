@@ -1,4 +1,4 @@
-package nextstep.subway.line.infrastructure;
+package nextstep.subway.path.infrastructure;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,22 +9,33 @@ import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
+import org.springframework.stereotype.Component;
 
 import nextstep.subway.common.domain.exception.ErrorMessage;
 import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Section;
-import nextstep.subway.line.infrastructure.dto.StationPath;
+import nextstep.subway.path.infrastructure.dto.StationPaths;
 import nextstep.subway.station.domain.Station;
 
+@Component
 public class JgraphtPathFinder implements PathFinder {
     @Override
-    public StationPath findShortestPaths(List<Section> sections, Station source, Station target) {
+    public StationPaths findShortestPaths(List<Section> sections, Station source, Station target) {
         verifySameSourceTarget(source, target);
 
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = graph(sections);
         ShortestPathAlgorithm<Station, DefaultWeightedEdge> algorithm = new DijkstraShortestPath<>(graph);
 
-        return toStationPath(algorithm.getPath(source, target));
+        try {
+            return toStationPath(algorithm.getPath(source, target));
+        } catch(IllegalArgumentException e) {
+            if ("graph must contain the sink vertex".equals(e.getMessage())) {
+                throw new IllegalArgumentException(ErrorMessage.DISCONNECT_STATIONS.getMessage());
+            }
+            throw e;
+        } catch(NullPointerException e) {
+            throw new IllegalArgumentException(ErrorMessage.DISCONNECT_STATIONS.getMessage());
+        }
     }
 
     private void verifySameSourceTarget(Station source, Station target) {
@@ -56,7 +67,7 @@ public class JgraphtPathFinder implements PathFinder {
         }
     }
 
-    private StationPath toStationPath(GraphPath<Station, DefaultWeightedEdge> graphPath) {
-        return new StationPath(graphPath.getVertexList(), new Distance((int) graphPath.getWeight()));
+    private StationPaths toStationPath(GraphPath<Station, DefaultWeightedEdge> graphPath) {
+        return new StationPaths(graphPath.getVertexList(), new Distance((int) graphPath.getWeight()));
     }
 }

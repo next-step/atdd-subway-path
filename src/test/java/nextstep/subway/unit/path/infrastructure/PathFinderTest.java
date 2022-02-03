@@ -1,4 +1,4 @@
-package nextstep.subway.unit.station.infrastructure;
+package nextstep.subway.unit.path.infrastructure;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -12,9 +12,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Sections;
-import nextstep.subway.line.infrastructure.JgraphtPathFinder;
-import nextstep.subway.line.infrastructure.PathFinder;
-import nextstep.subway.line.infrastructure.dto.StationPath;
+import nextstep.subway.path.infrastructure.JgraphtPathFinder;
+import nextstep.subway.path.infrastructure.PathFinder;
+import nextstep.subway.path.infrastructure.dto.StationPaths;
 import nextstep.subway.station.domain.Station;
 
 @DisplayName("경로 찾기 테스트")
@@ -72,7 +72,7 @@ public class PathFinderTest {
     @MethodSource("pathFinders")
     @ParameterizedTest
     void findShortestPaths(PathFinder pathFinder) {
-        StationPath path = allSections.shortestPaths(pathFinder, 교대역, 양재역);
+        StationPaths path = allSections.shortestPaths(pathFinder, 교대역, 양재역);
 
         assertThat(path.getStations()).containsExactly(교대역, 남부터미널역, 양재역);
         assertThat(path.getDistance().getValue()).isEqualTo(12);

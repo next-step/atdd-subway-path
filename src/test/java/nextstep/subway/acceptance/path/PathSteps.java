@@ -19,7 +19,7 @@ public class PathSteps {
 
         return RestAssured
             .given().log().all()
-            .body(params)
+            .params(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().get("/paths")
             .then().log().all().extract();

@@ -62,12 +62,14 @@ public class PathAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("경로 조회")
     @Test
-    void find() {
+    void findShortestPaths() {
         // When
         ExtractableResponse<Response> response = 경로_조회_요청(교대역, 양재역);
 
         // Then
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(교대역, 남부터미널역, 양재역);
+        System.out.println(response.jsonPath().getList("stations.id", Long.class));
+        assertThat(response.jsonPath().getList("stations.id", Long.class))
+            .containsExactly(교대역, 남부터미널역, 양재역);
         assertThat(response.jsonPath().getInt("distance")).isEqualTo(12);
     }
 
@@ -77,7 +79,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("경로 조회 - 출발역과 도착역이 같은 경우")
     @Test
-    void findFailCase1() {
+    void findShortestPathsFailCase1() {
         // When
         ExtractableResponse<Response> response = 경로_조회_요청(교대역, 교대역);
 
@@ -92,7 +94,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("경로 조회 - 출발역과 도착역이 연결되어 있지 않은 경우")
     @Test
-    void findFailCase2() {
+    void findShortestPathsFailCase2() {
         // Given
         Long 연결_안된_노선 = 지하철_노선_생성_요청_하고_ID_반환("연결 안된 노선", "BLACK");
         Long 새로운_상행 = 지하철역_생성_요청_하고_ID_반환("상행");
@@ -112,13 +114,13 @@ public class PathAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("경로 조회 - 존재하지 않는 출발역이나 도착역을 조회할 경우")
     @Test
-    void findFailCase3() {
+    void findShortestPathsFailCase3() {
         // When
         Long 없는_출발역 = 111L;
         Long 없는_도착역 = 222L;
         ExtractableResponse<Response> response = 경로_조회_요청(없는_출발역, 없는_도착역);
 
         // Then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }

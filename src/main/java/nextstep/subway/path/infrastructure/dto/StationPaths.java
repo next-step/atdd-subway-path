@@ -1,4 +1,4 @@
-package nextstep.subway.line.infrastructure.dto;
+package nextstep.subway.path.infrastructure.dto;
 
 import java.util.List;
 
@@ -7,11 +7,11 @@ import nextstep.subway.line.domain.Distance;
 import nextstep.subway.station.domain.Station;
 
 @Getter
-public class StationPath {
+public class StationPaths {
     private final List<Station> stations;
     private final Distance distance;
 
-    public StationPath(List<Station> stations, Distance distance) {
+    public StationPaths(List<Station> stations, Distance distance) {
         this.stations = stations;
         this.distance = distance;
     }

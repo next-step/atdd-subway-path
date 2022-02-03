@@ -16,11 +16,13 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
+import lombok.Getter;
 import nextstep.subway.common.domain.exception.ErrorMessage;
-import nextstep.subway.line.infrastructure.PathFinder;
-import nextstep.subway.line.infrastructure.dto.StationPath;
+import nextstep.subway.path.infrastructure.PathFinder;
+import nextstep.subway.path.infrastructure.dto.StationPaths;
 import nextstep.subway.station.domain.Station;
 
+@Getter
 @Embeddable
 public class Sections {
     @OneToMany(
@@ -141,7 +143,7 @@ public class Sections {
         return new Sections(newSections);
     }
 
-    public StationPath shortestPaths(PathFinder pathFinder, Station source, Station target) {
+    public StationPaths shortestPaths(PathFinder pathFinder, Station source, Station target) {
         return pathFinder.findShortestPaths(values, source, target);
     }
 
