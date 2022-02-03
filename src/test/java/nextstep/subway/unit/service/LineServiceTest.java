@@ -138,10 +138,10 @@ class LineServiceTest {
         lineService.addSection(sectionRequest, 이호선.getId());
 
         // when
-        lineService.deleteSection(이호선.getId(), 역삼역.getId());
+        lineService.deleteSection(이호선.getId(), 강남역.getId());
         LineResponse findLine = lineService.findLineById(이호선.getId());
 
         // then
-        assertThat(findLine.getStations().get(0).getName()).isEqualTo(교대역.getName());
+        assertThat(findLine.getStations().get(1).getName()).isEqualTo(역삼역.getName());
     }
 }

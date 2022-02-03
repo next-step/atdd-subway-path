@@ -176,12 +176,12 @@ class LineServiceMockTest {
         lineService.addSection(강남_TO_역삼, 이호선.getId());
 
         // when
-        lineService.deleteSection(이호선.getId(), 역삼역.getId());
+        lineService.deleteSection(이호선.getId(), 강남역.getId());
 
         // then
         Line line = lineRepository.findById(이호선.getId()).get();
         Sections sections = line.getSections();
-        assertThat(sections.getSections()).hasSize(1);
+        assertThat(sections.getSections().get(0).getDistance()).isEqualTo(7);
     }
 
     private void givenToSaveLine() {
