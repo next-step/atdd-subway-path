@@ -36,35 +36,41 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * Given 새로운 지하철역 생성을 요청하고,
      * When 기존 상행 종점역에 새로운 구간 추가를 요청하면,
      * Then 상행 종점역에 새로운 구간이 추가되고, 조회 시 상행 종점부터 하행 종점까지 순서대로 조회된다.
      */
     @DisplayName("지하철 노선의 상행 종점역으로 새로운 구간 추가")
     @Test
     void addLineUpEndStationSection() {
-        // when
+        // given
         Long 신논현역 = 지하철역_생성_요청("신논현").jsonPath().getLong("id");
+
+        // when
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역, 10));
-        Long 논현역 = 지하철역_생성_요청("논현").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(논현역, 신논현역, 10));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(논현역, 신논현역, 강남역, 양재역);
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신논현역, 강남역, 양재역);
     }
 
     /**
+     * Given 새로운 지하철역 생얼을 요청하고,
+     * AND 새로운 구간 생성 요청을 하고,
+     * Given 새로운 지하철역 생얼을 요청하고,
      * When 역 사이에 새로운 구간 추가를 요청하면,
      * Then 사이에 새로운 구간이 추가되고, 조회 시 상행 종점부터 하행 종점까지 순서대로 조회된다.
      */
     @DisplayName("지하철역 사이에 새로운 구간 추가")
     @Test
     void addLineBetweenSection() {
-        // when
+        // given
         Long 논현역 = 지하철역_생성_요청("논현").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(논현역, 강남역, 10));
         Long 신논현역 = 지하철역_생성_요청("신논현").jsonPath().getLong("id");
+
+        // when
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(논현역, 신논현역, 3));
 
         // then
@@ -75,14 +81,17 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * Given 새로운 지하철역 생성을 요청하고,
      * When 지하철 노선의 하행 종점역에 새로운 구간 추가를 요청하면,
      * Then 노선에 새로운 구간이 추가된다.
      */
     @DisplayName("지하철 노선의 하행 종점역에 구간을 추가")
     @Test
     void addLineDownEndStationSection() {
-        // when
+        // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+
+        // when
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 10));
 
         // then
@@ -113,16 +122,21 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * Given 새로운 지하철역 생성을 요청하고,
+     * AND 새로운 구간 생성을 요청을 하고,
+     * Given 새로운 지하철역 생성을 요청하고,
      * When 역 사이에 새로운 구간 추가 시 기존 역 사이 거리 이상으로 구간 추가 요청을 하면,
      * Then 구간 추가가 실패한다.
      */
     @DisplayName("지하철역 사이에 새로운 구간 추가 시 기존 역 사이 길이 이상일 수 없음.")
     @Test
     void exceptionAddLineBetweenSection() {
-        // when
+        // given
         Long 논현역 = 지하철역_생성_요청("논현").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(논현역, 강남역, 10));
         Long 신논현역 = 지하철역_생성_요청("신논현").jsonPath().getLong("id");
+
+        // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(논현역, 신논현역, 10));
 
         // then
