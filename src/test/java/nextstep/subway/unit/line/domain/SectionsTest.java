@@ -3,6 +3,7 @@ package nextstep.subway.unit.line.domain;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -150,5 +151,14 @@ class SectionsTest {
     @Test
     void totalDistance() {
         assertThat(sections.totalDistance()).isEqualTo(distance.getValue());
+    }
+
+    @DisplayName("리스트 합치기")
+    @Test
+    void union() {
+        Section dummySection = Section.builder().build();
+        Sections dummySections = new Sections(Collections.singletonList(dummySection));
+
+        assertThat(sections.union(dummySections).size()).isEqualTo(2);
     }
 }
