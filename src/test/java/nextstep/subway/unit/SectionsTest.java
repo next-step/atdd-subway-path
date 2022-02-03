@@ -101,4 +101,14 @@ class SectionsTest {
         assertThat(신분당선.getSections().get(0).getDownStation()).isEqualTo(정자역);
         assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(distance);
     }
+
+    @DisplayName("지하철 노선에서 구간이 1개일 때, 구간을 제거 - 실패")
+    @Test
+    void deleteSectionFail() {
+        // when & then
+        assertThatThrownBy(() -> 신분당선.deleteSection(강남역))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> 신분당선.deleteSection(양재역))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }
