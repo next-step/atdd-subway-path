@@ -58,13 +58,37 @@ public class Sections {
         return getSortStations(section);
     }
 
-    public void remove(Station station) {
-        Section lastSection = getLastSection();
-        if (!lastSection.isLast(station)) {
-            throw new IllegalSectionArgumentException(NOT_LAST_SECTION);
+    public void remove(Line line, Station station) {
+        Section previousSection = this.sections.stream()
+                .filter(section1 -> section1.isDownStation(station))
+                .findFirst()
+                .orElse(null);
+
+        Section nextSection = this.sections.stream()
+                .filter(section1 -> section1.isUpStation(station))
+                .findFirst()
+                .orElse(null);
+
+        if (previousSection == null && nextSection == null) {
+            throw new IllegalSectionArgumentException("삭제할 역이 존재하지 않습니다.");
         }
 
-        this.sections.remove(lastSection);
+        if (previousSection == null) {
+            this.sections.remove(nextSection);
+            return;
+        }
+
+        if (nextSection == null) {
+            this.sections.remove(previousSection);
+            return;
+        }
+
+        int i = this.sections.indexOf(previousSection);
+        this.sections.set(i, new Section(line,
+                    previousSection.getUpStation(),
+                    nextSection.getDownStation(),
+                previousSection.getDistance() + nextSection.getDistance()));
+        this.sections.remove(nextSection);
     }
 
     private void validateStation(boolean isNext, boolean isPrevious) {
