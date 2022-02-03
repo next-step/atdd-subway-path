@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.ui.exception.AddSectionException;
 
 import javax.persistence.CascadeType;
@@ -34,16 +33,6 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    /**
-     * 기존 구간 상행역과 신규 구간 상행역이 겹치면
-     * 1. 기존 구간의 상행역을 신규 구간의 하행역으로 변경한다.
-     * 2. 기존 구간의 거리는
-     *    기존 구간 거리 - 신규 구간의 절대값으로 변경된다.
-     *    신규 구간의 거리는 그대로 저장된다.
-     *    ex) 가양역 ~ 등촌역 구간 거리 10m이면, 신규 구간이 가양역 ~ 증미역 거리 3m이면,
-     *        가양역 ~ 증미역 구간 거리는 3m 그대로 저장, 증미역 ~ 등촌역 구간 거리는 7m로 변경된다.
-     * 세부 로직은 addLineBetweenSection()에서 수행한다.
-     */
     public void addSection(Section newSection) {
         validateStationNotExistInSection(newSection);
         for (Section existingSection : sections) {

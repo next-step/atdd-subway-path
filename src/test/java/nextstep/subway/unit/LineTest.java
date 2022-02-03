@@ -35,7 +35,7 @@ class LineTest {
         fourDistance2 = 4;
     }
 
-    @DisplayName("지하철역 사이에 새로운 구간 추가")
+    @DisplayName("지하철역 사이에 새로운 구간 추가(기존 구간 상행역과 신규 구간 상행역이 겹친다.")
     @Test
     void addLineBetweenSection() {
         // given
@@ -51,7 +51,8 @@ class LineTest {
         assertThat(sections.size()).isEqualTo(2);
         assertThat(section1.getUpStation()).isEqualTo(증미역);
         assertThat(section1.getDownStation()).isEqualTo(등촌역);
-        assertThat(section1.getDistance()).isEqualTo(tenDistance - fourDistance2);
+        assertThat(section1.getDistance()).isEqualTo(6);
+        assertThat(section2.getDistance()).isEqualTo(4);
     }
 
     @DisplayName("지하철 노선의 하행 종점역에 구간을 추가")

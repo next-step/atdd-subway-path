@@ -3,7 +3,6 @@ package nextstep.subway.unit;
 
 import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.ui.exception.AddSectionException;
 import org.junit.jupiter.api.DisplayName;
