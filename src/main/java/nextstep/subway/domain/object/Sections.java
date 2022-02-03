@@ -26,10 +26,120 @@ public class Sections {
         if (!validateAddSection(section)) {
             throw new InvalidParameterException();
         }
+
+        updateOriginSection(section);
         this.values.add(section);
     }
 
-    public Section lastSection() {
+    private void updateOriginSection(Section section) {
+        Section originSection = values.stream()
+                .filter(value ->
+                        value.getUpStation().equals(section.getUpStation())
+                ).findFirst()
+                .orElse(null);
+
+        if (originSection != null && checkMiddleStationToBeSeperated(section)) {
+            Distance changedDistance = originSection.minusDistance(section.getDistance());
+            originSection.update(section.getDownStation(), changedDistance);
+        }
+    }
+
+    public int size() {
+        return this.values.size();
+    }
+
+    public void removeLastSection(Long stationId) {
+        if (!validateRemoveSection(stationId)) {
+            throw new InvalidParameterException();
+        }
+        this.values.remove(lastSection());
+    }
+
+    private boolean validateRemoveSection(Long stationId) {
+        if (isSmallerMinimumSize()) {
+            return false;
+        }
+
+        return lastDownStationId().equals(stationId);
+    }
+
+    private boolean validateAddSection(Section section) {
+        if (values.isEmpty()) {
+            return true;
+        }
+
+        if (checkDuplicatedSection(section)) {
+            return false;
+        }
+
+        if (checkLastStationToBeAttached(section)) {
+            return true;
+        }
+
+        if (checkFirstStationToBeAttached(section)) {
+            return true;
+        }
+
+        return checkMiddleStationToBeSeperated(section);
+    }
+
+    private boolean checkDuplicatedSection(Section section) {
+        return this.values.stream()
+                .anyMatch(value ->
+                        value.getUpStationId().equals(section.getUpStationId())
+                                && value.getDownStationId().equals(section.getDownStationId())
+                );
+    }
+
+    private boolean checkLastStationToBeAttached(Section section) {
+        return equalsLastDownStation(section.getUpStationId()) && !checkDuplicatedDownStation(section.getDownStationId());
+    }
+
+    private boolean equalsLastDownStation(Long upStationId) {
+        return this.lastDownStationId().equals(upStationId);
+    }
+
+    private boolean checkDuplicatedDownStation(Long downStationId) {
+        return this.values.stream()
+                .anyMatch(section ->
+                        section.getUpStationId().equals(downStationId) ||
+                                section.getDownStationId().equals(downStationId)
+                );
+    }
+
+    private boolean checkFirstStationToBeAttached(Section section) {
+        return equalsFirstUpStation(section.getDownStationId()) && !checkDuplicatedUpStation(section.getDownStationId());
+    }
+
+    private boolean equalsFirstUpStation(Long downStationId) {
+        return this.getFirstStation().getId().equals(downStationId);
+    }
+
+    private boolean checkDuplicatedUpStation(Long getDownStationId) {
+        return this.values.stream()
+                .anyMatch(section ->
+                        section.getUpStationId().equals(getDownStationId) ||
+                                section.getDownStationId().equals(getDownStationId)
+                );
+    }
+
+    private boolean checkMiddleStationToBeSeperated(Section section) {
+        return this.values.stream().anyMatch(value ->
+                (isSameUpStationNotDownStation(value, section)
+                        || isSameDownStationNotUpStation(value, section))
+                        && value.getDistanceValue() > section.getDistanceValue()
+        );
+    }
+
+    private boolean isSameUpStationNotDownStation(Section value, Section section) {
+        return value.getUpStationId().equals(section.getUpStationId()) && !value.getDownStationId().equals(section.getDownStationId());
+    }
+
+    private boolean isSameDownStationNotUpStation(Section value, Section section) {
+        return !value.getUpStationId().equals(section.getUpStationId()) && value.getDownStationId().equals(section.getDownStationId());
+    }
+
+    private Section lastSection() {
         Station lastStation = getLastStation();
         return this.values.stream()
                 .filter(value ->
@@ -43,11 +153,7 @@ public class Sections {
         return stations.get(stations.size() - 1);
     }
 
-    public Station lastDownStation() {
-        return lastSection().getDownStation();
-    }
-
-    public Long lastDownStationId() {
+    private Long lastDownStationId() {
         return lastSection().getDownStationId();
     }
 
@@ -109,50 +215,6 @@ public class Sections {
 
         return getOrderedStations(stations, nextDownStation);
     }
-
-    public int size() {
-        return this.values.size();
-    }
-
-    public boolean validateAddSection(Section section) {
-        if (values.isEmpty()) {
-            return true;
-        }
-
-        if (!equalsLastDownStation(section.getUpStation())) {
-            return false;
-        }
-
-        return !checkDuplicatedDownStation(section.getDownStation());
-    }
-
-    public boolean equalsLastDownStation(Station upStation) {
-        return this.lastDownStation().equals(upStation);
-    }
-
-    public boolean checkDuplicatedDownStation(Station downStation) {
-        return this.values.stream()
-                .anyMatch(section ->
-                        section.getUpStation().equals(downStation) ||
-                                section.getDownStation().equals(downStation)
-                );
-    }
-
-    public void removeLastSection(Long stationId) {
-        if (!validateRemoveSection(stationId)) {
-            throw new InvalidParameterException();
-        }
-        this.values.remove(lastSection());
-    }
-
-    public boolean validateRemoveSection(Long stationId) {
-        if (isSmallerMinimumSize()) {
-            return false;
-        }
-
-        return lastDownStationId().equals(stationId);
-    }
-
 
     private boolean isSmallerMinimumSize() {
         return this.values.size() <= 1;

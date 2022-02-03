@@ -53,6 +53,10 @@ public class Section extends BaseEntity {
         return upStation;
     }
 
+    public Long getUpStationId() {
+        return upStation.getId();
+    }
+
     public Station getDownStation() {
         return downStation;
     }
@@ -63,5 +67,18 @@ public class Section extends BaseEntity {
 
     public Distance getDistance() {
         return distance;
+    }
+
+    public Integer getDistanceValue() {
+        return distance.getValue();
+    }
+
+    public void update(Station downStation, Distance distance) {
+        this.upStation = downStation;
+        this.distance = distance;
+    }
+
+    public Distance minusDistance(Distance distance) {
+        return this.distance.minus(distance);
     }
 }
