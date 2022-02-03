@@ -285,7 +285,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ApiUtil.지하철_노선_생성_API(Lines.GTXA노선_연신내_삼성역);
 
         // when
-        ExtractableResponse<Response> response = ApiUtil.지하철_노선_구간_등록_API(1L, Lines.GTXA노선_구간_서울역_삼성역);
+        ExtractableResponse<Response> response = ApiUtil.지하철_노선_구간_등록_API(1L, Lines.GTXA노선_구간_연신내_서울역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
