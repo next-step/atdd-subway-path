@@ -97,6 +97,7 @@ class SectionsTest {
 
         // then
         assertThat(신분당선.getStations()).containsExactly(양재역, 정자역);
+        assertThat(신분당선.getSections()).hasSize(1);
         assertThat(신분당선.getSections().get(0).getUpStation()).isEqualTo(양재역);
         assertThat(신분당선.getSections().get(0).getDownStation()).isEqualTo(정자역);
         assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(distance);
@@ -114,6 +115,7 @@ class SectionsTest {
 
         // then
         assertThat(신분당선.getStations()).containsExactly(강남역, 양재역);
+        assertThat(신분당선.getSections()).hasSize(1);
         assertThat(신분당선.getSections().get(0).getUpStation()).isEqualTo(강남역);
         assertThat(신분당선.getSections().get(0).getDownStation()).isEqualTo(양재역);
         assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(distance);
@@ -131,6 +133,7 @@ class SectionsTest {
 
         // then
         assertThat(신분당선.getStations()).containsExactly(강남역, 정자역);
+        assertThat(신분당선.getSections()).hasSize(1);
         assertThat(신분당선.getSections().get(0).getUpStation()).isEqualTo(강남역);
         assertThat(신분당선.getSections().get(0).getDownStation()).isEqualTo(정자역);
         assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(2 * distance);
@@ -149,6 +152,7 @@ class SectionsTest {
 
         // then
         assertThat(신분당선.getStations()).containsExactly(강남역, 양재역, 정자역);
+        assertThat(신분당선.getSections()).hasSize(2);
     }
 
     @DisplayName("지하철 노선에서 구간이 1개일 때, 구간을 제거 - 실패")
