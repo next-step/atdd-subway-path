@@ -17,6 +17,7 @@ public class Lines {
     public static 지하철_구간_생성_파람 GTXA노선_구간_서울역_삼성역;
     public static 지하철_구간_생성_파람 GTXA노선_구간_연신내역_삼성역;
     public static 지하철_구간_생성_파람 GTXA노선_구간_서울역_연신내역;
+    public static 지하철_구간_생성_파람 GTXA노선_구간_삼성역_강남역;
 
     public static 지하철_구간_삭제_파람 GTXA노선_구간_삭제_삼성역;
     public static 지하철_구간_삭제_파람 GTXA노선_구간_삭제_연신내;
@@ -103,6 +104,12 @@ public class Lines {
                 .distance(DEFAULT_DISTANCE)
                 .build();
 
+        GTXA노선_구간_삼성역_강남역 =  지하철_구간_생성_파람.builder()
+                .upStationId(3L)
+                .downStationId(4L)
+                .distance(DEFAULT_DISTANCE)
+                .build();
+
         GTXA노선_구간_삭제_삼성역 = 지하철_구간_삭제_파람.builder()
                 .stationId(3L)
                 .build();
@@ -121,7 +128,7 @@ public class Lines {
         private final String color;
         private final Long upStationId;
         private final Long downStationId;
-        private final Integer distance;
+        private Integer distance;
 
         @Builder
         지하철_노선_생성_파람(String name, String color, Long upStationId, Long downStationId, Integer distance) {
@@ -130,6 +137,10 @@ public class Lines {
             this.upStationId = upStationId;
             this.downStationId = downStationId;
             this.distance = distance;
+        }
+
+        public void setDistance(int value) {
+            this.distance = value;
         }
     }
 
@@ -153,12 +164,16 @@ public class Lines {
     public static class 지하철_구간_생성_파람 extends BaseParams {
         private final Long upStationId;
         private final Long downStationId;
-        private final Integer distance;
+        private Integer distance;
 
         @Builder
         지하철_구간_생성_파람(Long upStationId, Long downStationId, Integer distance) {
             this.upStationId = upStationId;
             this.downStationId = downStationId;
+            this.distance = distance;
+        }
+
+        public void setDistance(Integer distance) {
             this.distance = distance;
         }
     }
