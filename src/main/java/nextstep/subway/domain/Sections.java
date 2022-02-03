@@ -8,12 +8,10 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
     private static final int MIN_SECTIONS_SIZE = 1;
-    private static final int FIRST_INDEX = 0;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -23,6 +21,8 @@ public class Sections {
             sections.add(newSection);
             return;
         }
+
+        validateSection(newSection);
 
         if (canAddToBetweenSections(newSection)) {
             addToBetweenSections(newSection);
@@ -40,6 +40,17 @@ public class Sections {
         }
 
         throw new IllegalArgumentException("역을 추가할 수 없음");
+    }
+
+    private void validateSection(Section newSection) {
+        if (containsStation(newSection.getUpStation()) && containsStation(newSection.getDownStation())) {
+            throw new IllegalArgumentException("잘못된 구간입니다");
+        }
+    }
+
+    private boolean containsStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.isUpStation(station) || section.isDownStation(station));
     }
 
     private void addToLastSection(Section newSection) {
