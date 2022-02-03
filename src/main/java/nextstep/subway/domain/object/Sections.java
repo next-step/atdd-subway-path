@@ -8,6 +8,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,12 +42,62 @@ public class Sections {
     }
 
     public List<Station> getAllStations() {
-        List<Station> stations = this.values.stream()
-                .sorted(Comparator.comparing(Section::getId))
+        Section firstSection = getFirstSection();
+
+        if (firstSection == null) {
+            return Collections.emptyList();
+        }
+
+        List<Station> stations = new ArrayList<>();
+        stations.add(firstSection.getUpStation());
+
+        return getOrderedStations(stations, firstSection.getDownStation());
+    }
+
+    private Section getFirstSection() {
+        Station station = getFirstStation();
+
+        if (station == null) {
+            return null;
+        }
+
+        return this.values.stream()
+                .filter(value ->
+                        value.getUpStation().equals(station)
+                ).findFirst()
+                .orElse(null);
+
+    }
+
+    private Station getFirstStation() {
+        List<Station> upStations = values.stream()
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
-        stations.add(lastDownStation());
-        return stations;
+        List<Station> downStations = values.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+
+        return upStations.stream()
+                .filter(upStation ->
+                        !downStations.contains(upStation)
+                ).findFirst()
+                .orElse(null);
+    }
+
+    private List<Station> getOrderedStations(List<Station> stations, Station downStation) {
+        if (downStation == null) {
+            return stations;
+        }
+        stations.add(downStation);
+
+        Station nextDownStation = this.values.stream()
+                .filter(value ->
+                        value.getUpStation().equals(downStation)
+                ).map(Section::getDownStation)
+                .findFirst()
+                .orElse(null);
+
+        return getOrderedStations(stations, nextDownStation);
     }
 
     public int size() {
