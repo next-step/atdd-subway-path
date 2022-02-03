@@ -13,7 +13,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private Sections sections = new Sections();
+    private final Sections sections = new Sections();
 
     public Line() {
     }
@@ -29,43 +29,41 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Long getId() {
-        return id;
+    public void addSection(Station upStation, Station downStation, int distance) {
+        sections.addSection(new Section(this, upStation, downStation, distance));
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void deleteSection(Station station) {
+        sections.deleteSection(station);
+    }
+
+    public void update(String name, String color) {
+        if (name != null) {
+            this.name = name;
+        }
+
+        if (color != null) {
+            this.color = color;
+        }
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 
     public List<Section> getSections() {
         return sections.getSectionList();
     }
 
-    public void addSection(Station upStation, Station downStation, int distance) {
-        sections.addSection(new Section(this, upStation, downStation, distance));
-    }
-
     public List<Station> getStations() {
         return sections.getStationList();
-    }
-
-    public void deleteSection(Station station) {
-        sections.deleteSection(station);
     }
 }

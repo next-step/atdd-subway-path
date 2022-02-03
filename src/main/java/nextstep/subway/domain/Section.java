@@ -4,6 +4,8 @@ import javax.persistence.*;
 
 @Entity
 public class Section {
+    private static final String INVALID_DISTANCE_MESSAGE = "신규 역 사이의 길이가 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,6 +35,42 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section changeUpStation(Section otherSection) {
+        validateDistance(otherSection.distance);
+        return new Section(line, otherSection.downStation, downStation, distance - otherSection.distance);
+    }
+
+    public Section changeDownStation(Section otherSection) {
+        validateDistance(otherSection.distance);
+        return new Section(line, upStation, otherSection.upStation, distance - otherSection.distance);
+    }
+
+    public boolean equalsUpAndDownStation(Section section) {
+        return hasSameUpStation(section) && hasSameDownStation(section);
+    }
+
+    public boolean hasSameUpStation(Section otherSection) {
+        return upStation.equals(otherSection.upStation);
+    }
+
+    public boolean hasSameDownStation(Section otherSection) {
+        return downStation.equals(otherSection.downStation);
+    }
+
+    public boolean isPreviousSection(Section otherSection) {
+        return downStation.equals(otherSection.upStation);
+    }
+
+    public boolean isNextSection(Section otherSection) {
+        return upStation.equals(otherSection.downStation);
+    }
+
+    private void validateDistance(int otherDistance) {
+        if (distance <= otherDistance) {
+            throw new IllegalArgumentException(INVALID_DISTANCE_MESSAGE);
+        }
+    }
+
     public Long getId() {
         return id;
     }
@@ -51,43 +89,5 @@ public class Section {
 
     public int getDistance() {
         return distance;
-    }
-
-    public void changeUpStation(Station station, int distance) {
-        upStation = station;
-        this.distance -= distance;
-    }
-
-    public void changeDownStation(Station station, int distance) {
-        downStation = station;
-        this.distance -= distance;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Section section = (Section) o;
-
-        if (line != null ? !line.equals(section.line) : section.line != null) {
-            return false;
-        }
-        if (upStation != null ? !upStation.equals(section.upStation) : section.upStation != null) {
-            return false;
-        }
-        return downStation != null ? downStation.equals(section.downStation) : section.downStation == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = line != null ? line.hashCode() : 0;
-        result = 31 * result + (upStation != null ? upStation.hashCode() : 0);
-        result = 31 * result + (downStation != null ? downStation.hashCode() : 0);
-        return result;
     }
 }

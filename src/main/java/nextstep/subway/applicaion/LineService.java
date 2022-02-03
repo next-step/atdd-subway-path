@@ -25,35 +25,31 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-        if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
+        if (request.hasSectionInformation()) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
             line.addSection(upStation, downStation, request.getDistance());
         }
-        return LineResponse.of(line);
+        return LineResponse.from(line);
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> showLines() {
         return lineRepository.findAll().stream()
-                .map(LineResponse::of)
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        return LineResponse.of(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        return LineResponse.from(line);
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
 
-        if (lineRequest.getName() != null) {
-            line.setName(lineRequest.getName());
-        }
-        if (lineRequest.getColor() != null) {
-            line.setColor(lineRequest.getColor());
-        }
+        line.update(lineRequest.getName(), lineRequest.getColor());
     }
 
     public void deleteLine(Long id) {

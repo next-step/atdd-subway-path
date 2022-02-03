@@ -7,19 +7,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 @Embeddable
 public class Sections {
+    private static final String ALREADY_EXIST_SECTION_MESSAGE = "이미 존재하는 구간입니다.";
     private static final String NO_FIRST_STATION_MESSAGE = "상행 종점역이 존재하지 않습니다.";
-    private static final String INVALID_DISTANCE_MESSAGE = "신규 역 사이의 길이가 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.";
     private static final int LAST_INDEX_VALUE = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sectionList = new ArrayList<>();
+    private final List<Section> sectionList = new ArrayList<>();
 
     public void addSection(Section section) {
         if (isAlreadyExistSection(section) || nonExistStation(section)) {
-            throw new IllegalArgumentException("이미 존재하는 구간입니다.");
+            throw new IllegalArgumentException(ALREADY_EXIST_SECTION_MESSAGE);
         }
         
         if (isMiddleSection(section)) {
@@ -42,7 +43,7 @@ public class Sections {
 
     private boolean isAlreadyExistSection(Section section) {
         return sectionList.stream()
-                .anyMatch(section::equals);
+                .anyMatch(section::equalsUpAndDownStation);
     }
 
     private boolean isMiddleSection(Section section) {
@@ -53,74 +54,64 @@ public class Sections {
     }
 
     private void addMiddleSection(Section section) {
-        for (Section otherSection : sectionList) {
-            if (section.getUpStation().equals(otherSection.getUpStation())) {
-                validateDistance(section, otherSection);
-                otherSection.changeUpStation(section.getDownStation(), section.getDistance());
-                break;
-            }
-
-            if (section.getDownStation().equals(otherSection.getDownStation())) {
-                validateDistance(section, otherSection);
-                otherSection.changeDownStation(section.getUpStation(), section.getDistance());
-                break;
-            }
+        Optional<Section> sameUpStationSection = findSectionBy(section::hasSameUpStation);
+        if (sameUpStationSection.isPresent()) {
+            Section beforeSection = sameUpStationSection.get();
+            Section changedSection = beforeSection.changeUpStation(section);
+            replaceSection(beforeSection, changedSection);
+            sectionList.add(section);
+            return;
         }
-        sectionList.add(section);
-    }
 
-    private void validateDistance(Section section, Section otherSection) {
-        if (section.getDistance() >= otherSection.getDistance()) {
-            throw new IllegalArgumentException(INVALID_DISTANCE_MESSAGE);
+        Optional<Section> sameDownStationSection = findSectionBy(section::hasSameDownStation);
+        if (sameDownStationSection.isPresent()) {
+            Section beforeSection = sameDownStationSection.get();
+            Section changedSection = beforeSection.changeDownStation(section);
+            replaceSection(beforeSection, changedSection);
+            sectionList.add(section);
+            return;
         }
     }
 
-    public List<Section> getSectionList() {
-        return Collections.unmodifiableList(sectionList);
+    private void replaceSection(Section beforeSection, Section changedSection) {
+        int index = sectionList.indexOf(beforeSection);
+        sectionList.set(index, changedSection);
     }
 
-    public List<Station> getStationList() {
-        if (sectionList.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        Section firstSection = findFirstSection();
-        List<Station> stations = makeStationList(firstSection);
-
-        return Collections.unmodifiableList(stations);
+    private Optional<Section> findSectionBy(Predicate<Section> sameStationSectionPredicate) {
+        return sectionList.stream()
+                .filter(sameStationSectionPredicate)
+                .findFirst();
     }
 
     private List<Station> makeStationList(Section section) {
         List<Station> stations = new ArrayList<>();
         stations.add(section.getUpStation());
 
-        while (true) {
-            Section finalSection = section;
-            Optional<Section> nextSection = sectionList.stream()
-                    .filter(otherSection -> finalSection.getDownStation().equals(otherSection.getUpStation()))
-                    .findAny();
-
-            if (nextSection.isPresent()) {
-                stations.add(nextSection.get().getUpStation());
-                section = nextSection.get();
-                continue;
-            }
-
-            break;
-        }
-
-        stations.add(section.getDownStation());
+        addNextSection(section, stations);
         return stations;
     }
 
+    private void addNextSection(Section section, List<Station> stations) {
+        stations.add(section.getDownStation());
+
+        Optional<Section> nextSection = sectionList.stream()
+                .filter(section::isPreviousSection)
+                .findFirst();
+
+        nextSection.ifPresent(sectionNext -> addNextSection(nextSection.get(), stations));
+    }
+
     private Section findFirstSection() {
-        for (Section section : sectionList) {
-            if (sectionList.stream()
-                    .noneMatch(otherSection -> section.getUpStation().equals(otherSection.getDownStation()))) {
-                return section;
-            }
-        }
-        throw new IllegalArgumentException(NO_FIRST_STATION_MESSAGE);
+        return sectionList.stream()
+                .filter(this::firstSectionCondition)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(NO_FIRST_STATION_MESSAGE));
+    }
+
+    private boolean firstSectionCondition(Section section) {
+        return sectionList.stream()
+                .noneMatch(section::isNextSection);
     }
 
     public void deleteSection(Station station) {
@@ -137,5 +128,20 @@ public class Sections {
 
     private int lastIndex() {
         return sectionList.size() - LAST_INDEX_VALUE;
+    }
+
+    public List<Section> getSectionList() {
+        return Collections.unmodifiableList(sectionList);
+    }
+
+    public List<Station> getStationList() {
+        if (sectionList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Section firstSection = findFirstSection();
+        List<Station> stations = makeStationList(firstSection);
+
+        return Collections.unmodifiableList(stations);
     }
 }

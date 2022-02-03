@@ -19,7 +19,7 @@ public class StationResponse {
         this.modifiedDate = modifiedDate;
     }
 
-    public static StationResponse of(Station station) {
+    public static StationResponse from(Station station) {
         return new StationResponse(
                 station.getId(),
                 station.getName(),
@@ -28,9 +28,9 @@ public class StationResponse {
         );
     }
 
-    public static List<StationResponse> ofList(List<Station> stations) {
+    public static List<StationResponse> fromList(List<Station> stations) {
         return stations.stream()
-                .map(StationResponse::of)
+                .map(StationResponse::from)
                 .collect(Collectors.toList());
     }
 
