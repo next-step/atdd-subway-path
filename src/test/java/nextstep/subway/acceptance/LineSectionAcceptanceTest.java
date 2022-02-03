@@ -239,17 +239,20 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeLineSectionByMiddleStation() {
         // given
-        Long 양재역_번호 = 지하철_역_생성_되어있음(양재역);
-        지하철_노선_구간_등록을_요청한다(신분당선_번호, 강남역_번호, 양재역_번호, 강남_양재_거리);
+        Long 논현역_번호 = 지하철_역_생성_되어있음(논현역);
+        Long 정자역_번호 = 지하철_역_생성_되어있음(정자역);
+
+        지하철_노선_구간_등록을_요청한다(신분당선_번호, 논현역_번호, 강남역_번호, 논현_강남_거리);
+        지하철_노선_구간_등록을_요청한다(신분당선_번호, 판교역_번호, 정자역_번호, 판교_정자_거리);
 
         // when
-        지하철_노선_구간을_삭제_요청한다(신분당선_번호, 양재역_번호);
+        지하철_노선_구간을_삭제_요청한다(신분당선_번호, 강남역_번호);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회를_요청한다(신분당선_번호);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역_번호, 판교역_번호)
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(논현역_번호, 판교역_번호, 정자역_번호)
         );
     }
 
