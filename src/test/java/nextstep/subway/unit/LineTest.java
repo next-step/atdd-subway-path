@@ -3,10 +3,9 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.PairedStations;
 import nextstep.subway.domain.Station;
+import nextstep.subway.utils.EntityFixtures;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.lang.reflect.Field;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -136,16 +135,6 @@ class LineTest {
     }
 
     private Station 역_생성(Long id) {
-        try {
-            Station station = new Station();
-
-            Field idField = station.getClass().getDeclaredField("id");
-            idField.setAccessible(true);
-            idField.set(station, id);
-
-            return station;
-        } catch (Exception e) {
-            return null;
-        }
+        return EntityFixtures.createEntityFixtureWithId(id, Station.class);
     }
 }

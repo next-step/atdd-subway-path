@@ -8,6 +8,7 @@ import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
+import nextstep.subway.utils.EntityFixtures;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -34,8 +35,8 @@ public class LineServiceMockTest {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         Line 노선 = new Line("2호선", "green");
-        Station 상행종점역 = new Station("강남역");
-        Station 하행종점역 = new Station("역삼역");
+        Station 상행종점역 = EntityFixtures.createEntityFixtureWithId(상행종점역ID, Station.class);
+        Station 하행종점역 = EntityFixtures.createEntityFixtureWithId(하행종점역ID, Station.class);
 
         when(stationService.findById(상행종점역ID)).thenReturn(상행종점역);
         when(stationService.findById(하행종점역ID)).thenReturn(하행종점역);
@@ -53,7 +54,6 @@ public class LineServiceMockTest {
         LineResponse lineResponse = lineService.findById(노선ID);
         assertThat(lineResponse.getName()).isEqualTo("2호선");
         assertThat(lineResponse.getStations().size()).isEqualTo(2);
-        assertThat(lineResponse.getStations().stream().map(StationResponse::getName)).containsExactly("강남역", "역삼역");
+        assertThat(lineResponse.getStations().stream().map(StationResponse::getId)).containsExactly(상행종점역ID, 하행종점역ID);
     }
-
 }
