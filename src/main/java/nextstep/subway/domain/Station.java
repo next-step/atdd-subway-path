@@ -18,8 +18,19 @@ public class Station extends BaseEntity {
         this.name = name;
     }
 
-    public Station(String name) {
+    private Station(String name) {
         this.name = name;
+    }
+
+    public static Station from(String name) {
+        return new Station(name);
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "name='" + name + '\'' +
+                '}';
     }
 
     public Long getId() {

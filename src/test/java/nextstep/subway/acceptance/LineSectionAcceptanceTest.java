@@ -37,10 +37,11 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * Scenario : 한 구간에 대해 하행역에 새로운 구간이 추가되는 경우
      * When 지하철 노선에 새로운 구간 추가를 요청 하면
      * Then 노선에 새로운 구간이 추가된다
      */
-    @DisplayName("지하철 노선에 구간을 등록")
+    @DisplayName("지하철 노선의 최하행역에 대해 구간을 등록")
     @Test
     void addLineSection() {
         // when
