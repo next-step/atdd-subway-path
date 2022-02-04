@@ -62,6 +62,11 @@ public class Section {
         upStation = newSection.getDownStation();
     }
 
+    private void changeDistance(int newDistance) {
+        validationDistance(newDistance);
+        this.distance = this.distance - newDistance;
+    }
+
     public Long getId() {
         return id;
     }
@@ -80,11 +85,6 @@ public class Section {
 
     public Station getDownStation() {
         return downStation;
-    }
-
-    private void changeDistance(int newDistance) {
-        validationDistance(newDistance);
-        this.distance = this.distance - newDistance;
     }
 
     private void validationDistance(int distance) {

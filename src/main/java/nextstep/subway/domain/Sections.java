@@ -77,14 +77,7 @@ public class Sections {
             return Collections.emptyList();
         }
 
-        Comparator<Section> sortSection = new Comparator<Section>() {
-            @Override
-            public int compare(Section o1, Section o2) {
-                return o2.getUpStation().equals(o1.getDownStation()) ? -1 : 0;
-            }
-        };
-
-        Collections.sort(sections, sortSection);
+        Collections.sort(sections, (a, b) -> b.getUpStation().equals(a.getDownStation()) ? -1 : 0);
 
         List<Station> stations = sections.stream()
                 .map(Section::getDownStation)
