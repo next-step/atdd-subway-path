@@ -73,7 +73,7 @@ class PathQueryServiceTest {
 
         // then
         List<String> names = names(response);
-        Assertions.assertThat(names).containsExactly(교대역.getName(), 교대역.getName(), 양재역.getName());
+        Assertions.assertThat(names).containsExactly(교대역.getName(), 남부터미널역.getName(), 양재역.getName());
     }
 
     @DisplayName("없는 역을 요청할 경우 예외 처리")

@@ -218,11 +218,8 @@ public class Sections {
     }
 
     private Section getRegisteredSection(Section section) {
-        Station upStation = section.getUpStation();
-        Station downStation = section.getDownStation();
-
         return sections.stream()
-                .filter(it -> it.isContainStation(upStation) || it.isContainStation(downStation))
+                .filter(it -> it.isContainSection(section))
                 .findAny()
                 .orElseThrow(NotFoundConnectStationException::new);
     }

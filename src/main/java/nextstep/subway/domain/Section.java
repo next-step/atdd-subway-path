@@ -44,17 +44,9 @@ public class Section {
         return new Section(line, section.upStation, section.downStation, section.distance);
     }
 
-    public boolean isMatchUpStation(Section section) {
-        return Objects.equals(this.upStation, section.upStation);
-    }
-
-    public boolean isMatchDownStation(Section section) {
-        return Objects.equals(this.downStation, section.downStation);
-    }
-
-    public boolean isContainStation(Station station) {
-        return Objects.equals(this.upStation, station)
-                || Objects.equals(this.downStation, station);
+    public boolean isContainSection(Section section) {
+        return isContainStation(section.upStation)
+                || isContainStation(section.downStation);
     }
 
     public Line getLine() {
@@ -71,6 +63,11 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    private boolean isContainStation(Station station) {
+        return Objects.equals(this.upStation, station)
+                || Objects.equals(this.downStation, station);
     }
 
     private void validateDistance(int distance) {
