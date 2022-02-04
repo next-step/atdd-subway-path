@@ -44,27 +44,8 @@ public class Sections {
         boolean hasUpStation = stations.contains(upStation);
         boolean hasDownStation = stations.contains(downStation);
 
-        if (hasUpStation && hasDownStation) {
-            throw new IllegalArgumentException(ALREADY_REGISTERED_SECTION);
-        }
-
-        if (!hasUpStation && !hasDownStation) {
-            throw new IllegalArgumentException(UNREGISTERED_STATIONS);
-        }
-
-        if (hasUpStation) {
-            int index = indexOfUpStation(upStation);
-
-            // 중간에 등록하는 경우 ex.기존: 강남 - 양재 / 요청: 강남 - 정자
-            addBetweenSectionsByUpStation(index, section);
-        }
-
-        if (hasDownStation) {
-            int index = indexOfDownStation(downStation);
-
-            // 중간에 등록하는 경우 ex.기존: 강남 - 양재 / 요청: 정자 - 양재
-            addBetweenSectionsByDownStation(index, section);
-        }
+        validateAddable(hasUpStation, hasDownStation);
+        addBetweenSection(section, hasUpStation, hasDownStation);
 
         sections.add(section);
     }
@@ -96,6 +77,30 @@ public class Sections {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    private void addBetweenSection(Section section, boolean hasUpStation, boolean hasDownStation) {
+        if (hasUpStation) {
+            int index = indexOfUpStation(section.getUpStation());
+
+            addBetweenSectionsByUpStation(index, section);
+        }
+
+        if (hasDownStation) {
+            int index = indexOfDownStation(section.getDownStation());
+
+            addBetweenSectionsByDownStation(index, section);
+        }
+    }
+
+    private void validateAddable(boolean hasUpStation, boolean hasDownStation) {
+        if (hasUpStation && hasDownStation) {
+            throw new IllegalArgumentException(ALREADY_REGISTERED_SECTION);
+        }
+
+        if (!hasUpStation && !hasDownStation) {
+            throw new IllegalArgumentException(UNREGISTERED_STATIONS);
+        }
     }
 
     private void addBetweenSectionsByDownStation(int index, Section section) {
