@@ -64,11 +64,16 @@ public class JgraphtPathFinder implements PathFinder {
     private void setAllEdgeWeight(WeightedMultigraph<Station, DefaultWeightedEdge> graph, List<Section> sections) {
         for (Section eachSection : sections) {
             DefaultWeightedEdge edge = graph.addEdge(eachSection.getUpStation(), eachSection.getDownStation());
-            graph.setEdgeWeight(edge, eachSection.getDistance().getValue());
+            graph.setEdgeWeight(edge, eachSection.getDistance()
+                                                 .getValue()
+            );
         }
     }
 
     private StationPaths toStationPath(GraphPath<Station, DefaultWeightedEdge> graphPath) {
-        return new StationPaths(graphPath.getVertexList(), new Distance((int) graphPath.getWeight()));
+        return new StationPaths(
+            graphPath.getVertexList(),
+            new Distance((int) graphPath.getWeight())
+        );
     }
 }

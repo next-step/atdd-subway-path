@@ -49,6 +49,6 @@ public class LineServiceMockTest {
 
         // then
         // line.findLineById 메서드를 통해 검증
-        assertThat(mockLine.getSections().size()).isEqualTo(1);
+        assertThat(mockLine.getSections().getValues().size()).isEqualTo(1);
     }
 }

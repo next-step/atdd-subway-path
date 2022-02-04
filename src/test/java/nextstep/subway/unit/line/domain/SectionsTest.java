@@ -159,6 +159,6 @@ class SectionsTest {
         Section dummySection = Section.builder().build();
         Sections dummySections = new Sections(Collections.singletonList(dummySection));
 
-        assertThat(sections.union(dummySections).size()).isEqualTo(2);
+        assertThat(sections.union(dummySections).getValues().size()).isEqualTo(2);
     }
 }
