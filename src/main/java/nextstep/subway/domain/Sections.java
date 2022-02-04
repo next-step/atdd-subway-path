@@ -103,7 +103,7 @@ public class Sections {
         return allStations;
     }
 
-    public void removeSection(Station station) {
+    public void remove(Station station) {
         Station lastDownStation = getLastDownStation();
 
         if (isNotAvailableDelete()) {
