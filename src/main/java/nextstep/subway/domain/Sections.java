@@ -64,6 +64,10 @@ public class Sections {
         return stations;
     }
 
+    public List<Section> getSections() {
+        return sections;
+    }
+
     private void addEndSection(Section section) {
         if (isAddableFirstSection(section)) {
             addFirstSection(section);
