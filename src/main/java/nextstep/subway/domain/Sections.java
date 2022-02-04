@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -74,6 +75,9 @@ public class Sections {
     }
 
     public List<Station> getStations() {
+        if(sections.isEmpty()){
+            return Collections.emptyList();
+        }
         List<Section> sorted = sort();
         List<Station> stations = sorted.stream()
                 .map(Section::getUpStation)
