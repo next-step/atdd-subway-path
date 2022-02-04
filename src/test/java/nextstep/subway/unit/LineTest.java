@@ -165,4 +165,10 @@ class LineTest {
         assertThrows(IllegalSectionArgumentException.class, () -> line.removeSection(서울역));
     }
 
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 삭제")
+    @Test
+    void 구간이_하나인_노선에서_마지막_구간_삭제() {
+        assertThrows(IllegalSectionArgumentException.class, () -> line.removeSection(수원역));
+    }
+
 }
