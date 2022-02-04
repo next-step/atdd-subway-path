@@ -19,6 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LineAcceptanceTest extends AcceptanceTest {
     Map<String, String> 이호선;
 
+    /**
+     * Given 지하철역을 두개 생성하고 노선에 대한 파라미터를 생성한 후
+     */
     @Override
     @BeforeEach
     public void setUp() {

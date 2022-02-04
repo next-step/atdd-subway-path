@@ -32,6 +32,10 @@ public class LineServiceMockTest {
 
     final Line 이호선 = Line.of("2호선", "green", 강남역, 역삼역, 100);
 
+
+    /**
+     * Given 지하철역을 세개 생성하고 노선도 생성하였다고 가정한 후
+     */
     @BeforeEach
     public void setUp() {
         ReflectionTestUtils.setField(강남역, "id", 1L);
@@ -41,6 +45,10 @@ public class LineServiceMockTest {
         ReflectionTestUtils.setField(이호선, "id", 1L);
     }
 
+    /**
+     * When 노선에 구간 등록을 요청하면
+     * Then 노선에 새로운 구간이 추가된다.
+     */
     @Test
     void addSection() {
         final int 거리 = 50;

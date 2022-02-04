@@ -25,6 +25,11 @@ public class LineServiceTest {
     @Autowired
     private LineService lineService;
 
+    /**
+     * Given 지하철역을 생성하고 노선도 생성한 후
+     * When 노선에 구간 등록을 요청하면
+     * Then 노선에 새로운 구간이 추가된다.
+     */
     @Test
     void addSection() {
         // given
