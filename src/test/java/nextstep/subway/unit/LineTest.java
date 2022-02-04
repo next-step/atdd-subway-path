@@ -188,6 +188,21 @@ class LineTest {
 
     }
 
+    @DisplayName("하행 종점 역 삭제")
+    @Test
+    void removeLastDownSection() {
+        //given
+        Section section = Section.of(loopLine, yeoksam, sunreoung, 10);
+        loopLine.addSection(section);
+
+        //when
+        loopLine.deleteSection(sunreoung);
+
+        //then
+        List<String> namesOfStations = getNamesOfStations(loopLine);
+        assertThat(namesOfStations).containsExactly(gangnam.getName(), yeoksam.getName());
+    }
+
     @DisplayName("구간이 목록에서 마지막 역 삭제")
     @Test
     void removeSection() {

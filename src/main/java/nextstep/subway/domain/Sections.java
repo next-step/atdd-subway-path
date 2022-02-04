@@ -173,11 +173,26 @@ public class Sections {
             throw new CannotDeleteSectionException();
         }
 
+        Section lastDownSection = findLastDownSection();
+        if (lastDownSection.hasSameDownStation(station)) {
+            sections.remove(lastDownSection);
+            return;
+        }
+
+
 
         if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
             throw new IllegalArgumentException();
         }
 
         sections.remove(sections.size() - 1);
+    }
+
+    private Section findLastDownSection() {
+        Station lastDownStation = findLastDownStation();
+        return sections.stream()
+                .filter(section -> section.hasSameDownStation(lastDownStation))
+                .findFirst()
+                .orElseThrow(EntityNotFoundException::new);
     }
 }

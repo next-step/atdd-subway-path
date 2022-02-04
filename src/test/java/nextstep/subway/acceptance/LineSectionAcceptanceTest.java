@@ -162,7 +162,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @MethodSource
     void removeSection(Long stationId, Long... expected) {
         //given
-        Map<String, String> sectionCreateParams = createSectionCreateParams(양재역, 판교역);
+        Map<String, String> sectionCreateParams = createSectionCreateParams(양재역, 판교역, 5);
         지하철_노선에_지하철_구간_생성_요청(신분당선, sectionCreateParams);
         
         //when
@@ -174,9 +174,9 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     
     private static Stream<Arguments> removeSection() {
         return Stream.of(
-                Arguments.of(양재역, 판교역, 정자역),
-                Arguments.of(판교역, 양재역, 정자역),
-                Arguments.of(정자역, 양재역, 판교역)
+                Arguments.of(양재역, new Long[]{판교역, 정자역}),
+                Arguments.of(판교역, new Long[]{양재역, 정자역}),
+                Arguments.of(정자역, new Long[]{양재역, 판교역})
         );
     }
 
