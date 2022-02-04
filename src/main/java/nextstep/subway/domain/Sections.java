@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.NotFoundSectionException;
 import nextstep.subway.exception.NotFoundStationException;
 import nextstep.subway.exception.ValidationException;
 
@@ -130,7 +129,7 @@ public class Sections {
         Optional<Section> down = findSectionByDownStationId(stationId);
 
         if(isMiddleSectionDeleteRequest(up, down)) {
-            sections.add(createNewSectionByRePosition(up, down));
+            sections.add(createNewSectionByRePosition(up.get(), down.get()));
             sections.remove(up.get());
             sections.remove(down.get());
             return;
@@ -165,13 +164,21 @@ public class Sections {
 
     private Optional<Section> findSectionByUpStationId(final Long stationId) {
         return sections.stream()
-                .filter(s -> s.getUpStation().getId().equals(stationId))
+                .filter(s -> {
+                    Station upStation = s.getUpStation();
+                    Long id = upStation.getId();
+                    return id.equals(stationId);
+                })
                 .findFirst();
     }
 
     private Optional<Section> findSectionByDownStationId(final Long stationId) {
         return sections.stream()
-                .filter(s -> s.getDownStation().getId().equals(stationId))
+                .filter(s -> {
+                    Station downStation = s.getDownStation();
+                    Long id = downStation.getId();
+                    return id.equals(stationId);
+                })
                 .findFirst();
     }
 
@@ -179,12 +186,12 @@ public class Sections {
         return up.isPresent() && down.isPresent();
     }
 
-    private Section createNewSectionByRePosition(Optional<Section> up, Optional<Section> down) {
+    private Section createNewSectionByRePosition(Section up, Section down) {
         return Section.of(
-                up.get().getLine(),
-                down.get().getUpStation(),
-                up.get().getDownStation(),
-                up.get().getDistance() + down.get().getDistance()
+                up.getLine(),
+                down.getUpStation(),
+                up.getDownStation(),
+                up.getDistance() + down.getDistance()
         );
     }
 

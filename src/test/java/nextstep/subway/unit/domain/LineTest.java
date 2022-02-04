@@ -31,21 +31,7 @@ class LineTest {
 
     @BeforeEach
     void setFixtures() {
-        // given
-        line = new Line("2호선", "bg-red-600");
-        서초역 = new Station("서초역");
-        교대역 = new Station("교대역");
-        강남역 = new Station("강남역");
-        역삼역 = new Station("역삼역");
-        삼성역 = new Station("삼성역");
-        section = new Section(line, 교대역, 역삼역, 10);
-        line.addSection(section);
-
-        ReflectionTestUtils.setField(서초역, "id", 1L);
-        ReflectionTestUtils.setField(교대역, "id", 2L);
-        ReflectionTestUtils.setField(강남역, "id", 3L);
-        ReflectionTestUtils.setField(역삼역, "id", 4L);
-        ReflectionTestUtils.setField(삼성역, "id", 5L);
+        setUp();
     }
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
@@ -152,5 +138,22 @@ class LineTest {
             line.removeSection(교대역.getId());
         }).isInstanceOf(ValidationException.class)
           .hasMessage(ErrorCode.SECTION_MINIMUM_SIZE_ERROR.getMessage());
+    }
+
+    private void setUp() {
+        line = new Line("2호선", "bg-red-600");
+        서초역 = new Station("서초역");
+        교대역 = new Station("교대역");
+        강남역 = new Station("강남역");
+        역삼역 = new Station("역삼역");
+        삼성역 = new Station("삼성역");
+        section = new Section(line, 교대역, 역삼역, 10);
+        line.addSection(section);
+
+        ReflectionTestUtils.setField(서초역, "id", 1L);
+        ReflectionTestUtils.setField(교대역, "id", 2L);
+        ReflectionTestUtils.setField(강남역, "id", 3L);
+        ReflectionTestUtils.setField(역삼역, "id", 4L);
+        ReflectionTestUtils.setField(삼성역, "id", 5L);
     }
 }
