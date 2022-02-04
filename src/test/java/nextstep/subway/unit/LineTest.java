@@ -114,7 +114,6 @@ class LineTest {
 
         // then
         assertThat(line.sectionsSize()).isEqualTo(1);
-        assertThat(line.getDownStation(0)).isEqualTo(증미역);
     }
 
     @DisplayName("지하철역 사이에 새로운 구간 추가 시 기존 역 사이 길이 이상일 수 없음.")

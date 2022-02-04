@@ -61,11 +61,6 @@ public class Line extends BaseEntity {
         return color;
     }
 
-
-    public Station getDownStation(int sectionIndex) {
-        return sections.getDownStation(sectionIndex);
-    }
-
     public int sectionsSize() {
         return sections.size();
     }
