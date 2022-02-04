@@ -40,6 +40,16 @@ public class Section {
         return new Section(line, upStation, downStation, distance);
     }
 
+    @Override
+    public String toString() {
+        return "Section{" +
+                "line=" + line +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
+    }
+
     public Long getId() {
         return id;
     }
@@ -60,27 +70,15 @@ public class Section {
         return distance;
     }
 
-    public boolean isUpStation(Station station) {
+    public boolean hasUpStation(Station station) {
         return this.upStation.equals(station);
-    }
-
-    public boolean isDownStation(Station station) {
-        return this.downStation.equals(station);
-    }
-
-    public boolean isNotDownStation(Station station) {
-        return !this.downStation.equals(station);
-    }
-
-    public boolean isNotUpStation(Station station) {
-        return !this.upStation.equals(station);
-    }
-
-    public boolean hasStation(Station station) {
-        return upStation.equals(station) || downStation.equals(station);
     }
 
     public boolean hasDownStation(Station station) {
         return this.downStation.equals(station);
+    }
+
+    public boolean hasStation(Station station) {
+        return (this.upStation.equals(station) || this.downStation.equals(station));
     }
 }

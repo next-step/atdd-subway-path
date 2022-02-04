@@ -1,15 +1,7 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.handler.exception.SectionException;
-import nextstep.subway.handler.validator.SectionValidator;
-
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import static nextstep.subway.handler.exception.ErrorCode.NO_CORRECT_SECTION;
 
 @Entity
 public class Line extends BaseEntity {
@@ -20,8 +12,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     @OneToOne(fetch = FetchType.LAZY)
     private Station upStation;
@@ -48,6 +40,14 @@ public class Line extends BaseEntity {
         return new Line(name, color, upStation, downStation, distance);
     }
 
+    @Override
+    public String toString() {
+        return "Line{" +
+                "name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                '}';
+    }
+
     /* getter */
     public Long getId() {
         return id;
@@ -59,10 +59,6 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    public List<Section> getSections() {
-        return sections;
     }
 
     /* 구간 추가 */
@@ -86,64 +82,34 @@ public class Line extends BaseEntity {
     }
 
     private void bothUpStationSame(Section insertedSection) {
-        sections.stream()
-                .filter(oldSection -> sameUpDifferentDown(insertedSection, oldSection))
-                .findFirst()
-                .ifPresent(oldSection -> pushNewRemoveOld(insertedSection.getDownStation(), oldSection.getDownStation(),
-                        extractDistance(insertedSection, oldSection), oldSection));
-    }
-
-    private boolean sameUpDifferentDown(Section insertedSection, Section oldSection) {
-        return oldSection.isUpStation(insertedSection.getUpStation())
-                && oldSection.isNotDownStation(insertedSection.getDownStation());
+        sections.findSameUpDifferentDown(insertedSection)
+                .ifPresent(oldSection -> {
+                    pushSection(insertedSection.getDownStation(), oldSection.getDownStation(),
+                            extractDistance(insertedSection, oldSection));
+                    sections.remove(oldSection);
+                });
     }
 
     private void bothDownStationSame(Section insertedSection) {
-        sections.stream()
-                .filter(oldSection -> sameDownDifferentUp(insertedSection, oldSection))
-                .findFirst()
-                .ifPresent(oldSection -> pushNewRemoveOld(oldSection.getUpStation(), insertedSection.getUpStation(),
-                        extractDistance(insertedSection, oldSection), oldSection));
-    }
-
-    private boolean sameDownDifferentUp(Section insertedSection, Section oldSection) {
-        return oldSection.isDownStation(insertedSection.getDownStation())
-                && oldSection.isNotUpStation(insertedSection.getUpStation());
+        sections.findSameDownDifferentUp(insertedSection)
+                .ifPresent(oldSection -> {
+                    pushSection(oldSection.getUpStation(), insertedSection.getUpStation(),
+                            extractDistance(insertedSection, oldSection));
+                    sections.remove(oldSection);
+                });
     }
 
     private int extractDistance(Section insertedSection, Section oldSection) {
         return oldSection.getDistance() - insertedSection.getDistance();
     }
 
-    private void pushNewRemoveOld(Station upStation, Station downStation, int distance, Section oldSection) {
-        pushSection(upStation, downStation, distance);
-        sections.remove(oldSection);
-    }
-
     private void pushSection(Station upStation, Station downStation, int newDistance) {
-        SectionValidator.validateDistance(newDistance);
         sections.add(Section.of(this, upStation, downStation, newDistance));
     }
 
     /* 갖고있는 지하철역 리스트 반환 */
     public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
-        List<Section> tmpSections = new ArrayList<>(sections);
-        Station tmpStation = upStation;
-
-        while (!tmpSections.isEmpty()) {
-            for (Section section : tmpSections) {
-                if (tmpStation.equals(section.getUpStation())) {
-                    stations.add(section.getUpStation());
-                    tmpStation = section.getDownStation();
-                    tmpSections.remove(section);
-                    break;
-                }
-            }
-        }
-
-        stations.add(tmpStation);
-        return stations.stream().distinct().collect(Collectors.toList());
+        return sections.getStations(upStation);
     }
 
     /* 노선 정보 변경 */
@@ -165,7 +131,7 @@ public class Line extends BaseEntity {
     }
 
     public boolean hasStation(Station station) {
-        return sections.stream().anyMatch(section -> section.hasStation(station));
+        return sections.hasStation(station);
     }
 
     public boolean isEmpty() {
@@ -177,9 +143,10 @@ public class Line extends BaseEntity {
     }
 
     public Section findSectionByStation(Station station) {
-        return sections.stream()
-                .filter(section -> section.hasDownStation(station))
-                .findFirst()
-                .orElseThrow(() -> new SectionException(NO_CORRECT_SECTION));
+        return sections.findSectionByStation(station);
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 }

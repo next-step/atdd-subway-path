@@ -77,11 +77,12 @@ public class LineService {
         Station downStation = findStationById(sectionRequest.getDownStationId());
         Line line = findLineById(lineId);
 
+        SectionValidator.validateOnlyOneStationExists(line, upStation, downStation);
+
         line.addSection(createSection(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
     private Section createSection(Line line, Station upStation, Station downStation, int distance) {
-        SectionValidator.validateOnlyOneStationExists(line, upStation, downStation);
         return Section.of(line, upStation, downStation, distance);
     }
 

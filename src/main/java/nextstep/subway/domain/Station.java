@@ -26,6 +26,13 @@ public class Station extends BaseEntity {
         return new Station(name);
     }
 
+    @Override
+    public String toString() {
+        return "Station{" +
+                "name='" + name + '\'' +
+                '}';
+    }
+
     public Long getId() {
         return id;
     }
