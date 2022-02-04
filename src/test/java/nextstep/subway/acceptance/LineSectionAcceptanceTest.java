@@ -16,8 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static nextstep.subway.acceptance.AssertionSteps.상태_코드_검증;
-import static nextstep.subway.acceptance.AssertionSteps.지하철_역_목록_순서_일치_검증;
+import static nextstep.subway.acceptance.AssertionSteps.*;
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,13 +58,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         //then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
 
-        int 응답_상태_코드 = response.statusCode();
-        List<Long> 역_목록 = response.jsonPath().getList("stations.id", Long.class);
-
-        assertAll(
-                () -> 상태_코드_검증(응답_상태_코드, HttpStatus.OK),
-                () -> 지하철_역_목록_순서_일치_검증(역_목록, 강남역, 양재역, 정자역)
-        );
+        구간_생성_요청_후_역_목록_확인(response, 강남역, 양재역, 정자역);
     }
 
     @DisplayName("하행 종점역 추가")
@@ -80,13 +73,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         //then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
 
-        int 응답_상태_코드 = response.statusCode();
-        List<Long> 역_목록 = response.jsonPath().getList("stations.id", Long.class);
-
-        assertAll(
-                () -> 상태_코드_검증(응답_상태_코드, HttpStatus.OK),
-                () -> 지하철_역_목록_순서_일치_검증(역_목록, 양재역, 정자역, 미금역)
-        );
+        구간_생성_요청_후_역_목록_확인(response, 양재역, 정자역, 미금역);
     }
 
     /**
@@ -103,13 +90,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
 
-        int 응답_상태_코드 = response.statusCode();
-        List<Long> 역_목록 = response.jsonPath().getList("stations.id", Long.class);
-
-        assertAll(
-                () -> 상태_코드_검증(응답_상태_코드, HttpStatus.OK),
-                () -> 지하철_역_목록_순서_일치_검증(역_목록, 양재역, 판교역, 정자역)
-        );
+        구간_생성_요청_후_역_목록_확인(response, 양재역, 판교역, 정자역);
     }
 
     private static Stream<Arguments> addLineSection() {
@@ -129,10 +110,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         //when
         ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, sectionCreateParams);
 
-        int 응답_상태_코드 = 지하철_노선에_지하철_구간_생성_요청_응답.statusCode();
-
         //then
-        상태_코드_검증(응답_상태_코드, HttpStatus.BAD_REQUEST);
+        구간_생성_요청_실패(지하철_노선에_지하철_구간_생성_요청_응답, HttpStatus.BAD_REQUEST);
     }
 
     @DisplayName("역과 역사이 신규 역을 추가 실패 - 추가하려는 역이 이미 존재하는 경우")
@@ -144,10 +123,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         //when
         ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, sectionCreateParams);
 
-        int 응답_상태_코드 = 지하철_노선에_지하철_구간_생성_요청_응답.statusCode();
-
         //then
-        상태_코드_검증(응답_상태_코드, HttpStatus.BAD_REQUEST);
+        구간_생성_요청_실패(지하철_노선에_지하철_구간_생성_요청_응답, HttpStatus.BAD_REQUEST);
     }
 
     @DisplayName("역과 역사이 신규 역을 추가 실패 - 추가하려는 역이 등록되어 있지 존재하는 경우")
@@ -161,10 +138,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         //when
         ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, sectionCreateParams);
 
-        int 응답_상태_코드 = 지하철_노선에_지하철_구간_생성_요청_응답.statusCode();
-
         //then
-        상태_코드_검증(응답_상태_코드, HttpStatus.BAD_REQUEST);
+        구간_생성_요청_실패(지하철_노선에_지하철_구간_생성_요청_응답, HttpStatus.BAD_REQUEST);
     }
 
     /**
