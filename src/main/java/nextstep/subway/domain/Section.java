@@ -11,10 +11,6 @@ public class Section {
     private Long id;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "line_id")
-    private Line line;
-
-    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
@@ -37,13 +33,8 @@ public class Section {
         this.distance = distance;
     }
 
-
     public Long getId() {
         return id;
-    }
-
-    public Line getLine() {
-        return line;
     }
 
     public Station getUpStation() {
@@ -56,11 +47,6 @@ public class Section {
 
     public int getDistance() {
         return distance;
-    }
-
-    public void setLine(Line line) {
-        this.line = line;
-        line.getSections().add(this);
     }
 
     public boolean hasStation(Station station) {

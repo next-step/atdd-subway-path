@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -17,120 +16,39 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @OneToMany(
-            mappedBy = "line",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-            orphanRemoval = true,
-            fetch = FetchType.LAZY
-    )
-    private List<Section> sections = new LinkedList<>();
+    @Embedded
+    private Sections sections;
 
-    public void init(Section section) {
-        section.setLine(this);
-    }
-
-    public void addSection(Section section) {
-        verifyCanBeAdded(section);
-
-        var stations = getStations();
-        if (stations.get(0).equals(section.getDownStation())) {
-            section.setLine(this);
-            return;
-        }
-
-        if (stations.get(stations.size() - 1).equals(section.getUpStation())) {
-            section.setLine(this);
-            return;
-        }
-
-        addSectionToBetween(section);
+    public void addSection(
+            Station upStation,
+            Station downStation,
+            int distance
+    ) {
+        sections.addSection(new Section(upStation, downStation, distance));
     }
 
     public List<Station> getStations() {
-        if (sections.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        var ret = new ArrayList<Station>();
-        var top = firstSection();
-        ret.add(top.getUpStation());
-
-        var curSection = top;
-        while (curSection != null) {
-            ret.add(curSection.getDownStation());
-            curSection = nextSection(curSection);
-        }
-
-        return ret;
-    }
-
-    private Section firstSection() {
-        var downStations = sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        return sections.stream()
-                .filter(it -> !downStations.contains(it.getUpStation()))
-                .findAny()
-                .orElseThrow(RuntimeException::new);
-    }
-
-    private Section nextSection(Section section) {
-        return sections.stream()
-                .filter(it -> it.getUpStation().equals(section.getDownStation()))
-                .findAny()
-                .orElse(null);
-    }
-
-    private void addSectionToBetween(Section section) {
-        var betweenSectionUp = sections.stream()
-                .filter(it -> it.getUpStation().equals(section.getUpStation()))
-                .findAny()
-                .orElse(null);
-
-        if (betweenSectionUp != null) {
-            if (betweenSectionUp.getDistance() <= section.getDistance()) {
-                throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같아서 추가할 수 없습니다.");
-            }
-
-            section.setLine(this);
-            var newSection = new Section(
-                    section.getDownStation(),
-                    betweenSectionUp.getDownStation(),
-                    betweenSectionUp.getDistance() - section.getDistance()
-            );
-            newSection.setLine(this);
-
-            sections.remove(betweenSectionUp);
-            return;
-        }
-
-        var betweenSectionDown = sections.stream()
-                .filter(it -> it.getDownStation().equals(section.getDownStation()))
-                .findAny()
-                .orElse(null);
-
-        if (betweenSectionDown != null) {
-            if (betweenSectionDown.getDistance() <= section.getDistance()) {
-                throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같아서 추가할 수 없습니다.");
-            }
-
-            section.setLine(this);
-            var newSection = new Section(
-                    betweenSectionDown.getUpStation(),
-                    section.getUpStation(),
-                    betweenSectionDown.getDistance() - section.getDistance()
-            );
-            newSection.setLine(this);
-
-            sections.remove(betweenSectionDown);
-        }
+        return sections.getStations();
     }
 
     protected Line() {
     }
 
-    public Line(String name, String color) {
+    public Line(
+            String name,
+            String color,
+            Station upStation,
+            Station downStation,
+            int initialDistance
+    ) {
+        this.name = name;
+        this.color = color;
+        var sectionList = new LinkedList<Section>();
+        sectionList.add(new Section(upStation, downStation, initialDistance));
+        this.sections = new Sections(sectionList);
+    }
+
+    public void update(String name, String color) {
         this.name = name;
         this.color = color;
     }
@@ -147,42 +65,12 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return sections;
     }
 
-    public void update(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
-
-    public void remove(Station station) {
-        verifyCanBeDeleted(station);
-        sections.remove(sections.size() - 1);
-    }
-
-    private void verifyCanBeAdded(Section section) {
-        if (sections.stream().filter(it -> it.hasStation(section.getUpStation())).findAny().isEmpty()
-                && sections.stream().filter(it -> it.hasStation(section.getDownStation())).findAny().isEmpty()) {
-            throw new IllegalArgumentException("상행역과 하행역 모두 등록되어 있지 않아서 추가할 수 없습니다.");
-        }
-
-        if (sections.stream().anyMatch(it ->
-                it.getUpStation().equals(section.getUpStation())
-                        && it.getDownStation().equals(section.getDownStation()))
-        ) {
-            throw new IllegalArgumentException("상행역과 하행역이 모두 등록되어 있어서 추가할 수 없습니다.");
-        }
-    }
-
-    private void verifyCanBeDeleted(Station station) {
-        if (sections.size() <= 1) {
-            throw new IllegalStateException("노선에 구간이 부족하여 역을 삭제할 수 없습니다.");
-        }
-
-        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException("삭제하려는 역은 해당 노선 마지막 구간의 하행역이 아닙니다.");
-        }
+    public void removeSection(Station station) {
+        sections.remove(station);
     }
 
     @Override

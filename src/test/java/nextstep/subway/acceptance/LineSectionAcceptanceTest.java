@@ -21,11 +21,13 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         역_생성_요청(양재역);
         var 노선_생성_응답 = 노선_생성_요청(신분당선);
 
-        역_생성_요청(강남역);
+        var 역_생성_응답 = 역_생성_요청(강남역);
 
         // when
         var lineUri = 노선_생성_응답.header("Location");
-        var 구간_등록_응답 = 구간_등록_요청(lineUri, SectionFixture.of(3L, 2L, 5));
+        var 하행_종점역_ID = 노선_생성_응답.jsonPath().getList("stations.id", Long.class).get(1);
+        long 새로운역_ID = 역_생성_응답.jsonPath().getLong("id");
+        var 구간_등록_응답 = 구간_등록_요청(lineUri, SectionFixture.of(새로운역_ID, 하행_종점역_ID, 5));
 
         // then
         구간_등록_성공(구간_등록_응답);
@@ -39,11 +41,13 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         역_생성_요청(양재역);
         var 노선_생성_응답 = 노선_생성_요청(신분당선);
 
-        역_생성_요청(신논현역);
+        var 역_생성_응답 = 역_생성_요청(신논현역);
 
         // when
         var lineUri = 노선_생성_응답.header("Location");
-        var 구간_등록_응답 = 구간_등록_요청(lineUri, SectionFixture.of(3L, 1L, 5));
+        var 상행_종점역_ID = 노선_생성_응답.jsonPath().getList("stations.id", Long.class).get(0);
+        var 새로운역_ID = 역_생성_응답.jsonPath().getLong("id");
+        var 구간_등록_응답 = 구간_등록_요청(lineUri, SectionFixture.of(새로운역_ID, 상행_종점역_ID, 5));
 
         // then
         구간_등록_성공(구간_등록_응답);
@@ -57,13 +61,15 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSection() {
         // given
-        역_생성_요청(역삼역);
-
         var 노선_생성_응답 = 신분당선_생성_완료();
+        var 역_생성_응답 = 역_생성_요청(역삼역);
 
         // when
         var lineUri = 노선_생성_응답.header("Location");
-        var 구간1 = SectionFixture.of(2L, 3L, 10);
+        var 하행_종점역_ID = 노선_생성_응답.jsonPath().getList("stations.id", Long.class).get(1);
+        var 새로운역_ID = 역_생성_응답.jsonPath().getLong("id");
+
+        var 구간1 = SectionFixture.of(하행_종점역_ID, 새로운역_ID, 10);
         var 구간_등록_응답 = 구간_등록_요청(lineUri, 구간1);
 
         // then
@@ -79,16 +85,19 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeLineSection() {
         // given
-        역_생성_요청(역삼역);
-
         var 노선_생성_응답 = 신분당선_생성_완료();
-        var 구간1 = SectionFixture.of(2L, 3L, 10);
+
+        var 역_생성_응답 = 역_생성_요청(역삼역);
+        var 하행_종점역_ID = 노선_생성_응답.jsonPath().getList("stations.id", Long.class).get(1);
+        var 새로운역_ID = 역_생성_응답.jsonPath().getLong("id");
+
+        var 구간1 = SectionFixture.of(하행_종점역_ID, 새로운역_ID, 10);
 
         var lineUri = 노선_생성_응답.header("Location");
         구간_등록_요청(lineUri, 구간1);
 
         // when
-        var 구간_삭제_응답 = 구간_삭제_요청(lineUri, 3L);
+        var 구간_삭제_응답 = 구간_삭제_요청(lineUri, 새로운역_ID);
 
         // then
         구간_삭제_성공(구간_삭제_응답);
@@ -101,11 +110,14 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // given
         var 노선_생성_응답 = 이호선_생성_완료();
 
-        역_생성_요청(강남역);
+        var 역_생성_응답 = 역_생성_요청(강남역);
 
         // when
         var lineUri = 노선_생성_응답.header("Location");
-        var 구간1 = SectionFixture.of(3L, 2L, 4);
+        var 하행_종점역_ID = 노선_생성_응답.jsonPath().getList("stations.id", Long.class).get(1);
+        var 새로운역_ID = 역_생성_응답.jsonPath().getLong("id");
+
+        var 구간1 = SectionFixture.of(새로운역_ID, 하행_종점역_ID, 4);
         var 구간_등록_응답 = 구간_등록_요청(lineUri, 구간1);
 
         // then
@@ -118,11 +130,14 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // given
         var 노선_생성_응답 = 이호선_생성_완료();
 
-        역_생성_요청(강남역);
+        var 역_생성_응답 = 역_생성_요청(강남역);
 
         // when
         var lineUri = 노선_생성_응답.header("Location");
-        var 구간1 = SectionFixture.of(3L, 2L, 11);
+        var 하행_종점역_ID = 노선_생성_응답.jsonPath().getList("stations.id", Long.class).get(1);
+        var 새로운역_ID = 역_생성_응답.jsonPath().getLong("id");
+
+        var 구간1 = SectionFixture.of(새로운역_ID, 하행_종점역_ID, 11);
         var 구간_등록_응답 = 구간_등록_요청(lineUri, 구간1);
 
         // then

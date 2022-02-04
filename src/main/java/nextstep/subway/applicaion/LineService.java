@@ -6,7 +6,6 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.common.exception.DuplicateAttributeException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,16 +39,12 @@ public class LineService {
             throw new DuplicateAttributeException("이미 존재하는 노선 명: " + requestName);
         }
 
-        var section = new Section(
-                stationRepository.findById(requestUpStationId)
-                        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 역 id: " + requestUpStationId)),
-                stationRepository.findById(requestDownStationId)
-                        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 역 id: " + requestDownStationId)),
-                distance
-        );
+        var upStation = stationRepository.findById(requestUpStationId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 역 id: " + requestUpStationId));
+        var downStation = stationRepository.findById(requestDownStationId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 역 id: " + requestDownStationId));
 
-        var savedLine = lineRepository.save(new Line(requestName, requestColor));
-        savedLine.init(section);
+        var savedLine = lineRepository.save(new Line(requestName, requestColor, upStation, downStation, distance));
 
         return LineResponse.from(savedLine);
     }
@@ -83,7 +78,7 @@ public class LineService {
         return LineResponse.from(line);
     }
 
-    public void addStationToLine(Long lineId, SectionRequest sectionRequest) {
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
         var line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 노선 id: " + lineId));
 
@@ -93,11 +88,10 @@ public class LineService {
 
         var upStation = stationRepository.findById(upStationId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 역 id: " + upStationId));
-        var downStation = stationRepository.findById(sectionRequest.getDownStationId())
+        var downStation = stationRepository.findById(downStationId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 역 id: " + downStationId));
 
-        var section = new Section(upStation, downStation, distance);
-        line.addSection(section);
+        line.addSection(upStation, downStation, distance);
     }
 
     public void deleteSection(Long lineId, Long stationId) {
@@ -107,7 +101,7 @@ public class LineService {
         var station = stationRepository.findById(stationId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 역 id: " + stationId));
 
-        line.remove(station);
+        line.removeSection(station);
     }
 
     private boolean isLineNamePresent(String lineName) {
