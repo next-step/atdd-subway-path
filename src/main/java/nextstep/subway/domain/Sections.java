@@ -131,14 +131,14 @@ public class Sections {
             throw new DuplicateSectionException();
         }
 
-        if (!isValidateSection(section)) {
+        if (isNotValidateSection(section)) {
             throw new SectionValidException();
         }
     }
 
-    private boolean isValidateSection(Section section) {
+    private boolean isNotValidateSection(Section section) {
         if (sections.isEmpty()) {
-            return true;
+            return false;
         }
 
         List<Station> allStations = getAllStations();
@@ -146,7 +146,7 @@ public class Sections {
         boolean containsUpStation = allStations.contains(section.getUpStation());
         boolean containsDownStation = allStations.contains(section.getDownStation());
 
-        return containsUpStation || containsDownStation;
+        return !(containsUpStation || containsDownStation);
     }
 
     private boolean hasSameSection(Section section) {
