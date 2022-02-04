@@ -54,7 +54,7 @@ public class Sections {
         sections.remove(section);
     }
 
-    public Section findSectionByStation(Station downStation) {
+    public Section findSectionByDownStation(Station downStation) {
         return sections.stream()
                 .filter(section -> section.hasDownStation(downStation))
                 .findFirst()

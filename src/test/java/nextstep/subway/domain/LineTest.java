@@ -58,7 +58,7 @@ class LineTest {
         이호선.addSection(createSection(이호선, 선릉역, 역삼역, 7));
 
         // then
-        assertThat(이호선.getSections().size()).isEqualTo(2);
+        assertThat(이호선.getSectionSize()).isEqualTo(2);
         assertThat(이호선.getStations()).containsExactly(Arrays.array(강남역, 선릉역, 역삼역));
     }
 
@@ -75,8 +75,10 @@ class LineTest {
         이호선.addSection(createSection(이호선, 강남역, 역삼역, 7));
 
         // then
-        assertThat(이호선.getSections().size()).isEqualTo(2);
+        assertThat(이호선.getSectionSize()).isEqualTo(2);
         assertThat(이호선.getStations()).containsExactly(Arrays.array(강남역, 역삼역, 선릉역));
+        assertThat(이호선.findSectionByDownStation(역삼역).getDistance()).isEqualTo(7);
+        assertThat(이호선.findSectionByDownStation(선릉역).getDistance()).isEqualTo(3);
     }
 
     @Test
@@ -92,7 +94,9 @@ class LineTest {
         이호선.addSection(createSection(이호선, 역삼역, 선릉역, 7));
 
         // then
-        assertThat(이호선.getSections().size()).isEqualTo(2);
+        assertThat(이호선.getSectionSize()).isEqualTo(2);
         assertThat(이호선.getStations()).containsExactly(Arrays.array(강남역, 역삼역, 선릉역));
+        assertThat(이호선.findSectionByDownStation(역삼역).getDistance()).isEqualTo(3);
+        assertThat(이호선.findSectionByDownStation(선릉역).getDistance()).isEqualTo(7);
     }
 }

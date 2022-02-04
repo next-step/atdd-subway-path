@@ -53,7 +53,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    /* 단일 구간의 정보를 반환한다. */
+    /* 단일 노선의 정보를 반환한다. */
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
         return LineResponse.of(findLineById(id));
@@ -91,7 +91,7 @@ public class LineService {
         Line line = findLineById(lineId);
         Station station = findStationById(stationId);
 
-        Section targetSection = line.findSectionByStation(station);
+        Section targetSection = line.findSectionByDownStation(station);
 
         line.removeSection(targetSection);
     }

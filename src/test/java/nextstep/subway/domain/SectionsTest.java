@@ -90,7 +90,7 @@ class SectionsTest {
         sections.add(추가할구간);
 
         // when
-        Section section = sections.findSectionByStation(역삼역);
+        Section section = sections.findSectionByDownStation(역삼역);
 
         // then
         assertThat(section.getUpStation()).isEqualTo(선릉역);

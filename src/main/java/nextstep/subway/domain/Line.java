@@ -142,11 +142,15 @@ public class Line extends BaseEntity {
         sections.remove(targetSection);
     }
 
-    public Section findSectionByStation(Station station) {
-        return sections.findSectionByStation(station);
+    public Section findSectionByDownStation(Station station) {
+        return sections.findSectionByDownStation(station);
     }
 
     public Sections getSections() {
         return sections;
+    }
+
+    public int getSectionSize() {
+        return sections.size();
     }
 }
