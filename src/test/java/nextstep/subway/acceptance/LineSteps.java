@@ -76,4 +76,8 @@ public class LineSteps {
     public static void 지하철_노선_지하철_구간_생성_요청_응답(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    public static void 지하철_노선_지하철역_삭제_요청_응답(ExtractableResponse response){
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
