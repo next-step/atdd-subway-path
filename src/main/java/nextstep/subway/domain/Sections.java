@@ -18,6 +18,7 @@ public class Sections {
     public static final String UP_AND_DOWN_STATION_BOTH_CANNOT_EXISTS = "상행과 하행이 모두 존재할수 없습니다.";
     public static final String CAN_NOT_DELETE = "구간이 하나밖에 없는 경우 지하철역을 삭제할 수 없습니다.";
     public static final int MINIMUM_DISTANCE = 1;
+    public static final int MINIMUM_SECTION_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -60,23 +61,12 @@ public class Sections {
     }
 
     public void remove(Line line, Station station) {
-        if (!editable()) {
-            throw new IllegalSectionArgumentException(CAN_NOT_DELETE);
-        }
+        validateEditable();
 
-        Section previousSection = this.sections.stream()
-                .filter(section1 -> section1.isDownStation(station))
-                .findFirst()
-                .orElse(null);
+        Section previousSection = getPreviousSection(station);
+        Section nextSection = getNextSection(station);
 
-        Section nextSection = this.sections.stream()
-                .filter(section1 -> section1.isUpStation(station))
-                .findFirst()
-                .orElse(null);
-
-        if (previousSection == null && nextSection == null) {
-            throw new IllegalSectionArgumentException(NOT_EXISTS_STATION);
-        }
+        validateSection(previousSection, nextSection);
 
         if (previousSection == null) {
             this.sections.remove(nextSection);
@@ -88,16 +78,7 @@ public class Sections {
             return;
         }
 
-        int i = this.sections.indexOf(previousSection);
-        this.sections.set(i, new Section(line,
-                    previousSection.getUpStation(),
-                    nextSection.getDownStation(),
-                previousSection.getDistance() + nextSection.getDistance()));
-        this.sections.remove(nextSection);
-    }
-
-    public boolean editable() {
-        return this.sections.size() != 1;
+        removeStation(line, previousSection, nextSection);
     }
 
     private void validateStation(boolean isNext, boolean isPrevious) {
@@ -214,6 +195,27 @@ public class Sections {
             section = previousSection;
         }
         return section;
+    }
+
+    private void validateEditable() {
+        if (this.sections.size() != MINIMUM_SECTION_SIZE) {
+            throw new IllegalSectionArgumentException(CAN_NOT_DELETE);
+        }
+    }
+
+    private void validateSection(Section previousSection, Section nextSection) {
+        if (previousSection == null && nextSection == null) {
+            throw new IllegalSectionArgumentException(NOT_EXISTS_STATION);
+        }
+    }
+
+    private void removeStation(Line line, Section previousSection, Section nextSection) {
+        int index = this.sections.indexOf(previousSection);
+        this.sections.set(index, new Section(line,
+                previousSection.getUpStation(),
+                nextSection.getDownStation(),
+                previousSection.getDistance() + nextSection.getDistance()));
+        this.sections.remove(nextSection);
     }
 
 }
