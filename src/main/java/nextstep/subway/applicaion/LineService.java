@@ -43,15 +43,18 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse findById(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(IllegalArgumentException::new);
+    public LineResponse findLine(Long id) {
+        Line line = findById(id);
         return createLineResponse(line);
     }
 
-    public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id)
+    private Line findById(Long id) {
+        return lineRepository.findById(id)
                 .orElseThrow(IllegalArgumentException::new);
+    }
+
+    public void updateLine(Long id, LineRequest lineRequest) {
+        Line line = findById(id);
 
         if (lineRequest.getName() != null) {
             line.setName(lineRequest.getName());
@@ -68,8 +71,7 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(IllegalArgumentException::new);
+        Line line = findById(lineId);
 
         line.addSection(Section.of(line, upStation, downStation, sectionRequest.getDistance()));
     }
@@ -92,8 +94,7 @@ public class LineService {
     }
 
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(IllegalArgumentException::new);
+        Line line = findById(lineId);
         line.removeSection(stationId);
     }
 }

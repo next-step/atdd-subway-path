@@ -53,7 +53,7 @@ public class LineServiceMockTest {
 
         // then
         // line.findLineById 메서드를 통해 검증
-        LineResponse response = lineService.findById(lineId);
+        LineResponse response = lineService.findLine(lineId);
         assertThat(response.getStations()).hasSize(3);
     }
 }
