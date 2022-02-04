@@ -39,7 +39,7 @@ class SectionsTest {
 
     @DisplayName("새로운 역을 구간의 중간에 추가")
     @Test
-    void addSection() {
+    void addSection_BetweenSection() {
         int newSectionDistance = 3;
         Section newSection = Section.of(_5호선, 군자역, 광나루역, newSectionDistance);
         sections.addSection(newSection);
@@ -51,7 +51,7 @@ class SectionsTest {
 
     @DisplayName("새로운 역을 상행 종점으로 추가")
     @Test
-    void addSection2() {
+    void addSection_InFrontSection() {
         Section newSection = Section.of(_5호선, 광나루역, 군자역, distance);
         sections.addSection(newSection);
 
@@ -60,7 +60,7 @@ class SectionsTest {
 
     @DisplayName("새로운 역을 하행 종점으로 추가")
     @Test
-    void addSection3() {
+    void addSection_InBackSection() {
         Section newSection = Section.of(_5호선, 아차산역, 광나루역, distance);
         sections.addSection(newSection);
 
@@ -69,7 +69,7 @@ class SectionsTest {
 
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다")
     @Test
-    void addSectionFail() {
+    void addSectionFail_InvalidDistance() {
         int newSectionDistance = 11;
         Section newSection = Section.of(_5호선, 군자역, 광나루역, newSectionDistance);
 
@@ -79,7 +79,7 @@ class SectionsTest {
 
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다")
     @Test
-    void addSectionFail2() {
+    void addSectionFail_DuplicatedStations() {
         int newSectionDistance = 3;
         Section newSection = Section.of(_5호선, 군자역, 아차산역, newSectionDistance);
 
@@ -89,7 +89,7 @@ class SectionsTest {
 
     @DisplayName("상행역과 하행역이 노선에 모두 등록되어 있지 않다면 추가할 수 없다")
     @Test
-    void addSectionFail3() {
+    void addSectionFail_NotContainsStations() {
         int newSectionDistance = 3;
         Section newSection = Section.of(_5호선, 광나루역, 천호역, newSectionDistance);
 
@@ -97,18 +97,12 @@ class SectionsTest {
                 .isInstanceOf(AddSectionFailException.class);
     }
 
-    @DisplayName("역 목록 조회")
+    @DisplayName("역 목록 조회시 등록된 역을 구간 순서대로 반환한다")
     @Test
     void getStations() {
-        assertThat(sections.getStations()).hasSize(2);
-    }
-
-    @DisplayName("역 목록 조회")
-    @Test
-    void getStations2() {
-        Section newSection = Section.of(_5호선, 아차산역, 광나루역, distance);
+        Section newSection = Section.of(_5호선, 군자역, 광나루역, 3);
         sections.addSection(newSection);
 
-        assertThat(sections.getStations()).hasSize(3);
+        assertThat(sections.getStations()).containsExactly(군자역, 광나루역, 아차산역);
     }
 }

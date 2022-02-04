@@ -98,7 +98,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선 구간의 시작 역을 기준으로 구간을 추가")
     @Test
-    void addLineSection2() {
+    void addLineSection_BetweenSection() {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
 
@@ -117,7 +117,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("새로운 역을 상행 종점으로 등록할 경우 기존 구간 앞에 구간이 추가된다.")
     @Test
-    void addLineSection3() {
+    void addLineSection_InFrontSection() {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
 
@@ -136,7 +136,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("새로운 역을 하행 종점으로 등록할 경우 기존 구간 뒤에 구간이 추가된다.")
     @Test
-    void addLineSection4() {
+    void addLineSection_InBackSection() {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
 
@@ -155,7 +155,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
     @Test
-    void addLineSectionFail() {
+    void addLineSectionFail_InvalidDistance() {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
 
@@ -172,7 +172,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test
-    void addLineSectionFail2() {
+    void addLineSectionFail_DuplicatedStations() {
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 3));
 
@@ -186,7 +186,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
     @Test
-    void addLineSectionFail3() {
+    void addLineSectionFail_NotContainsStations() {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         Long 논현역 = 지하철역_생성_요청("논현역").jsonPath().getLong("id");
