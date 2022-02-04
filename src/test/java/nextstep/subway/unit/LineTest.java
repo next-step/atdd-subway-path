@@ -175,6 +175,19 @@ class LineTest {
 
     }
 
+    @DisplayName("구간이 1개 남은 경우 삭제 실패")
+    @Test
+    void removeSectionMinimumSizeException() {
+        //when
+        ThrowableAssert.ThrowingCallable actual = () -> loopLine.deleteSection(gangnam);
+
+        //then
+        assertThatThrownBy(actual)
+                .isInstanceOf(CannotDeleteSectionException.class)
+                .hasMessage("노선의 구간은 1개 이상 존재해야 합니다.");
+
+    }
+
     @DisplayName("구간이 목록에서 마지막 역 삭제")
     @Test
     void removeSection() {

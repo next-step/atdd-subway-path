@@ -169,6 +169,10 @@ public class Sections {
             throw new CannotDeleteSectionException(station.getName());
         }
 
+        if (sections.size() == 1) {
+            throw new CannotDeleteSectionException();
+        }
+
 
         if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
             throw new IllegalArgumentException();

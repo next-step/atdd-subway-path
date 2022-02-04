@@ -1,6 +1,7 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.domain.exception.CannotAddSectionException;
+import nextstep.subway.domain.exception.CannotDeleteSectionException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,12 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(CannotAddSectionException.class)
     public ResponseEntity<String> handleICannotAddSectionException(CannotAddSectionException e) {
+        return ResponseEntity.badRequest()
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler(CannotDeleteSectionException.class)
+    public ResponseEntity<String> handleICannotDeleteSectionException(CannotDeleteSectionException e) {
         return ResponseEntity.badRequest()
                 .body(e.getMessage());
     }
