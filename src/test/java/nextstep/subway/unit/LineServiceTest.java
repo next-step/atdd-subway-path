@@ -27,7 +27,8 @@ public class LineServiceTest {
     private static final String SECOND_LINE_NAME = "2호선";
     private static final String FIRST_STATION_NAME = "강남역";
     private static final String SECOND_STATION_NAME = "역삼역";
-
+    private static final String THIRD_STATION_NAME = "삼성역";
+    private static final String FOURTH_STATION_NAME = "잠실역";
 
     @Autowired
     private StationRepository stationRepository;
@@ -67,10 +68,10 @@ public class LineServiceTest {
     @Test
     void saveLineAndSaveSection() {
         // given
-        Station upStation = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
-        Station downStation = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
+        Station 강남역 = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
+        Station 역삼역 = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
 
-        LineRequest lineRequest = createLineRequest(FIRST_LINE_NAME, DEFAULT_LINE_COLOR, upStation.getId(), downStation.getId(), DEFAULT_DISTANCE);
+        LineRequest lineRequest = createLineRequest(FIRST_LINE_NAME, DEFAULT_LINE_COLOR, 강남역.getId(), 역삼역.getId(), DEFAULT_DISTANCE);
 
         // when
         LineResponse lineResponse = lineService.saveLine(lineRequest);
@@ -83,7 +84,7 @@ public class LineServiceTest {
         assertAll(
                 () -> assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName()),
                 () -> assertThat(lineResponse.getColor()).isEqualTo(lineRequest.getColor()),
-                () -> assertThat(stationNames).contains(upStation.getName(), downStation.getName())
+                () -> assertThat(stationNames).contains(강남역.getName(), 역삼역.getName())
         );
     }
 
@@ -132,12 +133,12 @@ public class LineServiceTest {
         // given
         String updateName = "분당선";
 
-        LineResponse lineResponse = lineService.saveLine(createLineRequest(FIRST_LINE_NAME));
+        LineResponse 일호선 = lineService.saveLine(createLineRequest(FIRST_LINE_NAME));
         LineRequest updateLineRequest = createLineRequest(updateName);
 
         // when
-        lineService.updateLine(lineResponse.getId(), updateLineRequest);
-        LineResponse updateLineResponse = lineService.findById(lineResponse.getId());
+        lineService.updateLine(일호선.getId(), updateLineRequest);
+        LineResponse updateLineResponse = lineService.findById(일호선.getId());
 
         // then
         assertThat(updateLineResponse.getName()).isEqualTo(updateName);
@@ -147,20 +148,21 @@ public class LineServiceTest {
     @Test
     void updateLineDuplicationNameException() {
         // given
-        LineResponse firstLine = lineService.saveLine(createLineRequest(FIRST_LINE_NAME));
-        LineResponse secondLine = lineService.saveLine(createLineRequest(SECOND_LINE_NAME));
-        LineRequest duplicationNameLineRequest = createLineRequest(SECOND_LINE_NAME);
+        LineResponse 일호선 = lineService.saveLine(createLineRequest(FIRST_LINE_NAME));
+        LineResponse 이호선 = lineService.saveLine(createLineRequest(SECOND_LINE_NAME));
+        LineRequest 중복_이호선 = createLineRequest(SECOND_LINE_NAME);
 
         // when, then
-        assertThatThrownBy(() -> lineService.updateLine(firstLine.getId(), duplicationNameLineRequest))
-                .isInstanceOf(DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> {
+            lineService.updateLine(일호선.getId(), 중복_이호선);
+            lineService.showLines();
+        }).isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @DisplayName("수정할 노선이 없으면 예외 발생")
     @Test
     void updateLineNotFindException() {
         // given
-        LineResponse lineResponse = lineService.saveLine(createLineRequest(FIRST_LINE_NAME));
         LineRequest updateLineRequest = createLineRequest(FIRST_LINE_NAME);
 
         // when, then
@@ -172,10 +174,10 @@ public class LineServiceTest {
     @Test
     void deleteLine() {
         // given
-        LineResponse lineResponse = lineService.saveLine(createLineRequest(FIRST_LINE_NAME));
+        LineResponse 일호선 = lineService.saveLine(createLineRequest(FIRST_LINE_NAME));
 
         // when
-        lineService.deleteLine(lineResponse.getId());
+        lineService.deleteLine(일호선.getId());
         List<LineResponse> lineResponses = lineService.showLines();
 
         // then
@@ -188,10 +190,10 @@ public class LineServiceTest {
         // given
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         Line line = lineRepository.save(createLineEntity());
-        Station upStation = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
-        Station downStation = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
+        Station 강남역 = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
+        Station 역삼역 = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
 
-        SectionRequest request = createSectionRequest(upStation, downStation);
+        SectionRequest request = createSectionRequest(강남역, 역삼역);
 
         // when
         // lineService.addSection 호출
@@ -202,22 +204,47 @@ public class LineServiceTest {
         assertThat(line.getSections()).hasSize(1);
     }
 
+    @DisplayName("기존 구간 중간에 새로운 구간을 추가하다.")
+    @Test
+    void addSectionInThMiddle() {
+        // given
+        Line line = lineRepository.save(createLineEntity());
+        Station 강남역 = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
+        Station 삼성역 = stationRepository.save(createStationEntity(THIRD_STATION_NAME));
+        Station 역삼역 = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
+
+        lineService.addSection(line.getId(), createSectionRequest(강남역, 삼성역));
+
+        SectionRequest request = createSectionRequest(강남역, 역삼역, 2);
+
+        // when
+        lineService.addSection(line.getId(), request);
+
+        // then
+        assertAll(
+                () -> assertThat(line.getSections()).hasSize(2),
+                () -> assertThat(line.getStations().get(0)).isEqualTo(강남역),
+                () -> assertThat(line.getStations().get(1)).isEqualTo(역삼역),
+                () -> assertThat(line.getStations().get(2)).isEqualTo(삼성역)
+        );
+    }
+
     @DisplayName("구간을 추가할 노선이 조회안되면 예외 발생.")
     @Test
     void addSectionNotLineException() {
         // given
         Line line = lineRepository.save(createLineEntity());
-        Station upStation = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
-        Station downStation = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
+        Station 강남역 = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
+        Station 역삼역 = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
 
-        SectionRequest request = createSectionRequest(upStation, downStation);
+        SectionRequest request = createSectionRequest(강남역, 역삼역);
 
         // when, then
         assertThatThrownBy(() -> lineService.addSection(100000L, request))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("추가할 구간의 역이 조회안되면 예외 발생.")
+    @DisplayName("추가할 구간의 역이 조회가 안되면 예외 발생.")
     @Test
     void addSectionNotStationException() {
         // given

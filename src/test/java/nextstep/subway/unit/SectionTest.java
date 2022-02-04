@@ -41,7 +41,7 @@ public class SectionTest {
         Section newSection = createSection(강남역, 역삼역, newDistance);
 
         // when
-        section.changeSection(newSection);
+        section.changeDownStationToNewUpStations(newSection);
 
         // then
         assertThat(section.getDistance()).isEqualTo(changeDistance);
@@ -61,7 +61,7 @@ public class SectionTest {
         Section newSection = createSection(강남역, 역삼역, overDistance);
 
         // when, then
-        assertThatThrownBy(() -> section.changeSection(newSection))
+        assertThatThrownBy(() -> section.changeDownStationToNewUpStations(newSection))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("새로운 구간의 길이가 기존 구간 사이의 길이보다 큽니다.");
 

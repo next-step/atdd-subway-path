@@ -10,8 +10,6 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
-    private static final int ALL_MATCH_COUNT = 2;
-    private static final int NONE_MATCH_COUNT = 0;
     private static final int FIRST_SECTION_INDEX = 0;
     private static final int NONE_SECTION_INDEX = -1;
     private static final String ALL_MATCH_SECTION_ERROR_MESSAGE = "상행역과 하행역이 모두 등록된 상태입니다.";
@@ -27,36 +25,51 @@ public class Sections {
         this.sections = sections;
     }
 
-    public void addSection(Section section) {
-        validationSection(section);
+    public void addSection(Section newSection) {
+        boolean isUpStation = anyMatchUpStation(newSection);
+        boolean isDownStation = anyMatchDownStation(newSection);
 
-        int addIndex = existingSectionIndex(section);
+        validationSection(isUpStation, isDownStation);
 
-        if (isFirstSection(addIndex, section)) {
-            sections.add(addIndex, section);
+        if (isUpStation) {
+            addUpSection(newSection);
             return;
         }
 
-        if (addIndex > NONE_SECTION_INDEX) {
-            sections.get(addIndex).changeSection(section);
-            sections.add(addIndex, section);
+        if (isDownStation) {
+            addDownSection(newSection);
             return;
         }
 
-        sections.add(section);
+        sections.add(newSection);
     }
 
-    private boolean isFirstSection(int addIndex, Section section) {
-        return addIndex == FIRST_SECTION_INDEX && sections.get(addIndex).isUpStation(section);
+    private void addUpSection(Section newSection) {
+        int index = findUpSection(newSection);
+        Section section = sections.get(index);
+
+        if (index == FIRST_SECTION_INDEX
+            && section.isUpStation(newSection.getDownStation())) {
+            sections.add(index, newSection);
+            return;
+        }
+
+        section.changeUpStationToNewDownStations(newSection);
+        sections.add(index, newSection);
     }
 
-    private int existingSectionIndex(Section section) {
-        Section findSection = sections.stream()
-                .filter(sec -> sec.anyMatchUpStation(section))
-                .findFirst()
-                .orElse(new Section());
+    private void addDownSection(Section newSection) {
+        int index = findDownSection(newSection);
+        Section section = sections.get(index);
 
-        return sections.indexOf(findSection);
+        if (index == (sections.size() - 1)
+                && section.isDownStation(newSection.getUpStation())) {
+            sections.add(newSection);
+            return;
+        }
+
+        section.changeDownStationToNewUpStations(newSection);
+        sections.add(index, newSection);
     }
 
     public List<Station> getStations() {
@@ -85,29 +98,52 @@ public class Sections {
         return Collections.unmodifiableList(sections);
     }
 
-    private void validationSection(Section section) {
+//    private boolean isFirstSection(int index, Section newSection) {
+//        return index == FIRST_SECTION_INDEX
+//                && sections.get(index).matchUpStation(newSection.getDownStation());
+//    }
+
+    private void validationSection(boolean isUpStation, boolean isDownStation) {
         if (sections.isEmpty()) {
             return;
         }
 
-        if (allMatchStation(section)) {
+        if (isUpStation && isDownStation) {
             throw new IllegalArgumentException(ALL_MATCH_SECTION_ERROR_MESSAGE);
         }
 
-        if (noneMatchStation(section)) {
+        if (!isUpStation && !isDownStation) {
             throw new IllegalArgumentException(NONE_MATCH_SECTION_ERROR_MESSAGE);
         }
     }
 
-    private boolean allMatchStation(Section section) {
-        return sections.stream()
-                .filter(sec -> sec.matchStation(section))
-                .count() == ALL_MATCH_COUNT;
+    private int findUpSection(Section newSection) {
+        Section section = sections.stream()
+                .filter(sec -> sec.matchUpStation(newSection))
+                .findFirst()
+                .orElse(new Section());
+
+        return sections.indexOf(section);
     }
 
-    private boolean noneMatchStation(Section section) {
+    private int findDownSection(Section newSection) {
+        Section section = sections.stream()
+                .filter(sec -> sec.matchDownStation(newSection))
+                .findFirst()
+                .orElse(new Section());
+
+        return sections.indexOf(section);
+    }
+
+    private boolean anyMatchUpStation(Section newSection) {
         return sections.stream()
-                .filter(sec -> sec.matchStation(section))
-                .count() == NONE_MATCH_COUNT;
+                .filter(sec -> sec.matchUpStation(newSection))
+                .count() > 0;
+    }
+
+    private boolean anyMatchDownStation(Section newSection) {
+        return sections.stream()
+                .filter(sec -> sec.matchDownStation(newSection))
+                .count() > 0;
     }
 }

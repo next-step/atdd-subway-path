@@ -34,33 +34,32 @@ public class Section {
         this.distance = distance;
     }
 
-    public boolean matchStation(Section section) {
-        return anyMatchUpStation(section)
-                || anyMatchDownStation(section);
+    public boolean matchUpStation(Section newSection) {
+        return upStation.equals(newSection.getUpStation())
+                || upStation.equals(newSection.getDownStation());
     }
 
-    public boolean anyMatchUpStation(Section section) {
-        return upStation.equals(section.getUpStation())
-                || upStation.equals(section.getDownStation());
+    public boolean matchDownStation(Section newSection) {
+        return downStation.equals(newSection.getDownStation())
+                || downStation.equals(newSection.getUpStation());
     }
 
-    public boolean isUpStation(Section section) {
-        return this.upStation.equals(section.getDownStation());
+    public boolean isUpStation(Station newDownStation) {
+        return upStation.equals(newDownStation);
     }
 
-    public int getDistance() {
-        return distance;
+    public boolean isDownStation(Station newUpStation) {
+        return downStation.equals(newUpStation);
     }
 
-    private boolean anyMatchDownStation(Section section) {
-        return downStation.equals(section.getUpStation())
-                || downStation.equals(section.getDownStation());
+    public void changeDownStationToNewUpStations(Section newSection) {
+        changeDistance(newSection.getDistance());
+        downStation = newSection.getUpStation();
     }
 
-    public void changeSection(Section section) {
-        validationDistance(section.getDistance());
-        this.upStation = section.getUpStation();
-        this.distance = this.distance - section.distance;
+    public void changeUpStationToNewDownStations(Section newSection) {
+        changeDistance(newSection.getDistance());
+        upStation = newSection.getDownStation();
     }
 
     public Long getId() {
@@ -71,12 +70,21 @@ public class Section {
         return line;
     }
 
+    public int getDistance() {
+        return distance;
+    }
+
     public Station getUpStation() {
         return upStation;
     }
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    private void changeDistance(int newDistance) {
+        validationDistance(newDistance);
+        this.distance = this.distance - newDistance;
     }
 
     private void validationDistance(int distance) {
