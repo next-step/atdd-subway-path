@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+    private static final int MIN_SECTION_SIZE = 1;
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -183,6 +185,6 @@ public class Sections {
     }
 
     private boolean isNotAvailableDelete() {
-        return sections.size() <= 1;
+        return sections.size() <= MIN_SECTION_SIZE;
     }
 }
