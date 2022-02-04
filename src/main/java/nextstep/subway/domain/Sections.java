@@ -6,6 +6,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
@@ -162,7 +163,7 @@ public class Sections {
         return sections.stream()
                 .filter(section -> station.equals(section.getUpStation()))
                 .findFirst()
-                .get();
+                .orElseThrow(NoSuchElementException::new);
     }
 
     private Station findFirstStation() {
@@ -172,7 +173,7 @@ public class Sections {
         return upStations.stream()
                 .filter(station -> !downStations.contains(station))
                 .findFirst()
-                .get();
+                .orElseThrow(NoSuchElementException::new);
     }
 
     private Station findLastStation() {
@@ -182,7 +183,7 @@ public class Sections {
         return downStations.stream()
                 .filter(station -> !upStations.contains(station))
                 .findFirst()
-                .get();
+                .orElseThrow(NoSuchElementException::new);
     }
 
     private List<Station> getUpStations() {
