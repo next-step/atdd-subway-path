@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class LineServiceMockTest {
+class LineServiceMockTest {
     @Mock
     private LineRepository lineRepository;
     @Mock
@@ -38,19 +38,14 @@ public class LineServiceMockTest {
 
     @BeforeEach
     void setUp() {
-        강남역 = new Station("강남역");
-        ReflectionTestUtils.setField(강남역, "id", 1L);
-        역삼역 = new Station("역삼역");
-        ReflectionTestUtils.setField(역삼역, "id", 2L);
-        선릉역 = new Station("선릉역");
-        ReflectionTestUtils.setField(선릉역, "id", 3L);
+        강남역 = createStation(1L, "강남역");
+        역삼역 = createStation(2L, "역삼역");
+        선릉역 = createStation(3L, "선릉역");
 
-        강남역_응답 = new StationResponse(강남역.getId(), 강남역.getName(), 강남역.getCreatedDate(), 강남역.getModifiedDate());
-        역삼역_응답 = new StationResponse(역삼역.getId(), 역삼역.getName(), 역삼역.getCreatedDate(), 역삼역.getModifiedDate());
+        강남역_응답 = createStationsResponse(강남역);
+        역삼역_응답 = createStationsResponse(역삼역);
 
-        이호선 = new Line("이호선", "green");
-        ReflectionTestUtils.setField(이호선, "id", 1L);
-
+        이호선 = createLine(1L , "이호선", "green");
     }
 
     @Test
@@ -77,5 +72,21 @@ public class LineServiceMockTest {
                 .collect(Collectors.toList());
         assertThat(namesOfStations).containsExactly(강남역.getName(), 역삼역.getName());
 
+    }
+
+
+    private Station createStation(Long id, String name) {
+        Station station = new Station(name);
+        ReflectionTestUtils.setField(station, "id", id);
+        return station;
+    }
+    private Line createLine(Long id, String name, String color) {
+        Line line = new Line(name, color);
+        ReflectionTestUtils.setField(line, "id", id);
+        return line;
+    }
+
+    private StationResponse createStationsResponse(Station station) {
+        return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate());
     }
 }

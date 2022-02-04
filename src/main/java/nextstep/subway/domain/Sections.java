@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.domain.exception.CannotAddSectionException;
+import nextstep.subway.domain.exception.CannotDeleteSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -164,10 +165,54 @@ public class Sections {
     }
 
     public void deleteSection(Station station) {
-        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
+        if (!hasStation(station)) {
+            throw new CannotDeleteSectionException(station.getName());
         }
 
-        sections.remove(sections.size() - 1);
+        if (sections.size() == 1) {
+            throw new CannotDeleteSectionException();
+        }
+
+        Section lastDownSection = findLastDownSection();
+        if (lastDownSection.hasSameDownStation(station)) {
+            sections.remove(lastDownSection);
+            return;
+        }
+
+        Section firstUpSection = findFirstUpSection();
+        if (firstUpSection.hasSameUpStation(station)) {
+            sections.remove(firstUpSection);
+            return;
+        }
+
+        Section containsUpStation = findSectionContainsUpStation(station);
+        Section containsDownStation = findSectionContainsDownStation(station);
+        containsDownStation.combineSection(containsUpStation);
+
+        sections.remove(containsUpStation);
+    }
+
+    private Section findLastDownSection() {
+        Station lastDownStation = findLastDownStation();
+        return findSectionContainsDownStation(lastDownStation);
+    }
+
+    private Section findFirstUpSection() {
+        Station firstUpStation = findFirstUpStation();
+        return findSectionContainsUpStation(firstUpStation);
+    }
+
+    private Section findSectionContainsUpStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.hasSameUpStation(station))
+                .findFirst()
+                .orElseThrow(EntityNotFoundException::new);
+    }
+
+    private Section findSectionContainsDownStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.hasSameDownStation(station))
+                .findFirst()
+                .orElseThrow(EntityNotFoundException::new);
     }
 }

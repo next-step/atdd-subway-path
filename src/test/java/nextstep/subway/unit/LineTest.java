@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.exception.CannotAddSectionException;
+import nextstep.subway.domain.exception.CannotDeleteSectionException;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -49,9 +50,7 @@ class LineTest {
         // when
         loopLine.addSection(section);
 
-        List<String> namesOfStations = loopLine.stations().stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
+        List<String> namesOfStations = getNamesOfStations(loopLine);
 
         // then
         assertThat(namesOfStations).containsExactly(sunreoung.getName(), gangnam.getName(), yeoksam.getName());
@@ -67,9 +66,7 @@ class LineTest {
         // when
         loopLine.addSection(section);
 
-        List<String> namesOfStations = loopLine.stations().stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
+        List<String> namesOfStations = getNamesOfStations(loopLine);
 
         // then
         assertThat(namesOfStations).containsExactly(gangnam.getName(), yeoksam.getName(), sunreoung.getName());
@@ -138,9 +135,7 @@ class LineTest {
         // when
         loopLine.addSection(section);
 
-        List<String> namesOfStations = loopLine.stations().stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
+        List<String> namesOfStations = getNamesOfStations(loopLine);
         List<Integer> distances = loopLine.distances();
 
         // then
@@ -161,27 +156,87 @@ class LineTest {
     @Test
     void getStations() {
         // when
-        List<String> namesOfStations = loopLine.stations().stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
+        List<String> namesOfStations = getNamesOfStations(loopLine);
 
         // then
         assertThat(namesOfStations).containsExactly(gangnam.getName(), yeoksam.getName());
     }
 
-    @DisplayName("구간이 목록에서 마지막 역 삭제")
+    @DisplayName("구간에 존재하지 않은 역 삭제 실패")
     @Test
-    void removeSection() {
-        // given
+    void removeSectionNotExistException() {
+        //when
+        ThrowableAssert.ThrowingCallable actual = () -> loopLine.deleteSection(sunreoung);
+
+        //then
+        assertThatThrownBy(actual)
+                .isInstanceOf(CannotDeleteSectionException.class)
+                .hasMessage(String.format("노선에 없는 역은 삭제할 수 없습니다. [%s]", sunreoung.getName()));
+
+    }
+
+    @DisplayName("구간이 1개 남은 경우 삭제 실패")
+    @Test
+    void removeSectionMinimumSizeException() {
+        //when
+        ThrowableAssert.ThrowingCallable actual = () -> loopLine.deleteSection(gangnam);
+
+        //then
+        assertThatThrownBy(actual)
+                .isInstanceOf(CannotDeleteSectionException.class)
+                .hasMessage("노선의 구간은 1개 이상 존재해야 합니다.");
+
+    }
+
+    @DisplayName("하행 종점 역 삭제")
+    @Test
+    void removeLastDownSection() {
+        //given
         Section section = Section.of(loopLine, yeoksam, sunreoung, 10);
         loopLine.addSection(section);
 
-        // when
+        //when
         loopLine.deleteSection(sunreoung);
-        int sizeOfStations = loopLine.stations().size();
 
         //then
-        assertThat(sizeOfStations).isEqualTo(2);
+        List<String> namesOfStations = getNamesOfStations(loopLine);
+        assertThat(namesOfStations).containsExactly(gangnam.getName(), yeoksam.getName());
+    }
 
+    @DisplayName("상행 종점 역 삭제")
+    @Test
+    void removeFirstUpSection() {
+        //given
+        Section section = Section.of(loopLine, yeoksam, sunreoung, 10);
+        loopLine.addSection(section);
+
+        //when
+        loopLine.deleteSection(gangnam);
+
+        //then
+        List<String> namesOfStations = getNamesOfStations(loopLine);
+        assertThat(namesOfStations).containsExactly(yeoksam.getName(), sunreoung.getName());
+    }
+
+    @DisplayName("중간 역 삭제")
+    @Test
+    void removeSection() {
+        // given
+        Section section = Section.of(loopLine, yeoksam, sunreoung, 5);
+        loopLine.addSection(section);
+
+        // when
+        loopLine.deleteSection(yeoksam);
+
+        //then
+        List<String> namesOfStations = getNamesOfStations(loopLine);
+        assertThat(namesOfStations).containsExactly(gangnam.getName(), sunreoung.getName());
+
+    }
+
+    private List<String> getNamesOfStations(Line line) {
+        return line.stations().stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
     }
 }
