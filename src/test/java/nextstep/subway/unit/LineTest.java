@@ -162,4 +162,19 @@ class LineTest {
                 .isInstanceOf(SectionException.class)
                 .hasMessage("상행역과 하행역 모두 구간에 존재하지 않는 역입니다. 상행역 = 등촌역, 하행역 = 신목동역");
     }
+
+    @DisplayName("노선 정보 변경")
+    @Test
+    void updateLine() {
+        // given
+        Section section = new Section(line, 가양역, 증미역, tenDistance);
+        line.addSection(section);
+
+        // when
+        line.updateLine("5호선", "보라색");
+
+        // then
+        assertThat(line.getName()).isEqualTo("5호선");
+        assertThat(line.getColor()).isEqualTo("보라색");
+    }
 }
