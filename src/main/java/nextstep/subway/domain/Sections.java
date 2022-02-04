@@ -31,19 +31,22 @@ public class Sections {
 
         Optional<Section> betweenUpStation = findSectionEqualsDownStation(downStation);
         if (betweenUpStation.isPresent()) {
-            Section existSection = betweenUpStation.get();
-            int existSectionDistance = existSection.getDistance();
-
-            if (section.isNotValidateSectionDistance(existSectionDistance)) {
-                throw new SectionDistanceNotValidException();
-            }
-
-            existSection.changeDownStationDistance(upStation, existSectionDistance - section.getDistance());
-            section.changeDistance(existSectionDistance - existSection.getDistance());
-
-            this.sections.add(section);
+            addBetweenUpStationSection(section, upStation, betweenUpStation.get());
             return;
         }
+
+        this.sections.add(section);
+    }
+
+    private void addBetweenUpStationSection(Section section, Station upStation, Section existSection) {
+        int existSectionDistance = existSection.getDistance();
+
+        if (section.isNotValidateSectionDistance(existSectionDistance)) {
+            throw new SectionDistanceNotValidException();
+        }
+
+        existSection.changeDownStationDistance(upStation, existSectionDistance - section.getDistance());
+        section.changeDistance(existSectionDistance - existSection.getDistance());
 
         this.sections.add(section);
     }
