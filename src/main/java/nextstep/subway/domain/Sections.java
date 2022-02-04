@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 @Embeddable
@@ -139,13 +140,10 @@ public class Sections {
     }
 
     private int indexOf(Station station, IntFunction<Station> func) {
-        for (int i = 0; i < sections.size(); i++) {
-            Station nowStation = func.apply(i);
-            if (nowStation.equals(station)) {
-                return i;
-            }
-        }
-        return INDEX_OF_END_SECTION;
+        return IntStream.range(0, sections.size())
+                .filter(index -> func.apply(index).equals(station))
+                .findFirst()
+                .orElse(INDEX_OF_END_SECTION);
     }
 
     private List<Section> sort() {
