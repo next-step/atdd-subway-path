@@ -13,13 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-public class LineServiceTest {
+class LineServiceTest {
     @Autowired
     private StationRepository stationRepository;
     @Autowired

@@ -49,9 +49,7 @@ class LineTest {
         // when
         loopLine.addSection(section);
 
-        List<String> namesOfStations = loopLine.stations().stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
+        List<String> namesOfStations = getNamesOfStations(loopLine);
 
         // then
         assertThat(namesOfStations).containsExactly(sunreoung.getName(), gangnam.getName(), yeoksam.getName());
@@ -67,9 +65,7 @@ class LineTest {
         // when
         loopLine.addSection(section);
 
-        List<String> namesOfStations = loopLine.stations().stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
+        List<String> namesOfStations = getNamesOfStations(loopLine);
 
         // then
         assertThat(namesOfStations).containsExactly(gangnam.getName(), yeoksam.getName(), sunreoung.getName());
@@ -138,9 +134,7 @@ class LineTest {
         // when
         loopLine.addSection(section);
 
-        List<String> namesOfStations = loopLine.stations().stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
+        List<String> namesOfStations = getNamesOfStations(loopLine);
         List<Integer> distances = loopLine.distances();
 
         // then
@@ -161,9 +155,7 @@ class LineTest {
     @Test
     void getStations() {
         // when
-        List<String> namesOfStations = loopLine.stations().stream()
-                .map(Station::getName)
-                .collect(Collectors.toList());
+        List<String> namesOfStations = getNamesOfStations(loopLine);
 
         // then
         assertThat(namesOfStations).containsExactly(gangnam.getName(), yeoksam.getName());
@@ -183,5 +175,11 @@ class LineTest {
         //then
         assertThat(sizeOfStations).isEqualTo(2);
 
+    }
+
+    private List<String> getNamesOfStations(Line line) {
+        return line.stations().stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
     }
 }
