@@ -26,7 +26,7 @@ public class AcceptanceTest {
         databaseCleanup.execute();
     }
 
-    void 요청_응답을_확인한다(ExtractableResponse<Response> response, HttpStatus status) {
+    void 인수테스트_요청_응답을_확인한다(ExtractableResponse<Response> response, HttpStatus status) {
         assertThat(response.statusCode()).isEqualTo(status.value());
     }
 }
