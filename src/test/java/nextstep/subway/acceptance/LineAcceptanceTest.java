@@ -66,7 +66,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
 
         // then
-        요청_응답을_확인한다(createResponse, HttpStatus.OK);
+        요청_응답을_확인한다(response, HttpStatus.OK);
         assertThat(response.jsonPath().getString("name")).isEqualTo("2호선");
     }
 
@@ -92,8 +92,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
 
         // then
-        요청_응답을_확인한다(createResponse, HttpStatus.OK);
-
+        요청_응답을_확인한다(response, HttpStatus.OK);
     }
 
     /**
@@ -114,7 +113,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
 
         // then
-        요청_응답을_확인한다(createResponse, HttpStatus.NO_CONTENT);
+        요청_응답을_확인한다(response, HttpStatus.NO_CONTENT);
     }
 
     /**
