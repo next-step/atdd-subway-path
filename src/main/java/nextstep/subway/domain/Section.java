@@ -52,8 +52,10 @@ public class Section {
     }
 
     public void updateRemoveLineBetweenSection(Section removeSection) {
-        this.upStation = removeSection.getUpStation();
-        this.distance = this.distance.sum(removeSection.getDistance());
+        if (upStation.equals(removeSection.getDownStation())) {
+            this.upStation = removeSection.getUpStation();
+            this.distance = this.distance.sum(removeSection.getDistance());
+        }
     }
 
     private boolean isBetweenSection(Section newSection) {

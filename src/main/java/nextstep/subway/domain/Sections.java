@@ -16,8 +16,8 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public void addSection(Section newSection) {
-        validateStationNotExistInSection(newSection);
+    void addSection(Section newSection) {
+        validateAddSectionStationNotExistInSection(newSection);
         for (Section existingSection : sections) {
             existingSection.updateAddLineBetweenSection(newSection);
         }
@@ -26,18 +26,15 @@ public class Sections {
 
     void remove(Station downStation) {
         validateOneSection();
-        Section removeSection = null;
-        for (Section existingSection : sections) {
-            if (existingSection.getDownStation().equals(downStation)) {
-                removeSection = existingSection;
-                sections.remove(existingSection);
-                break;
-            }
-        }
-        for (Section existingSection : sections) {
-            if (existingSection.getUpStation().equals(downStation)) {
-                existingSection.updateRemoveLineBetweenSection(removeSection);
-            }
+        Section removeSection = sections.stream()
+                .filter(section -> section.getDownStation().equals(downStation))
+                .findFirst()
+                .orElseThrow(() ->
+                        new SectionException(String.format("상행역과 하행역 모두 구간에 존재하지 않는 역입니다. 하행역 = %s", downStation)));
+        sections.remove(removeSection);
+
+        for (Section section : sections) {
+            section.updateRemoveLineBetweenSection(removeSection);
         }
     }
     
@@ -58,15 +55,23 @@ public class Sections {
         return sections.size();
     }
 
-    private void validateStationNotExistInSection(Section newSection) {
-        if (!getUpStations().contains(newSection.getUpStation()) &&
-                !getUpStations().contains(newSection.getDownStation()) &&
-                !getDownStations().contains(newSection.getUpStation()) &&
-                !getDownStations().contains(newSection.getDownStation()) &&
+    private void validateAddSectionStationNotExistInSection(Section section) {
+        if (!getUpStations().contains(section.getUpStation()) &&
+                !getUpStations().contains(section.getDownStation()) &&
+                !getDownStations().contains(section.getUpStation()) &&
+                !getDownStations().contains(section.getDownStation()) &&
                 !sections.isEmpty()) {
             throw new SectionException(
                     String.format("상행역과 하행역 모두 구간에 존재하지 않는 역입니다. 상행역 = %s, 하행역 = %s",
-                            newSection.getUpStation().getName(), newSection.getDownStation().getName()));
+                            section.getUpStation().getName(), section.getDownStation().getName()));
+        }
+    }
+
+    private void validateRemoveSectionStationNotExistInSections(Station downStation) {
+        if (!getUpStations().contains(downStation) &&
+                !getDownStations().contains(downStation)) {
+            throw new SectionException(
+                    String.format("상행역과 하행역 모두 구간에 존재하지 않는 역입니다. 하행역 = %s", downStation));
         }
     }
 
