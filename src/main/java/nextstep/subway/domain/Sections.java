@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
 
@@ -131,7 +132,7 @@ public class Sections {
         return indexOf(station, x -> sections.get(x).getDownStation());
     }
 
-    private int indexOf(Station station, Function<Integer, Station> func) {
+    private int indexOf(Station station, IntFunction<Station> func) {
         for (int i = 0; i < sections.size(); i++) {
             Station nowStation = func.apply(i);
             if (nowStation.equals(station)) {
