@@ -5,7 +5,9 @@ import java.util.Objects;
 
 @Entity
 public class Section {
-    private static final String DISTANCE_ERROR_MESSAGE = "새로운 구간의 길이가 기존 구간 사이의 길이보다 큽니다.";
+    private static final String OVER_DISTANCE_ERROR_MESSAGE = "새로운 구간의 길이가 기존 구간 사이의 길이보다 큽니다.";
+    private static final String ZERO_DISTANCE_ERROR_MESSAGE = "구간의 길이는 0 이하가 될 수 없습니다.";
+    private static final int DISTANCE_MINIMUM = 1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +30,7 @@ public class Section {
     public Section() { }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
+        validationMinimumDistance(distance);
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -67,6 +70,11 @@ public class Section {
         this.distance = this.distance - newDistance;
     }
 
+    private void validationDistance(int newDistance) {
+        validationMinimumDistance(newDistance);
+        validationOverDistance(newDistance);
+    }
+
     public Long getId() {
         return id;
     }
@@ -87,9 +95,15 @@ public class Section {
         return downStation;
     }
 
-    private void validationDistance(int distance) {
+    private void validationMinimumDistance(int distance) {
+        if (distance < DISTANCE_MINIMUM) {
+            throw new IllegalArgumentException(ZERO_DISTANCE_ERROR_MESSAGE);
+        }
+    }
+
+    private void validationOverDistance(int distance) {
         if (this.distance <= distance) {
-            throw new IllegalArgumentException(DISTANCE_ERROR_MESSAGE);
+            throw new IllegalArgumentException(OVER_DISTANCE_ERROR_MESSAGE);
         }
     }
 
