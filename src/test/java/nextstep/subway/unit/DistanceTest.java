@@ -15,7 +15,7 @@ class DistanceTest {
 
     @DisplayName("지하철역 사이에 새로운 구간 추가")
     @Test
-    void addLineBetweenSection() {
+    void exceptionAddSection() {
         // given
         Distance distance = new Distance(10);
 
@@ -24,6 +24,18 @@ class DistanceTest {
                 // then
                 .isInstanceOf(AddSectionException.class)
                 .hasMessage("새로 추가되는 구간 거리는 기존 구간의 거리 이상일 수 없습니다. 기존 구간 거리 = 10, 신규 구간 거리 = 10");
+    }
+
+    @Test
+    void subtract() {
+        // given
+        Distance distance = new Distance(10);
+
+        // when
+        Distance subtract = distance.subtract(5);
+
+        // when
+        assertThat(subtract.getDistance()).isEqualTo(5);
     }
 
     @Test

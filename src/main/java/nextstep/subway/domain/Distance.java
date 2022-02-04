@@ -15,7 +15,7 @@ public class Distance {
     }
 
     public Distance subtract(int newDistance) {
-        validateDistance(newDistance);
+        validateBetWeenAddDistance(newDistance);
         return new Distance(distance - newDistance);
     }
 
@@ -23,7 +23,7 @@ public class Distance {
         return new Distance(distance + newDistance);
     }
 
-    private void validateDistance(int newDistance) {
+    private void validateBetWeenAddDistance(int newDistance) {
         if (this.distance <= newDistance) {
             throw new AddSectionException(
                     String.format("새로 추가되는 구간 거리는 기존 구간의 거리 이상일 수 없습니다. 기존 구간 거리 = %d, 신규 구간 거리 = %d",

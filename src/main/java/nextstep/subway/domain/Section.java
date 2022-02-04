@@ -43,7 +43,7 @@ public class Section {
         this.distance = new Distance(distance);
     }
 
-    void updateAddLineBetweenSection(Section newSection) {
+    public void updateAddLineBetweenSection(Section newSection) {
         if (isBetweenSection(newSection)) {
             validateDuplicationSection(newSection);
             this.upStation = newSection.getDownStation();
@@ -51,7 +51,7 @@ public class Section {
         }
     }
 
-    void updateRemoveLineBetweenSection(Section removeSection) {
+    public void updateRemoveLineBetweenSection(Section removeSection) {
         this.upStation = removeSection.getUpStation();
         this.distance = this.distance.sum(removeSection.getDistance());
     }
