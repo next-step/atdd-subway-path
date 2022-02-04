@@ -1,4 +1,4 @@
-package nextstep.subway.exceptions;
+package nextstep.subway.common.handler;
 
 import lombok.Getter;
 

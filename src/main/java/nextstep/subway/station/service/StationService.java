@@ -1,7 +1,7 @@
 package nextstep.subway.station.service;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.subway.exceptions.BadRequestException;
+import nextstep.subway.common.exception.BadRequestException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;

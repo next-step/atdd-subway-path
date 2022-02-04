@@ -1,6 +1,6 @@
 package nextstep.subway.line.service;
 
-import nextstep.subway.exceptions.BadRequestException;
+import nextstep.subway.common.exception.BadRequestException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;

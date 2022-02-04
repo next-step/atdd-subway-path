@@ -1,7 +1,8 @@
-package nextstep.subway.line.utils;
+package nextstep.subway.line.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineTestRequest;
 
@@ -32,6 +33,18 @@ public class LineUtils {
         params.put("color", request.getLineColor());
         params.put("upStationId", String.valueOf(upStationId));
         params.put("downStationId", String.valueOf(downStationId));
+        params.put("distance", String.valueOf(request.getDistance()));
+
+        return post("/lines", params);
+    }
+
+    public static ExtractableResponse<Response> 지하철노선_생성_요청(LineRequest request) {
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", request.getName());
+        params.put("color", request.getColor());
+        params.put("upStationId", String.valueOf(request.getUpStationId()));
+        params.put("downStationId", String.valueOf(request.getDownStationId()));
         params.put("distance", String.valueOf(request.getDistance()));
 
         return post("/lines", params);

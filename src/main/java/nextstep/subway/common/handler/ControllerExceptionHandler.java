@@ -1,5 +1,6 @@
-package nextstep.subway.exceptions;
+package nextstep.subway.common.handler;
 
+import nextstep.subway.common.exception.BadRequestException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
