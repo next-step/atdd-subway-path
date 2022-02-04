@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.IllegalSectionArgumentException;
+
 import javax.persistence.*;
 import java.util.List;
 
