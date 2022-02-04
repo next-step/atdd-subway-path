@@ -88,26 +88,15 @@ public class Sections {
         List<Station> allStations = new ArrayList<>();
         allStations.add(section.getUpStation());
 
-        while (true) {
-            Station downStation = section.getDownStation();
-            Optional<Section> optionalFindSection = sections.stream()
-                .filter(it -> it.getUpStation().equals(downStation))
-                .findFirst();
+        Optional<Section> nextSection = findSectionEqualsUpStation(section.getDownStation());
 
-            boolean findResult = optionalFindSection.isPresent();
-
-            if (findResult) {
-                section = optionalFindSection.get();
-                Station upStation = section.getUpStation();
-
-                allStations.add(upStation);
-                continue;
-            }
-
-            allStations.add(section.getDownStation());
-
-            break;
+        while (nextSection.isPresent()) {
+            section = nextSection.get();
+            nextSection = findSectionEqualsUpStation(section.getDownStation());
+            allStations.add(section.getUpStation());
         }
+
+        allStations.add(section.getDownStation());
 
         return allStations;
     }
