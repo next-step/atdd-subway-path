@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import static nextstep.subway.exception.ErrorMessages.*;
 
 @Embeddable
@@ -109,22 +110,32 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        Station lastDownStation = getLastDownStation();
+        checkAvailableDelete();
+        Section deleteSection = getByDownStation(station);
 
-        checkAvailableDelete(station, lastDownStation);
-
-        Section delete = getByDownStation(lastDownStation);
-
-        sections.remove(delete);
-    }
-
-    private void checkAvailableDelete(Station station, Station lastDownStation) {
-        if (isNotAvailableDelete()) {
-            throw new DeleteSectionException(DELETE_NOT_AVAILABLE_SECTION.getMessage());
+        if (getLastDownStation().equals(station)) {
+            sections.remove(deleteSection);
+            return;
         }
 
-        if (!lastDownStation.equals(station)) {
-            throw new DeleteSectionException(SECTION_NOT_FOUND_LAST_DOWN_STATION.getMessage());
+        sections.remove(deleteSection);
+        rearrange(deleteSection);
+    }
+
+    private void rearrange(Section deleteSection) {
+        Station upStation = deleteSection.getUpStation();
+        Station downStation = deleteSection.getDownStation();
+        int distance = deleteSection.getDistance();
+
+        Section updateSection = findSectionEqualsUpStation(downStation)
+            .orElseThrow(SectionNotFoundException::new);
+
+        updateSection.changeUpStationDistance(upStation, distance + updateSection.getDistance());
+    }
+
+    private void checkAvailableDelete() {
+        if (isNotAvailableDelete()) {
+            throw new DeleteSectionException(DELETE_NOT_AVAILABLE_SECTION.getMessage());
         }
     }
 

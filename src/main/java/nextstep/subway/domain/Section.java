@@ -75,4 +75,9 @@ public class Section {
     public boolean isNotValidateSectionDistance(int existSectionDistance) {
         return getDistance() >= existSectionDistance;
     }
+
+    public void changeUpStationDistance(Station upStation, int distance) {
+        this.upStation = upStation;
+        this.distance = distance;
+    }
 }
