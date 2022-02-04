@@ -72,8 +72,8 @@ public class Section {
     }
 
     public void changeUpStation(Station station, int distance) {
-        this.upStation = station;
         validateDistance(distance);
+        this.upStation = station;
         this.distance -= distance;
     }
 
