@@ -218,19 +218,19 @@ class LineTest {
         assertThat(namesOfStations).containsExactly(yeoksam.getName(), sunreoung.getName());
     }
 
-    @DisplayName("구간이 목록에서 마지막 역 삭제")
+    @DisplayName("중간 역 삭제")
     @Test
     void removeSection() {
         // given
-        Section section = Section.of(loopLine, yeoksam, sunreoung, 10);
+        Section section = Section.of(loopLine, yeoksam, sunreoung, 5);
         loopLine.addSection(section);
 
         // when
-        loopLine.deleteSection(sunreoung);
-        int sizeOfStations = loopLine.stations().size();
+        loopLine.deleteSection(yeoksam);
 
         //then
-        assertThat(sizeOfStations).isEqualTo(2);
+        List<String> namesOfStations = getNamesOfStations(loopLine);
+        assertThat(namesOfStations).containsExactly(gangnam.getName(), sunreoung.getName());
 
     }
 

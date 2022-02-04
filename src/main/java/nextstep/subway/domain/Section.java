@@ -62,6 +62,11 @@ public class Section {
         return of(this.line, this.upStation, section.getUpStation(), differenceDistance);
     }
 
+    public void combineSection(Section nextSection) {
+        this.downStation = nextSection.downStation;
+        this.distance = this.distance + nextSection.distance;
+    }
+
     public boolean isGreaterThanDistance(int distance) {
         return this.distance >= distance;
     }
@@ -102,5 +107,4 @@ public class Section {
     public int hashCode() {
         return Objects.hash(getId(), line, getUpStation(), getDownStation(), getDistance());
     }
-
 }

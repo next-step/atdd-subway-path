@@ -185,26 +185,33 @@ public class Sections {
             return;
         }
 
+        Section containsUpStation = findSectionContainsUpStation(station);
+        Section containsDownStation = findSectionContainsDownStation(station);
+        containsDownStation.combineSection(containsUpStation);
 
-        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-
-        sections.remove(sections.size() - 1);
+        sections.remove(containsUpStation);
     }
 
     private Section findLastDownSection() {
         Station lastDownStation = findLastDownStation();
-        return sections.stream()
-                .filter(section -> section.hasSameDownStation(lastDownStation))
-                .findFirst()
-                .orElseThrow(EntityNotFoundException::new);
+        return findSectionContainsDownStation(lastDownStation);
     }
 
     private Section findFirstUpSection() {
         Station firstUpStation = findFirstUpStation();
+        return findSectionContainsUpStation(firstUpStation);
+    }
+
+    private Section findSectionContainsUpStation(Station station) {
         return sections.stream()
-                .filter(section -> section.hasSameUpStation(firstUpStation))
+                .filter(section -> section.hasSameUpStation(station))
+                .findFirst()
+                .orElseThrow(EntityNotFoundException::new);
+    }
+
+    private Section findSectionContainsDownStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.hasSameDownStation(station))
                 .findFirst()
                 .orElseThrow(EntityNotFoundException::new);
     }
