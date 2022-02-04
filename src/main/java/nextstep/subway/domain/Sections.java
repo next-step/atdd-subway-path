@@ -12,11 +12,11 @@ import java.util.List;
 @Embeddable
 public class Sections {
 
-    public static final String NOT_LAST_SECTION = "마지막 구간이 아닙니다.";
+    public static final String NOT_EXISTS_STATION = "지하철역이 존재하지 않습니다.";
     public static final String WRONG_DISTANCE = "추가되는 구간의 거리가 기존의 거리보다 크거나 같을 수 없습니다.";
     public static final String REQUIRED_STATION = "하나라도 지하철이 포함되어 있어야 합니다.";
     public static final String UP_AND_DOWN_STATION_BOTH_CANNOT_EXISTS = "상행과 하행이 모두 존재할수 없습니다.";
-    public static final int MINIMUN_DISTANCE = 1;
+    public static final int MINIMUM_DISTANCE = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -70,7 +70,7 @@ public class Sections {
                 .orElse(null);
 
         if (previousSection == null && nextSection == null) {
-            throw new IllegalSectionArgumentException("삭제할 역이 존재하지 않습니다.");
+            throw new IllegalSectionArgumentException(NOT_EXISTS_STATION);
         }
 
         if (previousSection == null) {
@@ -137,7 +137,7 @@ public class Sections {
     }
 
     private void validateDistance(Section newSection, Section section) {
-        if ((section.getDistance() - newSection.getDistance()) < MINIMUN_DISTANCE) {
+        if ((section.getDistance() - newSection.getDistance()) < MINIMUM_DISTANCE) {
             throw new IllegalSectionArgumentException(WRONG_DISTANCE);
         }
     }
