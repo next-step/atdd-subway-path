@@ -68,7 +68,6 @@ public class LineService {
         line.removeSection(station);
     }
 
-
     private Line getLine(Long lineId) {
         return lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
     }

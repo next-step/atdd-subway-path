@@ -25,6 +25,10 @@ public class Sections {
         return sections.size();
     }
 
+    public List<Section> getSectionList() {
+        return sections;
+    }
+
     public void addSection(Section section) {
         if (!isEmpty()) {
             Long upStationId = section.getUpStation().getId();
@@ -45,7 +49,6 @@ public class Sections {
                 updateDownSection(section);
             }
         }
-
         sections.add(section);
     }
 
@@ -144,7 +147,6 @@ public class Sections {
             }
             downStation = nextLineStation.get().getUpStation();
         }
-
         return downStation;
     }
 }

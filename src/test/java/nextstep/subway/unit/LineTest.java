@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
@@ -104,6 +105,21 @@ class LineTest {
         assertThat(line.getSections().count()).isEqualTo(2);
     }
 
+
+    @DisplayName("구간 목록이 1개일 경우 삭제 - 에러")
+    @Test
+    void removeSectionError1() {
+        // given
+        Station upStation = StationSteps.강남역();
+        Station downStation = StationSteps.사당역();
+        Line line = new Line("2호선", "green");
+        line.addSection(upStation, downStation, 30);
+
+        // when
+        assertThatThrownBy(() -> line.removeSection(upStation))
+                .isInstanceOf(IllegalArgumentException.class);
+
+    }
 
     private Line 지하철_라인_역_샘플() {
         Station upStation = StationSteps.강남역();
