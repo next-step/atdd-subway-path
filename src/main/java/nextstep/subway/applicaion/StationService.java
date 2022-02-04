@@ -2,6 +2,7 @@ package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.StationRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.exception.DuplicatedException;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -13,15 +14,24 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class StationService {
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
     }
 
     public StationResponse saveStation(StationRequest stationRequest) {
+        checkDuplication(stationRequest);
+
         Station station = stationRepository.save(new Station(stationRequest.getName()));
+
         return createStationResponse(station);
+    }
+
+    private void checkDuplication(StationRequest stationRequest) {
+        if (stationRepository.existsByName(stationRequest.getName())) {
+            throw new DuplicatedException();
+        }
     }
 
     @Transactional(readOnly = true)
@@ -37,16 +47,22 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    public StationResponse createStationResponse(Station station) {
-        return new StationResponse(
-                station.getId(),
-                station.getName(),
-                station.getCreatedDate(),
-                station.getModifiedDate()
-        );
+    private StationResponse createStationResponse(Station station) {
+        return StationResponse.builder()
+                .id(station.getId())
+                .name(station.getName())
+                .createdDate(station.getCreatedDate())
+                .modifiedDate(station.getModifiedDate())
+                .build();
     }
 
-    public Station findById(Long id) {
-        return stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+    public List<StationResponse> createStationResponses(List<Station> stations) {
+        return stations.stream()
+                .map(this::createStationResponse)
+                .collect(Collectors.toList());
+    }
+
+    public Station findById(Long stationId) {
+        return stationRepository.getById(stationId);
     }
 }
