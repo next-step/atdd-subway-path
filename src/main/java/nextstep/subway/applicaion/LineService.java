@@ -74,7 +74,7 @@ public class LineService {
         line.removeStation(station);
     }
 
-    private Line findById(Long id){
+    private Line findById(Long id) {
         return lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
     }
 }
