@@ -179,6 +179,11 @@ public class Sections {
             return;
         }
 
+        Section firstUpSection = findFirstUpSection();
+        if (firstUpSection.hasSameUpStation(station)) {
+            sections.remove(firstUpSection);
+            return;
+        }
 
 
         if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
@@ -192,6 +197,14 @@ public class Sections {
         Station lastDownStation = findLastDownStation();
         return sections.stream()
                 .filter(section -> section.hasSameDownStation(lastDownStation))
+                .findFirst()
+                .orElseThrow(EntityNotFoundException::new);
+    }
+
+    private Section findFirstUpSection() {
+        Station firstUpStation = findFirstUpStation();
+        return sections.stream()
+                .filter(section -> section.hasSameUpStation(firstUpStation))
                 .findFirst()
                 .orElseThrow(EntityNotFoundException::new);
     }
