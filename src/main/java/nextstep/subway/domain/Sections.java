@@ -75,7 +75,7 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        if(sections.isEmpty()){
+        if (sections.isEmpty()) {
             return Collections.emptyList();
         }
         List<Section> sorted = sort();
