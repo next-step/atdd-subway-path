@@ -23,23 +23,20 @@ class LineTest {
     void setUp() {
         사당역 = new Station("사당");
         방배역 = new Station("방배");
-        사당_방배_구간 = new Section(사당역, 방배역, 10);
-        이호선 = new Line("2호선", "green", 사당_방배_구간);
+        이호선 = new Line("2호선", "green");
+        사당_방배_구간 = new Section(이호선, 사당역, 방배역, 10);
     }
 
 
     @DisplayName("등록된 구간이 없을 때 새로운 구간을 추가할 경우 성공한다")
     @Test
     void section_should_be_added_to_line_when_there_is_no_section() {
-        // given
-        Line newLine = new Line("2호선", "green");
-
         // when
-        newLine.addSection(사당_방배_구간);
+        이호선.addSection(사당_방배_구간);
 
         // then
-        assertThat(newLine.getSections().size()).isEqualTo(1);
-        assertThat(newLine.getSections()).containsExactly(사당_방배_구간);
+        assertThat(이호선.getSections().size()).isEqualTo(1);
+        assertThat(이호선.getSections()).containsExactly(사당_방배_구간);
     }
 
     @DisplayName("마지막 구간에 새로운 구간을 등록할 경우 성공한다")
@@ -47,7 +44,8 @@ class LineTest {
     void section_should_be_added_to_line_when_there_is_last_section_that_is_able_to_connect() {
         // given
         Station 서초역 = new Station("서초");
-        Section 방배_서초_구간 = new Section(방배역, 서초역, 3);
+        Section 방배_서초_구간 = new Section(이호선, 방배역, 서초역, 3);
+        이호선.addSection(사당_방배_구간);
 
         // when
         이호선.addSection(방배_서초_구간);
@@ -61,7 +59,8 @@ class LineTest {
     void section_should_be_added_to_line_when_there_is_middle_section_that_up_station_is_registered() {
         // given
         Station 서초역 = new Station("서초");
-        Section 사당_서초_구간 = new Section(사당역, 서초역, 3);
+        Section 사당_서초_구간 = new Section(이호선, 사당역, 서초역, 3);
+        이호선.addSection(사당_방배_구간);
 
         // when
         이호선.addSection(사당_서초_구간);
@@ -75,7 +74,8 @@ class LineTest {
     void section_should_be_added_to_line_when_there_is_middle_section_that_down_station_is_registered() {
         // given
         Station 서초역 = new Station("서초");
-        Section 서초_방배_구간 = new Section(서초역, 방배역, 3);
+        Section 서초_방배_구간 = new Section(이호선, 서초역, 방배역, 3);
+        이호선.addSection(사당_방배_구간);
 
         // when
         이호선.addSection(서초_방배_구간);
@@ -89,7 +89,8 @@ class LineTest {
     void section_should_throw_exception_when_request_with_longer_section() {
         // given
         Station 서초역 = new Station("서초");
-        Section 서초_방배_구간 = new Section(서초역, 방배역, 10);
+        Section 서초_방배_구간 = new Section(이호선, 서초역, 방배역, 10);
+        이호선.addSection(사당_방배_구간);
 
         // when & then
         assertThatIllegalArgumentException().isThrownBy(
@@ -101,11 +102,12 @@ class LineTest {
     @Test
     void section_should_throw_exception_when_request_with_both_already_registered_station() {
         // given
-        Section 사당_방배_구간 = new Section(사당역, 방배역, 10);
+        이호선.addSection(사당_방배_구간);
+        Section 사당_방배_구간2 = new Section(이호선, 사당역, 방배역, 10);
 
         // when & then
         assertThatIllegalArgumentException().isThrownBy(
-                () -> 이호선.addSection(사당_방배_구간)
+                () -> 이호선.addSection(사당_방배_구간2)
         );
     }
 
@@ -115,7 +117,8 @@ class LineTest {
         // given
         Station 서초역 = new Station("서초");
         Station 교대역 = new Station("교대");
-        Section 서초_교대_구간 = new Section(서초역, 교대역, 10);
+        Section 서초_교대_구간 = new Section(이호선, 서초역, 교대역, 10);
+        이호선.addSection(사당_방배_구간);
 
         // when & then
         assertThatIllegalArgumentException().isThrownBy(
@@ -128,7 +131,8 @@ class LineTest {
     void section_should_be_added_to_line_when_request_to_connect_as_first_up_station() {
         // given
         Station 서초역 = new Station("서초");
-        Section 서초_사당_구간 = new Section(서초역, 사당역, 3);
+        Section 서초_사당_구간 = new Section(이호선, 서초역, 사당역, 3);
+        이호선.addSection(사당_방배_구간);
 
         // when
         이호선.addSection(서초_사당_구간);
@@ -143,7 +147,8 @@ class LineTest {
         // given
         Station 서초역 = new Station("서초");
         Station 교대역 = new Station("교대");
-        Section 서초_교대_구간 = new Section(서초역, 교대역, 5);
+        Section 서초_교대_구간 = new Section(이호선, 서초역, 교대역, 5);
+        이호선.addSection(사당_방배_구간);
 
         // when & then
         assertThatIllegalArgumentException().isThrownBy(
@@ -155,6 +160,8 @@ class LineTest {
     @Test
     void getStations() {
         // given
+        이호선.addSection(사당_방배_구간);
+
         // when
         List<Station> stations = 이호선.getStations();
 
@@ -167,7 +174,8 @@ class LineTest {
     void should_be_success_when_last_section_is_removable() {
         // given
         Station 서초역 = new Station("서초");
-        Section 방배_서초_구간 = new Section(방배역, 서초역, 5);
+        Section 방배_서초_구간 = new Section(이호선, 방배역, 서초역, 5);
+        이호선.addSection(사당_방배_구간);
         이호선.addSection(방배_서초_구간);
 
         // when
@@ -180,6 +188,9 @@ class LineTest {
     @DisplayName("구간이 하나일 때 마지막 역 삭제 실패한다")
     @Test
     void should_be_fail_when_section_is_only_one() {
+        // given
+        이호선.addSection(사당_방배_구간);
+
         // when & then
         assertThatIllegalArgumentException().isThrownBy(
                 () -> 이호선.removeStation(방배역)

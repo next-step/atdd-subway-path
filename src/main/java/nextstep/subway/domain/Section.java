@@ -38,6 +38,13 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section(Line line, Station upStation, Station downStation, int distance) {
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
     public void updateSection(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;

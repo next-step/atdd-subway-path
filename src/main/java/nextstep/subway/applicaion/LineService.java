@@ -29,7 +29,7 @@ public class LineService {
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.addSection(new Section(upStation, downStation, request.getDistance()));
+            line.addSection(new Section(line, upStation, downStation, request.getDistance()));
         }
         return LineResponse.of(line);
     }
@@ -64,7 +64,7 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = findById(lineId);
 
-        line.addSection(new Section(upStation, downStation, sectionRequest.getDistance()));
+        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
     public void deleteSection(Long lineId, Long stationId) {
