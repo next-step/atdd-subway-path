@@ -22,7 +22,7 @@ class LineTest {
     Station 신목동역;
     Line line;
     int tenDistance;
-    int fourDistance2;
+    int fourDistance;
 
     @BeforeEach
     void setUp() {
@@ -32,7 +32,7 @@ class LineTest {
         신목동역 = new Station("신목동역");
         line = new Line("9호선", "금색");
         tenDistance = 10;
-        fourDistance2 = 4;
+        fourDistance = 4;
     }
 
     @DisplayName("지하철역 사이에 새로운 구간 추가(기존 구간 상행역과 신규 구간 상행역이 겹친다.")
@@ -40,7 +40,7 @@ class LineTest {
     void addLineBetweenSection() {
         // given
         Section section1 = new Section(line, 가양역, 등촌역, tenDistance);
-        Section section2 = new Section(line, 가양역, 증미역, fourDistance2);
+        Section section2 = new Section(line, 가양역, 증미역, fourDistance);
 
         // when
         line.addSection(section1);
@@ -74,8 +74,8 @@ class LineTest {
     @Test
     void getStations() {
         line.addSection(new Section(line, 등촌역, 신목동역, tenDistance));
-        line.addSection(new Section(line, 증미역, 등촌역, fourDistance2));
-        line.addSection(new Section(line, 가양역, 증미역, fourDistance2));
+        line.addSection(new Section(line, 증미역, 등촌역, fourDistance));
+        line.addSection(new Section(line, 가양역, 증미역, fourDistance));
 
         // when
         List<Station> stations = line.getStations();
@@ -84,12 +84,32 @@ class LineTest {
         assertThat(stations).containsExactly(가양역, 증미역, 등촌역, 신목동역);
     }
 
+    @DisplayName("구간이 목록에서 사이 역 삭제")
+    @Test
+    void removeBetweenSection() {
+        // given
+        line.addSection(new Section(line, 가양역, 증미역, tenDistance));
+        line.addSection(new Section(line, 증미역, 등촌역, fourDistance));
+
+        Section section = new Section(line, 등촌역, 신목동역, fourDistance);
+        line.addSection(section);
+
+        // when
+        line.removeSection(등촌역);
+
+        // then
+        assertThat(section.getDistance()).isEqualTo(8);
+        assertThat(section.getUpStation().getName()).isEqualTo("증미역");
+    }
+
+
+
     @DisplayName("구간이 목록에서 마지막 역 삭제")
     @Test
     void removeSection() {
         // given
         line.addSection(new Section(line, 가양역, 증미역, tenDistance));
-        line.addSection(new Section(line, 증미역, 등촌역, fourDistance2));
+        line.addSection(new Section(line, 증미역, 등촌역, fourDistance));
 
         // when
         line.removeSection(등촌역);

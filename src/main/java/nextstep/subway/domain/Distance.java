@@ -14,9 +14,13 @@ public class Distance {
         this.distance = distance;
     }
 
-    public Distance calculate(int newDistance) {
+    public Distance subtract(int newDistance) {
         validateDistance(newDistance);
         return new Distance(distance - newDistance);
+    }
+
+    public Distance sum(int newDistance) {
+        return new Distance(distance + newDistance);
     }
 
     private void validateDistance(int newDistance) {
@@ -30,4 +34,5 @@ public class Distance {
     public int getDistance() {
         return distance;
     }
+
 }

@@ -19,17 +19,26 @@ public class Sections {
     void addSection(Section newSection) {
         validateStationNotExistInSection(newSection);
         for (Section existingSection : sections) {
-            existingSection.addLineBetweenSection(newSection);
+            existingSection.updateAddLineBetweenSection(newSection);
         }
         sections.add(newSection);
     }
 
     void remove(Station downStation) {
-        Section lastSection = sections.get(sections.size() - 1);
-        if (!lastSection.getDownStation().equals(downStation)) {
-            throw new IllegalArgumentException();
+        // 중간역 구간 제거
+        Section removeSection = null;
+        for (Section existingSection : sections) {
+            if (existingSection.getDownStation().equals(downStation)) {
+                removeSection = existingSection;
+                sections.remove(existingSection);
+                break;
+            }
         }
-        sections.remove(sections.size() - 1);
+        for (Section existingSection : sections) {
+            if (existingSection.getUpStation().equals(downStation)) {
+                existingSection.updateRemoveLineBetweenSection(removeSection);
+            }
+        }
     }
 
     List<Station> getStations() {
