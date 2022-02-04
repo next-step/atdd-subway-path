@@ -52,9 +52,7 @@ public class LineService {
         String name = lineRequest.getName();
         String color = lineRequest.getColor();
 
-        if (name != null && color != null) {
-            line.updateLine(name, color);
-        }
+        line.updateLine(name, color);
     }
 
     public void deleteLine(Long id) {
