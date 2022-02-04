@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+@DisplayName("노선 서비스 관리 - 실객체")
 @SpringBootTest
 @Transactional
 public class LineServiceTest {
@@ -28,7 +29,6 @@ public class LineServiceTest {
     private static final String FIRST_STATION_NAME = "강남역";
     private static final String SECOND_STATION_NAME = "역삼역";
     private static final String THIRD_STATION_NAME = "삼성역";
-    private static final String FOURTH_STATION_NAME = "잠실역";
 
     @Autowired
     private StationRepository stationRepository;
@@ -261,10 +261,10 @@ public class LineServiceTest {
     @Test
     void deleteSection() {
         // given
-        Station upStation = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
-        Station downStation = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
+        Station 강남역 = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
+        Station 역삼역 = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
 
-        LineRequest lineRequest = createLineRequest(FIRST_LINE_NAME, DEFAULT_LINE_COLOR, upStation.getId(), downStation.getId(), DEFAULT_DISTANCE);
+        LineRequest lineRequest = createLineRequest(FIRST_LINE_NAME, DEFAULT_LINE_COLOR, 강남역.getId(), 역삼역.getId(), DEFAULT_DISTANCE);
         LineResponse lineResponse = lineService.saveLine(lineRequest);
 
         // when
@@ -279,10 +279,10 @@ public class LineServiceTest {
     @Test
     void deleteSectionNotLineException() {
         // given
-        Station upStation = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
-        Station downStation = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
+        Station 강남역 = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
+        Station 역삼역 = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
 
-        LineRequest lineRequest = createLineRequest(FIRST_LINE_NAME, DEFAULT_LINE_COLOR, upStation.getId(), downStation.getId(), DEFAULT_DISTANCE);
+        LineRequest lineRequest = createLineRequest(FIRST_LINE_NAME, DEFAULT_LINE_COLOR, 강남역.getId(), 역삼역.getId(), DEFAULT_DISTANCE);
         LineResponse lineResponse = lineService.saveLine(lineRequest);
 
         // when
@@ -294,14 +294,14 @@ public class LineServiceTest {
     @Test
     void deleteNotLastSectionStException() {
         // given
-        Station upStation = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
-        Station downStation = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
+        Station 강남역 = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
+        Station 역삼역 = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
 
-        LineRequest lineRequest = createLineRequest(FIRST_LINE_NAME, DEFAULT_LINE_COLOR, upStation.getId(), downStation.getId(), DEFAULT_DISTANCE);
+        LineRequest lineRequest = createLineRequest(FIRST_LINE_NAME, DEFAULT_LINE_COLOR, 강남역.getId(), 역삼역.getId(), DEFAULT_DISTANCE);
         LineResponse lineResponse = lineService.saveLine(lineRequest);
 
         // when
-        assertThatThrownBy(() -> lineService.deleteSection(lineResponse.getId(), upStation.getId()))
+        assertThatThrownBy(() -> lineService.deleteSection(lineResponse.getId(), 강남역.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

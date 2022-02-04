@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +15,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("구간들 관리")
 public class SectionsTest {
     private static final int DEFAULT_DISTANCE = 5;
     private static final String FIRST_STATION_NAME = "강남역";
@@ -23,14 +25,24 @@ public class SectionsTest {
 
     private static final Line DEFAULT_LINE = new Line("2호선", "bg-green-700");
 
+    private Station 강남역;
+    private Station 역삼역;
+    private Station 삼성역;
+    private Station 잠실역;
+
+    @BeforeEach
+    void setUp() {
+        Station 강남역 = createStation(FIRST_STATION_NAME);
+        Station 역삼역 = createStation(SECOND_STATION_NAME);
+        Station 삼성역 = createStation(THIRD_STATION_NAME);
+        Station 잠실역 = createStation(FOURTH_STATION_NAME);
+    }
+
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가한다.")
     @Test
     void addSection() {
         // given
         Sections sections = createSections();
-        Station 강남역 = createStation(FIRST_STATION_NAME);
-        Station 역삼역 = createStation(SECOND_STATION_NAME);
-        Station 삼성역 = createStation(THIRD_STATION_NAME);
         Section section = createSection(강남역, 역삼역);
 
         // when
@@ -52,9 +64,6 @@ public class SectionsTest {
     @Test
     void addSectionNoneMatchStationException() {
         // given
-        Station 강남역 = createStation(FIRST_STATION_NAME);
-        Station 역삼역 = createStation(SECOND_STATION_NAME);
-        Station 삼성역 = createStation(THIRD_STATION_NAME);
         Sections sections = createSections(createSection(강남역, 역삼역), createSection(역삼역, 삼성역));
 
         Station 동인천역 = createStation("동인천역");
@@ -71,9 +80,6 @@ public class SectionsTest {
     @Test
     void addSectionAllMatchStationException() {
         // given
-        Station 강남역 = createStation(FIRST_STATION_NAME);
-        Station 역삼역 = createStation(SECOND_STATION_NAME);
-        Station 삼성역 = createStation(THIRD_STATION_NAME);
         Sections sections = createSections(createSection(강남역, 역삼역), createSection(역삼역, 삼성역));
         Section section = createSection(강남역, 역삼역);
 
@@ -88,9 +94,6 @@ public class SectionsTest {
     void addSectionInTheMiddle() {
         // given
         Sections sections = createSections();
-        Station 강남역 = createStation(FIRST_STATION_NAME);
-        Station 역삼역 = createStation(SECOND_STATION_NAME);
-        Station 삼성역 = createStation(THIRD_STATION_NAME);
         sections.addSection(createSection(강남역, 삼성역));
 
         Section newSection = createSection(강남역, 역삼역, 2);
@@ -115,9 +118,6 @@ public class SectionsTest {
     void addFirstSection() {
         // given
         Sections sections = createSections();
-        Station 강남역 = createStation(FIRST_STATION_NAME);
-        Station 역삼역 = createStation(SECOND_STATION_NAME);
-        Station 삼성역 = createStation(THIRD_STATION_NAME);
         sections.addSection(createSection(역삼역, 삼성역));
 
         Section newSection = createSection(강남역, 역삼역, 2);
@@ -141,10 +141,6 @@ public class SectionsTest {
     @Test
     void getStations() {
         // given
-        Station 강남역 = createStation(FIRST_STATION_NAME);
-        Station 역삼역 = createStation(SECOND_STATION_NAME);
-        Station 삼성역 = createStation(THIRD_STATION_NAME);
-        Station 잠실역 = createStation(FOURTH_STATION_NAME);
         Sections sections = createSections(createSection(강남역, 역삼역), createSection(역삼역, 삼성역));
         Section section = createSection(삼성역, 잠실역);
 
@@ -162,8 +158,6 @@ public class SectionsTest {
     void removeSection() {
         // given
         Sections sections = createSections();
-        Station 강남역 = createStation(FIRST_STATION_NAME);
-        Station 역삼역 = createStation(SECOND_STATION_NAME);
         Section section = createSection(강남역, 역삼역);
 
         sections.addSection(section);

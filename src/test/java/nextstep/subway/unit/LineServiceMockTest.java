@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@DisplayName("노선 서비스 관리 - Mock")
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
     private static final int DEFAULT_DISTANCE = 5;
