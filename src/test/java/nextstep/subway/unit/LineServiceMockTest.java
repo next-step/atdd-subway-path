@@ -69,7 +69,7 @@ public class LineServiceMockTest {
 
         // then
         // line.findLineById 메서드를 통해 검증
-        LineResponse lineResponse = lineService.findById(1L);
+        LineResponse lineResponse = lineService.findLineById(1L);
         List<String> stationNameList = lineResponse.getStations().stream()
                 .map(StationResponse::getName)
                 .collect(Collectors.toList());
