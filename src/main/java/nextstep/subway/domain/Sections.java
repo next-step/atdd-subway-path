@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
@@ -16,6 +15,11 @@ import java.util.stream.Collectors;
 public class Sections {
     private static final int MIN_SIZE = 1;
     private static final int INDEX_OF_END_SECTION = -1;
+    private static final String ALREADY_REGISTERED_SECTION = "이미 등록된 구간입니다.";
+    private static final String OVER_DISTANCE_SECTION = "길이가 더 긴 구간은 추가할 수 없습니다.";
+    private static final String UNABLE_TO_REMOVE_LAST_SECTION = "구간이 1개일 경우 삭제가 불가능합니다.";
+    private static final String UNABLE_TO_REMOVE_NON_LAST_STATION = "마지막 역만 삭제가 가능합니다.";
+    private static final String UNREGISTERED_STATIONS = "요청한 상/하행역이 모두 노선에 등록되지 않았습니다.";
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -41,11 +45,11 @@ public class Sections {
         boolean hasDownStation = stations.contains(downStation);
 
         if (hasUpStation && hasDownStation) {
-            throw new IllegalArgumentException("이미 등록된 구간입니다.");
+            throw new IllegalArgumentException(ALREADY_REGISTERED_SECTION);
         }
 
         if (!hasUpStation && !hasDownStation) {
-            throw new IllegalArgumentException("요청한 상/하행역이 모두 노선에 등록되지 않았습니다.");
+            throw new IllegalArgumentException(UNREGISTERED_STATIONS);
         }
 
         if (hasUpStation) {
@@ -67,11 +71,11 @@ public class Sections {
 
     public void removeStation(Station newStation) {
         if (sections.size() == MIN_SIZE) {
-            throw new IllegalArgumentException("구간이 1개일 경우 삭제가 불가능합니다.");
+            throw new IllegalArgumentException(UNABLE_TO_REMOVE_LAST_SECTION);
         }
         List<Station> stations = getStations();
         if (!stations.get(stations.size() - 1).equals(newStation)) {
-            throw new IllegalArgumentException("마지막 역만 삭제가 가능합니다.");
+            throw new IllegalArgumentException(UNABLE_TO_REMOVE_NON_LAST_STATION);
         }
         sections.remove(sections.size() - 1);
     }
@@ -104,7 +108,7 @@ public class Sections {
 
         Section oldSection = sections.get(index);
         if (oldSection.getDistance() <= newDistance) {
-            throw new IllegalArgumentException("길이가 더 긴 구간은 추가할 수 없습니다.");
+            throw new IllegalArgumentException(OVER_DISTANCE_SECTION);
         }
         oldSection.updateSection(oldSection.getUpStation(), upStation, oldSection.getDistance() - newDistance);
     }
@@ -119,7 +123,7 @@ public class Sections {
 
         Section oldSection = sections.get(index);
         if (oldSection.getDistance() <= newDistance) {
-            throw new IllegalArgumentException("길이가 더 긴 구간은 추가할 수 없습니다.");
+            throw new IllegalArgumentException(OVER_DISTANCE_SECTION);
         }
         oldSection.updateSection(downStation, oldSection.getDownStation(), oldSection.getDistance() - newDistance);
 
