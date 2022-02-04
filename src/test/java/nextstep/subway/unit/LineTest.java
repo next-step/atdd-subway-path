@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.exception.CannotAddSectionException;
+import nextstep.subway.domain.exception.CannotDeleteSectionException;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -159,6 +160,19 @@ class LineTest {
 
         // then
         assertThat(namesOfStations).containsExactly(gangnam.getName(), yeoksam.getName());
+    }
+
+    @DisplayName("구간에 존재하지 않은 역 삭제 실패")
+    @Test
+    void removeSectionNotExistException() {
+        //when
+        ThrowableAssert.ThrowingCallable actual = () -> loopLine.deleteSection(sunreoung);
+
+        //then
+        assertThatThrownBy(actual)
+                .isInstanceOf(CannotDeleteSectionException.class)
+                .hasMessage(String.format("노선에 없는 역은 삭제할 수 없습니다. [%s]", sunreoung.getName()));
+
     }
 
     @DisplayName("구간이 목록에서 마지막 역 삭제")

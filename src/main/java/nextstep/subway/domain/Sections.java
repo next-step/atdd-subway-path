@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.domain.exception.CannotAddSectionException;
+import nextstep.subway.domain.exception.CannotDeleteSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -164,6 +165,11 @@ public class Sections {
     }
 
     public void deleteSection(Station station) {
+        if (!hasStation(station)) {
+            throw new CannotDeleteSectionException(station.getName());
+        }
+
+
         if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
             throw new IllegalArgumentException();
         }
