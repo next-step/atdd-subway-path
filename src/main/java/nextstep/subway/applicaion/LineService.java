@@ -79,16 +79,7 @@ public class LineService {
                 .orElseThrow(() -> new NotExistLineException(lineId));
 
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
-
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-
-        if (line.isNotEqualDownStation(upStation)) {
-            throw new IllegalArgumentException("노선의 하행선이 구간의 상행선과 다릅니다.");
-        }
-
-        if (line.existStation(downStation)) {
-            throw new IllegalArgumentException("해당 역은 이미 노선에 등록되어 있습니다.");
-        }
 
         line.addSection(upStation, downStation, sectionRequest.getDistance());
 

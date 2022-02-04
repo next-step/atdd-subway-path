@@ -66,10 +66,6 @@ public class Line extends BaseEntity {
         return !upStation.equals(sections.getLastDownStation());
     }
 
-    public boolean existStation(Station downStation) {
-        return sections.existStation(downStation);
-    }
-
     public void deleteSection(Station station) {
         if (haveOnlySection()) {
             throw new IllegalArgumentException("구간이 1개인 경우 삭제가 불가합니다.");
@@ -83,7 +79,7 @@ public class Line extends BaseEntity {
     }
 
     private boolean haveOnlySection() {
-        return sections.getStations().size() == 2;
+        return sections.count() == 1;
     }
 
 }

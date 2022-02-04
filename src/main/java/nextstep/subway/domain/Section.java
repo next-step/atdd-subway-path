@@ -1,9 +1,10 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
-public class Section {
+public class Section implements Comparable<Section> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,12 +21,13 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
 
-    private Section(Line line, Station upStation, Station downStation, int distance) {
+    private Section(Line line, Station upStation, Station downStation, Distance distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -33,15 +35,11 @@ public class Section {
     }
 
     public static Section of(Line line, Station upStation, Station downStation, int distance) {
-        return new Section(line, upStation, downStation, distance);
+        return new Section(line, upStation, downStation, Distance.from(distance));
     }
 
     public Long getId() {
         return id;
-    }
-
-    public Line getLine() {
-        return line;
     }
 
     public Station getUpStation() {
@@ -52,7 +50,34 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
+    public Distance getDistance() {
         return distance;
+    }
+
+    @Override
+    public int compareTo(Section section) {
+        if (upStation.equals(section.getDownStation())) {
+            return 1;
+        }
+
+        if (downStation.equals(section.getUpStation())) {
+            return -1;
+        }
+
+        return 0;
+    }
+
+    public List<Station> getStations() {
+        return List.of(upStation, downStation);
+    }
+
+    public void upStationUpdate(Station downStation, Distance divideDistance) {
+        distance.reduceDistance(divideDistance);
+        this.upStation = downStation;
+    }
+
+    public void downStationUpdate(Station upStation, Distance divideDistance) {
+        distance.reduceDistance(divideDistance);
+        this.downStation = upStation;
     }
 }
