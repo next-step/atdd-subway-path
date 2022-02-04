@@ -7,4 +7,8 @@ public class SectionNotFoundException extends RuntimeException {
     public SectionNotFoundException() {
         super(message);
     }
+
+    public SectionNotFoundException(String message) {
+        super(message);
+    }
 }

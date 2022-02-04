@@ -1,14 +1,14 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.DeleteSectionException;
-import nextstep.subway.exception.DuplicateSectionException;
-import nextstep.subway.exception.SectionDistanceNotValidException;
-import nextstep.subway.exception.SectionValidException;
+import nextstep.subway.exception.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -25,18 +25,7 @@ public class Sections {
         Optional<Section> betweenDownStation = findSectionEqualsUpStation(upStation);
 
         if (betweenDownStation.isPresent()) {
-            Section existSection = betweenDownStation.get();
-            Station existDownStation = existSection.getDownStation();
-            int existSectionDistance = existSection.getDistance();
-
-            if (section.isNotValidateSectionDistance(existSectionDistance)) {
-                throw new SectionDistanceNotValidException();
-            }
-
-            existSection.changeDownStationDistance(downStation, section.getDistance());
-            section.changeStationDistance(downStation, existDownStation, existSectionDistance - section.getDistance());
-
-            this.sections.add(section);
+            addBetweenDownStationSection(section, downStation, betweenDownStation.get());
             return;
         }
 
@@ -59,6 +48,20 @@ public class Sections {
         this.sections.add(section);
     }
 
+    private void addBetweenDownStationSection(Section section, Station downStation, Section existSection) {
+        Station existDownStation = existSection.getDownStation();
+        int existSectionDistance = existSection.getDistance();
+
+        if (section.isNotValidateSectionDistance(existSectionDistance)) {
+            throw new SectionDistanceNotValidException();
+        }
+
+        existSection.changeDownStationDistance(downStation, section.getDistance());
+        section.changeStationDistance(downStation, existDownStation, existSectionDistance - section.getDistance());
+
+        this.sections.add(section);
+    }
+
     public List<Section> getAllSections() {
         return sections;
     }
@@ -68,7 +71,7 @@ public class Sections {
             .stream()
             .map(Section::getDownStation)
             .reduce((first, second) -> second)
-            .orElseThrow(() -> new NoSuchElementException("하행 종점역이 없습니다."));
+            .orElseThrow(() -> new StationNotFoundException(ErrorMessages.SECTION_NOT_FOUND_LAST_DOWN_STATION.getMessage()));
     }
 
     public List<Station> getAllStations() {
@@ -110,11 +113,11 @@ public class Sections {
         Station lastDownStation = getLastDownStation();
 
         if (isNotAvailableDelete()) {
-            throw new DeleteSectionException("구간이 1개 이하인 경우 역을 삭제할 수 없습니다.");
+            throw new DeleteSectionException(ErrorMessages.DELETE_NOT_AVAILABLE_SECTION.getMessage());
         }
 
         if (!lastDownStation.equals(station)) {
-            throw new DeleteSectionException("구간에 일치하는 하행 종점역이 없습니다.");
+            throw new DeleteSectionException(ErrorMessages.SECTION_NOT_FOUND_LAST_DOWN_STATION.getMessage());
         }
 
         Section delete = getByDownStation(lastDownStation);
@@ -126,7 +129,7 @@ public class Sections {
         return sections.stream()
             .filter(section -> section.getDownStation().equals(station))
             .findFirst()
-            .orElseThrow(() -> new NoSuchElementException("일치하는 구간을 찾을 수 없습니다."));
+            .orElseThrow(SectionNotFoundException::new);
     }
 
     private void validateAddSection(Section section) {
@@ -177,7 +180,7 @@ public class Sections {
             .stream()
             .filter(it -> !downStations.contains(it.getUpStation()))
             .findFirst()
-            .orElseThrow(() -> new NoSuchElementException("상행 종점이 상행역인 구간이 없습니다."));
+            .orElseThrow(() -> new SectionNotFoundException(ErrorMessages.SECTION_NOT_FOUND_FIRST_UP_STATION.getMessage()));
     }
 
     private List<Station> getAllDownStations() {
