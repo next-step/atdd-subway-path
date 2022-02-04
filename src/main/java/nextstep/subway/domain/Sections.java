@@ -5,7 +5,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,7 +61,7 @@ public class Sections {
         int index = findDownSection(newSection);
         Section section = sections.get(index);
 
-        if (index == (sections.size() - 1)
+        if (index == lastIndex()
                 && section.isDownStation(newSection.getUpStation())) {
             sections.add(newSection);
             return;
@@ -89,15 +88,19 @@ public class Sections {
     }
 
     public void deleteSection(Station station) {
-        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
+        if (!sections.get(lastIndex()).getDownStation().equals(station)) {
             throw new IllegalArgumentException();
         }
 
-        sections.remove(sections.size() - 1);
+        sections.remove(lastIndex());
     }
 
     public List<Section> getSections() {
         return Collections.unmodifiableList(sections);
+    }
+
+    private int lastIndex() {
+        return sections.size() - 1;
     }
 
     private void validationSection(boolean isUpStation, boolean isDownStation) {

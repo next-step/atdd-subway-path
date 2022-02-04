@@ -208,12 +208,10 @@ public class LineServiceMockTest {
         lineService.saveLine(lineRequest1);
         lineService.saveLine(lineRequest2);
 
-        // TODO : 에러가 발생안하는 경우는 무엇일까?
         // when, then
-        lineService.updateLine(line1.getId(), lineRequest2);
-
-        assertThatThrownBy(() -> lineService.updateLine(line1.getId(), lineRequest2))
-                .isInstanceOf(DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> {
+            lineService.updateLine(line1.getId(), lineRequest2);
+        }).isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @DisplayName("수정할 노선이 없으면 예외 발생")
@@ -242,7 +240,7 @@ public class LineServiceMockTest {
         lineService.deleteLine(lineResponse.getId());
         List<LineResponse> lineResponses = lineService.showLines();
 
-        // then
+        // then가
         assertAll(
                 () -> assertThat(lineResponses).hasSize(0)
         );
