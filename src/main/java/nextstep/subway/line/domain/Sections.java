@@ -16,13 +16,11 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
-import lombok.Getter;
 import nextstep.subway.common.domain.exception.ErrorMessage;
-import nextstep.subway.path.infrastructure.PathFinder;
-import nextstep.subway.path.infrastructure.dto.StationPaths;
+import nextstep.subway.path.domain.PathFinder;
+import nextstep.subway.path.domain.StationPaths;
 import nextstep.subway.station.domain.Station;
 
-@Getter
 @Embeddable
 public class Sections {
     @OneToMany(

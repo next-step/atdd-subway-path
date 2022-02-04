@@ -1,6 +1,7 @@
 package nextstep.subway.path.infrastructure;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -14,7 +15,8 @@ import org.springframework.stereotype.Component;
 import nextstep.subway.common.domain.exception.ErrorMessage;
 import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Section;
-import nextstep.subway.path.infrastructure.dto.StationPaths;
+import nextstep.subway.path.domain.PathFinder;
+import nextstep.subway.path.domain.StationPaths;
 import nextstep.subway.station.domain.Station;
 
 @Component
@@ -54,9 +56,8 @@ public class JgraphtPathFinder implements PathFinder {
     private void addAllVertex(WeightedMultigraph<Station, DefaultWeightedEdge> graph, List<Section> sections) {
         Stream<Station> upStationStream = sections.stream().map(Section::getUpStation);
         Stream<Station> downStationStream = sections.stream().map(Section::getDownStation);
-        List<Station> stations = Stream.concat(upStationStream, downStationStream)
-                                       .distinct()
-                                       .collect(Collectors.toList());
+        Set<Station> stations = Stream.concat(upStationStream, downStationStream)
+                                      .collect(Collectors.toSet());
         stations.forEach(graph::addVertex);
     }
 

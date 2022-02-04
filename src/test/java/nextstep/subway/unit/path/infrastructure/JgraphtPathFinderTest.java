@@ -6,19 +6,19 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 
 import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Sections;
+import nextstep.subway.path.domain.StationPaths;
 import nextstep.subway.path.infrastructure.JgraphtPathFinder;
-import nextstep.subway.path.infrastructure.PathFinder;
-import nextstep.subway.path.infrastructure.dto.StationPaths;
 import nextstep.subway.station.domain.Station;
 
 @DisplayName("경로 찾기 테스트")
-public class PathFinderTest {
+public class JgraphtPathFinderTest {
+    private JgraphtPathFinder pathFinder;
+
     private Station 교대역;
     private Station 강남역;
     private Station 양재역;
@@ -40,6 +40,7 @@ public class PathFinderTest {
      */
     @BeforeEach
     public void setUp() {
+        pathFinder = new JgraphtPathFinder();
         교대역 = new Station(1L, "교대역");
         강남역 = new Station(2L, "강남역");
         양재역 = new Station(3L, "양재역");
@@ -62,16 +63,9 @@ public class PathFinderTest {
                             .get();
     }
 
-    private static Stream<PathFinder> pathFinders() {
-        return Stream.of(
-            new JgraphtPathFinder()
-        );
-    }
-
     @DisplayName("최단 경로 찾기")
-    @MethodSource("pathFinders")
-    @ParameterizedTest
-    void findShortestPaths(PathFinder pathFinder) {
+    @Test
+    void findShortestPaths() {
         StationPaths path = allSections.shortestPaths(pathFinder, 교대역, 양재역);
 
         assertThat(path.getStations()).containsExactly(교대역, 남부터미널역, 양재역);
@@ -79,17 +73,15 @@ public class PathFinderTest {
     }
 
     @DisplayName("최단 경로 찾기 실패 - 출발역과 도착역이 같은 경우")
-    @MethodSource("pathFinders")
-    @ParameterizedTest
-    void findShortestPathsFailCase1(PathFinder pathFinder) {
+    @Test
+    void findShortestPathsFailCase1() {
         assertThatThrownBy(() -> allSections.shortestPaths(pathFinder, 교대역, 교대역))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("최단 경로 찾기 실패 - 출발역과 도착역이 연결되어 있지 않은 경우")
-    @MethodSource("pathFinders")
-    @ParameterizedTest
-    void findShortestPathsFailCase2(PathFinder pathFinder) {
+    @Test
+    void findShortestPathsFailCase2() {
         Line 사호선 = new Line(3L, "삼호선", "red");
         Station 동작역 = new Station(5L, "동작역");
         Station 이촌역 = new Station(6L, "이촌역");
@@ -100,9 +92,8 @@ public class PathFinderTest {
     }
 
     @DisplayName("최단 경로 찾기 실패 - 존재하지 않는 출발역이나 도착역을 조회할 경우")
-    @MethodSource("pathFinders")
-    @ParameterizedTest
-    void findShortestPathsFailCase3(PathFinder pathFinder) {
+    @Test
+    void findShortestPathsFailCase3() {
         Station 유령역 = new Station("유령역");
 
         assertThatThrownBy(() -> allSections.shortestPaths(pathFinder, 교대역, 유령역))

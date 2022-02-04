@@ -11,8 +11,8 @@ import nextstep.subway.line.domain.Sections;
 import nextstep.subway.line.domain.repository.LineRepository;
 import nextstep.subway.path.application.dto.PathRequest;
 import nextstep.subway.path.application.dto.PathResponse;
-import nextstep.subway.path.infrastructure.PathFinder;
-import nextstep.subway.path.infrastructure.dto.StationPaths;
+import nextstep.subway.path.domain.PathFinder;
+import nextstep.subway.path.domain.StationPaths;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 
@@ -27,7 +27,7 @@ public class PathFacade {
     public PathResponse findShortestPaths(PathRequest pathRequest) {
         Station source = stationService.findById(pathRequest.getSource());
         Station target = stationService.findById(pathRequest.getTarget());
-        StationPaths stationPaths = pathFinder.findShortestPaths(allSections().getValues(), source, target);
+        StationPaths stationPaths = allSections().shortestPaths(pathFinder, source, target);
 
         return PathResponse.from(stationPaths);
     }

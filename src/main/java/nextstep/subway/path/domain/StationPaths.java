@@ -1,4 +1,4 @@
-package nextstep.subway.path.infrastructure.dto;
+package nextstep.subway.path.domain;
 
 import java.util.List;
 

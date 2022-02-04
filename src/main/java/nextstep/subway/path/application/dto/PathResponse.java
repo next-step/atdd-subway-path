@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import lombok.Builder;
 import lombok.Getter;
-import nextstep.subway.path.infrastructure.dto.StationPaths;
+import nextstep.subway.path.domain.StationPaths;
 import nextstep.subway.station.application.dto.StationResponse;
 
 @Getter
@@ -27,7 +27,9 @@ public class PathResponse {
                        .collect(Collectors.toList());
         return PathResponse.builder()
             .stations(stations)
-            .distance(stationPath.getDistance().getValue())
+            .distance(stationPath.getDistance()
+                                 .getValue()
+            )
             .build();
     }
 }
