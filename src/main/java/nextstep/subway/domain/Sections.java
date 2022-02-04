@@ -32,7 +32,6 @@ public class Sections {
 
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
-        int newDistance = section.getDistance();
         List<Station> stations = getStations();
 
         boolean hasUpStation = stations.contains(upStation);
@@ -95,7 +94,6 @@ public class Sections {
         }
 
         Station upStation = section.getUpStation();
-        Station downStation = section.getDownStation();
         int newDistance = section.getDistance();
 
         Section oldSection = sections.get(index);
@@ -110,7 +108,6 @@ public class Sections {
             return;
         }
 
-        Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
         int newDistance = section.getDistance();
 
