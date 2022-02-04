@@ -5,13 +5,13 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
     private static final int FIRST_SECTION_INDEX = 0;
-    private static final int NONE_SECTION_INDEX = -1;
     private static final String ALL_MATCH_SECTION_ERROR_MESSAGE = "상행역과 하행역이 모두 등록된 상태입니다.";
     private static final String NONE_MATCH_SECTION_ERROR_MESSAGE = "상행역과 하행역이 모두 등록되지 않았습니다.";
 
@@ -77,6 +77,15 @@ public class Sections {
             return Collections.emptyList();
         }
 
+        Comparator<Section> sortSection = new Comparator<Section>() {
+            @Override
+            public int compare(Section o1, Section o2) {
+                return o2.getUpStation().equals(o1.getDownStation()) ? -1 : 0;
+            }
+        };
+
+        Collections.sort(sections, sortSection);
+
         List<Station> stations = sections.stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
@@ -97,11 +106,6 @@ public class Sections {
     public List<Section> getSections() {
         return Collections.unmodifiableList(sections);
     }
-
-//    private boolean isFirstSection(int index, Section newSection) {
-//        return index == FIRST_SECTION_INDEX
-//                && sections.get(index).matchUpStation(newSection.getDownStation());
-//    }
 
     private void validationSection(boolean isUpStation, boolean isDownStation) {
         if (sections.isEmpty()) {
