@@ -1,10 +1,14 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.path.NotFoundPathException;
+import nextstep.subway.exception.path.SameStationException;
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ShortestPathChecker {
 
@@ -24,8 +28,14 @@ public class ShortestPathChecker {
     }
 
     public List<Station> findShortestPath(Station source, Station target) {
-        return dijkstraShortestPath.getPath(source, target)
-                .getVertexList();
+        validatePath(source, target);
+        GraphPath<Station, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(source, target);
+
+        if (Objects.isNull(path)) {
+            throw new NotFoundPathException(source.getName(), target.getName());
+        }
+
+        return path.getVertexList();
     }
 
     private void initGraph(List<Line> lines) {
@@ -43,6 +53,12 @@ public class ShortestPathChecker {
         sections.stream()
                 .forEach(it -> graph.setEdgeWeight(
                         graph.addEdge(it.getUpStation(), it.getDownStation()), it.getDistance()));
+    }
+
+    private void validatePath(Station source, Station target) {
+        if (Objects.equals(source, target)) {
+            throw new SameStationException();
+        }
     }
 
 }

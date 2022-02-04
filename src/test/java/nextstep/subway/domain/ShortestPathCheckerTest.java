@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.path.NotFoundPathException;
+import nextstep.subway.exception.path.SameStationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철 최단 경로 탐색")
 class ShortestPathCheckerTest {
@@ -81,6 +84,29 @@ class ShortestPathCheckerTest {
 
         // then
         assertThat(path).containsExactly(판교역, 양재역, 남부터미널역, 교대역);
+    }
+
+    @DisplayName("출발역과 도착역은 같을 수 없다")
+    @Test
+    void validatePath() {
+        // given
+        ShortestPathChecker checker = ShortestPathChecker.of(Arrays.asList(신분당선, 이호선, 삼호선));
+
+        // then
+        assertThatThrownBy(() -> checker.findShortestPath(판교역, 판교역))
+                .isInstanceOf(SameStationException.class);
+    }
+
+    @DisplayName("경로를 찾을 수 없는가 경우 예외 처리")
+    @Test
+    void validatePath_nonPath() {
+        // given
+        Line 노선 = Line.of("노선", "green", 교대역, 남부터미널역, 50);
+        ShortestPathChecker checker = ShortestPathChecker.of(Arrays.asList(신분당선, 노선));
+
+        // then
+        assertThatThrownBy(() -> checker.findShortestPath(판교역, 교대역))
+                .isInstanceOf(NotFoundPathException.class);
     }
 
 }
