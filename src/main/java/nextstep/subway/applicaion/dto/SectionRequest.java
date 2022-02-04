@@ -23,4 +23,10 @@ public class SectionRequest {
     public int getDistance() {
         return distance;
     }
+
+    public SectionRequest(Section section) {
+        this.downStationId = section.getDownStation().getId();
+        this.upStationId = section.getUpStation().getId();
+        this.distance = section.getDistance();
+    }
 }
