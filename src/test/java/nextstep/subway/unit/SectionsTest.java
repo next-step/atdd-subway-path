@@ -214,6 +214,22 @@ class SectionsTest {
         assertThat(sections.getAllStations()).containsExactly(강남역, 선릉역, 삼성역);
     }
 
+    @Test
+    @DisplayName("중간역을 제거하면 구간이 재배치 후 거리가 합쳐진다.")
+    void rearrangeSectionDistance() {
+        Section 강남역삼구간 = new Section(line, 강남역, 역삼역, 7);
+        Section 역삼선릉구간 = new Section(line, 역삼역, 선릉역, 4);
+
+        Sections sections = new Sections();
+        sections.add(강남역삼구간);
+        sections.add(역삼선릉구간);
+
+        sections.remove(역삼역);
+
+        Section updatedSection = getFirstSection(sections.getAllSections(), 강남역);
+        assertThat(updatedSection.getDistance()).isEqualTo(11);
+    }
+
     private Section getFirstSection(List<Section> allSections, Station station) {
         return allSections
             .stream()
