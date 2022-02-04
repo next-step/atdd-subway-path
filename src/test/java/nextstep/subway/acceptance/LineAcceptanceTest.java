@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import static nextstep.subway.acceptance.LineFixture.*;
-import static nextstep.subway.acceptance.LineSteps.*;
-import static nextstep.subway.acceptance.StationFixture.*;
-import static nextstep.subway.acceptance.StationSteps.지하철_역_생성_되어있음;
+import static nextstep.subway.acceptance.steps.LineSteps.*;
+import static nextstep.subway.acceptance.steps.StationSteps.지하철_역_생성_되어있음;
+import static nextstep.subway.fixture.LineFixture.*;
+import static nextstep.subway.fixture.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 

@@ -8,17 +8,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
-import static nextstep.subway.acceptance.LineFixture.*;
-import static nextstep.subway.acceptance.StationFixture.*;
+import static nextstep.subway.fixture.LineFixture.*;
+import static nextstep.subway.fixture.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("구간들 단위 테스트(Sections)")
 class SectionsTest {
 
-    public static final String 양재_시민의_숲 = "양재 시민의 숲";
     private Station upStation;
     private Station downStation;
     private Line line;
@@ -38,7 +35,7 @@ class SectionsTest {
     void addSectionByStationInMultipleSections() {
         // given
         final Station firstExtraStation = new Station(양재역);
-        final Station secondExtraStation = new Station(양재_시민의_숲);
+        final Station secondExtraStation = new Station(양재시민의숲역);
 
         // when
         sections.addSection(new Section(line, upStation, firstExtraStation, 강남_양재_거리));
@@ -51,6 +48,7 @@ class SectionsTest {
     @DisplayName("구간 목록 맨뒤에 새로운 구간을 추가할 경우")
     @Test
     void addSectionExtensionDownTerminalStation() {
+        // A-B == B-D 에서 B-C 추가할때의 로직이 이상해서 테스트를 아래와 같이 바꿨습니다.
         // given
         final Station extraStation = new Station(정자역);
         final Section section = new Section(line, downStation, extraStation, 판교_정자_거리);

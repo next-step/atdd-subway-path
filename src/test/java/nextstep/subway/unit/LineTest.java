@@ -7,8 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static nextstep.subway.acceptance.LineFixture.*;
-import static nextstep.subway.acceptance.StationFixture.*;
+import static nextstep.subway.fixture.LineFixture.*;
+import static nextstep.subway.fixture.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LineTest {

@@ -1,4 +1,4 @@
-package nextstep.subway.acceptance;
+package nextstep.subway.acceptance.steps;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 
-import static nextstep.subway.acceptance.LineFixture.*;
+import static nextstep.subway.fixture.LineFixture.*;
 
 public class LineSteps {
 
@@ -91,10 +91,6 @@ public class LineSteps {
                 .delete(LINE_BASE_PATH + lineId)
                 .then().log().all()
                 .extract();
-    }
-
-    public static Long 지하철_노선이_구간_등록되어_있음(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
-        return 지하철_노선_구간_등록을_요청한다(lineId, upStationId, downStationId, distance).jsonPath().getLong("id");
     }
 
     public static ExtractableResponse<Response> 지하철_노선_구간_등록을_요청한다(final Long lineId, final Long upStationId, final Long downStationId, final int distance) {

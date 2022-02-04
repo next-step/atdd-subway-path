@@ -7,9 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static nextstep.subway.acceptance.LineFixture.*;
-import static nextstep.subway.acceptance.StationFixture.강남역;
-import static nextstep.subway.acceptance.StationFixture.판교역;
+import static nextstep.subway.fixture.LineFixture.*;
+import static nextstep.subway.fixture.StationFixture.강남역;
+import static nextstep.subway.fixture.StationFixture.판교역;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -93,7 +93,7 @@ class SectionTest {
         final int otherDistance = 10;
         final Section other = new Section(line, otherFirstStation, otherSecondStation, otherDistance);
 
-        // then
+        // when and then
         assertThatThrownBy(() -> section.subtractDistance(other))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("other distance is equal or bigger");
