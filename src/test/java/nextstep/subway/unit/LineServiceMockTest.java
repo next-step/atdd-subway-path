@@ -249,7 +249,7 @@ public class LineServiceMockTest {
 
     @DisplayName("구간을 추가할 노선이 조회안되면 예외 발생.")
     @Test
-    void addSectionNotLineException() {
+    void addSectionNotFindLineException() {
         // given
         Station upStation = createStationEntity(FIRST_STATION_NAME);
         Station downStation = createStationEntity(SECOND_STATION_NAME);
@@ -266,7 +266,7 @@ public class LineServiceMockTest {
 
     @DisplayName("추가할 구간의 역이 조회안되면 예외 발생.")
     @Test
-    void addSectionNotStationException() {
+    void addSectionNotFindStationException() {
         // given
         SectionRequest request = createSectionRequest(1L, 2L, DEFAULT_DISTANCE);
 
@@ -337,7 +337,7 @@ public class LineServiceMockTest {
 
     @DisplayName("구간을 삭제할 때 노선이 조회안되면 예외 발생")
     @Test
-    void deleteSectionNotLineException() {
+    void deleteSectionNotFindLineException() {
         // given
         when(lineRepository.findById(any())).thenThrow(IllegalArgumentException.class);
 
@@ -348,7 +348,7 @@ public class LineServiceMockTest {
 
     @DisplayName("구간의 마지막 역이 아니면 삭제 요청 시 예외 발생")
     @Test
-    void deleteNotLastSectionStException() {
+    void deleteSectionNotLastException() {
         // given
         Line line = createLineEntity(FIRST_LINE_NAME);
         Station upStation = createStationEntity(FIRST_STATION_ID, FIRST_STATION_NAME);
