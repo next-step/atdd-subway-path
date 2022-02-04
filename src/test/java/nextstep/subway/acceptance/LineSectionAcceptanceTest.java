@@ -208,7 +208,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 구간 추가 요청하면,
      * Then 구간 추가가 실패한다.
      */
-    @DisplayName("구간 추가 시 상행역과 하행역 중 하나도 구간에 등록되어 있지 않으면 등록 불가.(구간이 1개 이상일 경우)")
+    @DisplayName("구간 추가 시 상행역과 하행역 중 하나도 구간에 등록되어 있지 않으면 등록 불가.(최초 등록 시 제외)")
     @Test
     void exceptionAddSectionNotFoundStation() {
         // given
@@ -217,6 +217,20 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(논현역, 신논현역, 10));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 구간이 1개인 경우 삭제 요청을 하면,
+     * Then 구간 제거가 실패한다.
+     */
+    @DisplayName("구간이 1개이면 삭제 불가.")
+    @Test
+    void exceptionOneSectionRemove() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

@@ -3,7 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.ui.exception.AddSectionException;
+import nextstep.subway.ui.exception.SectionException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -102,8 +102,6 @@ class LineTest {
         assertThat(section.getUpStation().getName()).isEqualTo("증미역");
     }
 
-
-
     @DisplayName("구간이 목록에서 마지막 역 삭제")
     @Test
     void removeSection() {
@@ -131,7 +129,7 @@ class LineTest {
         // when
         assertThatThrownBy(() -> line.addSection(section2))
                 // then
-                .isInstanceOf(AddSectionException.class)
+                .isInstanceOf(SectionException.class)
                 .hasMessage("새로 추가되는 구간 거리는 기존 구간의 거리 이상일 수 없습니다. 기존 구간 거리 = 10, 신규 구간 거리 = 10");
     }
 
@@ -146,7 +144,7 @@ class LineTest {
         // when
         assertThatThrownBy(() -> line.addSection(section2))
                 // then
-                .isInstanceOf(AddSectionException.class)
+                .isInstanceOf(SectionException.class)
                 .hasMessage("상행역과 하행역 모두 등록된 역입니다. 상행역 = 가양역, 하행역 = 증미역");
     }
 
@@ -161,7 +159,7 @@ class LineTest {
         // when
         assertThatThrownBy(() -> line.addSection(section2))
                 // then
-                .isInstanceOf(AddSectionException.class)
+                .isInstanceOf(SectionException.class)
                 .hasMessage("상행역과 하행역 모두 구간에 존재하지 않는 역입니다. 상행역 = 등촌역, 하행역 = 신목동역");
     }
 }

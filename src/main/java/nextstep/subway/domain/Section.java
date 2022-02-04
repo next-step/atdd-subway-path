@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.ui.exception.AddSectionException;
+import nextstep.subway.ui.exception.SectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
@@ -62,7 +62,7 @@ public class Section {
 
     private void validateDuplicationSection(Section newSection) {
         if (this.upStation.equals(newSection.upStation) && this.downStation.equals(newSection.getDownStation())) {
-            throw new AddSectionException(
+            throw new SectionException(
                     String.format("상행역과 하행역 모두 등록된 역입니다. 상행역 = %s, 하행역 = %s",
                             this.upStation.getName(), this.downStation.getName()));
         }

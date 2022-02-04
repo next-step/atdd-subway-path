@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.ui.exception.AddSectionException;
+import nextstep.subway.ui.exception.SectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -16,7 +16,7 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    void addSection(Section newSection) {
+    public void addSection(Section newSection) {
         validateStationNotExistInSection(newSection);
         for (Section existingSection : sections) {
             existingSection.updateAddLineBetweenSection(newSection);
@@ -25,7 +25,7 @@ public class Sections {
     }
 
     void remove(Station downStation) {
-        // 중간역 구간 제거
+        validateOneSection();
         Section removeSection = null;
         for (Section existingSection : sections) {
             if (existingSection.getDownStation().equals(downStation)) {
@@ -40,6 +40,7 @@ public class Sections {
             }
         }
     }
+    
 
     List<Station> getStations() {
         return getStations(getFirstSection());
@@ -63,9 +64,15 @@ public class Sections {
                 !getDownStations().contains(newSection.getUpStation()) &&
                 !getDownStations().contains(newSection.getDownStation()) &&
                 !sections.isEmpty()) {
-            throw new AddSectionException(
+            throw new SectionException(
                     String.format("상행역과 하행역 모두 구간에 존재하지 않는 역입니다. 상행역 = %s, 하행역 = %s",
                             newSection.getUpStation().getName(), newSection.getDownStation().getName()));
+        }
+    }
+
+    private void validateOneSection() {
+        if (sections.size() <= 1) {
+            throw new SectionException("구간이 1개 이하인 경우 삭제할 수 없습니다.");
         }
     }
 

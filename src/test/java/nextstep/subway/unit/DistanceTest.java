@@ -4,7 +4,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
-import nextstep.subway.ui.exception.AddSectionException;
+import nextstep.subway.ui.exception.SectionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +22,7 @@ class DistanceTest {
         // when
         assertThatThrownBy(() -> distance.subtract(10))
                 // then
-                .isInstanceOf(AddSectionException.class)
+                .isInstanceOf(SectionException.class)
                 .hasMessage("새로 추가되는 구간 거리는 기존 구간의 거리 이상일 수 없습니다. 기존 구간 거리 = 10, 신규 구간 거리 = 10");
     }
 
