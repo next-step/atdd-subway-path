@@ -5,8 +5,6 @@ import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
-    @Embedded
-    private final Sections sections = new Sections();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -14,10 +12,20 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    protected Line() {
+    @Embedded
+    private Sections sections = new Sections();
+
+
+    public Line() {
     }
 
     public Line(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this.sections.init(new Section(upStation, downStation, distance));
         this.name = name;
         this.color = color;
     }
@@ -46,8 +54,12 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public List<Section> getSections() {
-        return sections.getSections();
+    public Sections getSections() {
+        return sections;
+    }
+
+    public void deleteSection(Section section) {
+        sections.delete(section);
     }
 
     public void deleteLastSection() {
@@ -60,22 +72,5 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section) {
         sections.addSection(section);
-    }
-
-    public void initSection(Section section) {
-        sections.initSection(section);
-    }
-
-    public void deleteSection(Long stationId) {
-        Section downSection = null;
-        Section upSection = null;
-        if (getSections().stream().filter(section -> section.getUpStation().getId() == stationId).findFirst().isPresent()) {
-            downSection = getSections().stream().filter(section -> section.getUpStation().getId() == stationId).findFirst().get();
-            sections.getSections().remove(downSection);
-        }
-        if (getSections().stream().filter(section -> section.getDownStation().getId() == stationId).findFirst().isPresent()) {
-            upSection = getSections().stream().filter(section -> section.getUpStation().getId() == stationId).findFirst().get();
-            sections.getSections().remove(upSection);
-        }
     }
 }
