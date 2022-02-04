@@ -23,13 +23,6 @@ public class PathResponse {
         return response;
     }
 
-    @Override
-    public String toString() {
-        return "PathResponse{" +
-                "stations=" + stations +
-                '}';
-    }
-
     public static class StationResponse {
 
         private Long id;
@@ -57,14 +50,6 @@ public class PathResponse {
             return createdAt;
         }
 
-        @Override
-        public String toString() {
-            return "StationResponse{" +
-                    "id=" + id +
-                    ", name='" + name + '\'' +
-                    ", createdAt=" + createdAt +
-                    '}';
-        }
     }
 
 }
