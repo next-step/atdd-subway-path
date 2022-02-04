@@ -13,8 +13,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -44,11 +44,29 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public List<Section> getSections() {
+        return sections.getAllSections();
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public void update(String name, String color) {
+        if (name != null) {
+            this.name = name;
+        }
+
+        if (color != null) {
+            this.color = color;
+        }
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public List<Station> getAllStations() {
+        return sections.getAllStations();
+    }
+
+    public void removeSection(Station lastDownStation) {
+        sections.removeSection(lastDownStation);
     }
 }
