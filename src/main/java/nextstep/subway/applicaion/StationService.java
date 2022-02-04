@@ -19,25 +19,28 @@ public class StationService {
         this.stationRepository = stationRepository;
     }
 
+    /* 역 생성을 처리한다. */
     public StationResponse saveStation(StationRequest stationRequest) {
-        Station station = stationRepository.save(new Station(stationRequest.getName()));
-        return createStationResponse(station);
+        Station station = createStation(stationRequest.getName());
+        return StationResponse.from(station);
     }
 
+    private Station createStation(String name) {
+        return stationRepository.save(Station.from(name));
+    }
+
+    /* 모든 역의 정보를 반환한다. */
     @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-                .map(this::createStationResponse)
+                .map(StationResponse::from)
                 .collect(Collectors.toList());
     }
 
+    /* 역 삭제를 처리한다. */
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
-    }
-
-    public StationResponse createStationResponse(Station station) {
-        return StationResponse.from(station);
     }
 }

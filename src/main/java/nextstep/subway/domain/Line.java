@@ -1,11 +1,15 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.handler.exception.SectionException;
 import nextstep.subway.handler.validator.SectionValidator;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static nextstep.subway.handler.exception.ErrorCode.NO_CORRECT_SECTION;
 
 @Entity
 public class Line extends BaseEntity {
@@ -74,37 +78,46 @@ public class Line extends BaseEntity {
         insertSection(section);
     }
 
-    private void insertSection(Section section) {
-        // 새로운 구간의 상행역과 기존 구간의 상행역이 같다면
-        // 새로운 구간의 하행역을 상행역으로, 기존 구간의 하행역을 하행역으로 갖는 구간을 생성하고
-        // 기존 구간을 삭제하면서
-        // 입력된 구간을 추가한다.
+    private void insertSection(Section insertedSection) {
+        bothUpStationSame(insertedSection);
+        bothDownStationSame(insertedSection);
+
+        sections.add(insertedSection);
+    }
+
+    private void bothUpStationSame(Section insertedSection) {
         sections.stream()
-                .filter(oriSection -> oriSection.isUpStation(section.getUpStation())
-                        && oriSection.isNotDownStation(section.getDownStation()))
+                .filter(oldSection -> sameUpDifferentDown(insertedSection, oldSection))
                 .findFirst()
-                .ifPresent(oriSection -> {
-                    pushSection(section.getDownStation(), oriSection.getDownStation(),
-                            oriSection.getDistance() - section.getDistance());
-                    sections.remove(oriSection);
-                });
+                .ifPresent(oldSection -> pushNewRemoveOld(insertedSection.getDownStation(), oldSection.getDownStation(),
+                        extractDistance(insertedSection, oldSection), oldSection));
+    }
 
+    private boolean sameUpDifferentDown(Section insertedSection, Section oldSection) {
+        return oldSection.isUpStation(insertedSection.getUpStation())
+                && oldSection.isNotDownStation(insertedSection.getDownStation());
+    }
 
-        // 새로운 구간의 하행역과 기존 구간의 하행역이 같다면
-        // 새로운 구간의 상행역을 하행역으로, 기존 구간의 상행역을 상행역으로 갖는 구간을 생성하고
-        // 기존 구간을 삭제하면서
-        // 입력된 구간을 추가한다.
+    private void bothDownStationSame(Section insertedSection) {
         sections.stream()
-                .filter(oriSection -> oriSection.isDownStation(section.getDownStation())
-                        && oriSection.isNotUpStation(section.getUpStation()))
+                .filter(oldSection -> sameDownDifferentUp(insertedSection, oldSection))
                 .findFirst()
-                .ifPresent(oriSection -> {
-                    pushSection(oriSection.getUpStation(), section.getUpStation(),
-                            oriSection.getDistance() - section.getDistance());
-                    sections.remove(oriSection);
-                });
+                .ifPresent(oldSection -> pushNewRemoveOld(oldSection.getUpStation(), insertedSection.getUpStation(),
+                        extractDistance(insertedSection, oldSection), oldSection));
+    }
 
-        sections.add(section);
+    private boolean sameDownDifferentUp(Section insertedSection, Section oldSection) {
+        return oldSection.isDownStation(insertedSection.getDownStation())
+                && oldSection.isNotUpStation(insertedSection.getUpStation());
+    }
+
+    private int extractDistance(Section insertedSection, Section oldSection) {
+        return oldSection.getDistance() - insertedSection.getDistance();
+    }
+
+    private void pushNewRemoveOld(Station upStation, Station downStation, int distance, Section oldSection) {
+        pushSection(upStation, downStation, distance);
+        sections.remove(oldSection);
     }
 
     private void pushSection(Station upStation, Station downStation, int newDistance) {
@@ -153,5 +166,20 @@ public class Line extends BaseEntity {
 
     public boolean hasStation(Station station) {
         return sections.stream().anyMatch(section -> section.hasStation(station));
+    }
+
+    public boolean isEmpty() {
+        return sections.isEmpty();
+    }
+
+    public void removeSection(Section targetSection) {
+        sections.remove(targetSection);
+    }
+
+    public Section findSectionByStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.hasDownStation(station))
+                .findFirst()
+                .orElseThrow(() -> new SectionException(NO_CORRECT_SECTION));
     }
 }

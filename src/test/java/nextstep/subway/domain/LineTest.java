@@ -34,14 +34,15 @@ class LineTest {
 
         // given
         Station 역삼역 = createStation(3L, "역삼역");
+        Station 교대역 = createStation(4L, "교대역");
 
         // (1) when/then
         이호선.addSection(createSection(이호선, 역삼역, 강남역, 7));
         assertThat(이호선.isUpStation(역삼역)).isTrue();
 
         // (2) when/then
-        이호선.addSection(createSection(이호선, 선릉역, 역삼역, 7));
-        assertThat(이호선.isDownStation(역삼역)).isTrue();
+        이호선.addSection(createSection(이호선, 선릉역, 교대역, 7));
+        assertThat(이호선.isDownStation(교대역)).isTrue();
     }
 
     @Test
