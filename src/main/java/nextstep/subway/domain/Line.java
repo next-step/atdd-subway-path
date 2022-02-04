@@ -60,7 +60,6 @@ public class Line extends BaseEntity {
     public String getColor() {
         return color;
     }
-
     public int sectionsSize() {
         return sections.size();
     }

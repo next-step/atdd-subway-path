@@ -37,7 +37,6 @@ public class Sections {
             section.updateRemoveLineBetweenSection(removeSection);
         }
     }
-    
 
     List<Station> getStations() {
         return getStations(getFirstSection());

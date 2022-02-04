@@ -254,7 +254,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
-
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId, int distance) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();

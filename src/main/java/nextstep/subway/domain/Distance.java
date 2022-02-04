@@ -34,5 +34,4 @@ public class Distance {
     public int getDistance() {
         return distance;
     }
-
 }
