@@ -25,18 +25,18 @@ public class Sections {
 
         validateSection(newSection);
 
-        if (canAddToBetweenSections(newSection)) {
-            addToBetweenSections(newSection);
-            return;
-        }
-
-        if (canAddToFirstSection(newSection)) {
+        if (isFirstStation(newSection.getDownStation())) {
             addToFirstSection(newSection);
             return;
         }
 
-        if (canAddToLastSection(newSection)) {
+        if (isLastStation(newSection.getUpStation())) {
             addToLastSection(newSection);
+            return;
+        }
+
+        if (hasSameUpStation(newSection.getUpStation())) {
+            addToBetweenSections(newSection);
             return;
         }
 
@@ -54,27 +54,26 @@ public class Sections {
                 .anyMatch(section -> section.isUpStation(station) || section.isDownStation(station));
     }
 
+    private boolean isLastStation(Station station) {
+        return getLastSection().isDownStation(station);
+    }
+
     private void addToLastSection(Section newSection) {
         sections.add(newSection);
     }
 
-    private boolean canAddToLastSection(Section newSection) {
-        return sections.stream()
-                .anyMatch(section -> section.isDownStation(newSection.getUpStation()));
+    private boolean isFirstStation(Station station) {
+        return sections.get(0)
+                .isUpStation(station);
     }
 
     private void addToFirstSection(Section newSection) {
         sections.add(0, newSection);
     }
 
-    private boolean canAddToFirstSection(Section newSection) {
+    private boolean hasSameUpStation(Station station) {
         return sections.stream()
-                .anyMatch(section -> section.isUpStation(newSection.getDownStation()));
-    }
-
-    private boolean canAddToBetweenSections(Section newSection) {
-        return sections.stream()
-                .anyMatch(section -> section.isUpStation(newSection.getUpStation()));
+                .anyMatch(section -> section.isUpStation(station));
     }
 
     private void addToBetweenSections(Section newSection) {
@@ -138,7 +137,7 @@ public class Sections {
     }
 
     private void validateIsLastStation(Long stationId) {
-        if (!isLastStation(stationId)) {
+        if (!hasLastStation(stationId)) {
             throw new RemoveSectionFailException();
         }
     }
@@ -149,7 +148,7 @@ public class Sections {
         }
     }
 
-    private boolean isLastStation(Long stationId) {
+    private boolean hasLastStation(Long stationId) {
         return getLastDownStation().getId()
                 .equals(stationId);
     }
