@@ -27,25 +27,49 @@ class LineTest {
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
     @Test
-    void addSection() {
+    void addLastSection() {
         이호선.addSection(역삼역, 합정역, 50);
 
-        assertThat(이호선.getSections().getStations()).contains(강남역, 역삼역, 합정역);
+        assertThat(이호선.getSections().getStations()).containsExactly(강남역, 역삼역, 합정역);
+    }
+
+    @DisplayName("구간 목록 중간에 새로운 구간을 추가할 경우(상행 일치)")
+    @Test
+    void addUpStationMiddleSection() {
+        이호선.addSection(강남역, 합정역, 50);
+
+        assertThat(이호선.getSections().getStations()).containsExactly(강남역, 합정역, 역삼역);
+    }
+
+    @DisplayName("구간 목록 중간에 새로운 구간을 추가할 경우(하행 일치)")
+    @Test
+    void addDownStationMiddleSection() {
+        이호선.addSection(합정역, 역삼역, 50);
+
+        assertThat(이호선.getSections().getStations()).containsExactly(강남역, 합정역, 역삼역);
+    }
+
+    @DisplayName("구간 목록 처음에 새로운 구간을 추가할 경우")
+    @Test
+    void addFirstSection() {
+        이호선.addSection(합정역, 강남역, 50);
+
+        assertThat(이호선.getSections().getStations()).containsExactly(합정역, 강남역, 역삼역);
     }
 
     @DisplayName("노선에 속해있는 역 목록 조회")
     @Test
     void getStations() {
-        assertThat(이호선.getSections().getStations()).contains(강남역, 역삼역);
+        assertThat(이호선.getSections().getStations()).containsExactly(강남역, 역삼역);
     }
 
-    @DisplayName("구간이 목록에서 마지막 역 삭제")
+    @DisplayName("구간 목록에서 마지막 역 삭제")
     @Test
     void removeSection() {
         이호선.addSection(역삼역, 합정역, 50);
 
         이호선.deleteSection(합정역);
 
-        assertThat(이호선.getSections().getStations()).contains(강남역, 역삼역);
+        assertThat(이호선.getSections().getStations()).containsExactly(강남역, 역삼역);
     }
 }
