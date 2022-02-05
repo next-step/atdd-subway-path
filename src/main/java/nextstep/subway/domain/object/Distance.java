@@ -26,4 +26,8 @@ public class Distance {
     public Distance minus(Distance value) {
         return new Distance(this.value - value.getValue());
     }
+
+    public Distance plus(Distance value) {
+        return new Distance(this.value + value.getValue());
+    }
 }

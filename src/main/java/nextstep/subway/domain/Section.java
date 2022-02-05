@@ -73,12 +73,25 @@ public class Section extends BaseEntity {
         return distance.getValue();
     }
 
-    public void update(Station downStation, Distance distance) {
+    public void updateForAdd(Station downStation, Distance distance) {
         this.upStation = downStation;
+        setDistance(distance);
+    }
+
+    public void updateForDelete(Station downStation, Distance distance) {
+        this.downStation = downStation;
+        setDistance(distance);
+    }
+
+    private void setDistance(Distance distance) {
         this.distance = distance;
     }
 
     public Distance minusDistance(Distance distance) {
         return this.distance.minus(distance);
+    }
+
+    public Distance plusDistance(Distance distance) {
+        return this.distance.plus(distance);
     }
 }
