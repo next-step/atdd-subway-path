@@ -1,14 +1,17 @@
 package nextstep.subway.applicaion;
 
+import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 
 public class PathService {
 
     private final StationRepository stationRepository;
+    private final LineRepository lineRepository;
 
-    public PathService(final StationRepository stationRepository) {
+    public PathService(final StationRepository stationRepository, final LineRepository lineRepository) {
         this.stationRepository = stationRepository;
+        this.lineRepository = lineRepository;
     }
 
     public void findShortestPath(final Long sourceId, final Long targetId) {
