@@ -198,7 +198,7 @@ public class Sections {
     }
 
     private void validateEditable() {
-        if (this.sections.size() != MINIMUM_SECTION_SIZE) {
+        if (this.sections.size() == MINIMUM_SECTION_SIZE) {
             throw new IllegalSectionArgumentException(CAN_NOT_DELETE);
         }
     }
