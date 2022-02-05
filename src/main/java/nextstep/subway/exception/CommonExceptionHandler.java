@@ -30,9 +30,4 @@ public class CommonExceptionHandler {
         return ResponseEntity.badRequest().build();
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity handleNoSuchElementException(NoSuchElementException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    }
-
 }

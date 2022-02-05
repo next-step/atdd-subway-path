@@ -21,7 +21,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 public class PathAcceptanceTest extends AcceptanceTest {
 
@@ -126,7 +125,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         response = 출발역과_도착역으로_최단경로를_조회한다(없는역Id, 널미터부남역.getId());
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> 출발역과_도착역으로_최단경로를_조회한다(Long srcStationId, Long dstStationId) {

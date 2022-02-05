@@ -1,5 +1,7 @@
 package nextstep.subway.domain.section;
 
+import java.io.InvalidClassException;
+import nextstep.subway.exception.InvalidPathSearchingException;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
@@ -10,7 +12,9 @@ public class SectionMultigraph<V, E> extends WeightedMultigraph<V, E> {
     }
 
     public void setEdge(E e, double weight) {
-        assert (e instanceof DefaultWeightedEdge) : e.getClass();
+        if (!(e instanceof DefaultWeightedEdge)) {
+            throw new InvalidPathSearchingException();
+        }
 
         ((SectionEdge) e).weight = weight;
     }

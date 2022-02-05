@@ -17,20 +17,21 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 
 public class PathFinderUsingWeightedMultigraph implements PathFinder {
 
+    private static final int NUMBER_OF_SHORTEST_PATHS = 5;
     private SectionMultigraph<Station, SectionEdge> weightedMultigraph;
 
     public PathFinderUsingWeightedMultigraph(List<Line> lines) {
         makeGraph(lines);
     }
 
-    public void makeGraph(List<Line> lines) {
+    private void makeGraph(List<Line> lines) {
         weightedMultigraph = new SectionMultigraph(SectionEdge.class);
         for (Line line : lines) {
             addVerticesAndEdgesOf(line);
         }
     }
 
-    public void addVerticesAndEdgesOf(Line line) {
+    private void addVerticesAndEdgesOf(Line line) {
         Section section;
         for (int i = 0; i < line.getSections().size(); ++i) {
             section = line.getSections().get(i);
@@ -42,6 +43,7 @@ public class PathFinderUsingWeightedMultigraph implements PathFinder {
         }
     }
 
+    @Override
     public ShortestPath executeDijkstra(Station sourceStation, Station targetStation) {
         validateSourceTarget(sourceStation, targetStation);
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath
@@ -52,10 +54,11 @@ public class PathFinderUsingWeightedMultigraph implements PathFinder {
         return new ShortestPath(path);
     }
 
+    @Override
     public List<ShortestPath> executeKShortest(Station sourceStation, Station targetStation) {
         validateSourceTarget(sourceStation, targetStation);
         KShortestPaths<Station, DefaultWeightedEdge> kShortestPaths
-                = new KShortestPaths(weightedMultigraph, 5);
+                = new KShortestPaths(weightedMultigraph, NUMBER_OF_SHORTEST_PATHS);
         List<GraphPath<Station, DefaultWeightedEdge>> paths
                 = kShortestPaths.getPaths(sourceStation, targetStation);
 
@@ -64,7 +67,7 @@ public class PathFinderUsingWeightedMultigraph implements PathFinder {
                 .collect(Collectors.toList());
     }
 
-    public void validateSourceTarget(Station source, Station target) {
+    private void validateSourceTarget(Station source, Station target) {
         if (source.equals(target)) {
             throw new InvalidPathSearchingException(SAME_DEPARTURE_AND_DESTINAME);
         }
