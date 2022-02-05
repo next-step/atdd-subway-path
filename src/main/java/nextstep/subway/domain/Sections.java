@@ -19,7 +19,7 @@ public class Sections {
     private static final String ALREADY_REGISTERED_SECTION = "이미 등록된 구간입니다.";
     private static final String OVER_DISTANCE_SECTION = "길이가 더 긴 구간은 추가할 수 없습니다.";
     private static final String UNABLE_TO_REMOVE_LAST_SECTION = "구간이 1개일 경우 삭제가 불가능합니다.";
-    private static final String UNABLE_TO_REMOVE_NON_LAST_STATION = "마지막 역만 삭제가 가능합니다.";
+    private static final String UNREGISTERED_STATION = "등록되지 않은 역입니다.";
     private static final String UNREGISTERED_STATIONS = "요청한 상/하행역이 모두 노선에 등록되지 않았습니다.";
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
@@ -47,15 +47,20 @@ public class Sections {
         sections.add(section);
     }
 
-    public void removeStation(Station newStation) {
-        if (sections.size() == MIN_SIZE) {
-            throw new IllegalArgumentException(UNABLE_TO_REMOVE_LAST_SECTION);
-        }
+    public void removeStation(Station station) {
         List<Station> stations = getStations();
-        if (!stations.get(stations.size() - 1).equals(newStation)) {
-            throw new IllegalArgumentException(UNABLE_TO_REMOVE_NON_LAST_STATION);
+
+        validateRemovable(station, stations);
+
+        if (isFirstStation(station)) {
+            removeFirstSection(station);
+            return;
         }
-        sections.remove(sections.size() - 1);
+        if (isLastStation(station)) {
+            removeLastSection(station);
+            return;
+        }
+        removeMiddleSection(station);
     }
 
     public List<Station> getStations() {
@@ -76,15 +81,60 @@ public class Sections {
         return sections;
     }
 
+    private boolean isFirstStation(Station station) {
+        return findFirstStation().equals(station);
+    }
+
+    private boolean isLastStation(Station station) {
+        return findLastStation().equals(station);
+    }
+
+    private void removeFirstSection(Station station) {
+        int index = indexOfSectionByUpStation(station);
+        sections.remove(index);
+    }
+
+    private void removeLastSection(Station station) {
+        int index = indexOfSectionByDownStation(station);
+        sections.remove(index);
+    }
+
+    private void removeMiddleSection(Station station) {
+        int indexOfRemoveSection = indexOfSectionByDownStation(station);
+        int indexOfNextSection = indexOfSectionByUpStation(station);
+
+        Section removeSection = sections.get(indexOfRemoveSection);
+        Section nextSection = sections.get(indexOfNextSection);
+
+
+        Station newUpStation = removeSection.getUpStation();
+        Station newDownStation = nextSection.getDownStation();
+        int totalDistance = removeSection.getDistance() + nextSection.getDistance();
+
+        nextSection.updateSection(newUpStation, newDownStation, totalDistance);
+
+        sections.remove(indexOfRemoveSection);
+    }
+
+    private void validateRemovable(Station station, List<Station> stations) {
+        if (!stations.contains(station)) {
+            throw new IllegalArgumentException(UNREGISTERED_STATION);
+        }
+
+        if (sections.size() == MIN_SIZE) {
+            throw new IllegalArgumentException(UNABLE_TO_REMOVE_LAST_SECTION);
+        }
+    }
+
     private void addBetweenSection(Section section, boolean hasUpStation, boolean hasDownStation) {
         if (hasUpStation) {
-            int index = indexOfUpStation(section.getUpStation());
+            int index = indexOfSectionByUpStation(section.getUpStation());
 
             addBetweenSectionsByUpStation(index, section);
         }
 
         if (hasDownStation) {
-            int index = indexOfDownStation(section.getDownStation());
+            int index = indexOfSectionByDownStation(section.getDownStation());
 
             addBetweenSectionsByDownStation(index, section);
         }
@@ -131,15 +181,15 @@ public class Sections {
 
     }
 
-    private int indexOfUpStation(Station station) {
-        return indexOf(station, x -> sections.get(x).getUpStation());
+    private int indexOfSectionByUpStation(Station station) {
+        return indexOfSectionByStation(station, x -> sections.get(x).getUpStation());
     }
 
-    private int indexOfDownStation(Station station) {
-        return indexOf(station, x -> sections.get(x).getDownStation());
+    private int indexOfSectionByDownStation(Station station) {
+        return indexOfSectionByStation(station, x -> sections.get(x).getDownStation());
     }
 
-    private int indexOf(Station station, IntFunction<Station> func) {
+    private int indexOfSectionByStation(Station station, IntFunction<Station> func) {
         return IntStream.range(0, sections.size())
                 .filter(index -> func.apply(index).equals(station))
                 .findFirst()
