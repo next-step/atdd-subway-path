@@ -30,7 +30,8 @@ public class StationFakeRepository implements StationRepository {
     }
 
     public Optional<Station> findById(Long aLong) {
-        return Optional.of(stations.get(aLong));
+        Station station = stations.get(aLong);
+        return station == null ? Optional.empty() : Optional.of(station);
     }
 
     @Override
