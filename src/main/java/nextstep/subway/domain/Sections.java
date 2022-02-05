@@ -157,10 +157,10 @@ public class Sections {
         }
 
         //중간 역 삭제
-        deleteAndSutureSection(stationId);
+        deleteAndMergeSection(stationId);
     }
 
-    private void deleteAndSutureSection(Long stationId) {
+    private void deleteAndMergeSection(Long stationId) {
         Section findSection = findSectionByUpStation(stationId);
         int index = sections.indexOf(findSection);
         int frontIndex = index - 1;
