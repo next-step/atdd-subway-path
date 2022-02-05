@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.exception.IllegalSectionArgumentException;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -11,22 +12,23 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
     private Line line;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
     private int distance;
 
 
-    protected Section() {}
+    protected Section() {
+    }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         validateDistance(distance);
@@ -58,29 +60,11 @@ public class Section {
     }
 
     public boolean isUpStation(Station station) {
-        return this.upStation.equals(station);
+        return Objects.equals(this.upStation, station);
     }
 
     public boolean isDownStation(Station station) {
-        return this.downStation.equals(station);
-    }
-
-    public boolean isLast(Station station) {
-        return this.downStation.equals(station);
-    }
-
-    public boolean isFirstStation(Station station) {
-        return this.upStation.equals(station);
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void validationDownStation(Section section) {
-        if (this.downStation == section.getDownStation() && this.upStation == section.getDownStation()) {
-            throw new IllegalSectionArgumentException("추가되는 구간의 상행역 과 하행역이 현재 등록되어있는 역일 수 없습니다.");
-        }
+        return Objects.equals(this.downStation, station);
     }
 
     private void validateDistance(int distance) {

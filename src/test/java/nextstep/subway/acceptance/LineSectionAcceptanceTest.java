@@ -118,6 +118,30 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선_지하철_구간_생성_요청_응답(지하철_노선에_지하철_구간_생성_요청);
     }
 
+    @DisplayName("지하철 노선에 존재하지 않는 상행역과 하행역을 가진 구간을 등록하는 경우 등록이 실패")
+    @Test
+    void 지하철_노선에_존재하지_않는_상행역과_하행역_등록_실패() {
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        Long 구로역 = 지하철역_생성_요청("구로역").jsonPath().getLong("id");
+        int 구간거리 = 13;
+        ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청 =
+                지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 구로역, 구간거리));
+
+        // then
+        지하철_노선_지하철_구간_생성_요청_응답(지하철_노선에_지하철_구간_생성_요청);
+    }
+
+    @DisplayName("지하철 노선에 이미 노선에 등록된 상행역과 하행역을 가진 구간을 등록하는 경우 등록이 실패")
+    @Test
+    void 지하철_노선에_등록되어_있는_상행역과_하행역_등록_실패() {
+        int 구간거리 = 1;
+        ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청 =
+                지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(서울역, 양재역, 구간거리));
+
+        // then
+        지하철_노선_지하철_구간_생성_요청_응답(지하철_노선에_지하철_구간_생성_요청);
+    }
+
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
@@ -137,7 +161,64 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         지하철_노선_조회_요청_응답(response, 서울역, 강남역 ,양재역);
+    }
 
+    @DisplayName("지하철 노선에 첫번째 역을 제거")
+    @Test
+    void 첫번째역을_제거() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        int 구간거리 = 4;
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(서울역, 정자역, 구간거리));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 서울역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_노선_조회_요청_응답(response, 정자역, 강남역 ,양재역);
+    }
+    
+    @DisplayName("지하철 노선에 두번째 역을 제거")
+    @Test
+    void 두번째역을_제거() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        int 구간거리 = 4;
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(서울역, 정자역, 구간거리));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_노선_조회_요청_응답(response, 서울역, 강남역 ,양재역);
+    }
+
+    @DisplayName("지하철 노선에 존재하지 않는역을 제거")
+    @Test
+    void 존재하지_않는역을_제거() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+
+        // then
+        지하철_노선_지하철역_삭제_요청_응답(response);
+    }
+
+    @DisplayName("지하철 노선의 구간이 하나일때 지하철역을 삭제")
+    @Test
+    void 지하철_노선의_구간이_하나일때_지하철역_삭제_실패() {
+        // given
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+        
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 서울역);
+
+        // then
+        지하철_노선_지하철역_삭제_요청_응답(response);
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {

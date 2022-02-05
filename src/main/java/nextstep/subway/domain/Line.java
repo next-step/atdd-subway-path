@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.IllegalSectionArgumentException;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -48,20 +50,16 @@ public class Line extends BaseEntity {
         return sections.getStations();
     }
 
-    public List<Section> getSections() {
-        return sections.getSections();
-    }
-
     public void updateLine(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public void addSections(Section section) {
-        this.sections.add(this, section);
+    public void addSections(Station upStation, Station downStation, int distance) {
+        this.sections.add(this, upStation, downStation, distance);
     }
 
     public void removeSection(Station station) {
-        this.sections.remove(station);
+        this.sections.remove(this, station);
     }
 }
