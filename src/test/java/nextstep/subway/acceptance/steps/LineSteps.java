@@ -13,8 +13,8 @@ import static nextstep.subway.fixture.LineFixture.*;
 
 public class LineSteps {
 
-    private static final String LINE_BASE_PATH = "/lines/";
-    private static final String SECTION_BASE_PATH = "/lines/%s/sections";
+    private static final String BASE_PATH = "/lines/";
+    private static final String SECTION_PATH = BASE_PATH + "%s/sections/";
 
     public static Long 지하철_노선이_생성되어_있음(final String name, final String color,
                                        final Long upStationId, final Long downStationId, final int distance) {
@@ -29,7 +29,7 @@ public class LineSteps {
                 .accept(ContentType.ANY)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post(LINE_BASE_PATH)
+                .post(BASE_PATH)
                 .then().log().all()
                 .extract();
     }
@@ -50,7 +50,7 @@ public class LineSteps {
                 .accept(ContentType.JSON)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .get(LINE_BASE_PATH)
+                .get(BASE_PATH)
                 .then().log().all()
                 .extract();
     }
@@ -60,7 +60,7 @@ public class LineSteps {
                 .accept(ContentType.JSON)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .get(LINE_BASE_PATH + lineId)
+                .get(BASE_PATH + lineId)
                 .then().log().all()
                 .extract();
     }
@@ -72,7 +72,7 @@ public class LineSteps {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
                 .when()
-                .put(LINE_BASE_PATH + lineId)
+                .put(BASE_PATH + lineId)
                 .then().log().all()
                 .extract();
     }
@@ -88,7 +88,7 @@ public class LineSteps {
         return RestAssured.given().log().all()
                 .accept(ContentType.ANY)
                 .when()
-                .delete(LINE_BASE_PATH + lineId)
+                .delete(BASE_PATH + lineId)
                 .then().log().all()
                 .extract();
     }
@@ -100,7 +100,7 @@ public class LineSteps {
                 .accept(ContentType.ANY)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post(String.format(SECTION_BASE_PATH, lineId))
+                .post(String.format(SECTION_PATH, lineId))
                 .then().log().all()
                 .extract();
     }
@@ -119,7 +119,7 @@ public class LineSteps {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .queryParam("stationId", stationId)
-                .delete(String.format(SECTION_BASE_PATH, lineId))
+                .delete(String.format(SECTION_PATH, lineId))
                 .then().log().all()
                 .extract();
     }

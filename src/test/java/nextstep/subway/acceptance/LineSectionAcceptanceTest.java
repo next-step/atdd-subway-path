@@ -276,7 +276,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선에 상행 종점역을 기준으로 구간 삭제 요청 하면
      * Then 지하철 노선에 구간 삭제가 실패한다.
      */
-    @DisplayName("지하철 노선에 등록된 구간이 1개일때 구간 제거")
+    @DisplayName("지하철 노선에 등록된 구간이 1개일때 상행 종점역을 기준으로 구간 제거")
     @Test
     void removeLineSectionUpStationWhenOnlyOne() {
         // when
@@ -290,7 +290,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선에 하행 종점역을 기준으로 구간 삭제 요청 하면
      * Then 지하철 노선에 구간 삭제가 실패한다.
      */
-    @DisplayName("지하철 노선에 등록된 구간이 1개일때 구간 제거")
+    @DisplayName("지하철 노선에 등록된 구간이 1개일때 하행 종점역을 기준으로 구간 제거")
     @Test
     void removeLineSectionDownStationWhenOnlyOne() {
         // when

@@ -68,31 +68,31 @@ public class Sections {
         if (sections.size() < REMOVABLE_CONDITION) {
             throw new IllegalStateException("sections is not removable state");
         }
-        final boolean upStationExistence = isStationExistenceInSection(it -> it.isUpStation(station));
-        final boolean downStationExistence = isStationExistenceInSection(it -> it.isDownStation(station));
-        if (upStationExistence == false && downStationExistence == false) {
+        final boolean upStationExistence = isStationExistenceInSections(it -> it.isUpStation(station));
+        final boolean downStationExistence = isStationExistenceInSections(it -> it.isDownStation(station));
+        if (!upStationExistence && !downStationExistence) {
             throw new IllegalArgumentException("removed station is not include sections");
         }
-        if (upStationExistence == true && downStationExistence == true) {
-            final Section upStationSection = mapToSection(it -> it.isUpStation(station));
-            final Section downStationSection = mapToSection(it -> it.isDownStation(station));
+        if (upStationExistence && downStationExistence) {
+            final Section upStationSection = findSection(it -> it.isUpStation(station));
+            final Section downStationSection = findSection(it -> it.isDownStation(station));
             downStationSection.updateDownStation(upStationSection.getDownStation(), upStationSection.addDistance(downStationSection));
             sections.remove(upStationSection);
             return;
         }
         if (upStationExistence) {
-            sections.remove(mapToSection(it -> it.isUpStation(station)));
+            sections.remove(findSection(it -> it.isUpStation(station)));
         }
         if (downStationExistence) {
-            sections.remove(mapToSection(it -> it.isDownStation(station)));
+            sections.remove(findSection(it -> it.isDownStation(station)));
         }
     }
 
-    private boolean isStationExistenceInSection(final Predicate<Section> predicate) {
+    private boolean isStationExistenceInSections(final Predicate<Section> predicate) {
         return sections.stream().anyMatch(predicate);
     }
 
-    private Section mapToSection(final Predicate<Section> predicate) {
+    private Section findSection(final Predicate<Section> predicate) {
         return sections.stream()
                 .filter(predicate)
                 .findAny()
@@ -104,7 +104,7 @@ public class Sections {
             return Collections.emptyList();
         }
         final List<Station> stations = new ArrayList<>();
-        final Station upTerminalStation = mapToUpTerminalStation();
+        final Station upTerminalStation = findUpTerminalStation();
         stations.add(upTerminalStation);
         Optional<Station> nextStationOptional = nextStation(upTerminalStation);
         while (nextStationOptional.isPresent()) {
@@ -115,7 +115,7 @@ public class Sections {
         return Collections.unmodifiableList(stations);
     }
 
-    private Station mapToUpTerminalStation() {
+    private Station findUpTerminalStation() {
         return sections.stream()
                 .map(Section::getUpStation)
                 .filter(upStation -> sections.stream().noneMatch(it -> it.isDownStation(upStation)))
