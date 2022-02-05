@@ -1,11 +1,10 @@
 package nextstep.subway.unit;
 
-import static nextstep.subway.common.LineSomething.DISTANCE_BASIC;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.section.Section;
+import nextstep.subway.domain.station.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

@@ -9,9 +9,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.section.Section;
+import nextstep.subway.domain.station.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,6 +34,7 @@ class LineTest {
     private Station 역2;
     private Section 구간1;
     private Station 추가역;
+    private Station 없는역 = Station.of("없는역");
 
     @BeforeEach
     void setUp() {
@@ -107,6 +108,19 @@ class LineTest {
         assertThatThrownBy(() -> {
             노선.deleteSectionByStation(역1);
         }).isInstanceOf(IllegalStateException.class);
+    }
+
+    @DisplayName("노선에서 역ID 로 구간을 삭제 시, 해당 역이 없으면 실패한다.")
+    @Test
+    void lineDeleteSectionByStation_테스트_5() {
+        // given 역이 3개 있다.
+        Section 추가구간 = 하행역_뒤쪽으로_추가성공_할_구간을_만든다();
+        노선.addSection(추가구간);
+
+        // when // then
+        assertThatThrownBy(() -> {
+            노선.deleteSectionByStation(없는역);
+        }).isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("노선을 이름과 색상으로 생성한다.")
@@ -260,7 +274,7 @@ class LineTest {
 
     @DisplayName("노선에 속해있는 역 목록 조회하여 예상한 역이 맞다.")
     @Test
-    void getStations() {
+    void getStations_1() {
         given: {
             Section 추가구간 = 하행역_뒤쪽으로_추가성공_할_구간을_만든다();
 
@@ -271,6 +285,18 @@ class LineTest {
             assertThat(노선.getStations().stream()
                 .mapToLong(Station::getId)
             ).containsExactly(1L, 2L, 3L);
+        }
+    }
+
+    @DisplayName("노선에 속해있는 역 목록 조회 시 구간이 없으면 빈 역리스트가 온다.")
+    @Test
+    void getStations_2() {
+        given: {
+            노선 = Line.of("빈노선이름", "빈노선색상");
+        }
+
+        whenThen: {
+            assertThat(노선.getStations().size()).isEqualTo(0);
         }
     }
 

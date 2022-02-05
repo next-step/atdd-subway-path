@@ -2,8 +2,8 @@ package nextstep.subway.domain.utils;
 
 import java.util.List;
 import java.util.Optional;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.section.Section;
+import nextstep.subway.domain.station.Station;
 
 public abstract class StationConnector {
     protected List<Section> sections;

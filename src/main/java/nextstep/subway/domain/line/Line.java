@@ -1,4 +1,4 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.line;
 
 import static nextstep.subway.exception.CommonExceptionMessages.SECTION_COUNT_IS_LESS_THAN_TWO;
 
@@ -10,6 +10,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import nextstep.subway.domain.BaseEntity;
+import nextstep.subway.domain.station.Station;
+import nextstep.subway.domain.section.Section;
+import nextstep.subway.domain.section.Sections;
 
 @Entity
 public class Line extends BaseEntity {

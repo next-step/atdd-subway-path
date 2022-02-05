@@ -7,5 +7,8 @@ public class CommonExceptionMessages {
     public static final String INVALID_SECTION_DISTANCE = "유효하지 않은 구간 길이.";
     public static final String SECTION_COUNT_IS_LESS_THAN_TWO = "구간이 1개 이하로 남아있어서 삭제 할 수 없음.";
     public static final String NOT_RESISTERED_STATION_IN_LINE = "노선에 등록되지 않은 역.";
+    public static final String NOT_EXIST_UP_DOWN_END_STATION = "최상행 혹은 최하행 역이 없음.";
+    public static final String SAME_DEPARTURE_AND_DESTINAME = "경로를 검색하려는 출발역과 도착역이 같습니다.";
+    public static final String NULL_SHORTEST_PATH = "최단경로가 Null 입니다.";
 
 }

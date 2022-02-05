@@ -1,4 +1,4 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.section;
 
 import static nextstep.subway.exception.CommonExceptionMessages.ALREADY_HAS_STATIONS;
 import static nextstep.subway.exception.CommonExceptionMessages.NOT_HAS_ANY_STATIONS;
@@ -10,6 +10,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.utils.StationConnector;
 import nextstep.subway.domain.utils.StationFrontConnector;
 import nextstep.subway.domain.utils.StationRearConnector;
@@ -87,10 +88,6 @@ public class Sections {
         return sections.get(index);
     }
 
-    public void remove(int index) {
-        sections.remove(index);
-    }
-
     public void remove(Section section) {
         sections.remove(section);
     }
@@ -161,10 +158,20 @@ public class Sections {
     }
 
     private SectionsIncludingRemoveStation findSectionListIncluding(Station station) {
-        SectionsIncludingRemoveStation sectionsIncludingRemoveStation = new SectionsIncludingRemoveStation();
+        return this.find(sections, station);
+    }
 
-        sectionsIncludingRemoveStation.find(sections, station);
+    private SectionsIncludingRemoveStation find(List<Section> sections, Station station) {
+        Section sameUpStationSection = sections.stream()
+            .filter(section -> section.getUpStation().equals(station))
+            .findAny()
+            .orElse(null);
 
-        return sectionsIncludingRemoveStation;
+        Section sameDownStationSection = sections.stream()
+            .filter(section -> section.getDownStation().equals(station))
+            .findAny()
+            .orElse(null);
+
+        return SectionsIncludingRemoveStation.of(sameUpStationSection, sameDownStationSection);
     }
 }

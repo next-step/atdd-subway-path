@@ -1,4 +1,4 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.section;
 
 import static nextstep.subway.exception.CommonExceptionMessages.INVALID_SECTION_DISTANCE;
 
@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.station.Station;
 import org.springframework.dao.DataIntegrityViolationException;
 
 @Entity
@@ -67,14 +69,6 @@ public class Section {
         }
 
         this.line.addSection(this);
-    }
-
-    public void setUpStation(Station upStation) {
-        this.upStation = upStation;
-    }
-
-    public void setDownStation(Station downStation) {
-        this.downStation = downStation;
     }
 
     public boolean hasSameUpStationWith(Section section) {
@@ -138,10 +132,6 @@ public class Section {
 
     public int getDistance() {
         return distance;
-    }
-
-    public void setDistance(int distance) {
-        this.distance = distance;
     }
 
     public void handleRemoveMidCase(Section connectedSection) {

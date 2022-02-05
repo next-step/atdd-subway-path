@@ -5,18 +5,18 @@ import java.util.stream.Collectors;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.line.LineRepository;
+import nextstep.subway.domain.section.Section;
+import nextstep.subway.domain.station.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
-    private StationService stationService;
+    private final LineRepository lineRepository;
+    private final StationService stationService;
 
     public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
@@ -43,6 +43,11 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
         return LineResponse.from(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Line> findAll() {
+        return lineRepository.findAll();
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
