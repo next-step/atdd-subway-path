@@ -3,6 +3,7 @@ package nextstep.subway.handler.validator;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import nextstep.subway.handler.exception.SectionException;
+import nextstep.subway.handler.exception.StationException;
 
 import static nextstep.subway.handler.exception.ErrorCode.*;
 
@@ -28,6 +29,12 @@ public class SectionValidator {
     public static void validateOnlyOneSection(Line line) {
         if (line.getSectionSize() == 1) {
             throw new SectionException(SECTION_REMAINED_ONLY_ONE);
+        }
+    }
+
+    public static void validateStationRemove(Line line, Station station) {
+        if (!line.hasStation(station)) {
+            throw new StationException(STATION_NOT_EXISTS_IN_LINE);
         }
     }
 }

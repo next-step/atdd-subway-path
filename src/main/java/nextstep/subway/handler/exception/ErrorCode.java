@@ -9,6 +9,7 @@ public enum ErrorCode {
     STATIONS_NOT_FOUND_FROM_LINE(404, "[ERROR] 입력한 구간의 두 역을 노선에서 모두 찾을 수 없습니다."),
     NO_CORRECT_SECTION(404, "[ERROR] 해당 역을 갖는 구간은 존재하지 않습니다."),
     SECTION_NOT_FOUND(404, "[ERROR] 입력한 구간을 찾을 수 없습니다."),
+    STATION_NOT_EXISTS_IN_LINE(404, "[ERROR] 입력한 역은 노선에 존재하지 않습니다."),
 
     STATIONS_ALL_EXISTS(409, "[ERROR] 입력한 구간의 두 역은 이미 노선에 존재합니다."),
     ;

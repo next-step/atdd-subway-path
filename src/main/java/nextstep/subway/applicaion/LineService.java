@@ -92,6 +92,7 @@ public class LineService {
         Station station = findStationById(stationId);
 
         SectionValidator.validateOnlyOneSection(line);
+        SectionValidator.validateStationRemove(line, station);
 
         line.removeSectionByStation(station);
     }
