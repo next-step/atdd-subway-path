@@ -104,6 +104,37 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
+    @Test
+    void addLineSection3() {
+        // when
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath()
+                                    .getLong("id");
+
+
+        // when
+        지하철_노선에_지하철_구간_생성_요청(
+                신분당선,
+                createSectionCreateParams(
+                        양재역,
+                        정자역,
+                        3
+                )
+        );
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.jsonPath()
+                           .getList(
+                                   "stations.id",
+                                   Long.class
+                           )).containsExactly(
+                강남역,
+                양재역,
+                정자역
+        );
+    }
+
 
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
