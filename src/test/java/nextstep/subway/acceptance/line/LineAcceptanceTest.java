@@ -420,33 +420,10 @@ class LineAcceptanceTest extends AcceptanceTest {
         ApiUtil.지하철_노선_구간_등록_API(1L, Lines.GTXA노선_구간_서울역_삼성역);
 
         // when
-        ExtractableResponse<Response> deleteResponse = ApiUtil.지하철_노선_구간_삭제_API(1L, Lines.GTXA노선_구간_삭제_삼성역);
+        ExtractableResponse<Response> deleteResponse = ApiUtil.지하철_노선_구간_삭제_API(1L, Lines.GTXA노선_구간_삭제_서울역);
 
         // then
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    /**
-     * Given 지하철 노선 생성 및 노선 구간 생성을 하고,
-     * When 하행 종점이 아닌 지하철 노선 구간 삭제를 요청 하면
-     * Then 생성한 지하철 노선 구간 삭제가 실패한다.
-     * @see nextstep.subway.ui.LineController#deleteSection
-     */
-    @DisplayName("지하철 노선 하행 종점이 아닌 구간 삭제 방지 테스트")
-    @Test
-    void 지하철_노선_하행_종점_아닌_구간_삭제_방지_테스트() {
-        //given
-        ApiUtil.지하철역_생성_API(Stations.연신내역);
-        ApiUtil.지하철역_생성_API(Stations.서울역);
-        ApiUtil.지하철역_생성_API(Stations.삼성역);
-        ApiUtil.지하철_노선_생성_API(Lines.GTXA노선_연신내_서울역);
-        ApiUtil.지하철_노선_구간_등록_API(1L, Lines.GTXA노선_구간_서울역_삼성역);
-
-        // when
-        ExtractableResponse<Response> deleteResponse = ApiUtil.지하철_노선_구간_삭제_API(1L, Lines.GTXA노선_구간_삭제_연신내);
-
-        // then
-        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
     /**
