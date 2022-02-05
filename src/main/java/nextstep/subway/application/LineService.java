@@ -25,14 +25,9 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line line;
-        if (request.getUpStationId() != null && request.getDownStationId() != null) {
-            Station upStation = stationService.findById(request.getUpStationId());
-            Station downStation = stationService.findById(request.getDownStationId());
-            line = lineRepository.save(new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
-        } else {
-            line = lineRepository.save(new Line(request.getName(), request.getColor()));
-        }
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+        Line line = lineRepository.save(new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
         return createLineResponse(line);
     }
 
