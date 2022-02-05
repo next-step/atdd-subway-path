@@ -35,30 +35,28 @@ public class LineResponse {
 		return name;
 	}
 
-	public static LineResponse of(Line line) {
-		return new LineResponse(
-			line.getId(),
-			line.getName(),
-			line.getColor(),
-			createStationResponses(line),
-			line.getCreatedDate(),
-			line.getModifiedDate());
+	public List<StationResponse> getStations() {
+		return stations;
 	}
 
-	private static List<StationResponse> createStationResponses(Line line) {
-		if (line.sectionIsEmpty()) {
-			return Collections.emptyList();
-		}
-
+	public static LineResponse of(Line line) {
 		List<Station> stations = line.allSections().stream()
 			.map(Section::getDownStation)
 			.collect(Collectors.toList());
 
 		stations.add(0, line.sectionByIndex(0).getUpStation());
 
-		return stations.stream()
+		List<StationResponse> stationResponses = stations.stream()
 			.map(StationResponse::of)
 			.collect(Collectors.toList());
+
+		return new LineResponse(
+			line.getId(),
+			line.getName(),
+			line.getColor(),
+			stationResponses,
+			line.getCreatedDate(),
+			line.getModifiedDate());
 	}
 }
 

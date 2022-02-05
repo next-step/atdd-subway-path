@@ -61,7 +61,7 @@ public class Line extends BaseEntity {
     }
 
     public Section sectionByIndex(int index) {
-        return sections.sectionByIndex(index);
+        return sections.findByIndex(index);
     }
 
     public void removeSectionByIndex(int index) {
@@ -69,7 +69,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> allSections(){
-        return sections.allSections();
+        return sections.findAll();
     }
 
 

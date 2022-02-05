@@ -44,8 +44,13 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse findById(Long id) {
+    public LineResponse findResponseById(Long id) {
         return LineResponse.of(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+    }
+
+    @Transactional(readOnly = true)
+    public Line findById(Long id) {
+        return lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
