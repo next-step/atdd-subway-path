@@ -1,6 +1,9 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.dto.PathResponse;
+import nextstep.subway.exception.NotConnectedException;
+import nextstep.subway.exception.NotFoundStationException;
+import nextstep.subway.exception.SameStationException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -39,9 +42,20 @@ public class PathFinder {
     }
 
     public PathResponse findShortestPath(Station source, Station target) {
+        validate(source, target);
         GraphPath<Station, DefaultWeightedEdge> findPath = dijkstraShortestPath.getPath(source, target);
         int distance = (int) findPath.getWeight();
         List<Station> stations = findPath.getVertexList();
         return PathResponse.of(stations, distance);
     }
+
+    private void validate(Station source, Station target) {
+        if(source.equals(target)) {
+            throw new SameStationException();
+        }
+        if(!graph.isAllowingLoops()) {
+            throw new NotConnectedException();
+        }
+    }
+
 }

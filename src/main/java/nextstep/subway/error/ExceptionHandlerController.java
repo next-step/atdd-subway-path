@@ -8,6 +8,20 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ExceptionHandlerController {
 
+    @ExceptionHandler(NotConnectedException.class)
+    public ResponseEntity<ErrorResponse> notConnected(final NotConnectedException e) {
+        return ResponseEntity
+                .status(e.getErrorCode().getStatus())
+                .body(ErrorResponse.of(e.getErrorCode()));
+    }
+
+    @ExceptionHandler(SameStationException.class)
+    public ResponseEntity<ErrorResponse> sameStation(final SameStationException e) {
+        return ResponseEntity
+                .status(e.getErrorCode().getStatus())
+                .body(ErrorResponse.of(e.getErrorCode()));
+    }
+
     @ExceptionHandler(NotFoundStationException.class)
     public ResponseEntity<ErrorResponse> notFoundStation(final NotFoundStationException e) {
         return ResponseEntity
