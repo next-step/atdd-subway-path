@@ -184,6 +184,38 @@ class LineTest {
         // then
         assertThat(이호선.getStations()).doesNotContain(서초역);
     }
+    
+    @DisplayName("구간이 여러 개일 경우 중간 역 삭제 성공한다")
+    @Test
+    void should_be_success_when_middle_section_is_removable() {
+        // given
+        Station 서초역 = new Station("서초");
+        Section 방배_서초_구간 = new Section(이호선, 방배역, 서초역, 5);
+        이호선.addSection(사당_방배_구간);
+        이호선.addSection(방배_서초_구간);
+
+        // when
+        이호선.removeStation(방배역);
+
+        // then
+        assertThat(이호선.getStations()).doesNotContain(방배역);
+    }
+
+    @DisplayName("구간이 여러 개일 경우 처음 역 삭제 성공한다")
+    @Test
+    void should_be_success_when_first_section_is_removable() {
+        // given
+        Station 서초역 = new Station("서초");
+        Section 방배_서초_구간 = new Section(이호선, 방배역, 서초역, 5);
+        이호선.addSection(사당_방배_구간);
+        이호선.addSection(방배_서초_구간);
+
+        // when
+        이호선.removeStation(사당역);
+
+        // then
+        assertThat(이호선.getStations()).doesNotContain(사당역);
+    }
 
     @DisplayName("구간이 하나일 때 마지막 역 삭제 실패한다")
     @Test
@@ -195,5 +227,21 @@ class LineTest {
         assertThatIllegalArgumentException().isThrownBy(
                 () -> 이호선.removeStation(방배역)
         );
+    }
+
+    @DisplayName("등록되지 않은 역은 삭제 실패한다")
+    @Test
+    void should_be_fail_when_request_with_unregistered_section() {
+        // given
+        Station 서초역 = new Station("서초");
+        Section 방배_서초_구간 = new Section(이호선, 방배역, 서초역, 5);
+        이호선.addSection(사당_방배_구간);
+        이호선.addSection(방배_서초_구간);
+        Station 교대역 = new Station("교대");
+
+        // when & then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> 이호선.removeStation(교대역)
+        ).withMessageContaining("등록되지 않은 역입니다");
     }
 }
