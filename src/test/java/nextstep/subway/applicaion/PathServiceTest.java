@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
@@ -23,9 +24,6 @@ class PathServiceTest {
     @Mock
     private StationRepository stationRepository;
 
-    @Mock
-    private LineRepository lineRepository;
-
     @InjectMocks
     private PathService pathService;
 
@@ -37,6 +35,6 @@ class PathServiceTest {
 
         assertThatThrownBy(() -> pathService.findShortestPath(1L, 1L))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("source and target stations conflict");
+                .hasMessage("source and target stations were conflict");
     }
 }
