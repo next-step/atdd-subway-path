@@ -42,23 +42,29 @@ public class PathFinder {
     }
 
     public PathResponse findShortestPath(final Station source, final Station target) {
-        validate(source, target);
-        return getShortestPathResult(source, target);
+        return getShortestPathOrElseThrow(source, target);
     }
 
-    private void validate(final Station source, final Station target) {
+    private PathResponse getShortestPathOrElseThrow(final Station source, final Station target) {
         if(source.equals(target)) {
             throw new SameStationException();
         }
-        if(!graph.isAllowingLoops()) {
+
+        if(isNotFound(source, target)) {
+            throw new NotFoundStationException();
+        }
+
+        GraphPath<Station, DefaultWeightedEdge> findPath = dijkstraShortestPath.getPath(source, target);
+        if(findPath == null) {
             throw new NotConnectedException();
         }
-    }
 
-    private PathResponse getShortestPathResult(final Station source, final Station target) {
-        GraphPath<Station, DefaultWeightedEdge> findPath = dijkstraShortestPath.getPath(source, target);
         int distance = (int) findPath.getWeight();
         List<Station> stations = findPath.getVertexList();
         return PathResponse.of(stations, distance);
+    }
+
+    private boolean isNotFound(final Station source, final Station target) {
+        return !graph.containsVertex(source) || !graph.containsVertex(target);
     }
 }

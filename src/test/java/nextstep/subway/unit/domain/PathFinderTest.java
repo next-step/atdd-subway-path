@@ -26,16 +26,18 @@ class PathFinderTest {
     private Line 신분당선;
     private Line 이호선;
     private Line 삼호선;
+    private Line 팔호선;
     private Station 교대역;
     private Station 강남역;
     private Station 역삼역;
     private Station 남부터미널역;
     private Station 양재역;
-    private Station 선릉역;
     private Station 삼성역;
+    private Station 석촌역;
+    private Station 단대오거리역;
 
     /**
-     * 교대역(1) --- *2호선* ---   강남역(2) --- *2호선* ---  역삼역(3)
+     * 교대역(1) --- *2호선* ---   강남역(2) --- *2호선* ---  역삼역(3)    석촌역(6)  --- *8호선* --- 단대오거리역(7)
      * |                            |
      * *3호선*                   *신분당선*
      * |                             |
@@ -61,8 +63,14 @@ class PathFinderTest {
 
     @Test
     void 출발역과_도착역이_연결되어있지_않으면_경로_조회가_실패_한다() {
-        assertThatThrownBy(() -> pathFinder.findShortestPath(양재역, 삼성역))
+        assertThatThrownBy(() -> pathFinder.findShortestPath(양재역, 석촌역))
                 .isInstanceOf(NotConnectedException.class);
+    }
+
+    @Test
+    void 출발역과_또는_도착역이_존재하지_않으면_경로_조회가_실패_한다() {
+        assertThatThrownBy(() -> pathFinder.findShortestPath(양재역, 삼성역))
+                .isInstanceOf(NotFoundStationException.class);
     }
 
     void givens() {
@@ -71,31 +79,36 @@ class PathFinderTest {
         역삼역 = new Station("역삼역");
         남부터미널역 = new Station("남부터미널역");
         양재역 = new Station("양재역");
-        선릉역 = new Station("선릉역");
         삼성역 = new Station("삼성역");
+        석촌역 = new Station("석촌역");
+        단대오거리역 = new Station("단대오거리역");
 
         ReflectionTestUtils.setField(교대역, "id", 1L);
         ReflectionTestUtils.setField(강남역, "id", 2L);
         ReflectionTestUtils.setField(역삼역, "id", 3L);
         ReflectionTestUtils.setField(남부터미널역, "id", 4L);
         ReflectionTestUtils.setField(양재역, "id", 5L);
-        ReflectionTestUtils.setField(선릉역, "id", 6L);
-        ReflectionTestUtils.setField(삼성역, "id", 7L);
+        ReflectionTestUtils.setField(삼성역, "id", 6L);
+        ReflectionTestUtils.setField(석촌역, "id", 7L);
+        ReflectionTestUtils.setField(단대오거리역, "id", 8L);
 
         신분당선 = new Line("신분당선", "bg-red-600");
         이호선 = new Line("2호선", "bg-green-600");
         삼호선 = new Line("3호선", "bg-orange-600");
+        팔호선 = new Line("8호선", "bg-pink-600");
 
         신분당선.addSection(new Section(신분당선, 강남역, 양재역, 5));
         이호선.addSection(new Section(이호선, 교대역, 강남역, 2));
         이호선.addSection(new Section(이호선, 강남역, 역삼역, 4));
         삼호선.addSection(new Section(삼호선, 교대역, 남부터미널역, 3));
         삼호선.addSection(new Section(삼호선, 남부터미널역, 양재역, 3));
+        팔호선.addSection(new Section(팔호선, 석촌역, 단대오거리역, 5));
 
         List<Line> lines = new ArrayList<>();
         lines.add(신분당선);
         lines.add(이호선);
         lines.add(삼호선);
+        lines.add(팔호선);
 
         pathFinder = PathFinder.of(lines);
     }
