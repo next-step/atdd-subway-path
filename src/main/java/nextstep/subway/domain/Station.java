@@ -13,8 +13,24 @@ public class Station extends BaseEntity {
     public Station() {
     }
 
-    public Station(String name) {
+    public Station(Long id, String name) {
+        this.id = id;
         this.name = name;
+    }
+
+    private Station(String name) {
+        this.name = name;
+    }
+
+    public static Station from(String name) {
+        return new Station(name);
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "name='" + name + '\'' +
+                '}';
     }
 
     public Long getId() {
