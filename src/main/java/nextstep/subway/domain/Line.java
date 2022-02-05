@@ -128,12 +128,12 @@ public class Line extends BaseEntity {
                     .getDownStation();
 
             if (upStation.equals(newSection.getUpStation()) && downStation.equals(newSection.getDownStation())) {
-                throw new RuntimeException("이미 동일한 구간정보가 등록돼있어서 취소됐습니다.");
+                throw new NotRegisterStation("이미 동일한 구간정보가 등록돼있어서 취소됐습니다.");
             }
 
             if (upStation.equals(prevDownStation)) {
                 if (downStation.equals(newSection.getDownStation())) {
-                    throw new RuntimeException("요청한 구간정보가 이미 간접적으로 연결돼있어서 취소됐습니다.");
+                    throw new NotRegisterStation("요청한 구간정보가 이미 간접적으로 연결돼있어서 취소됐습니다.");
                 }
             }
             prevDownStation = downStation;

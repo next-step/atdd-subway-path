@@ -156,18 +156,14 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이와 같으면 등록할 수 없음")
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 구간과 직접적으로 동일하다면 등록할 수 없음")
     @Test
     void addLineSection5() {
-        // when
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath()
-                                    .getLong("id");
-
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(
                 신분당선,
                 createSectionCreateParams(
-                        정자역,
+                        강남역,
                         양재역,
                         7
                 )
@@ -176,6 +172,39 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 구간과 간접적으로 동일하다면 등록할 수 없음")
+    @Test
+    void addLineSection6(){
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath()
+                                    .getLong("id");
+
+        지하철_노선에_지하철_구간_생성_요청(
+                신분당선,
+                createSectionCreateParams(
+                        양재역,
+                        정자역,
+                        10
+                )
+        );
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(
+                신분당선,
+                createSectionCreateParams(
+                        강남역,
+                        정자역,
+                        10
+                )
+        );
+
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
 
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
