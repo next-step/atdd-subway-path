@@ -135,29 +135,4 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
-
-    /**
-     * Given 지하철 노선 생성을 요청 하고
-     * Given 지하철 역 생성을 요청 하고
-     * When 지하철 구간 등록을 요청 하면
-     * Then 지하철 구간 등록이 성공 한다.
-     */
-    @DisplayName("지하철 구간 등록")
-    @Test
-    void addSection() {
-        // given
-        Long lineId = 지하철_노선_생성_요청("2호선", "green").jsonPath().getLong("id");
-        Long startingStationId = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
-        Long endingStationId = 지하철역_생성_요청("역삼역").jsonPath().getLong("id");
-
-        // when
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", startingStationId.toString());
-        params.put("downStationId", endingStationId.toString());
-        params.put("distance", Integer.toString(10));
-        int responseStatusCode = 지하철_노선에_지하철_구간_생성_요청(lineId, params).statusCode();
-
-        // then
-        assertThat(responseStatusCode).isEqualTo(HttpStatus.OK.value());
-    }
 }
