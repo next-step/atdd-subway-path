@@ -64,19 +64,15 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> addSection(Station upStation, Station downStation, int distance) {
-        Section newSection = new Section(
+        return addSection(new Section(
                 this,
                 upStation,
                 downStation,
                 distance
-        );
-        this.getSections()
-            .add(newSection);
-
-        return sections;
+        ));
     }
 
-    public List<Section> addSection(Section newSection) {
+    private List<Section> addSection(Section newSection) {
 
         AtomicBoolean normalCondition = new AtomicBoolean(true);
 

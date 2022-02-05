@@ -1,7 +1,6 @@
 package nextstep.subway.applicaion.dto;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 
 import java.time.LocalDateTime;
@@ -53,20 +52,9 @@ public class StationResponse {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getSections()
-                                     .stream()
-                                     .map(Section::getDownStation)
-                                     .collect(Collectors.toList());
-
-        stations.add(
-                0,
-                line.getSections()
-                    .get(0)
-                    .getUpStation()
-        );
-
-        return stations.stream()
-                       .map(StationResponse::from)
-                       .collect(Collectors.toList());
+        return line.getStations()
+                   .stream()
+                   .map(StationResponse::from)
+                   .collect(Collectors.toList());
     }
 }

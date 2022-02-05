@@ -1,7 +1,6 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -137,7 +136,7 @@ class LineTest {
         assertThat(실제_일호선_역_개수).isEqualTo(3);
     }
 
-    @DisplayName("구간 추가 - 상행역이 같은 경우 / 새로운 구간의 거리가 작은 경우")
+    @DisplayName("구간 추가 - 상행역이 같은 경우에 새로운 역을 등록")
     @Test
     void addSection2() {
 
@@ -158,12 +157,9 @@ class LineTest {
 
         // when
         일호선_라인.addSection(
-                new Section(
-                        일호선_라인,
-                        A역,
-                        B역,
-                        4
-                )
+                A역,
+                B역,
+                4
         );
 
         // then
@@ -209,12 +205,9 @@ class LineTest {
 
         // when
         일호선_라인.addSection(
-                new Section(
-                        일호선_라인,
-                        A역,
-                        C역,
-                        7
-                )
+                A역,
+                C역,
+                7
         );
 
         // then
@@ -259,12 +252,9 @@ class LineTest {
 
         // when
         일호선_라인.addSection(
-                new Section(
-                        일호선_라인,
-                        B역,
-                        A역,
-                        4
-                )
+                B역,
+                A역,
+                4
         );
 
         // then
@@ -308,12 +298,9 @@ class LineTest {
 
         // when
         일호선_라인.addSection(
-                new Section(
-                        일호선_라인,
-                        C역,
-                        B역,
-                        3
-                )
+                C역,
+                B역,
+                3
         );
 
         // then
@@ -358,12 +345,9 @@ class LineTest {
 
         // when, then
         assertThatThrownBy(() -> 일호선_라인.addSection(
-                new Section(
-                        일호선_라인,
-                        B역,
-                        C역,
-                        7
-                )
+                B역,
+                C역,
+                7
         )).isInstanceOf(RuntimeException.class);
 
     }
@@ -387,43 +371,31 @@ class LineTest {
         );
 
         일호선_라인.addSection(
-                new Section(
-                        일호선_라인,
-                        B역,
-                        C역,
-                        3
-                ));
+                B역,
+                C역,
+                3
+        );
 
         // when, then
         assertAll(
                 () -> assertThatThrownBy(() -> 일호선_라인.addSection(
-                        new Section(
-                                일호선_라인,
-                                B역,
-                                C역,
-                                5
-                        )
+                        B역,
+                        C역,
+                        5
                 )).isInstanceOf(RuntimeException.class),
 
                 () -> assertThatThrownBy(() -> 일호선_라인.addSection(
-                        new Section(
-                                일호선_라인,
-                                B역,
-                                C역,
-                                3
-                        )
+                        B역,
+                        C역,
+                        3
                 )).isInstanceOf(RuntimeException.class),
 
                 () -> assertThatThrownBy(() -> 일호선_라인.addSection(
-                        new Section(
-                                일호선_라인,
-                                A역,
-                                C역,
-                                3
-                        )
+                        A역,
+                        C역,
+                        3
                 )).isInstanceOf(RuntimeException.class)
         );
-
     }
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
@@ -447,21 +419,16 @@ class LineTest {
         );
 
         일호선_라인.addSection(
-                new Section(
-                        일호선_라인,
-                        B역,
-                        C역,
-                        3
-                ));
+                B역,
+                C역,
+                3
+        );
 
         // when
         assertThatThrownBy(() -> 일호선_라인.addSection(
-                new Section(
-                        일호선_라인,
-                        X역,
-                        Y역,
-                        7
-                )
+                X역,
+                Y역,
+                7
         )).isInstanceOf(RuntimeException.class);
     }
 }
