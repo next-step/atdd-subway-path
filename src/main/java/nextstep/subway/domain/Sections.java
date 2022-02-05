@@ -19,7 +19,7 @@ public class Sections {
     private static final String ALREADY_REGISTERED_SECTION = "이미 등록된 구간입니다.";
     private static final String OVER_DISTANCE_SECTION = "길이가 더 긴 구간은 추가할 수 없습니다.";
     private static final String UNABLE_TO_REMOVE_LAST_SECTION = "구간이 1개일 경우 삭제가 불가능합니다.";
-    private static final String UNABLE_TO_REMOVE_NON_LAST_STATION = "마지막 역만 삭제가 가능합니다.";
+    private static final String UNREGISTERED_STATION = "등록되지 않은 역입니다.";
     private static final String UNREGISTERED_STATIONS = "요청한 상/하행역이 모두 노선에 등록되지 않았습니다.";
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
@@ -118,7 +118,7 @@ public class Sections {
 
     private void validateRemovable(Station station, List<Station> stations) {
         if (!stations.contains(station)) {
-            throw new IllegalArgumentException("등록되지 않은 역입니다.");
+            throw new IllegalArgumentException(UNREGISTERED_STATION);
         }
 
         if (sections.size() == MIN_SIZE) {

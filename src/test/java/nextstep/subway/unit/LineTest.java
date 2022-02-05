@@ -184,7 +184,7 @@ class LineTest {
         // then
         assertThat(이호선.getStations()).doesNotContain(서초역);
     }
-    
+
     @DisplayName("구간이 여러 개일 경우 중간 역 삭제 성공한다")
     @Test
     void should_be_success_when_middle_section_is_removable() {
