@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LineSteps {
+    private static final String RESPONSE_HEADER_LOCATION = "Location";
+
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
@@ -18,6 +20,23 @@ public class LineSteps {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
+                .then().log().all().extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_수정_요청(ExtractableResponse<Response> createResponse, Map params) {
+        return RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put(createResponse.header(RESPONSE_HEADER_LOCATION))
+                .then().log().all().extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_제거_요청(ExtractableResponse<Response> createResponse) {
+        return RestAssured
+                .given().log().all()
+                .when()
+                .delete(createResponse.header(RESPONSE_HEADER_LOCATION))
                 .then().log().all().extract();
     }
 
@@ -31,7 +50,7 @@ public class LineSteps {
     public static ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> createResponse) {
         return RestAssured
                 .given().log().all()
-                .when().get(createResponse.header("location"))
+                .when().get(createResponse.header(RESPONSE_HEADER_LOCATION))
                 .then().log().all().extract();
     }
 
