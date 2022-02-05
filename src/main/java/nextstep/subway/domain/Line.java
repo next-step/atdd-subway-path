@@ -24,6 +24,19 @@ public class Line extends BaseEntity {
     public Line() {
     }
 
+    private Line(Long id, String name, String color, Station upStation, Station downStation, int distance) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        sections.add(initSection(upStation, downStation, distance));
+    }
+
+    public static Line of(Long id, String name, String color, Station upStation, Station downStation, int distance) {
+        return new Line(id, name, color, upStation, downStation, distance);
+    }
+
     private Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
@@ -32,12 +45,12 @@ public class Line extends BaseEntity {
         sections.add(initSection(upStation, downStation, distance));
     }
 
-    private Section initSection(Station upStation, Station downStation, int distance) {
-        return Section.of(this, upStation, downStation, distance);
-    }
-
     public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
         return new Line(name, color, upStation, downStation, distance);
+    }
+
+    private Section initSection(Station upStation, Station downStation, int distance) {
+        return Section.of(this, upStation, downStation, distance);
     }
 
     @Override
@@ -59,6 +72,14 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public String getUpStationName() {
+        return upStation.getName();
+    }
+
+    public String getDownStationName() {
+        return downStation.getName();
     }
 
     /* 구간 추가 */
@@ -152,5 +173,9 @@ public class Line extends BaseEntity {
 
     public int getSectionSize() {
         return sections.size();
+    }
+
+    public void removeSectionByStation(Station station) {
+
     }
 }

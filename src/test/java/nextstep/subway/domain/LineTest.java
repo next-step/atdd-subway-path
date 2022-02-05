@@ -99,4 +99,58 @@ class LineTest {
         assertThat(이호선.findSectionByDownStation(역삼역).getDistance()).isEqualTo(3);
         assertThat(이호선.findSectionByDownStation(선릉역).getDistance()).isEqualTo(7);
     }
+
+    @Test
+    @DisplayName("구간을 삭제한다. - 종점을 삭제하는 경우")
+    void removeSection() {
+        // 새로운 역을 생성하고 노선의 종점으로 구간을 등록하고,
+        // 다시 해당 역을 삭제하면 구간이 제거되고, 종점이 갱신된다.
+
+        // given
+        Station 역삼역 = createStation(3L, "역삼역");
+        이호선.addSection(createSection(이호선, 선릉역, 역삼역, 7));
+
+        // when
+        이호선.removeSectionByStation(역삼역);
+
+        // then
+        assertThat(이호선.getStations()).containsExactly(Arrays.array(강남역, 선릉역));
+        assertThat(이호선.getDownStationName()).isEqualTo("선릉역");
+    }
+
+    @Test
+    @DisplayName("구간을 삭제한다. - 최상행역을 삭제하는 경우")
+    void removeSection2() {
+        // 새로운 역을 생성하고 노선의 종점으로 구간을 등록하고,
+        // 노선의 최상행역을 삭제하면 구간이 제거되고, 최상행역이 갱신된다.
+
+        // given
+        Station 역삼역 = createStation(3L, "역삼역");
+        이호선.addSection(createSection(이호선, 선릉역, 역삼역, 7));
+
+        // when
+        이호선.removeSectionByStation(강남역);
+
+        // then
+        assertThat(이호선.getStations()).containsExactly(Arrays.array(선릉역, 역삼역));
+        assertThat(이호선.getUpStationName()).isEqualTo("선릉역");
+    }
+
+    @Test
+    @DisplayName("구간을 삭제한다. - 중간역을 삭제하는 경우")
+    void removeSection3() {
+        // 새로운 역을 생성하고 노선의 종점으로 구간을 등록하고
+        // 중간역을 삭제하면 구간이 제거되고,
+        // 중간역의 상행과 하행을 잇는 구간이 새롭게 등록된다.
+
+        // given
+        Station 역삼역 = createStation(3L, "역삼역");
+        이호선.addSection(createSection(이호선, 선릉역, 역삼역, 7));
+
+        // when
+        이호선.removeSectionByStation(선릉역);
+
+        // then
+        assertThat(이호선.getStations()).containsExactly(Arrays.array(강남역, 역삼역));
+    }
 }

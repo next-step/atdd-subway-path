@@ -91,9 +91,7 @@ public class LineService {
         Line line = findLineById(lineId);
         Station station = findStationById(stationId);
 
-        Section targetSection = line.findSectionByDownStation(station);
-
-        line.removeSection(targetSection);
+        line.removeSectionByStation(station);
     }
 
     private Line findLineById(Long id) {

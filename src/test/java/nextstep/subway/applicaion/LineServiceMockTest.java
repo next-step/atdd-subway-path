@@ -42,7 +42,7 @@ class LineServiceMockTest {
 
         강남역 = createStation(1L, "강남역");
         선릉역 = createStation(2L, "선릉역");
-        이호선 = createLine("2호선", "green", 강남역, 선릉역, 10);
+        이호선 = createLine(1L, "2호선", "green", 강남역, 선릉역, 10);
     }
 
     @Test
@@ -68,7 +68,7 @@ class LineServiceMockTest {
         // given
         Station 용산역 = createStation(3L, "용산역");
         Station 공덕역 = createStation(4L, "공덕역");
-        Line 경의선 = createLine("경의선", "blue", 용산역, 공덕역, 8);
+        Line 경의선 = createLine(2L, "경의선", "blue", 용산역, 공덕역, 8);
 
         when(lineRepository.findAll()).thenReturn(Arrays.asList(이호선, 경의선));
 
