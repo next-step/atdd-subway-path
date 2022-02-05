@@ -26,7 +26,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // when
         var lineUri = 노선_생성_응답.header("Location");
         var 하행_종점역_ID = 노선_생성_응답.jsonPath().getList("stations.id", Long.class).get(1);
-        long 새로운역_ID = 역_생성_응답.jsonPath().getLong("id");
+        var 새로운역_ID = 역_생성_응답.jsonPath().getLong("id");
         var 구간_등록_응답 = 구간_등록_요청(lineUri, SectionFixture.of(새로운역_ID, 하행_종점역_ID, 5));
 
         // then
@@ -81,7 +81,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
      * Then 노선에 구간이 제거된다
      */
-    @DisplayName("지하철 노선에 구간을 제거")
+    @DisplayName("지하철 노선의 마지막 구간을 제거")
     @Test
     void removeLineSection() {
         // given
@@ -101,6 +101,69 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         구간_삭제_성공(구간_삭제_응답);
+    }
+
+    @DisplayName("지하철 노선의 상행 종점 구간을 제거")
+    @Test
+    void removeLineTopSection() {
+        // given
+        var 노선_생성_응답 = 신분당선_생성_완료();
+
+        var 역_생성_응답 = 역_생성_요청(역삼역);
+        var stationIdList = 노선_생성_응답.jsonPath().getList("stations.id", Long.class);
+
+        var 상행_종점역_ID = stationIdList.get(0);
+        var 하행_종점역_ID = stationIdList.get(1);
+        var 새로운역_ID = 역_생성_응답.jsonPath().getLong("id");
+
+        var 구간1 = SectionFixture.of(하행_종점역_ID, 새로운역_ID, 10);
+
+        var lineUri = 노선_생성_응답.header("Location");
+        구간_등록_요청(lineUri, 구간1);
+
+        // when
+        var 구간_삭제_응답 = 구간_삭제_요청(lineUri, 상행_종점역_ID);
+
+        // then
+        구간_삭제_성공(구간_삭제_응답);
+    }
+
+    @DisplayName("지하철 노선에 존재하지 않는 역을 제거")
+    @Test
+    void removeSectionNotExistStation() {
+        // given
+        var 노선_생성_응답 = 신분당선_생성_완료();
+
+        var 역_생성_응답 = 역_생성_요청(역삼역);
+        var 하행_종점역_ID = 노선_생성_응답.jsonPath().getList("stations.id", Long.class).get(1);
+        var 새로운역_ID = 역_생성_응답.jsonPath().getLong("id");
+
+        var 구간1 = SectionFixture.of(하행_종점역_ID, 새로운역_ID, 10);
+
+        var lineUri = 노선_생성_응답.header("Location");
+        구간_등록_요청(lineUri, 구간1);
+
+        // when
+        var 구간_삭제_응답 = 구간_삭제_요청(lineUri, 1000L);
+
+        // then
+        구간_삭제_예외(구간_삭제_응답);
+    }
+
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거")
+    @Test
+    void removeExistOnlyOneSection() {
+        // given
+        var 노선_생성_응답 = 신분당선_생성_완료();
+
+        var 상행_종점역_ID = 노선_생성_응답.jsonPath().getList("stations.id", Long.class).get(0);
+        var lineUri = 노선_생성_응답.header("Location");
+
+        // when
+        var 구간_삭제_응답 = 구간_삭제_요청(lineUri, 상행_종점역_ID);
+
+        // then
+        구간_삭제_예외(구간_삭제_응답);
     }
 
 
