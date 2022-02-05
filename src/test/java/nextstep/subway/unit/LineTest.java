@@ -14,8 +14,9 @@ class LineTest {
     void getStations() {
     }
 
-    @DisplayName("구간이 목록에서 마지막 역 삭제")
+    @DisplayName("구간의 목록에서 마지막 역 삭제")
     @Test
     void removeSection() {
+
     }
 }
