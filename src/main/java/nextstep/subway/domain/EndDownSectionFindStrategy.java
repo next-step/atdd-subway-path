@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import java.util.List;
+import java.util.Optional;
 
 public class EndDownSectionFindStrategy implements SectionFindStrategy {
     private List<Section> sections;
@@ -10,13 +11,10 @@ public class EndDownSectionFindStrategy implements SectionFindStrategy {
     }
 
     public Section findToEndDownSection(Section section) {
-        for (Section s : sections) {
-            if (s.isNext(section)) {
-                return findToEndDownSection(s);
-            }
-        }
-
-        return section;
+        Optional<Section> sectionOptional = sections.stream()
+                .filter(section::isPrevious)
+                .findFirst();
+        return sectionOptional.isPresent() ? findToEndDownSection(sectionOptional.get()) : section;
     }
 
     @Override

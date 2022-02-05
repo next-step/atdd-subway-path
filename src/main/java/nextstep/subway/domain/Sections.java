@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import java.util.*;
 
 @Embeddable
@@ -11,11 +10,9 @@ public class Sections {
     private final static int FIRST_SECTION_INDEX = 0;
     private final static int END_STATIONS_SIZE = 2;
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    @OrderBy("id asc")
-    private List<Section> sections;
+    private List<Section> sections = new ArrayList<>();
 
     public Sections() {
-        this.sections = new ArrayList<>();
     }
 
     public Section add(Section section) {
@@ -138,13 +135,11 @@ public class Sections {
         stations.add(cursor.getUpStation());
         stations.add(cursor.getDownStation());
 
-        for (Section section : sections) {
-            if (cursor.isPrevious(section)) {
-                return flatStations(stations, section);
-            }
-        }
+        Optional<Section> sectionOptional = sections.stream()
+                .filter(cursor::isPrevious)
+                .findFirst();
 
-        return stations;
+        return sectionOptional.isPresent() ? flatStations(stations, sectionOptional.get()) : stations;
     }
 
     public List<Station> flatStations() {
