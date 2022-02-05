@@ -70,7 +70,7 @@ public class LineServiceTest {
     void showLines() {
         // given
         Line line = new Line(lineName, lineColor);
-        line.getSections().add(new Section(line, upStation, downStation, distance));
+        line.addSection(upStation, downStation, distance);
         lineRepository.save(line);
 
         // when
@@ -129,13 +129,7 @@ public class LineServiceTest {
         lineService.addSection(line.getId(), new SectionRequest(upStationId, downStationId, distance));
 
         // then
-        Section section = line.getSections().stream().findAny().get();
-        assertAll(
-                () -> assertThat(section.getLine()).isEqualTo(line),
-                () -> assertThat(section.getUpStation()).isEqualTo(upStation),
-                () -> assertThat(section.getDownStation()).isEqualTo(downStation),
-                () -> assertThat(section.getDistance()).isEqualTo(distance)
-        );
+        assertThat(line.getStations()).isEqualTo(List.of(upStation, downStation));
     }
 
     @DisplayName("지하철 노선 내 구간 삭제")
@@ -144,10 +138,8 @@ public class LineServiceTest {
         // given
         Line line = lineRepository.save(new Line(lineName, lineColor));
         Station newStation = stationRepository.save(new Station("사당역"));
-        line.getSections().addAll(List.of(
-                new Section(line, upStation, downStation, distance),
-                new Section(line, downStation, newStation, distance)
-        ));
+        line.addSection(upStation, downStation, distance);
+        line.addSection(downStation, newStation, distance);
 
         // when
         lineService.deleteSection(line.getId(), newStation.getId());
