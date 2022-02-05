@@ -1,17 +1,11 @@
 package nextstep.subway.applicaion;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.*;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class PathService {
 
@@ -34,22 +28,20 @@ public class PathService {
 
 
         // 노드 입력 -- 각각의 역을 입력해야겠지?
-        stationRepository.findAll().stream()
+        final List<Line> all = lineRepository.findAll();
+        all.stream()
+                .flatMap(it -> it.getStations().stream())
                 .forEach(graph::addVertex);
 
-//        final List<Line> all = lineRepository.findAll();
-//        all.stream().forEach(it -> it.getSections());
-//
-//        // 간선 입력
-//        graph.setEdgeWeight(graph.addEdge("v1", "v2"), 2);
-//        graph.setEdgeWeight(graph.addEdge("v2", "v3"), 3);
-//        graph.setEdgeWeight(graph.addEdge("v1", "v3"), 100);
-//        graph.setEdgeWeight(graph.addEdge("v2", "v4"), 1);
-//        graph.setEdgeWeight(graph.addEdge("v3", "v4"), 1);
-
+        all.stream()
+                .flatMap(it -> it.getSections().stream())
+                .forEach(it -> setEdgeWeight(graph, it));
 
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-        List<String> shortestPath = dijkstraShortestPath.getPath(sourceStation, targetStation).getVertexList();
+        List<Station> shortestPath = dijkstraShortestPath.getPath(sourceStation, targetStation).getVertexList();
+    }
 
+    private void setEdgeWeight(final WeightedMultigraph<Station, DefaultWeightedEdge> graph, final Section it) {
+        graph.setEdgeWeight(graph.addEdge(it.getUpStation(), it.getDownStation()), it.getDistance());
     }
 }

@@ -85,7 +85,6 @@ class PathServiceTest {
         given(lineRepository.findAll()).willReturn(List.of(이호선, 신분당선, 삼호선));
 
         assertThatThrownBy(() -> pathService.findShortestPath(sourceId, targetId))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("source and target stations were not Linked");
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
