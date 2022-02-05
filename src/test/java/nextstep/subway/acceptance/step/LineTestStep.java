@@ -21,8 +21,8 @@ public class LineTestStep {
                 .color("bg-red-600")
                 .name("신분당선")
                 .upStationId(StationTestStep.지하철역_생성_후_아이디_추출하기("강남역"))
-                .downStationId(StationTestStep.지하철역_생성_후_아이디_추출하기("양재역"))
-                .distance(4)
+                .downStationId(StationTestStep.지하철역_생성_후_아이디_추출하기("정자역"))
+                .distance(10)
                 .build();
     }
 

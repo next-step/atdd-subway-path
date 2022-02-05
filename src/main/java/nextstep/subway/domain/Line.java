@@ -37,7 +37,8 @@ public class Line extends BaseEntity {
     public Section addSection(Station upStation, Station downStation, int distance) {
         Section section = new Section(upStation, downStation, distance);
         section.updateLine(this);
-        return sections.addSection(section);
+        sections.addSection(section);
+        return section;
     }
 
     public List<Station> getAllStations() {
@@ -48,6 +49,10 @@ public class Line extends BaseEntity {
         Section removedSection = sections.removeSection(station);
         removedSection.updateLine(null);
         return removedSection;
+    }
+
+    public int getTotalDistance() {
+        return sections.getTotalDistance();
     }
 
     public void update(String name, String color) {

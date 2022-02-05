@@ -6,10 +6,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -29,22 +26,74 @@ public class Sections {
         this.sections.add(section);
     }
 
-    public Section addSection(Section section) {
-        checkPossibleAddingSection(section);
-        sections.add(section);
-        return section;
+    public void addSection(Section section) {
+        checkStateToAddSection(section);
+
+        if (addSectionBetweenStations(section)) {
+            return;
+        }
+        if (addSectionInFrontOfFirstUpStation(section)) {
+            return;
+        }
+        addSectionBehindLastDownStation(section);
     }
 
-    private void checkPossibleAddingSection(Section section) {
+    private void checkStateToAddSection(Section section) {
         if (sections.isEmpty()) {
             return;
         }
-        if (!Objects.equals(getLastDownStation(), section.getUpStation())) {
-            throw new IllegalUpdatingStateException("마지막 하행선이 요청한 구간의 상행선과 동일하지 않아 구간을 추가하지 못합니다.");
+        List<Station> allStations = getAllStations();
+        if (allStations.contains(section.getUpStation())
+                && allStations.contains(section.getDownStation())) {
+            throw new IllegalUpdatingStateException("요청한 구간의 상행역과 하행역이 이미 노선에 등록되어있습니다.");
         }
-        if (getAllStations().contains(section.getDownStation())) {
-            throw new IllegalUpdatingStateException("요청한 구간의 하행역이 이미 노선에 등록되어있습니다.");
+    }
+
+    private boolean addSectionBetweenStations(Section section) {
+        if (addSectionBetweenStationsWhenSameUpStation(section)) {
+            return true;
         }
+        if (addSectionBetweenStationsWhenSameDownStation(section)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean addSectionBetweenStationsWhenSameUpStation(Section section) {
+        Optional<Section> optionalSameUpStationSection = sections.stream()
+                .filter(s -> s.getUpStation().equals(section.getUpStation()))
+                .findAny();
+        if (!optionalSameUpStationSection.isPresent()) {
+            return false;
+        }
+
+        Section sameUpStationSection = optionalSameUpStationSection.get();
+        sameUpStationSection.updateForSplittingBySameUpStationSection(section);
+        sections.add(sections.indexOf(sameUpStationSection), section);
+        return true;
+    }
+
+    private boolean addSectionBetweenStationsWhenSameDownStation(Section section) {
+        Optional<Section> optionalSameDownStationSection = sections.stream()
+                .filter(s -> s.getDownStation().equals(section.getDownStation()))
+                .findAny();
+        if (!optionalSameDownStationSection.isPresent()) {
+            return false;
+        }
+
+        Section sameDownStationSection = optionalSameDownStationSection.get();
+        sameDownStationSection.updateForSplittingBySameDownStationSection(section);
+        sections.add(sections.indexOf(sameDownStationSection) + 1, section);
+        return true;
+    }
+
+    private boolean addSectionInFrontOfFirstUpStation(Section section) {
+        return false;
+    }
+
+    private boolean addSectionBehindLastDownStation(Section section) {
+        sections.add(section);
+        return true;
     }
 
     public List<Station> getAllStations() {
@@ -78,5 +127,11 @@ public class Sections {
         if (!Objects.equals(getLastDownStation(), station)) {
             throw new IllegalUpdatingStateException("해당 노선의 하행 종점역이 아니라 삭제하지 못합니다.");
         }
+    }
+
+    public int getTotalDistance() {
+        return sections.stream()
+                .mapToInt(Section::getDistance)
+                .sum();
     }
 }

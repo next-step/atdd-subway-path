@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.linesOf;
 
 @DisplayName("지하철 구간 관리 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -28,9 +29,52 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         lineId = LineTestStep.지하철_노선_생성한_후_아이디_추출하기(lineRequest);
     }
 
-    @DisplayName("구간 등록 기능")
+    @DisplayName("구간 등록 기능 - 역 사이에 새로운 역을 등록할 경우 - 상행역 동일")
     @Test
-    void createSection() {
+    void createSectionBetweenStationsSameUpStation() {
+        // given
+        Long 판교역_id = StationTestStep.지하철역_생성_후_아이디_추출하기("판교역");
+        SectionTestRequest sectionRequest = new SectionTestRequest(lineRequest.getUpStationId(), 판교역_id, 6);
+
+        // when
+        ExtractableResponse<Response> response = SectionTestStep.지하철역_구간_생성하기(sectionRequest, lineId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @DisplayName("구간 등록 기능 - 역 사이에 새로운 역을 등록할 경우 - 하행역 동일")
+    @Test
+    void createSectionBetweenStationsSameDownStation() {
+        // given
+        Long 판교역_id = StationTestStep.지하철역_생성_후_아이디_추출하기("판교역");
+        SectionTestRequest sectionRequest = new SectionTestRequest(판교역_id, lineRequest.getDownStationId(), 4);
+
+        // when
+        ExtractableResponse<Response> response = SectionTestStep.지하철역_구간_생성하기(sectionRequest, lineId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @DisplayName("구간 등록 기능 - 역 사이에 새로운 역 등록 시 기존 구간보다 길거나 같을 때 실패")
+    @Test
+    void createSectionBetweenStationsLongDistanceFailCase() {
+        // given
+        Long 판교역_id = StationTestStep.지하철역_생성_후_아이디_추출하기("판교역");
+        SectionTestRequest sectionRequest = new SectionTestRequest(
+                lineRequest.getUpStationId(), 판교역_id, lineRequest.getDistance());
+
+        // when
+        ExtractableResponse<Response> response = SectionTestStep.지하철역_구간_생성하기(sectionRequest, lineId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+    }
+
+    @DisplayName("구간 등록 기능 - 새로운 역을 상행 종점으로 등록할 경우")
+    @Test
+    void createSectionOnLastDownStation() {
         // given
         Long 양재시민의숲역_id = StationTestStep.지하철역_생성_후_아이디_추출하기("양재시민의숲역");
         SectionTestRequest sectionRequest = new SectionTestRequest(lineRequest.getDownStationId(), 양재시민의숲역_id, 3);
@@ -40,34 +84,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-    }
-
-    @DisplayName("구간 등록 시 상행역이 노선의 하행 종점역이 아닐 때 실패 기능")
-    @Test
-    void createSectionNotDownStationFail() {
-        // given
-        Long 양재시민의숲역_id = StationTestStep.지하철역_생성_후_아이디_추출하기("양재시민의숲역");
-        SectionTestRequest sectionRequest = new SectionTestRequest(양재시민의숲역_id, lineRequest.getDownStationId(), 3);
-
-        // when
-        ExtractableResponse<Response> response = SectionTestStep.지하철역_구간_생성하기(sectionRequest, lineId);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
-    }
-
-    @DisplayName("구간 등록 시 하행역이 해당 노선에 등록되어 있을 때 실패 기능")
-    @Test
-    void createSectionDuplicateDownStationFail() {
-        // given
-        SectionTestRequest sectionRequest = new SectionTestRequest(
-                lineRequest.getDownStationId(), lineRequest.getUpStationId(), 3);
-
-        // when
-        ExtractableResponse<Response> response = SectionTestStep.지하철역_구간_생성하기(sectionRequest, lineId);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     @DisplayName("구간 제거 기능")
