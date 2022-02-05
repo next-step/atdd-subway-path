@@ -5,6 +5,7 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.handler.exception.SectionException;
+import nextstep.subway.handler.exception.StationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -89,11 +90,26 @@ public class LineServiceTest {
         assertThat(line.getSectionSize()).isEqualTo(1);
     }
 
-    @DisplayName("구간 삭제를 처리한다. - 노선에 구간이 1개인 경우")
+    @DisplayName("구간 삭제를 검증한다. - 노선에 구간이 1개인 경우")
     @Test
-    void deleteSection4() {
+    void validateDeleteSection() {
         // when/then
         assertThatThrownBy(() -> lineService.deleteSection(이호선.getId(), 선릉역.getId()))
                 .isInstanceOf(SectionException.class);
+    }
+
+    @DisplayName("구간 삭제를 검증한다. - 노선에 존재하지 않은 역인 경우")
+    @Test
+    void validateDeleteSection2() {
+        // given
+        이호선.addSection(createSection(이호선, 선릉역, 역삼역, 7));
+        lineRepository.save(이호선);
+
+        Station 용산역 = createStation("용산역");
+        stationRepository.save(용산역);
+
+        // when/then
+        assertThatThrownBy(() -> lineService.deleteSection(이호선.getId(), 용산역.getId()))
+                .isInstanceOf(StationException.class);
     }
 }

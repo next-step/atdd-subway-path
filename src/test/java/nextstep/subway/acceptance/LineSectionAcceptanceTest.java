@@ -148,7 +148,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(신분당선);
         assertThat(getResponse.body().jsonPath().getString("downStation")).isEqualTo("양재역");
         assertThat(getResponse.body().jsonPath().getList("stations.name"))
-                .containsExactly(Arrays.array("강남역, 양재역"));
+                .containsExactly(Arrays.array("강남역", "양재역"));
     }
 
     /**
@@ -173,7 +173,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(신분당선);
         assertThat(getResponse.body().jsonPath().getString("upStation")).isEqualTo("양재역");
         assertThat(getResponse.body().jsonPath().getList("stations.name"))
-                .containsExactly(Arrays.array("양재역, 정자역"));
+                .containsExactly(Arrays.array("양재역", "정자역"));
     }
 
     /**
@@ -197,7 +197,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(신분당선);
         assertThat(getResponse.body().jsonPath().getList("stations.name"))
-                .containsExactly(Arrays.array("강남역, 정자역"));
+                .containsExactly(Arrays.array("강남역", "정자역"));
     }
 
     /**
@@ -212,7 +212,28 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> deleteResponse = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
 
         // then
-        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Scenario : 구간에 존재하지 않은 역에 대해 삭제 요청을 하면 삭제가 되지 않는다.
+     * given    : 새로운 역을 추가하고 구간을 등록한 후에
+     * when     : 주어진 노선에 존재하지 않은 역에대해 삭제를 요청하면
+     * then     : 구간이 삭제되어지지 않는다. (404에러)
+     */
+    @DisplayName("노선에 존재하지 않은 역에대해 구간삭제가 불가하다.")
+    @Test
+    void validateRemoveLineSection2() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 8));
+        Long 용산역 = 지하철역_생성_요청("용산역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_노선에_지하철_구간_제거_요청(신분당선, 용산역);
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     /**
