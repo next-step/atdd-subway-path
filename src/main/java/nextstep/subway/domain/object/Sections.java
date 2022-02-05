@@ -61,16 +61,38 @@ public class Sections {
         }
 
        val targetIndex = stations.indexOf(targetStation);
+        if (removeFirstSection(targetIndex)) { return; }
+        if (removeLastSection(targetIndex, stations.size())) { return; }
+        removeMiddleSection(targetStation);
+    }
+
+    private boolean validateRemoveSection(Station targetStation) {
+        if (isSmallerMinimumSize()) {
+            return false;
+        }
+
+        return targetStation != null;
+    }
+
+    private boolean removeFirstSection(int targetIndex) {
         if (targetIndex == 0) {
             this.values.remove(getFirstSection());
-            return;
+            return true;
         }
 
-        if (targetIndex == stations.size() - 1) {
+        return false;
+    }
+
+    private boolean removeLastSection(int targetIndex, int StationsSize) {
+        if (targetIndex == StationsSize - 1) {
             this.values.remove(getLastSection());
-            return;
+            return true;
         }
 
+        return false;
+    }
+
+    private void removeMiddleSection(Station targetStation) {
         val sectionToBeChanged= values.stream()
                 .filter(value ->
                         value.getDownStation().equals(targetStation)
@@ -92,14 +114,6 @@ public class Sections {
     private void updateOriginSectionForDelete(Section preSection, Section targetSection) {
         val changedDistance= preSection.plusDistance(targetSection.getDistance());
         preSection.updateForDelete(targetSection.getDownStation(), changedDistance);
-    }
-
-    private boolean validateRemoveSection(Station targetStation) {
-        if (isSmallerMinimumSize()) {
-            return false;
-        }
-
-        return targetStation != null;
     }
 
     private boolean validateAddSection(Section section) {
