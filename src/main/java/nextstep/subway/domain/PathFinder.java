@@ -11,6 +11,9 @@ import java.util.List;
 
 public class PathFinder {
 
+    private PathFinder() {
+    }
+
     public static PathResponse findPath(List<Line> lines, Station from, Station to) {
         pathValidCheck(from, to);
         WeightedMultigraph<Station, DefaultWeightedEdge> graph

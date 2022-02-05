@@ -75,8 +75,7 @@ class PathFinderTest {
         //given
 
         //when
-        PathFinder pathFinder = new PathFinder();
-        PathResponse path = pathFinder.findPath(노선_모음, 교대역, 양재역);
+        PathResponse path = PathFinder.findPath(노선_모음, 교대역, 양재역);
 
         //then
         Assertions.assertThat(path.getStations()).hasSize(3);
@@ -95,10 +94,9 @@ class PathFinderTest {
         //given
 
         //when //then
-        PathFinder pathFinder = new PathFinder();
 
         org.junit.jupiter.api.Assertions.assertThrows(BusinessException.class, () -> {
-            pathFinder.findPath(노선_모음, 교대역, 교대역);
+            PathFinder.findPath(노선_모음, 교대역, 교대역);
         });
     }
 }
