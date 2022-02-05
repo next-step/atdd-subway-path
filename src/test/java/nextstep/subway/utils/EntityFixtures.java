@@ -1,14 +1,27 @@
 package nextstep.subway.utils;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
+
+import javax.persistence.Entity;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class EntityFixtures {
 
-    // 테스트에서 fixture 엔티티를 생성 할 때 ID를 설정해주어야 하지만 도메인 엔티티 클래스 생성자에 id 파라미터를 추가하기 싫을 때 사용한다.
-    public static <T> T createEntityFixtureWithId(Long id, Class<T> clazz) {
+    public static <T, ID> T createEntityFixtureWithId(ID id, Class<T> clazz) {
         try {
-            Constructor<T> constructor = clazz.getConstructor(null);
+            boolean isNotEntity = Arrays.stream(clazz.getDeclaredAnnotations())
+                    .noneMatch(annotation -> Entity.class.isAssignableFrom(annotation.annotationType()));
+
+            if (isNotEntity) {
+                throw new IllegalArgumentException("must be an entity class");
+            }
+
+            Constructor<T> constructor = clazz.getConstructor();
             T entity = constructor.newInstance();
 
             Field idField = entity.getClass().getDeclaredField("id");
@@ -17,6 +30,38 @@ public class EntityFixtures {
 
             return entity;
         } catch (Exception e) {
+            System.err.println(e.getMessage());
+            return null;
+        }
+    }
+
+    public static <T> T createEntityFixtureWithFieldSet(Map<String, Object> fieldSet, Class<T> clazz) {
+        try {
+            boolean isNotEntity = Arrays.stream(clazz.getDeclaredAnnotations())
+                    .noneMatch(annotation -> Entity.class.isAssignableFrom(annotation.annotationType()));
+
+            if (isNotEntity) {
+                throw new IllegalArgumentException("must be an entity class");
+            }
+
+            Constructor<T> constructor = clazz.getConstructor();
+            T entity = constructor.newInstance();
+
+            Map<String, Field> fieldMap = Arrays.stream(FieldUtils.getAllFields(clazz))
+                    .collect(Collectors.toMap(Field::getName, Function.identity()));
+
+            for (Map.Entry<String, Object> e : fieldSet.entrySet()) {
+                String fieldName = e.getKey();
+                Object fieldValue = e.getValue();
+
+                Field field = fieldMap.get(fieldName);
+                field.setAccessible(true);
+                field.set(entity, fieldValue);
+            }
+
+            return entity;
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
             return null;
         }
     }
