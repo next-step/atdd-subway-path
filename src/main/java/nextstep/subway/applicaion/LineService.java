@@ -3,23 +3,23 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.SubwayException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
-    private StationService stationService;
+    private final LineRepository lineRepository;
+    private final StationService stationService;
 
     public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
@@ -27,6 +27,10 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
+        if (lineRepository.existsByName(request.getName())) {
+            throw new SubwayException.DuplicatedException();
+        }
+
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
         if (request.isValid()) {
             Station upStation = stationService.findById(request.getUpStationId());
@@ -81,7 +85,7 @@ public class LineService {
         Station station = stationService.findById(stationId);
 
         if (!line.sectionByIndex(line.sectionsSize() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
+            throw new SubwayException.CanNotDeleteException();
         }
 
         line.removeSectionByIndex(line.sectionsSize() - 1);

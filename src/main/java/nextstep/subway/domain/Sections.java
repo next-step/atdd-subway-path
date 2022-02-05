@@ -9,6 +9,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.exception.SubwayException;
+
 @Embeddable
 public class Sections {
 
@@ -26,16 +28,47 @@ public class Sections {
 		}
 
 		// 중복확인
-		if(this.sections.stream()
-			.anyMatch(it -> it.isDuplicateSection(section.getUpStation(), section.getDownStation()))){
-			throw new IllegalArgumentException("중복된 구간이 존재합니다");
-		}
-
-
+		isDuplicatedSection(section);
 		updateUpSection(section);
 		updateDownSection(section);
 
 		this.sections.add(section);
+	}
+
+	public List<Station> findAllStations() {
+		//  첫번째 상행역을 찾고, 그 뒤로 구간에 연결되는 하행역을 찾는다
+		List<Station> stations = new ArrayList<>();
+		Station upStation = findFirstUpStation();
+		stations.add(upStation);
+
+		while (true) {
+			Station station = upStation;
+			Optional<Section> section = findSectionByUpStation(station);
+			if (!section.isPresent()) {
+				break;
+			}
+			// 다음 상행역은 구간에서 찾은 하행역
+			upStation = section.get().getDownStation();
+			stations.add(upStation);
+		}
+
+		return stations;
+	}
+
+	public int size() {
+		return this.sections.size();
+	}
+
+	public List<Section> findAll() {
+		return this.sections;
+	}
+
+	public Section findByIndex(int index) {
+		return this.sections.get(index);
+	}
+
+	public void removeByIndex(int index) {
+		this.sections.remove(index);
 	}
 
 	private void updateDownSection(Section section) {
@@ -72,24 +105,13 @@ public class Sections {
 			});
 	}
 
-	public List<Station> findAllStations() {
-		//  첫번째 상행역을 찾고, 그 뒤로 구간에 연결되는 하행역을 찾는다
-		List<Station> stations = new ArrayList<>();
-		Station upStation = findFirstUpStation();
-		stations.add(upStation);
-
-		while (true) {
-			Station station = upStation;
-			Optional<Section> section = findSectionByUpStation(station);
-			if (!section.isPresent()) {
-				break;
-			}
-			// 다음 상행역은 구간에서 찾은 하행역
-			upStation = section.get().getDownStation();
-			stations.add(upStation);
-		}
-
-		return stations;
+	private void isDuplicatedSection(Section section) {
+		this.sections.stream()
+			.filter(it -> it.isDuplicateSection(section.getUpStation(), section.getDownStation()))
+			.findFirst()
+			.ifPresent(it -> {
+				throw new SubwayException.DuplicatedException();
+			});
 	}
 
 	private Station findFirstUpStation() {
@@ -105,28 +127,12 @@ public class Sections {
 		return upStations.stream()
 			.filter(station -> !downStations.contains(station))
 			.findFirst()
-			.orElseThrow(IllegalArgumentException::new);
+			.orElseThrow(SubwayException.NotFoundException::new);
 	}
 
 	private Optional<Section> findSectionByUpStation(Station station) {
 		return this.sections.stream()
 			.filter(section -> section.isEqualUpStation(station))
 			.findFirst();
-	}
-
-	public int size() {
-		return this.sections.size();
-	}
-
-	public List<Section> findAll() {
-		return this.sections;
-	}
-
-	public Section findByIndex(int index) {
-		return this.sections.get(index);
-	}
-
-	public void removeByIndex(int index) {
-		this.sections.remove(index);
 	}
 }

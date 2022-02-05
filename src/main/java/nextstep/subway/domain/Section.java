@@ -2,6 +2,8 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 
+import nextstep.subway.exception.SubwayException;
+
 @Entity
 public class Section {
     @Id
@@ -28,7 +30,7 @@ public class Section {
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         if (distance <= 0) {
-            throw new IllegalArgumentException();
+            throw new SubwayException.WrongParameterException();
         }
         this.line = line;
         this.upStation = upStation;
