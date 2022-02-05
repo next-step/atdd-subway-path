@@ -64,9 +64,9 @@ public class Section {
         }
     }
 
-    public void updateUpStation(final Station station, final int disatnce) {
+    public void updateUpStation(final Station station, final int distance) {
         this.upStation = station;
-        this.distance = disatnce;
+        this.distance = distance;
     }
 
     public void updateDownStation(final Station station, final int distance) {
@@ -79,6 +79,10 @@ public class Section {
             throw new IllegalArgumentException("other distance is equal or bigger");
         }
         return Math.subtractExact(this.distance, other.distance);
+    }
+
+    public int addDistance(final Section other) {
+        return Math.addExact(this.distance, other.distance);
     }
 
     public boolean isUpStation(final Station station) {
@@ -108,4 +112,5 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
 }

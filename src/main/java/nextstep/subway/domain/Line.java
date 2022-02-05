@@ -28,6 +28,18 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    private void validateName(final String name) {
+        if (Objects.isNull(name)) {
+            throw new IllegalArgumentException("line name is not valid");
+        }
+    }
+
+    private void validateColor(final String color) {
+        if (Objects.isNull(color)) {
+            throw new IllegalArgumentException("line color is not valid");
+        }
+    }
+
     public void addSection(final Section section) {
         sections.addSection(section);
     }
@@ -64,17 +76,5 @@ public class Line extends BaseEntity {
 
     public List<Station> getStations() {
         return sections.getStations();
-    }
-
-    private void validateName(final String name) {
-        if (Objects.isNull(name)) {
-            throw new IllegalArgumentException("line name is not valid");
-        }
-    }
-
-    private void validateColor(final String color) {
-        if (Objects.isNull(color)) {
-            throw new IllegalArgumentException("line color is not valid");
-        }
     }
 }

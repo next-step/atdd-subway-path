@@ -7,6 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static nextstep.subway.fixture.LineFixture.*;
+import static nextstep.subway.fixture.StationFixture.강남역;
+import static nextstep.subway.fixture.StationFixture.판교역;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -22,10 +25,10 @@ class SectionTest {
 
     @BeforeEach
     void setUp() {
-        upStation = new Station("upStation");
-        downStation = new Station("downStation");
-        line = new Line("color", "name");
-        distance = 10;
+        upStation = new Station(강남역);
+        downStation = new Station(판교역);
+        line = new Line(신분당선, 빨강색);
+        distance = 강남_판교_거리;
         section = new Section(line, upStation, downStation, distance);
     }
 
@@ -65,6 +68,22 @@ class SectionTest {
         assertThat(actual).isEqualTo(distance - otherDistance);
     }
 
+    @DisplayName("세션간의 거리값 합 계산")
+    @Test
+    void addDistance() {
+        // given
+        final Station otherFirstStation = new Station("otherFirstStation");
+        final Station otherSecondStation = new Station("otherSecondStation");
+        final int otherDistance = 5;
+        final Section other = new Section(line, otherFirstStation, otherSecondStation, otherDistance);
+
+        // when
+        final int actual = section.addDistance(other);
+
+        // then
+        assertThat(actual).isEqualTo(distance + otherDistance);
+    }
+
     @DisplayName("세션간의 거리값 차이가 음수면 예외처리")
     @Test
     void subtractDistanceException() {
@@ -74,7 +93,7 @@ class SectionTest {
         final int otherDistance = 10;
         final Section other = new Section(line, otherFirstStation, otherSecondStation, otherDistance);
 
-        // then
+        // when and then
         assertThatThrownBy(() -> section.subtractDistance(other))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("other distance is equal or bigger");

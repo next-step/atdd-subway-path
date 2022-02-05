@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static nextstep.subway.fixture.LineFixture.*;
+import static nextstep.subway.fixture.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LineTest {
@@ -17,18 +19,18 @@ class LineTest {
 
     @BeforeEach
     void setUp() {
-        upStation = new Station("upStation");
-        downStation = new Station("downStation");
-        line = new Line("color", "name");
-        line.addSection(new Section(line, upStation, downStation, 10));
+        upStation = new Station(강남역);
+        downStation = new Station(판교역);
+        line = new Line(신분당선, 빨강색);
+        line.addSection(new Section(line, upStation, downStation, 강남_판교_거리));
     }
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
     @Test
     void addSection() {
         // given
-        final Station extraStation = new Station("extraStation");
-        final Section section = new Section(line, downStation, extraStation, 1);
+        final Station extraStation = new Station(정자역);
+        final Section section = new Section(line, downStation, extraStation, 판교_정자_거리);
 
         // when
         line.addSection(section);
@@ -47,8 +49,8 @@ class LineTest {
     @Test
     void removeSection() {
         // given
-        final Station extraStation = new Station("extraStation");
-        final Section section = new Section(line, downStation, extraStation, 1);
+        final Station extraStation = new Station(정자역);
+        final Section section = new Section(line, downStation, extraStation, 판교_정자_거리);
         line.addSection(section);
 
         // when

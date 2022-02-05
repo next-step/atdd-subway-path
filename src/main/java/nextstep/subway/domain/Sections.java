@@ -7,12 +7,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @Embeddable
 public class Sections {
 
-    private static final int GAP_SIZE = 1;
+    private static final int REMOVABLE_CONDITION = 2;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private final List<Section> sections;
@@ -30,79 +31,72 @@ public class Sections {
             sections.add(section);
             return;
         }
-        final boolean upStationExistence = isUpStation(section);
-        final boolean downStationExistence = isDownStation(section);
+        final Station upStation = section.getUpStation();
+        final Station downStation = section.getDownStation();
+        final boolean upStationExistence = isStationExistenceInStations(it -> it.isSameName(upStation));
+        final boolean downStationExistence = isStationExistenceInStations(it -> it.isSameName(downStation));
         if ((upStationExistence && downStationExistence) || (!upStationExistence && !downStationExistence)) {
             throw new IllegalArgumentException("station is not valid");
         }
         if (upStationExistence) {
-            updateUpStation(section);
+            updateSection(
+                    it -> it.getUpStation().isSameName(upStation),
+                    it -> it.updateUpStation(downStation, it.subtractDistance(section))
+            );
         }
         if (downStationExistence) {
-            updateDownStation(section);
+            updateSection(
+                    it -> it.getDownStation().isSameName(downStation),
+                    it -> it.updateDownStation(upStation, it.subtractDistance(section))
+            );
         }
         sections.add(section);
     }
 
-    private boolean isUpStation(final Section section) {
-        return sections.stream()
-                .map(Section::getUpStation)
-                .anyMatch(isSameStationName(section));
+    private boolean isStationExistenceInStations(final Predicate<Station> predicate) {
+        return getStations().stream().anyMatch(predicate);
     }
 
-    private boolean isDownStation(final Section section) {
-        return sections.stream()
-                .map(Section::getDownStation)
-                .anyMatch(isSameStationName(section));
-    }
-
-    private Predicate<Station> isSameStationName(final Section section) {
-        return it -> it.isSameName(section.getUpStation()) || it.isSameName(section.getDownStation());
-    }
-
-    private void updateUpStation(final Section section) {
-        final Station upStation = section.getUpStation();
-        final Station downStation = section.getDownStation();
-        final Section alreadySection = findUpStationSection(upStation, downStation);
-        if (alreadySection.isUpStation(upStation)) {
-            alreadySection.updateUpStation(section.getDownStation(), alreadySection.subtractDistance(section));
-        }
-    }
-
-    private Section findUpStationSection(final Station upStation, final Station downStation) {
-        return sections.stream().filter(it -> it.isUpStation(upStation) || it.isUpStation(downStation))
+    private void updateSection(final Predicate<Section> predicate, final Consumer<Section> consumer) {
+        sections.stream()
+                .filter(predicate)
                 .findAny()
-                .orElseThrow(() -> new IllegalStateException("station is not found"));
-    }
-
-    private void updateDownStation(final Section section) {
-        final Station upStation = section.getUpStation();
-        final Station downStation = section.getDownStation();
-        final Section alreadySection = findDownStationSection(upStation, downStation);
-        if (alreadySection.isDownStation(downStation)) {
-            alreadySection.updateDownStation(section.getUpStation(), alreadySection.subtractDistance(section));
-        }
-    }
-
-    private Section findDownStationSection(final Station upStation, final Station downStation) {
-        return sections.stream().filter(it -> it.isDownStation(upStation) || it.isDownStation(downStation))
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("station is not found"));
+                .ifPresent(consumer);
     }
 
     public void removeSection(final Station station) {
-        validateRemoveSection(station);
-        this.sections.remove(lastIndex());
-    }
-
-    private void validateRemoveSection(final Station station) {
-        if (!sections.get(sections.size() - GAP_SIZE).isDownStation(station)) {
-            throw new IllegalArgumentException("invalid remove section");
+        if (sections.size() < REMOVABLE_CONDITION) {
+            throw new IllegalStateException("sections is not removable state");
+        }
+        final boolean upStationExistence = isStationExistenceInSection(it -> it.isUpStation(station));
+        final boolean downStationExistence = isStationExistenceInSection(it -> it.isDownStation(station));
+        if (upStationExistence == false && downStationExistence == false) {
+            throw new IllegalArgumentException("removed station is not include sections");
+        }
+        if (upStationExistence == true && downStationExistence == true) {
+            final Section upStationSection = mapToSection(it -> it.isUpStation(station));
+            final Section downStationSection = mapToSection(it -> it.isDownStation(station));
+            downStationSection.updateDownStation(upStationSection.getDownStation(), upStationSection.addDistance(downStationSection));
+            sections.remove(upStationSection);
+            return;
+        }
+        if (upStationExistence) {
+            sections.remove(mapToSection(it -> it.isUpStation(station)));
+        }
+        if (downStationExistence) {
+            sections.remove(mapToSection(it -> it.isDownStation(station)));
         }
     }
 
-    private int lastIndex() {
-        return sections.size() - GAP_SIZE;
+    private boolean isStationExistenceInSection(final Predicate<Section> predicate) {
+        return sections.stream().anyMatch(predicate);
+    }
+
+    private Section mapToSection(final Predicate<Section> predicate) {
+        return sections.stream()
+                .filter(predicate)
+                .findAny()
+                .orElseThrow(IllegalStateException::new);
     }
 
     public List<Station> getStations() {
@@ -110,31 +104,26 @@ public class Sections {
             return Collections.emptyList();
         }
         final List<Station> stations = new ArrayList<>();
-        final Station upTerminalStation = findUpTerminalStation();
+        final Station upTerminalStation = mapToUpTerminalStation();
         stations.add(upTerminalStation);
-        Optional<Station> nextStationOptional = findNextStation(upTerminalStation);
+        Optional<Station> nextStationOptional = nextStation(upTerminalStation);
         while (nextStationOptional.isPresent()) {
             final Station nextStation = nextStationOptional.get();
             stations.add(nextStation);
-            nextStationOptional = findNextStation(nextStation);
+            nextStationOptional = nextStation(nextStation);
         }
         return Collections.unmodifiableList(stations);
     }
 
-    private Station findUpTerminalStation() {
+    private Station mapToUpTerminalStation() {
         return sections.stream()
                 .map(Section::getUpStation)
-                .filter(this::isNotDownStation)
+                .filter(upStation -> sections.stream().noneMatch(it -> it.isDownStation(upStation)))
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("no have end upStation"));
     }
 
-    private boolean isNotDownStation(final Station station) {
-        return sections.stream()
-                .noneMatch(it -> it.isDownStation(station));
-    }
-
-    private Optional<Station> findNextStation(final Station station) {
+    private Optional<Station> nextStation(final Station station) {
         return sections.stream()
                 .filter(it -> it.isUpStation(station))
                 .map(Section::getDownStation)
