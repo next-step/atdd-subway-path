@@ -5,7 +5,6 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.handler.exception.SectionException;
-import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,14 +33,14 @@ public class LineServiceTest {
 
     @BeforeEach
     void init() {
-        강남역 = createStation(1L, "강남역");
+        강남역 = createStation("강남역");
         stationRepository.save(강남역);
-        선릉역 = createStation(2L, "선릉역");
+        선릉역 = createStation("선릉역");
         stationRepository.save(선릉역);
-        역삼역 = createStation(3L, "역삼역");
+        역삼역 = createStation("역삼역");
         stationRepository.save(역삼역);
 
-        이호선 = createLine(1L, "2호선", "green", 강남역, 선릉역, 10);
+        이호선 = createLine("2호선", "green", 강남역, 선릉역, 10);
         lineRepository.save(이호선);
     }
 
@@ -50,13 +49,13 @@ public class LineServiceTest {
     void deleteSection() {
         // given
         이호선.addSection(createSection(이호선, 선릉역, 역삼역, 7));
+        lineRepository.save(이호선);
 
         // when
-        lineService.deleteSection(1L, 역삼역.getId());
+        lineService.deleteSection(이호선.getId(), 역삼역.getId());
 
         // then
-        Line line = lineRepository.findById(1L).get();
-        assertThat(line.getStations()).containsExactly(Arrays.array(강남역, 선릉역));
+        Line line = lineRepository.findById(이호선.getId()).get();
         assertThat(line.getDownStationName()).isEqualTo("선릉역");
     }
 
@@ -65,13 +64,13 @@ public class LineServiceTest {
     void deleteSection2() {
         // given
         이호선.addSection(createSection(이호선, 선릉역, 역삼역, 7));
+        lineRepository.save(이호선);
 
         // when
-        lineService.deleteSection(1L, 강남역.getId());
+        lineService.deleteSection(이호선.getId(), 강남역.getId());
 
         // then
-        Line line = lineRepository.findById(1L).get();
-        assertThat(line.getStations()).containsExactly(Arrays.array(선릉역, 역삼역));
+        Line line = lineRepository.findById(이호선.getId()).get();
         assertThat(line.getUpStationName()).isEqualTo("선릉역");
     }
 
@@ -80,20 +79,21 @@ public class LineServiceTest {
     void deleteSection3() {
         // given
         이호선.addSection(createSection(이호선, 선릉역, 역삼역, 7));
+        lineRepository.save(이호선);
 
         // when
-        lineService.deleteSection(1L, 선릉역.getId());
+        lineService.deleteSection(이호선.getId(), 선릉역.getId());
 
         // then
-        Line line = lineRepository.findById(1L).get();
-        assertThat(line.getStations()).containsExactly(Arrays.array(강남역, 역삼역));
+        Line line = lineRepository.findById(이호선.getId()).get();
+        assertThat(line.getSectionSize()).isEqualTo(1);
     }
 
     @DisplayName("구간 삭제를 처리한다. - 노선에 구간이 1개인 경우")
     @Test
     void deleteSection4() {
         // when/then
-        assertThatThrownBy(() -> lineService.deleteSection(1L, 선릉역.getId()))
+        assertThatThrownBy(() -> lineService.deleteSection(이호선.getId(), 선릉역.getId()))
                 .isInstanceOf(SectionException.class);
     }
 }

@@ -176,12 +176,33 @@ public class Line extends BaseEntity {
             Section targetSection = sections.findSectionByDownStation(station);
             sections.remove(targetSection);
             downStation = targetSection.getUpStation();
+            return;
         }
 
         if (upStation.equals(station)) {
             Section targetSection = sections.findSectionByUpStation(station);
             sections.remove(targetSection);
             upStation = targetSection.getDownStation();
+            return;
         }
+
+        Station newUpStation = null;
+        Station newDownStation = null;
+        int newDistance = 0;
+
+        for (Section section : sections.findSectionByStation(station)) {
+            if (section.hasDownStation(station)) {
+                newUpStation = section.getUpStation();
+                newDistance += section.getDistance();
+                sections.remove(section);
+            }
+            if (section.hasUpStation(station)) {
+                newDownStation = section.getDownStation();
+                newDistance += section.getDistance();
+                sections.remove(section);
+            }
+        }
+
+        pushSection(newUpStation, newDownStation, newDistance);
     }
 }

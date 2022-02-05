@@ -9,6 +9,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -89,5 +90,11 @@ public class Sections {
                 .filter(section -> section.hasUpStation(station))
                 .findFirst()
                 .orElseThrow(() -> new SectionException(ErrorCode.NO_CORRECT_SECTION));
+    }
+
+    public List<Section> findSectionByStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.hasStation(station))
+                .collect(Collectors.toList());
     }
 }

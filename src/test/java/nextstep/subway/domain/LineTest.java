@@ -5,8 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static nextstep.subway.domain.factory.EntityFactory.createMockStation;
 import static nextstep.subway.domain.factory.EntityFactory.createSection;
-import static nextstep.subway.domain.factory.EntityFactory.createStation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선 단위 테스트")
@@ -18,8 +18,8 @@ class LineTest {
 
     @BeforeEach
     void init() {
-        강남역 = createStation(1L, "강남역");
-        선릉역 = createStation(2L, "선릉역");
+        강남역 = createMockStation(1L, "강남역");
+        선릉역 = createMockStation(2L, "선릉역");
         이호선 = Line.of("2호선", "green", 강남역, 선릉역, 10);
     }
 
@@ -33,8 +33,8 @@ class LineTest {
         // 노선의 최하행역을 갱신해야한다.
 
         // given
-        Station 역삼역 = createStation(3L, "역삼역");
-        Station 교대역 = createStation(4L, "교대역");
+        Station 역삼역 = createMockStation(3L, "역삼역");
+        Station 교대역 = createMockStation(4L, "교대역");
 
         // (1) when/then
         이호선.addSection(createSection(이호선, 역삼역, 강남역, 7));
@@ -52,7 +52,7 @@ class LineTest {
         // 기존 구간의 하행선에 맞물려 구간이 생성된다.
 
         // given
-        Station 역삼역 = createStation(3L, "역삼역");
+        Station 역삼역 = createMockStation(3L, "역삼역");
 
         // when
         이호선.addSection(createSection(이호선, 선릉역, 역삼역, 7));
@@ -69,7 +69,7 @@ class LineTest {
         // 기존 구간의 상행선을 상행선으로, 새로운 역을 하행선으로 갖는 구간을 추가한다.
 
         // given
-        Station 역삼역 = createStation(3L, "역삼역");
+        Station 역삼역 = createMockStation(3L, "역삼역");
 
         // when
         이호선.addSection(createSection(이호선, 강남역, 역삼역, 7));
@@ -88,7 +88,7 @@ class LineTest {
         // 새로운 역을 상행선으로, 기존구간의 하행선을 하행선으로 갖는 구간을 추가한다.
 
         // given
-        Station 역삼역 = createStation(3L, "역삼역");
+        Station 역삼역 = createMockStation(3L, "역삼역");
 
         // when
         이호선.addSection(createSection(이호선, 역삼역, 선릉역, 7));
@@ -107,7 +107,7 @@ class LineTest {
         // 다시 해당 역을 삭제하면 구간이 제거되고, 종점이 갱신된다.
 
         // given
-        Station 역삼역 = createStation(3L, "역삼역");
+        Station 역삼역 = createMockStation(3L, "역삼역");
         이호선.addSection(createSection(이호선, 선릉역, 역삼역, 7));
 
         // when
@@ -125,7 +125,7 @@ class LineTest {
         // 노선의 최상행역을 삭제하면 구간이 제거되고, 최상행역이 갱신된다.
 
         // given
-        Station 역삼역 = createStation(3L, "역삼역");
+        Station 역삼역 = createMockStation(3L, "역삼역");
         이호선.addSection(createSection(이호선, 선릉역, 역삼역, 7));
 
         // when
@@ -144,7 +144,7 @@ class LineTest {
         // 중간역의 상행과 하행을 잇는 구간이 새롭게 등록된다.
 
         // given
-        Station 역삼역 = createStation(3L, "역삼역");
+        Station 역삼역 = createMockStation(3L, "역삼역");
         이호선.addSection(createSection(이호선, 선릉역, 역삼역, 7));
 
         // when
