@@ -83,4 +83,11 @@ public class Sections {
                         && !oldSection.hasUpStation(section.getUpStation()))
                 .findFirst();
     }
+
+    public Section findSectionByUpStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.hasUpStation(station))
+                .findFirst()
+                .orElseThrow(() -> new SectionException(ErrorCode.NO_CORRECT_SECTION));
+    }
 }
