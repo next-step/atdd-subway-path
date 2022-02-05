@@ -52,10 +52,6 @@ public class Line extends BaseEntity {
         sections.add(section);
     }
 
-    public boolean sectionIsEmpty(){
-        return sections.isEmpty();
-    }
-
     public int sectionsSize() {
         return sections.size();
     }
@@ -72,5 +68,7 @@ public class Line extends BaseEntity {
         return sections.findAll();
     }
 
-
+    public List<Station> allStations() {
+        return sections.findAllStations();
+    }
 }
