@@ -107,7 +107,7 @@ public class Line extends BaseEntity {
                 .ifPresent(oldSection -> {
                     pushSection(insertedSection.getDownStation(), oldSection.getDownStation(),
                             extractDistance(insertedSection, oldSection));
-                    sections.remove(oldSection);
+                    removeSection(oldSection);
                 });
     }
 
@@ -116,7 +116,7 @@ public class Line extends BaseEntity {
                 .ifPresent(oldSection -> {
                     pushSection(oldSection.getUpStation(), insertedSection.getUpStation(),
                             extractDistance(insertedSection, oldSection));
-                    sections.remove(oldSection);
+                    removeSection(oldSection);
                 });
     }
 
@@ -172,20 +172,32 @@ public class Line extends BaseEntity {
     }
 
     public void removeSectionByStation(Station station) {
-        if (downStation.equals(station)) {
-            Section targetSection = sections.findSectionByDownStation(station);
-            sections.remove(targetSection);
-            downStation = targetSection.getUpStation();
+        if (isDownStation(station)) {
+            removeDownSection(station);
             return;
         }
 
-        if (upStation.equals(station)) {
-            Section targetSection = sections.findSectionByUpStation(station);
-            sections.remove(targetSection);
-            upStation = targetSection.getDownStation();
+        if (isUpStation(station)) {
+            removeUpSection(station);
             return;
         }
 
+        removeCentralSection(station);
+    }
+
+    private void removeUpSection(Station station) {
+        Section targetSection = sections.findSectionByUpStation(station);
+        removeSection(targetSection);
+        updateUpStation(targetSection);
+    }
+
+    private void removeDownSection(Station station) {
+        Section targetSection = sections.findSectionByDownStation(station);
+        removeSection(targetSection);
+        updateDownStation(targetSection);
+    }
+
+    private void removeCentralSection(Station station) {
         Station newUpStation = null;
         Station newDownStation = null;
         int newDistance = 0;
@@ -194,15 +206,27 @@ public class Line extends BaseEntity {
             if (section.hasDownStation(station)) {
                 newUpStation = section.getUpStation();
                 newDistance += section.getDistance();
-                sections.remove(section);
+                removeSection(section);
             }
             if (section.hasUpStation(station)) {
                 newDownStation = section.getDownStation();
                 newDistance += section.getDistance();
-                sections.remove(section);
+                removeSection(section);
             }
         }
 
         pushSection(newUpStation, newDownStation, newDistance);
+    }
+
+    private void updateUpStation(Section targetSection) {
+        upStation = targetSection.getDownStation();
+    }
+
+    private void updateDownStation(Section targetSection) {
+        downStation = targetSection.getUpStation();
+    }
+
+    private void removeSection(Section targetSection) {
+        sections.remove(targetSection);
     }
 }

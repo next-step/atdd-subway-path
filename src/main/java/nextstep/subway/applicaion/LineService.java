@@ -7,6 +7,7 @@ import nextstep.subway.domain.*;
 import nextstep.subway.handler.exception.LineException;
 import nextstep.subway.handler.exception.StationException;
 import nextstep.subway.handler.validator.SectionValidator;
+import nextstep.subway.handler.validator.StationValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,7 +93,7 @@ public class LineService {
         Station station = findStationById(stationId);
 
         SectionValidator.validateOnlyOneSection(line);
-        SectionValidator.validateStationRemove(line, station);
+        StationValidator.validateStationRemove(line, station);
 
         line.removeSectionByStation(station);
     }
