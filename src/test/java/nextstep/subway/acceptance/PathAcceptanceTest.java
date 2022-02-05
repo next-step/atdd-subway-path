@@ -31,7 +31,7 @@ class PathAcceptanceTest extends AcceptanceTest {
      * |                            |
      * *3호선*                   *신분당선*
      * |                             |
-     * 남부터미널역(4)  --- *3호선* ---   양재(5)
+     * 남부터미널역(4)  --- *3호선* ---   양재역(5)
      */
     @BeforeEach
     void setFixtures() {
