@@ -107,10 +107,14 @@ public class Sections {
             return Collections.emptyList();
         }
         List<Station> allStations = new ArrayList<>();
-        allStations.add(sections.get(0).getUpStation());
-        allStations.addAll(sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList()));
+        Map<Station, Section> upStationSectionMap = getUpStationSectionMap();
+
+        Section nowSection = getFirstSection();
+        allStations.add(nowSection.getUpStation());
+        for (; Objects.nonNull(nowSection); nowSection = upStationSectionMap.get(nowSection.getDownStation())) {
+            allStations.add(nowSection.getDownStation());
+        }
+
         return allStations;
     }
 

@@ -116,14 +116,16 @@ class LineTest {
     @Test
     void getStations() {
         // given
-        Line 신분당선 = new Line("신분당선", "red", 강남역, 판교역, 8);
+        Line 신분당선 = new Line("신분당선", "red", 강남역, 정자역, 11);
         신분당선.addSection(판교역, 정자역, 3);
+        Station 신사역 = new Station("신사역");
+        신분당선.addSection(신사역, 강남역, 3);
 
         // when
         List<Station> stations = 신분당선.getAllStations();
 
         // then
-        assertThat(stations).containsExactly(강남역, 판교역, 정자역);
+        assertThat(stations).containsExactly(신사역, 강남역, 판교역, 정자역);
     }
 
     @DisplayName("구간이 목록에서 마지막 역 삭제")
