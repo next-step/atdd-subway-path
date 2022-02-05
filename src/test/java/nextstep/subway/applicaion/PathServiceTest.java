@@ -59,7 +59,7 @@ class PathServiceTest {
         신분당선.addSection(new Section(신분당선, 강남역, 양재역, 10));
 
         삼호선 = new Line("3호선", "orange");
-        삼호선.addSection(new Section(삼호선, 교대역, 남부터미널역, 2);
+        삼호선.addSection(new Section(삼호선, 교대역, 남부터미널역, 2));
         삼호선.addSection(new Section(삼호선, 남부터미널역, 양재역, 3));
     }
 
