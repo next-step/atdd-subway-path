@@ -57,21 +57,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-    @DisplayName("구간 등록 기능 - 역 사이에 새로운 역 등록 시 기존 구간보다 길거나 같을 때 실패")
-    @Test
-    void createSectionBetweenStationsLongDistanceFailCase() {
-        // given
-        Long 판교역_id = StationTestStep.지하철역_생성_후_아이디_추출하기("판교역");
-        SectionTestRequest sectionRequest = new SectionTestRequest(
-                lineRequest.getUpStationId(), 판교역_id, lineRequest.getDistance());
-
-        // when
-        ExtractableResponse<Response> response = SectionTestStep.지하철역_구간_생성하기(sectionRequest, lineId);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
-    }
-
     @DisplayName("구간 등록 기능 - 새로운 역을 상행 종점으로 등록")
     @Test
     void createSectionInFrontOfFirstUpStation() {
@@ -99,6 +84,36 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @DisplayName("구간 등록 기능 - 역 사이에 새로운 역 등록 시 기존 구간보다 길거나 같을 때 실패")
+    @Test
+    void createSectionBetweenStationsLongDistanceFailCase() {
+        // given
+        Long 판교역_id = StationTestStep.지하철역_생성_후_아이디_추출하기("판교역");
+        SectionTestRequest sectionRequest = new SectionTestRequest(
+                lineRequest.getUpStationId(), 판교역_id, lineRequest.getDistance());
+
+        // when
+        ExtractableResponse<Response> response = SectionTestStep.지하철역_구간_생성하기(sectionRequest, lineId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+    }
+
+    @DisplayName("구간 등록 기능 - 상/하행역 하나라도 포함되어 있지 않다면 구간 등록 불가")
+    @Test
+    void createSectionNoStationFailCase() {
+        // given
+        Long 판교역_id = StationTestStep.지하철역_생성_후_아이디_추출하기("판교역");
+        Long 신사역_id = StationTestStep.지하철역_생성_후_아이디_추출하기("신사역");
+        SectionTestRequest sectionRequest = new SectionTestRequest(신사역_id, 판교역_id, 13);
+
+        // when
+        ExtractableResponse<Response> response = SectionTestStep.지하철역_구간_생성하기(sectionRequest, lineId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     @DisplayName("구간 제거 기능")

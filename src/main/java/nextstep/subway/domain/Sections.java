@@ -42,9 +42,11 @@ public class Sections {
 
     private void checkStateToAddSection(Section section) {
         List<Station> allStations = getAllStations();
-        if (allStations.contains(section.getUpStation())
-                && allStations.contains(section.getDownStation())) {
-            throw new IllegalUpdatingStateException("요청한 구간의 상행역과 하행역이 이미 노선에 등록되어있습니다.");
+        if (allStations.contains(section.getUpStation()) && allStations.contains(section.getDownStation())) {
+            throw new IllegalUpdatingStateException("요청한 구간의 상행역과 하행역 모두 이미 노선에 등록되어있어 등록이 불가합니다.");
+        }
+        if (!allStations.contains(section.getUpStation()) && !allStations.contains(section.getDownStation())) {
+            throw new IllegalUpdatingStateException("요청한 구간의 상행역과 하행역 모두 기존 노선에 등록되어 있지않아 등록이 불가합니다.");
         }
     }
 
