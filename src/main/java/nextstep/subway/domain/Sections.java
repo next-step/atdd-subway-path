@@ -129,4 +129,8 @@ public class Sections {
                 .map(Section::getDownStation)
                 .findAny();
     }
+
+    public List<Section> getSections() {
+        return Collections.unmodifiableList(sections);
+    }
 }
