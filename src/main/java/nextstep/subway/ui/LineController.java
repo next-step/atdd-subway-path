@@ -4,6 +4,7 @@ import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,26 +22,26 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse line = lineService.saveLine(lineRequest);
+        LineResponse line = lineService.createLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineResponse> responses = lineService.showLines();
+        List<LineResponse> responses = lineService.findAllLines();
         return ResponseEntity.ok().body(responses);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
-        LineResponse lineResponse = lineService.findById(id);
+        LineResponse lineResponse = lineService.findLineById(id);
         return ResponseEntity.ok().body(lineResponse);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.updateLine(id, lineRequest);
-        return ResponseEntity.ok().build();
+    @ResponseStatus(HttpStatus.OK)
+    public LineResponse updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        return lineService.updateLine(id, lineRequest);
     }
 
     @DeleteMapping("/{id}")

@@ -1,18 +1,13 @@
 package nextstep.subway.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
-import static org.assertj.core.api.Assertions.assertThat;
+import static nextstep.subway.acceptance.StationSteps.역_생성_요청;
+import static nextstep.subway.fixture.LineFixture.신분당선;
+import static nextstep.subway.fixture.LineFixture.이호선;
+import static nextstep.subway.fixture.StationFixture.*;
 
 @DisplayName("지하철 노선 관리 기능")
 class LineAcceptanceTest extends AcceptanceTest {
@@ -23,11 +18,17 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 생성")
     @Test
     void createLine() {
+        // given
+        역_생성_요청(신논현역);
+        역_생성_요청(강남역);
+
+        var 노선 = 신분당선;
+
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green");
+        var 노선_생성_응답 = 노선_생성_요청(노선);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        노선_생성_완료(노선_생성_응답);
     }
 
     /**
@@ -40,15 +41,21 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철_노선_생성_요청("2호선", "green");
-        지하철_노선_생성_요청("3호선", "orange");
+        역_생성_요청(신논현역);
+        역_생성_요청(강남역);
+        역_생성_요청(역삼역);
+
+        var 노선1 = 신분당선;
+        노선_생성_요청(노선1);
+
+        var 노선2 = 이호선;
+        노선_생성_요청(노선2);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
+        var 노선_목록_조회_응답 = 노선_목록_조회_요청();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("name")).contains("2호선", "3호선");
+        노선_목록_조회_완료(노선_목록_조회_응답, 노선1, 노선2);
     }
 
     /**
@@ -60,14 +67,20 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        var 역1 = 신논현역;
+        var 역2 = 강남역;
+        역_생성_요청(역1);
+        역_생성_요청(역2);
+
+        var 노선 = 신분당선;
+        var 노선_생성_응답 = 노선_생성_요청(노선);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
+        var uri = 노선_생성_응답.header("Location");
+        var 노선_조회_응답 = 노선_조회_요청(uri);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getString("name")).isEqualTo("2호선");
+        노선_조회_완료(노선_조회_응답, 노선, 역1, 역2);
     }
 
     /**
@@ -79,20 +92,21 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        역_생성_요청(신논현역);
+        역_생성_요청(강남역);
+        역_생성_요청(역삼역);
+
+        var 노선1 = 신분당선;
+        var 노선_생성_응답 = 노선_생성_요청(노선1);
 
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "red");
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put(createResponse.header("location"))
-                .then().log().all().extract();
+        var 노선2 = 이호선;
+
+        var uri = 노선_생성_응답.header("Location");
+        var 노선_수정_응답 = 노선_수정_요청(uri, 노선2);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        노선_수정_완료(노선_수정_응답, 노선2);
     }
 
     /**
@@ -104,16 +118,18 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        역_생성_요청(신논현역);
+        역_생성_요청(강남역);
+
+        var 노선1 = 신분당선;
+        var 노선_생성_응답 = 노선_생성_요청(노선1);
 
         // when
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .when().delete(createResponse.header("location"))
-                .then().log().all().extract();
+        var uri = 노선_생성_응답.header("Location");
+        var 노선_삭제_응답 = 노선_삭제_요청(uri);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        노선_삭제_완료(노선_삭제_응답);
     }
 
     /**
@@ -125,12 +141,16 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void duplicateName() {
         // given
-        지하철_노선_생성_요청("2호선", "green");
+        역_생성_요청(신논현역);
+        역_생성_요청(강남역);
+
+        var 노선1 = 신분당선;
+        노선_생성_요청(노선1);
 
         // when
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        var 노선_생성_응답 = 노선_생성_요청(노선1);
 
         // then
-        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        중복된_노선_생성_예외(노선_생성_응답);
     }
 }

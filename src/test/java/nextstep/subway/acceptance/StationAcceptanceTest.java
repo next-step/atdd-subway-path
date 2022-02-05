@@ -1,16 +1,11 @@
 package nextstep.subway.acceptance;
 
-import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 
-import java.util.List;
-
-import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
-import static org.assertj.core.api.Assertions.assertThat;
+import static nextstep.subway.acceptance.StationSteps.*;
+import static nextstep.subway.fixture.StationFixture.강남역;
+import static nextstep.subway.fixture.StationFixture.역삼역;
 
 @DisplayName("지하철역 관리 기능")
 class StationAcceptanceTest extends AcceptanceTest {
@@ -21,12 +16,14 @@ class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역 생성")
     @Test
     void createStation() {
+        // given
+        var 역1 = 강남역;
+
         // when
-        ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
+        var 역_생성_응답 = 역_생성_요청(역1);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(response.header("Location")).isNotBlank();
+        역_생성_완료(역_생성_응답);
     }
 
     /**
@@ -38,20 +35,17 @@ class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역 목록 조회")
     @Test
     void getStations() {
-        // given
-        지하철역_생성_요청("강남역");
-        지하철역_생성_요청("역삼역");
+        /// given
+        var 역1 = 강남역;
+        역_생성_요청(역1);
+
+        var 역2 = 역삼역;
+        역_생성_요청(역2);
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .get("/stations")
-                .then().log().all()
-                .extract();
+        var 역_목록_조회_응답 = 역_목록_조회_요청();
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<String> stationNames = response.jsonPath().getList("name");
-        assertThat(stationNames).contains("강남역", "역삼역");
+        역_목록_조회_완료(역_목록_조회_응답, 역1, 역2);
     }
 
     /**
@@ -63,18 +57,14 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철역_생성_요청("강남역");
+        var 역_생성_응답 = 역_생성_요청(강남역);
 
         // when
-        String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when()
-                .delete(uri)
-                .then().log().all()
-                .extract();
+        String uri = 역_생성_응답.header("Location");
+        var 역_삭제_응답 = 역_삭제_요청(uri);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        역_삭제_완료(역_삭제_응답);
     }
 
     /**
@@ -86,12 +76,13 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void duplicateName() {
         // given
-        지하철역_생성_요청("강남역");
+        var 역1 = 강남역;
+        역_생성_요청(역1);
 
         // when
-        ExtractableResponse<Response> createResponse = 지하철역_생성_요청("강남역");
+        var 역_생성_응답 = 역_생성_요청(역1);
 
         // then
-        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        중복된_역_생성_예외(역_생성_응답);
     }
 }

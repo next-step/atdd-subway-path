@@ -1,55 +1,79 @@
 package nextstep.subway.acceptance;
 
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.subway.fixture.SectionFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
-import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
-import static org.assertj.core.api.Assertions.assertThat;
+import static nextstep.subway.acceptance.SectionSteps.*;
+import static nextstep.subway.acceptance.StationSteps.역_생성_요청;
+import static nextstep.subway.fixture.LineFixture.신분당선;
+import static nextstep.subway.fixture.StationFixture.*;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
-    private Long 신분당선;
 
-    private Long 강남역;
-    private Long 양재역;
+    @DisplayName("역 사이에 새로운 역을 등록")
+    @Test
+    void addSectionBetweenSection() {
+        // given
+        역_생성_요청(신논현역);
+        역_생성_요청(양재역);
+        var 노선_생성_응답 = 노선_생성_요청(신분당선);
 
-    /**
-     * Given 지하철역과 노선 생성을 요청 하고
-     */
-    @BeforeEach
-    public void setUp() {
-        super.setUp();
+        var 역_생성_응답 = 역_생성_요청(강남역);
 
-        강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
-        양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+        // when
+        var lineUri = 노선_생성_응답.header("Location");
+        var 하행_종점역_ID = 노선_생성_응답.jsonPath().getList("stations.id", Long.class).get(1);
+        long 새로운역_ID = 역_생성_응답.jsonPath().getLong("id");
+        var 구간_등록_응답 = 구간_등록_요청(lineUri, SectionFixture.of(새로운역_ID, 하행_종점역_ID, 5));
 
-        Map<String, String> lineCreateParams = createLineCreateParams(강남역, 양재역);
-        신분당선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
+        // then
+        구간_등록_성공(구간_등록_응답);
+    }
+
+    @DisplayName("새로운 역을 상행 종점으로 등록")
+    @Test
+    void addSectionToTop() {
+        // given
+        역_생성_요청(강남역);
+        역_생성_요청(양재역);
+        var 노선_생성_응답 = 노선_생성_요청(신분당선);
+
+        var 역_생성_응답 = 역_생성_요청(신논현역);
+
+        // when
+        var lineUri = 노선_생성_응답.header("Location");
+        var 상행_종점역_ID = 노선_생성_응답.jsonPath().getList("stations.id", Long.class).get(0);
+        var 새로운역_ID = 역_생성_응답.jsonPath().getLong("id");
+        var 구간_등록_응답 = 구간_등록_요청(lineUri, SectionFixture.of(새로운역_ID, 상행_종점역_ID, 5));
+
+        // then
+        구간_등록_성공(구간_등록_응답);
     }
 
     /**
      * When 지하철 노선에 새로운 구간 추가를 요청 하면
      * Then 노선에 새로운 구간이 추가된다
      */
-    @DisplayName("지하철 노선에 구간을 등록")
+    @DisplayName("새로운 역을 하행 종점으로 등록")
     @Test
     void addLineSection() {
+        // given
+        var 노선_생성_응답 = 신분당선_생성_완료();
+        var 역_생성_응답 = 역_생성_요청(역삼역);
+
         // when
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+        var lineUri = 노선_생성_응답.header("Location");
+        var 하행_종점역_ID = 노선_생성_응답.jsonPath().getList("stations.id", Long.class).get(1);
+        var 새로운역_ID = 역_생성_응답.jsonPath().getLong("id");
+
+        var 구간1 = SectionFixture.of(하행_종점역_ID, 새로운역_ID, 10);
+        var 구간_등록_응답 = 구간_등록_요청(lineUri, 구간1);
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+        구간_등록_성공(구간_등록_응답);
     }
 
     /**
@@ -61,34 +85,62 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeLineSection() {
         // given
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+        var 노선_생성_응답 = 신분당선_생성_완료();
+
+        var 역_생성_응답 = 역_생성_요청(역삼역);
+        var 하행_종점역_ID = 노선_생성_응답.jsonPath().getList("stations.id", Long.class).get(1);
+        var 새로운역_ID = 역_생성_응답.jsonPath().getLong("id");
+
+        var 구간1 = SectionFixture.of(하행_종점역_ID, 새로운역_ID, 10);
+
+        var lineUri = 노선_생성_응답.header("Location");
+        구간_등록_요청(lineUri, 구간1);
 
         // when
-        지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+        var 구간_삭제_응답 = 구간_삭제_요청(lineUri, 새로운역_ID);
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+        구간_삭제_성공(구간_삭제_응답);
     }
 
-    private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
-        Map<String, String> lineCreateParams;
-        lineCreateParams = new HashMap<>();
-        lineCreateParams.put("name", "신분당선");
-        lineCreateParams.put("color", "bg-red-600");
-        lineCreateParams.put("upStationId", upStationId + "");
-        lineCreateParams.put("downStationId", downStationId + "");
-        lineCreateParams.put("distance", 10 + "");
-        return lineCreateParams;
+
+    @DisplayName("역 사이에 새로운 역을 생성")
+    @Test
+    void addSectionBetween() {
+        // given
+        var 노선_생성_응답 = 이호선_생성_완료();
+
+        var 역_생성_응답 = 역_생성_요청(강남역);
+
+        // when
+        var lineUri = 노선_생성_응답.header("Location");
+        var 하행_종점역_ID = 노선_생성_응답.jsonPath().getList("stations.id", Long.class).get(1);
+        var 새로운역_ID = 역_생성_응답.jsonPath().getLong("id");
+
+        var 구간1 = SectionFixture.of(새로운역_ID, 하행_종점역_ID, 4);
+        var 구간_등록_응답 = 구간_등록_요청(lineUri, 구간1);
+
+        // then
+        구간_등록_성공(구간_등록_응답);
     }
 
-    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId) {
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", upStationId + "");
-        params.put("downStationId", downStationId + "");
-        params.put("distance", 6 + "");
-        return params;
+    @DisplayName("역 사이에 기존 구간보다 더 긴 구간을 추가")
+    @Test
+    void addSectionBetweenLong() {
+        // given
+        var 노선_생성_응답 = 이호선_생성_완료();
+
+        var 역_생성_응답 = 역_생성_요청(강남역);
+
+        // when
+        var lineUri = 노선_생성_응답.header("Location");
+        var 하행_종점역_ID = 노선_생성_응답.jsonPath().getList("stations.id", Long.class).get(1);
+        var 새로운역_ID = 역_생성_응답.jsonPath().getLong("id");
+
+        var 구간1 = SectionFixture.of(새로운역_ID, 하행_종점역_ID, 11);
+        var 구간_등록_응답 = 구간_등록_요청(lineUri, 구간1);
+
+        // then
+        구간_생성_예외(구간_등록_응답);
     }
 }

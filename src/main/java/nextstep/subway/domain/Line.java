@@ -1,25 +1,54 @@
 package nextstep.subway.domain;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
+
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections;
 
-    public Line() {
+    public void addSection(
+            Station upStation,
+            Station downStation,
+            int distance
+    ) {
+        sections.addSection(new Section(upStation, downStation, distance));
     }
 
-    public Line(String name, String color) {
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
+    protected Line() {
+    }
+
+    public Line(
+            String name,
+            String color,
+            Station upStation,
+            Station downStation,
+            int initialDistance
+    ) {
+        this.name = name;
+        this.color = color;
+        var sectionList = new LinkedList<Section>();
+        sectionList.add(new Section(upStation, downStation, initialDistance));
+        this.sections = new Sections(sectionList);
+    }
+
+    public void update(String name, String color) {
         this.name = name;
         this.color = color;
     }
@@ -28,27 +57,35 @@ public class Line extends BaseEntity {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getColor() {
         return color;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public Sections getSections() {
+        return sections;
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public void removeSection(Station station) {
+        sections.remove(station);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+
+        var line = (Line) obj;
+        return StringUtils.equals(this.name, line.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }
