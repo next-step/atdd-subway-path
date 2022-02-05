@@ -48,5 +48,24 @@ class LineTest {
     @DisplayName("구간이 목록에서 마지막 역 삭제")
     @Test
     void removeSection() {
+        // given
+        Line line = new Line();
+
+        final Station 상행역 = new Station("상행역");
+        final Station 하행역 = new Station("하행역");
+        final Section section = new Section(line, 상행역, 하행역, 1);
+
+        final Station 마지막역 = new Station("마지막역");
+        final Section newSection = new Section(line, 하행역, 마지막역, 1);
+
+        line.addSection(section);
+        line.addSection(newSection);
+
+        // when
+        line.deleteSection(마지막역);
+
+        // then
+        List<Station> stations = line.getAllStations();
+        assertThat(stations.size()).isEqualTo(2);
     }
 }

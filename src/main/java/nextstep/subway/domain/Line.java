@@ -70,4 +70,14 @@ public class Line extends BaseEntity {
                 .distinct()
                 .collect(Collectors.toList());
     }
+
+    public void deleteSection(Station station) {
+        final int lastIndex = this.sections.size() - 1;
+        final Section lastSection = this.sections.get(lastIndex);
+        if (!lastSection.isDownStation(station)) {
+            throw new IllegalArgumentException();
+        }
+
+        this.sections.remove(lastIndex);
+    }
 }
