@@ -117,7 +117,7 @@ public class Sections {
         }
 
         Section section = sections.stream()
-                .filter(_section -> _section.getDownStation().equals(station))
+                .filter(it -> it.getDownStation().equals(station))
                 .findAny().orElseThrow(() -> new IllegalArgumentException("구간에 존재하지 않는 역입니다."));
         sections.remove(section);
     }
