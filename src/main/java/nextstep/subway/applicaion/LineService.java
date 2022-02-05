@@ -73,9 +73,9 @@ public class LineService {
         return SectionResponse.of(newSection);
     }
 
-    public void deleteSection(final Long lineId, final Long downStationId) {
+    public void deleteSection(final Long lineId, final Long stationId) {
         Line line = getLineById(lineId);
-        line.removeSection(downStationId);
+        line.removeSection(stationId);
     }
 
     private Line getLineById(final Long id) {

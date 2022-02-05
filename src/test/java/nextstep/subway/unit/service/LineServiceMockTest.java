@@ -55,29 +55,7 @@ class LineServiceMockTest {
 
     @BeforeEach
     void setFixtures() {
-        교대역 = new Station("교대역");
-        ReflectionTestUtils.setField(교대역, "id", 1L);
-
-        역삼역 = new Station("역삼역");
-        ReflectionTestUtils.setField(역삼역, "id", 2L);
-
-        정자역 = new Station("정자역");
-        ReflectionTestUtils.setField(정자역, "id", 3L);
-
-        판교역 = new Station("판교역");
-        ReflectionTestUtils.setField(판교역, "id", 4L);
-
-        강남역 = new Station("강남역");
-        ReflectionTestUtils.setField(강남역, "id", 5L);
-
-        이호선 = new Line("2호선", "bg-green-600");
-        ReflectionTestUtils.setField(이호선, "id", 1L);
-
-        교대_TO_역삼 = 교대_TO_역삼_구간_만들기(교대역, 역삼역);
-        강남_TO_역삼 = 강남_TO_역삼_구간_만들기(강남역, 역삼역);
-
-        이호선_요청_객체 = 이호선_요청_객체_만들기(교대역, 역삼역);
-        신분당선_요청_객체 = 신분당선_요청_객체_만들기(정자역, 판교역);
+        setUp();
     }
 
     @Test
@@ -176,12 +154,12 @@ class LineServiceMockTest {
         lineService.addSection(강남_TO_역삼, 이호선.getId());
 
         // when
-        lineService.deleteSection(이호선.getId(), 역삼역.getId());
+        lineService.deleteSection(이호선.getId(), 강남역.getId());
 
         // then
         Line line = lineRepository.findById(이호선.getId()).get();
         Sections sections = line.getSections();
-        assertThat(sections.getSections()).hasSize(1);
+        assertThat(sections.getSections().get(0).getDistance()).isEqualTo(7);
     }
 
     private void givenToSaveLine() {
@@ -192,5 +170,31 @@ class LineServiceMockTest {
         ReflectionTestUtils.setField(line, "id", 1L);
         when(lineRepository.save(any(line.getClass()))).then(AdditionalAnswers.returnsFirstArg());
         when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+    }
+
+    private void setUp() {
+        교대역 = new Station("교대역");
+        ReflectionTestUtils.setField(교대역, "id", 1L);
+
+        역삼역 = new Station("역삼역");
+        ReflectionTestUtils.setField(역삼역, "id", 2L);
+
+        정자역 = new Station("정자역");
+        ReflectionTestUtils.setField(정자역, "id", 3L);
+
+        판교역 = new Station("판교역");
+        ReflectionTestUtils.setField(판교역, "id", 4L);
+
+        강남역 = new Station("강남역");
+        ReflectionTestUtils.setField(강남역, "id", 5L);
+
+        이호선 = new Line("2호선", "bg-green-600");
+        ReflectionTestUtils.setField(이호선, "id", 1L);
+
+        교대_TO_역삼 = 교대_TO_역삼_구간_만들기(교대역, 역삼역);
+        강남_TO_역삼 = 강남_TO_역삼_구간_만들기(강남역, 역삼역);
+
+        이호선_요청_객체 = 이호선_요청_객체_만들기(교대역, 역삼역);
+        신분당선_요청_객체 = 신분당선_요청_객체_만들기(정자역, 판교역);
     }
 }

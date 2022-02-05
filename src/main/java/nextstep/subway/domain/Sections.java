@@ -9,10 +9,14 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static nextstep.subway.error.ErrorCode.*;
+import static nextstep.subway.error.ErrorCode.ALREADY_EXISTS_STATIONS_ERROR;
+import static nextstep.subway.error.ErrorCode.FIRST_SECTION_CREATE_ERROR;
+import static nextstep.subway.error.ErrorCode.NOT_EXISTS_ANY_STATIONS_ERROR;
+import static nextstep.subway.error.ErrorCode.SECTION_MINIMUM_SIZE_ERROR;
 
 @Embeddable
 public class Sections {
@@ -40,9 +44,9 @@ public class Sections {
         save(section);
     }
 
-    public void remove(final Long downStationId) {
-        validateDelete(downStationId);
-        sections.remove(getLastSection());
+    public void remove(final Long stationId) {
+        validateDelete(stationId);
+        removeAndRePosition(stationId);
     }
 
     public Section findSectionHasUpStationEndPoint() {
@@ -120,14 +124,24 @@ public class Sections {
                 .orElse(null) != null;
     }
 
-    private void validateDelete(final Long downStationId) {
-        validateNotExists(downStationId);
-        validateSectionMinimumSize();
-        validateOnlyTheLastSectionCanBeDelete(downStationId);
+    private void removeAndRePosition(final Long stationId) {
+        Optional<Section> up = findSectionByUpStationId(stationId);
+        Optional<Section> down = findSectionByDownStationId(stationId);
+
+        if(isMiddleSectionDeleteRequest(up, down)) {
+            sections.add(createNewSectionByRePosition(up.get(), down.get()));
+            sections.remove(up.get());
+            sections.remove(down.get());
+            return;
+        }
+
+        up.ifPresent(section -> sections.remove(section));
+        down.ifPresent(section -> sections.remove(section));
     }
 
-    private Section getLastSection() {
-        return sections.get(sections.size() - 1);
+    private void validateDelete(final Long stationId) {
+        validateNotExists(stationId);
+        validateSectionMinimumSize();
     }
 
     private void validateNotExists(final Long downStationId) {
@@ -148,14 +162,37 @@ public class Sections {
         }
     }
 
-    private void validateOnlyTheLastSectionCanBeDelete(final Long downStationId) {
-        if (!getLastRegisteredDownStationId().equals(downStationId)) {
-            throw new ValidationException(ONLY_THE_LAST_SECTION_CAN_BE_DELETE_ERROR);
-        }
+    private Optional<Section> findSectionByUpStationId(final Long stationId) {
+        return sections.stream()
+                .filter(s -> {
+                    Station upStation = s.getUpStation();
+                    Long id = upStation.getId();
+                    return id.equals(stationId);
+                })
+                .findFirst();
     }
 
-    private Long getLastRegisteredDownStationId() {
-        return getDownStationEndPoint().getId();
+    private Optional<Section> findSectionByDownStationId(final Long stationId) {
+        return sections.stream()
+                .filter(s -> {
+                    Station downStation = s.getDownStation();
+                    Long id = downStation.getId();
+                    return id.equals(stationId);
+                })
+                .findFirst();
+    }
+
+    private boolean isMiddleSectionDeleteRequest(Optional<Section> up, Optional<Section> down) {
+        return up.isPresent() && down.isPresent();
+    }
+
+    private Section createNewSectionByRePosition(Section up, Section down) {
+        return Section.of(
+                up.getLine(),
+                down.getUpStation(),
+                up.getDownStation(),
+                up.getDistance() + down.getDistance()
+        );
     }
 
     public Station getDownStationEndPoint() {
