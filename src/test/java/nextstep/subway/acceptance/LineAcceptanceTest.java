@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static nextstep.subway.model.LineEntitiesHelper.*;
-import static nextstep.subway.model.StationEntitiesHelper.*;
+import static nextstep.subway.acceptance.model.LineEntitiesHelper.*;
+import static nextstep.subway.acceptance.model.StationEntitiesHelper.*;
 import static org.apache.http.HttpHeaders.LOCATION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.*;

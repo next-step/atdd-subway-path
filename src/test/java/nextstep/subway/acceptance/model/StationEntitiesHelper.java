@@ -1,4 +1,4 @@
-package nextstep.subway.model;
+package nextstep.subway.acceptance.model;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -19,6 +19,8 @@ public final class StationEntitiesHelper {
     public static final String 판교역 = "판교역";
     public static final String 정자역 = "정자역";
     public static final String 삼성역 = "삼성역";
+    public static final String 남부터미널역 = "남부터미널역";
+    public static final String 양재역 = "양재역";
 
     public static Long 지하철역_생성_요청후_아이디_조회(String name) {
         ExtractableResponse<Response> createResponse = 지하철역_생성_요청(name);
