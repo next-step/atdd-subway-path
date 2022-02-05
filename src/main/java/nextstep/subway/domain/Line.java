@@ -159,10 +159,6 @@ public class Line extends BaseEntity {
         return sections.isEmpty();
     }
 
-    public void removeSection(Section targetSection) {
-        sections.remove(targetSection);
-    }
-
     public Section findSectionByDownStation(Station station) {
         return sections.findSectionByDownStation(station);
     }
@@ -176,6 +172,11 @@ public class Line extends BaseEntity {
     }
 
     public void removeSectionByStation(Station station) {
+        Section targetSection = sections.findSectionByDownStation(station);
+        sections.remove(targetSection);
 
+        if(downStation.equals(station)) {
+            downStation = targetSection.getUpStation();
+        }
     }
 }
