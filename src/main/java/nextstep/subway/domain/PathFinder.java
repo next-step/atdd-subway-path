@@ -31,25 +31,22 @@ public class PathFinder {
         lines.forEach(line -> addEdgeWeight(line.getSections()));
     }
 
-    private void addVertex(List<Station> stations) {
+    private void addVertex(final List<Station> stations) {
         stations.forEach(graph::addVertex);
     }
 
-    private void addEdgeWeight(Sections sections) {
+    private void addEdgeWeight(final Sections sections) {
         sections.getSections().forEach(s ->
             graph.setEdgeWeight(graph.addEdge(s.getUpStation(), s.getDownStation()), s.getDistance())
         );
     }
 
-    public PathResponse findShortestPath(Station source, Station target) {
+    public PathResponse findShortestPath(final Station source, final Station target) {
         validate(source, target);
-        GraphPath<Station, DefaultWeightedEdge> findPath = dijkstraShortestPath.getPath(source, target);
-        int distance = (int) findPath.getWeight();
-        List<Station> stations = findPath.getVertexList();
-        return PathResponse.of(stations, distance);
+        return getShortestPathResult(source, target);
     }
 
-    private void validate(Station source, Station target) {
+    private void validate(final Station source, final Station target) {
         if(source.equals(target)) {
             throw new SameStationException();
         }
@@ -58,4 +55,10 @@ public class PathFinder {
         }
     }
 
+    private PathResponse getShortestPathResult(final Station source, final Station target) {
+        GraphPath<Station, DefaultWeightedEdge> findPath = dijkstraShortestPath.getPath(source, target);
+        int distance = (int) findPath.getWeight();
+        List<Station> stations = findPath.getVertexList();
+        return PathResponse.of(stations, distance);
+    }
 }
