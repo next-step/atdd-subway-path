@@ -9,8 +9,10 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.ui.exception.LineException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -62,5 +64,13 @@ class LineServiceTest {
         List<StationResponse> stations = response.getStations();
         assertThat(stations).extracting(StationResponse::getId)
                 .containsExactly(upStation.getId(), downStation.getId());
+    }
+
+    @DisplayName("존재하지 않는 노선")
+    @Test
+    void exceptionNotExistsLine() {
+        assertThatThrownBy(() -> lineService.findById(1L))
+                .isInstanceOf(LineException.class)
+                .hasMessage(String.format("존재하지 않는 노선, id = %d", 1L));
     }
 }

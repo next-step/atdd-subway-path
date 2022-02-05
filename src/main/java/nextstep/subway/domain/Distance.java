@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.ui.exception.AddSectionException;
+import nextstep.subway.ui.exception.SectionException;
 
 import javax.persistence.Embeddable;
 
@@ -14,14 +14,18 @@ public class Distance {
         this.distance = distance;
     }
 
-    public Distance calculate(int newDistance) {
-        validateDistance(newDistance);
+    public Distance subtract(int newDistance) {
+        validateBetWeenAddDistance(newDistance);
         return new Distance(distance - newDistance);
     }
 
-    private void validateDistance(int newDistance) {
+    public Distance sum(int newDistance) {
+        return new Distance(distance + newDistance);
+    }
+
+    private void validateBetWeenAddDistance(int newDistance) {
         if (this.distance <= newDistance) {
-            throw new AddSectionException(
+            throw new SectionException(
                     String.format("새로 추가되는 구간 거리는 기존 구간의 거리 이상일 수 없습니다. 기존 구간 거리 = %d, 신규 구간 거리 = %d",
                             this.distance, newDistance));
         }

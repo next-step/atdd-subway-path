@@ -12,8 +12,8 @@ public class ControllerExceptionHandler {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(AddSectionException.class)
-    public ResponseEntity<String> handleIllegalArgsException(AddSectionException e) {
+    @ExceptionHandler(SectionException.class)
+    public ResponseEntity<String> handleIllegalArgsException(SectionException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

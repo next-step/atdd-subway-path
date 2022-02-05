@@ -7,6 +7,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.ui.exception.LineException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class LineService {
+    private static final String NOT_EXISTS_LINE_EXCEPTION = "존재하지 않는 노선, id = %d";
     private final LineRepository lineRepository;
     private final StationService stationService;
 
@@ -39,11 +41,13 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        return LineResponse.createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        return LineResponse.createLineResponse(lineRepository.findById(id)
+                .orElseThrow(() -> new LineException(String.format(NOT_EXISTS_LINE_EXCEPTION, id))));
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new LineException(String.format(NOT_EXISTS_LINE_EXCEPTION, id)));
         line.updateLine(lineRequest.getName(), lineRequest.getColor());
     }
 
@@ -54,13 +58,15 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new LineException(String.format(NOT_EXISTS_LINE_EXCEPTION, lineId)));
 
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new LineException(String.format(NOT_EXISTS_LINE_EXCEPTION, lineId)));
         Station station = stationService.findById(stationId);
 
         line.removeSection(station);

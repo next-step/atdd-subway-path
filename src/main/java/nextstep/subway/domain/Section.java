@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.ui.exception.AddSectionException;
+import nextstep.subway.ui.exception.SectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
@@ -43,11 +43,18 @@ public class Section {
         this.distance = new Distance(distance);
     }
 
-    void addLineBetweenSection(Section newSection) {
+    public void updateAddLineBetweenSection(Section newSection) {
         if (isBetweenSection(newSection)) {
             validateDuplicationSection(newSection);
             this.upStation = newSection.getDownStation();
-            this.distance = this.distance.calculate(newSection.getDistance());
+            this.distance = this.distance.subtract(newSection.getDistance());
+        }
+    }
+
+    public void updateRemoveLineBetweenSection(Section removeSection) {
+        if (upStation.equals(removeSection.getDownStation())) {
+            this.upStation = removeSection.getUpStation();
+            this.distance = this.distance.sum(removeSection.getDistance());
         }
     }
 
@@ -57,7 +64,7 @@ public class Section {
 
     private void validateDuplicationSection(Section newSection) {
         if (this.upStation.equals(newSection.upStation) && this.downStation.equals(newSection.getDownStation())) {
-            throw new AddSectionException(
+            throw new SectionException(
                     String.format("상행역과 하행역 모두 등록된 역입니다. 상행역 = %s, 하행역 = %s",
                             this.upStation.getName(), this.downStation.getName()));
         }
