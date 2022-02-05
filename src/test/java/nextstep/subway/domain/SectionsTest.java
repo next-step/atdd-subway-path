@@ -28,8 +28,8 @@ class SectionsTest {
     private static Stream<Arguments> provideArgumentsForVerifyingToAdd() {
         Sections sections = new Sections();
         Line line = new Line();
-        Station startingStation = new Station(1L, "강남역");
-        Station endingStation = new Station(2L, "사당역");
+        Station startingStation = new Station(1L, "사당역");
+        Station endingStation = new Station(2L, "강남역");
         int distance = 10;
         sections.add(new Section(line, startingStation, endingStation, distance));
 
@@ -164,6 +164,30 @@ class SectionsTest {
         // then
         assertThatIllegalArgumentException().isThrownBy(() -> sections.add(newSection))
                 .withMessage("기존 구간에 속하지 않는 역 만으로 구간의 상행, 하행 역을 지정할 수 없습니다.");
+    }
+
+    @DisplayName("복수 구간 추가")
+    @ParameterizedTest
+    @MethodSource("provideArgumentsForVerifyingToAdd")
+    void addWithMultipleStations(Sections sections, Line line, Station startingStation, Station endingStation, int distance) {
+        // given
+        Station newStartingStation = new Station(3L, "홍대입구역");
+        Station newUpStation = new Station(4L, "합정역");
+        Station newDownStation = new Station(5L, "신도림역");
+        Station newEndingStation = new Station(6L, "잠실역");
+        Station newNewEndingStation = new Station(7L, "왕십리역");
+
+        // when
+        sections.add(new Section(line, newStartingStation, startingStation, distance));
+        sections.add(new Section(line, newStartingStation, newDownStation, distance - 1));
+        sections.add(new Section(line, newUpStation, newDownStation, distance - 2));
+        sections.add(new Section(line, endingStation, newNewEndingStation, distance));
+        sections.add(new Section(line, newEndingStation, newNewEndingStation, distance - 1));
+
+        // then
+        assertThat(sections.getStations()).isEqualTo(List.of(
+                newStartingStation, newUpStation, newDownStation, startingStation, endingStation, newEndingStation, newNewEndingStation
+        ));
     }
 
     @DisplayName("역 목록 조회")
