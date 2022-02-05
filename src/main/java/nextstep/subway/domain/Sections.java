@@ -25,17 +25,19 @@ public class Sections {
 			return;
 		}
 
-		// TODO : 상행구간 재배치
-		this.sections.stream()
-			.filter(it -> it.isEqualDownStation(section.getDownStation()))
-			.findFirst()
-			.ifPresent(it -> {
-				sections.add(new Section(section.getLine(), it.getUpStation(), section.getUpStation(),
-					it.getDistance() - section.getDistance()));
-				sections.remove(it);
-			});
+		updateUpSection(section);
+		updateDownSection(section);
 
-		// TODO : 하행구간 재배치
+		this.sections.add(section);
+	}
+
+	private void updateDownSection(Section section) {
+		// ex)
+		// 기존 : A - B
+		// 신규 : A - C
+		// A 가 상행역으로 같음 => 기존구간을 삭제하고 하행역끼리 연결 (C - B)
+		// 그 후 신규 구간 추가 (A - C)
+		// => A - C, C - B 로 구간 생성
 		this.sections.stream()
 			.filter(it -> it.isEqualUpStation(section.getUpStation()))
 			.findFirst()
@@ -44,12 +46,26 @@ public class Sections {
 					it.getDistance() - section.getDistance()));
 				sections.remove(it);
 			});
+	}
 
-		this.sections.add(section);
+	private void updateUpSection(Section section) {
+		// ex)
+		// 기존 : A - B
+		// 신규 : C - B
+		// B 가 하행역으로 같음 => 기존구간을 삭제하고 상행역끼리 연결 (A - C)
+		// 그 후 신규 구간 추가 (C - B)
+		// => A - C, C - B 로 구간 생성
+		this.sections.stream()
+			.filter(it -> it.isEqualDownStation(section.getDownStation()))
+			.findFirst()
+			.ifPresent(it -> {
+				sections.add(new Section(section.getLine(), it.getUpStation(), section.getUpStation(),
+					it.getDistance() - section.getDistance()));
+				sections.remove(it);
+			});
 	}
 
 	public List<Station> findAllStations() {
-		// TODO : 모든 역 찾기
 		//  첫번째 상행역을 찾고, 그 뒤로 구간에 연결되는 하행역을 찾는다
 		List<Station> stations = new ArrayList<>();
 		Station upStation = findFirstUpStation();
@@ -70,7 +86,6 @@ public class Sections {
 	}
 
 	private Station findFirstUpStation() {
-		// TODO : 첫번째 역 구하기
 		//  상행역 중 하행역이 없는게 첫번째 역
 		List<Station> upStations = this.sections.stream()
 			.map(Section::getUpStation)

@@ -72,24 +72,19 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 노선에 구간이 존재할 때
-     * When 지하철 노선에 새로운 하행 구간 추가 요청을 하면
-     * Then 노선에 새로운 하행 구간이 추가된다
-     */
-    @DisplayName("하행 구간 등록")
-    @Test
-    void addDownSection() {
-
-    }
-
-    /**
-     * Given 노선에 구간이 존재할 때
      * When 지하철 노선의 중간에 구간 추가 요청을 하면
      * Then 노선의 중간에 새로운 구간이 추가된다
      */
     @DisplayName("사이 구간 등록")
     @Test
     void addMiddleSection() {
+        // when
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역));
 
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역, 양재역);
     }
 
     /**
