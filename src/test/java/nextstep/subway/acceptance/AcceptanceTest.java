@@ -1,7 +1,6 @@
 package nextstep.subway.acceptance;
 
 import io.restassured.RestAssured;
-
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.utils.DatabaseCleanup;
@@ -9,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-
 import org.springframework.http.HttpStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,8 +31,8 @@ public class AcceptanceTest {
         assertThat(응답_값.statusCode()).isEqualTo(상태_코드.value());
     }
 
-    public void 리스트_값_검사(ExtractableResponse<Response> 응답_값, String 예상_키, String... 예상_값) {
-        for (String 값 : 예상_값) {
+    public void 리스트_값_검사(ExtractableResponse<Response> 응답_값, String 예상_키, Object... 예상_값) {
+        for (Object 값 : 예상_값) {
             assertThat(응답_값.jsonPath().getList(예상_키)).contains(값);
         }
     }

@@ -29,6 +29,12 @@ public class SectionStepUtil {
         return 포스트_요청(기본구간주소, 구간파라미터생성);
     }
 
+    public static ExtractableResponse<Response> 구간등록(Long 노선번호, Long 상행종점, Long 하행종점, int 종점간거리) {
+        Map<String, Object> 구간파라미터생성 = 구간파라미터생성(상행종점, 하행종점, 종점간거리);
+
+        return 포스트_요청("/lines/" + 노선번호 + "/sections", 구간파라미터생성);
+    }
+
     private static Map<String, Object> 구간파라미터생성(Long 상행종점, Long 하행종점, int 종점간거리) {
         Map<String, Object> params = new HashMap<>();
         params.put(LineStepUtil.노선_상행역_키, 상행종점);
