@@ -135,6 +135,47 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크면 등록할 수 없음")
+    @Test
+    void addLineSection4() {
+        // when
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath()
+                                    .getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(
+                신분당선,
+                createSectionCreateParams(
+                        정자역,
+                        양재역,
+                        8
+                )
+        );
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이와 같으면 등록할 수 없음")
+    @Test
+    void addLineSection5() {
+        // when
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath()
+                                    .getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(
+                신분당선,
+                createSectionCreateParams(
+                        정자역,
+                        양재역,
+                        7
+                )
+        );
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
