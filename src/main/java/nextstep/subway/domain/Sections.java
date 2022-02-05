@@ -11,13 +11,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.exception.ErrorMessages.*;
+
 @Embeddable
 public class Sections {
+    private static final int MIN_SECTION_SIZE = 1;
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
-        validateAddSection(section);
+        checkAvailableAdd(section);
 
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
@@ -35,6 +39,10 @@ public class Sections {
             return;
         }
 
+        addSection(section);
+    }
+
+    private void addSection(Section section) {
         this.sections.add(section);
     }
 
@@ -48,7 +56,7 @@ public class Sections {
         existSection.changeDownStationDistance(upStation, existSectionDistance - section.getDistance());
         section.changeDistance(existSectionDistance - existSection.getDistance());
 
-        this.sections.add(section);
+        addSection(section);
     }
 
     private void addBetweenDownStationSection(Section section, Station downStation, Section existSection) {
@@ -62,7 +70,7 @@ public class Sections {
         existSection.changeDownStationDistance(downStation, section.getDistance());
         section.changeStationDistance(downStation, existDownStation, existSectionDistance - section.getDistance());
 
-        this.sections.add(section);
+        addSection(section);
     }
 
     public List<Section> getAllSections() {
@@ -74,7 +82,7 @@ public class Sections {
             .stream()
             .map(Section::getDownStation)
             .reduce((first, second) -> second)
-            .orElseThrow(() -> new StationNotFoundException(ErrorMessages.SECTION_NOT_FOUND_LAST_DOWN_STATION.getMessage()));
+            .orElseThrow(() -> new StationNotFoundException(SECTION_NOT_FOUND_LAST_DOWN_STATION.getMessage()));
     }
 
     public List<Station> getAllStations() {
@@ -101,20 +109,34 @@ public class Sections {
         return allStations;
     }
 
-    public void removeSection(Station station) {
-        Station lastDownStation = getLastDownStation();
+    public void remove(Station station) {
+        checkAvailableDelete();
+        Section deleteSection = getByDownStation(station);
 
+        if (getLastDownStation().equals(station)) {
+            sections.remove(deleteSection);
+            return;
+        }
+
+        sections.remove(deleteSection);
+        rearrange(deleteSection);
+    }
+
+    private void rearrange(Section deleteSection) {
+        Station upStation = deleteSection.getUpStation();
+        Station downStation = deleteSection.getDownStation();
+        int distance = deleteSection.getDistance();
+
+        Section updateSection = findSectionEqualsUpStation(downStation)
+            .orElseThrow(SectionNotFoundException::new);
+
+        updateSection.changeUpStationDistance(upStation, distance + updateSection.getDistance());
+    }
+
+    private void checkAvailableDelete() {
         if (isNotAvailableDelete()) {
-            throw new DeleteSectionException(ErrorMessages.DELETE_NOT_AVAILABLE_SECTION.getMessage());
+            throw new DeleteSectionException(DELETE_NOT_AVAILABLE_SECTION.getMessage());
         }
-
-        if (!lastDownStation.equals(station)) {
-            throw new DeleteSectionException(ErrorMessages.SECTION_NOT_FOUND_LAST_DOWN_STATION.getMessage());
-        }
-
-        Section delete = getByDownStation(lastDownStation);
-
-        sections.remove(delete);
     }
 
     public Section getByDownStation(Station station) {
@@ -124,19 +146,19 @@ public class Sections {
             .orElseThrow(SectionNotFoundException::new);
     }
 
-    private void validateAddSection(Section section) {
+    private void checkAvailableAdd(Section section) {
         if (hasSameSection(section)) {
             throw new DuplicateSectionException();
         }
 
-        if (!isValidateSection(section)) {
+        if (isNotValidateSection(section)) {
             throw new SectionValidException();
         }
     }
 
-    private boolean isValidateSection(Section section) {
+    private boolean isNotValidateSection(Section section) {
         if (sections.isEmpty()) {
-            return true;
+            return false;
         }
 
         List<Station> allStations = getAllStations();
@@ -144,7 +166,7 @@ public class Sections {
         boolean containsUpStation = allStations.contains(section.getUpStation());
         boolean containsDownStation = allStations.contains(section.getDownStation());
 
-        return containsUpStation || containsDownStation;
+        return !(containsUpStation || containsDownStation);
     }
 
     private boolean hasSameSection(Section section) {
@@ -172,7 +194,7 @@ public class Sections {
             .stream()
             .filter(it -> !downStations.contains(it.getUpStation()))
             .findFirst()
-            .orElseThrow(() -> new SectionNotFoundException(ErrorMessages.SECTION_NOT_FOUND_FIRST_UP_STATION.getMessage()));
+            .orElseThrow(() -> new SectionNotFoundException(SECTION_NOT_FOUND_FIRST_UP_STATION.getMessage()));
     }
 
     private List<Station> getAllDownStations() {
@@ -183,6 +205,6 @@ public class Sections {
     }
 
     private boolean isNotAvailableDelete() {
-        return sections.size() <= 1;
+        return sections.size() <= MIN_SECTION_SIZE;
     }
 }
