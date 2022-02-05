@@ -39,7 +39,7 @@ class SectionsTest {
 
     @DisplayName("새로운 역을 구간의 중간에 추가")
     @Test
-    void addSection_BetweenSection() {
+    void addSectionBetweenSection() {
         int newSectionDistance = 3;
         Section newSection = Section.of(_5호선, 군자역, 광나루역, newSectionDistance);
         sections.addSection(newSection);
@@ -51,7 +51,7 @@ class SectionsTest {
 
     @DisplayName("새로운 역을 상행 종점으로 추가")
     @Test
-    void addSection_InFrontSection() {
+    void addSectionInFrontSection() {
         Section newSection = Section.of(_5호선, 광나루역, 군자역, distance);
         sections.addSection(newSection);
 
@@ -60,7 +60,7 @@ class SectionsTest {
 
     @DisplayName("새로운 역을 하행 종점으로 추가")
     @Test
-    void addSection_InBackSection() {
+    void addSectionInBackSection() {
         Section newSection = Section.of(_5호선, 아차산역, 광나루역, distance);
         sections.addSection(newSection);
 
@@ -69,7 +69,7 @@ class SectionsTest {
 
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다")
     @Test
-    void addSectionFail_InvalidDistance() {
+    void addSectionFailInvalidDistance() {
         int newSectionDistance = 11;
         Section newSection = Section.of(_5호선, 군자역, 광나루역, newSectionDistance);
 
@@ -79,7 +79,7 @@ class SectionsTest {
 
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다")
     @Test
-    void addSectionFail_DuplicatedStations() {
+    void addSectionFailDuplicatedStations() {
         int newSectionDistance = 3;
         Section newSection = Section.of(_5호선, 군자역, 아차산역, newSectionDistance);
 
@@ -89,7 +89,7 @@ class SectionsTest {
 
     @DisplayName("상행역과 하행역이 노선에 모두 등록되어 있지 않다면 추가할 수 없다")
     @Test
-    void addSectionFail_NotContainsStations() {
+    void addSectionFailNotContainsStations() {
         int newSectionDistance = 3;
         Section newSection = Section.of(_5호선, 광나루역, 천호역, newSectionDistance);
 
