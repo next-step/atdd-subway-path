@@ -59,4 +59,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
+    public List<Section> getAllSection() {
+        return sections.getSections();
+    }
+
 }

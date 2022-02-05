@@ -64,6 +64,10 @@ public class Sections {
         return stations;
     }
 
+    public List<Section> getSections() {
+        return sections;
+    }
+
     private void addEndSection(Section section) {
         if (isAddableFirstSection(section)) {
             addFirstSection(section);
@@ -214,11 +218,8 @@ public class Sections {
     }
 
     private Section getRegisteredSection(Section section) {
-        Station upStation = section.getUpStation();
-        Station downStation = section.getDownStation();
-
         return sections.stream()
-                .filter(it -> it.isContainStation(upStation) || it.isContainStation(downStation))
+                .filter(it -> it.isContainSection(section))
                 .findAny()
                 .orElseThrow(NotFoundConnectStationException::new);
     }
