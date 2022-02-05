@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.exception.NotRegisterStation;
-import org.springframework.dao.DataIntegrityViolationException;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -112,7 +111,7 @@ public class Line extends BaseEntity {
                      .filter(section -> !getStations().contains(newSection.getDownStation()))
                      .findAny()
                      .ifPresent(unused -> {
-                         throw new RuntimeException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음");
+                         throw new NotRegisterStation("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음");
                      });
     }
 
@@ -186,7 +185,7 @@ public class Line extends BaseEntity {
                         ));
                     } else if (newSection.getDistance() > oldSection.getDistance()) {
                         throw new NotRegisterStation("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크면 등록을 할 수 없음");
-                    } else if (newSection.getDistance() == oldSection.getDistance()){
+                    } else if (newSection.getDistance() == oldSection.getDistance()) {
                         throw new NotRegisterStation("역 사이에 새로운 역을 등록할 경우 기존 역 사이와 길으면 등록을 할 수 없음");
                     }
                 });
