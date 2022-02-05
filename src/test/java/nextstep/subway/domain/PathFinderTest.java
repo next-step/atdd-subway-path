@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.applicaion.exception.BusinessException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -78,8 +79,26 @@ class PathFinderTest {
         PathResponse path = pathFinder.findPath(노선_모음, 교대역, 양재역);
 
         //then
-        Assertions.assertThat( path.getStations()).hasSize(3);
-        assertTrue( path.getStations().contains(StationResponse.of(남부터미널역)));
+        Assertions.assertThat(path.getStations()).hasSize(3);
+        assertTrue(path.getStations().contains(StationResponse.of(남부터미널역)));
 
+    }
+
+    /**
+     * Given 노선을 생성한다.
+     * When 출발지와 도착지가 같은 최단 경로를 요청한다.
+     * Then 예외를 발생한다
+     */
+    @DisplayName("출발지와 도착지가 같으면 예외")
+    @Test
+    void 출발지와_도착지가_같으면_예외_발생() {
+        //given
+
+        //when //then
+        PathFinder pathFinder = new PathFinder();
+
+        org.junit.jupiter.api.Assertions.assertThrows(BusinessException.class, () -> {
+            pathFinder.findPath(노선_모음, 교대역, 교대역);
+        });
     }
 }
