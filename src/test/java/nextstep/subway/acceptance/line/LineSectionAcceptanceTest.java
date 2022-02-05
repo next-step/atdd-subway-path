@@ -29,8 +29,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
-        상행 = 지하철역_생성_요청("상행").jsonPath().getLong("id");
-        하행 = 지하철역_생성_요청("하행").jsonPath().getLong("id");
+        상행 = 지하철역_생성_요청_하고_ID_반환("상행");
+        하행 = 지하철역_생성_요청_하고_ID_반환("하행");
 
         Map<String, Object> lineCreateParams = LineSteps.createLineCreateParams(상행, 하행);
         노선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
@@ -49,7 +49,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         Long B역 = 하행;
 
         // when
-        Long C역 = 지하철역_생성_요청("C역").jsonPath().getLong("id");
+        Long C역 = 지하철역_생성_요청_하고_ID_반환("C역");
         지하철_노선에_지하철_구간_생성_요청(노선, createSectionCreateParams(B역, C역));
 
         // then
@@ -71,7 +71,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         Long C역 = 하행;
 
         // when
-        Long A역 = 지하철역_생성_요청("A역").jsonPath().getLong("id");
+        Long A역 = 지하철역_생성_요청_하고_ID_반환("A역");
         지하철_노선에_지하철_구간_생성_요청(노선, createSectionCreateParams(A역, B역));
 
         // then
@@ -95,7 +95,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         int beforeLength = 지하철_노선_조회_요청(노선).jsonPath().get("length");
 
         // when
-        Long B역 = 지하철역_생성_요청("A역").jsonPath().getLong("id");
+        Long B역 = 지하철역_생성_요청_하고_ID_반환("A역");
         지하철_노선에_지하철_구간_생성_요청(노선, createSectionCreateParams(A역, B역));
 
         // then
@@ -117,7 +117,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         Long A역 = 상행;
 
         // when
-        Long B역 = 지하철역_생성_요청("A역").jsonPath().getLong("id");
+        Long B역 = 지하철역_생성_요청_하고_ID_반환("A역");
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(노선, createSectionCreateParams(A역, B역, 999999999));
 
         // then
@@ -146,8 +146,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSectionFailCase3() {
         // given
-        Long 새로운_상행 = 지하철역_생성_요청("새로운 상행").jsonPath().getLong("id");
-        Long 새로운_하행 = 지하철역_생성_요청("새로운 하행").jsonPath().getLong("id");
+        Long 새로운_상행 = 지하철역_생성_요청_하고_ID_반환("새로운 상행");
+        Long 새로운_하행 = 지하철역_생성_요청_하고_ID_반환("새로운 하행");
 
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(노선, createSectionCreateParams(새로운_상행, 새로운_하행));
@@ -165,7 +165,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeLineSectionCase1() {
         // given
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        Long 정자역 = 지하철역_생성_요청_하고_ID_반환("정자역");
         지하철_노선에_지하철_구간_생성_요청(노선, createSectionCreateParams(하행, 정자역));
 
         // when

@@ -22,6 +22,10 @@ public class StationSteps {
                           .extract();
     }
 
+    public static Long 지하철역_생성_요청_하고_ID_반환(String name) {
+        return 지하철역_생성_요청(name).jsonPath().getLong("id");
+    }
+
     public static ExtractableResponse<Response> 지하철역_목록_조회_요청() {
         return RestAssured.given().log().all()
                           .when()
