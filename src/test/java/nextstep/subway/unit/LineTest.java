@@ -49,7 +49,7 @@ class LineTest {
         assertThat(stationList).containsExactlyInAnyOrder(station1, station2);
     }
 
-    @DisplayName("구간이 목록에서 마지막 역 삭제")
+    @DisplayName("구간 목록에서 마지막 역인 구간 삭제")
     @Test
     void removeSection() {
         // given
@@ -67,6 +67,50 @@ class LineTest {
         // then
         assertThat(line.getStations()).doesNotContain(station3);
     }
+
+    @DisplayName("구간 목록에서 상행 종점 역인 구간 삭제")
+    @Test
+    void removeTopSection() {
+        // given
+
+        var station1 = new Station("신논현역");
+        var station2 = new Station("강남역");
+
+        var line = new Line("신분당선", "bg-red-600", station1, station2, 10);
+
+        var station3 = new Station("양재역");
+        line.addSection(station2, station3, 10);
+
+        // when
+        line.removeSection(station1);
+
+        // then
+        assertThat(line.getStations()).doesNotContain(station1);
+    }
+
+
+    @DisplayName("구간 목록에서 중간 역이 포함된 구간 삭제")
+    @Test
+    void removeBetweenSection() {
+        // given
+        var station1 = new Station("신논현역");
+        var station2 = new Station("강남역");
+
+        var line = new Line("신분당선", "bg-red-600", station1, station2, 10);
+
+        var station3 = new Station("양재역");
+        line.addSection(station2, station3, 10);
+
+        // when
+        line.removeSection(station2);
+
+        // then
+        assertAll(
+                () -> assertThat(line.getStations()).doesNotContain(station2),
+                () -> assertThat(line.getSections().getOrderedSections().get(0).getDistance()).isEqualTo(20)
+        );
+    }
+
 
     @DisplayName("구간 목록 처음에 새로운 구간을 추가할 경우")
     @Test
