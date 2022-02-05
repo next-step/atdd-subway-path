@@ -82,19 +82,17 @@ class LineTest {
         assertThat(신분당선.getAllStations()).containsExactly(신사역, 강남역, 판교역);
     }
 
-    @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
+    @DisplayName("새로운 역을 하행 종점으로 등록")
     @Test
     void addSectionBehindLastDownStation() {
         // given
         Line 신분당선 = new Line("신분당선", "red", 강남역, 판교역, 8);
 
         // when
-        Section section = 신분당선.addSection(판교역, 정자역, 3);
+        신분당선.addSection(판교역, 정자역, 3);
 
         // then
-        assertThat(section.getUpStation()).isEqualTo(판교역);
-        assertThat(section.getDownStation()).isEqualTo(정자역);
-        assertThat(section.getDistance()).isGreaterThan(0);
+        assertThat(신분당선.getAllStations()).containsExactly(강남역, 판교역, 정자역);
     }
 
     @DisplayName("노선 총 길이 조회")

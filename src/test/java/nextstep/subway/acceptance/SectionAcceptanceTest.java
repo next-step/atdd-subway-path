@@ -72,7 +72,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
-    @DisplayName("구간 등록 기능 - 새로운 역을 상행 종점으로 등록할 경우")
+    @DisplayName("구간 등록 기능 - 새로운 역을 상행 종점으로 등록")
     @Test
     void createSectionInFrontOfFirstUpStation() {
         // given
@@ -87,7 +87,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-    @DisplayName("구간 등록 기능 - 새로운 역을 상행 종점으로 등록할 경우")
+    @DisplayName("구간 등록 기능 - 새로운 역을 하행 종점으로 등록")
     @Test
     void createSectionBehindLastDownStation() {
         // given
