@@ -60,7 +60,7 @@ public class Sections {
             curSection = findNextSection(curSection);
         }
 
-        return orderedStations;
+        return Collections.unmodifiableList(orderedStations);
     }
 
     public List<Section> getOrderedSections() {
@@ -144,7 +144,33 @@ public class Sections {
 
     public void remove(Station station) {
         verifyCanBeDeleted(station);
-        sections.remove(sections.size() - 1);
+
+        var selectedSection = getOrderedSections().stream()
+                .filter(it -> it.hasStation(station))
+                .collect(Collectors.toList());
+
+        if (selectedSection.size() == 1) {
+            sections.remove(selectedSection.get(0));
+        } else {
+            var upSection = selectedSection.stream()
+                    .filter(it -> it.getDownStation().equals(station))
+                    .findFirst()
+                    .get();
+            var downSection = selectedSection.stream()
+                    .filter(it -> it.getUpStation().equals(station))
+                    .findFirst()
+                    .get();
+
+            var newSection = new Section(
+                    upSection.getUpStation(),
+                    downSection.getDownStation(),
+                    upSection.getDistance() + downSection.getDistance()
+            );
+
+            sections.remove(upSection);
+            sections.remove(downSection);
+            sections.add(newSection);
+        }
     }
 
     private void verifyCanBeAdded(Section section) {
@@ -163,11 +189,7 @@ public class Sections {
 
     private void verifyCanBeDeleted(Station station) {
         if (sections.size() < DELETABLE_SIZE) {
-            throw new IllegalStateException("노선에 구간이 부족하여 역을 삭제할 수 없습니다.");
-        }
-
-        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException("삭제하려는 역은 해당 노선 마지막 구간의 하행역이 아닙니다.");
+            throw new IllegalArgumentException("노선에 구간이 부족하여 역을 삭제할 수 없습니다.");
         }
     }
 
