@@ -19,6 +19,7 @@ public class LineStepUtil {
     public static final String 수정노선 = "수정 노선";
     public static final String 수정색상 = "수정 색상";
 
+    public static final String 노선_아이디_키 = "id";
     public static final String 노선_이름_키 = "name";
     public static final String 노선_색상_키 = "color";
     public static final String 노선_상행역_키 = "upStationId";
