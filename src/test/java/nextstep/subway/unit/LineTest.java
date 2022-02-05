@@ -68,9 +68,23 @@ class LineTest {
                 .isThrownBy(() -> 신분당선.addSection(강남역, 정자역, 길이));
     }
 
+    @DisplayName("새로운 역을 상행 종점으로 등록")
+    @Test
+    void addSectionInFrontOfFirstUpStation() {
+        // given
+        Station 신사역 = new Station("신사역");
+        Line 신분당선 = new Line("신분당선", "red", 강남역, 판교역, 8);
+
+        // when
+        신분당선.addSection(신사역, 강남역, 3);
+
+        // then
+        assertThat(신분당선.getAllStations()).containsExactly(신사역, 강남역, 판교역);
+    }
+
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
     @Test
-    void addSectionOnLastDownStation() {
+    void addSectionBehindLastDownStation() {
         // given
         Line 신분당선 = new Line("신분당선", "red", 강남역, 판교역, 8);
 

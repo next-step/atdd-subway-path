@@ -74,7 +74,22 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("구간 등록 기능 - 새로운 역을 상행 종점으로 등록할 경우")
     @Test
-    void createSectionOnLastDownStation() {
+    void createSectionInFrontOfFirstUpStation() {
+        // given
+        Long 신사역_id = StationTestStep.지하철역_생성_후_아이디_추출하기("신사역");
+        SectionTestRequest sectionRequest = new SectionTestRequest(
+                신사역_id, lineRequest.getUpStationId(), lineRequest.getDistance());
+
+        // when
+        ExtractableResponse<Response> response = SectionTestStep.지하철역_구간_생성하기(sectionRequest, lineId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @DisplayName("구간 등록 기능 - 새로운 역을 상행 종점으로 등록할 경우")
+    @Test
+    void createSectionBehindLastDownStation() {
         // given
         Long 양재시민의숲역_id = StationTestStep.지하철역_생성_후_아이디_추출하기("양재시민의숲역");
         SectionTestRequest sectionRequest = new SectionTestRequest(lineRequest.getDownStationId(), 양재시민의숲역_id, 3);
