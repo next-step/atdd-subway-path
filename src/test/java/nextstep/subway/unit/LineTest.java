@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import lombok.val;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.domain.object.Distance;
 import nextstep.subway.unit.test.utils.Stations;
@@ -22,16 +23,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 public class LineTest {
 
-    @Autowired
-    private StationRepository stationRepository;
-
-    @Autowired
-    private LineRepository lineRepository;
-
     @BeforeEach
     public void init() {
         역_초기화();
         노선_초기화();
+        기본역_생성();
+        GTXA노선_생성();
     }
 
     /**
@@ -46,17 +43,8 @@ public class LineTest {
     @DisplayName("지하철 노선의 역 순차적으로 불러오기 테스트")
     @Test
     void getAllStations() {
-        // given
-        val 연신내 = stationRepository.save(Stations.연신내);
-        val 서울역 = stationRepository.save(Stations.서울역);
-        val 삼성역 = stationRepository.save(Stations.삼성역);
-        stationRepository.save(Stations.판교역);
-        Line line = lineRepository.save(GTXA_연신내_판교역);
-        line.addSection(연신내, 삼성역, new Distance(8));
-        line.addSection(연신내, 서울역, new Distance(4));
-
         // when
-        val stations = line.getAllStations();
+        val stations = GTXA노선.getAllStations();
 
         // then
         assertThat(stations.size()).isEqualTo(4);
@@ -78,24 +66,40 @@ public class LineTest {
     @DisplayName("지하철 노선의 역 삭제 테스트")
     @Test
     void removeSection() {
-        // given
-        val 연신내 = stationRepository.save(Stations.연신내);
-        val 서울역 = stationRepository.save(Stations.서울역);
-        val 삼성역 = stationRepository.save(Stations.삼성역);
-        stationRepository.save(Stations.판교역);
-
-        Line line = lineRepository.save(GTXA_연신내_판교역);
-        line.addSection(연신내, 삼성역, new Distance(8));
-        line.addSection(연신내, 서울역, new Distance(4));
-
         // when
-        line.removeSection(서울역.getId());
+        GTXA노선.removeSection(서울역.getId());
 
         // then
-        val stations = line.getAllStations();
+        val stations = GTXA노선.getAllStations();
         assertThat(stations.size()).isEqualTo(3);
         assertThat(stations.get(0).getName().equals("연신내")).isTrue();
         assertThat(stations.get(1).getName().equals("삼성역")).isTrue();
         assertThat(stations.get(2).getName().equals("판교역")).isTrue();
+    }
+
+    @Autowired
+    private StationRepository stationRepository;
+
+    @Autowired
+    private LineRepository lineRepository;
+
+    Station 연신내;
+    Station 서울역;
+    Station 삼성역;
+    Station 판교역;
+
+    Line GTXA노선;
+
+    private void 기본역_생성() {
+        연신내 = stationRepository.save(Stations.연신내);
+        서울역 = stationRepository.save(Stations.서울역);
+        삼성역 = stationRepository.save(Stations.삼성역);
+        판교역 = stationRepository.save(Stations.판교역);
+    }
+
+    private void GTXA노선_생성() {
+        GTXA노선 = lineRepository.save(GTXA_연신내_판교역);
+        GTXA노선.addSection(연신내, 삼성역, new Distance(8));
+        GTXA노선.addSection(연신내, 서울역, new Distance(4));
     }
 }
