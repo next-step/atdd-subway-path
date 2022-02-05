@@ -33,13 +33,25 @@ public class Section implements Comparable<Section> {
         this.distance = distance;
     }
 
-    public boolean doesContains(Long stationsID) {
-        return stationsID.equals(upStation.getId()) ||
-                stationsID.equals(downStation.getId());
+    public boolean doesContains(Station station) {
+        return station.equals(upStation) ||
+                station.equals(downStation);
     }
 
     public boolean isLastStation(Station lastDownStation) {
         return downStation.equals(lastDownStation);
+    }
+
+    public void changeUpStationToNewDownStation(Section section) {
+        upStation = section.getDownStation();
+        changeDistance(distance - section.distance);
+    }
+
+    private void changeDistance(int distance) {
+        if (distance < 1) {
+            throw new IllegalArgumentException();
+        }
+        this.distance = distance;
     }
 
     public Long getId() {

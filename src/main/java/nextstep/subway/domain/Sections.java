@@ -13,54 +13,108 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public void validateNew(Long upStationId, Long downStationId) {
-        if (!sections.isEmpty() &&
-                doesNotMatchLastDownStation(upStationId) ||
-                doesContains(downStationId)) {
-            throw new IllegalArgumentException();
+    public void add(Section section) {
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+
+        if (isValidToEnd(upStation, downStation)) {
+            sections.add(section);
+            return;
         }
+        if (isValidToMiddle(upStation, downStation)) {
+            addMiddle(section);
+            return;
+        }
+        throw new IllegalArgumentException();
     }
 
-    private boolean doesNotMatchLastDownStation(Long upStationId) {
-        return !upStationId.equals(getLastDownStation().getId());
+    public boolean isValidToEnd(Station upStation, Station downStation) {
+        if (sections.isEmpty()) {
+            return true;
+        }
+
+        if (isNotValidToFirst(upStation, downStation) &&
+                isNotValidToLast(upStation, downStation)) {
+            return false;
+        }
+        return true;
     }
 
-    private Station getLastDownStation() {
+    private boolean isNotValidToFirst(Station upStation, Station downStation) {
+        return doesContains(upStation) ||
+                doesNotMatchFirstUpStation(downStation);
+    }
+
+    private boolean doesNotMatchFirstUpStation(Station downStation) {
+        return !downStation.equals(findFirstUpStation());
+    }
+
+    private Station findFirstUpStation() {
+        return sections.stream()
+                .filter(us -> sections.stream().noneMatch(ds ->
+                        ds.getDownStation().equals(us.getUpStation())))
+                .collect(Collectors.toList())
+                .get(FIRST_SECTION_INDEX)
+                .getUpStation();
+    }
+
+    private boolean isNotValidToLast(Station upStation, Station downStation) {
+        return doesContains(downStation) ||
+                doesNotMatchLastDownStation(upStation);
+    }
+
+    private boolean doesNotMatchLastDownStation(Station upStation) {
+        return !upStation.equals(findLastDownStation());
+    }
+
+    private Station findLastDownStation() {
         return sections.stream()
                 .filter(ds -> sections.stream().noneMatch(us ->
                         us.getUpStation().equals(ds.getDownStation())))
                 .collect(Collectors.toList())
-                .get(0)
+                .get(FIRST_SECTION_INDEX)
                 .getDownStation();
     }
 
-    private boolean doesContains(Long downStationId) {
-        return sections.stream().anyMatch(s -> s.doesContains(downStationId));
+    private boolean doesContains(Station station) {
+        return sections.stream().anyMatch(s -> s.doesContains(station));
     }
 
-    public void add(Section section) {
-        if (sections.contains(section)) {
-            throw new IllegalArgumentException();
-        }
+    private boolean isValidToMiddle(Station upStation, Station downStation) {
+        return doesContains(upStation) &&
+                !doesContains(downStation) &&
+                doesNotMatchLastDownStation(upStation);
+    }
+
+    private void addMiddle(Section section) {
+        Section targetSection = findTargetSection(section.getUpStation());
+        targetSection.changeUpStationToNewDownStation(section);
         sections.add(section);
+    }
+
+    private Section findTargetSection(Station upStation) {
+        return sections.stream()
+                .filter(s -> s.getUpStation().equals(upStation))
+                .collect(Collectors.toList())
+                .get(FIRST_SECTION_INDEX);
     }
 
     public List<Station> getSortedStations() {
         sorted();
 
         List<Station> stations = new ArrayList<>();
-        stations.add(getFirstUpStation());
+        stations.add(getFirstUpStationWhenSorted());
         sections.forEach(s -> stations.add(s.getDownStation()));
 
         return stations;
     }
 
-    private Station getFirstUpStation() {
+    private Station getFirstUpStationWhenSorted() {
         return sections.get(FIRST_SECTION_INDEX).getUpStation();
     }
 
     private void sorted() {
-        Section firstSection = getFirstSection();
+        Section firstSection = findFirstSection();
         sections.remove(firstSection);
         sections.add(FIRST_SECTION_INDEX, firstSection);
 
@@ -69,7 +123,7 @@ public class Sections {
         }
     }
 
-    private Section getFirstSection() {
+    private Section findFirstSection() {
         return sections.stream()
                 .filter(us ->
                         sections.stream().noneMatch(ds ->
@@ -94,22 +148,22 @@ public class Sections {
         return sections.get(i).compareTo(sections.get(j)) > 0;
     }
 
-    public void remove(Long stationId) {
-        Section section = findSection(stationId);
+    public void remove(Station station) {
+        Section section = findSection(station);
         validatePossibleToRemove(section);
         sections.remove(section);
     }
 
-    private Section findSection(Long stationId) {
+    private Section findSection(Station station) {
         return sections.stream()
-                .filter(s -> s.getDownStation().getId().equals(stationId))
+                .filter(s -> s.getDownStation().equals(station))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }
 
     private void validatePossibleToRemove(Section section) {
         if (sections.size() <= 1 ||
-                !section.isLastStation(getLastDownStation())) {
+                !section.isLastStation(findLastDownStation())) {
             throw new IllegalArgumentException();
         }
     }

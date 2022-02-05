@@ -59,7 +59,8 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        return LineResponse.of(findLine(id));
+        Line line = findLine(id);
+        return LineResponse.of(line, getStationResponses(line));
     }
 
     private Line findLine(Long id) {
@@ -91,8 +92,8 @@ public class LineService {
 
     public void deleteSection(Long lineId, Long stationId) {
         Line line = findLine(lineId);
-        stationService.findById(stationId);
+        Station station = stationService.findById(stationId);
 
-        line.removeSection(stationId);
+        line.removeSection(station);
     }
 }

@@ -23,10 +23,6 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void validateNewSection(Long upStationId, Long downStationId) {
-        sections.validateNew(upStationId, downStationId);
-    }
-
     public void addSection(Section section) {
         sections.add(section);
     }
@@ -36,8 +32,8 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void removeSection(Long stationId) {
-        sections.remove(stationId);
+    public void removeSection(Station station) {
+        sections.remove(station);
     }
 
     public List<Station> getStations() {
