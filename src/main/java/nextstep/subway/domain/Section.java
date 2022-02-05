@@ -27,6 +27,9 @@ public class Section {
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
+        if (distance <= 0) {
+            throw new IllegalArgumentException();
+        }
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -59,5 +62,10 @@ public class Section {
 
     public boolean isEqualDownStation(Station station) {
         return this.downStation == station;
+    }
+
+    public boolean isDuplicateSection(Station upStation, Station downStation) {
+        return (this.upStation == upStation && this.downStation == downStation)
+            || (this.upStation == downStation && this.downStation == upStation);
     }
 }

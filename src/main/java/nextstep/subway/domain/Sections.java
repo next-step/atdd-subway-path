@@ -25,6 +25,13 @@ public class Sections {
 			return;
 		}
 
+		// 중복확인
+		if(this.sections.stream()
+			.anyMatch(it -> it.isDuplicateSection(section.getUpStation(), section.getDownStation()))){
+			throw new IllegalArgumentException("중복된 구간이 존재합니다");
+		}
+
+
 		updateUpSection(section);
 		updateDownSection(section);
 

@@ -30,7 +30,6 @@ class LineTest {
     void addSectionInLast() {
         line.addSection(new Section(line, 강남역, 양재역, 10));
         line.addSection(new Section(line, 양재역, 정자역, 10));
-        System.out.println(line.allStations());
         assertThat(line.allStations()).containsExactly(강남역, 양재역, 정자역);
     }
 
@@ -39,7 +38,6 @@ class LineTest {
     void addSectionInFirst() {
         line.addSection(new Section(line, 강남역, 양재역, 10));
         line.addSection(new Section(line, 정자역, 강남역, 10));
-        System.out.println(line.allStations());
         assertThat(line.allStations()).containsExactly(정자역, 강남역, 양재역);
     }
 
@@ -48,7 +46,6 @@ class LineTest {
     void addSectionInMiddleByUpSection() {
         line.addSection(new Section(line, 강남역, 양재역, 10));
         line.addSection(new Section(line, 강남역, 정자역, 5));
-        System.out.println(line.allStations());
         assertThat(line.allStations()).containsExactly(강남역, 정자역, 양재역);
     }
 
@@ -57,13 +54,25 @@ class LineTest {
     void addSectionInMiddleBYDownSection() {
         line.addSection(new Section(line, 강남역, 양재역, 10));
         line.addSection(new Section(line, 정자역, 양재역, 5));
-        System.out.println(line.allStations());
         assertThat(line.allStations()).containsExactly(강남역, 정자역, 양재역);
     }
 
-    @DisplayName("노선에 속해있는 역 목록 조회")
+    @DisplayName("등록할 수 없는 구간길이를 등록했을때, 예외발생 확인")
     @Test
-    void getStations() {
+    void addSectionWithWrongDistance() {
+        line.addSection(new Section(line, 강남역, 양재역, 10));
+        assertThatThrownBy(() -> {
+            line.addSection(new Section(line, 정자역, 양재역, 10));
+        }).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("중복된 구간을 등록했을때, 예외발생 확인")
+    @Test
+    void addSectionWithWrongSection() {
+        line.addSection(new Section(line, 강남역, 양재역, 10));
+        assertThatThrownBy(() -> {
+            line.addSection(new Section(line, 강남역, 양재역, 10));
+        }).isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("구간이 목록에서 마지막 역 삭제")
