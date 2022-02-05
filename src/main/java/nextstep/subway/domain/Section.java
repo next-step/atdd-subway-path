@@ -3,7 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 
 @Entity
-public class Section {
+public class Section implements Comparable<Section> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,6 +33,15 @@ public class Section {
         this.distance = distance;
     }
 
+    public boolean doesContains(Long stationsID) {
+        return stationsID.equals(upStation.getId()) ||
+                stationsID.equals(downStation.getId());
+    }
+
+    public boolean isLastStation(Station lastDownStation) {
+        return downStation.equals(lastDownStation);
+    }
+
     public Long getId() {
         return id;
     }
@@ -51,5 +60,13 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    @Override
+    public int compareTo(Section section) {
+        if (downStation.equals(section.getUpStation())) {
+            return 1;
+        }
+        return 0;
     }
 }
