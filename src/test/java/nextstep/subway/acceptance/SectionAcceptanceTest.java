@@ -101,6 +101,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
+    @DisplayName("구간 등록 기능 - 상/하행역 모두 이미 노선에 등록되어 있다면 등록 불가")
+    @Test
+    void createSectionAlreadyAddedStationsFailCase() {
+        // given
+        SectionTestRequest sectionRequest = new SectionTestRequest(
+                lineRequest.getDownStationId(), lineRequest.getUpStationId(), 6);
+
+        // when
+        ExtractableResponse<Response> response = SectionTestStep.지하철역_구간_생성하기(sectionRequest, lineId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+    }
+
     @DisplayName("구간 등록 기능 - 상/하행역 하나라도 포함되어 있지 않다면 구간 등록 불가")
     @Test
     void createSectionNoStationFailCase() {
