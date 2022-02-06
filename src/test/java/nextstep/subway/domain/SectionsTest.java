@@ -36,6 +36,21 @@ class SectionsTest {
         return Stream.of(Arguments.of(sections, line, startingStation, endingStation, distance));
     }
 
+    private static Stream<Arguments> provideArgumentsForVerifyingToRemove() {
+        Line line = new Line();
+        Station startingStation = new Station(1L, "강남역");
+        Station middleStation = new Station(2L, "사당역");
+        Station endingStation = new Station(3L, "신림역");
+
+        int distance = 10;
+        Section startingSection = new Section(line, startingStation, middleStation, distance);
+        Section endingSection = new Section(line, middleStation, endingStation, distance);
+
+        Sections sections = new Sections(new ArrayList<>(List.of(startingSection, endingSection)));
+
+        return Stream.of(Arguments.of(sections, startingSection, endingSection));
+    }
+
     @DisplayName("구간 추가")
     @ParameterizedTest
     @MethodSource("provideLineStationsAndSection")
@@ -202,39 +217,87 @@ class SectionsTest {
         assertThat(sections.getStations()).isEqualTo(List.of(startingStation, endingStation));
     }
 
-    @DisplayName("구간 제거")
+    @DisplayName("기점 역 제거")
     @ParameterizedTest
-    @MethodSource("provideLineStationsAndSection")
-    void remove(Line line, Station startingStation, Station endingStation, Section section) {
+    @MethodSource("provideArgumentsForVerifyingToRemove")
+    void removeStartStation(Sections sections, Section startingSection, Section endingSection) {
         // given
-        Station newEndingStation = new Station(3L, "역삼역");
-        int distance = 10;
-        Section newSection = new Section(line, endingStation, newEndingStation, distance);
+        Station startingStation = startingSection.getUpStation();
 
         // when
-        Sections sections = new Sections(new ArrayList<>(List.of(section, newSection)));
-        sections.remove(newEndingStation);
+        sections.remove(startingStation);
 
         // then
         List<Station> stations = sections.getStations();
         assertAll(
-                () -> assertThat(stations).isEqualTo(List.of(startingStation, endingStation)),
-                () -> assertThat(stations).doesNotContain(newEndingStation)
+                () -> assertThat(stations).isEqualTo(List.of(endingSection.getUpStation(), endingSection.getDownStation())),
+                () -> assertThat(stations).doesNotContain(startingStation)
         );
     }
 
-    @DisplayName("구간이 목록에서 마지막 역이 아닌 역 삭제 예외")
+    @DisplayName("중간 역 제거")
+    @ParameterizedTest
+    @MethodSource("provideArgumentsForVerifyingToRemove")
+    void removeMiddleStation(Sections sections, Section startingSection, Section endingSection) {
+        // given
+        Station middleStation = startingSection.getDownStation();
+
+        // when
+        sections.remove(middleStation);
+
+        // then
+        List<Station> stations = sections.getStations();
+        assertAll(
+                () -> assertThat(stations).isEqualTo(List.of(startingSection.getUpStation(), endingSection.getDownStation())),
+                () -> assertThat(stations).doesNotContain(middleStation)
+        );
+    }
+
+    @DisplayName("종점 역 제거")
+    @ParameterizedTest
+    @MethodSource("provideArgumentsForVerifyingToRemove")
+    void removeEndingStation(Sections sections, Section startingSection, Section endingSection) {
+        // given
+        Station endingStation = endingSection.getDownStation();
+
+        // when
+        sections.remove(endingStation);
+
+        // then
+        List<Station> stations = sections.getStations();
+        assertAll(
+                () -> assertThat(stations).isEqualTo(List.of(startingSection.getUpStation(), startingSection.getDownStation())),
+                () -> assertThat(stations).doesNotContain(endingStation)
+        );
+    }
+
+    @DisplayName("구간이 한 개인 역 제거 예외")
     @ParameterizedTest
     @MethodSource("provideLineStationsAndSection")
-    void removeNonEndingSection(Line line, Station startingStation, Station endingStation, Section section) {
+    void removeASingleSection(Line line, Station startingStation, Station endingStation, Section section) {
         // given
-        Station newEndingStation = new Station(3L, "역삼역");
-        int distance = 10;
-        line.addSection(endingStation, newEndingStation, distance);
+        Sections sections = new Sections(List.of(section));
 
         // when
         // then
-        assertThatIllegalArgumentException().isThrownBy(() -> line.removeSection(endingStation))
-                .withMessage("구간이 목록에서 마지막 역이 아닙니다.");
+        assertAll(
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> sections.remove(startingStation))
+                        .withMessage("구간이 한 개면 삭제할 수 없습니다."),
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> sections.remove(endingStation))
+                        .withMessage("구간이 한 개면 삭제할 수 없습니다.")
+        );
+    }
+
+    @DisplayName("구간에 존재 하지 않는 역 제거 예외")
+    @ParameterizedTest
+    @MethodSource("provideArgumentsForVerifyingToRemove")
+    void removeAUnregisteredSection(Sections sections, Section startingSection, Section endingSection) {
+        // given
+        Station unregisteredStation = new Station(99L, "서울역");
+
+        // when
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() -> sections.remove(unregisteredStation))
+                .withMessage("구간에 존재하지 않는 역입니다.");
     }
 }

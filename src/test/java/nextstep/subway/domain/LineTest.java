@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 class LineTest {
 
@@ -60,20 +59,5 @@ class LineTest {
 
         // then
         assertThat(line.getStations()).isEqualTo(Arrays.asList(startingStation, endingStation));
-    }
-
-    @DisplayName("구간이 목록에서 마지막 역이 아닌 역 삭제 예외")
-    @ParameterizedTest
-    @MethodSource("provideLineAndStations")
-    void removeNonEndingSection(Line line, Station startingStation, Station endingStation) {
-        // given
-        Station newEndingStation = new Station(3L, "신림역");
-        int distance = 10;
-        line.addSection(endingStation, newEndingStation, distance);
-
-        // when
-        // then
-        assertThatIllegalArgumentException().isThrownBy(() -> line.removeSection(endingStation))
-                .withMessage("구간이 목록에서 마지막 역이 아닙니다.");
     }
 }
