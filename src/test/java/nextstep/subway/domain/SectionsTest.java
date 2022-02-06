@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static nextstep.subway.domain.factory.EntityFactory.createMockStation;
 import static nextstep.subway.domain.factory.EntityFactory.createSection;
-import static nextstep.subway.domain.factory.EntityFactory.createStation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선의 구간을 갖는 집합에 대한 단위테스트")
@@ -21,9 +21,9 @@ class SectionsTest {
 
     @BeforeEach
     void init() {
-        강남역 = createStation(1L, "강남역");
-        선릉역 = createStation(2L, "선릉역");
-        역삼역 = createStation(3L, "역삼역");
+        강남역 = createMockStation(1L, "강남역");
+        선릉역 = createMockStation(2L, "선릉역");
+        역삼역 = createMockStation(3L, "역삼역");
         이호선 = Line.of("2호선", "green", 강남역, 선릉역, 10);
 
         sections = 이호선.getSections();
