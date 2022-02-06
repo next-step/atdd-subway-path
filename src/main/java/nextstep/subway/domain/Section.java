@@ -40,13 +40,18 @@ public class Section implements Comparable<Section> {
                 station.equals(downStation);
     }
 
-    public boolean isLastStation(Station lastDownStation) {
-        return downStation.equals(lastDownStation);
+    public boolean isNextSection(Station downStation) {
+        return upStation.equals(downStation);
     }
 
-    public void changeUpStationToNewDownStation(Section section) {
+    public void changeUpStationWhenAdd(Section section) {
         upStation = section.getDownStation();
         changeDistance(distance - section.distance);
+    }
+
+    public void changeUpStationWhenRemove(Section section) {
+        upStation = section.getUpStation();
+        changeDistance(distance + section.distance);
     }
 
     private void changeDistance(int distance) {

@@ -21,30 +21,30 @@ public class Sections {
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
 
-        if (isValidToEnd(upStation, downStation)) {
+        if (isValidAddToEnd(upStation, downStation)) {
             sections.add(section);
             return;
         }
-        if (isValidToMiddle(upStation, downStation)) {
+        if (isValidAddToMiddle(upStation, downStation)) {
             addMiddle(section);
             return;
         }
         throw new InvalidValueException(section.getId());
     }
 
-    public boolean isValidToEnd(Station upStation, Station downStation) {
+    public boolean isValidAddToEnd(Station upStation, Station downStation) {
         if (sections.isEmpty()) {
             return true;
         }
 
-        if (isNotValidToFirst(upStation, downStation) &&
-                isNotValidToLast(upStation, downStation)) {
+        if (isNotValidAddToFirst(upStation, downStation) &&
+                isNotValidAddToLast(upStation, downStation)) {
             return false;
         }
         return true;
     }
 
-    private boolean isNotValidToFirst(Station upStation, Station downStation) {
+    private boolean isNotValidAddToFirst(Station upStation, Station downStation) {
         return doesContains(upStation) ||
                 doesNotMatchFirstUpStation(downStation);
     }
@@ -62,7 +62,7 @@ public class Sections {
                 .getUpStation();
     }
 
-    private boolean isNotValidToLast(Station upStation, Station downStation) {
+    private boolean isNotValidAddToLast(Station upStation, Station downStation) {
         return doesContains(downStation) ||
                 doesNotMatchLastDownStation(upStation);
     }
@@ -84,7 +84,7 @@ public class Sections {
         return sections.stream().anyMatch(s -> s.doesContains(station));
     }
 
-    private boolean isValidToMiddle(Station upStation, Station downStation) {
+    private boolean isValidAddToMiddle(Station upStation, Station downStation) {
         return doesContains(upStation) &&
                 !doesContains(downStation) &&
                 doesNotMatchLastDownStation(upStation);
@@ -92,7 +92,7 @@ public class Sections {
 
     private void addMiddle(Section section) {
         Section targetSection = findTargetSection(section.getUpStation());
-        targetSection.changeUpStationToNewDownStation(section);
+        targetSection.changeUpStationWhenAdd(section);
         sections.add(section);
     }
 
@@ -155,25 +155,45 @@ public class Sections {
     }
 
     public void remove(Station station) {
+        if (sections.size() <= 1) {
+            throw new InvalidValueException(station.getId());
+        }
+
         Section section = findSection(station);
-        validatePossibleToRemove(section);
-        sections.remove(section);
+        if (isValidRemoveTheEnd(station)) {
+            sections.remove(section);
+            return;
+        }
+        removeTheMiddle(section);
     }
 
     private Section findSection(Station station) {
         return sections.stream()
-                .filter(s -> s.getDownStation().equals(station))
+                .filter(s -> s.doesContains(station))
                 .findFirst()
                 .orElseThrow(() -> {
                     throw new InvalidValueException(station.getId());
                 });
     }
 
-    private void validatePossibleToRemove(Section section) {
-        if (sections.size() <= 1 ||
-                !section.isLastStation(findLastDownStation())) {
-            throw new InvalidValueException(section.getId());
-        }
+    private boolean isValidRemoveTheEnd(Station station) {
+        return station.equals(findFirstUpStation()) ||
+                station.equals(findLastDownStation());
+    }
+
+    private void removeTheMiddle(Section section) {
+        Section nextSection = findNextSection(section.getDownStation());
+        nextSection.changeUpStationWhenRemove(section);
+        sections.remove(section);
+    }
+
+    private Section findNextSection(Station downStation) {
+        return sections.stream()
+                .filter(s -> s.isNextSection(downStation))
+                .findFirst()
+                .orElseThrow(() -> {
+                    throw new InvalidValueException(downStation.getId());
+                });
     }
 
     public List<Section> getSections() {
