@@ -83,6 +83,8 @@ class LineTest {
         신분당선.addSection(강남역, 광교역, 5);
 
         //then
-        assertThat(신분당선.getStations().get(1).getName()).isEqualTo("광교역");
+        assertThat(신분당선.getSections()).hasSize(2);
+        assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(5);
+        assertThat(신분당선.getSections().get(1).getDistance()).isEqualTo(5);
     }
 }

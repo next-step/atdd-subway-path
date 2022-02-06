@@ -19,10 +19,42 @@ public class Sections {
     public void add(Line line, Station upStation, Station downStation, int distance) {
         Section section = new Section(line, upStation, downStation, distance);
         if (!sections.isEmpty()) {
-            checkLastDownStation(section.getUpStation());
             checkExistStationInLine(section.getDownStation());
+            // validSection(section);
+            // 기존 하행과 신규 상행이 같거나
+            // 기존 상행과 신규 하행이 같으면
+            // 그냥 추가.
+            // 기존 상행과 신규 상행이 같으면
+            // 구간을 업데이트 해야함.
+            if(isSameUpStation(upStation)){
+                updateSection(section);
+            }
         }
         this.sections.add(section);
+    }
+
+    private void validSection(Section newSection) {
+        boolean isValid = false;
+        isValid = isLastDownStation(newSection.getUpStation());
+        isValid = isFirstUpStation(newSection.getDownStation());
+    }
+
+    private boolean isFirstUpStation(Station downStation) {
+        return downStation.equals(findFirstStation());
+    }
+
+    private void updateSection(Section newSection) {
+        Section findSection = this.sections.stream()
+                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+                .findAny()
+                .get();
+
+        findSection.updateUpStation(newSection.getDownStation(), newSection.getDistance());
+    }
+
+    private boolean isSameUpStation(Station upStation) {
+        return this.sections.stream()
+                .anyMatch(section -> section.getUpStation().equals(upStation));
     }
 
     public List<Station> get() {
@@ -70,10 +102,8 @@ public class Sections {
         }
     }
 
-    private void checkLastDownStation(Station upStation) {
-        if (!upStation.equals(getLastStation())) {
-            throw new IllegalArgumentException();
-        }
+    private boolean isLastDownStation(Station upStation) {
+        return upStation.equals(getLastStation());
     }
 
 }
