@@ -12,7 +12,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -60,6 +62,25 @@ class PathServiceTest {
         삼호선 = new Line("3호선", "orange");
         삼호선.addSection(new Section(삼호선, 교대역, 남부터미널역, 2));
         삼호선.addSection(new Section(삼호선, 남부터미널역, 양재역, 3));
+    }
+
+    @DisplayName("출발역과 도착역간의 최단 경로와 거리 조회")
+    @Test
+    void findShortestPath() {
+        // given
+        final Long sourceId = 1L;
+        final Long targetId = 2L;
+
+        given(stationRepository.findById(sourceId)).willReturn(Optional.of(교대역));
+        given(stationRepository.findById(targetId)).willReturn(Optional.of(양재역));
+        given(lineRepository.findAll()).willReturn(List.of(이호선, 신분당선, 삼호선));
+
+        // when & then
+        final ShortestPathResponse shortestPathResponse = pathService.findShortestPath(sourceId, targetId);
+        assertAll(
+                () -> assertThat(shortestPathResponse.getStations()).contains(),
+                () -> assertThat(shortestPathResponse.getDistance()).isEqualTo(1)
+        );
     }
 
     @DisplayName("출발역과 도착역이 같은 경우의 최단 경로와 거리 조회")

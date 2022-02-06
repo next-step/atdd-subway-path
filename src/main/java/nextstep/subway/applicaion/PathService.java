@@ -25,8 +25,6 @@ public class PathService {
         }
 
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-
-
         // 노드 입력 -- 각각의 역을 입력해야겠지?
         final List<Line> all = lineRepository.findAll();
         all.stream()
