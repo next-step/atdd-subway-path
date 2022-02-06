@@ -33,8 +33,13 @@ public class PathService {
         pathFinder = new PathFinder(findAllLines());
 
         List<Station> exploredStations = exploreByStations(sourceStation, targetStation);
+        int distance = exploredDistance();
 
-        return ExploreResponse.from(exploredStations);
+        return ExploreResponse.from(exploredStations, distance);
+    }
+
+    private int exploredDistance() {
+        return pathFinder.exploreDistance();
     }
 
     private List<Station> exploreByStations(Station sourceStation, Station targetStation) {

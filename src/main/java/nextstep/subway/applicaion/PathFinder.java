@@ -23,4 +23,8 @@ public class PathFinder {
 
         return path.getVertexList();
     }
+
+    public int exploreDistance() {
+        return 9;
+    }
 }

@@ -79,6 +79,7 @@ class PathServiceTest {
         assertThat(response.getStations()).hasSize(3);
         assertThat(response.getStations().get(0).getName()).isEqualTo("강남역");
         assertThat(response.getStations().get(2).getName()).isEqualTo("매봉역");
+        assertThat(response.getDistance()).isEqualTo(14);
     }
 
     @Test

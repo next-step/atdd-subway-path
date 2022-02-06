@@ -63,9 +63,11 @@ class PathFinderTest {
 
         // when
         List<String> exploredStations = pathFinder.explore(강남역.getName(), 매봉역.getName());
+        int distance = pathFinder.exploreDistance();
 
         // then
         assertThat(exploredStations).containsExactly(Arrays.array("강남역", "양재역", "매봉역"));
+        assertThat(distance).isEqualTo(14);
     }
 
     @DisplayName("두 역이 이어지지 않은 경우 예외를 발생시킨다.")

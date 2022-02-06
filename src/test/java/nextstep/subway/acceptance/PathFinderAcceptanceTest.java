@@ -80,6 +80,7 @@ public class PathFinderAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(getResponse.body().jsonPath().getInt("distance")).isEqualTo(14);
         assertThat(getResponse.body().jsonPath().getList("stations.name"))
                 .containsExactly(Arrays.array("강남역", "양재역", "매봉역"));
     }
