@@ -65,4 +65,8 @@ public class Section {
     public boolean isEqualDownStation(Station downStation) {
         return this.downStation.isEqualName(downStation);
     }
+
+    public boolean isGraterOrEqualThanDistance(int distance) {
+        return this.distance >= distance;
+    }
 }
