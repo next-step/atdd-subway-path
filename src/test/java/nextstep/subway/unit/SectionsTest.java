@@ -32,10 +32,10 @@ public class SectionsTest {
 
     @BeforeEach
     void setUp() {
-        Station 강남역 = createStation(FIRST_STATION_NAME);
-        Station 역삼역 = createStation(SECOND_STATION_NAME);
-        Station 삼성역 = createStation(THIRD_STATION_NAME);
-        Station 잠실역 = createStation(FOURTH_STATION_NAME);
+        강남역 = createStation(FIRST_STATION_NAME);
+        역삼역 = createStation(SECOND_STATION_NAME);
+        삼성역 = createStation(THIRD_STATION_NAME);
+        잠실역 = createStation(FOURTH_STATION_NAME);
     }
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가한다.")

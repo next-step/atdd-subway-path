@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
-import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
+import static nextstep.subway.acceptance.StationSteps.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리 기능")
@@ -35,14 +35,14 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
-        광교역 = 지하철역_생성_요청("광교역").jsonPath().getLong("id");
-        양재시민의숲 = 지하철역_생성_요청("양재시민의숲").jsonPath().getLong("id");
-        양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
-        판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
-        강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
+        광교역 = 지하철역_식별번호_가져오기(지하철역_생성_요청("광교역"));
+        양재시민의숲 = 지하철역_식별번호_가져오기(지하철역_생성_요청("양재시민의숲"));
+        양재역 = 지하철역_식별번호_가져오기(지하철역_생성_요청("양재역"));
+        판교역 = 지하철역_식별번호_가져오기(지하철역_생성_요청("판교역"));
+        강남역 = 지하철역_식별번호_가져오기(지하철역_생성_요청("강남역"));
 
         Map<String, String> lineCreateParams = createLineCreateParams(강남역, 양재시민의숲);
-        신분당선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
+        신분당선 = 노선_식별번호_추출(지하철_노선_생성_요청(lineCreateParams));
     }
 
     /**
@@ -53,13 +53,13 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSection() {
         // when
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        Long 정자역 = 지하철역_식별번호_가져오기(지하철역_생성_요청("정자역"));
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재시민의숲, 정자역));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재시민의숲, 정자역);
+        assertThat(지하철역_식별번호_내역들_가져오기(response)).containsExactly(강남역, 양재시민의숲, 정자역);
     }
 
     /**
@@ -125,7 +125,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 양재시민의숲);
+        assertThat(지하철역_식별번호_내역들_가져오기(response)).containsExactly(강남역, 양재역, 양재시민의숲);
     }
 
     /**
@@ -141,7 +141,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 양재시민의숲);
+        assertThat(지하철역_식별번호_내역들_가져오기(response)).containsExactly(강남역, 양재역, 양재시민의숲);
     }
 
     /**
@@ -162,7 +162,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 양재시민의숲, 판교역);
+        assertThat(지하철역_식별번호_내역들_가져오기(response)).containsExactly(강남역, 양재역, 양재시민의숲, 판교역);
     }
 
     /**
@@ -183,7 +183,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재시민의숲);
+        assertThat(지하철역_식별번호_내역들_가져오기(response)).containsExactly(강남역, 양재시민의숲);
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {

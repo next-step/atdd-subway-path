@@ -47,8 +47,7 @@ public class Sections {
         int index = findUpSection(newSection);
         Section section = sections.get(index);
 
-        if (index == FIRST_SECTION_INDEX
-            && section.isUpStation(newSection.getDownStation())) {
+        if (isFirstNewSection(newSection, index, section)) {
             sections.add(index, newSection);
             return;
         }
@@ -61,8 +60,7 @@ public class Sections {
         int index = findDownSection(newSection);
         Section section = sections.get(index);
 
-        if (index == lastIndex()
-                && section.isDownStation(newSection.getUpStation())) {
+        if (isLastNewSection(newSection, index, section)) {
             sections.add(newSection);
             return;
         }
@@ -76,7 +74,8 @@ public class Sections {
             return Collections.emptyList();
         }
 
-        Collections.sort(sections, (a, b) -> b.getUpStation().equals(a.getDownStation()) ? -1 : 0);
+        Collections.sort(sections, (a, b) -> b.getUpStation()
+                                                .equals(a.getDownStation()) ? -1 : 0);
 
         List<Station> stations = sections.stream()
                 .map(Section::getDownStation)
@@ -88,7 +87,8 @@ public class Sections {
     }
 
     public void deleteSection(Station station) {
-        if (!sections.get(lastIndex()).getDownStation().equals(station)) {
+        if (!sections.get(lastIndex())
+                .isDownStation(station)) {
             throw new IllegalArgumentException();
         }
 
@@ -101,6 +101,14 @@ public class Sections {
 
     private int lastIndex() {
         return sections.size() - 1;
+    }
+
+    private boolean isFirstNewSection(Section newSection, int index, Section section) {
+        return index == FIRST_SECTION_INDEX && section.isUpStation(newSection.getDownStation());
+    }
+
+    private boolean isLastNewSection(Section newSection, int index, Section section) {
+        return index == lastIndex() && section.isDownStation(newSection.getUpStation());
     }
 
     private void validationSection(boolean isUpStation, boolean isDownStation) {
