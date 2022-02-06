@@ -13,40 +13,40 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class StationService {
-    private final StationRepository stationRepository;
+  private final StationRepository stationRepository;
 
-    public StationService(StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
-    }
+  public StationService(StationRepository stationRepository) {
+    this.stationRepository = stationRepository;
+  }
 
-    public StationResponse saveStation(StationRequest stationRequest) {
-        Station station = stationRepository.save(new Station(stationRequest.getName()));
-        return createStationResponse(station);
-    }
+  public StationResponse saveStation(StationRequest stationRequest) {
+    Station station = stationRepository.save(new Station(stationRequest.getName()));
+    return createStationResponse(station);
+  }
 
-    @Transactional(readOnly = true)
-    public List<StationResponse> findAllStations() {
-        List<Station> stations = stationRepository.findAll();
+  @Transactional(readOnly = true)
+  public List<StationResponse> findAllStations() {
+    List<Station> stations = stationRepository.findAll();
 
-        return stations.stream()
-                .map(this::createStationResponse)
-                .collect(Collectors.toList());
-    }
+    return stations.stream()
+      .map(this::createStationResponse)
+      .collect(Collectors.toList());
+  }
 
-    public void deleteStationById(Long id) {
-        stationRepository.deleteById(id);
-    }
+  public void deleteStationById(Long id) {
+    stationRepository.deleteById(id);
+  }
 
-    public StationResponse createStationResponse(Station station) {
-        return new StationResponse(
-                station.getId(),
-                station.getName(),
-                station.getCreatedDate(),
-                station.getModifiedDate()
-        );
-    }
+  public StationResponse createStationResponse(Station station) {
+    return new StationResponse(
+      station.getId(),
+      station.getName(),
+      station.getCreatedDate(),
+      station.getModifiedDate()
+    );
+  }
 
-    public Station findById(Long id) {
-        return stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-    }
+  public Station findById(Long id) {
+    return stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+  }
 }

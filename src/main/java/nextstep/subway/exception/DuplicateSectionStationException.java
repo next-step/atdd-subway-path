@@ -7,7 +7,7 @@ import static nextstep.subway.exception.Messages.DUPLICATE_SECTION_STATION;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class DuplicateSectionStationException extends RuntimeException {
-    public DuplicateSectionStationException() {
-        super(DUPLICATE_SECTION_STATION.message());
-    }
+  public DuplicateSectionStationException() {
+    super(DUPLICATE_SECTION_STATION.message());
+  }
 }

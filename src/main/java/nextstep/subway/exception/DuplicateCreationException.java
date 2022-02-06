@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.CONFLICT)
 public class DuplicateCreationException extends RuntimeException {
-    public DuplicateCreationException() {
-        super(Messages.DUPLICATE_CREATION.message());
-    }
+  public DuplicateCreationException() {
+    super(Messages.DUPLICATE_CREATION.message());
+  }
 }

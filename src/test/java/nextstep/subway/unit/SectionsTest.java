@@ -1,9 +1,7 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
-import nextstep.subway.domain.Station;
 import nextstep.subway.exception.DuplicateCreationException;
 import nextstep.subway.exception.IllegalAddSectionException;
 import org.junit.jupiter.api.BeforeEach;
