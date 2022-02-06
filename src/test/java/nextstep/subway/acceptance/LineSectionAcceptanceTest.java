@@ -122,7 +122,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선에 A->B 구간에 C->D 구간 추가를 요청 하면
      * Then 구간 생성이 실패한다.
      */
-    @DisplayName("노선에 존재하지 않는 상행역과 하행역을 가지는 구간 생성 요청")
+    @DisplayName("노선에 이미 존재하는 상행역과 하행역을 가지는 구간 생성 요청")
     @Test
     void AllMatchSectionException() {
         // when
