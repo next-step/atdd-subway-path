@@ -207,13 +207,30 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * When 지하철 노선의 구간 사이즈가 최소(1개)일 때 제거 요청하면
+     * Then 노선의 구간 제거 요청이 실패한다.
+     */
+    @DisplayName("지하철 노선의 중간 구간을 제거")
+    @Test
+    void removeSectionMinimumSizeException() {
+        // given
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재시민의숲, 양재역));
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
      * Given 지하철 노선(강남역-양재시민의숲)에 새로운 구간 추가(양재시민의숲-양재역)를 요청 하고
      * When 지하철 노선에 존재하지 않은 구간(광교역) 제거를 요청하면
      * Then 구간 삭제 요청이 실패한다.
      */
     @DisplayName("지하철 노선에 존재하지 않은 구간을 제거")
     @Test
-    void removeNoneSection() {
+    void removeSectionNoneStationException() {
         // given
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재시민의숲, 양재역));
 
