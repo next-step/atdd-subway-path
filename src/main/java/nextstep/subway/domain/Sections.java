@@ -64,10 +64,6 @@ public class Sections {
         sections.add(new Section(replacedSection.getLine(), newSectionUpStation, newSectionDownStation, remainedDistance));
     }
 
-    public List<Section> get() {
-        return sections;
-    }
-
     public void add(Section section) {
         Station addedUpStation = section.getUpStation();
         Station addedDownStation = section.getDownStation();
