@@ -40,7 +40,7 @@ public class LineServiceMockTest {
         신분당선 = new Line("신분당선", "red");
         강남역에서_양재역 = new Section(신분당선, 강남역, 양재역, 50);
         양재역에서_미금역 = new Section(신분당선, 양재역, 미금역, 50);
-        신분당선.init(강남역에서_양재역);
+        신분당선.initSection(강남역에서_양재역);
 
         ReflectionTestUtils.setField(강남역, "id", 1L);
         ReflectionTestUtils.setField(양재역, "id", 2L);
@@ -64,12 +64,16 @@ public class LineServiceMockTest {
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(1L, new SectionRequest(양재역에서_미금역));
+        lineService.addSection(1L, createSectionRequest(양재역에서_미금역));
 
         // then
         // line.findLineById 메서드를 통해 검증
         LineResponse lineResponse = lineService.findById(1L);
         assertThat(lineResponse.getStations().get(1).getId()).isEqualTo(양재역.getId());
         assertThat(lineResponse.getStations().get(2).getId()).isEqualTo(미금역.getId());
+    }
+
+    private SectionRequest createSectionRequest(Section section) {
+        return new SectionRequest(section.getDownStation().getId(), section.getUpStation().getId(), section.getDistance());
     }
 }

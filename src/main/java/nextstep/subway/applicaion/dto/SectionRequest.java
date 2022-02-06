@@ -12,13 +12,6 @@ public class SectionRequest {
         this.upStationId = upStationId;
         this.distance = distance;
     }
-
-    public SectionRequest(Section section) {
-        this.downStationId = section.getDownStation().getId();
-        this.upStationId = section.getUpStation().getId();
-        this.distance = section.getDistance();
-    }
-
     public Long getUpStationId() {
         return upStationId;
     }
