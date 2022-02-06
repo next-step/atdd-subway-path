@@ -55,10 +55,9 @@ class PathTest {
         List<Line> lines = List.of(신분당선, 이호선, 삼호선);
         Station source = 교대역;
         Station target = 양재역;
-        Path path = new Path(source, target, lines);
 
         // when
-        path.findShortestPath();
+        Path path = Path.findShortestPath(lines, source, target);
 
         // then
         assertThat(path.getStations()).containsExactly(교대역, 남부터미널역, 양재역);
@@ -75,7 +74,7 @@ class PathTest {
 
         // when & then
         assertThatIllegalArgumentException().isThrownBy(
-                () -> new Path(source, target, lines)
+                () -> Path.findShortestPath(lines, source, target)
         ).withMessageContaining("출발역과 도착역이 같습니다");
 
     }
@@ -89,11 +88,10 @@ class PathTest {
         Station 선정릉역 = new Station("선정릉역");
         분당선.addSection(new Section(선릉역, 선정릉역, 5));
         List<Line> lines = List.of(신분당선, 이호선, 삼호선, 분당선);
-        Path path = new Path(양재역, 선릉역, lines);
 
         // when & then
         assertThatIllegalArgumentException().isThrownBy(
-                () -> path.findShortestPath()
+                () -> Path.findShortestPath(lines, 선정릉역, 강남역)
         ).withMessageContaining("연결되어 있지 않습니다");
     }
 
