@@ -24,6 +24,19 @@ public class Line extends BaseEntity {
     public Line() {
     }
 
+    private Line(Long id, String name, String color, Station upStation, Station downStation, int distance) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        sections.add(initSection(upStation, downStation, distance));
+    }
+
+    public static Line of(Long id, String name, String color, Station upStation, Station downStation, int distance) {
+        return new Line(id, name, color, upStation, downStation, distance);
+    }
+
     private Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
@@ -32,33 +45,12 @@ public class Line extends BaseEntity {
         sections.add(initSection(upStation, downStation, distance));
     }
 
-    private Section initSection(Station upStation, Station downStation, int distance) {
-        return Section.of(this, upStation, downStation, distance);
-    }
-
     public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
         return new Line(name, color, upStation, downStation, distance);
     }
 
-    @Override
-    public String toString() {
-        return "Line{" +
-                "name='" + name + '\'' +
-                ", color='" + color + '\'' +
-                '}';
-    }
-
-    /* getter */
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
+    private Section initSection(Station upStation, Station downStation, int distance) {
+        return Section.of(this, upStation, downStation, distance);
     }
 
     /* 구간 추가 */
@@ -86,7 +78,7 @@ public class Line extends BaseEntity {
                 .ifPresent(oldSection -> {
                     pushSection(insertedSection.getDownStation(), oldSection.getDownStation(),
                             extractDistance(insertedSection, oldSection));
-                    sections.remove(oldSection);
+                    removeSection(oldSection);
                 });
     }
 
@@ -95,7 +87,7 @@ public class Line extends BaseEntity {
                 .ifPresent(oldSection -> {
                     pushSection(oldSection.getUpStation(), insertedSection.getUpStation(),
                             extractDistance(insertedSection, oldSection));
-                    sections.remove(oldSection);
+                    removeSection(oldSection);
                 });
     }
 
@@ -138,10 +130,6 @@ public class Line extends BaseEntity {
         return sections.isEmpty();
     }
 
-    public void removeSection(Section targetSection) {
-        sections.remove(targetSection);
-    }
-
     public Section findSectionByDownStation(Station station) {
         return sections.findSectionByDownStation(station);
     }
@@ -152,5 +140,93 @@ public class Line extends BaseEntity {
 
     public int getSectionSize() {
         return sections.size();
+    }
+
+    public void removeSectionByStation(Station station) {
+        if (isDownStation(station)) {
+            removeDownSection(station);
+            return;
+        }
+
+        if (isUpStation(station)) {
+            removeUpSection(station);
+            return;
+        }
+
+        removeCentralSection(station);
+    }
+
+    private void removeUpSection(Station station) {
+        Section targetSection = sections.findSectionByUpStation(station);
+        removeSection(targetSection);
+        updateUpStation(targetSection);
+    }
+
+    private void removeDownSection(Station station) {
+        Section targetSection = sections.findSectionByDownStation(station);
+        removeSection(targetSection);
+        updateDownStation(targetSection);
+    }
+
+    private void removeCentralSection(Station station) {
+        Station newUpStation = null;
+        Station newDownStation = null;
+        int newDistance = 0;
+
+        for (Section section : sections.findSectionByStation(station)) {
+            if (section.hasDownStation(station)) {
+                newUpStation = section.getUpStation();
+                newDistance += section.getDistance();
+                removeSection(section);
+            }
+            if (section.hasUpStation(station)) {
+                newDownStation = section.getDownStation();
+                newDistance += section.getDistance();
+                removeSection(section);
+            }
+        }
+
+        pushSection(newUpStation, newDownStation, newDistance);
+    }
+
+    private void updateUpStation(Section targetSection) {
+        upStation = targetSection.getDownStation();
+    }
+
+    private void updateDownStation(Section targetSection) {
+        downStation = targetSection.getUpStation();
+    }
+
+    private void removeSection(Section targetSection) {
+        sections.remove(targetSection);
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                '}';
+    }
+
+    /* getter */
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public String getUpStationName() {
+        return upStation.getName();
+    }
+
+    public String getDownStationName() {
+        return downStation.getName();
     }
 }

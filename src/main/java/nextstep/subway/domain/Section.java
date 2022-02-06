@@ -40,6 +40,18 @@ public class Section {
         return new Section(line, upStation, downStation, distance);
     }
 
+    public boolean hasUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean hasDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public boolean hasStation(Station station) {
+        return (this.upStation.equals(station) || this.downStation.equals(station));
+    }
+
     @Override
     public String toString() {
         return "Section{" +
@@ -68,17 +80,5 @@ public class Section {
 
     public int getDistance() {
         return distance;
-    }
-
-    public boolean hasUpStation(Station station) {
-        return this.upStation.equals(station);
-    }
-
-    public boolean hasDownStation(Station station) {
-        return this.downStation.equals(station);
-    }
-
-    public boolean hasStation(Station station) {
-        return (this.upStation.equals(station) || this.downStation.equals(station));
     }
 }

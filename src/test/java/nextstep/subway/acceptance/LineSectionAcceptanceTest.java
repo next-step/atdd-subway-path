@@ -127,24 +127,113 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
-     * When 지하철 노선의 마지막 구간 제거를 요청 하면
-     * Then 노선에 구간이 제거된다
+     * Scenario : 종점에 대해 구간삭제를 요청하면 구간이 지워지고, 노선의 종점이 직전의 상행역으로 갱신된다.
+     * given    : 새로운 역을 추가하고 기존 구간의 하행에 대해 구간을 생성한다.
+     * when     : 추가한 역에 대해 구간 삭제를 요청하면
+     * then     : 구간이 삭제되고, 노선의 종점이 기존 구간의 하행으로 갱신된다.
      */
-    @DisplayName("지하철 노선에 구간을 제거")
+    @DisplayName("종점에 대해 구간삭제를 요청하면, 구간이 삭제되고 종점이 갱신된다.")
     @Test
     void removeLineSection() {
         // given
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 10));
 
         // when
-        지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+        ExtractableResponse<Response> deleteResponse = 지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(신분당선);
+        assertThat(getResponse.body().jsonPath().getString("downStation")).isEqualTo("양재역");
+        assertThat(getResponse.body().jsonPath().getList("stations.name"))
+                .containsExactly(Arrays.array("강남역", "양재역"));
+    }
+
+    /**
+     * Scenario : 최상행역에 대해 구간삭제를 요청하면 구간이 지워지고, 노선의 최상행역이 직후의 하행역으로 갱신된다.
+     * given    : 새로운 역을 추가하고 기존 구간의 하행에 대해 구간을 생성한다.
+     * when     : 기존 구간 상행역에 대해 구간 삭제를 요청하면
+     * then     : 구간이 삭제되고, 노선의 최상행역이 기존 구간의 하행역으로 갱신된다.
+     */
+    @DisplayName("최상행역에 대해 구간삭제를 요청하면, 구간이 삭제되고 최상행역이 갱신된다.")
+    @Test
+    void removeLineSection2() {
+        // given
+        long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 10));
+
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(신분당선);
+        assertThat(getResponse.body().jsonPath().getString("upStation")).isEqualTo("양재역");
+        assertThat(getResponse.body().jsonPath().getList("stations.name"))
+                .containsExactly(Arrays.array("양재역", "정자역"));
+    }
+
+    /**
+     * Scenario : 중간역에 대해 삭제를 요청하면 구간이 삭제되고 상행과 하행을 잇는 구간이 새롭게 추가된다.
+     * given    : 새로운 역을 추가하고 기존 구간의 하행에 대해 구간을 생성한다.
+     * when     : 중간역에대해 삭제를 요청하면
+     * then     : 구간이 삭제되고, 새롭게 잇는 구간이 추가된다.
+     */
+    @DisplayName("종점에 대해 구간삭제를 요청하면, 구간이 삭제되고 종점이 갱신된다.")
+    @Test
+    void removeLineSection3() {
+        // given
+        long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 10));
+
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(신분당선);
+        assertThat(getResponse.body().jsonPath().getList("stations.name"))
+                .containsExactly(Arrays.array("강남역", "정자역"));
+    }
+
+    /**
+     * Scenario : 구간이 1개인 노선에 대해 구간 삭제를 요청하면 삭제가 되지 않는다.
+     * when     : 주어진 노선의 하행역에 대해 구간삭제를 요청하면
+     * then     : 구간이 삭제되어지지 않는다. (400에러)
+     */
+    @DisplayName("구간이 1개인 노선은 구간삭제를 하지 못한다.")
+    @Test
+    void validateRemoveLineSection() {
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Scenario : 구간에 존재하지 않은 역에 대해 삭제 요청을 하면 삭제가 되지 않는다.
+     * given    : 새로운 역을 추가하고 구간을 등록한 후에
+     * when     : 주어진 노선에 존재하지 않은 역에대해 삭제를 요청하면
+     * then     : 구간이 삭제되어지지 않는다. (404에러)
+     */
+    @DisplayName("노선에 존재하지 않은 역에대해 구간삭제가 불가하다.")
+    @Test
+    void validateRemoveLineSection2() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 8));
+        Long 용산역 = 지하철역_생성_요청("용산역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_노선에_지하철_구간_제거_요청(신분당선, 용산역);
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     /**

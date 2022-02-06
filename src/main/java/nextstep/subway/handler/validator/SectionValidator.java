@@ -24,4 +24,10 @@ public class SectionValidator {
             throw new SectionException(STATIONS_NOT_FOUND_FROM_LINE);
         }
     }
+
+    public static void validateOnlyOneSection(Line line) {
+        if (line.getSectionSize() == 1) {
+            throw new SectionException(SECTION_REMAINED_ONLY_ONE);
+        }
+    }
 }
