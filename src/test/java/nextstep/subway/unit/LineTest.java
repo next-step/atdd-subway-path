@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,39 +18,44 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LineTest {
     @Autowired
     private StationRepository stationRepository;
+
     @Autowired
     private LineRepository lineRepository;
+
+    Station 강남역;
+    Station 양재역;
+    Station 광교역;
+    Line 신분당선;
+
+    @BeforeEach
+    void setUp() {
+        강남역 = stationRepository.save(new Station("강남역"));
+        양재역 = stationRepository.save(new Station("양재역"));
+        광교역 = stationRepository.save(new Station("광교역"));
+        신분당선 = lineRepository.save(new Line("신분당선", "bg-red-600"));
+    }
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
     @Test
     void addSection() {
-        //given
-        Station upStation = stationRepository.save(new Station("강남역"));
-        Station downStation = stationRepository.save(new Station("양재역"));
-        Line line =  new Line("신분당선", "bg-red-600");
 
         //when
-        line.addSection(upStation, downStation, 10);
+        신분당선.addSection(강남역, 양재역, 10);
 
         //then
-        Line save = lineRepository.save(line);
-        assertThat(save.getSections()).hasSize(1);
-        assertThat(line.getSections().get(0).getUpStation().getName()).isEqualTo("강남역");
-        assertThat(line.getSections().get(0).getDownStation().getName()).isEqualTo("양재역");
+        assertThat(신분당선.getSections()).hasSize(1);
+        assertThat(신분당선.getSections().get(0).getUpStation().getName()).isEqualTo("강남역");
+        assertThat(신분당선.getSections().get(0).getDownStation().getName()).isEqualTo("양재역");
     }
 
     @DisplayName("노선에 속해있는 역 목록 조회")
     @Test
     void getStations() {
         //given
-        Station upStation = stationRepository.save(new Station("강남역"));
-        Station downStation = stationRepository.save(new Station("양재역"));
-        Line line =  new Line("신분당선", "bg-red-600");
-        line.addSection(upStation, downStation, 10);
-        Line save = lineRepository.save(line);
+        신분당선.addSection(강남역, 양재역, 10);
 
         //when
-        List<Station> stations = save.getStations();
+        List<Station> stations = 신분당선.getStations();
 
         //then
         assertThat(stations).hasSize(2);
@@ -59,18 +65,13 @@ class LineTest {
     @Test
     void removeSection() {
         //given
-        Station 강남역 = stationRepository.save(new Station("강남역"));
-        Station 양재역 = stationRepository.save(new Station("양재역"));
-        Station 광교역 = stationRepository.save(new Station("광교역"));
-        Line line =  new Line("신분당선", "bg-red-600");
-        line.addSection(강남역, 양재역, 10);
-        line.addSection(양재역, 광교역, 10);
-        Line save = lineRepository.save(line);
+        신분당선.addSection(강남역, 양재역, 10);
+        신분당선.addSection(양재역, 광교역, 10);
 
         //when
-        save.removeSection(광교역);
+        신분당선.removeSection(광교역);
 
         //then
-        assertThat(line.getStations()).hasSize(2);
+        assertThat(신분당선.getStations()).hasSize(2);
     }
 }
