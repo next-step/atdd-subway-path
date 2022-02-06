@@ -16,4 +16,11 @@ public class Lines {
             .distinct()
             .collect(Collectors.toList());
     }
+
+    public List<Section> getAllSections() {
+        return lines.stream()
+            .flatMap(it -> it.getSections().stream())
+            .distinct()
+            .collect(Collectors.toList());
+    }
 }

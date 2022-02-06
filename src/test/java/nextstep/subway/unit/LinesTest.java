@@ -42,7 +42,19 @@ public class LinesTest {
     void getAllStations() {
         Lines lines = new Lines(this.lines);
 
-        assertThat(lines.getAllStations()).hasSize(4);
-        assertThat(lines.getAllStations()).contains(교대역, 강남역, 양재역, 남부터미널역);
+        List<Station> stations = lines.getAllStations();
+
+        assertThat(stations).hasSize(4);
+        assertThat(stations).contains(교대역, 강남역, 양재역, 남부터미널역);
+    }
+
+    @DisplayName("모든 라인의 구간을 가져온다.")
+    @Test
+    void getAllSections() {
+        Lines lines = new Lines(this.lines);
+
+        List<Section> sections = lines.getAllSections();
+
+        assertThat(sections).hasSize(4);
     }
 }
