@@ -1,4 +1,4 @@
-package nextstep.subway.applicaion.dto;
+package nextstep.subway.application.dto;
 
 public class LineRequest {
     private String name;
@@ -6,6 +6,17 @@ public class LineRequest {
     private Long upStationId;
     private Long downStationId;
     private int distance;
+
+    public LineRequest() {
+    }
+
+    public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+        this.name = name;
+        this.color = color;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
+    }
 
     public String getName() {
         return name;

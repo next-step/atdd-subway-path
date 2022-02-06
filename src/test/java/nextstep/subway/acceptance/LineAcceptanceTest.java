@@ -16,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관리 기능")
 class LineAcceptanceTest extends AcceptanceTest {
+
     /**
      * When 지하철 노선 생성을 요청 하면
      * Then 지하철 노선 생성이 성공한다.
@@ -24,7 +25,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green");
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green", "강남역", "역삼역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -40,15 +41,17 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철_노선_생성_요청("2호선", "green");
-        지하철_노선_생성_요청("3호선", "orange");
+        String 지하철2호선 = "2호선";
+        String 지하철1호선 = "1호선";
+        지하철_노선_생성_요청(지하철2호선, "green", "강남역", "역삼역");
+        지하철_노선_생성_요청(지하철1호선, "indigo", "구로역", "광명역");
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("name")).contains("2호선", "3호선");
+        assertThat(response.jsonPath().getList("name")).contains(지하철2호선, 지하철1호선);
     }
 
     /**
@@ -60,7 +63,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", "강남역", "역삼역");
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
@@ -79,7 +82,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", "강남역", "역삼역");
 
         // when
         Map<String, String> params = new HashMap<>();
@@ -104,7 +107,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", "강남역", "역삼역");
 
         // when
         ExtractableResponse<Response> response = RestAssured
@@ -125,10 +128,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void duplicateName() {
         // given
-        지하철_노선_생성_요청("2호선", "green");
+        지하철_노선_생성_요청("2호선", "green", "강남역", "역삼역");
 
         // when
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", "사당역", "잠실역");
 
         // then
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
