@@ -12,6 +12,7 @@ import java.util.List;
 public class PathFinder {
 
     private final WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+    private int distance;
 
     public PathFinder(List<Line> allLines) {
         allLines.forEach(line -> line.getSections().pushSections(graph));
@@ -21,10 +22,11 @@ public class PathFinder {
         GraphPath path = new DijkstraShortestPath(graph).getPath(source, target);
         ExploreValidator.validateNotFound(path);
 
+        distance = (int)path.getWeight();
         return path.getVertexList();
     }
 
     public int exploreDistance() {
-        return 9;
+        return distance;
     }
 }
