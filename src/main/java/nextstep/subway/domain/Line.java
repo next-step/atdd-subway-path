@@ -1,8 +1,19 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Line extends BaseEntity {
@@ -51,4 +62,45 @@ public class Line extends BaseEntity {
     public List<Section> getSections() {
         return sections;
     }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        if(sections.isEmpty()) {
+            sections.add(new Section(this, upStation, downStation, distance));
+            return;
+        }
+
+        int index = IntStream.range(0, sections.size())
+            .filter(i -> sections.get(i).getUpStation() == upStation || sections.get(i).getDownStation() == downStation)
+            .findFirst()
+            .orElse(-1);
+
+        if(index != -1) {
+            Section section = sections.get(index);
+
+            if(section.getUpStation() == upStation) {
+                Section res = new Section(section.getLine(), downStation, section.getDownStation(), section.getDistance() - distance);
+                sections.remove(index);
+
+                sections.add(index, res);
+            }
+
+            if(section.getDownStation() == downStation) {
+                Section res = new Section(section.getLine(), section.getUpStation(), upStation, section.getDistance() - distance);
+                sections.remove(index);
+
+                sections.add(index, res);
+            }
+        }
+
+        sections.add(new Section(this, upStation, downStation, distance));
+    }
+
+    // private int getIndexContainStation(Station upStation, Station downStation) {
+    //     return IntStream.range(0, sections.size())
+    //         .filter(i -> sections.get(i).getUpStation() == upStation || sections.get(i).getDownStation() == downStation)
+    //         .findFirst()
+    //         .orElse(-1);
+    // }
+    //
+    // private void modifySection
 }
