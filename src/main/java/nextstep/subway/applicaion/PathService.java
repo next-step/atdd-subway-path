@@ -1,12 +1,10 @@
 package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.ShortestPathResponse;
-import nextstep.subway.domain.*;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
-
-import java.util.List;
+import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.StationShortestPath;
 
 public class PathService {
 
@@ -24,24 +22,7 @@ public class PathService {
         if (sourceStation.isSameName(targetStation)) {
             throw new IllegalArgumentException("source and target stations were conflict");
         }
-
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-        // 노드 입력 -- 각각의 역을 입력해야겠지?
-        final List<Line> all = lineRepository.findAll();
-        all.stream()
-                .flatMap(it -> it.getStations().stream())
-                .forEach(graph::addVertex);
-
-        all.stream()
-                .flatMap(it -> it.getSections().stream())
-                .forEach(it -> setEdgeWeight(graph, it));
-
-        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-        List<Station> shortestPath = dijkstraShortestPath.getPath(sourceStation, targetStation).getVertexList();
-        return ShortestPathResponse.of(shortestPath, (int) dijkstraShortestPath.getPathWeight(sourceStation, targetStation));
-    }
-
-    private void setEdgeWeight(final WeightedMultigraph<Station, DefaultWeightedEdge> graph, final Section it) {
-        graph.setEdgeWeight(graph.addEdge(it.getUpStation(), it.getDownStation()), it.getDistance());
+        final StationShortestPath stationShortestPath = StationShortestPath.of(lineRepository.findAll());
+        return ShortestPathResponse.of(stationShortestPath, sourceStation, targetStation);
     }
 }

@@ -1,6 +1,7 @@
 package nextstep.subway.applicaion.dto;
 
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationShortestPath;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,8 +18,12 @@ public class ShortestPathResponse {
         this.distance = distance;
     }
 
-    public static ShortestPathResponse of(final List<Station> entities, final int distance) {
-        return new ShortestPathResponse(entities.stream()
+    public static ShortestPathResponse of(final StationShortestPath stationShortestPath, final Station sourceStation, final Station targetStation) {
+        return of(stationShortestPath.getPath(sourceStation, targetStation), stationShortestPath.getPathWeight(sourceStation, targetStation));
+    }
+
+    public static ShortestPathResponse of(final List<Station> stations, final int distance) {
+        return new ShortestPathResponse(stations.stream()
                 .map(ShortestPathStationResponse::new)
                 .collect(Collectors.toList()), distance);
     }
