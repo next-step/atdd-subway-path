@@ -30,12 +30,12 @@ public class Distance {
     }
 
     public boolean canNotDivideDistance(int value) {
-        return this.value <= value;
+        return this.value <= value || value <= 0;
     }
 
-    public void validateDivideDistance(Distance value) {
-        if (canNotDivideDistance(value.getValue())) {
-            throw new IllegalArgumentException("추가할 구간의 사이의 거리를 초과합니다.");
+    public void validateDivideDistance(Distance distance) {
+        if (canNotDivideDistance(distance.getValue())) {
+            throw new IllegalArgumentException("거리는 추가할 구간 사이의 거리보다 크거나 0 이하로 설정할 수 없습니다.");
         }
     }
 
