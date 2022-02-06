@@ -40,7 +40,7 @@ class LineTest {
     }
 
     @Nested
-    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+    @DisplayName("update_메서드는")
     class update_메서드는 {
         private final String originalName = "2호선";
         private final String originalColor = "green";
@@ -50,7 +50,7 @@ class LineTest {
         private final String color = "red";
 
         @Nested
-        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @DisplayName("만약_이름만_있고_색깔은_null이라면")
         class 만약_이름만_있고_색깔은_null이라면 {
 
             @Test
@@ -64,7 +64,7 @@ class LineTest {
         }
 
         @Nested
-        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @DisplayName("만약_이름은_null이고_색깔만_있다면")
         class 만약_이름은_null이고_색깔만_있다면 {
 
             @Test
@@ -78,7 +78,7 @@ class LineTest {
         }
 
         @Nested
-        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @DisplayName("만약_이름과_색깔_모두_있다면")
         class 만약_이름과_색깔_모두_있다면 {
 
             @Test

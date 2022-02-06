@@ -13,7 +13,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private final Sections sections = new Sections();
+    private Sections sections = new Sections();
 
     public Line() {
     }
