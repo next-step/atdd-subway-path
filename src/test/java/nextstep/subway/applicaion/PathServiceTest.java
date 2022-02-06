@@ -46,7 +46,6 @@ class PathServiceTest {
      */
     @BeforeEach
     public void setUp() {
-
         교대역 = new Station("교대역");
         강남역 = new Station("강남역");
         양재역 = new Station("양재역");
@@ -66,8 +65,10 @@ class PathServiceTest {
     @DisplayName("출발역과 도착역이 같은 경우의 최단 경로와 거리 조회")
     @Test
     void findShortestPathBySameSourceAndTarget() {
+        // given
         given(stationRepository.findById(any())).willReturn(Optional.of(교대역));
 
+        // when & then
         assertThatThrownBy(() -> pathService.findShortestPath(1L, 1L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("source and target stations were conflict");
@@ -76,6 +77,7 @@ class PathServiceTest {
     @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우의 최단 경로와 거리 조회")
     @Test
     void findShortestPathByNoLinkedSourceAndTarget() {
+        // given
         final Long sourceId = 1L;
         final Long targetId = 2L;
         final Station 광명역 = new Station("광명역");
@@ -84,6 +86,36 @@ class PathServiceTest {
         given(stationRepository.findById(targetId)).willReturn(Optional.of(광명역));
         given(lineRepository.findAll()).willReturn(List.of(이호선, 신분당선, 삼호선));
 
+        // when & then
+        assertThatThrownBy(() -> pathService.findShortestPath(sourceId, targetId))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("존재하지 않은 출발역을 조회 할 경우의 최단 경로와 거리 조회")
+    @Test
+    void findShortestPathByNoExistenceSource() {
+        // given
+        final Long sourceId = 1L;
+        final Long targetId = 2L;
+
+        given(stationRepository.findById(sourceId)).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> pathService.findShortestPath(sourceId, targetId))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("존재하지 않은 도착역을 조회 할 경우의 최단 경로와 거리 조회")
+    @Test
+    void findShortestPathByNoExistenceTarget() {
+        // given
+        final Long sourceId = 1L;
+        final Long targetId = 2L;
+
+        given(stationRepository.findById(sourceId)).willReturn(Optional.of(교대역));
+        given(stationRepository.findById(targetId)).willReturn(Optional.empty());
+
+        // when & then
         assertThatThrownBy(() -> pathService.findShortestPath(sourceId, targetId))
                 .isInstanceOf(IllegalArgumentException.class);
     }
