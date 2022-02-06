@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -40,5 +41,21 @@ public class Station extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    public List<Station> findShortestPathTo(
+            GraphService graphService,
+            Station targetStation,
+            List<Line> allLines
+    ) {
+        return graphService.getShortestPath(this, targetStation, allLines);
+    }
+
+    public int findShortestDistanceTo(
+            GraphService graphService,
+            Station targetStation,
+            List<Line> allLines
+    ) {
+        return graphService.getShortestPathDistance(this, targetStation, allLines);
     }
 }

@@ -18,4 +18,19 @@ public class LineFixture {
             "downStationId", 2L,
             "distance", 10
     );
+
+    public static final Map<String, Object> of(
+            String name,
+            Long upStationId,
+            Long downStationId,
+            int distance
+    ) {
+        return Map.of(
+                "name", name,
+                "color", "test-color",
+                "upStationId", upStationId,
+                "downStationId", downStationId,
+                "distance", distance
+        );
+    }
 }
