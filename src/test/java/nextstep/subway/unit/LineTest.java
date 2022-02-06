@@ -33,6 +33,8 @@ class LineTest {
         //then
         Line save = lineRepository.save(line);
         assertThat(save.getSections()).hasSize(1);
+        assertThat(line.getSections().get(0).getUpStation().getName()).isEqualTo("강남역");
+        assertThat(line.getSections().get(0).getDownStation().getName()).isEqualTo("양재역");
     }
 
     @DisplayName("노선에 속해있는 역 목록 조회")
