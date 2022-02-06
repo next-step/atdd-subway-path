@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Sections {
-    private static int MINIMAL_DELETE_SIZE = 1;
+    private static final int MINIMAL_DELETE_SIZE = 1;
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    private final List<Section> sections = new ArrayList<>();
 
     public void init(Section section) {
         sections.add(section);
