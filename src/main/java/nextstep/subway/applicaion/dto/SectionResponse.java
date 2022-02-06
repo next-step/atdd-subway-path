@@ -3,10 +3,10 @@ package nextstep.subway.applicaion.dto;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 
-public class SectionResponse implements Comparable<SectionResponse>{
-    private Long id;
-    private Station upStation;
-    private Station downStation;
+public class SectionResponse implements Comparable<SectionResponse> {
+    private final Long id;
+    private final Station upStation;
+    private final Station downStation;
 
     public SectionResponse(Section section) {
         this.id = section.getId();
