@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -42,6 +43,10 @@ public class Line extends BaseEntity {
 
     public void removeSection(Long stationId) {
         this.sections.remove(stationId);
+    }
+
+    public List<Station> getStations() {
+        return sections.getAllStations();
     }
 
     public Long getId() {

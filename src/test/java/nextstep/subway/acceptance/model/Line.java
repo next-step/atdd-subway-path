@@ -1,4 +1,4 @@
-package nextstep.subway.model;
+package nextstep.subway.acceptance.model;
 
 import lombok.Builder;
 import lombok.Getter;

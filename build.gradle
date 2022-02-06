@@ -37,7 +37,27 @@ dependencies {
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 
+	// cucumber
+	testImplementation 'io.cucumber:cucumber-java:7.2.3'
+
 	runtimeOnly 'com.h2database:h2'
+}
+
+configurations {
+	cucumberRuntime {
+		extendsFrom testImplementation
+	}
+}
+
+task cucumber() {
+	dependsOn assemble, testClasses
+	doLast {
+		javaexec {
+			main = "io.cucumber.core.cli.Main"
+			classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+			args = ['--plugin', 'pretty', '--glue', 'gradle.cucumber', 'src/test/resources']
+		}
+	}
 }
 
 test {

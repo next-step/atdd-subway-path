@@ -209,7 +209,7 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    private List<Station> getAllStations() {
+    public List<Station> getAllStations() {
         return Stream.concat(getRegisteredDownStation().stream(), getRegisteredUpStation().stream())
                 .collect(Collectors.toList());
     }
