@@ -42,11 +42,10 @@ public class LineServiceTest {
 
 //        // then
         Line 신분당선 = lineRepository.findById(1L).get();
-
-        assertThat(신분당선.getSections().get(0).getUpStation().getName()).isEqualTo("강남");
-        assertThat(신분당선.getSections().get(0).getDownStation().getName()).isEqualTo("양재");
-        assertThat(신분당선.getSections().get(1).getUpStation().getName()).isEqualTo("양재");
-        assertThat(신분당선.getSections().get(1).getDownStation().getName()).isEqualTo("미금");
+        assertThat(신분당선.getSections().get(0).getDownStation().getName()).isEqualTo("강남");
+        assertThat(신분당선.getSections().get(0).getUpStation().getName()).isEqualTo("양재");
+        assertThat(신분당선.getSections().get(1).getDownStation().getName()).isEqualTo("양재");
+        assertThat(신분당선.getSections().get(1).getUpStation().getName()).isEqualTo("미금");
     }
 
     public void 지하철_역_저장() {
