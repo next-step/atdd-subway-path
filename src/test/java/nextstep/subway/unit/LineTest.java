@@ -74,4 +74,15 @@ class LineTest {
         //then
         assertThat(신분당선.getStations()).hasSize(2);
     }
+
+    @DisplayName("기존 구간에 새로운 구간을 추가 (A-C + A-B = A+B+C)")
+    @Test
+    void addSectionCase1() {
+        //when
+        신분당선.addSection(강남역, 양재역, 10);
+        신분당선.addSection(강남역, 광교역, 5);
+
+        //then
+        assertThat(신분당선.getStations().get(1).getName()).isEqualTo("광교역");
+    }
 }
