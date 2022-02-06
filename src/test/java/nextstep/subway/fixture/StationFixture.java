@@ -22,8 +22,14 @@ public class StationFixture {
     public static final Map<String, String> 양재역 = Map.of(
             "name", "양재역"
     );
-    public static final Map<String, String> 선릉역 = Map.of(
-            "name", "선릉역"
+    public static final Map<String, String> 교대역 = Map.of(
+            "name", "교대역"
+    );
+    public static final Map<String, String> 고속터미널역 = Map.of(
+            "name", "고속터미널역"
+    );
+    public static final Map<String, String> 사평역 = Map.of(
+            "name", "사평역"
     );
 
 }
