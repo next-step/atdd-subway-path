@@ -45,21 +45,19 @@ public class Sections {
     }
 
     private boolean isAddLeftAndMiddleSection(Section section) {
-        return sections.stream().filter(s -> s.getDownStation().getName().equals(section.getDownStation().getName()))
-                .findFirst()
-                .isPresent();
+        return sections.stream().anyMatch(s -> s.isEqualDownStationName(section.getDownStation().getName()));
     }
 
     private boolean isRightAddSection(Section section) {
-        return sections.stream().filter(s -> s.getUpStation().getName().equals(section.getDownStation().getName()))
-                .findFirst()
-                .isPresent();
+        return sections.stream().anyMatch(s -> s.isEqualUpStationName(section.getDownStation().getName()));
     }
 
     private boolean isLeftAddSection(Section section) {
-        return sections.stream().filter(s -> s.getDownStation().getName().equals(section.getUpStation().getName()))
-                .findFirst()
-                .isPresent();
+        return sections.stream().anyMatch(s -> s.isEqualDownStationName(section.getUpStation().getName()));
+    }
+
+    private boolean isAddMiddleAndRightSection(Section section) {
+        return sections.stream().anyMatch(s -> s.isEqualUpStationName(section.getUpStation().getName()));
     }
 
     private void addMiddleAndRightSection(Section section) {
@@ -103,11 +101,6 @@ public class Sections {
         }
     }
 
-    private boolean isAddMiddleAndRightSection(Section section) {
-        return sections.stream().filter(s -> s.getUpStation().getName().equals(section.getUpStation().getName()))
-                .findFirst()
-                .isPresent();
-    }
 
     private void changeStartStationName(String name) {
         this.startStationName = name;
