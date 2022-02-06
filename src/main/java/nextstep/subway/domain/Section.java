@@ -63,6 +63,10 @@ public class Section {
         this.line = line;
     }
 
+    public boolean containsStation(Station station) {
+        return isUpStation(station) || isDownStation(station);
+    }
+
     public boolean isUpStation(Station station) {
         return upStation.equals(station);
     }
@@ -81,5 +85,10 @@ public class Section {
         if (this.distance - distance <= 0) {
             throw new AddSectionFailException("구간 길이가 기존 길이보다 크거나 같음");
         }
+    }
+
+    public void changeDownStation(Station station, int distance) {
+        this.downStation = station;
+        this.distance += distance;
     }
 }

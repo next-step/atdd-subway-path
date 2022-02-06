@@ -28,10 +28,10 @@ class SectionsTest {
         // given
         sections = new Sections();
         _5호선 = new Line("5호선", "파란색");
-        군자역 = new Station("군자역");
-        아차산역 = new Station("아차산역");
-        광나루역 = new Station("광나루역");
-        천호역 = new Station("천호역");
+        군자역 = new Station(1L, "군자역");
+        아차산역 = new Station(2L, "아차산역");
+        광나루역 = new Station(3L, "광나루역");
+        천호역 = new Station(4L, "천호역");
         distance = 10;
         section = Section.of(_5호선, 군자역, 아차산역, distance);
         sections.addSection(section);
@@ -104,5 +104,49 @@ class SectionsTest {
         sections.addSection(newSection);
 
         assertThat(sections.getStations()).containsExactly(군자역, 광나루역, 아차산역);
+    }
+
+    @DisplayName("상행 종점 역 삭제")
+    @Test
+    void deleteFirstStation() {
+        int newSectionDistance = 3;
+        Section newSection = Section.of(_5호선, 군자역, 광나루역, newSectionDistance);
+        sections.addSection(newSection);
+        sections.removeSection2(군자역);
+
+        assertThat(sections.getStations()).containsExactly(광나루역, 아차산역);
+        Section section = sections.getSections().get(0);
+        assertThat(section.getUpStation()).isEqualTo(광나루역);
+        assertThat(section.getDownStation()).isEqualTo(아차산역);
+        assertThat(section.getDistance()).isEqualTo(distance - newSectionDistance);
+    }
+
+    @DisplayName("하행 종점 역 삭제")
+    @Test
+    void deleteLastStation() {
+        int newSectionDistance = 3;
+        Section newSection = Section.of(_5호선, 아차산역, 광나루역, newSectionDistance);
+        sections.addSection(newSection);
+        sections.removeSection2(광나루역);
+
+        assertThat(sections.getStations()).containsExactly(군자역, 아차산역);
+        Section section = sections.getSections().get(0);
+        assertThat(section.getUpStation()).isEqualTo(군자역);
+        assertThat(section.getDownStation()).isEqualTo(아차산역);
+    }
+
+    @DisplayName("중간 역 삭제")
+    @Test
+    void deleteBetweenStation() {
+        int newSectionDistance = 3;
+        Section newSection = Section.of(_5호선, 군자역, 광나루역, newSectionDistance);
+        sections.addSection(newSection);
+        sections.removeSection2(광나루역);
+
+        assertThat(sections.getStations()).containsExactly(군자역, 아차산역);
+        Section section = sections.getSections().get(0);
+        assertThat(section.getUpStation()).isEqualTo(군자역);
+        assertThat(section.getDownStation()).isEqualTo(아차산역);
+        assertThat(section.getDistance()).isEqualTo(distance);
     }
 }

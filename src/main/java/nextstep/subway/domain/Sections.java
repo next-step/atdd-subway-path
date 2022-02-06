@@ -132,6 +132,50 @@ public class Sections {
         sections.remove(getLastSection());
     }
 
+    public void removeSection2(Station station) {
+        validateSectionCount();
+
+        // case1. 상행종점 제거
+        if (isFirstStation(station)) {
+            sections.remove(0);
+            return;
+        }
+
+        // case3. 하행종점 제거
+        if (isLastStation(station)) {
+            sections.remove(getLastIndex());
+            return;
+        }
+
+        // case2. 중간역 제거
+        if (isUpStation(station)) {
+            // 중간 역 제거
+            removeMiddleStation(station);
+            return;
+        }
+
+        throw new RemoveSectionFailException();
+    }
+
+    private void removeMiddleStation(Station station) {
+        Section targetSection = findSection(station);
+        Section beforeSection = sections.get(sections.indexOf(targetSection) - 1);
+        beforeSection.changeDownStation(targetSection.getDownStation(), targetSection.getDistance());
+        sections.remove(targetSection);
+    }
+
+    private boolean isUpStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.isUpStation(station));
+    }
+
+    private Section findSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.isUpStation(station))
+                .findFirst()
+                .orElseThrow(RemoveSectionFailException::new);
+    }
+
     private Section getLastSection() {
         return sections.get(getLastIndex());
     }
@@ -154,8 +198,8 @@ public class Sections {
     }
 
     private Station getLastDownStation() {
-        return sections.get(getLastIndex())
-                .getDownStation();
+        List<Station> stations = getStations();
+        return stations.get(stations.size() - 1);
     }
 
     private int getLastIndex() {
