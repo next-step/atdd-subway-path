@@ -3,7 +3,7 @@ package nextstep.subway.applicaion.dto;
 public class StationRequest {
     private String name;
 
-    public StationRequest() {
+    protected StationRequest() {
     }
 
     public StationRequest(String name) {
