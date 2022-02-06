@@ -27,7 +27,7 @@ public class Sections {
     void remove(Station downStation) {
         validateOneSection();
         Section removeSection = sections.stream()
-                .filter(section -> section.getDownStation().equals(downStation))
+                .filter(equalsDownStation(downStation))
                 .findFirst()
                 .orElseThrow(() ->
                         new SectionException(String.format("상행역과 하행역 모두 구간에 존재하지 않는 역입니다. 하행역 = %s", downStation)));
@@ -54,6 +54,10 @@ public class Sections {
         return sections.size();
     }
 
+    private Predicate<Section> equalsDownStation(Station downStation) {
+        return section -> section.getDownStation().equals(downStation);
+    }
+
     private void validateAddSectionStationNotExistInSection(Section section) {
         if (!getUpStations().contains(section.getUpStation()) &&
                 !getUpStations().contains(section.getDownStation()) &&
@@ -63,14 +67,6 @@ public class Sections {
             throw new SectionException(
                     String.format("상행역과 하행역 모두 구간에 존재하지 않는 역입니다. 상행역 = %s, 하행역 = %s",
                             section.getUpStation().getName(), section.getDownStation().getName()));
-        }
-    }
-
-    private void validateRemoveSectionStationNotExistInSections(Station downStation) {
-        if (!getUpStations().contains(downStation) &&
-                !getDownStations().contains(downStation)) {
-            throw new SectionException(
-                    String.format("상행역과 하행역 모두 구간에 존재하지 않는 역입니다. 하행역 = %s", downStation));
         }
     }
 
@@ -101,7 +97,9 @@ public class Sections {
 
     private Section getFirstSection() {
         return sections.stream()
-                .filter(section -> getDownStations().stream().noneMatch(equalsUpAndDownStation(section)))
+                .filter(section ->
+                        getDownStations().stream()
+                        .noneMatch(equalsUpAndDownStation(section)))
                 .findFirst()
                 .orElse(sections.get(0));
     }
