@@ -77,10 +77,36 @@ class LineTest {
 
     @DisplayName("기존 구간에 새로운 구간을 추가 (A-C + A-B = A+B+C)")
     @Test
-    void addSectionCase1() {
+    void addSectionCase1_기존구간에_새로운구간() {
         //when
         신분당선.addSection(강남역, 양재역, 10);
         신분당선.addSection(강남역, 광교역, 5);
+
+        //then
+        assertThat(신분당선.getSections()).hasSize(2);
+        assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(5);
+        assertThat(신분당선.getSections().get(1).getDistance()).isEqualTo(5);
+    }
+
+    @DisplayName("처음 구간에 새로운 구간을 추가 (B-C + A-B = A+B+C)")
+    @Test
+    void addSectionCase2_새로운_역이_상행종점() {
+        //when
+        신분당선.addSection(양재역, 광교역, 10);
+        신분당선.addSection(강남역, 양재역, 5);
+
+        //then
+        assertThat(신분당선.getSections()).hasSize(2);
+        assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(5);
+        assertThat(신분당선.getSections().get(1).getDistance()).isEqualTo(5);
+    }
+
+    @DisplayName("마지막 구간에 새로운 구간을 추가 (A-B + B-C = A+B+C)")
+    @Test
+    void addSectionCase3_새로운_역이_하행종점() {
+        //when
+        신분당선.addSection(양재역, 광교역, 10);
+        신분당선.addSection(강남역, 양재역, 5);
 
         //then
         assertThat(신분당선.getSections()).hasSize(2);
