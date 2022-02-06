@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -15,17 +16,10 @@ public class Line extends BaseEntity {
     @Embedded
     private Sections sections = new Sections();
 
-
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
-
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
-        this.sections.init(new Section(upStation, downStation, distance));
         this.name = name;
         this.color = color;
     }
@@ -54,12 +48,8 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Sections getSections() {
-        return sections;
-    }
-
-    public void deleteSection(Section section) {
-        sections.delete(section);
+    public List<Section> getSections() {
+        return sections.getSections();
     }
 
     public void deleteLastSection() {
@@ -72,5 +62,9 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section) {
         sections.addSection(section);
+    }
+
+    public void init(Section section) {
+        sections.init(section);
     }
 }
