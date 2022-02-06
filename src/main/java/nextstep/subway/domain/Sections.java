@@ -27,7 +27,7 @@ public class Sections {
     void remove(Station downStation) {
         validateOneSection();
         Section removeSection = sections.stream()
-                .filter(section -> section.getDownStation().equals(downStation))
+                .filter(equalsDownStation(downStation))
                 .findFirst()
                 .orElseThrow(() ->
                         new SectionException(String.format("상행역과 하행역 모두 구간에 존재하지 않는 역입니다. 하행역 = %s", downStation)));
@@ -37,7 +37,7 @@ public class Sections {
             section.updateRemoveLineBetweenSection(removeSection);
         }
     }
-    
+
 
     List<Station> getStations() {
         return getStations(getFirstSection());
@@ -53,6 +53,10 @@ public class Sections {
 
     int size() {
         return sections.size();
+    }
+
+    private Predicate<Section> equalsDownStation(Station downStation) {
+        return section -> section.getDownStation().equals(downStation);
     }
 
     private void validateAddSectionStationNotExistInSection(Section section) {
@@ -94,7 +98,9 @@ public class Sections {
 
     private Section getFirstSection() {
         return sections.stream()
-                .filter(section -> getDownStations().stream().noneMatch(equalsUpAndDownStation(section)))
+                .filter(section ->
+                        getDownStations().stream()
+                        .noneMatch(equalsUpAndDownStation(section)))
                 .findFirst()
                 .orElse(sections.get(0));
     }
