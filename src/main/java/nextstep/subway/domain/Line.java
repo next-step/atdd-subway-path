@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -26,8 +27,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -62,44 +63,11 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        if(sections.isEmpty()) {
-            sections.add(new Section(this, upStation, downStation, distance));
-            return;
-        }
-
-        sections.stream()
-            .filter(it -> it.isEqualStation(upStation, downStation))
-            .findFirst()
-            .ifPresent(it -> { throw new IllegalArgumentException(ExceptionMessage.DUPLICATE_SECTION.getMessage()); });
-
-        int index = IntStream.range(0, sections.size())
-            .filter(i -> sections.get(i).getUpStation() == upStation || sections.get(i).getDownStation() == downStation)
-            .findFirst()
-            .orElse(-1);
-
-        if(index != -1) {
-            Section section = sections.get(index);
-
-            if(section.getUpStation() == upStation) {
-                Section res = new Section(section.getLine(), downStation, section.getDownStation(), section.getDistance() - distance);
-                sections.remove(index);
-
-                sections.add(index, res);
-            }
-
-            if(section.getDownStation() == downStation) {
-                Section res = new Section(section.getLine(), section.getUpStation(), upStation, section.getDistance() - distance);
-                sections.remove(index);
-
-                sections.add(index, res);
-            }
-        }
-
-        sections.add(new Section(this, upStation, downStation, distance));
+        sections.addSection(this, upStation, downStation, distance);
     }
 
     // private int getIndexContainStation(Station upStation, Station downStation) {

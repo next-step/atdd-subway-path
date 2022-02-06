@@ -19,6 +19,7 @@ class LineTest {
     private Station 교대역;
     private Station 강남역;
     private Station 역삼역;
+    private Station 선릉역;
 
     @BeforeEach
     void init() {
@@ -27,6 +28,7 @@ class LineTest {
         교대역 = new Station("교대역");
         강남역 = new Station("강남역");
         역삼역 = new Station("역삼역");
+        선릉역 = new Station("선릉역");
     }
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
@@ -102,6 +104,18 @@ class LineTest {
         assertThatIllegalArgumentException()
             .isThrownBy(() -> 이호선.addSection(역삼역, 교대역, 3))
             .withMessageContaining(ExceptionMessage.DUPLICATE_SECTION.getMessage());
+    }
+
+    @DisplayName("등록할 구간의 상행역과 하행역 중 하나가 기존 구간에 포함되어 있지 않는 경우")
+    @Test
+    void 등록할_구간의_상행역이나_하행역이_기존_구간에_포함되어_있지_않는_경우() {
+        // when
+        이호선.addSection(교대역, 역삼역, 10);
+
+        // then
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> 이호선.addSection(강남역, 선릉역, 3))
+            .withMessageContaining(ExceptionMessage.DO_NOT_ADD_SECTION.getMessage());
     }
 
     @DisplayName("노선에 속해있는 역 목록 조회")

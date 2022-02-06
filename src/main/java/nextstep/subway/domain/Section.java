@@ -53,8 +53,16 @@ public class Section {
         return distance;
     }
 
-    public boolean isEqualStation(Station upStation, Station downStation) {
+    public boolean isDuplicateStation(Station upStation, Station downStation) {
         return (this.upStation.isEqualName(upStation) && this.downStation.isEqualName(downStation))
             || (this.upStation.isEqualName(downStation) && this.downStation.isEqualName(upStation));
+    }
+
+    public boolean isEqualUpStation(Station upStation) {
+        return this.upStation.isEqualName(upStation);
+    }
+
+    public boolean isEqualDownStation(Station downStation) {
+        return this.downStation.isEqualName(downStation);
     }
 }
