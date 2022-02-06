@@ -7,14 +7,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
@@ -156,13 +154,33 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
-     * When 지하철 노선의 마지막 구간 제거를 요청 하면
-     * Then 노선에 구간이 제거된다
+     * Given 지하철 노선의 처음에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 첫 번째 구간 제거를 요청 하면
+     * Then 노선의 구간이 제거된다
      */
-    @DisplayName("지하철 노선에 구간을 제거")
+    @DisplayName("지하철 노선의 첫 번째 구간을 제거")
     @Test
-    void removeLineSection() {
+    void removeLineSectionFrist() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 강남역));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_노선에_지하철_구간_제거_완료(response, 강남역, 양재역);
+    }
+
+    /**
+     * Given 지하철 노선의 마지막에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 마지막 구간 제거를 요청 하면
+     * Then 노선의 구간이 제거된다
+     */
+    @DisplayName("지하철 노선의 마지막 구간을 제거")
+    @Test
+    void removeLineSectionLast() {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
@@ -172,8 +190,58 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+        지하철_노선에_지하철_구간_제거_완료(response, 강남역, 양재역);
+    }
+
+    /**
+     * Given 지하철 노선의 마지막에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 중간 구간 제거를 요청 하면
+     * Then 노선의 구간이 제거된다
+     */
+    @DisplayName("지하철 노선의 중간 구간을 제거")
+    @Test
+    void removeLineSectionMiddle() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_노선에_지하철_구간_제거_완료(response, 강남역, 정자역);
+    }
+
+    /**
+     * When 지하철 노선의 히니쁜인 구간 제거를 요청 하면
+     * Then 노선의 구간 제거에 실패한다
+     */
+    @DisplayName("지하철 노선의 하나뿐인 구간을 제거")
+    @Test
+    void removeLineSectionLastOne() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        지하철_노선에_지하철_구간_제거_실패(response);
+    }
+
+    /**
+     * When 지하철 노선에 기존에 등록되지 않은 구간 제거를 요청 하면
+     * Then 노선의 구간 제거에 실패한다
+     */
+    @DisplayName("지하철 노선에 기존에 등록되지 않은 구간을 제거")
+    @Test
+    void removeLineSectionWithNotContains() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+
+        // then
+        지하철_노선에_지하철_구간_제거_실패(response);
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
