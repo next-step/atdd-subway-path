@@ -32,7 +32,6 @@ public class LineResponse {
         List<SectionResponse> sectionResponses = sections.stream()
                 .map(section -> new SectionResponse(section))
                 .collect(Collectors.toList());
-        Collections.sort(sectionResponses);
         return sectionResponses;
     }
 
