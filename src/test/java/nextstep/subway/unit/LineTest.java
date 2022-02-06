@@ -1,6 +1,5 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.applicaion.LineService;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -59,6 +58,19 @@ class LineTest {
     @DisplayName("구간이 목록에서 마지막 역 삭제")
     @Test
     void removeSection() {
+        //given
+        Station 강남역 = stationRepository.save(new Station("강남역"));
+        Station 양재역 = stationRepository.save(new Station("양재역"));
+        Station 광교역 = stationRepository.save(new Station("광교역"));
+        Line line =  new Line("신분당선", "bg-red-600");
+        line.addSection(강남역, 양재역, 10);
+        line.addSection(양재역, 광교역, 10);
+        Line save = lineRepository.save(line);
 
+        //when
+        save.removeSection(광교역);
+
+        //then
+        assertThat(line.getStations()).hasSize(2);
     }
 }

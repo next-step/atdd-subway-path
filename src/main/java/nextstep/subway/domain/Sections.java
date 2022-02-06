@@ -25,10 +25,10 @@ public class Sections {
         this.sections.add(section);
     }
 
-    public List<Station> getStations() {
+    public List<Station> get() {
         List<Station> stations = new ArrayList<>();
 
-        if(!sections.isEmpty()){
+        if (!sections.isEmpty()) {
             stations.add(findFirstStation());
             stations.addAll(findDownStations());
         }
@@ -36,9 +36,17 @@ public class Sections {
         return stations;
     }
 
+    public void remove(Station station) {
+        if (!getLastStation().equals(station)) {
+            throw new IllegalArgumentException();
+        }
+
+        sections.remove(sections.size() - 1);
+    }
+
     private List<Station> findDownStations() {
         return sections.stream()
-                .map(section -> section.getDownStation())
+                .map(Section::getDownStation)
                 .collect(Collectors.toList());
     }
 
@@ -67,4 +75,5 @@ public class Sections {
             throw new IllegalArgumentException();
         }
     }
+
 }
