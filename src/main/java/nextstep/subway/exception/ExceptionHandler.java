@@ -16,7 +16,7 @@ public class ExceptionHandler {
         return ResponseEntity.badRequest().build();
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(AllMatchSectionException.class)
+    @org.springframework.web.bind.annotation.ExceptionHandler(IllegalSectionException.class)
     public ResponseEntity<HttpStatus> checkIllegalSectionException() {
         return ResponseEntity.badRequest().build();
     }
@@ -26,7 +26,7 @@ public class ExceptionHandler {
         return ResponseEntity.badRequest().build();
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(NotExistedStationDeleteException.class)
+    @org.springframework.web.bind.annotation.ExceptionHandler(NotMatchDeleteSectionException.class)
     public ResponseEntity<HttpStatus> checkNotMatchDeleteSectionException() {
         return ResponseEntity.badRequest().build();
     }
