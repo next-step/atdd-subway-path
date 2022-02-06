@@ -110,15 +110,15 @@ class SectionsTest {
     @Test
     void deleteFirstStation() {
         int newSectionDistance = 3;
-        Section newSection = Section.of(_5호선, 군자역, 광나루역, newSectionDistance);
+        Section newSection = Section.of(_5호선, 광나루역, 군자역, newSectionDistance);
         sections.addSection(newSection);
-        sections.removeSection2(군자역);
+        sections.removeSection(광나루역);
 
-        assertThat(sections.getStations()).containsExactly(광나루역, 아차산역);
+        assertThat(sections.getStations()).containsExactly(군자역, 아차산역);
         Section section = sections.getSections().get(0);
-        assertThat(section.getUpStation()).isEqualTo(광나루역);
+        assertThat(section.getUpStation()).isEqualTo(군자역);
         assertThat(section.getDownStation()).isEqualTo(아차산역);
-        assertThat(section.getDistance()).isEqualTo(distance - newSectionDistance);
+        assertThat(section.getDistance()).isEqualTo(distance);
     }
 
     @DisplayName("하행 종점 역 삭제")
@@ -127,7 +127,7 @@ class SectionsTest {
         int newSectionDistance = 3;
         Section newSection = Section.of(_5호선, 아차산역, 광나루역, newSectionDistance);
         sections.addSection(newSection);
-        sections.removeSection2(광나루역);
+        sections.removeSection(광나루역);
 
         assertThat(sections.getStations()).containsExactly(군자역, 아차산역);
         Section section = sections.getSections().get(0);
@@ -141,7 +141,7 @@ class SectionsTest {
         int newSectionDistance = 3;
         Section newSection = Section.of(_5호선, 군자역, 광나루역, newSectionDistance);
         sections.addSection(newSection);
-        sections.removeSection2(광나루역);
+        sections.removeSection(광나루역);
 
         assertThat(sections.getStations()).containsExactly(군자역, 아차산역);
         Section section = sections.getSections().get(0);

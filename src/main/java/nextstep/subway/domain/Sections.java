@@ -126,30 +126,20 @@ public class Sections {
                 .orElseThrow(RuntimeException::new);
     }
 
-    public void removeSection(Long stationId) {
-        validateSectionCount();
-        validateIsLastStation(stationId);
-        sections.remove(getLastSection());
-    }
-
-    public void removeSection2(Station station) {
+    public void removeSection(Station station) {
         validateSectionCount();
 
-        // case1. 상행종점 제거
         if (isFirstStation(station)) {
             sections.remove(0);
             return;
         }
 
-        // case3. 하행종점 제거
         if (isLastStation(station)) {
             sections.remove(getLastIndex());
             return;
         }
 
-        // case2. 중간역 제거
         if (isUpStation(station)) {
-            // 중간 역 제거
             removeMiddleStation(station);
             return;
         }

@@ -63,7 +63,7 @@ class LineTest {
         line.addSection(section);
 
         // when
-        line.removeSection(광나루역.getId());
+        line.removeSection(광나루역);
 
         // then
         assertThat(line.getStations()).containsExactly(군자역, 아차산역);
