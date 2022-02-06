@@ -60,8 +60,6 @@ public class LineServiceMockTest {
         LineService lineService = new LineService(lineRepository, stationService, sectionRepository);
         when(stationService.findById(2L)).thenReturn(양재역);
         when(stationService.findById(3L)).thenReturn(미금역);
-        when(sectionRepository.findById(1L)).thenReturn(Optional.ofNullable(강남역에서_양재역));
-        when(sectionRepository.findById(2L)).thenReturn(Optional.ofNullable(양재역에서_미금역));
         when(lineRepository.findById(신분당선.getId())).thenReturn(Optional.ofNullable(신분당선));
 
         // when
