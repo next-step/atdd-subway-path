@@ -69,7 +69,7 @@ public class Line extends BaseEntity {
     }
 
     public void removeSection(Long stationId) {
-        this.sections.removeLastSection(stationId);
+        this.sections.removeSection(stationId);
     }
 
     public void update(String name, String color) {

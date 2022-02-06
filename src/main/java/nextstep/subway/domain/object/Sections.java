@@ -1,5 +1,6 @@
 package nextstep.subway.domain.object;
 
+import lombok.val;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 
@@ -9,7 +10,6 @@ import javax.persistence.OneToMany;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,11 +27,11 @@ public class Sections {
             throw new InvalidParameterException();
         }
 
-        updateOriginSection(section);
+        updateOriginSectionForAdd(section);
         this.values.add(section);
     }
 
-    private void updateOriginSection(Section section) {
+    private void updateOriginSectionForAdd(Section section) {
         Section originSection = values.stream()
                 .filter(value ->
                         value.getUpStation().equals(section.getUpStation())
@@ -40,7 +40,7 @@ public class Sections {
 
         if (originSection != null && checkMiddleStationToBeSeperated(section)) {
             Distance changedDistance = originSection.minusDistance(section.getDistance());
-            originSection.update(section.getDownStation(), changedDistance);
+            originSection.updateForAdd(section.getDownStation(), changedDistance);
         }
     }
 
@@ -48,19 +48,72 @@ public class Sections {
         return this.values.size();
     }
 
-    public void removeLastSection(Long stationId) {
-        if (!validateRemoveSection(stationId)) {
+    public void removeSection(Long stationId) {
+        val stations = getAllStations();
+        val targetStation = stations.stream()
+                .filter(station ->
+                        station.getId().equals(stationId)
+                ).findFirst()
+                .orElse(null);
+
+        if (!validateRemoveSection(targetStation)) {
             throw new InvalidParameterException();
         }
-        this.values.remove(lastSection());
+
+       val targetIndex = stations.indexOf(targetStation);
+        if (removeFirstSection(targetIndex)) { return; }
+        if (removeLastSection(targetIndex, stations.size())) { return; }
+        removeMiddleSection(targetStation);
     }
 
-    private boolean validateRemoveSection(Long stationId) {
+    private boolean validateRemoveSection(Station targetStation) {
         if (isSmallerMinimumSize()) {
             return false;
         }
 
-        return lastDownStationId().equals(stationId);
+        return targetStation != null;
+    }
+
+    private boolean removeFirstSection(int targetIndex) {
+        if (targetIndex == 0) {
+            this.values.remove(getFirstSection());
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean removeLastSection(int targetIndex, int StationsSize) {
+        if (targetIndex == StationsSize - 1) {
+            this.values.remove(getLastSection());
+            return true;
+        }
+
+        return false;
+    }
+
+    private void removeMiddleSection(Station targetStation) {
+        val sectionToBeChanged= values.stream()
+                .filter(value ->
+                        value.getDownStation().equals(targetStation)
+                ).findFirst()
+                .orElse(null);
+
+        val targetSection= values.stream()
+                .filter(value ->
+                        value.getUpStation().equals(targetStation)
+                ).findFirst()
+                .orElse(null);
+
+        assert sectionToBeChanged != null;
+        assert targetSection != null;
+        updateOriginSectionForDelete(sectionToBeChanged, targetSection);
+        values.remove(targetSection);
+    }
+
+    private void updateOriginSectionForDelete(Section preSection, Section targetSection) {
+        val changedDistance= preSection.plusDistance(targetSection.getDistance());
+        preSection.updateForDelete(targetSection.getDownStation(), changedDistance);
     }
 
     private boolean validateAddSection(Section section) {
@@ -139,7 +192,7 @@ public class Sections {
         return !value.getUpStationId().equals(section.getUpStationId()) && value.getDownStationId().equals(section.getDownStationId());
     }
 
-    private Section lastSection() {
+    private Section getLastSection() {
         Station lastStation = getLastStation();
         return this.values.stream()
                 .filter(value ->
@@ -154,7 +207,7 @@ public class Sections {
     }
 
     private Long lastDownStationId() {
-        return lastSection().getDownStationId();
+        return getLastSection().getDownStationId();
     }
 
     public List<Station> getAllStations() {

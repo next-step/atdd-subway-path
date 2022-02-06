@@ -13,6 +13,12 @@ public class SectionRequest {
     @Valid
     private Distance distance;
 
+    public SectionRequest(Long upStationId, Long downStationId, Distance distance) {
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
+    }
+
     public long getUpStationId() {
         return upStationId;
     }
