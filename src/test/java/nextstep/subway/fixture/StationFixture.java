@@ -8,6 +8,8 @@ public class StationFixture {
     public static final String 양재시민의숲역 = "양재시민의숲역";
     public static final String 판교역 = "판교역";
     public static final String 정자역 = "정자역";
+    public static final String 교대역 = "교대역";
+    public static final String 남부터미널역 = "남부터미널역";
 
     public static final String 사당역 = "사당역";
     public static final String 낙성대역 = "낙성대역";
