@@ -3,7 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 
 @Entity
-public class Section implements Comparable<Section> {
+public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,7 +22,7 @@ public class Section implements Comparable<Section> {
 
     private int distance;
 
-    public Section() {
+    protected Section() {
 
     }
 
@@ -75,15 +75,5 @@ public class Section implements Comparable<Section> {
                 ", downStation=" + downStation +
                 ", distance=" + distance +
                 '}';
-    }
-
-    @Override
-    public int compareTo(Section o) {
-        if (o.getId() < id) {
-            return 1;
-        } else if (o.getId() > id) {
-            return -1;
-        }
-        return 0;
     }
 }
