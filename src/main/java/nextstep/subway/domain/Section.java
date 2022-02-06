@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.error.exception.InvalidValueException;
+
 import javax.persistence.*;
 
 @Entity
@@ -49,7 +51,7 @@ public class Section implements Comparable<Section> {
 
     private void changeDistance(int distance) {
         if (distance < 1) {
-            throw new IllegalArgumentException();
+            throw new InvalidValueException();
         }
         this.distance = distance;
     }

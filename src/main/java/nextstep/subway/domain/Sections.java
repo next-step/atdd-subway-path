@@ -1,6 +1,10 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
+import nextstep.subway.error.exception.InvalidValueException;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +29,7 @@ public class Sections {
             addMiddle(section);
             return;
         }
-        throw new IllegalArgumentException();
+        throw new InvalidValueException(section.getId());
     }
 
     public boolean isValidToEnd(Station upStation, Station downStation) {
@@ -100,27 +104,25 @@ public class Sections {
     }
 
     public List<Station> getSortedStations() {
-        sorted();
-
+        List<Section> sortedSections = getSorted();
         List<Station> stations = new ArrayList<>();
-        stations.add(getFirstUpStationWhenSorted());
-        sections.forEach(s -> stations.add(s.getDownStation()));
+        stations.add(getFirstUpStationWhenSorted(sortedSections));
+        sortedSections.forEach(s -> stations.add(s.getDownStation()));
 
         return stations;
     }
 
-    private Station getFirstUpStationWhenSorted() {
-        return sections.get(FIRST_SECTION_INDEX).getUpStation();
+    private Station getFirstUpStationWhenSorted(List<Section> sortedSections) {
+        return sortedSections.get(FIRST_SECTION_INDEX).getUpStation();
     }
 
-    private void sorted() {
-        Section firstSection = findFirstSection();
-        sections.remove(firstSection);
-        sections.add(FIRST_SECTION_INDEX, firstSection);
-
-        for (int i = 0; i < sections.size() - 1; i++) {
-            findNextSection(i);
-        }
+    private List<Section> getSorted() {
+        List<Section> sortedSections = new ArrayList<>();
+        sortedSections.add(findFirstSection());
+        do {
+            addNextSections(sortedSections);
+        } while (sortedSections.size() < sections.size());
+        return sortedSections;
     }
 
     private Section findFirstSection() {
@@ -132,20 +134,24 @@ public class Sections {
                 .get(0);
     }
 
-    private void findNextSection(int i) {
-        for (int j = i + 1; j < sections.size(); j++) {
-            swap(i, j);
+    private void addNextSections(List<Section> sortedSections) {
+        for (int i = 0; i < sections.size(); i++) {
+            findNextSection(sortedSections, sections.get(i));
         }
     }
 
-    private void swap(int i, int j) {
-        if (isNextSection(i, j)) {
-            Collections.swap(sections, i + 1, j);
+    private void findNextSection(List<Section> sortedSections, Section section) {
+        Section lastSection = sortedSections.get(sortedSections.size() - 1);
+        if (lastSection.equals(section)) {
+            return;
+        }
+        if (isNextSection(lastSection, section)) {
+            sortedSections.add(section);
         }
     }
 
-    private boolean isNextSection(int i, int j) {
-        return sections.get(i).compareTo(sections.get(j)) > 0;
+    private boolean isNextSection(Section lastSection, Section section) {
+        return lastSection.compareTo(section) > 0;
     }
 
     public void remove(Station station) {
@@ -158,17 +164,19 @@ public class Sections {
         return sections.stream()
                 .filter(s -> s.getDownStation().equals(station))
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> {
+                    throw new InvalidValueException(station.getId());
+                });
     }
 
     private void validatePossibleToRemove(Section section) {
         if (sections.size() <= 1 ||
                 !section.isLastStation(findLastDownStation())) {
-            throw new IllegalArgumentException();
+            throw new InvalidValueException(section.getId());
         }
     }
 
     public List<Section> getSections() {
-        return sections;
+        return Collections.unmodifiableList(sections);
     }
 }
