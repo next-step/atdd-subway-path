@@ -14,6 +14,7 @@ import static nextstep.subway.acceptance.steps.LineSteps.지하철_노선_구간
 import static nextstep.subway.acceptance.steps.LineSteps.지하철_노선이_생성되어_있음;
 import static nextstep.subway.acceptance.steps.StationSteps.지하철_역_생성_되어있음;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 경로 검색")
 class PathAcceptanceTest extends AcceptanceTest {
@@ -46,6 +47,19 @@ class PathAcceptanceTest extends AcceptanceTest {
         삼호선_번호 = 지하철_노선이_생성되어_있음("3호선", "orange", 교대역_번호, 남부터미널역_번호, 2);
 
         지하철_노선_구간_등록을_요청한다(삼호선_번호, 남부터미널역_번호, 양재역_번호, 3);
+    }
+
+    @DisplayName("출발역과 도착역간의 최단 경로와 거리 조회")
+    @Test
+    void findShortestPath() {
+        // when
+        final ExtractableResponse<Response> response = 지하철_출발역과_도착역간의_최단_경로_조회를_요청한다(교대역_번호, 양재역_번호);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(교대역_번호, 남부터미널역_번호, 양재역_번호)
+        );
     }
 
     @DisplayName("출발역과 도착역이 같은 경우의 최단 경로와 거리 조회")
