@@ -16,7 +16,7 @@ public class ExceptionHandler {
         return ResponseEntity.badRequest().build();
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(IllegalSectionException.class)
+    @org.springframework.web.bind.annotation.ExceptionHandler(AllMatchSectionException.class)
     public ResponseEntity<HttpStatus> checkIllegalSectionException() {
         return ResponseEntity.badRequest().build();
     }

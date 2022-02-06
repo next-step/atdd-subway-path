@@ -20,6 +20,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     private Long 강남역;
     private Long 양재역;
+    private Long 신도림역;
+    private Long 문래역;
 
     /**
      * Given 지하철역과 노선 생성을 요청 하고
@@ -29,12 +31,15 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         super.setUp();
         강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
         양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+        신도림역 = 지하철역_생성_요청("신도림역").jsonPath().getLong("id");
+        문래역 = 지하철역_생성_요청("문래역").jsonPath().getLong("id");
+
         Map<String, String> lineCreateParams = createLineCreateParams(강남역, 양재역, 10);
         신분당선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
     }
 
     /**
-     * When 지하철 노선에 A->C 구간에 B->C 구간 추가를 요청 하면
+     * When 지하철 노선에 A->C 구간에 A->B 구간 추가를 요청 하면
      * Then A->B, B->C 새로운 구간이 추가된다
      */
     @DisplayName("기존 구간의 왼쪽과 중간에 구간을 등록")
@@ -56,7 +61,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("기존 구간의 중간과 오른쪽에 구간을 등록")
     @Test
-    void addRightAndMiddleSection() {
+    void addMiddleAndRightSection() {
         // when
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 양재역, 5));
@@ -69,7 +74,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 지하철 노선에 A->C 구간에 C->B 구간 추가를 요청 하면
-     * Then A->B, C->B 새로운 구간이 추가된다
+     * Then A->C, C->B 새로운 구간이 추가된다
      */
     @DisplayName("기존 구간의 오른쪽에 구간을 등록")
     @Test
@@ -85,8 +90,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 지하철 노선에 A->C 구간에 C->B 구간 추가를 요청 하면
-     * Then A->B, C->B 새로운 구간이 추가된다
+     * When 지하철 노선에 A->C 구간에 B->A 구간 추가를 요청 하면
+     * Then B->A, A->C 새로운 구간이 추가된다
      */
     @DisplayName("기존 구간의 왼쪽에 구간을 등록")
     @Test
@@ -99,6 +104,31 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("sections.downStation.name", String.class)).containsExactly("정자역", "강남역");
         assertThat(response.jsonPath().getList("sections.upStation.name", String.class)).containsExactly("강남역", "양재역");
+    }
+    /**
+     * When 지하철 노선에 A->B 구간에 C->D 구간 추가를 요청 하면
+     * Then 구간 생성이 실패한다.
+     */
+    @DisplayName("노선에 존재하지 않는 상행역과 하행역을 가지는 구간 생성 요청")
+    @Test
+    void NoMatchSectionException() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신도림역,문래역, 5));
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 지하철 노선에 A->B 구간에 C->D 구간 추가를 요청 하면
+     * Then 구간 생성이 실패한다.
+     */
+    @DisplayName("노선에 존재하지 않는 상행역과 하행역을 가지는 구간 생성 요청")
+    @Test
+    void AllMatchSectionException() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역,양재역, 5));
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
