@@ -56,7 +56,7 @@ class SectionsTest {
     Section section = new Section(이호선, 강남역, 교대역, 5);
 
     // then
-    assertThatThrownBy(() -> sections.addSection(section)).isInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> sections.addSection(section)).isInstanceOf(IllegalAddSectionException.class);
   }
 
   @Test
@@ -73,8 +73,6 @@ class SectionsTest {
   @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
   void addSectionWithoutRegisteredStationsTest() {
     // given
-    final Station 인덕원역 = new Station("인덕원역");
-    final Station 정부과천청사역 = new Station("정부과천청사역");
     Section section = new Section(이호선, 인덕원역, 정부과천청사역, 2);
 
     // then

@@ -108,7 +108,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         Long 정자역 = 지하철역_생성_요청_후_ID_반환("정자역");
 
         // when
-        ExtractableResponse<Response> createResponse = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역));
+        ExtractableResponse<Response> createResponse = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 11));
 
         // then
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

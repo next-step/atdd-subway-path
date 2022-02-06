@@ -24,6 +24,11 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
+
+    private final static Long 이호선ID = 1L;
+    private final static Long 강남역ID = 1L;
+    private final static Long 역삼역ID = 2L;
+
     @Mock
     private LineRepository lineRepository;
     @Mock
@@ -35,21 +40,21 @@ public class LineServiceMockTest {
     void addSection() {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
-        when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
-        when(lineRepository.save(이호선)).thenReturn(이호선);
-
-
-        when(stationService.findById(강남역.getId())).thenReturn(강남역);
-        when(stationService.findById(역삼역.getId())).thenReturn(역삼역);
+        when(stationService.findById(강남역ID)).thenReturn(강남역);
+        when(stationService.findById(역삼역ID)).thenReturn(역삼역);
+        when(lineRepository.findById(이호선ID)).thenReturn(Optional.of(이호선));
+        SectionRequest sectionRequest = new SectionRequest(강남역ID, 역삼역ID, 3);
 
         // when
         // lineService.addSection 호출
-        SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 역삼역.getId(), 3);
-        lineService.addSection(이호선.getId(), sectionRequest);
+        lineService.addSection(이호선ID, sectionRequest);
 
         // then
         // line.findLineById 메서드를 통해 검증
-        LineResponse existLine = lineService.findById(이호선.getId());
-        assertThat(existLine.getStations().size()).isEqualTo(2);
+        LineResponse response = lineService.findById(이호선ID);
+        org.junit.jupiter.api.Assertions.assertAll(
+          () -> assertThat(response.getName()).isEqualTo(이호선.getName()),
+          () -> assertThat(response.getStations().size()).isEqualTo(2)
+        );
     }
 }

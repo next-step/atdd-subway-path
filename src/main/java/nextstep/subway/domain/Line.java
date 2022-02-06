@@ -1,8 +1,6 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -55,6 +53,10 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section){
         sections.addSection(section);
+    }
+
+    public void removeSection(Station station){
+        sections.deleteSectionFromStation(station);
     }
 
     @Override

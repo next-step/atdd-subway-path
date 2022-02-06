@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import nextstep.subway.exception.DuplicateCreationException;
 import nextstep.subway.exception.IllegalAddSectionException;
+import nextstep.subway.exception.IllegalDeletionException;
 import nextstep.subway.exception.NotFoundException;
 
 import javax.persistence.CascadeType;
@@ -33,16 +34,16 @@ public class Sections {
     validateInsertion(section);
 
     // 상행에서 중간으로 이어지는 중간 부분 추가
-    sections.stream()
-      .filter(x -> x.getUpStation().equals(section.getUpStation())).findAny().ifPresent(x -> {
+    getSectionFromUpStation(section.getUpStation())
+      .ifPresent(x -> {
         x.isValidCreationDistance(section.getDistance());
         sections.add(new Section(section.getLine(), section.getDownStation(), x.getDownStation(), x.getDistance() - section.getDistance()));
         sections.remove(x);
     });
 
     // 상행의 위로 이어지는 상행 첫구간 추가
-    sections.stream()
-      .filter(x -> x.getDownStation().equals(section.getDownStation())).findAny().ifPresent(x -> {
+    getSectionFromDownStation(section.getDownStation())
+      .ifPresent(x -> {
         x.isValidCreationDistance(section.getDistance());
         sections.add(new Section(section.getLine(), x.getUpStation(), section.getUpStation(),x.getDistance() - section.getDistance()));
         sections.remove(x);
@@ -107,19 +108,19 @@ public class Sections {
     return Optional.of(sections.get(sections.size()-1));
   }
 
-  public void deleteLastSection(Station station){
+  public void deleteSectionFromStation(Station station){
 
     Optional<Section> lastSection = getLastSection();
     // 구간이 없을 경우 처리 X
-    if(!lastSection.isPresent()){
-      throw new IllegalArgumentException();
+    if(sections.size() <= 1){
+      throw new IllegalDeletionException();
     }
 
-    if(!lastSection.get().getDownStation().equals(station)){
-      throw new IllegalArgumentException();
-    }
+    Optional<Section> upSection = getSectionFromUpStation(station);
+    Optional<Section> downSection = getSectionFromDownStation(station);
 
-    sections.remove(sections.size() -1);
+    upSection.ifPresent(section -> sections.remove(section));
+    downSection.ifPresent(section -> sections.remove(section));
   }
 
   private Section getFirstUpSection(){
@@ -129,6 +130,16 @@ public class Sections {
       .filter(x -> !downStations.contains(x.getUpStation()))
       .findAny()
       .orElseThrow(NotFoundException::new);
+  }
+
+  private Optional<Section> getSectionFromUpStation(Station station){
+    return sections.stream()
+      .filter(x -> x.getUpStation().equals(station)).findAny();
+  }
+
+  private Optional<Section> getSectionFromDownStation(Station station){
+    return sections.stream()
+      .filter(x -> x.getDownStation().equals(station)).findAny();
   }
 
   private Optional<Section> getNextSection(Station downStation){

@@ -57,8 +57,8 @@ public class Section {
     }
 
     public void isValidCreationDistance(int targetDistance){
-        if(distance <= targetDistance) {
-            throw new IllegalArgumentException();
+        if(targetDistance >= distance) {
+            throw new IllegalAddSectionException("TOO LONG DISTANCE");
         }
     }
 

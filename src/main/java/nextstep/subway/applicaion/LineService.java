@@ -103,6 +103,6 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        line.getSections().deleteLastSection(station);
+        line.removeSection(station);
     }
 }
