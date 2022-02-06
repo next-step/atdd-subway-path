@@ -33,6 +33,8 @@ public class Sections {
             return;
         }
         if (isLeftAddSection(section)) {
+            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@");
+            changeStartStationName(section.getUpStation().getName());
             sections.add(section);
             return;
         }
@@ -56,7 +58,6 @@ public class Sections {
     }
 
     private boolean isLeftAddSection(Section section) {
-        changeStartStationName(section.getUpStation().getName());
         return sections.stream().filter(s -> s.getDownStation().getName().equals(section.getUpStation().getName()))
                 .findFirst()
                 .isPresent();
@@ -97,8 +98,8 @@ public class Sections {
     }
 
     private void checkNotSameSection(Section existedSection, Section section) {
-        if (existedSection.getDownStation().getName() == section.getDownStation().getName() &&
-                existedSection.getUpStation().getName() == section.getUpStation().getName()) {
+        if (existedSection.getDownStation().getName().equals(section.getDownStation().getName())  &&
+                existedSection.getUpStation().getName().equals(section.getUpStation().getName())) {
             throw new IllegalDistanceException();
         }
     }
@@ -140,9 +141,14 @@ public class Sections {
         if (sections.size() <= 1) {
             return sections;
         }
-
         String name = startStationName;
         List<Section> result = new ArrayList<>();
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        System.out.println(sections.stream()
+                .filter(section -> section.getUpStation().getName().equals(startStationName))
+                .findFirst()
+                .get());
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         result.add(sections.stream()
                 .filter(section -> section.getUpStation().getName().equals(startStationName))
                 .findFirst()
@@ -150,6 +156,9 @@ public class Sections {
         while (result.size() != sections.size()) {
             findNextUpStationName(name, result);
         }
+        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+        System.out.println(result.get(0).getUpStation().getName());
+        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$");
         return result;
     }
 
