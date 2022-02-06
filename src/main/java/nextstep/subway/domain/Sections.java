@@ -2,7 +2,6 @@ package nextstep.subway.domain;
 
 import nextstep.subway.exception.IllegalDeleteSectionException;
 import nextstep.subway.exception.IllegalDistanceException;
-import nextstep.subway.exception.IllegalSectionException;
 import nextstep.subway.exception.NoMatchSectionException;
 
 import javax.persistence.CascadeType;
@@ -17,13 +16,20 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
+    private String startStationName;
+
     public void init(Section section) {
+        changeStartStationName(section.getUpStation().getName());
         sections.add(section);
     }
 
     public void addSection(Section section) {
-        if (isMiddleAddSection(section)) {
-            addMiddleSection(section);
+        if (isAddMiddleAndRightSection(section)) {
+            addMiddleAndRightSection(section);
+            return;
+        }
+        if (isAddLeftAndMiddleSection(section)) {
+            addLeftAndMiddleSection(section);
             return;
         }
         if (isLeftAddSection(section)) {
@@ -37,6 +43,12 @@ public class Sections {
         throw new NoMatchSectionException();
     }
 
+    private boolean isAddLeftAndMiddleSection(Section section) {
+        return sections.stream().filter(s -> s.getDownStation().getName().equals(section.getDownStation().getName()))
+                .findFirst()
+                .isPresent();
+    }
+
     private boolean isRightAddSection(Section section) {
         return sections.stream().filter(s -> s.getUpStation().getName().equals(section.getDownStation().getName()))
                 .findFirst()
@@ -44,54 +56,61 @@ public class Sections {
     }
 
     private boolean isLeftAddSection(Section section) {
+        changeStartStationName(section.getUpStation().getName());
         return sections.stream().filter(s -> s.getDownStation().getName().equals(section.getUpStation().getName()))
                 .findFirst()
                 .isPresent();
     }
 
-    private boolean isMiddleAddSection(Section section) {
+    private void addMiddleAndRightSection(Section section) {
+        changeStartStationName(section.getDownStation().getName());
+        Section existedSection = sections.stream()
+                .filter(s -> s.getUpStation().getName().equals(section.getUpStation().getName()))
+                .findFirst().get();
+        checkDistanceValidation(existedSection, section);
+        checkNotSameSection(existedSection, section);
+        sections.add(new Section(section.getLine(), section.getDownStation(), existedSection.getUpStation(),
+                section.getDistance()));
+        sections.add(new Section(section.getLine(), existedSection.getDownStation(), section.getDownStation(),
+                existedSection.getDistance() - section.getDistance()));
+        delete(existedSection);
+    }
+
+    private void addLeftAndMiddleSection(Section section) {
+        changeStartStationName(section.getUpStation().getName());
+        Section existedSection = sections.stream()
+                .filter(s -> s.getDownStation().getName().equals(section.getDownStation().getName()))
+                .findFirst().get();
+        checkDistanceValidation(existedSection, section);
+        checkNotSameSection(existedSection, section);
+        sections.add(new Section(section.getLine(), section.getUpStation(), existedSection.getUpStation(),
+                existedSection.getDistance() - section.getDistance()));
+        sections.add(new Section(section.getLine(), existedSection.getDownStation(), section.getUpStation(),
+                section.getDistance()));
+        delete(existedSection);
+    }
+
+    private void checkDistanceValidation(Section existedSection, Section section) {
+        if (existedSection.getDistance() <= section.getDistance()) {
+            throw new IllegalDistanceException();
+        }
+    }
+
+    private void checkNotSameSection(Section existedSection, Section section) {
+        if (existedSection.getDownStation().getName() == section.getDownStation().getName() &&
+                existedSection.getUpStation().getName() == section.getUpStation().getName()) {
+            throw new IllegalDistanceException();
+        }
+    }
+
+    private boolean isAddMiddleAndRightSection(Section section) {
         return sections.stream().filter(s -> s.getUpStation().getName().equals(section.getUpStation().getName()))
-                .findFirst()
-                .isPresent() || sections.stream().filter(s -> s.getDownStation().getName().equals(section.getDownStation().getName()))
                 .findFirst()
                 .isPresent();
     }
 
-    private void addMiddleSection(Section section) {
-        if (sections.stream().filter(s -> s.getUpStation().getName().equals(section.getUpStation().getName()))
-                .findFirst()
-                .isPresent()) {
-            Section existedSection = sections.stream()
-                    .filter(s -> s.getUpStation().getName().equals(section.getUpStation().getName()))
-                    .findFirst().get();
-            if (existedSection.getDistance() <= section.getDistance()) {
-                throw new IllegalDistanceException();
-            }
-            if (section.getDownStation().getName().equals(existedSection.getDownStation().getName())) {
-                throw new IllegalSectionException();
-            }
-            sections.add(new Section(section.getDownStation(), existedSection.getUpStation(), section.getDistance()));
-            sections.add(new Section(existedSection.getDownStation(), section.getDownStation(), existedSection.getDistance() - section.getDistance()));
-            delete(sections.stream().filter(s -> s.getUpStation().getName().equals(section.getUpStation().getName()))
-                    .findFirst().get());
-        }
-        if (sections.stream().filter(s -> s.getDownStation().getName().equals(section.getDownStation().getName()))
-                .findFirst()
-                .isPresent()) {
-            Section existedSection = sections.stream()
-                    .filter(s -> s.getDownStation().getName().equals(section.getDownStation().getName()))
-                    .findFirst().get();
-            if (existedSection.getDistance() <= section.getDistance()) {
-                throw new IllegalDistanceException();
-            }
-            if (section.getUpStation().getName().equals(existedSection.getUpStation().getName())) {
-                throw new IllegalSectionException();
-            }
-            sections.add(new Section(section.getLine(), section.getUpStation(), existedSection.getUpStation(), existedSection.getDistance() - section.getDistance()));
-            sections.add(new Section(section.getLine(), existedSection.getDownStation(), section.getUpStation(), section.getDistance()));
-            delete(sections.stream().filter(s -> s.getDownStation().getName().equals(section.getDownStation().getName()))
-                    .findFirst().get());
-        }
+    private void changeStartStationName(String name) {
+        this.startStationName = name;
     }
 
     public List<Station> getStations() {
@@ -118,7 +137,30 @@ public class Sections {
     }
 
     public List<Section> getSections() {
-        Collections.sort(sections);
-        return sections;
+        if (sections.size() <= 1) {
+            return sections;
+        }
+
+        String name = startStationName;
+        List<Section> result = new ArrayList<>();
+        result.add(sections.stream()
+                .filter(section -> section.getUpStation().getName().equals(startStationName))
+                .findFirst()
+                .get());
+        while (result.size() != sections.size()) {
+            findNextUpStationName(name, result);
+        }
+        return result;
+    }
+
+    private String findNextUpStationName(String name, List<Section> result) {
+        for (Section section : sections) {
+            if (name.equals(section.getDownStation().getName())) {
+                result.add(section);
+                name = section.getUpStation().getName();
+                return name;
+            }
+        }
+        return null;
     }
 }
