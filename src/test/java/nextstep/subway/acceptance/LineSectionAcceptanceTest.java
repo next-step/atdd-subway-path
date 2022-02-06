@@ -39,8 +39,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 지하철 노선에 A->C 구간에 A->B 구간 추가를 요청 하면
-     * Then A->B, B->C 새로운 구간이 추가된다
+     * When 지하철 노선에 강남->양재 구간에 강남->정자 구간 추가를 요청 하면
+     * Then
+     *  1. 200 status code 가 반환된다.
+     *  2. 강남->정자, 정자->양재 새로운 구간이 추가된다
      */
     @DisplayName("기존 구간의 왼쪽과 중간에 구간을 등록")
     @Test
@@ -56,8 +58,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 지하철 노선에 A->C 구간에 B->C 구간 추가를 요청 하면
-     * Then A->B, B->C 새로운 구간이 추가된다
+     * When 지하철 노선에 강남->양재 구간에 정자->양재 구간 추가를 요청 하면
+     * Then
+     *  1. 200 status code 가 반환된다.
+     *  2. 강남->양재, 정자->양재 새로운 구간이 추가된다
      */
     @DisplayName("기존 구간의 중간과 오른쪽에 구간을 등록")
     @Test
@@ -73,8 +77,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 지하철 노선에 A->C 구간에 C->B 구간 추가를 요청 하면
-     * Then A->C, C->B 새로운 구간이 추가된다
+     * When 지하철 노선에 강남역->양재역 구간에 양재역->정자역 구간 추가를 요청 하면
+     * Then
+     *  1. 200 status code 가 반환된다.
+     *  2. 강남역->양재역, 양재역->정자역 새로운 구간이 추가된다
      */
     @DisplayName("기존 구간의 오른쪽에 구간을 등록")
     @Test
@@ -90,8 +96,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 지하철 노선에 A->C 구간에 B->A 구간 추가를 요청 하면
-     * Then B->A, A->C 새로운 구간이 추가된다
+     * When 지하철 노선에 강남역->양재역 구간에 정자역->강남역 구간 추가를 요청 하면
+     * Then
+     *  1. 200 status code 가 반환된다.
+     *  2. 정자역->강남역, 강남역->양재역 새로운 구간이 추가된다
      */
     @DisplayName("기존 구간의 왼쪽에 구간을 등록")
     @Test
@@ -106,8 +114,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("sections.upStation.name", String.class)).containsExactly("강남역", "양재역");
     }
     /**
-     * When 지하철 노선에 A->B 구간에 C->D 구간 추가를 요청 하면
-     * Then 구간 생성이 실패한다.
+     * When 지하철 노선에 강남역->양재역 구간에 신도림역->문래역 구간 추가를 요청 하면
+     * Then
+     *  1. 400 status code 가 반환된다.
+     *  2. 구간 생성이 실패한다.
      */
     @DisplayName("노선에 존재하지 않는 상행역과 하행역을 가지는 구간 생성 요청")
     @Test
@@ -119,8 +129,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 지하철 노선에 A->B 구간에 C->D 구간 추가를 요청 하면
-     * Then 구간 생성이 실패한다.
+     * When 지하철 노선에 강남역->양재역 구간에 강남역->양재역 구간 추가를 요청 하면
+     * Then
+     *  1. 400 status code 가 반환된다.
+     *  2. 구간 생성이 실패한다.
      */
     @DisplayName("노선에 이미 존재하는 상행역과 하행역을 가지는 구간 생성 요청")
     @Test
