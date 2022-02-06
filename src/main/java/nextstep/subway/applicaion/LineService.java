@@ -76,9 +76,6 @@ public class LineService {
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
-        if (!line.getSections().get(line.getSections().size() - 1).getUpStation().equals(station)) {
-            throw new NotMatchDeleteSectionException();
-        }
-        line.deleteLastSection();
+        line.deleteSection(stationId);
     }
 }
