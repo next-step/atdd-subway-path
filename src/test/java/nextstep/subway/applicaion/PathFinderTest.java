@@ -41,16 +41,16 @@ class PathFinderTest {
         양재시민의숲역 = createMockStation(6L, "양재시민의숲역");
 
         allLines = new ArrayList<>();
-        
+
         이호선 = createMockLine(1L, "2호선", "green", 강남역, 교대역, 6);
         이호선.addSection(createSection(이호선, 교대역, 서초역, 4));
         allLines.add(이호선);
 
         삼호선 = createMockLine(2L, "3호선", "orange", 교대역, 매봉역, 11);
-        신분당선 = createMockLine(3L, "신분당선", "red", 강남역, 양재시민의숲역, 16);
+        삼호선.addSection(createSection(삼호선, 교대역, 양재역, 7));
         allLines.add(삼호선);
 
-        삼호선.addSection(createSection(삼호선, 교대역, 양재역, 7));
+        신분당선 = createMockLine(3L, "신분당선", "red", 강남역, 양재시민의숲역, 16);
         신분당선.addSection(createSection(신분당선, 양재역, 양재시민의숲역, 6));
         allLines.add(신분당선);
     }
@@ -62,7 +62,7 @@ class PathFinderTest {
         pathFinder = new PathFinder(allLines);
 
         // when
-        List<String> exploredStations = pathFinder.explore(강남역, 매봉역);
+        List<String> exploredStations = pathFinder.explore(강남역.getName(), 매봉역.getName());
 
         // then
         assertThat(exploredStations).containsExactly(Arrays.array("강남역", "양재역", "매봉역"));
@@ -80,7 +80,7 @@ class PathFinderTest {
         pathFinder = new PathFinder(allLines);
 
         // when/then
-        assertThatThrownBy(() -> pathFinder.explore(강남역, 용산역))
+        assertThatThrownBy(() -> pathFinder.explore(강남역.getName(), 용산역.getName()))
                 .isInstanceOf(ExploreException.class);
     }
 }
