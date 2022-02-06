@@ -61,7 +61,14 @@ class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우의 최단 경로와 거리 조회")
     @Test
     void findShortestPathByNoLinkedSourceAndTarget() {
+        // given
+        final Long 광명역_번호 = 지하철_역_생성_되어있음("광명역");
 
+        // when
+        final ExtractableResponse<Response> response = 지하철_출발역과_도착역간의_최단_경로_조회를_요청한다(교대역_번호, 광명역_번호);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("존재하지 않은 출발역을 조회 할 경우의 최단 경로와 거리 조회")
