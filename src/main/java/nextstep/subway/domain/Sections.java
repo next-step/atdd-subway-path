@@ -107,14 +107,29 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        Station endingStation = getEndingStation();
-        if (!endingStation.equals(station)) {
-            throw new IllegalArgumentException("구간이 목록에서 마지막 역이 아닙니다.");
+        Optional<Section> downStationSection = findSectionByDownStation(station);
+        Optional<Section> upStationSection = findSectionByUpStation(station);
+
+        if (downStationSection.isEmpty() && upStationSection.isEmpty()) {
+            throw new IllegalArgumentException("구간에 존재하지 않는 역입니다.");
+        }
+        if (sections.size() < 2) {
+            throw new IllegalArgumentException("구간이 한 개면 삭제할 수 없습니다.");
         }
 
-        Section section = sections.stream()
-                .filter(it -> it.getDownStation().equals(station))
-                .findAny().orElseThrow(() -> new IllegalArgumentException("구간에 존재하지 않는 역입니다."));
-        sections.remove(section);
+        if (downStationSection.isPresent() && upStationSection.isPresent()) {
+            sections.add(mergeSection(downStationSection.get(), upStationSection.get()));
+        }
+        upStationSection.ifPresent(sections::remove);
+        downStationSection.ifPresent(sections::remove);
+    }
+
+    private Section mergeSection(Section upSection, Section downSection) {
+        return new Section(
+                upSection.getLine(),
+                upSection.getUpStation(),
+                downSection.getDownStation(),
+                upSection.getDistance() + downSection.getDistance()
+        );
     }
 }
