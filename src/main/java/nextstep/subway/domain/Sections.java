@@ -98,25 +98,33 @@ public class Sections {
             sections.remove(index);
             return;
         }
-/*
-        if (!sections.get(lastIndex())
-                .isDownStation(station)) {
-            throw new IllegalArgumentException();
-        }
-*/
-        sections.remove(lastIndex());
+
+        removeSection(index);
+    }
+
+    private void removeSection(int index) {
+        Section deleteSection = sections.get(index);
+        sections.remove(index);
+        Section updateSection = sections.get(index);
+
+        sections.set(index, new Section(
+                updateSection.getLine(),
+                deleteSection.getUpStation(),
+                updateSection.getDownStation(),
+                updateSection.getDistance() + deleteSection.getDistance()
+        ));
     }
 
     private void sectionsSort() {
         Collections.sort(sections, (a, b) -> b.getUpStation()
-                .equals(a.getDownStation()) ? -1 : 0);
+                                                .equals(a.getDownStation()) ? -1 : 0);
     }
 
     private boolean isEndSection(Station station) {
         boolean isFirst = sections.get(0)
-                .isUpStation(station);
+                            .isUpStation(station);
         boolean isLast = sections.get(lastIndex())
-                .isDownStation(station);
+                            .isDownStation(station);
 
         return isFirst || isLast;
     }
@@ -130,6 +138,7 @@ public class Sections {
             throw new IllegalArgumentException(DELETE_SECTION_MINIMUM_SIZE_ERROR_MESSAGE);
         }
     }
+
     public List<Section> getSections() {
         return Collections.unmodifiableList(sections);
     }
