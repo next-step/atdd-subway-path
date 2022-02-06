@@ -1,5 +1,6 @@
 package nextstep.subway.applicaion;
 
+import nextstep.subway.applicaion.dto.ShortestPathResponse;
 import nextstep.subway.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

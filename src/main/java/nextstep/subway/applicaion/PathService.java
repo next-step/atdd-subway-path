@@ -1,5 +1,6 @@
 package nextstep.subway.applicaion;
 
+import nextstep.subway.applicaion.dto.ShortestPathResponse;
 import nextstep.subway.domain.*;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -17,7 +18,7 @@ public class PathService {
         this.lineRepository = lineRepository;
     }
 
-    public void findShortestPath(final Long sourceId, final Long targetId) {
+    public ShortestPathResponse findShortestPath(final Long sourceId, final Long targetId) {
         final Station sourceStation = stationRepository.findById(sourceId).orElseThrow((IllegalArgumentException::new));
         final Station targetStation = stationRepository.findById(targetId).orElseThrow((IllegalArgumentException::new));
         if (sourceStation.isSameName(targetStation)) {
@@ -37,6 +38,7 @@ public class PathService {
 
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
         List<Station> shortestPath = dijkstraShortestPath.getPath(sourceStation, targetStation).getVertexList();
+        return ShortestPathResponse.of(shortestPath, all);
     }
 
     private void setEdgeWeight(final WeightedMultigraph<Station, DefaultWeightedEdge> graph, final Section it) {

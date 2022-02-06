@@ -38,11 +38,38 @@ class JgraphtTest {
         // 가장 짤은 거리 클래스 생성후, 결과값(경로) 가져오기
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
         List<String> shortestPath = dijkstraShortestPath.getPath(source, target).getVertexList();
-
         assertThat(shortestPath.size()).isEqualTo(4);
         for (String s : shortestPath) {
             System.out.println(s); // 3 -> 4 -> 2 -> 1
         }
+    }
+
+    @Test
+    void getDijkstraShortestWeight() {
+        // 출발 도착
+        String source = "v3";
+        String target = "v1";
+
+        // 가중치 그래프
+        WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+
+        // 노드 입력
+        graph.addVertex("v1");
+        graph.addVertex("v2");
+        graph.addVertex("v3");
+        graph.addVertex("v4");
+
+        // 간선 입력
+        graph.setEdgeWeight(graph.addEdge("v1", "v2"), 2);
+        graph.setEdgeWeight(graph.addEdge("v2", "v3"), 3);
+        graph.setEdgeWeight(graph.addEdge("v1", "v3"), 100);
+        graph.setEdgeWeight(graph.addEdge("v2", "v4"), 1);
+        graph.setEdgeWeight(graph.addEdge("v3", "v4"), 1);
+
+        // 가장 짤은 거리 클래스 생성후, 결과값(거리) 가져오기
+        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
+        final double pathWeight = dijkstraShortestPath.getPathWeight(source, target);
+        assertThat(pathWeight).isEqualTo(4.0);
     }
 
     @Test
