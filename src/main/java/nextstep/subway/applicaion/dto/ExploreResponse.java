@@ -16,7 +16,7 @@ public class ExploreResponse {
         this.stations = stations;
     }
 
-    public ExploreResponse from(List<Station> stations) {
+    public static ExploreResponse from(List<Station> stations) {
         return new ExploreResponse(stations.stream()
                 .map(StationResponse::from)
                 .collect(Collectors.toList()));

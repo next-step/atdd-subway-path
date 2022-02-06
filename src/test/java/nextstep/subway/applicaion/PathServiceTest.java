@@ -84,8 +84,14 @@ class PathServiceTest {
     @Test
     @DisplayName("두 역이 이어져 있지 않은 경우, 탐색 처리중에 예외를 발생한다.")
     void validateExplore() {
+        // given
+        Station 용산역 = 역_생성("용산역");
+        Station 운정역 = 역_생성("운정역");
+        Line 경의중앙선 = createLine("경의중앙선", "blue", 용산역, 운정역, 35);
+        lineRepository.save(경의중앙선);
+
         // when/then
-        assertThatThrownBy(() -> pathService.explore(강남역.getId(), 매봉역.getId()))
+        assertThatThrownBy(() -> pathService.explore(강남역.getId(), 운정역.getId()))
                 .isInstanceOf(ExploreException.class);
     }
 
@@ -93,7 +99,7 @@ class PathServiceTest {
     @DisplayName("두 역이 같은 경우 탐색을 하지 못한다.")
     void validateStations() {
         // when/then
-        assertThatThrownBy(() -> pathService.explore(강남역.getId(), 매봉역.getId()))
+        assertThatThrownBy(() -> pathService.explore(강남역.getId(), 강남역.getId()))
                 .isInstanceOf(ExploreException.class);
     }
 
@@ -101,7 +107,7 @@ class PathServiceTest {
     @DisplayName("존재하지 않는 역에 대해서는 탐색을 하지 못한다.")
     void validateStations2() {
         // when/then
-        assertThatThrownBy(() -> pathService.explore(강남역.getId(), 매봉역.getId()))
+        assertThatThrownBy(() -> pathService.explore(강남역.getId(), 100L))
                 .isInstanceOf(StationException.class);
     }
 }

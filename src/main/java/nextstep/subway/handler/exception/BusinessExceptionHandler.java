@@ -21,4 +21,9 @@ public class BusinessExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBusinessException(SectionException e) {
         return ErrorResponse.convert(e.getErrorCode());
     }
+
+    @ExceptionHandler(value = ExploreException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessException(ExploreException e) {
+        return ErrorResponse.convert(e.getErrorCode());
+    }
 }

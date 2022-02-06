@@ -50,6 +50,9 @@ public class PathFinderAcceptanceTest extends AcceptanceTest {
         강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
         교대역 = 지하철역_생성_요청("교대역").jsonPath().getLong("id");
         서초역 = 지하철역_생성_요청("서초역").jsonPath().getLong("id");
+        양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+        매봉역 = 지하철역_생성_요청("매봉역").jsonPath().getLong("id");
+        양재시민의숲역 = 지하철역_생성_요청("양재시민의숲역").jsonPath().getLong("id");
 
         Map<String, Object> 이호선_생성_body = createLineCreateParams("2호선", "green", 강남역, 교대역, 6);
         이호선 = 지하철_노선_생성_요청(이호선_생성_body).jsonPath().getLong("id");
@@ -106,7 +109,9 @@ public class PathFinderAcceptanceTest extends AcceptanceTest {
     @DisplayName("최단 경로를 탐색하지 못한다. - 이어지지 않은 두 역을 입력")
     void validatePathFind2() {
         // given
-        long 용산역 = 지하철역_생성_요청("용산역").jsonPath().getLong("id");
+        Long 용산역 = 지하철역_생성_요청("용산역").jsonPath().getLong("id");
+        Long 운정역 = 지하철역_생성_요청("운정역").jsonPath().getLong("id");
+        지하철_노선_생성_요청("경의중앙선", "blue", 용산역, 운정역, 35);
 
         // when
         ExtractableResponse<Response> getResponse = PathFinderSteps.경로_탐색(createParams(강남역, 용산역));
