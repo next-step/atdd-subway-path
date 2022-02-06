@@ -3,10 +3,16 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.assertj.core.util.Arrays;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineSteps {
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
@@ -19,6 +25,10 @@ public class LineSteps {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all().extract();
+    }
+
+    public static Long 지하철_노선_생성_요청_후_ID_반환(String name, String color) {
+        return 지하철_노선_생성_요청(name, color).jsonPath().getLong("id");
     }
 
     public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
@@ -42,6 +52,13 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
+    public static void 지하철_노선_조회_요청_후_역_검증(Long lineId, List<Long> stationIds){
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineId);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsAll(stationIds);
+    }
+
+
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
         return RestAssured
                 .given().log().all()
@@ -49,6 +66,10 @@ public class LineSteps {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all().extract();
+    }
+
+    public static Long 지하철_노선_생성_요청_후_ID_반환(Map<String, String> params) {
+        return 지하철_노선_생성_요청(params).jsonPath().getLong("id");
     }
 
     public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청(Long lineId, Map<String, String> params) {
