@@ -1,11 +1,19 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import nextstep.subway.exception.EmptySectionException;
 
 @Entity
 public class Line extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -13,7 +21,8 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST,
+            CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public Line() {
@@ -22,6 +31,34 @@ public class Line extends BaseEntity {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+
+        if (sections.size() < 0) {
+            throw new EmptySectionException();
+        }
+        stations.add(sections.get(0).getUpStation());
+
+        for (Section section : sections) {
+            stations.add(section.getDownStation());
+        }
+
+        return stations;
+    }
+
+    public void removeSection(Station station) {
+        if (!sections.get(sections.size() - 1).getDownStation()
+                .equals(station)) {
+            throw new IllegalArgumentException();
+        }
+
+        sections.remove(sections.size() - 1);
     }
 
     public Long getId() {
@@ -51,4 +88,5 @@ public class Line extends BaseEntity {
     public List<Section> getSections() {
         return sections;
     }
+
 }
