@@ -5,6 +5,7 @@ import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,17 @@ public class LineServiceTest {
     @Autowired
     private LineService lineService;
 
+    private Station 강남역;
+    private Station 삼성역;
+    private Station 역삼역;
+
+    @BeforeEach
+    void setUp() {
+        강남역 = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
+        역삼역 = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
+        삼성역 = stationRepository.save(createStationEntity(THIRD_STATION_NAME));
+    }
+
     @DisplayName("노선을 저장하다.")
     @Test
     void saveLine() {
@@ -68,9 +80,6 @@ public class LineServiceTest {
     @Test
     void saveLineAndSaveSection() {
         // given
-        Station 강남역 = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
-        Station 역삼역 = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
-
         LineRequest lineRequest = createLineRequest(FIRST_LINE_NAME, DEFAULT_LINE_COLOR, 강남역.getId(), 역삼역.getId(), DEFAULT_DISTANCE);
 
         // when
@@ -127,23 +136,6 @@ public class LineServiceTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("노선 정보를 수정한다")
-    @Test
-    void updateLine() {
-        // given
-        String updateName = "분당선";
-
-        LineResponse 일호선 = lineService.saveLine(createLineRequest(FIRST_LINE_NAME));
-        LineRequest updateLineRequest = createLineRequest(updateName);
-
-        // when
-        lineService.updateLine(일호선.getId(), updateLineRequest);
-        LineResponse updateLineResponse = lineService.findById(일호선.getId());
-
-        // then
-        assertThat(updateLineResponse.getName()).isEqualTo(updateName);
-    }
-
     @DisplayName("수정할 노선 이름이 중복이면 예외 발생")
     @Test
     void updateLineDuplicationNameException() {
@@ -190,8 +182,6 @@ public class LineServiceTest {
         // given
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         Line line = lineRepository.save(createLineEntity());
-        Station 강남역 = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
-        Station 역삼역 = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
 
         SectionRequest request = createSectionRequest(강남역, 역삼역);
 
@@ -209,9 +199,6 @@ public class LineServiceTest {
     void addSectionInThMiddle() {
         // given
         Line line = lineRepository.save(createLineEntity());
-        Station 강남역 = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
-        Station 삼성역 = stationRepository.save(createStationEntity(THIRD_STATION_NAME));
-        Station 역삼역 = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
 
         lineService.addSection(line.getId(), createSectionRequest(강남역, 삼성역));
 
@@ -234,8 +221,6 @@ public class LineServiceTest {
     void addSectionNotLineException() {
         // given
         Line line = lineRepository.save(createLineEntity());
-        Station 강남역 = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
-        Station 역삼역 = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
 
         SectionRequest request = createSectionRequest(강남역, 역삼역);
 
@@ -254,54 +239,6 @@ public class LineServiceTest {
 
         // when, then
         assertThatThrownBy(() -> lineService.addSection(line.getId(), request))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @DisplayName("노선의 선택한 구간을 삭제한다")
-    @Test
-    void deleteSection() {
-        // given
-        Station 강남역 = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
-        Station 역삼역 = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
-
-        LineRequest lineRequest = createLineRequest(FIRST_LINE_NAME, DEFAULT_LINE_COLOR, 강남역.getId(), 역삼역.getId(), DEFAULT_DISTANCE);
-        LineResponse lineResponse = lineService.saveLine(lineRequest);
-
-        // when
-        lineService.deleteSection(lineResponse.getId(), lineResponse.getStations().get(1).getId());
-        LineResponse findLine = lineService.findById(lineResponse.getId());
-
-        // then
-        assertThat(findLine.getStations()).hasSize(0);
-    }
-
-    @DisplayName("구간을 삭제할 때 노선이 조회안되면 예외 발생")
-    @Test
-    void deleteSectionNotLineException() {
-        // given
-        Station 강남역 = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
-        Station 역삼역 = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
-
-        LineRequest lineRequest = createLineRequest(FIRST_LINE_NAME, DEFAULT_LINE_COLOR, 강남역.getId(), 역삼역.getId(), DEFAULT_DISTANCE);
-        LineResponse lineResponse = lineService.saveLine(lineRequest);
-
-        // when
-        assertThatThrownBy(() -> lineService.deleteSection(2L, lineResponse.getStations().get(1).getId()))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @DisplayName("구간의 마지막 역이 아니면 삭제 요청 시 예외 발생")
-    @Test
-    void deleteNotLastSectionStException() {
-        // given
-        Station 강남역 = stationRepository.save(createStationEntity(FIRST_STATION_NAME));
-        Station 역삼역 = stationRepository.save(createStationEntity(SECOND_STATION_NAME));
-
-        LineRequest lineRequest = createLineRequest(FIRST_LINE_NAME, DEFAULT_LINE_COLOR, 강남역.getId(), 역삼역.getId(), DEFAULT_DISTANCE);
-        LineResponse lineResponse = lineService.saveLine(lineRequest);
-
-        // when
-        assertThatThrownBy(() -> lineService.deleteSection(lineResponse.getId(), 강남역.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

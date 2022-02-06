@@ -217,7 +217,7 @@ public class SectionsTest {
                 .hasMessage("구간이 적어 삭제할 수 없습니다.");
     }
 
-    @DisplayName("지하철 노선의 구간이 1개 이하일 때 제거 요청하면 예외처리")
+    @DisplayName("지하철 노선에 등록되지 않은 구간을 제거 요청하면 예외처리")
     @Test
     void removeSectionNoneStationException() {
         // given

@@ -193,32 +193,6 @@ public class LineServiceMockTest {
         );
     }
 
-/**
- * TODO : 명시적인 로직을 추가 or 통합테스트에서 진행해야함.
- *
-    @DisplayName("수정할 노선 이름이 중복이면 예외 발생")
-    @Test
-    void updateLineDuplicationNameException() {
-        // given
-        Line line1 = createLineEntity(FIRST_LINE_NAME);
-        Line line2 = createLineEntity(SECOND_LINE_NAME);
-        LineRequest lineRequest1 = createLineRequest(line1.getName(), line1.getColor());
-        LineRequest lineRequest2 = createLineRequest(line2.getName(), line2.getColor());
-
-        when(lineRepository.save(any())).thenReturn(line1)
-                                        .thenReturn(line2);
-        when(lineRepository.findById(any())).thenReturn(Optional.of(line1));
-
-        lineService.saveLine(lineRequest1);
-        lineService.saveLine(lineRequest2);
-
-        // when, then
-        assertThatThrownBy(() -> {
-            lineService.updateLine(line1.getId(), lineRequest2);
-        }).isInstanceOf(DataIntegrityViolationException.class);
-    }
-*/
-
     @DisplayName("수정할 노선이 없으면 예외 발생")
     @Test
     void updateLineNotFindException() {
@@ -314,30 +288,33 @@ public class LineServiceMockTest {
     void deleteSection() {
         // given
         Line line = createLineEntity(FIRST_LINE_NAME);
-        Station upStation = createStationEntity(FIRST_STATION_ID, FIRST_STATION_NAME);
-        Station downStation = createStationEntity(SECOND_STATION_ID, SECOND_STATION_NAME);
-        SectionRequest sectionRequest = createSectionRequest(upStation.getId(), downStation.getId());
+        Station firstStation = createStationEntity(FIRST_STATION_ID, FIRST_STATION_NAME);
+        Station secondStation = createStationEntity(SECOND_STATION_ID, SECOND_STATION_NAME);
+        Station thirdStation = createStationEntity(3L, "삼성역");
+        SectionRequest sectionRequest1 = createSectionRequest(firstStation.getId(), secondStation.getId());
+        SectionRequest sectionRequest2 = createSectionRequest(secondStation.getId(), thirdStation.getId());
 
-        when(stationService.findById(upStation.getId())).thenReturn(upStation);
-        when(stationService.findById(downStation.getId())).thenReturn(downStation);
-        when(stationService.findById(downStation.getId())).thenReturn(downStation);
+        when(stationService.findById(firstStation.getId())).thenReturn(firstStation);
+        when(stationService.findById(secondStation.getId())).thenReturn(secondStation);
+        when(stationService.findById(thirdStation.getId())).thenReturn(thirdStation);
 
         when(lineRepository.findById(any())).thenReturn(Optional.of(line))
+                                            .thenReturn(Optional.of(line))
                                             .thenReturn(Optional.of(line));
 
-        lineService.addSection(line.getId(), sectionRequest);
+        lineService.addSection(line.getId(), sectionRequest1);
+        lineService.addSection(line.getId(), sectionRequest2);
 
         // when
-        lineService.deleteSection(line.getId(), downStation.getId());
+        lineService.deleteSection(line.getId(), thirdStation.getId());
         LineResponse findLine = lineService.findById(line.getId());
 
         // then
         assertAll(
-                () -> verify(stationService, times(3)).findById(any()),
-                () -> verify(lineRepository, times(3)).findById(any()),
-                () -> assertThat(findLine.getStations()).hasSize(0)
+                () -> assertThat(findLine.getStations()).hasSize(2)
         );
     }
+
 
     @DisplayName("구간을 삭제할 때 노선이 조회안되면 예외 발생")
     @Test
@@ -349,29 +326,6 @@ public class LineServiceMockTest {
         assertThatThrownBy(() -> lineService.deleteSection(1L, 1L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
-
-    @DisplayName("구간의 마지막 역이 아니면 삭제 요청 시 예외 발생")
-    @Test
-    void deleteSectionNotLastException() {
-        // given
-        Line line = createLineEntity(FIRST_LINE_NAME);
-        Station upStation = createStationEntity(FIRST_STATION_ID, FIRST_STATION_NAME);
-        Station downStation = createStationEntity(SECOND_STATION_ID, SECOND_STATION_NAME);
-        SectionRequest sectionRequest = createSectionRequest(upStation.getId(), downStation.getId());
-
-        when(stationService.findById(upStation.getId())).thenReturn(upStation);
-        when(stationService.findById(downStation.getId())).thenReturn(downStation);
-        when(lineRepository.findById(any())).thenReturn(Optional.of(line))
-                .thenReturn(Optional.of(line));
-        when(stationService.findById(downStation.getId())).thenReturn(downStation);
-
-        lineService.addSection(line.getId(), sectionRequest);
-
-        // when, then
-        assertThatThrownBy(() -> lineService.deleteSection(line.getId(), upStation.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-//
 
     private SectionRequest createSectionRequest(Long upStationId, Long downStationId) {
         return createSectionRequest(upStationId, downStationId, DEFAULT_DISTANCE);
