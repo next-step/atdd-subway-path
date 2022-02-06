@@ -46,11 +46,8 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("구간을 새롭게 등록한다.")
+    @DisplayName("구간이 하행선에 이어서 생성된다.")
     void addSection() {
-        // 새로운 역이 생성되고,
-        // 기존 구간의 하행선에 맞물려 구간이 생성된다.
-
         // given
         Station 역삼역 = createMockStation(3L, "역삼역");
 
@@ -65,9 +62,6 @@ class LineTest {
     @Test
     @DisplayName("구간을 새롭게 등록한다. - 상행선이 같은 경우")
     void addSection2() {
-        // 새로운 역이 생성되고,
-        // 기존 구간의 상행선을 상행선으로, 새로운 역을 하행선으로 갖는 구간을 추가한다.
-
         // given
         Station 역삼역 = createMockStation(3L, "역삼역");
 
@@ -84,9 +78,6 @@ class LineTest {
     @Test
     @DisplayName("구간을 새롭게 등록한다. - 하행선이 같은 경우")
     void addSection3() {
-        // 새로운 역이 생성되고,
-        // 새로운 역을 상행선으로, 기존구간의 하행선을 하행선으로 갖는 구간을 추가한다.
-
         // given
         Station 역삼역 = createMockStation(3L, "역삼역");
 
@@ -103,9 +94,6 @@ class LineTest {
     @Test
     @DisplayName("구간을 삭제한다. - 종점을 삭제하는 경우")
     void removeSection() {
-        // 새로운 역을 생성하고 노선의 종점으로 구간을 등록하고,
-        // 다시 해당 역을 삭제하면 구간이 제거되고, 종점이 갱신된다.
-
         // given
         Station 역삼역 = createMockStation(3L, "역삼역");
         이호선.addSection(createSection(이호선, 선릉역, 역삼역, 7));
@@ -121,9 +109,6 @@ class LineTest {
     @Test
     @DisplayName("구간을 삭제한다. - 최상행역을 삭제하는 경우")
     void removeSection2() {
-        // 새로운 역을 생성하고 노선의 종점으로 구간을 등록하고,
-        // 노선의 최상행역을 삭제하면 구간이 제거되고, 최상행역이 갱신된다.
-
         // given
         Station 역삼역 = createMockStation(3L, "역삼역");
         이호선.addSection(createSection(이호선, 선릉역, 역삼역, 7));
@@ -139,10 +124,6 @@ class LineTest {
     @Test
     @DisplayName("구간을 삭제한다. - 중간역을 삭제하는 경우")
     void removeSection3() {
-        // 새로운 역을 생성하고 노선의 종점으로 구간을 등록하고
-        // 중간역을 삭제하면 구간이 제거되고,
-        // 중간역의 상행과 하행을 잇는 구간이 새롭게 등록된다.
-
         // given
         Station 역삼역 = createMockStation(3L, "역삼역");
         이호선.addSection(createSection(이호선, 선릉역, 역삼역, 7));

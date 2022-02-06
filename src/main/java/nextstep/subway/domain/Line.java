@@ -53,35 +53,6 @@ public class Line extends BaseEntity {
         return Section.of(this, upStation, downStation, distance);
     }
 
-    @Override
-    public String toString() {
-        return "Line{" +
-                "name='" + name + '\'' +
-                ", color='" + color + '\'' +
-                '}';
-    }
-
-    /* getter */
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public String getUpStationName() {
-        return upStation.getName();
-    }
-
-    public String getDownStationName() {
-        return downStation.getName();
-    }
-
     /* 구간 추가 */
     public void addSection(Section section) {
         if (isUpStation(section.getDownStation())) {
@@ -228,5 +199,34 @@ public class Line extends BaseEntity {
 
     private void removeSection(Section targetSection) {
         sections.remove(targetSection);
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                '}';
+    }
+
+    /* getter */
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public String getUpStationName() {
+        return upStation.getName();
+    }
+
+    public String getDownStationName() {
+        return downStation.getName();
     }
 }

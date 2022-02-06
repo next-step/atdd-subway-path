@@ -52,3 +52,5 @@
 - [x] Line#SectionList 에 대해 일급컬랙션 적용하기
 - [x] 하행 종점에 새로운 역 등록시에 대한 시나리오 구체화
 - [x] LineTest 의 구간생성 테스트들에 대해 distance 에 대한 검증 추가
+- [x] domain 에서 boilerplate 위치 변경
+- [x] LineTest 주석 내용 DisplayName 으로 정리
