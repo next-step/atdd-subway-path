@@ -23,7 +23,6 @@ public class Section {
     private int distance;
 
     protected Section() {
-
     }
 
     public Section(Line line, Station downStation, Station upStation, int distance) {
@@ -31,19 +30,6 @@ public class Section {
         this.downStation = downStation;
         this.upStation = upStation;
         this.distance = distance;
-    }
-
-    public Section(Station downStation, Station upStation, int distance) {
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
-    }
-
-    public Section(Station downStation, Station upStation, int distance, Line line) {
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
-        this.line = line;
     }
 
     public Long getId() {
@@ -64,6 +50,14 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public boolean isEqualDownStationName(String name) {
+        return getDownStation().isEqualName(name);
+    }
+
+    public boolean isEqualUpStationName(String name) {
+        return getUpStation().isEqualName(name);
     }
 
     @Override

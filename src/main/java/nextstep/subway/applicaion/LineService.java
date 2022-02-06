@@ -30,7 +30,7 @@ public class LineService {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
             line = new Line(request.getName(), request.getColor());
-            Section section = new Section(downStation, upStation, request.getDistance(), line);
+            Section section = new Section(line, downStation, upStation, request.getDistance());
             line.initSection(section);
         }
         lineRepository.save(line);
