@@ -77,7 +77,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
   }
 
   /**
-   * Given 노선을 생성하고 해당 노선에 종점역을 추가한 후
+   * Given 중간 지하철역을 추가하고
    * When 해당 노선의 전체 구간 중간에 구간 추가를 요청하면
    * Then 구간 추가가 성공한다.
    */
@@ -96,8 +96,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
   }
 
   /**
-   * Given 노선을 생성하고 해당 노선에 종점역을 추가한 후
-   * When 해당 노선의 전체 구간 중간에 길이가 같거나 더 긴 구간 추가를 요청하면
+   * Given 지하철역을 추가한 후
+   * When 해당 노선에 상행 종점역, 중간역을 구간으로 추가하는 경우 기존 간격보다 더 크게 추가할 경우
    * Then 구간 추가가 실패한다.
    */
   @DisplayName("노선 중간에 길이가 더 긴 구간 추가(실패 케이스)")
@@ -114,8 +114,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
   }
 
   /**
-   * Given 노선을 생성하고 해당 노선에 종점역을 추가한 후
-   * When 해당 노선의 구간에 존재하지 않는 역들을 구간으로 추가할 경우
+   * Given 노선에 존재하지 않는 역들의 구간을 설정하고
+   * When 해당 구간을 추가할 경우
    * Then 구간 추가가 실패한다.
    */
   @DisplayName("노선에 상 하행 역 존재하지 않는 구간 추가 실패")
@@ -128,8 +128,22 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     // when
     ExtractableResponse<Response> createResponse = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 미금역, 3));
 
-    // then 구간 추가 실패해야 한다.
+    // then
     assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+  }
+
+  /**
+   * When 상, 하행 역이 동일한 구간을 추가할 경우
+   * Then 구간 추가가 실패한다.
+   */
+  @DisplayName("노선에 상 하행 역 동일 구간 추가 실패")
+  @Test
+  void addDuplicationSectionTest() {
+    // when
+    ExtractableResponse<Response> createResponse = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 3));
+
+    // then
+    assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
   }
 
   private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
