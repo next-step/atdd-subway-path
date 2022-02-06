@@ -143,7 +143,7 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        verifyCanBeDeleted(station);
+        verifyCanBeDeleted();
 
         var selectedSection = getOrderedSections().stream()
                 .filter(it -> it.hasStation(station))
@@ -151,15 +151,9 @@ public class Sections {
 
         if (selectedSection.size() == 1) {
             sections.remove(selectedSection.get(0));
-        } else {
-            var upSection = selectedSection.stream()
-                    .filter(it -> it.getDownStation().equals(station))
-                    .findFirst()
-                    .get();
-            var downSection = selectedSection.stream()
-                    .filter(it -> it.getUpStation().equals(station))
-                    .findFirst()
-                    .get();
+        } else if (selectedSection.size() == 2) {
+            var upSection = selectedSection.get(0);
+            var downSection = selectedSection.get(1);
 
             var newSection = new Section(
                     upSection.getUpStation(),
@@ -170,6 +164,8 @@ public class Sections {
             sections.remove(upSection);
             sections.remove(downSection);
             sections.add(newSection);
+        } else {
+            throw new IllegalStateException("구간들의 데이터 정합성이 유효하지 않은 상태입니다.");
         }
     }
 
@@ -187,7 +183,7 @@ public class Sections {
         }
     }
 
-    private void verifyCanBeDeleted(Station station) {
+    private void verifyCanBeDeleted() {
         if (sections.size() < DELETABLE_SIZE) {
             throw new IllegalArgumentException("노선에 구간이 부족하여 역을 삭제할 수 없습니다.");
         }
