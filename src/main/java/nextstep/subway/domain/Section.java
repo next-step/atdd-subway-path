@@ -3,7 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 
 @Entity
-public class Section {
+public class Section implements Comparable<Section> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,7 +22,8 @@ public class Section {
 
     private int distance;
 
-    protected Section() {
+    public Section() {
+
     }
 
     public Section(Line line, Station downStation, Station upStation, int distance) {
@@ -31,11 +32,20 @@ public class Section {
         this.upStation = upStation;
         this.distance = distance;
     }
-    public Section(Station upStation, Station downStation, int distance) {
+
+    public Section(Station downStation, Station upStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
+
+    public Section(Station downStation, Station upStation, int distance, Line line) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+        this.line = line;
+    }
+
     public Long getId() {
         return id;
     }
@@ -56,14 +66,6 @@ public class Section {
         return distance;
     }
 
-    public boolean isEqualDownStationName(String name) {
-        return getDownStation().isEqualName(name);
-    }
-
-    public boolean isEqualUpStationName(String name) {
-        return getUpStation().isEqualName(name);
-    }
-
     @Override
     public String toString() {
         return "Section{" +
@@ -73,5 +75,15 @@ public class Section {
                 ", downStation=" + downStation +
                 ", distance=" + distance +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Section o) {
+        if (o.getId() < id) {
+            return 1;
+        } else if (o.getId() > id) {
+            return -1;
+        }
+        return 0;
     }
 }
