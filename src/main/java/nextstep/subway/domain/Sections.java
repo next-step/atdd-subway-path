@@ -15,6 +15,8 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
+    private final String NOT_EXIST_STATION = "해당 역들은 노선 내 구간에 존재하지 않습니다.";
+
     protected Sections() {
     }
 
@@ -34,7 +36,7 @@ public class Sections {
         }
 
         if (!existsUpStation && !existsDownStation) {
-            throw new IllegalArgumentException("해당 역들은 노선 내 구간에 존재하지 않습니다.");
+            throw new IllegalArgumentException(NOT_EXIST_STATION);
         }
 
         if (existsUpStation) {
@@ -75,7 +77,7 @@ public class Sections {
         return sections.stream()
                 .filter(generatedSection -> upStation.equals(generatedSection.getUpStation()))
                 .findAny()
-                .get();
+                .orElseThrow(() -> new IllegalArgumentException(NOT_EXIST_STATION));
     }
 
     private void prependSection(Section section) {
@@ -103,7 +105,7 @@ public class Sections {
         return sections.stream()
                 .filter(generatedSection -> downStation.equals(generatedSection.getDownStation()))
                 .findAny()
-                .get();
+                .orElseThrow(() -> new IllegalArgumentException(NOT_EXIST_STATION));
     }
 
     public Station getLastDownStation() {
