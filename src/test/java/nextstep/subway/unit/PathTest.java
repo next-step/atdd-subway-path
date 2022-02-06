@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 class PathTest {
 
@@ -62,6 +63,38 @@ class PathTest {
         // then
         assertThat(path.getStations()).containsExactly(교대역, 남부터미널역, 양재역);
         assertThat(path.getDistance()).isEqualTo(5);
+    }
+
+    @DisplayName("같은 역으로 생성시 에러 발생")
+    @Test
+    void testFindShortestPathException(){
+        // given
+        List<Line> lines = List.of(신분당선, 이호선, 삼호선);
+        Station source = 교대역;
+        Station target = 교대역;
+
+        // when & then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> new Path(source, target, lines)
+        ).withMessageContaining("출발역과 도착역이 같습니다");
+
+    }
+
+    @DisplayName("연결되어 있지 않은 역간의 경로 조회시 에러 발생")
+    @Test
+    void testFindShortestPathException2(){
+        // given
+        Line 분당선 = new Line("분당선", "yellow");
+        Station 선릉역 = new Station("선릉역");
+        Station 선정릉역 = new Station("선정릉역");
+        분당선.addSection(new Section(선릉역, 선정릉역, 5));
+        List<Line> lines = List.of(신분당선, 이호선, 삼호선, 분당선);
+        Path path = new Path(양재역, 선릉역, lines);
+
+        // when & then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> path.findShortestPath()
+        ).withMessageContaining("연결되어 있지 않습니다");
     }
 
 }

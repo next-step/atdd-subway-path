@@ -56,7 +56,7 @@ class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void findShortestPath() {
         // when
-        var response = 지하철_경로_조회(교대역, 양재역);
+        var response = 지하철_최단_경로_조회(교대역, 양재역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -72,7 +72,7 @@ class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void findShortestPath2() {
         // when
-        var response = 지하철_경로_조회(강남역, 남부터미널역);
+        var response = 지하철_최단_경로_조회(강남역, 남부터미널역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -80,7 +80,55 @@ class PathAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getInt("distance")).isEqualTo(12);
     }
 
-    private ExtractableResponse<Response> 지하철_경로_조회(Long source, Long target) {
+    /**
+     * When 출발역과 도착역이 같도록 조회하면
+     * Then 반환값이 400이다.
+     */
+    @DisplayName("출발역/도착역이 같으면 400을 반환")
+    @Test
+    void findShortestPathExceptionCase() {
+        // when
+        var response = 지하철_최단_경로_조회(강남역, 강남역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 출발역과 도착역이 연결되어 있지 않으면
+     * When 최단 경로 조회시
+     * Then 반환값이 400이다.
+     */
+    @DisplayName("출발역/도착역이 연결되어 있지 않으면 400을 반환")
+    @Test
+    void findShortestPathExceptionCase2() {
+        // given
+        Long 선릉역 = 지하철역_생성_요청("선릉역").jsonPath().getLong("id");
+        Long 선정릉역 = 지하철역_생성_요청("선정릉역").jsonPath().getLong("id");
+        Long 분당선 = 지하철_노선_생성_요청("분당선", "yellow", 선릉역, 선정릉역, 5).jsonPath().getLong("id");
+
+        // when
+        var response = 지하철_최단_경로_조회(강남역, 선정릉역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 등록되지 않은 출발/도착역의 경로 조회시
+     * Then 반환값이 400이다.
+     */
+    @DisplayName("출발역/도착역이 등록되어 있지 않으면 400을 반환")
+    @Test
+    void findShortestPathExceptionCase3() {
+        // when
+        var response = 지하철_최단_경로_조회(강남역, 10L);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ExtractableResponse<Response> 지하철_최단_경로_조회(Long source, Long target) {
         return RestAssured
                 .given().log().all()
                 .when()
