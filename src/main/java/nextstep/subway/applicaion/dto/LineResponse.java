@@ -16,7 +16,7 @@ public class LineResponse {
     private final List<StationResponse> stations;
     private final LocalDateTime createdDate;
     private final LocalDateTime modifiedDate;
-    private List<SectionResponse> sections;
+    private final List<SectionResponse> sections;
 
     public LineResponse(Line line) {
         this.id = line.getId();
