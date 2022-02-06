@@ -3,35 +3,39 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
+import nextstep.subway.exception.NotMatchDeleteSectionException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class LineService {
-    private LineRepository lineRepository;
-    private StationService stationService;
+    private final LineRepository lineRepository;
+    private final StationService stationService;
+    private final SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, StationService stationService, SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
+        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse saveLine(LineRequest request) {
-        Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
+        Line line = new Line(request.getName(), request.getColor());
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.getSections().addSection(new Section(line, upStation, downStation, request.getDistance()));
+            line = new Line(request.getName(), request.getColor());
+            Section section = new Section(downStation, upStation, request.getDistance(), line);
+            line.init(section);
         }
+        lineRepository.save(line);
         return new LineResponse(line);
     }
 
@@ -44,11 +48,11 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        return new LineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        return new LineResponse(lineRepository.findById(id).orElseThrow(EntityNotFoundException::new));
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
         if (lineRequest.getName() != null) {
             line.setName(lineRequest.getName());
@@ -66,18 +70,16 @@ public class LineService {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
-
-        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        Section section = new Section(line, downStation, upStation, sectionRequest.getDistance());
+        line.addSection(section);
     }
 
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
-
-        if (!line.getSections().getSections().get(line.getSections().getSections().size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
+        if (!line.getSections().get(line.getSections().size() - 1).getUpStation().equals(station)) {
+            throw new NotMatchDeleteSectionException();
         }
-
         line.deleteLastSection();
     }
 }
