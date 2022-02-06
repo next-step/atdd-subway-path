@@ -38,8 +38,7 @@ public class LineServiceTest {
         int distance = 10;
 
         Line 이호선 = new Line("2호선", "bg-green-600");
-        이호선.getSections().add(new Section(이호선, 교대역, 강남역, distance));
-        lineRepository.save(이호선);
+        이호선 = lineRepository.save(이호선);
         SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 역삼역.getId(), distance);
 
         // when
@@ -54,6 +53,5 @@ public class LineServiceTest {
         assertThat(section.getUpStation()).isEqualTo(강남역);
         assertThat(section.getDownStation()).isEqualTo(역삼역);
         assertThat(section.getDownStation()).isEqualTo(distance);
-
     }
 }

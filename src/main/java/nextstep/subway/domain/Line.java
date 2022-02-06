@@ -69,13 +69,4 @@ public class Line extends BaseEntity {
     public void addSection(Station upStation, Station downStation, int distance) {
         sections.addSection(this, upStation, downStation, distance);
     }
-
-    // private int getIndexContainStation(Station upStation, Station downStation) {
-    //     return IntStream.range(0, sections.size())
-    //         .filter(i -> sections.get(i).getUpStation() == upStation || sections.get(i).getDownStation() == downStation)
-    //         .findFirst()
-    //         .orElse(-1);
-    // }
-    //
-    // private void modifySection
 }

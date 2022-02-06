@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 import javax.persistence.CascadeType;
@@ -26,32 +25,7 @@ public class Sections {
 		validDuplicationSection(upStation, downStation);
 		validIncludedAnyStation(upStation, downStation);
 
-		int index = IntStream.range(0, sections.size())
-			.filter(i -> sections.get(i).isEqualUpStation(upStation)  || sections.get(i).isEqualDownStation(downStation))
-			.findFirst()
-			.orElse(-1);
-
-		if(index != -1) {
-			Section section = sections.get(index);
-
-			if(!section.isGraterOrEqualThanDistance(distance)) {
-				throw new IllegalArgumentException(ExceptionMessage.DO_NOT_ADD_SECTION.getMessage());
-			}
-
-			if(section.isEqualUpStation(upStation)) {
-				Section res = new Section(line, downStation, section.getDownStation(), section.getDistance() - distance);
-				sections.remove(index);
-
-				sections.add(index, res);
-			}
-
-			if(section.isEqualDownStation(downStation)) {
-				Section res = new Section(line, section.getUpStation(), upStation, section.getDistance() - distance);
-				sections.remove(index);
-
-				sections.add(index, res);
-			}
-		}
+		updateMiddleSection(line, upStation, downStation, distance);
 
 		sections.add(new Section(line, upStation, downStation, distance));
 	}
@@ -75,9 +49,30 @@ public class Sections {
 			.orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.DO_NOT_ADD_SECTION.getMessage()));
 	}
 
-	private void validDistance(Section section) {
-		// if(section.isGraterOrEqualThanDistance(distance)) {
-		// 	throw new IllegalArgumentException(ExceptionMessage.DO_NOT_ADD_SECTION.getMessage());
-		// }
+	private void updateMiddleSection(Line line, Station upStation, Station downStation, int distance) {
+		int index = IntStream.range(0, sections.size())
+			.filter(i -> sections.get(i).isEqualUpStation(upStation)  || sections.get(i).isEqualDownStation(downStation))
+			.findFirst()
+			.orElse(-1);
+
+		if(index != -1) {
+			Section section = sections.get(index);
+			Section newSection = null;
+
+			if(!section.isGraterOrEqualThanDistance(distance)) {
+				throw new IllegalArgumentException(ExceptionMessage.DO_NOT_ADD_SECTION.getMessage());
+			}
+
+			if(section.isEqualUpStation(upStation)) {
+				newSection = new Section(line, downStation, section.getDownStation(), section.getDistance() - distance);
+			}
+
+			if(section.isEqualDownStation(downStation)) {
+				newSection = new Section(line, section.getUpStation(), upStation, section.getDistance() - distance);
+			}
+
+			sections.remove(index);
+			sections.add(index, newSection);
+		}
 	}
 }
