@@ -74,13 +74,27 @@ class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("존재하지 않은 출발역을 조회 할 경우의 최단 경로와 거리 조회")
     @Test
     void findShortestPathByNoExistenceSource() {
+        // given
+        final Long 존재하지_않는_역_번호 = -1L;
 
+        // when
+        final ExtractableResponse<Response> response = 지하철_출발역과_도착역간의_최단_경로_조회를_요청한다(존재하지_않는_역_번호, 교대역_번호);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("존재하지 않은 도착역을 조회 할 경우의 최단 경로와 거리 조회")
     @Test
     void findShortestPathByNoExistenceTarget() {
+        // given
+        final Long 존재하지_않는_역_번호 = -1L;
 
+        // when
+        final ExtractableResponse<Response> response = 지하철_출발역과_도착역간의_최단_경로_조회를_요청한다(교대역_번호, 존재하지_않는_역_번호);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> 지하철_출발역과_도착역간의_최단_경로_조회를_요청한다(final Long source, final Long target) {
