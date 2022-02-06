@@ -37,6 +37,6 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        assertThat(line.getSections()).containsExactly(new Section(line, 강남역, 역삼역, 3));
+        assertThat(line.getSections().getSectionStations()).containsExactly(강남역, 역삼역);
     }
 }
