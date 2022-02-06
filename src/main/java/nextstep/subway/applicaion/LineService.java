@@ -4,7 +4,6 @@ import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
-import nextstep.subway.exception.NotMatchDeleteSectionException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +31,7 @@ public class LineService {
             Station downStation = stationService.findById(request.getDownStationId());
             line = new Line(request.getName(), request.getColor());
             Section section = new Section(downStation, upStation, request.getDistance(), line);
-            line.init(section);
+            line.initSection(section);
         }
         lineRepository.save(line);
         return new LineResponse(line);

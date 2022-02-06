@@ -18,7 +18,7 @@ public class Sections {
 
     private String startStationName;
 
-    public void init(Section section) {
+    public void initSection(Section section) {
         changeStartStationName(section.getUpStation().getName());
         sections.add(section);
     }
