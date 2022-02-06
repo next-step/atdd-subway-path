@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.IllegalAddSectionException;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -54,6 +56,12 @@ public class Section {
         return distance;
     }
 
+    public void isValidCreationDistance(int targetDistance){
+        if(distance <= targetDistance) {
+            throw new IllegalArgumentException();
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -65,5 +73,9 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(id, line, upStation, downStation, distance);
+    }
+
+    public boolean isIncludedStationsName(Station station){
+        return upStation.equals(station) || downStation.equals(station);
     }
 }

@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.DuplicateCreationException;
+import nextstep.subway.exception.IllegalAddSectionException;
 import nextstep.subway.exception.NotFoundException;
 
 import javax.persistence.CascadeType;
@@ -28,44 +30,40 @@ public class Sections {
       return;
     }
 
-    Optional<Section> existUpSection = sections.stream().filter(x -> x.getUpStation().equals(section.getUpStation())).findAny();
-    Optional<Section> existDownSection = sections.stream().filter(x -> x.getDownStation().equals(section.getDownStation())).findAny();
-
-    validateInsertion(existUpSection, existDownSection, section);
+    validateInsertion(section);
 
     // 상행에서 중간으로 이어지는 중간 부분 추가
-    existUpSection.ifPresent(x -> {
-      sections.add(new Section(section.getLine(), section.getDownStation(), x.getDownStation(), x.getDistance() - section.getDistance()));
-      sections.remove(x);
+    sections.stream()
+      .filter(x -> x.getUpStation().equals(section.getUpStation())).findAny().ifPresent(x -> {
+        x.isValidCreationDistance(section.getDistance());
+        sections.add(new Section(section.getLine(), section.getDownStation(), x.getDownStation(), x.getDistance() - section.getDistance()));
+        sections.remove(x);
     });
 
     // 상행의 위로 이어지는 상행 첫구간 추가
-    existDownSection.ifPresent(x -> {
-      sections.add(new Section(section.getLine(), x.getUpStation(), section.getUpStation(),x.getDistance() - section.getDistance()));
-      sections.remove(x);
+    sections.stream()
+      .filter(x -> x.getDownStation().equals(section.getDownStation())).findAny().ifPresent(x -> {
+        x.isValidCreationDistance(section.getDistance());
+        sections.add(new Section(section.getLine(), x.getUpStation(), section.getUpStation(),x.getDistance() - section.getDistance()));
+        sections.remove(x);
     });
 
     sections.add(section);
   }
 
-  private void validateInsertion(Optional<Section> existUpSection, Optional<Section> existDownSection, Section TargetSection){
+  private void validateInsertion(Section section){
     // 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
-    if(existUpSection.isPresent() && existDownSection.isPresent()){
-      throw new IllegalArgumentException();
+    boolean upStationIncluded = isUpStationSameNameIncluded(section.getUpStation());
+    boolean downStationIncluded = isUpStationSameNameIncluded(section.getDownStation());
+
+    if(upStationIncluded && downStationIncluded){
+      throw new DuplicateCreationException();
     }
 
-    // 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
-    if((!existUpSection.isPresent()) && (!existDownSection.isPresent())){
-      throw new IllegalArgumentException();
+    if((!upStationIncluded) && (!downStationIncluded)){
+      throw new IllegalAddSectionException();
     }
 
-    if(existUpSection.isPresent() && existUpSection.get().getDistance() <= TargetSection.getDistance()){
-      throw new IllegalArgumentException();
-    }
-
-    if(existDownSection.isPresent() && existDownSection.get().getDistance() <= TargetSection.getDistance()){
-      throw new IllegalArgumentException();
-    }
   }
 
   public boolean isEmpty(){
@@ -88,6 +86,11 @@ public class Sections {
     }
 
     return stations;
+  }
+
+  public boolean isUpStationSameNameIncluded(Station station){
+    return sections.stream()
+      .anyMatch(s -> s.isIncludedStationsName(station));
   }
 
   public List<Station> getDownStations(){

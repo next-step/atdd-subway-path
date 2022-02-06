@@ -1,12 +1,20 @@
 package nextstep.subway.unit;
 
+import nextstep.subway.domain.Station;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class LineTest {
+
+    @BeforeEach
+    void setup(){
+    }
+
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
     @Test
     void addSection() {
+
     }
 
     @DisplayName("노선에 속해있는 역 목록 조회")
