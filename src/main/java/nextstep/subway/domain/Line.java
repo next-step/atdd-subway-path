@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -55,5 +54,9 @@ public class Line extends BaseEntity {
 
     public void addSection(Station upStation, Station downStation, int distance) {
         this.sections.add(this, upStation, downStation, distance);
+    }
+
+    public List<Station> getStations() {
+        return this.sections.getStations();
     }
 }

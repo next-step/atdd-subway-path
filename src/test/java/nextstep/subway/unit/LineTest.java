@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -40,10 +42,23 @@ class LineTest {
     @DisplayName("노선에 속해있는 역 목록 조회")
     @Test
     void getStations() {
+        //given
+        Station upStation = stationRepository.save(new Station("강남역"));
+        Station downStation = stationRepository.save(new Station("양재역"));
+        Line line =  new Line("신분당선", "bg-red-600");
+        line.addSection(upStation, downStation, 10);
+        Line save = lineRepository.save(line);
+
+        //when
+        List<Station> stations = save.getStations();
+
+        //then
+        assertThat(stations).hasSize(2);
     }
 
     @DisplayName("구간이 목록에서 마지막 역 삭제")
     @Test
     void removeSection() {
+
     }
 }
