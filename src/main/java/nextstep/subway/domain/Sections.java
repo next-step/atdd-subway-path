@@ -13,6 +13,7 @@ public class Sections {
     private static final int DELETE_SECTION_MINIMUM_SIZE = 2;
     private static final int FIRST_SECTION_INDEX = 0;
     private static final String DELETE_SECTION_MINIMUM_SIZE_ERROR_MESSAGE = "구간이 적어 삭제할 수 없습니다.";
+    private static final String NONE_SECTION_ERROR_MESSAGE = "존재하지 않은 구간입니다.";
     private static final String ALL_MATCH_SECTION_ERROR_MESSAGE = "상행역과 하행역이 모두 등록된 상태입니다.";
     private static final String NONE_MATCH_SECTION_ERROR_MESSAGE = "상행역과 하행역이 모두 등록되지 않았습니다.";
 
@@ -135,7 +136,7 @@ public class Sections {
         }
 
         if (findIndex < FIRST_SECTION_INDEX) {
-            throw new IllegalArgumentException(DELETE_SECTION_MINIMUM_SIZE_ERROR_MESSAGE);
+            throw new IllegalArgumentException(NONE_SECTION_ERROR_MESSAGE);
         }
     }
 
