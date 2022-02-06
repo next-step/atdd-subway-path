@@ -67,14 +67,6 @@ public class Sections {
         }
     }
 
-    private void validateRemoveSectionStationNotExistInSections(Station downStation) {
-        if (!getUpStations().contains(downStation) &&
-                !getDownStations().contains(downStation)) {
-            throw new SectionException(
-                    String.format("상행역과 하행역 모두 구간에 존재하지 않는 역입니다. 하행역 = %s", downStation));
-        }
-    }
-
     private void validateOneSection() {
         if (sections.size() <= 1) {
             throw new SectionException("구간이 1개 이하인 경우 삭제할 수 없습니다.");
