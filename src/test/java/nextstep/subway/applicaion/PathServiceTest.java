@@ -65,7 +65,7 @@ class PathServiceTest {
         삼호선.addSection(new Section(삼호선, 남부터미널역, 양재역, 3));
     }
 
-    @DisplayName("출발역과 도착역간의 최단 경로와 거리 조회")
+    @DisplayName("출발역과 도착역간의 최단 거리 조회")
     @Test
     void findShortestPath() {
         // given
@@ -76,11 +76,13 @@ class PathServiceTest {
         given(stationRepository.findById(targetId)).willReturn(Optional.of(양재역));
         given(lineRepository.findAll()).willReturn(List.of(이호선, 신분당선, 삼호선));
 
-        // when & then
+        // when
         final ShortestPathResponse shortestPathResponse = pathService.findShortestPath(sourceId, targetId);
+
+        // then
         assertAll(
-                () -> assertThat(shortestPathResponse.getStations()).contains(),
-                () -> assertThat(shortestPathResponse.getDistance()).isEqualTo(1)
+                () -> assertThat(shortestPathResponse.getStations().size()).isEqualTo(3),
+                () -> assertThat(shortestPathResponse.getDistance()).isEqualTo(5)
         );
     }
 

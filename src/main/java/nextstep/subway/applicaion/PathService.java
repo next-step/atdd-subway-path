@@ -38,7 +38,7 @@ public class PathService {
 
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
         List<Station> shortestPath = dijkstraShortestPath.getPath(sourceStation, targetStation).getVertexList();
-        return ShortestPathResponse.of(shortestPath, all);
+        return ShortestPathResponse.of(shortestPath, (int) dijkstraShortestPath.getPathWeight(sourceStation, targetStation));
     }
 
     private void setEdgeWeight(final WeightedMultigraph<Station, DefaultWeightedEdge> graph, final Section it) {

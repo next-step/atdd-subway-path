@@ -1,25 +1,29 @@
 package nextstep.subway.applicaion.dto;
 
-import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ShortestPathResponse {
 
-    private List<ShortestPathResponse> stations;
+    private List<ShortestPathStationResponse> stations;
 
     private int distance;
 
-    public static ShortestPathResponse of(final List<Station> entities, final List<Line> lines) {
-        return new ShortestPathResponse();
-//        return new ShortestPathResponse(entities.stream()
-//                .map(ShortestPathStationResponse::new)
-//                .collect(Collectors.toList()), )
+    public ShortestPathResponse(final List<ShortestPathStationResponse> stations, final int distance) {
+        this.stations = stations;
+        this.distance = distance;
     }
 
-    public List<ShortestPathResponse> getStations() {
+    public static ShortestPathResponse of(final List<Station> entities, final int distance) {
+        return new ShortestPathResponse(entities.stream()
+                .map(ShortestPathStationResponse::new)
+                .collect(Collectors.toList()), distance);
+    }
+
+    public List<ShortestPathStationResponse> getStations() {
         return stations;
     }
 
