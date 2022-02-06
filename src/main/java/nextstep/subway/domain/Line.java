@@ -15,6 +15,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.domain.exception.ExceptionMessage;
+
 @Entity
 public class Line extends BaseEntity {
     @Id
@@ -68,6 +70,11 @@ public class Line extends BaseEntity {
             sections.add(new Section(this, upStation, downStation, distance));
             return;
         }
+
+        sections.stream()
+            .filter(it -> it.isEqualStation(upStation, downStation))
+            .findFirst()
+            .ifPresent(it -> { throw new IllegalArgumentException(ExceptionMessage.DUPLICATE_SECTION.getMessage()); });
 
         int index = IntStream.range(0, sections.size())
             .filter(i -> sections.get(i).getUpStation() == upStation || sections.get(i).getDownStation() == downStation)

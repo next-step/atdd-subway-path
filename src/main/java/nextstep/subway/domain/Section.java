@@ -52,4 +52,9 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public boolean isEqualStation(Station upStation, Station downStation) {
+        return (this.upStation.isEqualName(upStation) && this.downStation.isEqualName(downStation))
+            || (this.upStation.isEqualName(downStation) && this.downStation.isEqualName(upStation));
+    }
 }

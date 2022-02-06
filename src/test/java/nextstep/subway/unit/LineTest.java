@@ -1,6 +1,6 @@
 package nextstep.subway.unit;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.exception.ExceptionMessage;
 
 class LineTest {
     private Line 이호선;
@@ -38,13 +39,13 @@ class LineTest {
         // then
         List<Section> sections = 이호선.getSections();
         Section section = sections.stream()
-            .filter(it -> it.getUpStation().isEqualName(강남역.getName()))
+            .filter(it -> it.getUpStation().isEqualName(강남역))
             .findFirst()
             .orElseThrow(RuntimeException::new);
 
         assertAll(
-            () -> assertThat(section.getUpStation().isEqualName(강남역.getName())).isTrue(),
-            () -> assertThat(section.getDownStation().isEqualName(역삼역.getName())).isTrue(),
+            () -> assertThat(section.getUpStation().isEqualName(강남역)).isTrue(),
+            () -> assertThat(section.getDownStation().isEqualName(역삼역)).isTrue(),
             () -> assertThat(section.getDistance()).isEqualTo(15)
         );
     }
@@ -59,13 +60,13 @@ class LineTest {
         // then
         List<Section> sections = 이호선.getSections();
         Section section = sections.stream()
-            .filter(it -> it.getUpStation().isEqualName(교대역.getName()))
+            .filter(it -> it.getUpStation().isEqualName(교대역))
             .findFirst()
             .orElseThrow(RuntimeException::new);
 
         assertAll(
-            () -> assertThat(section.getUpStation().isEqualName(교대역.getName())).isTrue(),
-            () -> assertThat(section.getDownStation().isEqualName(강남역.getName())).isTrue(),
+            () -> assertThat(section.getUpStation().isEqualName(교대역)).isTrue(),
+            () -> assertThat(section.getDownStation().isEqualName(강남역)).isTrue(),
             () -> assertThat(section.getDistance()).isEqualTo(5)
         );
     }
@@ -80,15 +81,27 @@ class LineTest {
         // then
         List<Section> sections = 이호선.getSections();
         Section section = sections.stream()
-            .filter(it -> it.getUpStation().isEqualName(강남역.getName()))
+            .filter(it -> it.getUpStation().isEqualName(강남역))
             .findFirst()
             .orElseThrow(RuntimeException::new);
 
         assertAll(
-            () -> assertThat(section.getUpStation().isEqualName(강남역.getName())).isTrue(),
-            () -> assertThat(section.getDownStation().isEqualName(역삼역.getName())).isTrue(),
+            () -> assertThat(section.getUpStation().isEqualName(강남역)).isTrue(),
+            () -> assertThat(section.getDownStation().isEqualName(역삼역)).isTrue(),
             () -> assertThat(section.getDistance()).isEqualTo(3)
         );
+    }
+
+    @DisplayName("등록할 구간이 이미 등록 되어 있는 경우")
+    @Test
+    void 등록할_구간이_이미_존재할_경우_예외() {
+        // when
+        이호선.addSection(교대역, 역삼역, 10);
+
+        // then
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> 이호선.addSection(역삼역, 교대역, 3))
+            .withMessageContaining(ExceptionMessage.DUPLICATE_SECTION.getMessage());
     }
 
     @DisplayName("노선에 속해있는 역 목록 조회")
