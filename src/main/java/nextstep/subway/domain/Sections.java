@@ -170,26 +170,10 @@ public class Sections {
         return sections.get(getLastIndex());
     }
 
-    private void validateIsLastStation(Long stationId) {
-        if (!hasLastStation(stationId)) {
-            throw new RemoveSectionFailException();
-        }
-    }
-
     private void validateSectionCount() {
         if (sections.size() == MIN_SECTIONS_SIZE) {
             throw new RemoveSectionFailException();
         }
-    }
-
-    private boolean hasLastStation(Long stationId) {
-        return getLastDownStation().getId()
-                .equals(stationId);
-    }
-
-    private Station getLastDownStation() {
-        List<Station> stations = getStations();
-        return stations.get(stations.size() - 1);
     }
 
     private int getLastIndex() {
