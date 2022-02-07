@@ -55,7 +55,7 @@ public class Sections {
     }
 
     private boolean isLastStation(Station station) {
-        return getLastSection().isDownStation(station);
+        return findLastSection().isDownStation(station);
     }
 
     private void addToLastSection(Section newSection) {
@@ -63,8 +63,7 @@ public class Sections {
     }
 
     private boolean isFirstStation(Station station) {
-        return sections.get(0)
-                .isUpStation(station);
+        return findFirstSection().isUpStation(station);
     }
 
     private void addToFirstSection(Section newSection) {
@@ -130,12 +129,12 @@ public class Sections {
         validateSectionCount();
 
         if (isFirstStation(station)) {
-            sections.remove(0);
+            removeFirstStation();
             return;
         }
 
         if (isLastStation(station)) {
-            sections.remove(getLastIndex());
+            removeLastStation();
             return;
         }
 
@@ -147,11 +146,28 @@ public class Sections {
         throw new RemoveSectionFailException();
     }
 
+    private void removeLastStation() {
+        Section lastSection = findLastSection();
+        sections.remove(lastSection);
+    }
+
+    private void removeFirstStation() {
+        Section firstSection = findFirstSection();
+        sections.remove(firstSection);
+    }
+
     private void removeMiddleStation(Station station) {
         Section targetSection = findSection(station);
-        Section beforeSection = sections.get(sections.indexOf(targetSection) - 1);
+        Section beforeSection = findBeforeSection(targetSection.getUpStation());
         beforeSection.changeDownStation(targetSection.getDownStation(), targetSection.getDistance());
         sections.remove(targetSection);
+    }
+
+    private Section findBeforeSection(Station station) {
+        return sections.stream()
+                .filter(s -> s.isDownStation(station))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
     }
 
     private boolean isUpStation(Station station) {
@@ -166,8 +182,12 @@ public class Sections {
                 .orElseThrow(RemoveSectionFailException::new);
     }
 
-    private Section getLastSection() {
-        return sections.get(getLastIndex());
+    private Section findLastSection() {
+        return sections.stream()
+                .filter(section -> sections.stream()
+                        .noneMatch(s -> s.isUpStation(section.getDownStation())))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
     }
 
     private void validateSectionCount() {
