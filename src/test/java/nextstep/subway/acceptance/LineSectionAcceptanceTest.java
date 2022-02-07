@@ -113,6 +113,22 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("sections.downStation.name", String.class)).containsExactly("정자역", "강남역");
         assertThat(response.jsonPath().getList("sections.upStation.name", String.class)).containsExactly("강남역", "양재역");
     }
+
+    /**
+     * When 강남역 -> 양재역 -> 미금역 구간에 강남역 삭제 요청을 하면
+     * 양재역 -> 미금역이 된다.
+     */
+    @DisplayName("가장 왼쪽에 존재하는 구간을 삭제 요청")
+    @Test
+    void deleteLeftSection() {
+        // when
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 5));
+        // then
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선,강남역);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
     /**
      * When 지하철 노선에 강남역->양재역 구간에 신도림역->문래역 구간 추가를 요청 하면
      * Then
