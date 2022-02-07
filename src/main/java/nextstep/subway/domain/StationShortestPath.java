@@ -8,7 +8,7 @@ import java.util.List;
 
 public class StationShortestPath {
 
-    private DijkstraShortestPath dijkstraShortestPath;
+    private final DijkstraShortestPath dijkstraShortestPath;
 
     public static StationShortestPath of(List<Line> lines) {
         final WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
@@ -21,7 +21,7 @@ public class StationShortestPath {
         return new StationShortestPath(new DijkstraShortestPath(graph));
     }
 
-    public StationShortestPath(final DijkstraShortestPath dijkstraShortestPath) {
+    private StationShortestPath(final DijkstraShortestPath dijkstraShortestPath) {
         this.dijkstraShortestPath = dijkstraShortestPath;
     }
 

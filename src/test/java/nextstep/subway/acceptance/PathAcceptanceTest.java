@@ -61,7 +61,7 @@ class PathAcceptanceTest extends AcceptanceTest {
      * When 출발역과 도착역간의 최단 경로 찾기 요청을 하면
      * Then 출발역과 도착역간의 최단 경로와 거리를 조회할 수 있다.
      */
-    @DisplayName("출발역과 도착역간의 최단 경로와 거리 조회")
+    @DisplayName("출발역과 도착역간의 최단 경로를 조회한다")
     @Test
     void findShortestPath() {
         // when
@@ -78,7 +78,7 @@ class PathAcceptanceTest extends AcceptanceTest {
      * When 출발역과 도착역이 같은 경우의 최단 경로 찾기 요청을 하면
      * Then 출발역과 도착역간의 최단 경로와 거리를 조회할 수 없다.
      */
-    @DisplayName("출발역과 도착역이 같은 경우의 최단 경로와 거리 조회")
+    @DisplayName("출발역과 도착역이 같은 경우의 최단 경로를 조회할 수 없다")
     @Test
     void findShortestPathBySameSourceAndTarget() {
         // when
@@ -92,7 +92,7 @@ class PathAcceptanceTest extends AcceptanceTest {
      * When 출발역과 도착역이 연결이 되어 있지 않은 경우의 최단 경로 찾기 요청을 하면
      * Then 출발역과 도착역간의 최단 경로와 거리를 조회할 수 없다.
      */
-    @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우의 최단 경로와 거리 조회")
+    @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우에는 최단 경로를 조회할 수 없다")
     @Test
     void findShortestPathByNoLinkedSourceAndTarget() {
         // given
@@ -109,7 +109,7 @@ class PathAcceptanceTest extends AcceptanceTest {
      * When 존재하지 않은 출발역을 조회 할 경우의 최단 경로 찾기 요청을 하면
      * Then 출발역과 도착역간의 최단 경로와 거리를 조회할 수 없다.
      */
-    @DisplayName("존재하지 않은 출발역을 조회 할 경우의 최단 경로와 거리 조회")
+    @DisplayName("존재하지 않은 출발역을 조회 할 경우에는 최단 경로를 조회할 수 없다")
     @Test
     void findShortestPathByNoExistenceSource() {
         // when
@@ -123,7 +123,7 @@ class PathAcceptanceTest extends AcceptanceTest {
      * When 존재하지 않은 도착역을 조회 할 경우의 최단 경로 찾기 요청을 하면
      * Then 출발역과 도착역간의 최단 경로와 거리를 조회할 수 없다.
      */
-    @DisplayName("존재하지 않은 도착역을 조회 할 경우의 최단 경로와 거리 조회")
+    @DisplayName("존재하지 않은 도착역을 조회 할 경우에는 최단 경로와 거리 조회할 수 없다")
     @Test
     void findShortestPathByNoExistenceTarget() {
         // when

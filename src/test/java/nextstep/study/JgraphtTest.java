@@ -5,14 +5,18 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.alg.shortestpath.KShortestPaths;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 
 class JgraphtTest {
+
+    @DisplayName("최단 경로를 반환한다")
     @Test
     void getDijkstraShortestPath() {
         // 출발 도착
@@ -38,12 +42,14 @@ class JgraphtTest {
         // 가장 짤은 거리 클래스 생성후, 결과값(경로) 가져오기
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
         List<String> shortestPath = dijkstraShortestPath.getPath(source, target).getVertexList();
-        assertThat(shortestPath.size()).isEqualTo(4);
-        for (String s : shortestPath) {
-            System.out.println(s); // 3 -> 4 -> 2 -> 1
-        }
+
+        assertAll(
+                () -> assertThat(shortestPath.size()).isEqualTo(4),
+                () -> assertThat(shortestPath).containsExactly("v3", "v4", "v2", "v1")
+        );
     }
 
+    @DisplayName("최단 경로의 총 거리값을 반환한다")
     @Test
     void getDijkstraShortestWeight() {
         // 출발 도착
@@ -72,6 +78,7 @@ class JgraphtTest {
         assertThat(pathWeight).isEqualTo(4.0);
     }
 
+    @DisplayName("경로들을 최단 거리를 최우선 순으로 반환한다")
     @Test
     void getKShortestPaths() {
         // 출발 도착
@@ -105,7 +112,6 @@ class JgraphtTest {
                 .forEach(it -> {
                     assertThat(it.getVertexList()).startsWith(source);
                     assertThat(it.getVertexList()).endsWith(target);
-                    System.out.println(it.getVertexList());
                 });
     }
 }
