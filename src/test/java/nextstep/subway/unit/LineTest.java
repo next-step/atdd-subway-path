@@ -230,7 +230,14 @@ class LineTest {
 
         //then
         List<String> namesOfStations = getNamesOfStations(loopLine);
-        assertThat(namesOfStations).containsExactly(gangnam.getName(), sunreoung.getName());
+        Integer sumOfDistances = loopLine.distances().stream()
+                .reduce(0, Integer::sum);
+
+        assertAll(
+                () -> assertThat(namesOfStations).containsExactly(gangnam.getName(), sunreoung.getName()),
+                () -> assertThat(sumOfDistances).isEqualTo(15)
+        );
+
 
     }
 
