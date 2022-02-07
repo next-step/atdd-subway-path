@@ -232,4 +232,22 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * given 역을 생성하고
+     * when 등록되지 않은 역을 삭제 요청하면
+     * then 삭제 요청이 실패한다.
+     */
+    @DisplayName("지하철 노선에 구간을 제거 - 등록되지 않은 역 제거 불가")
+    @Test
+    void deleteNotContainsStation() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
