@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import nextstep.subway.exception.StationNotFoundException;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,5 +39,9 @@ public class Lines {
             .filter(station -> station.getId().equals(id))
             .findFirst()
             .orElseThrow(StationNotFoundException::new);
+    }
+
+    public boolean isNotExistStations(Long... ids) {
+        return getStationsByIds(Arrays.asList(ids)).isEmpty();
     }
 }

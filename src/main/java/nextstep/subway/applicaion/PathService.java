@@ -5,11 +5,15 @@ import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Lines;
 import nextstep.subway.domain.StationDijkstraShortestStationPathFinder;
+import nextstep.subway.exception.PathNotValidException;
 import org.jgrapht.GraphPath;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static nextstep.subway.exception.ErrorMessages.DUPLICATE_START_END_STATION;
+import static nextstep.subway.exception.ErrorMessages.NOT_EXIST_START_END_STATION;
 
 @Service
 public class PathService {
@@ -21,9 +25,17 @@ public class PathService {
 
     public PathResponse getPaths(Long source, Long target) {
         Lines lines = new Lines(lineRepository.findAll());
-        StationDijkstraShortestStationPathFinder stationDijkstraShortestStationPathFinder = StationDijkstraShortestStationPathFinder.ofLines(lines);
 
+        checkParameters(lines, source, target);
+
+        StationDijkstraShortestStationPathFinder stationDijkstraShortestStationPathFinder = StationDijkstraShortestStationPathFinder.ofLines(lines);
         final GraphPath findPath = stationDijkstraShortestStationPathFinder.getPath(source.toString(), target.toString());
+
+        boolean isNotConnected = findPath == null;
+        if (isNotConnected) {
+            throw new PathNotValidException();
+        }
+
         List<String> vertexList = findPath.getVertexList();
         List<Long> ids = convertStringToLong(vertexList);
 
@@ -34,6 +46,16 @@ public class PathService {
         int distance = (int) Math.round(findPath.getWeight());
 
         return new PathResponse(stations, distance);
+    }
+
+    private void checkParameters(Lines lines, Long source, Long target) {
+        if (source.equals(target)) {
+            throw new PathNotValidException(DUPLICATE_START_END_STATION.getMessage());
+        }
+
+        if (lines.isNotExistStations(source, target)) {
+            throw new PathNotValidException(NOT_EXIST_START_END_STATION.getMessage());
+        }
     }
 
     private List<Long> convertStringToLong(List<String> vertexList) {
