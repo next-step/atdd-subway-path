@@ -6,15 +6,28 @@ public class CannotAddSectionException extends RuntimeException {
     private static final String NON_EXISTS_MESSAGE = "기존 구간과 연결되는 역이 없습니다.";
     private static final String INVALID_DISTANCE_MESSAGE = "기존 구간의 길이보다 같거나 크면 추가할 수 없습니다. 기존 구간의 길이 : %d, 신규 구간의 길이 : %d";
 
-    public CannotAddSectionException() {
+    private CannotAddSectionException() {
         super(NON_EXISTS_MESSAGE);
     }
 
-    public CannotAddSectionException(String upStationName, String downStationName) {
+    private CannotAddSectionException(String upStationName, String downStationName) {
         super(String.format(EXIST_BOTH_MESSAGE, upStationName, downStationName));
     }
 
-    public CannotAddSectionException(int targetDistance, int distance) {
+    private CannotAddSectionException(int targetDistance, int distance) {
         super(String.format(INVALID_DISTANCE_MESSAGE, targetDistance, distance));
     }
+
+    public static CannotAddSectionException notExist() {
+        return new CannotAddSectionException();
+    }
+    public static CannotAddSectionException existBoth(String upStationName, String downStationName) {
+        return new CannotAddSectionException(upStationName, downStationName);
+    }
+
+    public static CannotAddSectionException invalidDistance(int targetDistance, int distance) {
+        return new CannotAddSectionException(targetDistance, distance);
+    }
+
+
 }
