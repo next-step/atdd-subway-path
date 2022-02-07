@@ -15,6 +15,7 @@ class LineTest {
 
     private Station upStation;
     private Station downStation;
+    private Section section;
     private Line line;
 
     @BeforeEach
@@ -22,7 +23,8 @@ class LineTest {
         upStation = new Station(강남역);
         downStation = new Station(판교역);
         line = new Line(신분당선, 빨강색);
-        line.addSection(new Section(line, upStation, downStation, 강남_판교_거리));
+        section = new Section(line, upStation, downStation, 강남_판교_거리);
+        line.addSection(section);
     }
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
@@ -58,5 +60,12 @@ class LineTest {
 
         // then
         assertThat(line.getStations()).containsExactly(upStation, downStation);
+    }
+
+    @DisplayName("노선 구간들을 반환")
+    @Test
+    void getSections() {
+        // then
+        assertThat(line.getSections()).containsExactly(section);
     }
 }

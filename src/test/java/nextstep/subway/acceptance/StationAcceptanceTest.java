@@ -36,7 +36,7 @@ class StationAcceptanceTest extends AcceptanceTest {
      * When 같은 이름으로 지하철역 생성을 요청 하면
      * Then 지하철역 생성이 실패한다.
      */
-    @DisplayName("중복이름으로 지하철역 생성")
+    @DisplayName("중복이름으로 지하철역 생성은 실패한다")
     @Test
     void duplicateName() {
         // given

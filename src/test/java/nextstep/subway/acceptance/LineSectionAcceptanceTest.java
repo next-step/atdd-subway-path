@@ -39,7 +39,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * Then 지하철 노선에 새로운 구간이 등록된다.
      * 예시) 강남 판교 - 판교-정자
      */
-    @DisplayName("지하철 노선에 새로운 하행 종점역 구간을 등록")
+    @DisplayName("지하철 노선에 새로운 하행 종점역 구간을 등록할 수 있다")
     @Test
     void addLineSectionExtensionDownTerminalStation() {
         // when
@@ -59,7 +59,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * Then 지하철 노선에 새로운 구간이 등록된다.
      * 예시) 강남 판교 - 논현 강남
      */
-    @DisplayName("지하철 노선에 새로운 상행 종점역 구간을 등록")
+    @DisplayName("지하철 노선에 새로운 상행 종점역 구간을 등록할 수 있다")
     @Test
     void addLineSectionExtensionUpTerminalStation() {
         // when
@@ -79,7 +79,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * Then 지하철 노선에 새로운 구간이 등록된다.
      * 예시) 강남 판교 - 양재 판교
      */
-    @DisplayName("지하철 노선 하행을 기준으로 중앙 방향의 새로운 구간을 등록")
+    @DisplayName("지하철 노선 하행을 기준으로 중앙 방향의 새로운 구간을 등록할 수 있다")
     @Test
     void addLineSectionDownStation() {
         // when
@@ -99,7 +99,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * Then 지하철 노선에 새로운 구간이 등록된다.
      * 예시) 강남 판교 - 강남 양재
      */
-    @DisplayName("지하철 노선 상행을 기준으로 중앙 방향의 새로운 구간을 등록")
+    @DisplayName("지하철 노선 상행을 기준으로 중앙 방향의 새로운 구간을 등록할 수 있다")
     @Test
     void addLineSectionUpStation() {
         // when
@@ -119,7 +119,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * Then 지하철 노선에 새로운 구간 등록이 실패한다.
      * 예시) 강남 판교 - 양재 판교
      */
-    @DisplayName("하행을 기준으로 지하철 노선에 있는 역 사이 길이보다 같거나 긴 새로운 지하철 노선 구간 등록")
+    @DisplayName("하행을 기준으로 지하철 노선에 있는 역 사이 길이보다 같거나 긴 새로운 지하철 노선 구간을 등록할 수 없다")
     @Test
     void addLineSectionDownStationException() {
         // when
@@ -136,7 +136,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * Then 지하철 노선에 새로운 구간 등록이 실패한다.
      * 예시) 강남 판교 - 강남 양재
      */
-    @DisplayName("상행을 기준으로 지하철 노선에 있는 역 사이 길이보다 같거나 긴 새로운 지하철 노선 구간 등록")
+    @DisplayName("상행을 기준으로 지하철 노선에 있는 역 사이 길이보다 같거나 긴 새로운 지하철 노선 구간을 등록할 수 없다")
     @Test
     void addLineSectionByUpStationException() {
         // when
@@ -153,7 +153,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선에 기존 구간에 있는 역들로 새로운 구간 등록 요청을 하면
      * Then 지하철 노선에 새로운 구간 추가가 실패한다.
      */
-    @DisplayName("지하철 노선에 기존 구간에 있는 역들로 새로운 구간 등록")
+    @DisplayName("지하철 노선에 기존 구간에 있는 역들로 새로운 구간을 등록할 수 없다")
     @Test
     void addLineSectionExistenceStationsException() {
         // when
@@ -167,7 +167,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선에 기존 등록되지 않은 역으로 새로운 구간 등록 요청을 하면
      * Then 지하철 노선에 새로운 구간 추가가 실패한다.
      */
-    @DisplayName("지하철 노선에 기존 등록되지 않은 역으로 새로운 지하철 노선 구간 등록")
+    @DisplayName("지하철 노선에 기존 등록되지 않은 역으로 새로운 지하철 노선 구간을 등록할 수 없다")
     @Test
     void addLineSectionUnregisteredAnyStationsException() {
         // when
@@ -185,7 +185,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선에 하행 종점역 구간 삭제 요청 하면
      * Then 지하철 노선에 구간이 삭제된다.
      */
-    @DisplayName("지하철 노선에 하행 종점역 구간을 제거")
+    @DisplayName("지하철 노선에 하행 종점역 구간을 제거할 수 있다")
     @Test
     void removeLineSectionDownTerminalStation() {
         // given
@@ -208,7 +208,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선에 상행 종점역 구간 삭제 요청 하면
      * Then 지하철 노선에 구간이 삭제된다.
      */
-    @DisplayName("지하철 노선에 상행 종점역 구간을 제거")
+    @DisplayName("지하철 노선에 상행 종점역 구간을 제거할 수 있다.")
     @Test
     void removeLineSectionUpTerminalStation() {
         // given
@@ -231,7 +231,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선에 중간 구간 삭제 요청 하면
      * Then 지하철 노선에 구간이 삭제된다.
      */
-    @DisplayName("지하철 노선에 중간역을 통한 구간 제거")
+    @DisplayName("지하철 노선에 중간역을 통한 구간 제거를 할 수 있다")
     @Test
     void removeLineSectionMiddleStation() {
         // given
@@ -257,7 +257,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선에 등록되지 않은 역을 기준으로 구간 삭제 요청 하면
      * Then 지하철 노선에 구간이 삭제가 실패한다.
      */
-    @DisplayName("지하철 노선에 등록되지 않은 역을 기준으로 구간 제거")
+    @DisplayName("지하철 노선에 등록되지 않은 역을 기준으로는 구간을 제거할 수 없다")
     @Test
     void removeLineSectionUnregisteredStationException() {
         // given
@@ -276,7 +276,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선에 상행 종점역을 기준으로 구간 삭제 요청 하면
      * Then 지하철 노선에 구간 삭제가 실패한다.
      */
-    @DisplayName("지하철 노선에 등록된 구간이 1개일때 구간 제거")
+    @DisplayName("지하철 노선에 등록된 구간이 1개일때 상행 종점역을 기준으로는 구간을 제거할 수 없다")
     @Test
     void removeLineSectionUpStationWhenOnlyOne() {
         // when
@@ -290,7 +290,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선에 하행 종점역을 기준으로 구간 삭제 요청 하면
      * Then 지하철 노선에 구간 삭제가 실패한다.
      */
-    @DisplayName("지하철 노선에 등록된 구간이 1개일때 구간 제거")
+    @DisplayName("지하철 노선에 등록된 구간이 1개일때 하행 종점역을 기준으로는 구간을 제거할 수 없다")
     @Test
     void removeLineSectionDownStationWhenOnlyOne() {
         // when

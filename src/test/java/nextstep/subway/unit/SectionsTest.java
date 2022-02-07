@@ -19,6 +19,7 @@ class SectionsTest {
     private Station upStation;
     private Station downStation;
     private Line line;
+    private Section section;
     private Sections sections;
 
     @BeforeEach
@@ -27,7 +28,8 @@ class SectionsTest {
         downStation = new Station(판교역);
         line = new Line(신분당선, 빨강색);
         sections = new Sections();
-        sections.addSection(new Section(line, upStation, downStation, 강남_판교_거리));
+        section = new Section(line, upStation, downStation, 강남_판교_거리);
+        sections.addSection(section);
     }
 
     @DisplayName("구간 목록에 새로운 구간을 추가한다.")
@@ -167,5 +169,11 @@ class SectionsTest {
         assertThatThrownBy(() -> sections.removeSection(new Station(강남역)))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("sections is not removable state");
+    }
+
+    @DisplayName("구간 목록을 반환한다")
+    @Test
+    void getSections() {
+        assertThat(sections.getSections()).containsExactly(section);
     }
 }
