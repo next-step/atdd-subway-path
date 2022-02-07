@@ -45,7 +45,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        인수테스트_요청_응답을_확인한다(response, HttpStatus.OK);
+
         지하철_노선에_지하철역이_포함됐는지_확인한다(response, 강남역, 양재역, 정자역);
     }
 
@@ -66,7 +66,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        인수테스트_요청_응답을_확인한다(response, HttpStatus.OK);
+
         지하철_노선에_지하철역이_포함됐는지_확인한다(response, 강남역, 양재역);
     }
 
@@ -85,7 +85,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        인수테스트_요청_응답을_확인한다(response, HttpStatus.OK);
+
         지하철_노선에_지하철역이_포함됐는지_확인한다(response, 강남역, 정자역, 양재역);
     }
 
@@ -104,7 +104,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        인수테스트_요청_응답을_확인한다(response, HttpStatus.OK);
+
         지하철_노선에_지하철역이_포함됐는지_확인한다(response, 정자역, 강남역, 양재역);
     }
 
@@ -123,7 +123,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        인수테스트_요청_응답을_확인한다(response, HttpStatus.OK);
+
         지하철_노선에_지하철역이_포함됐는지_확인한다(response, 강남역, 양재역, 정자역);
     }
 
@@ -147,7 +147,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        인수테스트_요청_응답을_확인한다(response, HttpStatus.OK);
         지하철_노선에_지하철역이_포함됐는지_확인한다(response, 강남역, 양재역, 판교역);
     }
 
@@ -169,7 +168,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 판교역);
 
         // then
-        인수테스트_요청_응답을_확인한다(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        인수테스트_요청_응답을_확인한다(response, HttpStatus.BAD_REQUEST);
     }
 
 
