@@ -20,10 +20,10 @@ public class LinesTest {
     private static final Line 삼호선 = new Line("3호선", "bg-orange-600");
     private static final Line 신분당선 = new Line("신분당선", "bg-pink-600");
 
-    private static final Station 교대역 = new Station("교대역");
-    private static final Station 강남역 = new Station("강남역");
-    private static final Station 양재역 = new Station("양재역");
-    private static final Station 남부터미널역 = new Station("남부터미널역");
+    private static final Station 교대역 = new Station(1L, "교대역");
+    private static final Station 강남역 = new Station(2L, "강남역");
+    private static final Station 양재역 = new Station(3L, "양재역");
+    private static final Station 남부터미널역 = new Station(4L, "남부터미널역");
 
     @BeforeEach
     void setUp() {
@@ -56,5 +56,19 @@ public class LinesTest {
         List<Section> sections = lines.getAllSections();
 
         assertThat(sections).hasSize(4);
+    }
+
+    @DisplayName("지하철역 아이디로 지하철역 목록 가져오기")
+    @Test
+    void getStationsByIds() {
+        Lines lines = new Lines(this.lines);
+        List<Long> ids = new ArrayList<>();
+        ids.add(강남역.getId());
+        ids.add(교대역.getId());
+
+        List<Station> stations = lines.getStationsByIds(ids);
+
+        assertThat(stations).hasSize(2);
+        assertThat(stations).contains(강남역, 교대역);
     }
 }

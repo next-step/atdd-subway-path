@@ -1,6 +1,5 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.domain.*;
 import org.jgrapht.GraphPath;
 import org.junit.jupiter.api.BeforeEach;
