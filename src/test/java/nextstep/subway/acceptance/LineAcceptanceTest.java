@@ -27,7 +27,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green");
 
         // then
-        인수테스트_요청_응답을_확인한다(response, HttpStatus.OK);
+        인수테스트_요청_응답을_확인한다(response, HttpStatus.CREATED);
     }
 
     /**
