@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.StationNotFoundException;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,5 +24,19 @@ public class Lines {
             .flatMap(it -> it.getSections().stream())
             .distinct()
             .collect(Collectors.toList());
+    }
+
+    public List<Station> getStationsByIds(List<Long> ids) {
+        return ids
+            .stream()
+            .map(this::findById)
+            .collect(Collectors.toList());
+    }
+
+    private Station findById(long id) {
+        return getAllStations().stream()
+            .filter(station -> station.getId().equals(id))
+            .findFirst()
+            .orElseThrow(StationNotFoundException::new);
     }
 }
