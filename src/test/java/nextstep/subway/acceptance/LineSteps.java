@@ -76,7 +76,7 @@ public class LineSteps {
     }
 
     public static void 구간_삭제_요청_실패(ExtractableResponse<Response> response) {
-        응답_코드_검증(response, HttpStatus.BAD_REQUEST);
+        응답_코드_검증(response, HttpStatus.CONFLICT);
     }
 
     public static void 구간_생성_요청_후_역_목록_확인(ExtractableResponse<Response> response, Long... expected) {

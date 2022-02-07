@@ -23,7 +23,7 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(CannotDeleteSectionException.class)
     public ResponseEntity<String> handleICannotDeleteSectionException(CannotDeleteSectionException e) {
-        return ResponseEntity.badRequest()
+        return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(e.getMessage());
     }
 }
