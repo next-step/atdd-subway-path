@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Lines;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,9 +17,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LinesTest {
     private final List<Line> lines = new ArrayList<>();
 
-    private static final Line 이호선 = new Line("2호선", "bg-green-600");
-    private static final Line 삼호선 = new Line("3호선", "bg-orange-600");
-    private static final Line 신분당선 = new Line("신분당선", "bg-pink-600");
+    private Line 이호선;
+    private Line 삼호선;
+    private Line 신분당선;
 
     private static final Station 교대역 = new Station(1L, "교대역");
     private static final Station 강남역 = new Station(2L, "강남역");
@@ -27,6 +28,10 @@ public class LinesTest {
 
     @BeforeEach
     void setUp() {
+        이호선 = new Line("2호선", "bg-green-600");
+        삼호선 = new Line("3호선", "bg-orange-600");
+        신분당선 = new Line("신분당선", "bg-pink-600");
+
         이호선.addSection(new Section(이호선, 교대역, 강남역, 10));
         신분당선.addSection(new Section(신분당선, 강남역, 양재역, 10));
         삼호선.addSection(new Section(삼호선, 교대역, 남부터미널역, 2));
