@@ -5,6 +5,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -13,7 +14,19 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public List<Section> getSections() {
-        return sections;
+        List<Section> ordered = new ArrayList<>();
+        Section section = getFirstSection();
+
+        while(section != null){
+            ordered.add(section);
+            Station downStation = section.getDownStation();
+            section = sections.stream()
+                    .filter(findSection -> findSection.getUpStation().equals(downStation))
+                    .findAny()
+                    .orElse(null);
+        }
+
+        return ordered;
     }
 
     public void add(Line line, Station upStation, Station downStation, int distance) {
@@ -40,7 +53,7 @@ public class Sections {
     }
 
     private boolean isFirstUpStation(Station downStation) {
-        return downStation.equals(findFirstStation());
+        return downStation.equals(getFirstStation());
     }
 
     private void updateSection(Section newSection) {
@@ -59,9 +72,9 @@ public class Sections {
 
     public List<Station> get() {
         List<Station> stations = new ArrayList<>();
-
+        List<Section> sections = getSections();
         if (!sections.isEmpty()) {
-            stations.add(findFirstStation());
+            stations.add(getFirstStation());
             stations.addAll(findDownStations());
         }
 
@@ -77,20 +90,55 @@ public class Sections {
     }
 
     private List<Station> findDownStations() {
-        return sections.stream()
+        return getSections().stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
     }
 
-    private Station getLastStation() {
-        int size = sections.size();
-        return sections.get(size - 1)
-                .getDownStation();
+    private Section getLastSection() {
+        Section findSection = this.sections.get(0);
+
+        while(findSection != null){
+            Station lastStation = findSection.getDownStation();
+            Optional<Section> optionalSection = sections.stream()
+                    .filter(section -> section.getUpStation().equals(lastStation))
+                    .findAny();
+
+            if(!optionalSection.isPresent()){
+                break;
+            }
+
+            findSection = optionalSection.get();
+        }
+
+        return findSection;
     }
 
-    private Station findFirstStation() {
-        return sections.get(0)
-                .getUpStation();
+    private Station getLastStation() {
+        return getLastSection().getDownStation();
+    }
+
+    private Station getFirstStation() {
+        return getFirstSection().getUpStation();
+    }
+
+    private Section getFirstSection(){
+        Section findSection = this.sections.get(0);
+
+        while(findSection != null){
+            Station firstStation = findSection.getUpStation();
+            Optional<Section> optionalSection = sections.stream()
+                    .filter(section -> section.getDownStation().equals(firstStation))
+                    .findAny();
+
+            if(!optionalSection.isPresent()){
+                break;
+            }
+
+            findSection = optionalSection.get();
+        }
+
+        return findSection;
     }
 
     private void checkExistStationInLine(Station downStation) {
