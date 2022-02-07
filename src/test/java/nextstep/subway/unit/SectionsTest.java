@@ -3,16 +3,14 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
-import nextstep.subway.utils.EntityFixtures;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import static nextstep.subway.unit.LineFixtures.구간_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SectionsTest {
@@ -103,19 +101,4 @@ class SectionsTest {
         field.setAccessible(true);
         return (List<Section>) field.get(sections);
     }
-
-    private static Section 구간_생성(Long sectionId, Long upStationId, Long downStationId, int distance) {
-        Station upStation = EntityFixtures.createEntityFixtureWithId(upStationId, Station.class);
-        Station downStation = EntityFixtures.createEntityFixtureWithId(downStationId, Station.class);
-
-
-        Map<String, Object> fieldSet = new HashMap<>();
-        fieldSet.put("id", sectionId);
-        fieldSet.put("upStation", upStation);
-        fieldSet.put("downStation", downStation);
-        fieldSet.put("distance", distance);
-
-        return EntityFixtures.createEntityFixtureWithFieldSet(fieldSet, Section.class);
-    }
-
 }
