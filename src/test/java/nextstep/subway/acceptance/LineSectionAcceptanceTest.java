@@ -218,4 +218,18 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
+
+    /**
+     * when 구간 추가 없이 상행 역을 제거 요청하면
+     * then 제거 요청이 실패한다.
+     */
+    @DisplayName("지하철 노선에 구간을 제거 - 마지막 구간 제거 불가")
+    @Test
+    void deleteLastRemainSection() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
