@@ -118,10 +118,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
-     * When 구간이 하나인 지하철 노선 에서 마지막 구간 제거를 요청 하면
+     * When 구간이 하나인 지하철 노선 에서 구간 제거를 요청 하면
      * Then 노선에 구간이 제거 실패 된다
      */
-    @DisplayName("지하철 노선에 구간을 제거 시 예외")
+    @DisplayName("구간이 하나인 지하철 노선 에서 구간 제거 요청 시 예외")
     @Test
     void removeLineSectionException() {
         // when
