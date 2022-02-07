@@ -36,7 +36,6 @@ public class LineResponse {
     }
 
     private static List<StationResponse> createStationResponses(Line line) {
-//        if (line.getSections().isEmpty()) {
         if (line.isEmptySections()) {
             return Collections.emptyList();
         }

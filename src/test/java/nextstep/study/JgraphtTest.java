@@ -34,9 +34,11 @@ class JgraphtTest {
 
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
         List<String> shortestPath = dijkstraShortestPath.getPath(source, target).getVertexList();
+        double pathWeight = dijkstraShortestPath.getPathWeight(source, target);
 
         assertThat(shortestPath.size()).isEqualTo(4);
         assertThat(shortestPath).containsExactly("v5", "v3", "v2", "v1");
+        assertThat(pathWeight).isEqualTo(50);
     }
 
     // 뭔지 잘 모르곘네?
