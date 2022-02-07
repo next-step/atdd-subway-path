@@ -1,11 +1,12 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
+    @Embedded
+    private final Sections sections = new Sections();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -13,10 +14,7 @@ public class Line extends BaseEntity {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
-
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color) {
@@ -49,6 +47,35 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
+    }
+
+    public void deleteLastSection() {
+        sections.deleteLastSection();
+    }
+
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
+    }
+
+    public void initSection(Section section) {
+        sections.initSection(section);
+    }
+
+    public void deleteSection(Long stationId) {
+        Section downSection = null;
+        Section upSection = null;
+        if (getSections().stream().filter(section -> section.getUpStation().getId() == stationId).findFirst().isPresent()) {
+            downSection = getSections().stream().filter(section -> section.getUpStation().getId() == stationId).findFirst().get();
+            sections.getSections().remove(downSection);
+        }
+        if (getSections().stream().filter(section -> section.getDownStation().getId() == stationId).findFirst().isPresent()) {
+            upSection = getSections().stream().filter(section -> section.getUpStation().getId() == stationId).findFirst().get();
+            sections.getSections().remove(upSection);
+        }
     }
 }

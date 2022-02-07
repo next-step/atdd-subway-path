@@ -22,14 +22,13 @@ public class Section {
 
     private int distance;
 
-    public Section() {
-
+    protected Section() {
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    public Section(Line line, Station downStation, Station upStation, int distance) {
         this.line = line;
-        this.upStation = upStation;
         this.downStation = downStation;
+        this.upStation = upStation;
         this.distance = distance;
     }
 
@@ -51,5 +50,24 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public boolean isEqualDownStationName(String name) {
+        return getDownStation().isEqualName(name);
+    }
+
+    public boolean isEqualUpStationName(String name) {
+        return getUpStation().isEqualName(name);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", line=" + line +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
     }
 }
