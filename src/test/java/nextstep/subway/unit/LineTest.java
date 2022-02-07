@@ -29,7 +29,7 @@ class LineTest {
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
     @Test
     void addSection() {
-        assertThat(신분당선.getSections().size()).isEqualTo(1);
+        assertThat(신분당선.getStations().size()).isEqualTo(1);
     }
 
     @DisplayName("노선에 속해있는 역 목록 조회")
@@ -42,6 +42,6 @@ class LineTest {
     @Test
     void removeSection() {
         신분당선.removeSection(판교역);
-        assertThat(신분당선.getSections()).isEqualTo(Collections.emptyList());
+        assertThat(신분당선.getStations()).isEqualTo(Collections.emptyList());
     }
 }
