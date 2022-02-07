@@ -25,11 +25,16 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest request) {
-        PairedStations pairedStations = new PairedStations(stationService.findById(request.getUpStationId()), stationService.findById(request.getDownStationId()));
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+
+        PairedStations pairedStations = new PairedStations(upStation, downStation);
+
         Line line = new Line(request.getName(),
                 request.getColor(),
                 pairedStations,
                 request.getDistance());
+
         lineRepository.save(line);
 
         return LineResponse.fromEntity(line);
