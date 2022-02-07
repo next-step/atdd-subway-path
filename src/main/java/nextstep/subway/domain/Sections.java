@@ -195,8 +195,4 @@ public class Sections {
             throw new RemoveSectionFailException();
         }
     }
-
-    private int getLastIndex() {
-        return sections.size() - 1;
-    }
 }
