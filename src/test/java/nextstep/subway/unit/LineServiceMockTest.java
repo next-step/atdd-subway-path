@@ -5,7 +5,6 @@ import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,22 +43,22 @@ public class LineServiceMockTest {
         setField(firstDownStation, "id", 2L);
         setField(newStation, "id", 3L);
 
-        Section firstSection = new Section(line, firstUpStation, firstDownStation, 10);
-        line.getSections().add(firstSection);
-
         given(lineRepository.findById(line.getId())).willReturn(Optional.of(line));
+        given(stationService.findById(firstUpStation.getId())).willReturn(firstUpStation);
         given(stationService.findById(firstDownStation.getId())).willReturn(firstDownStation);
         given(stationService.findById(newStation.getId())).willReturn(newStation);
 
+        SectionRequest firstSectionRequest =
+                new SectionRequest(firstUpStation.getId(), firstDownStation.getId(), 10);
         SectionRequest sectionRequest =
                 new SectionRequest(firstDownStation.getId(), newStation.getId(), 10);
 
         // when
+        lineService.addSection(line.getId(), firstSectionRequest);
         lineService.addSection(line.getId(), sectionRequest);
 
         // then
         List<Long> downStationsIds = line.getSections()
-                .getSections()
                 .stream()
                 .map(s -> s.getDownStation().getId())
                 .collect(Collectors.toList());

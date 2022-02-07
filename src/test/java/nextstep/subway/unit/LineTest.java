@@ -27,7 +27,7 @@ class LineTest {
         line = new Line("2호선", "green");
         section = new Section(line, 신림역, 봉천역, distance);
 
-        line.getSections().getSections().add(section);
+        line.addSection(section);
     }
 
     @DisplayName("구간 목록 처음에 새로운 구간을 추가할 경우")
@@ -40,7 +40,7 @@ class LineTest {
         line.addSection(newSection);
 
         // then
-        assertThat(line.getSections().getSections())
+        assertThat(line.getSections())
                 .extracting(s -> s.getUpStation().getName())
                 .containsOnly(서울대입구역.getName(), 신림역.getName());
     }
@@ -55,7 +55,7 @@ class LineTest {
         line.addSection(newSection);
 
         // then
-        assertThat(line.getSections().getSections())
+        assertThat(line.getSections())
                 .extracting(s -> s.getDownStation().getName())
                 .containsOnly(봉천역.getName(), 서울대입구역.getName());
     }
@@ -65,7 +65,7 @@ class LineTest {
     void addMiddleSection() {
         // given
         Section targetSection = new Section(line, 봉천역, 서울대입구역, distance);
-        line.getSections().getSections().add(targetSection);
+        line.addSection(targetSection);
         int newDistance = 7;
         Station newStation = new Station("낙성대역");
         Section newSection = new Section(line, 봉천역, newStation, newDistance);
@@ -74,7 +74,7 @@ class LineTest {
         line.addSection(newSection);
 
         // then
-        assertThat(line.getSections().getSections())
+        assertThat(line.getSections())
                 .extracting(s -> s.getUpStation().getName())
                 .containsOnly(신림역.getName(), 봉천역.getName(), newStation.getName());
         assertThat(targetSection.getDistance()).isEqualTo(distance - newDistance);
@@ -94,9 +94,24 @@ class LineTest {
                 .containsOnly(신림역.getName(), 봉천역.getName(), 서울대입구역.getName());
     }
 
-    @DisplayName("구간의 목록에서 마지막 역 삭제")
+    @DisplayName("구간의 목록에서 첫 번째역 삭제")
     @Test
-    void removeSection() {
+    void removeSectionFirst() {
+        // given
+        line.addSection(new Section(line, 봉천역, 서울대입구역, 10));
+
+        // when
+        line.removeSection(신림역);
+
+        // then
+        assertThat(line.getSections())
+                .extracting(s -> s.getDownStation().getName())
+                .containsOnly(서울대입구역.getName());
+    }
+
+    @DisplayName("구간의 목록에서 마지막역 삭제")
+    @Test
+    void removeSectionLast() {
         // given
         line.addSection(new Section(line, 봉천역, 서울대입구역, 10));
 
@@ -104,8 +119,23 @@ class LineTest {
         line.removeSection(서울대입구역);
 
         // then
-        assertThat(line.getSections().getSections())
+        assertThat(line.getSections())
                 .extracting(s -> s.getDownStation().getName())
                 .containsOnly(봉천역.getName());
+    }
+
+    @DisplayName("구간의 목록에서 중간역 삭제")
+    @Test
+    void removeSectionMiddle() {
+        // given
+        line.addSection(new Section(line, 봉천역, 서울대입구역, 10));
+
+        // when
+        line.removeSection(봉천역);
+
+        // then
+        assertThat(line.getSections())
+                .extracting(s -> s.getDownStation().getName())
+                .containsOnly(서울대입구역.getName());
     }
 }

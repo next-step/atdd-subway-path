@@ -76,4 +76,13 @@ public class LineSteps {
     public static void 지하철_노선에_지하철_구간_생성_실패(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    public static void 지하철_노선에_지하철_구간_제거_완료(ExtractableResponse<Response> response, Long... ids) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(ids);
+    }
+
+    public static void 지하철_노선에_지하철_구간_제거_실패(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

@@ -8,6 +8,8 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.error.exception.EntityDuplicateException;
+import nextstep.subway.error.exception.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +41,7 @@ public class LineService {
 
     private void checkDuplicated(String name) {
         lineRepository.findByName(name).ifPresent(line -> {
-            throw new IllegalArgumentException();
+            throw new EntityDuplicateException(name);
         });
     }
 
@@ -64,7 +66,10 @@ public class LineService {
     }
 
     private Line findLine(Long id) {
-        return lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        return lineRepository.findById(id)
+                .orElseThrow(() -> {
+                    throw new EntityNotFoundException(id);
+                });
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {

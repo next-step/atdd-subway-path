@@ -1,6 +1,10 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
+import nextstep.subway.error.exception.InvalidValueException;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,30 +21,30 @@ public class Sections {
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
 
-        if (isValidToEnd(upStation, downStation)) {
+        if (isValidAddToEnd(upStation, downStation)) {
             sections.add(section);
             return;
         }
-        if (isValidToMiddle(upStation, downStation)) {
+        if (isValidAddToMiddle(upStation, downStation)) {
             addMiddle(section);
             return;
         }
-        throw new IllegalArgumentException();
+        throw new InvalidValueException(section.getId());
     }
 
-    public boolean isValidToEnd(Station upStation, Station downStation) {
+    public boolean isValidAddToEnd(Station upStation, Station downStation) {
         if (sections.isEmpty()) {
             return true;
         }
 
-        if (isNotValidToFirst(upStation, downStation) &&
-                isNotValidToLast(upStation, downStation)) {
+        if (isNotValidAddToFirst(upStation, downStation) &&
+                isNotValidAddToLast(upStation, downStation)) {
             return false;
         }
         return true;
     }
 
-    private boolean isNotValidToFirst(Station upStation, Station downStation) {
+    private boolean isNotValidAddToFirst(Station upStation, Station downStation) {
         return doesContains(upStation) ||
                 doesNotMatchFirstUpStation(downStation);
     }
@@ -58,7 +62,7 @@ public class Sections {
                 .getUpStation();
     }
 
-    private boolean isNotValidToLast(Station upStation, Station downStation) {
+    private boolean isNotValidAddToLast(Station upStation, Station downStation) {
         return doesContains(downStation) ||
                 doesNotMatchLastDownStation(upStation);
     }
@@ -80,7 +84,7 @@ public class Sections {
         return sections.stream().anyMatch(s -> s.doesContains(station));
     }
 
-    private boolean isValidToMiddle(Station upStation, Station downStation) {
+    private boolean isValidAddToMiddle(Station upStation, Station downStation) {
         return doesContains(upStation) &&
                 !doesContains(downStation) &&
                 doesNotMatchLastDownStation(upStation);
@@ -88,7 +92,7 @@ public class Sections {
 
     private void addMiddle(Section section) {
         Section targetSection = findTargetSection(section.getUpStation());
-        targetSection.changeUpStationToNewDownStation(section);
+        targetSection.changeUpStationWhenAdd(section);
         sections.add(section);
     }
 
@@ -100,27 +104,25 @@ public class Sections {
     }
 
     public List<Station> getSortedStations() {
-        sorted();
-
+        List<Section> sortedSections = getSorted();
         List<Station> stations = new ArrayList<>();
-        stations.add(getFirstUpStationWhenSorted());
-        sections.forEach(s -> stations.add(s.getDownStation()));
+        stations.add(getFirstUpStationWhenSorted(sortedSections));
+        sortedSections.forEach(s -> stations.add(s.getDownStation()));
 
         return stations;
     }
 
-    private Station getFirstUpStationWhenSorted() {
-        return sections.get(FIRST_SECTION_INDEX).getUpStation();
+    private Station getFirstUpStationWhenSorted(List<Section> sortedSections) {
+        return sortedSections.get(FIRST_SECTION_INDEX).getUpStation();
     }
 
-    private void sorted() {
-        Section firstSection = findFirstSection();
-        sections.remove(firstSection);
-        sections.add(FIRST_SECTION_INDEX, firstSection);
-
-        for (int i = 0; i < sections.size() - 1; i++) {
-            findNextSection(i);
-        }
+    private List<Section> getSorted() {
+        List<Section> sortedSections = new ArrayList<>();
+        sortedSections.add(findFirstSection());
+        do {
+            addNextSections(sortedSections);
+        } while (sortedSections.size() < sections.size());
+        return sortedSections;
     }
 
     private Section findFirstSection() {
@@ -132,43 +134,69 @@ public class Sections {
                 .get(0);
     }
 
-    private void findNextSection(int i) {
-        for (int j = i + 1; j < sections.size(); j++) {
-            swap(i, j);
+    private void addNextSections(List<Section> sortedSections) {
+        for (int i = 0; i < sections.size(); i++) {
+            findNextSection(sortedSections, sections.get(i));
         }
     }
 
-    private void swap(int i, int j) {
-        if (isNextSection(i, j)) {
-            Collections.swap(sections, i + 1, j);
+    private void findNextSection(List<Section> sortedSections, Section section) {
+        Section lastSection = sortedSections.get(sortedSections.size() - 1);
+        if (lastSection.equals(section)) {
+            return;
+        }
+        if (isNextSection(lastSection, section)) {
+            sortedSections.add(section);
         }
     }
 
-    private boolean isNextSection(int i, int j) {
-        return sections.get(i).compareTo(sections.get(j)) > 0;
+    private boolean isNextSection(Section lastSection, Section section) {
+        return lastSection.compareTo(section) > 0;
     }
 
     public void remove(Station station) {
+        if (sections.size() <= 1) {
+            throw new InvalidValueException(station.getId());
+        }
+
         Section section = findSection(station);
-        validatePossibleToRemove(section);
-        sections.remove(section);
+        if (isValidRemoveTheEnd(station)) {
+            sections.remove(section);
+            return;
+        }
+        removeTheMiddle(section);
     }
 
     private Section findSection(Station station) {
         return sections.stream()
-                .filter(s -> s.getDownStation().equals(station))
+                .filter(s -> s.doesContains(station))
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> {
+                    throw new InvalidValueException(station.getId());
+                });
     }
 
-    private void validatePossibleToRemove(Section section) {
-        if (sections.size() <= 1 ||
-                !section.isLastStation(findLastDownStation())) {
-            throw new IllegalArgumentException();
-        }
+    private boolean isValidRemoveTheEnd(Station station) {
+        return station.equals(findFirstUpStation()) ||
+                station.equals(findLastDownStation());
+    }
+
+    private void removeTheMiddle(Section section) {
+        Section nextSection = findNextSection(section.getDownStation());
+        nextSection.changeUpStationWhenRemove(section);
+        sections.remove(section);
+    }
+
+    private Section findNextSection(Station downStation) {
+        return sections.stream()
+                .filter(s -> s.isNextSection(downStation))
+                .findFirst()
+                .orElseThrow(() -> {
+                    throw new InvalidValueException(downStation.getId());
+                });
     }
 
     public List<Section> getSections() {
-        return sections;
+        return Collections.unmodifiableList(sections);
     }
 }
