@@ -5,6 +5,7 @@ import nextstep.subway.exception.IllegalDistanceException;
 import nextstep.subway.exception.NoMatchSectionException;
 
 import javax.persistence.CascadeType;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -154,5 +155,44 @@ public class Sections {
             }
         }
         return null;
+    }
+
+    public boolean isDeleteRightSection(Long stationId) {
+        return getSections().stream().anyMatch(section -> section.isEqualDownStationId(stationId)) && !getSections().stream().anyMatch(section -> section.isEqualUpStationId(stationId));
+    }
+
+    public boolean isDeleteLeftSection(Long stationId) {
+        return !getSections().stream().anyMatch(section -> section.isEqualDownStationId(stationId)) && getSections().stream().anyMatch(section -> section.isEqualUpStationId(stationId));
+    }
+
+    public boolean isDeleteMiddleSection(Long stationId) {
+        return getSections().stream().anyMatch(section -> section.isEqualDownStationId(stationId)) && getSections().stream().anyMatch(section -> section.isEqualUpStationId(stationId));
+    }
+
+    public void deleteMiddleSection(Long stationId,Line line) {
+        Section leftSection = getSections().stream().filter(section -> section.isEqualUpStationId(stationId))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException());
+        Section rightSection = getSections().stream().filter(section -> section.isEqualDownStationId(stationId))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException());
+        sections.remove(leftSection);
+        sections.remove(rightSection);
+        sections.add(new Section(line, leftSection.getDownStation(), rightSection.getDownStation(),
+                leftSection.getDistance() + rightSection.getDistance()));
+    }
+
+    public void deleteRightSection(Long stationId,Line line) {
+        Section rightSection = getSections().stream().filter(section -> section.isEqualDownStationId(stationId))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException());
+        sections.remove(rightSection);
+    }
+
+    public void deleteLeftSection(Long stationId,Line line) {
+        Section leftSection = getSections().stream().filter(section -> section.isEqualUpStationId(stationId))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException());
+        sections.remove(leftSection);
     }
 }

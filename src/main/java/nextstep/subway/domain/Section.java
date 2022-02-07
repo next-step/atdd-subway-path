@@ -70,4 +70,12 @@ public class Section {
                 ", distance=" + distance +
                 '}';
     }
+
+    public boolean isEqualDownStationId(Long stationId) {
+        return id == stationId;
+    }
+
+    public boolean isEqualUpStationId(Long stationId) {
+        return id == stationId;
+    }
 }

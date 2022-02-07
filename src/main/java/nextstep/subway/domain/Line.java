@@ -67,15 +67,16 @@ public class Line extends BaseEntity {
     }
 
     public void deleteSection(Long stationId) {
-        Section downSection = null;
-        Section upSection = null;
-        if (getSections().stream().filter(section -> section.getUpStation().getId() == stationId).findFirst().isPresent()) {
-            downSection = getSections().stream().filter(section -> section.getUpStation().getId() == stationId).findFirst().get();
-            sections.getSections().remove(downSection);
+        Section leftSection = null;
+        Section rightSection = null;
+        if (sections.isDeleteMiddleSection(stationId)) {
+            sections.deleteMiddleSection(stationId,this);
         }
-        if (getSections().stream().filter(section -> section.getDownStation().getId() == stationId).findFirst().isPresent()) {
-            upSection = getSections().stream().filter(section -> section.getUpStation().getId() == stationId).findFirst().get();
-            sections.getSections().remove(upSection);
+        if (sections.isDeleteRightSection(stationId)) {
+            sections.deleteRightSection(stationId,this);
+        }
+        if (sections.isDeleteLeftSection(stationId)) {
+            sections.deleteLeftSection(stationId,this);
         }
     }
 }
