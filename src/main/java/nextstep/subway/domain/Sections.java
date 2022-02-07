@@ -57,7 +57,8 @@ public class Sections {
     }
 
     private void replaceSection(Section replacedSection, Station newSectionUpStation, Station newSectionDownStation, int remainedDistance) {
-        if (remainedDistance <= 0) {
+        final int minDistanceExclusive = 0;
+        if (remainedDistance <= minDistanceExclusive) {
             throw new IllegalArgumentException("기존 구간 거리 이상 구간은 사이에 추가할 수 없습니다.");
         }
         sections.remove(replacedSection);
@@ -113,7 +114,9 @@ public class Sections {
         if (downStationSection.isEmpty() && upStationSection.isEmpty()) {
             throw new IllegalArgumentException("구간에 존재하지 않는 역입니다.");
         }
-        if (sections.size() < 2) {
+
+        final int sectionMinCountInclusive = 1;
+        if (sections.size() <= sectionMinCountInclusive) {
             throw new IllegalArgumentException("구간이 한 개면 삭제할 수 없습니다.");
         }
 
