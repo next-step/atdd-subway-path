@@ -6,7 +6,6 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.handler.exception.StationException;
-import nextstep.subway.handler.validator.ExploreValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,7 +27,6 @@ public class PathService {
     public ExploreResponse explore(Long source, Long target) {
         Station sourceStation = findStationById(source);
         Station targetStation = findStationById(target);
-        ExploreValidator.validateStationsIsSame(sourceStation, targetStation);
 
         pathFinder = new PathFinder(findAllLines());
 

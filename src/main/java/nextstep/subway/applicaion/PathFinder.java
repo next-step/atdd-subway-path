@@ -19,10 +19,12 @@ public class PathFinder {
     }
 
     public List<String> explore(String source, String target) {
+        ExploreValidator.validateStationsIsSame(source, target);
+
         GraphPath path = new DijkstraShortestPath(graph).getPath(source, target);
         ExploreValidator.validateNotFound(path);
 
-        distance = (int)path.getWeight();
+        distance = (int) path.getWeight();
         return path.getVertexList();
     }
 

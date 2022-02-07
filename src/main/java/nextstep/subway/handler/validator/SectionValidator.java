@@ -7,8 +7,11 @@ import nextstep.subway.handler.exception.SectionException;
 import static nextstep.subway.handler.exception.ErrorCode.*;
 
 public class SectionValidator {
+    private final static int MINIMUM_DISTANCE = 0;
+    private final static int ONE_SECTION = 1;
+
     public static void validateDistance(int distance) {
-        if (distance <= 0) {
+        if (distance <= MINIMUM_DISTANCE) {
             throw new SectionException(INVALID_DISTANCE);
         }
     }
@@ -26,7 +29,7 @@ public class SectionValidator {
     }
 
     public static void validateOnlyOneSection(Line line) {
-        if (line.getSectionSize() == 1) {
+        if (line.getSectionSize() == ONE_SECTION) {
             throw new SectionException(SECTION_REMAINED_ONLY_ONE);
         }
     }

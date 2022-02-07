@@ -22,6 +22,6 @@ public class EntityFactory {
     }
 
     public static Section createSection(Line line, Station upStation, Station downStation, int distance) {
-        return Section.of(line, upStation, downStation, distance);
+        return Section.initialize(line, upStation, downStation, distance);
     }
 }

@@ -103,6 +103,7 @@ class LineTest {
 
         // then
         assertThat(이호선.getStations()).containsExactly(Arrays.array(강남역, 선릉역));
+        assertThat(이호선.getSections().findSectionByDownStation(선릉역).getDistance()).isEqualTo(10);
         assertThat(이호선.getDownStationName()).isEqualTo("선릉역");
     }
 
@@ -118,6 +119,7 @@ class LineTest {
 
         // then
         assertThat(이호선.getStations()).containsExactly(Arrays.array(선릉역, 역삼역));
+        assertThat(이호선.getSections().findSectionByDownStation(역삼역).getDistance()).isEqualTo(7);
         assertThat(이호선.getUpStationName()).isEqualTo("선릉역");
     }
 
@@ -133,5 +135,6 @@ class LineTest {
 
         // then
         assertThat(이호선.getStations()).containsExactly(Arrays.array(강남역, 역삼역));
+        assertThat(이호선.getSections().findSectionByDownStation(역삼역).getDistance()).isEqualTo(17);
     }
 }

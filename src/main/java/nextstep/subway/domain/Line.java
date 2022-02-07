@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.handler.validator.SectionValidator;
+import nextstep.subway.handler.validator.StationValidator;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -50,7 +53,7 @@ public class Line extends BaseEntity {
     }
 
     private Section initSection(Station upStation, Station downStation, int distance) {
-        return Section.of(this, upStation, downStation, distance);
+        return Section.initialize(this, upStation, downStation, distance);
     }
 
     /* 구간 추가 */
@@ -143,6 +146,9 @@ public class Line extends BaseEntity {
     }
 
     public void removeSectionByStation(Station station) {
+        SectionValidator.validateOnlyOneSection(this);
+        StationValidator.validateStationRemove(this, station);
+
         if (isDownStation(station)) {
             removeDownSection(station);
             return;
@@ -186,7 +192,11 @@ public class Line extends BaseEntity {
             }
         }
 
-        pushSection(newUpStation, newDownStation, newDistance);
+        pushInitSection(newUpStation, newDownStation, newDistance);
+    }
+
+    private void pushInitSection(Station upStation, Station downStation, int distance) {
+        sections.add(Section.initialize(this, upStation, downStation, distance));
     }
 
     private void updateUpStation(Section targetSection) {

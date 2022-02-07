@@ -48,9 +48,6 @@ class LineServiceMockTest {
     @Test
     void 노선_생성() {
         // given
-        Long 강남역Id = 1L;
-        Long 선릉역Id = 2L;
-
         when(stationRepository.findById(1L)).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(2L)).thenReturn(Optional.of(선릉역));
         when(lineRepository.save(any())).thenReturn(이호선);

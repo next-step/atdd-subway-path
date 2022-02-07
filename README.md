@@ -62,8 +62,8 @@
 - [x] LineTest 의 구간생성 테스트들에 대해 distance 에 대한 검증 추가
 - [x] domain 에서 boilerplate 위치 변경
 - [x] LineTest 주석 내용 DisplayName 으로 정리
-- [ ] Validator 도메인 로직으로 분리
+- [x] Validator 도메인 로직으로 분리
 - [ ] LineServiceMockTest 에서 실제 객체를 활용하는 부분
-- [ ] 매직넘버 상수로 치환
-- [ ] LineSectionAcceptanceTest#185 line @DisplayName 과 시나리오 상이 수정
-- [ ] LineTest 에서 중간역 삭제시 거리도 함께 검증
+- [x] 매직넘버 상수로 치환
+- [x] LineSectionAcceptanceTest#185 line @DisplayName 과 시나리오 상이 수정
+- [x] LineTest 에서 중간역 삭제시 거리도 함께 검증
