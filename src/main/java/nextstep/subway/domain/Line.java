@@ -67,4 +67,12 @@ public class Line extends BaseEntity {
     public boolean isEmptySections() {
         return sections.isEmpty();
     }
+
+    public List<Section> getSections() {
+        return sections.getSections();
+    }
+
+    public void setSections(Sections sections) {
+        this.sections = sections;
+    }
 }

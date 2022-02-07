@@ -6,6 +6,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -52,6 +53,10 @@ public class Sections {
 
     int size() {
         return sections.size();
+    }
+
+    public List<Section> getSections() {
+        return Collections.unmodifiableList(sections);
     }
 
     private Predicate<Section> equalsDownStation(Station downStation) {
