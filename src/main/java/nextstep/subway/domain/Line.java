@@ -67,16 +67,14 @@ public class Line extends BaseEntity {
     }
 
     public void deleteSection(Long stationId) {
-        Section leftSection = null;
-        Section rightSection = null;
         if (sections.isDeleteMiddleSection(stationId)) {
             sections.deleteMiddleSection(stationId,this);
         }
         if (sections.isDeleteRightSection(stationId)) {
-            sections.deleteRightSection(stationId,this);
+            sections.deleteRightSection(stationId);
         }
         if (sections.isDeleteLeftSection(stationId)) {
-            sections.deleteLeftSection(stationId,this);
+            sections.deleteLeftSection(stationId);
         }
     }
 }

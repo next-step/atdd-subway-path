@@ -182,14 +182,14 @@ public class Sections {
                 leftSection.getDistance() + rightSection.getDistance()));
     }
 
-    public void deleteRightSection(Long stationId,Line line) {
+    public void deleteRightSection(Long stationId) {
         Section rightSection = getSections().stream().filter(section -> section.isEqualDownStationId(stationId))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException());
         sections.remove(rightSection);
     }
 
-    public void deleteLeftSection(Long stationId,Line line) {
+    public void deleteLeftSection(Long stationId) {
         Section leftSection = getSections().stream().filter(section -> section.isEqualUpStationId(stationId))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException());
