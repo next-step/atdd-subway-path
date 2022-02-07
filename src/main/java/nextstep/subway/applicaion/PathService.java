@@ -16,12 +16,10 @@ import java.util.stream.Collectors;
 public class PathService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    private final PathFinder pathFinder;
 
-    public PathService(LineRepository lineRepository, StationRepository stationRepository, PathFinder pathFinder) {
+    public PathService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.pathFinder = pathFinder;
     }
 
     @Transactional(readOnly = true)
@@ -29,6 +27,6 @@ public class PathService {
         List<Line> lines = lineRepository.findAll();
         Map<Long, Station> stationMap = stationRepository.findAll().stream().collect(Collectors.toMap(Station::getId, Function.identity()));
 
-        return pathFinder.findPath(lines, stationMap, source, target);
+        return PathFinder.create(lines, stationMap).findPath(source, target);
     }
 }

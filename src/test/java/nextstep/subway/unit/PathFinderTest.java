@@ -38,8 +38,8 @@ class PathFinderTest {
      * *3호선*                   *신분당선*
      * |                        |
      * 남부터미널역  --- *3호선* ---   양재
-     *                          |
-     *                           청계산입구역
+     * |
+     * 청계산입구역
      */
     @BeforeEach
     public void setUp() {
@@ -62,7 +62,7 @@ class PathFinderTest {
         삼호선.addSection(교대역, 남부터미널역, 5);
         삼호선.addSection(남부터미널역, 양재역, 4);
         사호선.addSection(안산역, 오이도역, 100);
-        
+
         stationMap.put(교대역.getId(), 교대역);
         stationMap.put(강남역.getId(), 강남역);
         stationMap.put(양재역.getId(), 양재역);
@@ -77,13 +77,12 @@ class PathFinderTest {
     public void getPathsStation() {
         // given
         List<Line> lines = Lists.newArrayList(신분당선, 이호선, 삼호선);
-        PathFinder pathFinder = new PathFinder();
 
         // when
-        PathResponse response = pathFinder.findPath(lines, stationMap, 교대역.getId(), 청계산입구역.getId());
+        PathResponse response = PathFinder.create(lines, stationMap).findPath(교대역.getId(), 청계산입구역.getId());
 
         // then
-        List<Long> expected = Lists.newArrayList(교대역.getId(), 남부터미널역.getId(), 양재역.getId(),  청계산입구역.getId());
+        List<Long> expected = Lists.newArrayList(교대역.getId(), 남부터미널역.getId(), 양재역.getId(), 청계산입구역.getId());
         assertThat(response.getStations()).hasSize(4)
                 .extracting(StationResponse::getId)
                 .containsExactlyElementsOf(expected);
@@ -94,10 +93,9 @@ class PathFinderTest {
     public void getPathsStationError1() {
         // given
         List<Line> lines = Lists.newArrayList(신분당선, 이호선, 삼호선);
-        PathFinder pathFinder = new PathFinder();
 
         // when
-        assertThatThrownBy(() -> pathFinder.findPath(lines, stationMap, 교대역.getId(), 교대역.getId()))
+        assertThatThrownBy(() -> PathFinder.create(lines, stationMap).findPath(교대역.getId(), 교대역.getId()))
                 .isInstanceOf(RuntimeException.class);
     }
 
@@ -106,10 +104,9 @@ class PathFinderTest {
     public void getPathsStationError2() {
         // given
         List<Line> lines = Lists.newArrayList(신분당선, 이호선, 삼호선);
-        PathFinder pathFinder = new PathFinder();
 
         // when
-        assertThatThrownBy(() -> pathFinder.findPath(lines, stationMap, 10L, 교대역.getId()))
+        assertThatThrownBy(() -> PathFinder.create(lines, stationMap).findPath(10L, 교대역.getId()))
                 .isInstanceOf(RuntimeException.class);
     }
 
@@ -118,10 +115,9 @@ class PathFinderTest {
     public void getPathsStationError3() {
         // given
         List<Line> lines = Lists.newArrayList(신분당선, 이호선, 삼호선);
-        PathFinder pathFinder = new PathFinder();
 
         // when
-        assertThatThrownBy(() -> pathFinder.findPath(lines, stationMap, 교대역.getId(), 오이도역.getId()))
+        assertThatThrownBy(() -> PathFinder.create(lines, stationMap).findPath(교대역.getId(), 오이도역.getId()))
                 .isInstanceOf(RuntimeException.class);
     }
 }

@@ -12,23 +12,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Component
+
+/*
+정점(vertext)과 간선(edge), 그리고 가중치 개념을 이용
+정점: 지하철역(Station)
+간선: 지하철역 연결정보(Section)
+가중치: 거리
+*/
 public class PathFinder {
 
-    /*
-    정점(vertext)과 간선(edge), 그리고 가중치 개념을 이용
-    정점: 지하철역(Station)
-    간선: 지하철역 연결정보(Section)
-    가중치: 거리
-    */
-    public PathResponse findPath(List<Line> lines, Map<Long, Station> stationMap, Long source, Long target) {
+    private List<Line> lines;
+
+    private Map<Long, Station> stationMap;
+
+    public PathFinder(List<Line> lines, Map<Long, Station> stationMap) {
+        this.lines = lines;
+        this.stationMap = stationMap;
+    }
+
+    public static PathFinder create(List<Line> lines, Map<Long, Station> stationMap) {
+        return new PathFinder(lines, stationMap);
+    }
+    public PathResponse findPath(Long source, Long target) {
         checkValidate(stationMap, source, target);
 
         WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
         stationMap.forEach((stationId, station) ->
                 graph.addVertex(stationId)
         );
-        lines.stream().flatMap(it -> it.getSectionList().stream())
+        lines.stream().flatMap(it -> it.getSections().stream())
                 .forEach(it ->
                         graph.setEdgeWeight(graph.addEdge(it.getUpStation().getId(), it.getDownStation().getId()), it.getDistance())
                 );

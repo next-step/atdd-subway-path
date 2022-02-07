@@ -1,10 +1,13 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -20,10 +23,10 @@ class LineTest {
         line.addSection(newUpStation, newDownStation, 30);
 
         // when
-        Sections sections = line.getSections();
+        List<Section> sections = line.getSections();
 
         // then
-        assertThat(sections.count()).isEqualTo(2);
+        assertThat(sections.size()).isEqualTo(2);
     }
 
     @DisplayName("구간 중간에 새로운 구간을 추가할 경우")
@@ -40,10 +43,10 @@ class LineTest {
         line.addSection(newUpStation2, newDownStation2, 10);
 
         // when
-        Sections sections = line.getSections();
+        List<Section> sections = line.getSections();
 
         // then
-        assertThat(sections.count()).isEqualTo(3);
+        assertThat(sections.size()).isEqualTo(3);
     }
 
     @DisplayName("노선에 속해있는 역 목록 조회")
@@ -62,10 +65,10 @@ class LineTest {
         line.addSection(newUpStation2, newDownStation2, 40);
 
         // when
-        Sections sections = line.getSections();
+        List<Section> sections = line.getSections();
 
         // then
-        assertThat(sections.count()).isEqualTo(4);
+        assertThat(sections.size()).isEqualTo(4);
     }
 
     @DisplayName("구간 목록에서 마지막 역 삭제")
@@ -82,7 +85,7 @@ class LineTest {
         line.removeSection(newDownStation);
 
         // then
-        assertThat(line.getSections().count()).isEqualTo(1);
+        assertThat(line.getSections().size()).isEqualTo(1);
     }
 
     @DisplayName("구간 목록에서 중간역 삭제")
@@ -102,7 +105,7 @@ class LineTest {
         line.removeSection(newUpStation);
 
         // then
-        assertThat(line.getSections().count()).isEqualTo(2);
+        assertThat(line.getSections().size()).isEqualTo(2);
     }
 
 

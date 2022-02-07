@@ -65,8 +65,7 @@ public class PathServiceMockTest {
         lines.add(신분당선);
         lines.add(삼호선);
 
-        PathFinder pathFinder = new PathFinder();
-        pathService = new PathService(lineRepository, stationRepository, pathFinder);
+        pathService = new PathService(lineRepository, stationRepository);
     }
 
     @DisplayName("최단 경로를 조회")
