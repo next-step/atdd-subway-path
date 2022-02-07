@@ -10,7 +10,10 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+    private static final int DELETE_SECTION_MINIMUM_SIZE = 2;
     private static final int FIRST_SECTION_INDEX = 0;
+    private static final String DELETE_SECTION_MINIMUM_SIZE_ERROR_MESSAGE = "구간이 적어 삭제할 수 없습니다.";
+    private static final String NONE_SECTION_ERROR_MESSAGE = "존재하지 않은 구간입니다.";
     private static final String ALL_MATCH_SECTION_ERROR_MESSAGE = "상행역과 하행역이 모두 등록된 상태입니다.";
     private static final String NONE_MATCH_SECTION_ERROR_MESSAGE = "상행역과 하행역이 모두 등록되지 않았습니다.";
 
@@ -47,8 +50,7 @@ public class Sections {
         int index = findUpSection(newSection);
         Section section = sections.get(index);
 
-        if (index == FIRST_SECTION_INDEX
-            && section.isUpStation(newSection.getDownStation())) {
+        if (isFirstNewSection(newSection, index, section)) {
             sections.add(index, newSection);
             return;
         }
@@ -61,8 +63,7 @@ public class Sections {
         int index = findDownSection(newSection);
         Section section = sections.get(index);
 
-        if (index == lastIndex()
-                && section.isDownStation(newSection.getUpStation())) {
+        if (isLastNewSection(newSection, index, section)) {
             sections.add(newSection);
             return;
         }
@@ -76,7 +77,7 @@ public class Sections {
             return Collections.emptyList();
         }
 
-        Collections.sort(sections, (a, b) -> b.getUpStation().equals(a.getDownStation()) ? -1 : 0);
+        sectionsSort();
 
         List<Station> stations = sections.stream()
                 .map(Section::getDownStation)
@@ -88,11 +89,55 @@ public class Sections {
     }
 
     public void deleteSection(Station station) {
-        if (!sections.get(lastIndex()).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
+        sectionsSort();
+
+        int index = findDeleteSection(station);
+
+        validationDeleteSection(index);
+
+        if (isEndSection(station)) {
+            sections.remove(index);
+            return;
         }
 
-        sections.remove(lastIndex());
+        removeSection(index);
+    }
+
+    private void removeSection(int index) {
+        Section deleteSection = sections.get(index);
+        sections.remove(index);
+        Section updateSection = sections.get(index);
+
+        sections.set(index, new Section(
+                updateSection.getLine(),
+                deleteSection.getUpStation(),
+                updateSection.getDownStation(),
+                updateSection.getDistance() + deleteSection.getDistance()
+        ));
+    }
+
+    private void sectionsSort() {
+        Collections.sort(sections, (a, b) -> b.getUpStation()
+                                                .equals(a.getDownStation()) ? -1 : 0);
+    }
+
+    private boolean isEndSection(Station station) {
+        boolean isFirst = sections.get(0)
+                            .isUpStation(station);
+        boolean isLast = sections.get(lastIndex())
+                            .isDownStation(station);
+
+        return isFirst || isLast;
+    }
+
+    private void validationDeleteSection(int findIndex) {
+        if (sections.size() < DELETE_SECTION_MINIMUM_SIZE) {
+            throw new IllegalArgumentException(DELETE_SECTION_MINIMUM_SIZE_ERROR_MESSAGE);
+        }
+
+        if (findIndex < FIRST_SECTION_INDEX) {
+            throw new IllegalArgumentException(NONE_SECTION_ERROR_MESSAGE);
+        }
     }
 
     public List<Section> getSections() {
@@ -101,6 +146,14 @@ public class Sections {
 
     private int lastIndex() {
         return sections.size() - 1;
+    }
+
+    private boolean isFirstNewSection(Section newSection, int index, Section section) {
+        return index == FIRST_SECTION_INDEX && section.isUpStation(newSection.getDownStation());
+    }
+
+    private boolean isLastNewSection(Section newSection, int index, Section section) {
+        return index == lastIndex() && section.isDownStation(newSection.getUpStation());
     }
 
     private void validationSection(boolean isUpStation, boolean isDownStation) {
@@ -115,6 +168,15 @@ public class Sections {
         if (!isUpStation && !isDownStation) {
             throw new IllegalArgumentException(NONE_MATCH_SECTION_ERROR_MESSAGE);
         }
+    }
+
+    private int findDeleteSection(Station station) {
+        Section section = sections.stream()
+                .filter(sec -> sec.isUpStation(station) || sec.isDownStation(station))
+                .findFirst()
+                .orElse(new Section());
+
+        return sections.indexOf(section);
     }
 
     private int findUpSection(Section newSection) {

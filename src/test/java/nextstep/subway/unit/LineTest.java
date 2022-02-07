@@ -3,6 +3,8 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -17,5 +19,17 @@ class LineTest {
         Line line = new Line(FIRST_NAME, DEFAULT_COLOR);
 
         assertThat(line).isNotNull();
+    }
+
+    @DisplayName("노선의 정보를 수정한다")
+    @CsvSource(value = {"2호선,bg-blue-600"}, delimiter = ',')
+    @ParameterizedTest
+    void updateLine(String name, String color) {
+        Line line = new Line(FIRST_NAME, DEFAULT_COLOR);
+
+        line.updateLine(name, color);
+
+        assertThat(line.getColor()).isEqualTo(color);
+        assertThat(line.getName()).isEqualTo(name);
     }
 }

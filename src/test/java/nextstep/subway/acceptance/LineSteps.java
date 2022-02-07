@@ -83,4 +83,9 @@ public class LineSteps {
                 .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then().log().all().extract();
     }
+
+    public static Long 노선_식별번호_추출(ExtractableResponse<Response> response) {
+        return response.jsonPath()
+                .getLong("id");
+    }
 }

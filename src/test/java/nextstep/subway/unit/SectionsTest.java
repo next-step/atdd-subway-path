@@ -32,10 +32,10 @@ public class SectionsTest {
 
     @BeforeEach
     void setUp() {
-        Station 강남역 = createStation(FIRST_STATION_NAME);
-        Station 역삼역 = createStation(SECOND_STATION_NAME);
-        Station 삼성역 = createStation(THIRD_STATION_NAME);
-        Station 잠실역 = createStation(FOURTH_STATION_NAME);
+        강남역 = createStation(FIRST_STATION_NAME);
+        역삼역 = createStation(SECOND_STATION_NAME);
+        삼성역 = createStation(THIRD_STATION_NAME);
+        잠실역 = createStation(FOURTH_STATION_NAME);
     }
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가한다.")
@@ -153,20 +153,80 @@ public class SectionsTest {
         assertThat(stations).hasSize(4);
     }
 
-    @DisplayName("구간이 목록에서 마지막 역 삭제")
+    @DisplayName("구간 목록에서 마지막 구간 삭제")
     @Test
-    void removeSection() {
+    void removeLastSection() {
         // given
-        Sections sections = createSections();
-        Section section = createSection(강남역, 역삼역);
+        Sections sections = createSections(createSection(강남역, 역삼역), createSection(역삼역, 삼성역));
 
-        sections.addSection(section);
+        // then
+        sections.deleteSection(삼성역);
+
+        // when
+        assertAll(
+                () -> assertThat(sections.getSections()).hasSize(1),
+                () -> assertThat(sections.getStations()).containsExactly(강남역, 역삼역),
+                () -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo((DEFAULT_DISTANCE))
+        );
+    }
+
+    @DisplayName("구간 목록에서 첫번째 구간 삭제")
+    @Test
+    void removeFirstSection() {
+        // given
+        Sections sections = createSections(createSection(강남역, 역삼역), createSection(역삼역, 삼성역));
+
+        // then
+        sections.deleteSection(강남역);
+
+        // when
+        assertAll(
+                () -> assertThat(sections.getSections()).hasSize(1),
+                () -> assertThat(sections.getStations()).containsExactly(역삼역, 삼성역),
+                () -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo((DEFAULT_DISTANCE))
+        );
+    }
+
+    @DisplayName("구간 목록에서 중간 구간 삭제")
+    @Test
+    void removeMiddleSection() {
+        // given
+        Sections sections = createSections(createSection(강남역, 역삼역), createSection(역삼역, 삼성역));
 
         // then
         sections.deleteSection(역삼역);
 
         // when
-        assertThat(sections.getSections()).hasSize(0);
+        Section result = sections.getSections().get(0);
+        assertAll(
+                () -> assertThat(sections.getSections()).hasSize(1),
+                () -> assertThat(sections.getStations()).containsExactly(강남역, 삼성역),
+                () -> assertThat(result.getDistance()).isEqualTo((DEFAULT_DISTANCE * 2))
+        );
+    }
+
+    @DisplayName("지하철 노선의 구간이 1개 이하일 때 제거 요청하면 예외처리")
+    @Test
+    void removeSectionMinimumSizeException() {
+        // given
+        Sections sections = createSections(createSection(강남역, 역삼역));
+
+        // then, when
+        assertThatThrownBy(() -> sections.deleteSection(역삼역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("구간이 적어 삭제할 수 없습니다.");
+    }
+
+    @DisplayName("지하철 노선에 등록되지 않은 구간을 제거 요청하면 예외처리")
+    @Test
+    void removeSectionNoneStationException() {
+        // given
+        Sections sections = createSections(createSection(강남역, 역삼역), createSection(역삼역, 삼성역));
+
+        // then, when
+        assertThatThrownBy(() -> sections.deleteSection(잠실역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("존재하지 않은 구간입니다.");
     }
 
     private Station createStation(String name) {
