@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.error.exception.CannotRemoveStateException;
 import nextstep.subway.error.exception.InvalidValueException;
 
 import javax.persistence.CascadeType;
@@ -156,7 +157,7 @@ public class Sections {
 
     public void remove(Station station) {
         if (sections.size() <= 1) {
-            throw new InvalidValueException(station.getId());
+            throw new CannotRemoveStateException(station.getId());
         }
 
         Section section = findSection(station);
