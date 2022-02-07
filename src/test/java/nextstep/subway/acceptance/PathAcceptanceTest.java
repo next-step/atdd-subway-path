@@ -60,4 +60,18 @@ class PathAcceptanceTest extends AcceptanceTest {
         인수테스트_요청_응답을_확인한다(response, HttpStatus.OK);
     }
 
+    /**
+     * Given 출발역과 도착역을 동일하게 설정하고
+     * When 지하철 경로를 조회하면
+     * Then 에러가 발생한다.
+     */
+    @DisplayName("출발역과 도착역을 같에 설정하고 경로 찾기")
+    @Test
+    void duplicateStation() {
+        // when
+        ExtractableResponse<Response> response = 지하철_경로조회(교대역, 교대역);
+
+        // then
+        인수테스트_요청_응답을_확인한다(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
