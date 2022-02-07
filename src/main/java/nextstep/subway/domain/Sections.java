@@ -10,19 +10,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
 @Embeddable
 public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     @OrderBy("id")
     private List<Section> sections = new ArrayList<>();
 
-    public boolean isEmpty() {
-        return sections == null || sections.isEmpty();
-    }
-
-    public int count() {
-        return sections.size();
+    public List<Section> getSections() {
+        return sections;
     }
 
     public void addSection(Section section) {
@@ -45,12 +40,11 @@ public class Sections {
                 updateDownSection(section);
             }
         }
-
         sections.add(section);
     }
 
     public void removeSection(Station station) {
-        if (isEmpty() || count() == 1) {
+        if (isEmpty() || sections.size() < 2) {
             throw new IllegalArgumentException();
         }
 
@@ -74,7 +68,7 @@ public class Sections {
         upStation.ifPresent(it -> sections.remove(it));
     }
 
-    public List<Station> getStationList() {
+    public List<Station> getStations() {
         if (isEmpty()) {
             return Arrays.asList();
         }
@@ -144,7 +138,10 @@ public class Sections {
             }
             downStation = nextLineStation.get().getUpStation();
         }
-
         return downStation;
+    }
+
+    private boolean isEmpty() {
+        return sections == null || sections.isEmpty();
     }
 }

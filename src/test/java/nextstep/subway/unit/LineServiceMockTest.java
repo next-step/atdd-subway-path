@@ -43,8 +43,8 @@ public class LineServiceMockTest {
         Long lineId = 1L;
         Long upStationId = 2L;
         Long downStationId = 3L;
-        Station upStation = new Station("사당역");
-        Station downStation = new Station("신도림역");
+        Station upStation = new Station(upStationId, "사당역");
+        Station downStation = new Station(downStationId, "신도림역");
 
         Line line = 지하철_라인_역_샘플();
         when(lineRepository.findById(lineId)).thenReturn(Optional.of(line));
@@ -58,7 +58,7 @@ public class LineServiceMockTest {
 
         // then
         // addSection이 적용되어 역이 2개에서 3개로 증가
-        assertThat(line.getSections().getStationList()).hasSize(3);
+        assertThat(line.getStations()).hasSize(3);
     }
 
     @Test
@@ -79,8 +79,8 @@ public class LineServiceMockTest {
     }
 
     private Line 지하철_라인_역_샘플() {
-        Station upStation = new Station("강남역");
-        Station downStation = new Station("사당역");
+        Station upStation = new Station(1, "강남역");
+        Station downStation = new Station(2, "사당역");
         Line line = new Line("2호선", "green");
         line.addSection(upStation, downStation, 30);
         return line;
