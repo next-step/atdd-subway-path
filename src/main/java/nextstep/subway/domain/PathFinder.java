@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.ui.exception.PathException;
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -18,7 +20,11 @@ public class PathFinder {
     }
 
     public List<Station> shortsPathStations(Station source, Station target) {
-        return createDijkstraShortestPath().getPath(source, target).getVertexList();
+        GraphPath path = createDijkstraShortestPath().getPath(source, target);
+        if (path == null) {
+            throw new PathException("출발역과 도착역이 연결되어 있지 않습니다.");
+        }
+        return path.getVertexList();
     }
 
     public int shortsPathDistance(Station source, Station target) {

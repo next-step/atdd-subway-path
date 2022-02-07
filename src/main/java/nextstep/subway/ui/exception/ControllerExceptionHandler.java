@@ -12,8 +12,8 @@ public class ControllerExceptionHandler {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(SectionException.class)
-    public ResponseEntity<String> handleIllegalArgsException(SectionException e) {
+    @ExceptionHandler({SectionException.class, PathException.class, StationException.class})
+    public ResponseEntity<String> handleIllegalArgsException(RuntimeException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
