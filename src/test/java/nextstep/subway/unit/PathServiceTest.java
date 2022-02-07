@@ -1,20 +1,33 @@
 package nextstep.subway.unit;
 
-
+import nextstep.subway.applicaion.PathService;
+import nextstep.subway.applicaion.StationService;
+import nextstep.subway.applicaion.dto.PathResponse;
+import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.PathFinder;
+import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
-class PathFinderTest {
+@ExtendWith(MockitoExtension.class)
+class PathServiceTest {
+
+    @Mock
+    private LineRepository lineRepository;
+    @Mock
+    private StationService stationService;
+
+    private PathService pathService;
 
     Station 교대역;
     Station 강남역;
@@ -50,28 +63,24 @@ class PathFinderTest {
         삼호선.addSection(교대역_남부터미널_구간);
         삼호선.addSection(남부터미널_양재역_구간);
         신분당선.addSection(강남역_양재역_구간);
-        /**
-         * 교대역    --- *2호선(10m)* ---   강남역
-         * |                               |
-         * *3호선(2m)*                   *신분당선(10m)*
-         * |                               |
-         * 남부터미널역  --- *3호선(3m)* ---   양재
-         */
+        pathService = new PathService(lineRepository, stationService);
     }
 
-    @DisplayName("최단 경로 조회")
     @Test
-    void getShortsPath() {
+    void findPath() {
         // given
-        List<Line> lines = Arrays.asList(이호선, 삼호선, 신분당선);
-        PathFinder pathFinder = new PathFinder(lines);
+        when(lineRepository.findAll()).thenReturn(Arrays.asList(이호선, 삼호선, 신분당선));
+        when(stationService.findById(1L)).thenReturn(교대역);
+        when(stationService.findById(3L)).thenReturn(양재역);
 
         // when
-        List<Station> stations = pathFinder.shortsPathStations(교대역, 양재역);
-        int distance = pathFinder.shortsPathDistance(교대역, 양재역);
+        PathResponse response = pathService.findPath(1L, 3L);
 
         // then
-        assertThat(stations).containsExactly(교대역, 남부터미널역, 양재역);
-        assertThat(distance).isEqualTo(5);
+        assertThat(response.getStations()).containsExactly(
+                StationResponse.createStationResponse(교대역),
+                StationResponse.createStationResponse(남부터미널역),
+                StationResponse.createStationResponse(양재역));
+        assertThat(response.getDistance()).isEqualTo(5);
     }
 }
