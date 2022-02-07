@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.applicaion.exception.NotRegisterStation;
+import nextstep.subway.applicaion.exception.NotRegisterStationException;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -111,7 +111,7 @@ public class Line extends BaseEntity {
                 .filter(section -> !getStations().contains(newSection.getDownStation()))
                 .findAny()
                 .ifPresent(unused -> {
-                    throw new NotRegisterStation("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음");
+                    throw new NotRegisterStationException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음");
                 });
     }
 
@@ -127,12 +127,12 @@ public class Line extends BaseEntity {
                     .getDownStation();
 
             if (upStation.equals(newSection.getUpStation()) && downStation.equals(newSection.getDownStation())) {
-                throw new NotRegisterStation("이미 동일한 구간정보가 등록돼있어서 취소됐습니다.");
+                throw new NotRegisterStationException("이미 동일한 구간정보가 등록돼있어서 취소됐습니다.");
             }
 
             if (upStation.equals(prevDownStation)) {
                 if (downStation.equals(newSection.getDownStation())) {
-                    throw new NotRegisterStation("요청한 구간정보가 이미 간접적으로 연결돼있어서 취소됐습니다.");
+                    throw new NotRegisterStationException("요청한 구간정보가 이미 간접적으로 연결돼있어서 취소됐습니다.");
                 }
             }
             prevDownStation = downStation;
@@ -184,9 +184,9 @@ public class Line extends BaseEntity {
                                 (oldSection.getDistance() - newSection.getDistance())
                         ));
                     } else if (newSection.getDistance() > oldSection.getDistance()) {
-                        throw new NotRegisterStation("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크면 등록을 할 수 없음");
+                        throw new NotRegisterStationException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크면 등록을 할 수 없음");
                     } else if (newSection.getDistance() == oldSection.getDistance()) {
-                        throw new NotRegisterStation("역 사이에 새로운 역을 등록할 경우 기존 역 사이와 길으면 등록을 할 수 없음");
+                        throw new NotRegisterStationException("역 사이에 새로운 역을 등록할 경우 기존 역 사이와 길으면 등록을 할 수 없음");
                     }
                 });
     }

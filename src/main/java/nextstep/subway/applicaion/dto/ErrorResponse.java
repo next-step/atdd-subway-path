@@ -1,23 +1,21 @@
 package nextstep.subway.applicaion.dto;
 
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
-public class ErrorResponse{
+public class ErrorResponse {
 
     private HttpStatus status;
 
     private String reason;
 
-    @CreatedDate
     private LocalDateTime date;
 
     public ErrorResponse(HttpStatus status, String reason, LocalDateTime date) {
         this.status = status;
         this.reason = reason;
-        this.date = date;
+        this.date = LocalDateTime.now();
     }
 
     public HttpStatus getStatus() {

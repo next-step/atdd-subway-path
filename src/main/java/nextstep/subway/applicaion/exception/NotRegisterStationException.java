@@ -1,20 +1,18 @@
 package nextstep.subway.applicaion.exception;
 
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
-public class NotRegisterStation extends RuntimeException{
+public class NotRegisterStationException extends RuntimeException {
     private final HttpStatus status = HttpStatus.BAD_REQUEST;
     private final String reason;
+    private final LocalDateTime date;
 
-    @CreatedDate
-    private LocalDateTime date;
-
-    public NotRegisterStation(String message) {
+    public NotRegisterStationException(String message) {
         super(message);
         this.reason = message;
+        this.date = LocalDateTime.now();
     }
 
     public HttpStatus getStatus() {
