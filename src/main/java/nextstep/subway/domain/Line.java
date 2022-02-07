@@ -107,12 +107,12 @@ public class Line extends BaseEntity {
 
     private void isIncludingOne(Section newSection) {
         getStations().stream()
-                     .filter(station -> !getStations().contains(newSection.getUpStation()))
-                     .filter(section -> !getStations().contains(newSection.getDownStation()))
-                     .findAny()
-                     .ifPresent(unused -> {
-                         throw new NotRegisterStation("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음");
-                     });
+                .filter(station -> !getStations().contains(newSection.getUpStation()))
+                .filter(section -> !getStations().contains(newSection.getDownStation()))
+                .findAny()
+                .ifPresent(unused -> {
+                    throw new NotRegisterStation("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음");
+                });
     }
 
     private void checkDuplicateSections(Section newSection) {
@@ -150,7 +150,7 @@ public class Line extends BaseEntity {
         sections.stream()
                 .filter(unused -> normalCondition.get())
                 .filter(oldSection -> oldSection.getUpStation()
-                                                .equals(newSection.getDownStation()))
+                        .equals(newSection.getDownStation()))
                 .findFirst()
                 .ifPresent(oldSection -> {
                     sections.add(
@@ -164,7 +164,7 @@ public class Line extends BaseEntity {
         sections.stream()
                 .filter(unused -> normalCondition.get())
                 .filter(oldSection -> oldSection.getDownStation()
-                                                .equals(newSection.getDownStation()))
+                        .equals(newSection.getDownStation()))
                 .findFirst()
                 .ifPresent(oldSection -> {
 
@@ -194,7 +194,7 @@ public class Line extends BaseEntity {
     private void insertBetweenSameUpStations(Section newSection, AtomicBoolean normalCondition) {
         sections.stream()
                 .filter(oldSection -> oldSection.getUpStation()
-                                                .equals(newSection.getUpStation()))
+                        .equals(newSection.getUpStation()))
                 .findFirst()
                 .ifPresent(oldSection -> {
 
@@ -231,9 +231,9 @@ public class Line extends BaseEntity {
 
         for (int idx = 0; idx < sections.size(); idx++) {
             Station upStation = sections.get(idx)
-                                        .getUpStation();
+                    .getUpStation();
             Station downStation = sections.get(idx)
-                                          .getDownStation();
+                    .getDownStation();
             if (idx == 0) {
                 stations.add(upStation);
                 stations.add(downStation);
@@ -251,4 +251,22 @@ public class Line extends BaseEntity {
         Section lastSection = sections.get(sections.size() - 1);
         sections.remove(lastSection);
     }
+
+    public Station getLastDownStation() {
+        return getLastSection().getDownStation();
+    }
+
+    public Section getLastSection() {
+        int lastIndex = sizeOfSection() - 1;
+        return getSections().get(lastIndex);
+    }
+
+    public int sizeOfSection(){
+        return getSections().size();
+    }
+
+    public void removeSection(int index){
+        getSections().remove(index);
+    }
+
 }
