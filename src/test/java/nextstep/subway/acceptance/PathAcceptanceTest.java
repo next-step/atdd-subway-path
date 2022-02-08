@@ -1,13 +1,11 @@
 package nextstep.subway.acceptance;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +17,7 @@ import static nextstep.subway.acceptance.PathSteps.지하철역_최단거리_경
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("지하철역 길찾기")
 public class PathAcceptanceTest extends AcceptanceTest {
 
     private Long 교대역;
@@ -62,12 +61,58 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철역 최단경로 찾기")
     @Test
-    void find() {
+    void 최단경로_찾기() {
         // when
         ExtractableResponse<Response> response = 지하철역_최단거리_경로_조회_요청(교대역, 양재역);
 
         // then
         지하철역_최단거리_경로_조회_응답(response, 5, 교대역, 남부터미널역, 양재역);
+    }
+
+    @DisplayName("지하철역 최단경로 찾을때 출발역과 도착역이 같은 경우")
+    @Test
+    void 출발역과_도착역이_같은_최단경로_찾기() {
+        // when
+        ExtractableResponse<Response> response = 지하철역_최단거리_경로_조회_요청(교대역, 교대역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("지하철역 최단경로 찾을때 출발역 또는 도착역이 존재하지 않는 경우")
+    @Test
+    void 출발역이_존재하지_않을때_최단경로_찾기() {
+        Long 출발역 = 10L;
+
+        // when
+        ExtractableResponse<Response> response = 지하철역_최단거리_경로_조회_요청(출발역, 양재역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("지하철역 최단경로 찾을때 출발역 또는 도착역이 존재하지 않는 경우")
+    @Test
+    void 도착역이_존재하지_않을때_최단경로_찾기() {
+        Long 도착역 = 10L;
+
+        // when
+        ExtractableResponse<Response> response = 지하철역_최단거리_경로_조회_요청(양재역, 도착역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("지하철역 최단경로 찾을때 출발역과 도착역이 연결되어 있지 않은 경우")
+    @Test
+    void 출발역과_도착역이_연결되지_않은_최단경로_찾기() {
+        Long 곰역 = 지하철역_생성_요청("곰역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철역_최단거리_경로_조회_요청(곰역, 양재역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private Map<String, String> createLineCreateParams(String lineName, String lineColor, Long upStationId, Long downStationId, int distance) {
