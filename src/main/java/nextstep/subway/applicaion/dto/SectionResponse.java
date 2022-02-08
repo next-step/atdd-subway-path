@@ -7,11 +7,13 @@ public class SectionResponse {
     private final Long id;
     private final Station upStation;
     private final Station downStation;
+    private final int distance;
 
     public SectionResponse(Section section) {
         this.id = section.getId();
         this.upStation = section.getUpStation();
         this.downStation = section.getDownStation();
+        this.distance = section.getDistance();
     }
 
     public Long getId() {
@@ -24,5 +26,8 @@ public class SectionResponse {
 
     public Station getUpStation() {
         return upStation;
+    }
+    public int getDistance() {
+        return distance;
     }
 }
