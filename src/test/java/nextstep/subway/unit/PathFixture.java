@@ -21,7 +21,7 @@ public class PathFixture {
         신분당선.addSection(Section.of(삼호선, 강남역, 양재역, 10));
     }
 
-    private static Station createStation(Long id, String name) {
+    public static Station createStation(Long id, String name) {
         Station station = new Station(name);
         ReflectionTestUtils.setField(station, "id", id);
         return station;

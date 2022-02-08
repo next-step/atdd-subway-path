@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exception.CannotFindPathException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -7,6 +8,7 @@ import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public class Path {
@@ -15,10 +17,17 @@ public class Path {
     private final GraphPath<Station, DefaultWeightedEdge> graphPath;
 
     public Path(List<Section> sections, Station startStation, Station arrivalStation) {
+        validateStations(startStation, arrivalStation);
         graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         initGraph(sections);
 
         graphPath = new DijkstraShortestPath<>(graph).getPath(startStation, arrivalStation);
+    }
+
+    private void validateStations(Station startStation, Station arrivalStation) {
+        if (Objects.isNull(arrivalStation)) {
+            throw CannotFindPathException.notExistArrivalStation();
+        }
     }
 
     private void initGraph(List<Section> sections) {
