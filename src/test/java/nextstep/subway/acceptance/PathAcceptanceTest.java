@@ -3,6 +3,7 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.domain.Station;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
@@ -55,22 +57,23 @@ class PathAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 조회할 경로의 출발점, 도착점을 지정한다.
      * When 출발역과 도착역을 지정하여 조회한다.
      * Then 최단 경로에 포함된 역 정보와 거리를 반환한다.
      */
     @DisplayName("최단 경로 조회")
     @Test
     void getPath() {
-        // given
-        Long source = 1L;
-        Long target = 3L;
-
         // when
-        ExtractableResponse<Response> response = 최단_경로_조회(source, target);
+        ExtractableResponse<Response> response = 최단_경로_조회(교대역, 양재역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        List<Long> stations = response.jsonPath().getList("stations.id", Long.class);
+        assertThat(stations).containsExactly(교대역, 남부터미널역, 양재역);
+
+        int distance = response.jsonPath().getInt("distance");
+        assertThat(distance).isEqualTo(5);
     }
 
     /**
