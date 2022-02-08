@@ -7,6 +7,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.exception.CannotFindPathException;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -43,6 +44,22 @@ class PathTest {
                 Arguments.of(교대역, null, "도착역이 없는 경우 경로를 조회할 수 없습니다."),
                 Arguments.of(null, 교대역, "출발역이 없는 경우 경로를 조회할 수 없습니다.")
         );
+    }
+
+    @DisplayName("출발역과 도착역이 동일하면 경로 조회 실패")
+    @Test
+    void sameStationsException() {
+        //given
+        List<Section> sections = getSections();
+
+        //when
+        ThrowableAssert.ThrowingCallable actual = () -> new Path(sections, 교대역, 교대역);
+
+        //then
+        assertThatThrownBy(actual)
+                .isInstanceOf(CannotFindPathException.class)
+                .hasMessage("출발역과 도착역이 동일하면 조회할 수 없습니다.");
+
     }
 
     private List<Section> getSections() {

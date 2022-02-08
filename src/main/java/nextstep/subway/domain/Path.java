@@ -31,6 +31,9 @@ public class Path {
         if (Objects.isNull(startStation)) {
             throw CannotFindPathException.notExistStartStation();
         }
+        if (startStation.equals(arrivalStation)) {
+            throw CannotFindPathException.sameStations();
+        }
     }
 
     private void initGraph(List<Section> sections) {
