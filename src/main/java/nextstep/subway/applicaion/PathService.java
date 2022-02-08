@@ -1,15 +1,11 @@
 package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.ExploreResponse;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.*;
 import nextstep.subway.handler.exception.StationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static nextstep.subway.handler.exception.ErrorCode.STATION_NOT_FOUND_BY_ID;
 
@@ -17,7 +13,6 @@ import static nextstep.subway.handler.exception.ErrorCode.STATION_NOT_FOUND_BY_I
 public class PathService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    private PathFinder pathFinder;
 
     public PathService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -28,25 +23,9 @@ public class PathService {
         Station sourceStation = findStationById(source);
         Station targetStation = findStationById(target);
 
-        pathFinder = new PathFinder(findAllLines());
+        PathFinder pathFinder = new PathFinder(findAllLines());
 
-        List<Station> exploredStations = exploreByStations(sourceStation, targetStation);
-        int distance = exploredDistance();
-
-        return ExploreResponse.from(exploredStations, distance);
-    }
-
-    private int exploredDistance() {
-        return pathFinder.exploreDistance();
-    }
-
-    private List<Station> exploreByStations(Station sourceStation, Station targetStation) {
-        List<String> exploredStationNames = pathFinder.explore(sourceStation.getName(), targetStation.getName());
-
-        List<Station> exploredStations = exploredStationNames.stream()
-                .map(stationName -> stationRepository.getByName(stationName))
-                .collect(Collectors.toList());
-        return exploredStations;
+        return ExploreResponse.from(pathFinder.explore(sourceStation, targetStation));
     }
 
     private List<Line> findAllLines() {

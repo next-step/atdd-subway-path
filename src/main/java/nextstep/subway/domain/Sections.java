@@ -100,15 +100,15 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public void pushSections(WeightedMultigraph<String, DefaultWeightedEdge> graph) {
+    public void addStationsInGraph(WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
         sections.forEach(section -> {
-            String upStationName = section.getUpStation().getName();
-            String downStationName = section.getDownStation().getName();
             int distance = section.getDistance();
+            Station upStation = section.getUpStation();
+            Station downStation = section.getDownStation();
 
-            graph.addVertex(upStationName);
-            graph.addVertex(downStationName);
-            graph.setEdgeWeight(graph.addEdge(upStationName, downStationName), distance);
+            graph.addVertex(upStation);
+            graph.addVertex(downStation);
+            graph.setEdgeWeight(graph.addEdge(upStation, downStation), distance);
         });
     }
 }

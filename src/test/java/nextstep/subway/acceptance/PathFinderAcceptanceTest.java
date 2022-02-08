@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * |           |
  * 10          7
  * \           /
- * (양재역)  -4- (매봉역)  <3호선 : 교대-양재-매봉>
+ *    (양재역)  -4- (매봉역)  <3호선 : 교대-양재-매봉>
  * /
  * 6
  * |

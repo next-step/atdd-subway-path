@@ -64,10 +64,10 @@
 - [x] domain 에서 boilerplate 위치 변경
 - [x] LineTest 주석 내용 DisplayName 으로 정리
 - [x] Validator 도메인 로직으로 분리
-- [ ] LineServiceMockTest 에서 실제 객체를 활용하는 부분
+- [x] LineServiceMockTest 에서 실제 객체를 활용하는 부분
 - [x] 매직넘버 상수로 치환
 - [x] LineSectionAcceptanceTest#185 line @DisplayName 과 시나리오 상이 수정
 - [x] LineTest 에서 중간역 삭제시 거리도 함께 검증
-- [ ] PathFinderAcceptanceTest#61 line 시나리오 수정
-- [ ] PathService 의 내부 로직 수정 
-- [ ] PathFinder domain 으로 이동
+- [x] PathFinderAcceptanceTest#61 line 시나리오 수정
+- [x] PathService 의 내부 로직 수정 
+- [x] PathFinder domain 으로 이동

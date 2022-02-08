@@ -1,5 +1,6 @@
 package nextstep.subway.handler.validator;
 
+import nextstep.subway.domain.Station;
 import nextstep.subway.handler.exception.ExploreException;
 import org.jgrapht.GraphPath;
 
@@ -15,7 +16,7 @@ public class ExploreValidator {
         }
     }
 
-    public static void validateStationsIsSame(String source, String target) {
+    public static void validateStationsIsSame(Station source, Station target) {
         if (source.equals(target)) {
             throw new ExploreException(TWO_STATIONS_IS_SAME);
         }

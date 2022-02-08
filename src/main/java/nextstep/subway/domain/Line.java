@@ -2,6 +2,8 @@ package nextstep.subway.domain;
 
 import nextstep.subway.handler.validator.SectionValidator;
 import nextstep.subway.handler.validator.StationValidator;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.WeightedMultigraph;
 
 import javax.persistence.*;
 import java.util.List;
@@ -209,6 +211,10 @@ public class Line extends BaseEntity {
 
     private void removeSection(Section targetSection) {
         sections.remove(targetSection);
+    }
+
+    public void addStationsInGraphForExplore(WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
+        this.sections.addStationsInGraph(graph);
     }
 
     @Override

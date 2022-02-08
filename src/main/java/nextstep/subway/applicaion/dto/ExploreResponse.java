@@ -1,7 +1,5 @@
 package nextstep.subway.applicaion.dto;
 
-import nextstep.subway.domain.Station;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,10 +12,12 @@ public class ExploreResponse {
         this.distance = distance;
     }
 
-    public static ExploreResponse from(List<Station> stations, int distance) {
-        return new ExploreResponse(stations.stream()
+    public static ExploreResponse from(ExploredResult exploredResult) {
+        List<StationResponse> stationResponses = exploredResult.getStations().stream()
                 .map(StationResponse::from)
-                .collect(Collectors.toList()), distance);
+                .collect(Collectors.toList());
+
+        return new ExploreResponse(stationResponses, exploredResult.getDistance());
     }
 
     public List<StationResponse> getStations() {

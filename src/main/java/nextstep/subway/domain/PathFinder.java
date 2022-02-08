@@ -1,6 +1,6 @@
-package nextstep.subway.applicaion;
+package nextstep.subway.domain;
 
-import nextstep.subway.domain.Line;
+import nextstep.subway.applicaion.dto.ExploredResult;
 import nextstep.subway.handler.validator.ExploreValidator;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -11,24 +11,18 @@ import java.util.List;
 
 public class PathFinder {
 
-    private final WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-    private int distance;
+    private final WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
 
     public PathFinder(List<Line> allLines) {
-        allLines.forEach(line -> line.getSections().pushSections(graph));
+        allLines.forEach(line -> line.addStationsInGraphForExplore(graph));
     }
 
-    public List<String> explore(String source, String target) {
+    public ExploredResult explore(Station source, Station target) {
         ExploreValidator.validateStationsIsSame(source, target);
 
         GraphPath path = new DijkstraShortestPath(graph).getPath(source, target);
         ExploreValidator.validateNotFound(path);
 
-        distance = (int) path.getWeight();
-        return path.getVertexList();
-    }
-
-    public int exploreDistance() {
-        return distance;
+        return ExploredResult.of(path.getVertexList(), path.getWeight());
     }
 }
