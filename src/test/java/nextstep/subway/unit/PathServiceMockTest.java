@@ -64,6 +64,8 @@ public class PathServiceMockTest {
     @Test
     void shortPath() {
         // given
+        int sumDistance = DEFAULT_DISTANCE * 2;
+
         when(stationService.findById(any())).thenReturn(부평역)
                                             .thenReturn(강남역);
         when(lineRepository.findAll()).thenReturn(lines);
@@ -73,8 +75,31 @@ public class PathServiceMockTest {
 
         // then
         assertAll(
-                () -> assertThat(pathResponse.getStations()).hasSize(3)
+                () -> assertThat(pathResponse.getStations()).hasSize(3),
+                () -> assertThat(pathResponse.getDistance()).isEqualTo(sumDistance)
         );
+    }
+
+    @DisplayName("동일한 출발지와 도착역으로 최단 경로 조회하면 예외 발생")
+    @Test
+    void sourceEqualsTargetException() {
+        // when, then
+        assertThatThrownBy(() -> pathService.shortPath(부평역.getId(), 부평역.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("연결이 안된 구간으로 요청하면 예외 발생")
+    @Test
+    void notConnectException() {
+        // given
+        when(stationService.findById(any())).thenReturn(부평역)
+                                            .thenReturn(역삼역);
+        when(lineRepository.findAll()).thenReturn(lines);
+
+        // when
+
+        assertThatThrownBy(() -> pathService.shortPath(부평역.getId(), 역삼역.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     private Station createStationEntity(Long id, String name) {
