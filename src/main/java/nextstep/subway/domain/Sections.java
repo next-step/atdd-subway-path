@@ -57,15 +57,12 @@ public class Sections {
     }
 
     private void replaceSection(Section replacedSection, Station newSectionUpStation, Station newSectionDownStation, int remainedDistance) {
-        if (remainedDistance <= 0) {
+        final int minDistanceExclusive = 0;
+        if (remainedDistance <= minDistanceExclusive) {
             throw new IllegalArgumentException("기존 구간 거리 이상 구간은 사이에 추가할 수 없습니다.");
         }
         sections.remove(replacedSection);
         sections.add(new Section(replacedSection.getLine(), newSectionUpStation, newSectionDownStation, remainedDistance));
-    }
-
-    public List<Section> get() {
-        return sections;
     }
 
     public void add(Section section) {
@@ -111,14 +108,31 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        Station endingStation = getEndingStation();
-        if (!endingStation.equals(station)) {
-            throw new IllegalArgumentException("구간이 목록에서 마지막 역이 아닙니다.");
+        Optional<Section> downStationSection = findSectionByDownStation(station);
+        Optional<Section> upStationSection = findSectionByUpStation(station);
+
+        if (downStationSection.isEmpty() && upStationSection.isEmpty()) {
+            throw new IllegalArgumentException("구간에 존재하지 않는 역입니다.");
         }
 
-        Section section = sections.stream()
-                .filter(it -> it.getDownStation().equals(station))
-                .findAny().orElseThrow(() -> new IllegalArgumentException("구간에 존재하지 않는 역입니다."));
-        sections.remove(section);
+        final int sectionMinCountInclusive = 1;
+        if (sections.size() <= sectionMinCountInclusive) {
+            throw new IllegalArgumentException("구간이 한 개면 삭제할 수 없습니다.");
+        }
+
+        if (downStationSection.isPresent() && upStationSection.isPresent()) {
+            sections.add(mergeSection(downStationSection.get(), upStationSection.get()));
+        }
+        upStationSection.ifPresent(sections::remove);
+        downStationSection.ifPresent(sections::remove);
+    }
+
+    private Section mergeSection(Section upSection, Section downSection) {
+        return new Section(
+                upSection.getLine(),
+                upSection.getUpStation(),
+                downSection.getDownStation(),
+                upSection.getDistance() + downSection.getDistance()
+        );
     }
 }
