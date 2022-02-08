@@ -14,11 +14,14 @@ public class PathFinder {
 
     public PathFinder(List<Line> lines) {
         final WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+
         lines.stream()
                 .flatMap(line -> line.getStations().stream())
                 .forEach(graph::addVertex);
+
         lines.stream()
                 .forEach(line -> setEdgeWeight(graph, line.getSections()));
+
         dijkstraShortestPath = new DijkstraShortestPath(graph);
     }
 

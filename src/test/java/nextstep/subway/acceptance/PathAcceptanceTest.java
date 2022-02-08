@@ -15,6 +15,7 @@ import static nextstep.subway.acceptance.PathSteps.최단_경로_조회하기;
 import static nextstep.subway.acceptance.StationSteps.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("최단 경로 관리 기능")
 public class PathAcceptanceTest extends AcceptanceTest {
     private Long 교대역;
     private Long 강남역;
