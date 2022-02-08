@@ -74,7 +74,7 @@ class PathAcceptanceTest extends AcceptanceTest{
         지하철_노선에_지하철_구간_생성_요청(삼호선, createSectionParams(고속터미널역, 교대역, 10));
         지하철_노선에_지하철_구간_생성_요청(삼호선, createSectionParams(강남역, 남부터미널역, 10));
         지하철_노선에_지하철_구간_생성_요청(삼호선, createSectionParams(남부터미널역, 양재역, 10));
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionParams(강남역, 양재역, 10));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionParams(강남역, 양재역, 5));
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionParams(양재역, 판교역, 10));
     }
 
@@ -86,7 +86,7 @@ class PathAcceptanceTest extends AcceptanceTest{
 
         //then
         최단_경로_역_목록_확인(최단_경로_응답, 교대역, 강남역, 양재역, 판교역);
-        최단_경로_거리_확인(최단_경로_응답, 30);
+        최단_경로_거리_확인(최단_경로_응답, 25);
     }
 
     @DisplayName("도착역이 없는 경우 최단 경로 조회 실패")

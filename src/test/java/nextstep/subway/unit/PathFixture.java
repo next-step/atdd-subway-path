@@ -11,10 +11,17 @@ public class PathFixture {
     public static Station 강남역 = createStation(2L, "강남역");
     public static Station 남터역 = createStation(3L, "남터역");
     public static Station 양재역 = createStation(4L, "양재역");
+
     public static Line 이호선 = Line.of("이호선", "green");
     public static Line 삼호선 = Line.of("삼호선", "orange");
     public static Line 신분당선 = Line.of("신분당선", "red");
 
+    /**
+     *
+     * 교대----강남
+     *  |      |
+     * 남터    양재
+     */
     static {
         이호선.addSection(Section.of(이호선, 교대역, 강남역, 10));
         삼호선.addSection(Section.of(삼호선, 교대역, 남터역, 10));

@@ -52,14 +52,23 @@ public class Path {
     }
 
     private void getEdgeWeight(WeightedMultigraph<Station, DefaultWeightedEdge> graph, Section section) {
-        graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
+        DefaultWeightedEdge edge = graph.addEdge(section.getUpStation(), section.getDownStation());
+        graph.setEdgeWeight(edge, section.getDistance());
     }
 
     public List<Station> getVertexes() {
+        validateReach();
         return Collections.unmodifiableList(graphPath.getVertexList());
     }
 
     public int getWeight() {
+        validateReach();
         return (int) graphPath.getWeight();
+    }
+
+    private void validateReach() {
+        if (Objects.isNull(graphPath)) {
+            throw CannotFindPathException.cannotReach();
+        }
     }
 }

@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 import static nextstep.subway.unit.PathFixture.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@DisplayName("최단 경로 조횜")
+@DisplayName("최단 경로 조회")
 class PathTest {
 
     @DisplayName("도착역 또는 출발역이 없는 경우 경로 조회 실패")
@@ -61,6 +61,28 @@ class PathTest {
                 .hasMessage("출발역과 도착역이 동일하면 조회할 수 없습니다.");
 
     }
+
+    @DisplayName("출발역에서 도착역을 도달할 수 없는 경우 조회 불가")
+    @Test
+    void cannotReachException() {
+        //given
+        Station 시청역 = createStation(5L, "시청역");
+        Station 서울역 = createStation(6L, "서울역");
+        Line 일호선 = Line.of("일호선", "blue");
+
+        List<Section> sections = getSections();
+        sections.add(Section.of(일호선, 시청역, 서울역, 10));
+
+        //when
+        Path path = new Path(sections, 교대역, 시청역);
+
+        //then
+        assertThatThrownBy(path::getVertexes)
+                .isInstanceOf(CannotFindPathException.class)
+                .hasMessage("출발역에서 도착역까지 도달할 수 없습니다.");
+    }
+
+
 
     private List<Section> getSections() {
         List<Line> lines = Arrays.asList(이호선, 삼호선, 신분당선);

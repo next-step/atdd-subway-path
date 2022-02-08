@@ -5,6 +5,7 @@ public class CannotFindPathException extends RuntimeException {
     public static final String NOT_EXIST_ARRIVAL_STATION = "도착역이 없는 경우 경로를 조회할 수 없습니다.";
     public static final String NOT_EXIST_START_STATION = "출발역이 없는 경우 경로를 조회할 수 없습니다.";
     public static final String SAME_STATIONS = "출발역과 도착역이 동일하면 조회할 수 없습니다.";
+    public static final String CANNOT_REACH = "출발역에서 도착역까지 도달할 수 없습니다.";
 
     public CannotFindPathException(String message) {
         super(message);
@@ -20,5 +21,9 @@ public class CannotFindPathException extends RuntimeException {
 
     public static CannotFindPathException sameStations() {
         return new CannotFindPathException(SAME_STATIONS);
+    }
+
+    public static CannotFindPathException cannotReach() {
+        return new CannotFindPathException(CANNOT_REACH);
     }
 }
