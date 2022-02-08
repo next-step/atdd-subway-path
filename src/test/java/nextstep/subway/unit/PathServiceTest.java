@@ -74,15 +74,26 @@ public class PathServiceTest {
         );
     }
 
+    @DisplayName("동일한 출발지와 도착역으로 최단 경로 조회하면 예외 발생")
+    @Test
+    void sourceEqualsTargetException() {
+        // when, then
+        assertThatThrownBy(() -> pathService.shortPath(부평역.getId(), 부평역.getId()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("출발역과 도착역이 동일합니다.");
+    }
+
+    @DisplayName("연결이 안된 구간으로 요청하면 예외 발생")
+    @Test
+    void notConnectException() {
+        // when, then
+        assertThatThrownBy(() -> pathService.shortPath(부평역.getId(), 삼성역.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
     private List<String> getStationNames(PathResponse pathResponse) {
         return pathResponse.getStations().stream()
                 .map(stationResponse -> stationResponse.getName())
-                .collect(Collectors.toList());
-    }
-
-    private List<String> getStationNames(Station ... stations) {
-        return Arrays.stream(stations)
-                .map(Station::getName)
                 .collect(Collectors.toList());
     }
 
