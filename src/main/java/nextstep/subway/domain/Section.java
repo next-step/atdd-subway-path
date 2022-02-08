@@ -52,4 +52,20 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public void updateUpStation(Station downStation, int distance) {
+        if (this.distance <= distance) {
+            throw new RuntimeException("기존 노선의 길이보다 길다.");
+        }
+        this.upStation = downStation;
+        this.distance -= distance;
+    }
+
+    public void updateDownStation(Station upStation, int distance) {
+        if (this.distance <= distance) {
+            throw new RuntimeException("기존 노선의 길이보다 길다.");
+        }
+        this.downStation = upStation;
+        this.distance -= distance;
+    }
 }
