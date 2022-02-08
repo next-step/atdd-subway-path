@@ -3,7 +3,9 @@ package nextstep.subway.unit;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,26 +27,32 @@ public class LineServiceTest {
     @Autowired
     private LineService lineService;
 
+    private Station 군자역;
+    private Station 아차산역;
+    private Station 광나루역;
+    private Line _5호선;
+
+    @BeforeEach
+    void setup() {
+        군자역 = stationRepository.save(new Station("군자역"));
+        아차산역 = stationRepository.save(new Station("아차산역"));
+        광나루역 = stationRepository.save(new Station("광나루역"));
+        _5호선 = new Line("5호선", "보라색");
+        _5호선.getSections().add(Section.of(_5호선, 군자역, 아차산역, 10));
+        lineRepository.save(_5호선);
+    }
+
+    @DisplayName("마지막 구간에 구간 추가")
     @Test
     void addSection() {
         // given
-        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
-        Station 군자역 = stationRepository.save(new Station("군자역"));
-        Station 아차산역 = stationRepository.save(new Station("아차산역"));
-        Station 광나루역 = stationRepository.save(new Station("광나루역"));
-        Line _5호선 = new Line("5호선", "보라색");
-        _5호선.getSections().add(Section.of(_5호선, 군자역, 아차산역, 10));
-        lineRepository.save(_5호선);
-
         int distance = 10;
         SectionRequest request = new SectionRequest(아차산역.getId(), 광나루역.getId(), distance);
 
         // when
-        // lineService.addSection 호출
         lineService.addSection(_5호선.getId(), request);
 
         // then
-        // line.getSections 메서드를 통해 검증
         List<Section> sections = _5호선.getSections();
         Section lastSection = sections.get(sections.size() - 1);
         assertThat(lastSection.getUpStation()).isEqualTo(아차산역);
@@ -52,21 +60,23 @@ public class LineServiceTest {
         assertThat(lastSection.getDistance()).isEqualTo(distance);
     }
 
-    @DisplayName("removeSection")
+    @DisplayName("중간 역을 제거")
     @Test
     void removeSection() {
-        Station 군자역 = stationRepository.save(new Station("군자역"));
-        Station 아차산역 = stationRepository.save(new Station("아차산역"));
-        Station 광나루역 = stationRepository.save(new Station("광나루역"));
-        Line _5호선 = new Line("5호선", "보라색");
-        _5호선.getSections().add(Section.of(_5호선, 군자역, 아차산역, 10));
-        lineRepository.save(_5호선);
-
+        // given
         int distance = 5;
         SectionRequest request = new SectionRequest(군자역.getId(), 광나루역.getId(), distance);
-
         lineService.addSection(_5호선.getId(), request);
+
+        // when
         lineService.deleteSection(_5호선.getId(), 광나루역.getId());
+
+        // then
         LineResponse line = lineService.findLine(_5호선.getId());
+        List<StationResponse> stations = line.getStations();
+
+        assertThat(stations).hasSize(2);
+        assertThat(stations.get(0).getName()).isEqualTo(군자역.getName());
+        assertThat(stations.get(1).getName()).isEqualTo(아차산역.getName());
     }
 }
