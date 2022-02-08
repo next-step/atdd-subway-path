@@ -2,18 +2,16 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import nextstep.subway.exception.EmptySectionException;
 
 @Embeddable
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST,
             CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    private final List<Section> sections = new ArrayList<>();
 
     public void addSection(Section section) {
         if (sections.isEmpty()) {
@@ -63,8 +61,8 @@ public class Sections {
 
                 sections.add(index, registerSection);
                 sections.add(index + 1
-                        , new Section(section.getLine(), section.getDownStation(),
-                                registerSection.getDownStation(),
+                        , new Section(section.getLine(), registerSection.getDownStation(),
+                                section.getDownStation(),
                                 section.getDistance() - registerSection.getDistance()));
 
                 return true;
@@ -95,22 +93,42 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        if (sections.size() < 0) {
-            throw new EmptySectionException();
-        }
         List<Station> stations = new ArrayList<>();
 
-        stations.add(sections.get(0).getUpStation());
+        Section firstSection = firstSection();
+        stations.add(firstSection.getUpStation());
 
-        for (int index = 0; index < sections.size(); index++) {
-            Section section = sections.get(index);
-            stations.add(section.getUpStation());
-            stations.add(section.getDownStation());
+        Station downStation = firstSection.getDownStation();
+
+        while (sections.size() == stations.size() + 1) {
+            Section nextSection = nextSection(downStation);
+            Station upStation = nextSection.getUpStation();
+            downStation = nextSection.getDownStation();
+            stations.add(upStation);
         }
 
-        return stations.stream().distinct().collect(Collectors.toList());
+        stations.add(downStation);
+
+        return stations;
     }
 
+    /**
+     * 상행역이 상행종점역인 구간 찾기
+     */
+    private Section firstSection() {
+        return sections.stream()
+                .filter(section -> sections.stream()
+                        .noneMatch(otherSection -> otherSection.getDownStation()
+                                .equals(section.getUpStation())))
+                .findFirst().orElseThrow(RuntimeException::new);
+    }
+
+    private Section nextSection(Station downStation) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(downStation))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+    }
 
     public void removeSection() {
         sections.remove(sections.size() - 1);

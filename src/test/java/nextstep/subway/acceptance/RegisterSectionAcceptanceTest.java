@@ -74,9 +74,9 @@ public class RegisterSectionAcceptanceTest extends AcceptanceTest {
     void 노선_조회시_구간에_등록된_순서대로_조회() {
         SectionRequest params = new SectionRequest(판교역, 양재역, 5);
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, params);
-        List<Object> stations = 지하철_노선_조회_요청(신분당선).jsonPath().getList("stations.id");
+        List<Long> list = 지하철_노선_조회_요청(신분당선).jsonPath().getList("stations.id", Long.class);
 
-        assertThat(stations).containsExactly(강남역.intValue(), 판교역.intValue(), 양재역.intValue());
+        assertThat(list).containsExactly(강남역, 판교역, 양재역);
     }
 
     @Test
