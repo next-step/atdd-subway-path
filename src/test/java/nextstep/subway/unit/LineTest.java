@@ -2,7 +2,6 @@ package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Collections;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
@@ -29,19 +28,12 @@ class LineTest {
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
     @Test
     void addSection() {
-        assertThat(신분당선.getStations().size()).isEqualTo(1);
+        assertThat(신분당선.getStations().size()).isEqualTo(2);
     }
 
     @DisplayName("노선에 속해있는 역 목록 조회")
     @Test
     void getStations() {
         assertThat(신분당선.getStations()).containsExactly(강남역, 판교역);
-    }
-
-    @DisplayName("구간이 목록에서 마지막 역 삭제")
-    @Test
-    void removeSection() {
-        신분당선.removeSection(판교역);
-        assertThat(신분당선.getStations()).isEqualTo(Collections.emptyList());
     }
 }
