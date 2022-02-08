@@ -50,15 +50,6 @@ public class Sections {
             throw new IllegalArgumentException("노선 구간에 종점역만 존재하여 더 이상 구간을 삭제할 수 없습니다.");
         }
 
-        // station으로 존재하는 section을 찾아야 하는데
-        // station이 종점역일 경우에는 그냥 삭제를 하면 되고
-
-        // station이 종점역이 아닌 경우에는
-        // request: B
-        // A - B - C
-        // A - B, A - C 두개의 구간이 있을텐데, 첫번째 구간(request Station이 하행역이 되는 구간)
-        // A - B -> A -> C 이렇게 Update
-        // B - C 구간은 Delete
         SectionsIncludingStation sectionsIncludingStation = new SectionsIncludingStation(findSectionsIncludingStation(station), station);
 
         if (sectionsIncludingStation.hasNotAnySection()) {
@@ -87,36 +78,12 @@ public class Sections {
                 .anyMatch(section -> section.isEqualsAllStations(newSection));
     }
 
-    private boolean isNotEndDownStation(Station station) {
-        return getEndDownStation().map(endDownStation -> !endDownStation.equals(station)).orElse(true);
-    }
-
     private boolean isEmptySections() {
         return sections.isEmpty();
     }
 
-
-    private Optional<Station> getEndDownStation() {
-        if (!getLastSection().isPresent()) {
-            return Optional.empty();
-        }
-
-        return Optional.of(getLastSection().get().getDownStation());
-    }
-
-
     private boolean hasOnlyEndStations() {
         return flatStations().size() == END_STATIONS_SIZE;
-    }
-
-    private Optional<Section> getLastSection() {
-        if (isEmptySections()) { //Defensive
-            Optional.empty();
-        }
-
-        int sectionLastIndex = sections.size() - 1;
-
-        return Optional.of(sections.get(sectionLastIndex));
     }
 
     private Section getFirstSection() {
@@ -126,10 +93,6 @@ public class Sections {
 
         return sections.get(FIRST_SECTION_INDEX);
     }
-
-//    public Section findSectionByStation(Station station) {
-//
-//    }
 
     public Section findEndUpSection() {
         return CursorableSectionFinder.find(getFirstSection(), new EndUpSectionFindStrategy(sections));
