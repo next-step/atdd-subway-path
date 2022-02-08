@@ -18,8 +18,7 @@ public class LineService {
     private final StationService stationService;
     private final SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository, StationService stationService,
-            SectionRepository sectionRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService, SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
         this.sectionRepository = sectionRepository;

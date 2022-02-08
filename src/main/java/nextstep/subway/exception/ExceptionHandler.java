@@ -26,7 +26,7 @@ public class ExceptionHandler {
         return ResponseEntity.badRequest().build();
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(NotMatchDeleteSectionException.class)
+    @org.springframework.web.bind.annotation.ExceptionHandler(NotExistedStationDeleteException.class)
     public ResponseEntity<HttpStatus> checkNotMatchDeleteSectionException() {
         return ResponseEntity.badRequest().build();
     }

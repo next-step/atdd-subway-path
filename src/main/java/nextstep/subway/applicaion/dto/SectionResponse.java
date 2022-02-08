@@ -31,4 +31,3 @@ public class SectionResponse {
         return distance;
     }
 }
-}
