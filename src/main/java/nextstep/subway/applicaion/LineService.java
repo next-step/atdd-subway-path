@@ -1,13 +1,7 @@
 package nextstep.subway.applicaion;
 
-import nextstep.subway.applicaion.dto.LineRequest;
-import nextstep.subway.applicaion.dto.LineResponse;
-import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.applicaion.dto.*;
+import nextstep.subway.domain.*;
 import nextstep.subway.exception.LineNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,8 +66,25 @@ public class LineService {
         line.removeSection(station);
     }
 
+    public List<Line> getLines() {
+        return lineRepository.findAll();
+    }
+
     private Line getLine(Long id) {
         return lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+    }
+
+    public PathResponse getPath(Long source, Long target) {
+        List<Line> lines = lineRepository.findAll();
+        Station sourceStation = stationService.findById(source);
+        Station targetStation = stationService.findById(target);
+
+        PathFinder pathFinder = new PathFinder(lines);
+        int shortestDistance = pathFinder.getShortestDistance(sourceStation, targetStation);
+        List<Station> shortestPath = pathFinder.getShortestPath(sourceStation, targetStation);
+
+        PathResponse pathResponse = createPathResponse(shortestPath, shortestDistance);
+        return createPathResponse(shortestPath, shortestDistance);
     }
 
     private LineResponse createLineResponse(Line line) {
@@ -90,6 +101,18 @@ public class LineService {
     private List<StationResponse> createStationResponses(Line line) {
         return line.getStations()
                 .stream()
+                .map(it -> stationService.createStationResponse(it))
+                .collect(Collectors.toList());
+    }
+
+    private PathResponse createPathResponse(List<Station> stations, int distance) {
+        return new PathResponse(
+                createStationResponses(stations),
+                distance);
+    }
+
+    private List<StationResponse> createStationResponses(List<Station> stations) {
+        return stations.stream()
                 .map(it -> stationService.createStationResponse(it))
                 .collect(Collectors.toList());
     }
