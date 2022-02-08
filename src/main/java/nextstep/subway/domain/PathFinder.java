@@ -22,12 +22,12 @@ public class PathFinder {
         dijkstraShortestPath = new DijkstraShortestPath(graph);
     }
 
-    public List<Station> getShortPath(Station source, Station target) {
+    public List<Station> shortPathStations(Station source, Station target) {
         return dijkstraShortestPath.getPath(source, target)
                                     .getVertexList();
     }
 
-    public int getShortPathWeight(Station source, Station target) {
+    public int shortPathWeight(Station source, Station target) {
         return (int) dijkstraShortestPath.getPathWeight(source, target);
     }
 

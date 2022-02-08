@@ -2,7 +2,6 @@ package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
-import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.PathFinder;
@@ -26,13 +25,13 @@ public class PathService {
 
     public PathResponse shortPath(Long source, Long target) {
         validationShortPath(source, target);
+
         Station startStation = stationService.findById(source);
         Station endStation = stationService.findById(target);
 
-        List<Line> lines = lineRepository.findAll();
-        PathFinder pathFinder = new PathFinder(lines);
+        PathFinder pathFinder = new PathFinder(lineRepository.findAll());
 
-        return createPathResponse(pathFinder.getShortPath(startStation, endStation), pathFinder.getShortPathWeight(startStation, endStation));
+        return createPathResponse(pathFinder.shortPathStations(startStation, endStation), pathFinder.shortPathWeight(startStation, endStation));
     }
 
     private void validationShortPath(Long source, Long target) {
