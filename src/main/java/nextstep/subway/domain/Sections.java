@@ -15,6 +15,11 @@ public class Sections {
 
     public List<Section> getSections() {
         List<Section> ordered = new ArrayList<>();
+
+        if(this.sections.isEmpty()){
+            return ordered;
+        }
+
         Section section = getFirstSection();
 
         while (section != null) {
