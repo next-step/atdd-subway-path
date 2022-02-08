@@ -34,16 +34,6 @@ public class Station extends BaseEntity implements Comparable<Station> {
     }
 
     @Override
-    public int compareTo(Station o) {
-        if (o.getId() < id) {
-            return 1;
-        } else if (o.getId() > id) {
-            return -1;
-        }
-        return 0;
-    }
-
-    @Override
     public String toString() {
         return "Station{" +
                 "id=" + id +
