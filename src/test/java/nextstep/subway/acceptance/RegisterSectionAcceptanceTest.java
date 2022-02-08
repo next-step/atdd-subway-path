@@ -73,7 +73,7 @@ public class RegisterSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선 조회시 구간에 등록된 순서대로 조회")
     void 노선_조회시_구간에_등록된_순서대로_조회() {
         SectionRequest params = new SectionRequest(판교역, 양재역, 5);
-        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, params);
+        지하철_노선에_지하철_구간_생성_요청(신분당선, params);
         List<Long> list = 지하철_노선_조회_요청(신분당선).jsonPath().getList("stations.id", Long.class);
 
         assertThat(list).containsExactly(강남역, 판교역, 양재역);
@@ -82,14 +82,17 @@ public class RegisterSectionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
     void 등록_예외_기존_역_사이_길이보다_크거나_같은경우() {
-        SectionRequest params = new SectionRequest(양재역, 판교역, 15);
+        SectionRequest params = new SectionRequest(판교역, 양재역, 15);
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, params);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
     void 등록_예외_상행역_하행역_이미_모두_등록된_경우() {
-
+        SectionRequest params = new SectionRequest(양재역, 강남역, 5);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, params);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test

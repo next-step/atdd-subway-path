@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.exception.AlreadyRegisterStationException;
 
 @Embeddable
 public class Sections {
@@ -19,6 +20,8 @@ public class Sections {
             return;
         }
 
+        validateRegisterStation(section.getUpStation(), section.getDownStation());
+
         if (insertSectionIsUpStation(section)) {
             return;
         }
@@ -32,6 +35,23 @@ public class Sections {
         }
 
         throw new IllegalArgumentException("section 을 넣을 수 없습니다.");
+    }
+
+    private void validateRegisterStation(Station upStation, Station downStation) {
+        boolean containUpStation = false;
+        boolean containDownStation = false;
+
+        for (Section section : sections) {
+            if (section.getUpStation().equals(upStation) || section.getDownStation().equals(upStation)) {
+                containUpStation = true;
+            }
+            if (section.getUpStation().equals(downStation) || section.getDownStation().equals(downStation)) {
+                containDownStation = true;
+            }
+        }
+        if (containUpStation && containDownStation) {
+            throw new AlreadyRegisterStationException();
+        }
     }
 
     private boolean insertSectionIsUpStation(Section section) {
