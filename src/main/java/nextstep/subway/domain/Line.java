@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.NotExistedStationDeleteException;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -69,12 +71,16 @@ public class Line extends BaseEntity {
     public void deleteSection(Long stationId) {
         if (sections.isDeleteMiddleSection(stationId)) {
             sections.deleteMiddleSection(stationId,this);
+            return;
         }
-        if (sections.isDeleteRightSection(stationId)) {
+        if (sections.isDeleteRightMostSection(stationId)) {
             sections.deleteRightSection(stationId);
+            return;
         }
-        if (sections.isDeleteLeftSection(stationId)) {
+        if (sections.isDeleteLeftMostSection(stationId)) {
             sections.deleteLeftSection(stationId);
+            return;
         }
+        throw new NotExistedStationDeleteException();
     }
 }

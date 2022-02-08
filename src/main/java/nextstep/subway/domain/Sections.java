@@ -157,19 +157,19 @@ public class Sections {
         return null;
     }
 
-    public boolean isDeleteRightSection(Long stationId) {
-        return sections.stream().anyMatch(section -> section.isEqualDownStationId(stationId)) && !sections.stream().anyMatch(section -> section.isEqualUpStationId(stationId));
+    public boolean isDeleteRightMostSection(Long stationId) {
+        return sections.stream().anyMatch(section -> section.isEqualUpStationId(stationId)) && !sections.stream().anyMatch(section -> section.isEqualDownStationId(stationId));
     }
 
-    public boolean isDeleteLeftSection(Long stationId) {
-        return !sections.stream().anyMatch(section -> section.isEqualDownStationId(stationId)) && sections.stream().anyMatch(section -> section.isEqualUpStationId(stationId));
+    public boolean isDeleteLeftMostSection(Long stationId) {
+        return sections.stream().anyMatch(section -> section.isEqualDownStationId(stationId)) && !sections.stream().anyMatch(section -> section.isEqualUpStationId(stationId));
     }
 
     public boolean isDeleteMiddleSection(Long stationId) {
         return sections.stream().anyMatch(section -> section.isEqualDownStationId(stationId)) && sections.stream().anyMatch(section -> section.isEqualUpStationId(stationId));
     }
 
-    public void deleteMiddleSection(Long stationId,Line line) {
+    public void deleteMiddleSection(Long stationId, Line line) {
         Section leftSection = sections.stream().filter(section -> section.isEqualUpStationId(stationId))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException());
@@ -178,21 +178,22 @@ public class Sections {
                 .orElseThrow(() -> new EntityNotFoundException());
         sections.remove(leftSection);
         sections.remove(rightSection);
-        sections.add(new Section(line, leftSection.getDownStation(), rightSection.getDownStation(),
+        sections.add(new Section(line, leftSection.getDownStation(), rightSection.getUpStation(),
                 leftSection.getDistance() + rightSection.getDistance()));
     }
 
     public void deleteRightSection(Long stationId) {
-        Section rightSection = sections.stream().filter(section -> section.isEqualDownStationId(stationId))
+        Section rightSection = sections.stream().filter(section -> section.isEqualUpStationId(stationId))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException());
         sections.remove(rightSection);
     }
 
     public void deleteLeftSection(Long stationId) {
-        Section leftSection = sections.stream().filter(section -> section.isEqualUpStationId(stationId))
+        Section leftSection = sections.stream().filter(section -> section.isEqualDownStationId(stationId))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException());
+        startStationName = leftSection.getUpStation().getName();
         sections.remove(leftSection);
     }
 }
