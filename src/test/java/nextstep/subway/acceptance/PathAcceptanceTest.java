@@ -70,7 +70,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
      * Then 출발지(교대역)과 도착역(교대역)의 최단 경로를 요청하면
      * When 최단 경로 조회가 실패한다
      */
-    @DisplayName("최단 경로(교대역 - 교대역) 조회")
+    @DisplayName("동일한 출발지와 도착역으로 최단 경로 조회하면 예외 발생")
     @Test
     void sourceEqualsTargetException() {
         // when
@@ -84,7 +84,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
      * Then 구간이 연결이 안된 출발지(교대역)과 도착역(남부터미널역)으로 최단 거리 요청하면
      * When 최단 경로 조회가 실패한다
      */
-    @DisplayName("최단 경로(교대역 - 동인천역) 조회")
+    @DisplayName("연결이 안된 구간으로 최단 경로 조회하면 예외 발생")
     @Test
     void notConnectException() {
         // when

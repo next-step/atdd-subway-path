@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class PathService {
+    private static final String SAME_STATION_ERROR_MESSAGE = "출발역과 도착역이 동일합니다.";
     private LineRepository lineRepository;
     private StationService stationService;
 
@@ -22,6 +23,7 @@ public class PathService {
     }
 
     public PathResponse shortPath(Long source, Long target) {
+        validationShortPath(source, target);
         Station startStation = stationService.findById(source);
         Station endStation = stationService.findById(target);
 
@@ -29,6 +31,12 @@ public class PathService {
         PathFinder pathFinder = new PathFinder(lines);
 
         return createPathResponse(pathFinder.getShortPath(startStation, endStation), pathFinder.getShortPathWeight(startStation, endStation));
+    }
+
+    private void validationShortPath(Long source, Long target) {
+        if (source == target) {
+            throw new IllegalArgumentException(SAME_STATION_ERROR_MESSAGE);
+        }
     }
 
     private PathResponse createPathResponse(List<Station> stations, int shortPathWeight) {
