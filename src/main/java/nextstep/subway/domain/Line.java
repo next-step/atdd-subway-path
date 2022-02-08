@@ -1,11 +1,12 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.applicaion.exception.NotRegisterStationException;
+import nextstep.subway.applicaion.exception.NotRegisterSectionException;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Predicate;
 
 @Entity
 public class Line extends BaseEntity {
@@ -66,73 +67,67 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> addSection(Station upStation, Station downStation, int distance) {
-        return addSection(new Section(
-                this,
-                upStation,
-                downStation,
-                distance
-        ));
+        return addSection(new Section(this, upStation, downStation, distance));
     }
 
     private List<Section> addSection(Section newSection) {
-
-        AtomicBoolean normalCondition = new AtomicBoolean(true);
-
         isIncludingOne(newSection);
+        isDuplicate(newSection);
+        isBigOrEqualTo(newSection);
 
-        checkDuplicateSections(newSection);
+        emptySection(newSection);
 
-        insertBetweenSameUpStations(
-                newSection,
-                normalCondition
-        );
+        List<Section> copySections = new ArrayList<>(sections);
+        Collections.copy(copySections, sections);
 
-        insertBetweenSameDownStations(
-                newSection,
-                normalCondition
-        );
-
-        insertLastUpStation(
-                newSection,
-                normalCondition
-        );
-
-        insertLastDownStation(
-                newSection,
-                normalCondition
-        );
+        comparing(upStationIsTheEqual(copySections, newSection));
+        comparing(downStationIsTheEqual(copySections, newSection));
+        comparing(insertLastUpStation(copySections, newSection));
+        comparing(insertLastDownStation(copySections, newSection));
 
         return sections;
     }
 
+    private void emptySection(Section newSection) {
+        sections.add(newSection);
+    }
+
+    private void comparing(List<Section> copySections) {
+        if (!sections.equals(copySections)) {
+            Collections.copy(sections, copySections);
+            copySections = new ArrayList<>(sections);
+            Collections.copy(copySections, sections);
+        }
+    }
+
+    // TODO. [피드백]: ifPresent는 예외 처리할 때 사용하지 않습니다. orElseThrow로 적용해보시기 바랍니다.
+    // Stream이 익숙하지 않아서, 멀티 filter를 제어해서 orElseThrow 사용 하는법을 모르겠음..
     private void isIncludingOne(Section newSection) {
         getStations().stream()
                 .filter(station -> !getStations().contains(newSection.getUpStation()))
-                .filter(section -> !getStations().contains(newSection.getDownStation()))
-                .findAny()
+                .filter(station -> !getStations().contains(newSection.getDownStation()))
+                .findFirst()
                 .ifPresent(unused -> {
-                    throw new NotRegisterStationException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음");
+                    throw new NotRegisterSectionException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음");
                 });
     }
 
-    private void checkDuplicateSections(Section newSection) {
+    private void isDuplicate(Section newSection) {
 
         Station prevDownStation = null;
 
 
         for (Section section : sections) {
-            Station upStation = section
-                    .getUpStation();
-            Station downStation = section
-                    .getDownStation();
+            Station upStation = section.getUpStation();
+            Station downStation = section.getDownStation();
 
             if (upStation.equals(newSection.getUpStation()) && downStation.equals(newSection.getDownStation())) {
-                throw new NotRegisterStationException("이미 동일한 구간정보가 등록돼있어서 취소됐습니다.");
+                throw new NotRegisterSectionException("이미 동일한 구간정보가 등록돼있어서 취소됐습니다.");
             }
 
             if (upStation.equals(prevDownStation)) {
                 if (downStation.equals(newSection.getDownStation())) {
-                    throw new NotRegisterStationException("요청한 구간정보가 이미 간접적으로 연결돼있어서 취소됐습니다.");
+                    throw new NotRegisterSectionException("요청한 구간정보가 이미 간접적으로 연결돼있어서 취소됐습니다.");
                 }
             }
             prevDownStation = downStation;
@@ -140,87 +135,78 @@ public class Line extends BaseEntity {
 
     }
 
-    private void insertLastDownStation(Section newSection, AtomicBoolean normalCondition) {
-        if (normalCondition.get()) {
-            sections.add(newSection);
-        }
-    }
-
-    private void insertLastUpStation(Section newSection, AtomicBoolean normalCondition) {
-        sections.stream()
-                .filter(unused -> normalCondition.get())
-                .filter(oldSection -> oldSection.getUpStation()
-                        .equals(newSection.getDownStation()))
-                .findFirst()
-                .ifPresent(oldSection -> {
-                    sections.add(
-                            sections.indexOf(oldSection),
-                            newSection
-                    );
-                });
-    }
-
-    private void insertBetweenSameDownStations(Section newSection, AtomicBoolean normalCondition) {
-        sections.stream()
-                .filter(unused -> normalCondition.get())
+    private List<Section> insertLastDownStation(List<Section> copySections, Section newSection) {
+        copySections.stream()
                 .filter(oldSection -> oldSection.getDownStation()
-                        .equals(newSection.getDownStation()))
-                .findFirst()
-                .ifPresent(oldSection -> {
-
-                    normalCondition.set(false);
-
-                    if (newSection.getDistance() < oldSection.getDistance()) {
-                        sections.add(new Section(
-                                this,
-                                newSection.getUpStation(),
-                                oldSection.getDownStation(),
-                                newSection.getDistance()
-                        ));
-                        oldSection.update(new Section(
-                                this,
-                                oldSection.getUpStation(),
-                                newSection.getUpStation(),
-                                (oldSection.getDistance() - newSection.getDistance())
-                        ));
-                    } else if (newSection.getDistance() > oldSection.getDistance()) {
-                        throw new NotRegisterStationException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크면 등록을 할 수 없음");
-                    } else if (newSection.getDistance() == oldSection.getDistance()) {
-                        throw new NotRegisterStationException("역 사이에 새로운 역을 등록할 경우 기존 역 사이와 길으면 등록을 할 수 없음");
-                    }
-                });
-    }
-
-    private void insertBetweenSameUpStations(Section newSection, AtomicBoolean normalCondition) {
-        sections.stream()
-                .filter(oldSection -> oldSection.getUpStation()
                         .equals(newSection.getUpStation()))
                 .findFirst()
                 .ifPresent(oldSection -> {
+                    copySections.add(newSection);
+                });
+        return copySections;
+    }
 
-                    normalCondition.set(false);
+    private List<Section> insertLastUpStation(List<Section> copySections, Section newSection) {
+        copySections.stream()
+                .filter(oldSection -> oldSection.getUpStation()
+                        .equals(newSection.getDownStation()))
+                .findFirst()
+                .ifPresent(oldSection -> {
+                    copySections.add(sections.indexOf(oldSection), newSection);
+                });
+        return copySections;
+    }
 
-                    //새로운 구간의 거리가 작은 경우
-                    if (newSection.getDistance() < oldSection.getDistance()) {
-                        //[기존구간-새로운 구간]으로 구간을 생성한다.
-                        sections.add(new Section(
-                                this,
-                                newSection.getDownStation(),
-                                oldSection.getDownStation(),
-                                (oldSection.getDistance() - newSection.getDistance())
-                        ));
-                        //기존 구간을 새로운 구간으로 교체한다.
-                        oldSection.update(newSection);
-                    } else if (newSection.getDistance() > oldSection.getDistance()) {
-                        sections.add(new Section(
-                                this,
-                                oldSection.getDownStation(),
-                                newSection.getDownStation(),
-                                (newSection.getDistance() - oldSection.getDistance())
-                        ));
-                    } else {
-                        throw new RuntimeException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
-                    }
+    private List<Section> downStationIsTheEqual(List<Section> copySections, Section newSection) {
+        copySections.stream()
+                .filter(oldSection -> oldSection.getDownStation().equals(newSection.getDownStation()))
+                .findFirst()
+                .ifPresent(oldSection -> {
+                    copySections.add(new Section(
+                            this,
+                            newSection.getUpStation(),
+                            oldSection.getDownStation(),
+                            newSection.getDistance()
+                    ));
+                    oldSection.update(new Section(
+                            this,
+                            oldSection.getUpStation(),
+                            newSection.getUpStation(),
+                            (oldSection.getDistance() - newSection.getDistance())
+                    ));
+                });
+
+        return copySections;
+    }
+
+    private List<Section> upStationIsTheEqual(List<Section> copySections, Section newSection) {
+        copySections.stream()
+                .filter(oldSection -> oldSection.getUpStation().equals(newSection.getUpStation()))
+                .findFirst()
+                .filter(oldSection -> newSection.getDistance() < oldSection.getDistance())
+                .ifPresent(oldSection -> {
+                    copySections.add(new Section(
+                            this,
+                            newSection.getDownStation(),
+                            oldSection.getDownStation(),
+                            (oldSection.getDistance() - newSection.getDistance())
+                    ));
+                    oldSection.update(newSection);
+                });
+
+        return copySections;
+    }
+
+    private void isBigOrEqualTo(Section newSection) {
+        Predicate<Section> greater = oldSection -> newSection.getDistance() > oldSection.getDistance();
+        Predicate<Section> equal = oldSection -> newSection.getDistance() == oldSection.getDistance();
+
+        sections.stream()
+                .filter(oldSection -> oldSection.getDownStation().equals(newSection.getDownStation()))
+                .findFirst()
+                .filter(greater.or(equal))
+                .ifPresent(unused -> {
+                    throw new NotRegisterSectionException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록 할 수 없음");
                 });
     }
 
@@ -261,11 +247,11 @@ public class Line extends BaseEntity {
         return getSections().get(lastIndex);
     }
 
-    public int sizeOfSection(){
+    public int sizeOfSection() {
         return getSections().size();
     }
 
-    public void removeSection(int index){
+    public void removeSection(int index) {
         getSections().remove(index);
     }
 
