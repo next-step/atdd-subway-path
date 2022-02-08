@@ -3,11 +3,11 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.domain.Station;
+import nextstep.subway.applicaion.dto.LineRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,7 +46,7 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest params) {
         return RestAssured
                 .given().log().all()
                 .body(params)
@@ -70,6 +70,16 @@ public class LineSteps {
     }
 
     public static void 지하철_노선에_지하철역이_포함됐는지_확인한다(ExtractableResponse<Response> response, Long... stations) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(stations);
+    }
+
+
+    public static Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", upStationId + "");
+        params.put("downStationId", downStationId + "");
+        params.put("distance", distance + "");
+        return params;
     }
 }

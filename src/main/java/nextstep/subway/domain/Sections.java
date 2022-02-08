@@ -143,7 +143,7 @@ public class Sections {
         return sections.stream()
             .filter(section -> section.getDownStation().equals(station))
             .findFirst()
-            .orElseThrow(SectionNotFoundException::new);
+            .orElseThrow(SectionNotIncludedStationException::new);
     }
 
     private void checkAvailableAdd(Section section) {
