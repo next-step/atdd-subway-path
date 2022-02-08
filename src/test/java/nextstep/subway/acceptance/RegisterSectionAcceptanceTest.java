@@ -98,6 +98,10 @@ public class RegisterSectionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
     void 등록_예외_상행역_하행역_하나도_안포함된_경우() {
-
+        Long 교대역 = 지하철역_생성_요청("교대역").jsonPath().getLong("id");
+        Long 잠실역 = 지하철역_생성_요청("잠심역").jsonPath().getLong("id");
+        SectionRequest params = new SectionRequest(교대역, 잠실역, 5);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, params);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
