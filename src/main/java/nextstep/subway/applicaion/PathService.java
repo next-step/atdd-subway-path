@@ -3,12 +3,9 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Path;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import org.jgrapht.GraphPath;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,32 +25,28 @@ public class PathService {
     public PathResponse findShortestPath(Long startStationId, Long arrivalStationId) {
         Station startStation = stationService.findById(startStationId);
         Station arrivalStation = stationService.findById(arrivalStationId);
-
         List<Line> lines = lineService.findAllLines();
 
+        List<Section> sections = getAllSections(lines);
+        Path graphPath = new Path(sections, startStation, arrivalStation);
 
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-        lines.stream()
-                .flatMap(line -> line.stations().stream())
-                .forEach(graph::addVertex);
-
-        lines.stream()
-                .flatMap(line -> line.getSections().stream())
-                .forEach(section -> getEdgeWeight(graph, section));
-
-        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
-        GraphPath<Station, DefaultWeightedEdge> graphPath = dijkstraShortestPath.getPath(startStation, arrivalStation);
-        List<Station> shortestPath = graphPath.getVertexList();
-        List<StationResponse> stationResponses = shortestPath.stream()
-                .map(this::toStationResponse)
-                .collect(Collectors.toList());
-        int weight = (int) graphPath.getWeight();
+        List<StationResponse> stationResponses = createStationResponses(graphPath);
+        int weight = graphPath.getWeight();
 
         return new PathResponse(stationResponses, weight);
     }
 
-    private void getEdgeWeight(WeightedMultigraph<Station, DefaultWeightedEdge> graph, Section section) {
-        graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
+    private List<StationResponse> createStationResponses(Path graphPath) {
+        List<Station> shortestPath = graphPath.getVertexes();
+        return shortestPath.stream()
+                .map(this::toStationResponse)
+                .collect(Collectors.toList());
+    }
+
+    private List<Section> getAllSections(List<Line> lines) {
+        return lines.stream()
+                .flatMap(line -> line.getSections().stream())
+                .collect(Collectors.toList());
     }
 
     public StationResponse toStationResponse(Station station) {
