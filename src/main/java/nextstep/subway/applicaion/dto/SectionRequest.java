@@ -1,5 +1,7 @@
 package nextstep.subway.applicaion.dto;
 
+import nextstep.subway.domain.Section;
+
 public class SectionRequest {
     private final Long upStationId;
     private final Long downStationId;

@@ -76,6 +76,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("sections.upStation.name", String.class)).containsExactly("정자역", "양재역");
     }
 
+
     /**
      * When 지하철 노선에 강남역->양재역 구간에 양재역->정자역 구간 추가를 요청 하면
      * Then
