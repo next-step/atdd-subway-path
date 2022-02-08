@@ -13,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
@@ -123,25 +122,36 @@ class LineTest {
         assertThat(신분당선.getStations().get(2).getName()).isEqualTo("광교역");
     }
 
-    @DisplayName("처음 구간에 새로운 구간을 추가 - 실패")
+    @DisplayName("기존 역 사이 길이보다 크거나 같음 - 실패")
     @Test
-    void addSectionException_새로운_역이_상행종점이아님() {
+    void addSectionException_기존_역_사이_길이보다_크거나_같음() {
         //when
         //then
-        assertThrows(RuntimeException.class, ()->{
-            신분당선.addSection(양재역, 광교역, 10);
-            신분당선.addSection(강남역, 광교역, 5);
+        assertThrows(RuntimeException.class, () -> {
+            신분당선.addSection(강남역, 양재역, 10);
+            신분당선.addSection(강남역, 수지구청역, 10);
         });
     }
 
-    @DisplayName("마지막 구간에 새로운 구간을 추가 - 실패")
+    @DisplayName("이미 모두 노선에 등록되어있음 - 실패")
     @Test
-    void addSectionException_새로운_역이_하행종점이아님() {
+    void addSectionException_이미_모두_노선에_등록되어있음() {
         //when
         //then
-        assertThrows(RuntimeException.class, ()->{
+        assertThrows(RuntimeException.class, () -> {
             신분당선.addSection(강남역, 양재역, 10);
-            신분당선.addSection(수지구청역, 양재역, 5);
+            신분당선.addSection(강남역, 양재역, 5);
+        });
+    }
+
+    @DisplayName("어떤 역에도 포함되어있지 않음 - 실패")
+    @Test
+    void addSectionException_역이_포함되어있지않음() {
+        //when
+        //then
+        assertThrows(RuntimeException.class, () -> {
+            신분당선.addSection(강남역, 양재역, 10);
+            신분당선.addSection(수지구청역, 광교역, 5);
         });
     }
 }
