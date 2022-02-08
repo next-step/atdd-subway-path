@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.persistence.EntityNotFoundException;
+
 @ControllerAdvice
 public class ControllerExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -26,4 +28,10 @@ public class ControllerExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(e.getMessage());
     }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+    
 }
