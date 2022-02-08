@@ -14,13 +14,15 @@ import java.util.Set;
 
 public class PathFinder {
     private final List<Line> lines;
+    private final DijkstraShortestPath dijkstraShortestPath;
 
     public PathFinder(List<Line> lines) {
         this.lines = lines;
+        dijkstraShortestPath = createDijkstraShortestPath();
     }
 
     public List<Station> shortsPathStations(Station source, Station target) {
-        GraphPath path = createDijkstraShortestPath().getPath(source, target);
+        GraphPath path = dijkstraShortestPath.getPath(source, target);
         if (path == null) {
             throw new PathException("출발역과 도착역이 연결되어 있지 않습니다.");
         }
@@ -28,7 +30,7 @@ public class PathFinder {
     }
 
     public int shortsPathDistance(Station source, Station target) {
-        return (int)createDijkstraShortestPath().getPathWeight(source, target);
+        return (int)dijkstraShortestPath.getPathWeight(source, target);
     }
 
     private DijkstraShortestPath createDijkstraShortestPath() {
