@@ -121,22 +121,6 @@ class LineTest {
         assertThrows(IllegalArgumentException.class, () -> line.deleteSection(역_생성(3L)));
     }
 
-    @DisplayName("노선에 등록된 구간이 있고, 중간 구간 삭제시 구간 삭제가 성공하고 구간은 재배치 된다")
-    @Test
-    void 노선에_등록된_구간_삭제후_재배치() {
-        //given
-        Line line = 상행종점역_하행종점역만_가진_구간이_포함된_노선_생성(1L, 2L);
-        Station upStation = 역_생성(2L);
-        Station downStation = 역_생성(3L);
-        line.addSection(new PairedStations(upStation, downStation), 100);
-
-        //when then
-        assertThat(line.getStations().size()).isEqualTo(3);
-        assertDoesNotThrow(() -> line.deleteSection(역_생성(2L)));
-        assertThat(line.getStations().size()).isEqualTo(2);
-        assertThat(line.getStations().stream().map(Station::getId)).containsExactly(1L, 3L);
-    }
-
     @DisplayName("노선에 등록된 구간이 있고, 구간 삭제시 성공한다")
     @Test
     void 노선에_등록된_구간_삭제() {
@@ -149,7 +133,5 @@ class LineTest {
         //when then
         assertThat(line.getStations().size()).isEqualTo(3);
         assertDoesNotThrow(() -> line.deleteSection(역_생성(3L)));
-        assertThat(line.getStations().size()).isEqualTo(2);
-        assertThat(line.getStations().stream().map(Station::getId)).containsExactly(1L, 2L);
     }
 }
