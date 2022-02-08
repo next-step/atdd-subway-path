@@ -20,6 +20,7 @@
 |2주차|리뷰 리팩토링|22/02/04|
 |2주차|경로 조회|22/02/06|
 |2주차|리뷰 리팩토링|22/02/07|
+|2주차|리뷰 리팩토링|22/02/08|
 
 # 2주차
 ### 구간 추가 제약사항 변경
@@ -67,3 +68,6 @@
 - [x] 매직넘버 상수로 치환
 - [x] LineSectionAcceptanceTest#185 line @DisplayName 과 시나리오 상이 수정
 - [x] LineTest 에서 중간역 삭제시 거리도 함께 검증
+- [ ] PathFinderAcceptanceTest#61 line 시나리오 수정
+- [ ] PathService 의 내부 로직 수정 
+- [ ] PathFinder domain 으로 이동
