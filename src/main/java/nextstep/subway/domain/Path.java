@@ -28,6 +28,9 @@ public class Path {
         if (Objects.isNull(arrivalStation)) {
             throw CannotFindPathException.notExistArrivalStation();
         }
+        if (Objects.isNull(startStation)) {
+            throw CannotFindPathException.notExistStartStation();
+        }
     }
 
     private void initGraph(List<Section> sections) {
