@@ -215,4 +215,8 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(EntityNotFoundException::new);
     }
+
+    public List<Section> get() {
+        return Collections.unmodifiableList(sections);
+    }
 }

@@ -17,7 +17,7 @@ public class PathSteps {
                 .queryParam("source", 출발역)
                 .queryParam("target", 도착역)
                 .when()
-                .post("/paths")
+                .get("/paths")
                 .then().log().all()
                 .extract();
     }
@@ -30,4 +30,10 @@ public class PathSteps {
         List<Long> idsOfStations = response.jsonPath().getList("stations.id", Long.class);
         assertThat(idsOfStations).containsExactly(stations);
     }
+
+    public static void 최단_경로_거리_확인(ExtractableResponse<Response> response, int expected) {
+        int distance = response.jsonPath().get("distance");
+        assertThat(distance).isEqualTo(expected);
+    }
+
 }
