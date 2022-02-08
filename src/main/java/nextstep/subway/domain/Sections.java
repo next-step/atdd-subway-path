@@ -17,7 +17,7 @@ public class Sections {
         List<Section> ordered = new ArrayList<>();
         Section section = getFirstSection();
 
-        while(section != null){
+        while (section != null) {
             ordered.add(section);
             Station downStation = section.getDownStation();
             section = sections.stream()
@@ -33,23 +33,21 @@ public class Sections {
         Section section = new Section(line, upStation, downStation, distance);
         if (!sections.isEmpty()) {
             checkExistStationInLine(section.getDownStation());
-            // validSection(section);
-            // 기존 하행과 신규 상행이 같거나
-            // 기존 상행과 신규 하행이 같으면
-            // 그냥 추가.
-            // 기존 상행과 신규 상행이 같으면
-            // 구간을 업데이트 해야함.
-            if(isSameUpStation(upStation)){
+
+            if (isSameUpStation(upStation)) {
                 updateSection(section);
             }
+
+            //다운스테이션 업데이트 추가
+
+            
         }
+
         this.sections.add(section);
     }
 
-    private void validSection(Section newSection) {
-        boolean isValid = false;
-        isValid = isLastDownStation(newSection.getUpStation());
-        isValid = isFirstUpStation(newSection.getDownStation());
+    private boolean validSection(Section newSection) {
+        return isLastDownStation(newSection.getUpStation()) || isFirstUpStation(newSection.getDownStation());
     }
 
     private boolean isFirstUpStation(Station downStation) {
@@ -98,13 +96,13 @@ public class Sections {
     private Section getLastSection() {
         Section findSection = this.sections.get(0);
 
-        while(findSection != null){
+        while (findSection != null) {
             Station lastStation = findSection.getDownStation();
             Optional<Section> optionalSection = sections.stream()
                     .filter(section -> section.getUpStation().equals(lastStation))
                     .findAny();
 
-            if(!optionalSection.isPresent()){
+            if (!optionalSection.isPresent()) {
                 break;
             }
 
@@ -122,16 +120,16 @@ public class Sections {
         return getFirstSection().getUpStation();
     }
 
-    private Section getFirstSection(){
+    private Section getFirstSection() {
         Section findSection = this.sections.get(0);
 
-        while(findSection != null){
+        while (findSection != null) {
             Station firstStation = findSection.getUpStation();
             Optional<Section> optionalSection = sections.stream()
                     .filter(section -> section.getDownStation().equals(firstStation))
                     .findAny();
 
-            if(!optionalSection.isPresent()){
+            if (!optionalSection.isPresent()) {
                 break;
             }
 
