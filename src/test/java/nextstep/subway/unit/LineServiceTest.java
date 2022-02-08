@@ -44,6 +44,6 @@ public class LineServiceTest {
 		// then
 		// line.getSections 메서드를 통해 검증
 		Line line1 = lineService.findById(신분당선.getId());
-		assertThat(line1.sectionsSize()).isEqualTo(2);
+		assertThat(line1.lastIndexOfSections()).isEqualTo(1);
 	}
 }

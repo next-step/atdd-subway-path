@@ -52,8 +52,8 @@ public class Line extends BaseEntity {
         sections.add(section);
     }
 
-    public int sectionsSize() {
-        return sections.size();
+    public int lastIndexOfSections() {
+        return sections.size() - 1;
     }
 
     public Section sectionByIndex(int index) {

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.SubwayException;
 
 class LineTest {
 
@@ -63,7 +64,7 @@ class LineTest {
         line.addSection(new Section(line, 강남역, 양재역, 10));
         assertThatThrownBy(() -> {
             line.addSection(new Section(line, 정자역, 양재역, 10));
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(SubwayException.WrongParameterException.class);
     }
 
     @DisplayName("중복된 구간을 등록했을때, 예외발생 확인")
@@ -72,7 +73,7 @@ class LineTest {
         line.addSection(new Section(line, 강남역, 양재역, 10));
         assertThatThrownBy(() -> {
             line.addSection(new Section(line, 강남역, 양재역, 10));
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(SubwayException.DuplicatedException.class);
     }
 
     @DisplayName("구간이 목록에서 마지막 역 삭제")
