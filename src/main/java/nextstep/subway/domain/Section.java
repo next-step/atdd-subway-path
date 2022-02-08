@@ -36,6 +36,12 @@ public class Section {
     }
 
     public static Section of(Line line, Station upStation, Station downStation, int distance) {
+        SectionValidator.validateOnlyOneStationExists(line, upStation, downStation);
+        SectionValidator.validateDistance(distance);
+        return new Section(line, upStation, downStation, distance);
+    }
+
+    public static Section initialize(Line line, Station upStation, Station downStation, int distance) {
         SectionValidator.validateDistance(distance);
         return new Section(line, upStation, downStation, distance);
     }

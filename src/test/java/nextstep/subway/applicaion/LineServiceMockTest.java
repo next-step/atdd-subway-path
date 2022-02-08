@@ -17,8 +17,8 @@ import java.util.Optional;
 
 import static nextstep.subway.domain.factory.DtoFactory.createLineRequest;
 import static nextstep.subway.domain.factory.DtoFactory.createSectionRequest;
-import static nextstep.subway.domain.factory.EntityFactory.createMockLine;
-import static nextstep.subway.domain.factory.EntityFactory.createMockStation;
+import static nextstep.subway.domain.factory.EntityFactory.createLine;
+import static nextstep.subway.domain.factory.EntityFactory.createStation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -40,17 +40,14 @@ class LineServiceMockTest {
     void init() {
         lineService = new LineService(lineRepository, stationRepository);
 
-        강남역 = createMockStation(1L, "강남역");
-        선릉역 = createMockStation(2L, "선릉역");
-        이호선 = createMockLine(1L, "2호선", "green", 강남역, 선릉역, 10);
+        강남역 = createStation(1L, "강남역");
+        선릉역 = createStation(2L, "선릉역");
+        이호선 = createLine(1L, "2호선", "green", 강남역, 선릉역, 10);
     }
 
     @Test
     void 노선_생성() {
         // given
-        Long 강남역Id = 1L;
-        Long 선릉역Id = 2L;
-
         when(stationRepository.findById(1L)).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(2L)).thenReturn(Optional.of(선릉역));
         when(lineRepository.save(any())).thenReturn(이호선);
@@ -66,9 +63,9 @@ class LineServiceMockTest {
     @Test
     void 노선_정보가_담긴_리스트() {
         // given
-        Station 용산역 = createMockStation(3L, "용산역");
-        Station 공덕역 = createMockStation(4L, "공덕역");
-        Line 경의선 = createMockLine(2L, "경의선", "blue", 용산역, 공덕역, 8);
+        Station 용산역 = createStation(3L, "용산역");
+        Station 공덕역 = createStation(4L, "공덕역");
+        Line 경의선 = createLine(2L, "경의선", "blue", 용산역, 공덕역, 8);
 
         when(lineRepository.findAll()).thenReturn(Arrays.asList(이호선, 경의선));
 
@@ -112,7 +109,7 @@ class LineServiceMockTest {
     @Test
     void 노선_구간_추가() {
         // given
-        Station 용산역 = createMockStation(3L, "용산역");
+        Station 용산역 = createStation(3L, "용산역");
 
         when(stationRepository.findById(2L)).thenReturn(Optional.of(선릉역));
         when(stationRepository.findById(3L)).thenReturn(Optional.of(용산역));

@@ -182,7 +182,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * when     : 중간역에대해 삭제를 요청하면
      * then     : 구간이 삭제되고, 새롭게 잇는 구간이 추가된다.
      */
-    @DisplayName("종점에 대해 구간삭제를 요청하면, 구간이 삭제되고 종점이 갱신된다.")
+    @DisplayName("중간역에 대해 삭제를 요청하면, 구간이 삭제되고 상행과 하행을 잇는 구간이 추가된다.")
     @Test
     void removeLineSection3() {
         // given

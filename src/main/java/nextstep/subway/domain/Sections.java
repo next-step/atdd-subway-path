@@ -2,6 +2,8 @@ package nextstep.subway.domain;
 
 import nextstep.subway.handler.exception.ErrorCode;
 import nextstep.subway.handler.exception.SectionException;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.WeightedMultigraph;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -96,5 +98,17 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.hasStation(station))
                 .collect(Collectors.toList());
+    }
+
+    public void addStationsInGraph(WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
+        sections.forEach(section -> {
+            int distance = section.getDistance();
+            Station upStation = section.getUpStation();
+            Station downStation = section.getDownStation();
+
+            graph.addVertex(upStation);
+            graph.addVertex(downStation);
+            graph.setEdgeWeight(graph.addEdge(upStation, downStation), distance);
+        });
     }
 }

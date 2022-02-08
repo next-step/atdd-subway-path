@@ -3,6 +3,8 @@ package nextstep.subway.handler.exception;
 public enum ErrorCode {
     INVALID_DISTANCE(400, "[ERROR] 거리는 1보다 작을수 없습니다."),
     SECTION_REMAINED_ONLY_ONE(400, "[ERROR] 구간이 1개만 존재하여 삭제할 수 없습니다."),
+    TWO_STATIONS_NOT_LINKED(400, "[ERROR] 두 역은 이어져 있지 않아 탐색을 진행할 수 없습니다."),
+    TWO_STATIONS_IS_SAME(400, "[ERROR] 두 역은 같아서 탐색이 불가능합니다."),
 
     STATION_NOT_FOUND_BY_ID(404, "[ERROR] 입력한 id의 지하철역을 찾을 수 없습니다."),
     LINE_NOT_FOUND_BY_ID(404, "[ERROR] 입력한 id의 노선을 찾을 수 없습니다."),

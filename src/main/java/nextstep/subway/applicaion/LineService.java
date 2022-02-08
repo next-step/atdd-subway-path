@@ -6,8 +6,6 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
 import nextstep.subway.handler.exception.LineException;
 import nextstep.subway.handler.exception.StationException;
-import nextstep.subway.handler.validator.SectionValidator;
-import nextstep.subway.handler.validator.StationValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,8 +76,6 @@ public class LineService {
         Station downStation = findStationById(sectionRequest.getDownStationId());
         Line line = findLineById(lineId);
 
-        SectionValidator.validateOnlyOneStationExists(line, upStation, downStation);
-
         line.addSection(createSection(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
@@ -91,9 +87,6 @@ public class LineService {
     public void deleteSection(Long lineId, Long stationId) {
         Line line = findLineById(lineId);
         Station station = findStationById(stationId);
-
-        SectionValidator.validateOnlyOneSection(line);
-        StationValidator.validateStationRemove(line, station);
 
         line.removeSectionByStation(station);
     }
