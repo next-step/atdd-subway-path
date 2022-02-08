@@ -124,12 +124,23 @@ class LineTest {
 
     @DisplayName("기존 역 사이 길이보다 크거나 같음 - 실패")
     @Test
-    void addSectionException_기존_역_사이_길이보다_크거나_같음() {
+    void addSectionException_기존_역_사이_길이보다_크거나_같음_상행역() {
         //when
         //then
         assertThrows(RuntimeException.class, () -> {
             신분당선.addSection(강남역, 양재역, 10);
             신분당선.addSection(강남역, 수지구청역, 10);
+        });
+    }
+
+    @DisplayName("기존 역 사이 길이보다 크거나 같음 - 실패")
+    @Test
+    void addSectionException_기존_역_사이_길이보다_크거나_같음_하행역() {
+        //when
+        //then
+        assertThrows(RuntimeException.class, () -> {
+            신분당선.addSection(강남역, 양재역, 10);
+            신분당선.addSection(수지구청역, 양재역, 10);
         });
     }
 
