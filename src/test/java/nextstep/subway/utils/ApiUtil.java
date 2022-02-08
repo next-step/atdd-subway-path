@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.acceptance.test.utils.Lines;
+import nextstep.subway.acceptance.test.utils.Paths;
 import nextstep.subway.acceptance.test.utils.Stations;
 import org.springframework.http.MediaType;
 
@@ -102,6 +103,15 @@ public class ApiUtil {
         return RestAssured.given().log().all()
                 .when()
                 .delete(uri)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 최단거리_탐색_API(Paths.최단거리_탐색_파람 params) {
+        return RestAssured.given().log().all()
+                .params(params.toMap())
+                .when()
+                .get("/paths")
                 .then().log().all()
                 .extract();
     }
