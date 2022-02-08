@@ -119,10 +119,14 @@ public class Sections {
 
     private Section findFirstSection() {
         return sections.stream()
-                .filter(s1 -> sections.stream()
-                        .noneMatch(s2 -> s2.getDownStation().equals(s1.getUpStation())))
+                .filter(section -> notDownStationInAnotherSection(section.getUpStation()))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
+    }
+
+    private boolean notDownStationInAnotherSection(Station station) {
+        return sections.stream()
+                .noneMatch(section -> section.isDownStation(station));
     }
 
     public void removeSection(Station station) {
@@ -184,10 +188,14 @@ public class Sections {
 
     private Section findLastSection() {
         return sections.stream()
-                .filter(section -> sections.stream()
-                        .noneMatch(s -> s.isUpStation(section.getDownStation())))
+                .filter(section -> notUpStationInAnotherSection(section.getDownStation()))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
+    }
+
+    private boolean notUpStationInAnotherSection(Station station) {
+        return sections.stream()
+                .noneMatch(s -> s.isUpStation(station));
     }
 
     private void validateSectionCount() {
