@@ -14,7 +14,7 @@ import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철
 import static nextstep.subway.acceptance.PathSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 
-class PathAcceptanceTest extends AcceptanceTest{
+class PathAcceptanceTest extends AcceptanceTest {
 
     private static int DEFAULT_DISTANCE;
 
@@ -36,13 +36,12 @@ class PathAcceptanceTest extends AcceptanceTest{
 
 
     /**
-     *
      * 시청--서울--용산 (1호선)
-     *
+     * <p>
      * 고속터미널 (3호선)
-     *  |
+     * |
      * 교대--------강남---------역삼 (2호선)
-     *  |          |
+     * |           |
      * 남부터미널----양재
      *             |
      *            판교 (신분당선)

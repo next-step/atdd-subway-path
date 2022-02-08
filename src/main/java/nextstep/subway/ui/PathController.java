@@ -20,5 +20,4 @@ public class PathController {
         return ResponseEntity.ok(pathResponse);
     }
 
-
 }
