@@ -53,7 +53,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("sections.downStation.name", String.class)).containsExactly("강남역", "정자역");
+        assertThat(response.jsonPath().getList("sections.downStation.name", String.class)).containsExactly("강남역",
+                "정자역");
         assertThat(response.jsonPath().getList("sections.upStation.name", String.class)).containsExactly("정자역", "양재역");
     }
 
@@ -72,10 +73,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("sections.downStation.name", String.class)).containsExactly("강남역", "정자역");
+        assertThat(response.jsonPath().getList("sections.downStation.name", String.class)).containsExactly("강남역",
+                "정자역");
         assertThat(response.jsonPath().getList("sections.upStation.name", String.class)).containsExactly("정자역", "양재역");
     }
-
 
     /**
      * When 지하철 노선에 강남역->양재역 구간에 양재역->정자역 구간 추가를 요청 하면
@@ -92,7 +93,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("sections.downStation.name", String.class)).containsExactly("강남역", "양재역");
+        assertThat(response.jsonPath().getList("sections.downStation.name", String.class)).containsExactly("강남역",
+                "양재역");
         assertThat(response.jsonPath().getList("sections.upStation.name", String.class)).containsExactly("양재역", "정자역");
     }
 
@@ -111,7 +113,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("sections.downStation.name", String.class)).containsExactly("정자역", "강남역");
+        assertThat(response.jsonPath().getList("sections.downStation.name", String.class)).containsExactly("정자역",
+                "강남역");
         assertThat(response.jsonPath().getList("sections.upStation.name", String.class)).containsExactly("강남역", "양재역");
     }
 
@@ -133,7 +136,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(양재역, 정자역);
     }
-
 
     /**
      * When 강남역 -> 양재역 -> 미금역 구간에 강남역 삭제 요청을 하면

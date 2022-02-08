@@ -79,4 +79,5 @@ public class Section {
     public boolean isEqualUpStationId(Long stationId) {
         return upStation.getId() == stationId;
     }
+
 }

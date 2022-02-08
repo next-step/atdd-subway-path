@@ -102,7 +102,6 @@ public class Sections {
         }
     }
 
-
     private void changeStartStationName(String name) {
         this.startStationName = name;
     }
@@ -155,18 +154,21 @@ public class Sections {
             }
         }
         return null;
-    }
+    }<<<<<<<HEAD
 
     public boolean isDeleteRightMostSection(Long stationId) {
-        return sections.stream().anyMatch(section -> section.isEqualUpStationId(stationId)) && !sections.stream().anyMatch(section -> section.isEqualDownStationId(stationId));
+        return sections.stream().anyMatch(section -> section.isEqualUpStationId(stationId))
+                && !sections.stream().anyMatch(section -> section.isEqualDownStationId(stationId));
     }
 
     public boolean isDeleteLeftMostSection(Long stationId) {
-        return sections.stream().anyMatch(section -> section.isEqualDownStationId(stationId)) && !sections.stream().anyMatch(section -> section.isEqualUpStationId(stationId));
+        return sections.stream().anyMatch(section -> section.isEqualDownStationId(stationId))
+                && !sections.stream().anyMatch(section -> section.isEqualUpStationId(stationId));
     }
 
     public boolean isDeleteMiddleSection(Long stationId) {
-        return sections.stream().anyMatch(section -> section.isEqualDownStationId(stationId)) && sections.stream().anyMatch(section -> section.isEqualUpStationId(stationId));
+        return sections.stream().anyMatch(section -> section.isEqualDownStationId(stationId))
+                && sections.stream().anyMatch(section -> section.isEqualUpStationId(stationId));
     }
 
     public void deleteMiddleSection(Long stationId, Line line) {
@@ -196,4 +198,4 @@ public class Sections {
         startStationName = leftSection.getUpStation().getName();
         sections.remove(leftSection);
     }
-}
+}=======}>>>>>>>0 a399a6929ae3ee65a23796c473f52560892c06e

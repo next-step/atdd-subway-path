@@ -8,6 +8,7 @@ public class SectionResponse {
     private final Station upStation;
     private final Station downStation;
     private final int distance;
+
     public SectionResponse(Section section) {
         this.id = section.getId();
         this.upStation = section.getUpStation();
@@ -29,4 +30,5 @@ public class SectionResponse {
     public int getDistance() {
         return distance;
     }
+}
 }
