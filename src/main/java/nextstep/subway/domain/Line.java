@@ -70,7 +70,7 @@ public class Line extends BaseEntity {
 
     public void deleteSection(Long stationId) {
         if (sections.isDeleteMiddleSection(stationId)) {
-            sections.deleteMiddleSection(stationId,this);
+            sections.deleteMiddleSection(stationId, this);
             return;
         }
         if (sections.isDeleteRightMostSection(stationId)) {

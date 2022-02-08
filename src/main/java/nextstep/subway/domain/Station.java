@@ -32,6 +32,7 @@ public class Station extends BaseEntity implements Comparable<Station> {
     public boolean isEqualName(String name) {
         return this.name.equals(name);
     }
+
     @Override
     public int compareTo(Station o) {
         if (o.getId() < id) {
