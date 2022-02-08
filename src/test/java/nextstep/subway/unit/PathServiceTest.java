@@ -19,7 +19,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.unit.PathFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,31 +31,6 @@ class PathServiceTest {
     private LineService lineService;
     @Mock
     private StationService stationService;
-
-    private Station 교대역;
-    private Station 강남역;
-    private Station 남터역;
-    private Station 양재역;
-    private Line 이호선;
-    private Line 삼호선;
-    private Line 신분당선;
-
-    @BeforeEach
-    void setUp() {
-        교대역 = createStation(1L, "교대역");
-        강남역 = createStation(2L, "강남역");
-        남터역 = createStation(3L, "남터역");
-        양재역 = createStation(4L, "양재역");
-
-        이호선 = Line.of("이호선", "green");
-        삼호선 = Line.of("삼호선", "orange");
-        신분당선 = Line.of("신분당선", "red");
-
-        이호선.addSection(Section.of(이호선, 교대역, 강남역, 10));
-        삼호선.addSection(Section.of(삼호선, 교대역, 남터역, 10));
-        신분당선.addSection(Section.of(삼호선, 강남역, 양재역, 10));
-    }
-
 
     @Test
     void shortest() {
@@ -65,20 +42,17 @@ class PathServiceTest {
         PathService pathService = new PathService(lineService, stationService);
 
         //when
-        PathResponse shortest = pathService.findShortestPath(양재역.getId(), 남터역.getId());
-        List<String> namesOfStations = shortest.getStations().stream()
+        PathResponse shortestPath = pathService.findShortestPath(양재역.getId(), 남터역.getId());
+        List<String> namesOfStations = shortestPath.getStations().stream()
                 .map(StationResponse::getName)
                 .collect(Collectors.toList());
 
         //then
-        assertThat(shortest.getDistance()).isEqualTo(30);
-        assertThat(namesOfStations).containsExactly(양재역.getName(), 강남역.getName(), 교대역.getName(), 남터역.getName());
+        assertAll(
+                () -> assertThat(shortestPath.getDistance()).isEqualTo(30),
+                () -> assertThat(namesOfStations).containsExactly(양재역.getName(), 강남역.getName(), 교대역.getName(), 남터역.getName())
+        );
 
     }
 
-    private Station createStation(Long id, String name) {
-        Station station = new Station(name);
-        ReflectionTestUtils.setField(station, "id", id);
-        return station;
-    }
 }
