@@ -1,22 +1,13 @@
 package nextstep.subway.domain;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-
-import nextstep.subway.domain.exception.ExceptionMessage;
 
 @Entity
 public class Line extends BaseEntity {
@@ -66,7 +57,15 @@ public class Line extends BaseEntity {
         return sections.getSections();
     }
 
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
     public void addSection(Station upStation, Station downStation, int distance) {
         sections.addSection(this, upStation, downStation, distance);
+    }
+
+    public void deleteSection(Station station) {
+        sections.deleteSection(station);
     }
 }
