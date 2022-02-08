@@ -117,8 +117,7 @@ public class Sections {
     }
 
     private void sectionsSort() {
-        Collections.sort(sections, (a, b) -> b.getUpStation()
-                                                .equals(a.getDownStation()) ? -1 : 0);
+        Collections.sort(sections, (previous, next) -> next.matchUpStationAndPreviousDownStation(previous.getDownStation()));
     }
 
     private boolean isEndSection(Station station) {
