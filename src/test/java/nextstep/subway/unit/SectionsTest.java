@@ -5,6 +5,7 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.AddSectionFailException;
+import nextstep.subway.exception.RemoveSectionFailException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -148,5 +149,24 @@ class SectionsTest {
         assertThat(section.getUpStation()).isEqualTo(군자역);
         assertThat(section.getDownStation()).isEqualTo(아차산역);
         assertThat(section.getDistance()).isEqualTo(distance);
+    }
+
+
+    @DisplayName("마지막 구간에 속한 역은 삭제 불가")
+    @Test
+    void deleteLastSection() {
+        assertThatThrownBy(() -> sections.removeSection(군자역))
+                .isInstanceOf(RemoveSectionFailException.class);
+    }
+
+    @DisplayName("구간에 속하지 않은 역은 삭제 불가")
+    @Test
+    void deleteNotContainsStation() {
+        int newSectionDistance = 3;
+        Section newSection = Section.of(_5호선, 군자역, 광나루역, newSectionDistance);
+        sections.addSection(newSection);
+
+        assertThatThrownBy(() -> sections.removeSection(천호역))
+                .isInstanceOf(RemoveSectionFailException.class);
     }
 }
