@@ -7,11 +7,13 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.utils.PathFinder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class PathService {
     private static final String SAME_STATION_ERROR_MESSAGE = "출발역과 도착역이 동일합니다.";
     private LineRepository lineRepository;
