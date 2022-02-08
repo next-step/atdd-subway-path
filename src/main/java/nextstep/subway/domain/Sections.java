@@ -29,32 +29,29 @@ public class Sections {
         return ordered;
     }
 
-    public void add(Line line, Station upStation, Station downStation, int distance) {
-        Section section = new Section(line, upStation, downStation, distance);
-        if (!sections.isEmpty()) {
-            checkExistStationInLine(section.getDownStation());
+    public void addSection(Section newSection) {
 
-            if (isSameUpStation(upStation)) {
-                updateSection(section);
+        if (!sections.isEmpty()) {
+            boolean existUpStation = getSections().stream()
+                    .anyMatch(section -> section.getUpStation() == newSection.getUpStation());
+            boolean existDownStation = getSections().stream()
+                    .anyMatch(section -> section.getDownStation() == newSection.getDownStation());
+
+            checkExistStationInLine(existUpStation, existDownStation, newSection);
+
+            if (existUpStation) {
+                updateUpSection(newSection);
             }
 
-            //다운스테이션 업데이트 추가
-
-            
+            if (existDownStation) {
+                updateDownSection(newSection);
+            }
         }
 
-        this.sections.add(section);
+        this.sections.add(newSection);
     }
 
-    private boolean validSection(Section newSection) {
-        return isLastDownStation(newSection.getUpStation()) || isFirstUpStation(newSection.getDownStation());
-    }
-
-    private boolean isFirstUpStation(Station downStation) {
-        return downStation.equals(getFirstStation());
-    }
-
-    private void updateSection(Section newSection) {
+    private void updateUpSection(Section newSection) {
         Section findSection = this.sections.stream()
                 .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
                 .findAny()
@@ -63,12 +60,16 @@ public class Sections {
         findSection.updateUpStation(newSection.getDownStation(), newSection.getDistance());
     }
 
-    private boolean isSameUpStation(Station upStation) {
-        return this.sections.stream()
-                .anyMatch(section -> section.getUpStation().equals(upStation));
+    private void updateDownSection(Section newSection) {
+        Section findSection = this.sections.stream()
+                .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
+                .findAny()
+                .get();
+
+        findSection.updateDownStation(newSection.getUpStation(), newSection.getDistance());
     }
 
-    public List<Station> get() {
+    public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
         List<Section> sections = getSections();
         if (!sections.isEmpty()) {
@@ -139,17 +140,17 @@ public class Sections {
         return findSection;
     }
 
-    private void checkExistStationInLine(Station downStation) {
-        boolean exist = this.sections.stream()
-                .anyMatch(section -> section.getId() == downStation.getId());
+    private void checkExistStationInLine(boolean existUpStation, boolean existDownStation, Section newSection) {
 
-        if (exist) {
-            throw new IllegalArgumentException();
-        }
-    }
+        boolean existStation = getStations().stream()
+                .anyMatch(station -> newSection.getUpStation() == station || newSection.getDownStation() == station);
 
-    private boolean isLastDownStation(Station upStation) {
-        return upStation.equals(getLastStation());
+        if (existUpStation && existDownStation)
+            throw new RuntimeException("이미 존재하는 구간");
+
+        if (!existStation)
+            throw new RuntimeException("등록할 수 없음");
+
     }
 
 }
