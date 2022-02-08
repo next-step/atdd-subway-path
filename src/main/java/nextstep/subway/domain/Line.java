@@ -81,4 +81,8 @@ public class Line extends BaseEntity {
             this.color = color;
         }
     }
+
+    public List<Section> getSections() {
+        return this.sections.getValues();
+    }
 }

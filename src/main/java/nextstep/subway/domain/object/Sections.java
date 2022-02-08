@@ -22,6 +22,10 @@ public class Sections {
         this.values = new ArrayList<>();
     }
 
+    public List<Section> getValues() {
+        return this.values;
+    }
+
     public void add(Section section) {
         if (!validateAddSection(section)) {
             throw new InvalidParameterException();
@@ -68,7 +72,7 @@ public class Sections {
         if (removeLastSection(targetIndex, stations.size())) {
             return;
         }
-        
+
         removeMiddleSection(targetStation);
     }
 
