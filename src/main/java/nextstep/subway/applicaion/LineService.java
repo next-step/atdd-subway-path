@@ -29,8 +29,8 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         checkDuplicatedName(request);
 
-        Station upStation = stationService.findById(request.getUpStationId());
-        Station downStation = stationService.findById(request.getDownStationId());
+        Station upStation = stationService.getById(request.getUpStationId());
+        Station downStation = stationService.getById(request.getDownStationId());
 
         Line line = lineRepository.save(
                 Line.builder()
@@ -90,8 +90,8 @@ public class LineService {
     }
 
     public void saveSection(Long id, SectionRequest request) {
-        Station upStation = stationService.findById(request.getUpStationId());
-        Station downStation = stationService.findById(request.getDownStationId());
+        Station upStation = stationService.getById(request.getUpStationId());
+        Station downStation = stationService.getById(request.getDownStationId());
 
         Line line = lineRepository.getById(id);
 

@@ -62,7 +62,7 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public Station findById(Long stationId) {
+    public Station getById(Long stationId) {
         return stationRepository.getById(stationId);
     }
 }
