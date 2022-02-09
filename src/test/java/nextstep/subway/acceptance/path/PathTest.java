@@ -54,10 +54,14 @@ public class PathTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<HashMap<String, String>> stations = response.body().jsonPath().getList("stations");
+
         assertThat(stations.size()).isEqualTo(3);
         assertThat(stations.get(0).get("name").equals("연신내")).isTrue();
         assertThat(stations.get(1).get("name").equals("서울역")).isTrue();
         assertThat(stations.get(2).get("name").equals("강남역")).isTrue();
+
+        Integer distance = response.body().jsonPath().getInt("distance");
+        assertThat(distance).isEqualTo(20);
     }
 
     @BeforeEach
