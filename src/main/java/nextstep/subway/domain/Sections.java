@@ -74,6 +74,24 @@ public class Sections {
 		sections.removeIf(it -> it.isDownStation(station));
 	}
 
+	public void deleteMiddleSection(Station station) {
+		Section leftSection = sections.stream()
+			.filter(it -> it.isDownStation(station))
+			.findFirst()
+			.orElseThrow(IllegalAccessError::new);
+
+		Section rightSection = sections.stream()
+			.filter(it -> it.isUpStation(station))
+			.findFirst()
+			.orElseThrow(IllegalAccessError::new);
+
+		sections.remove(leftSection);
+		sections.remove(rightSection);
+
+		sections.add(new Section(leftSection.getLine(), leftSection.getUpStation(), rightSection.getDownStation(),
+			leftSection.getDistance() + rightSection.getDistance()));
+	}
+
 	private void validDuplicationSection(Station upStation, Station downStation) {
 		sections.stream()
 			.filter(it -> it.isDuplicateStation(upStation, downStation))
