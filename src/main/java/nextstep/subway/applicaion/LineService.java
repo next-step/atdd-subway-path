@@ -83,11 +83,11 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
+        if (line.sections().isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getAllStations();
+        List<Station> stations = line.sections().getAllStations();;
 
         return stations.stream()
                 .map(it -> stationService.createStationResponse(it))
@@ -98,6 +98,6 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        line.deleteSection(station);
+        line.sections().deleteSection(station);
     }
 }

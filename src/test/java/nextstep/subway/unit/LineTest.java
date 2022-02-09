@@ -20,7 +20,7 @@ class LineTest {
         for (int i = 0; i < num; i++) {
             line.addSection(new Section());
         }
-        assertThat(line.getSections().size()).isEqualTo(num);
+        assertThat(line.sections().size()).isEqualTo(num);
     }
 
     @DisplayName("노선에 속해있는 역 목록 조회")
@@ -39,7 +39,7 @@ class LineTest {
         line.addSection(newSection);
 
         // when
-        List<Station> stations = line.getAllStations();
+        List<Station> stations = line.sections().getAllStations();
 
         // then
         assertThat(stations.size()).isEqualTo(3);
@@ -62,10 +62,10 @@ class LineTest {
         line.addSection(newSection);
 
         // when
-        line.deleteSection(마지막역);
+        line.sections().deleteSection(마지막역);
 
         // then
-        List<Station> stations = line.getAllStations();
+        List<Station> stations = line.sections().getAllStations();;
         assertThat(stations.size()).isEqualTo(2);
     }
 }
