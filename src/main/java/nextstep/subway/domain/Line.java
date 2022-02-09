@@ -52,10 +52,6 @@ public class Line extends BaseEntity {
         return sections.getSections();
     }
 
-    public void deleteLastSection() {
-        sections.deleteLastSection();
-    }
-
     public List<Station> getStations() {
         return sections.getStations();
     }
@@ -69,18 +65,7 @@ public class Line extends BaseEntity {
     }
 
     public void deleteSection(Long stationId) {
-        if (sections.isDeleteMiddleSection(stationId)) {
-            sections.deleteMiddleSection(stationId, this);
-            return;
-        }
-        if (sections.isDeleteRightMostSection(stationId)) {
-            sections.deleteRightSection(stationId);
-            return;
-        }
-        if (sections.isDeleteLeftMostSection(stationId)) {
-            sections.deleteLeftSection(stationId);
-            return;
-        }
-        throw new NotExistedStationDeleteException();
+        sections.deleteSection(stationId, this);
+
     }
 }
