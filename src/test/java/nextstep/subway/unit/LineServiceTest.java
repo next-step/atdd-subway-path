@@ -38,6 +38,6 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        assertThat(이호선.getSections().getStations()).contains(역삼역, 선릉역);
+        assertThat(이호선.getStations()).contains(역삼역, 선릉역);
     }
 }
