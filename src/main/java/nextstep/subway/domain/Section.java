@@ -82,4 +82,9 @@ public class Section {
             throw new AddSectionFailException("구간 길이가 기존 길이보다 크거나 같음");
         }
     }
+
+    public void changeDownStation(Station station, int distance) {
+        this.downStation = station;
+        this.distance += distance;
+    }
 }

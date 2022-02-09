@@ -55,7 +55,7 @@ public class Sections {
     }
 
     private boolean isLastStation(Station station) {
-        return getLastSection().isDownStation(station);
+        return findLastSection().isDownStation(station);
     }
 
     private void addToLastSection(Section newSection) {
@@ -63,8 +63,7 @@ public class Sections {
     }
 
     private boolean isFirstStation(Station station) {
-        return sections.get(0)
-                .isUpStation(station);
+        return findFirstSection().isUpStation(station);
     }
 
     private void addToFirstSection(Section newSection) {
@@ -120,45 +119,88 @@ public class Sections {
 
     private Section findFirstSection() {
         return sections.stream()
-                .filter(s1 -> sections.stream()
-                        .noneMatch(s2 -> s2.getDownStation().equals(s1.getUpStation())))
+                .filter(section -> notDownStationInAnotherSection(section.getUpStation()))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
     }
 
-    public void removeSection(Long stationId) {
+    private boolean notDownStationInAnotherSection(Station station) {
+        return sections.stream()
+                .noneMatch(section -> section.isDownStation(station));
+    }
+
+    public void removeSection(Station station) {
         validateSectionCount();
-        validateIsLastStation(stationId);
-        sections.remove(getLastSection());
-    }
 
-    private Section getLastSection() {
-        return sections.get(getLastIndex());
-    }
-
-    private void validateIsLastStation(Long stationId) {
-        if (!hasLastStation(stationId)) {
-            throw new RemoveSectionFailException();
+        if (isFirstStation(station)) {
+            removeFirstStation();
+            return;
         }
+
+        if (isLastStation(station)) {
+            removeLastStation();
+            return;
+        }
+
+        if (isUpStation(station)) {
+            removeMiddleStation(station);
+            return;
+        }
+
+        throw new RemoveSectionFailException();
+    }
+
+    private void removeLastStation() {
+        Section lastSection = findLastSection();
+        sections.remove(lastSection);
+    }
+
+    private void removeFirstStation() {
+        Section firstSection = findFirstSection();
+        sections.remove(firstSection);
+    }
+
+    private void removeMiddleStation(Station station) {
+        Section targetSection = findSection(station);
+        Section beforeSection = findBeforeSection(targetSection.getUpStation());
+        beforeSection.changeDownStation(targetSection.getDownStation(), targetSection.getDistance());
+        sections.remove(targetSection);
+    }
+
+    private Section findBeforeSection(Station station) {
+        return sections.stream()
+                .filter(s -> s.isDownStation(station))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+    }
+
+    private boolean isUpStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.isUpStation(station));
+    }
+
+    private Section findSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.isUpStation(station))
+                .findFirst()
+                .orElseThrow(RemoveSectionFailException::new);
+    }
+
+    private Section findLastSection() {
+        return sections.stream()
+                .filter(section -> notUpStationInAnotherSection(section.getDownStation()))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+    }
+
+    private boolean notUpStationInAnotherSection(Station station) {
+        return sections.stream()
+                .noneMatch(s -> s.isUpStation(station));
     }
 
     private void validateSectionCount() {
         if (sections.size() == MIN_SECTIONS_SIZE) {
             throw new RemoveSectionFailException();
         }
-    }
-
-    private boolean hasLastStation(Long stationId) {
-        return getLastDownStation().getId()
-                .equals(stationId);
-    }
-
-    private Station getLastDownStation() {
-        return sections.get(getLastIndex())
-                .getDownStation();
-    }
-
-    private int getLastIndex() {
-        return sections.size() - 1;
     }
 }
