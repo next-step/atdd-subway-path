@@ -2,6 +2,7 @@ package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,11 +17,15 @@ class LineTest {
     void addSection() {
         Line line = new Line();
 
-        int num = 2;
-        for (int i = 0; i < num; i++) {
-            line.addSection(new Section());
-        }
-        assertThat(line.sections().size()).isEqualTo(num);
+        final Station 상행역 = new Station("상행역");
+        final Station 하행역 = new Station("하행역");
+
+        line.addSection(new Section(line, 상행역, 하행역, 1));
+
+        final Station 새로운역 = new Station("새로운역");
+        line.addSection(new Section(line, 하행역, 새로운역, 1));
+
+        assertThat(line.sections().size()).isEqualTo(2);
     }
 
     @DisplayName("노선에 속해있는 역 목록 조회")
@@ -42,7 +47,7 @@ class LineTest {
         List<Station> stations = line.sections().getAllStations();
 
         // then
-        assertThat(stations.size()).isEqualTo(3);
+        assertThat(stations).hasSize(3);
     }
 
     @DisplayName("구간이 목록에서 마지막 역 삭제")
