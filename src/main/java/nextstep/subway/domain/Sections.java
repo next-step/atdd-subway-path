@@ -2,6 +2,9 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -14,7 +17,16 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
+    public void init(Section section) {
+        sections.add(section);
+    }
+
     public void add(Section section) {
+        validationNewSection(section);
+        if (!isAddSectionToFirst(section) && !isAddSectionToLast(section)) {
+            addSectionToMiddle(section);
+        }
+
         sections.add(section);
     }
 
@@ -31,7 +43,7 @@ public class Sections {
         sections.remove(getLastSection());
     }
 
-    public List<Station> getStations() {
+    private List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
         stations.add(sections.get(0).getUpStation());
         stations.addAll(
@@ -42,11 +54,77 @@ public class Sections {
         return stations;
     }
 
-    public Section getLastSection() {
-        return sections.get(sections.size() - 1);
+    public List<Station> getSortedStations() {
+        List<Station> stations = new ArrayList<>();
+        Station station = getFirstSection().getUpStation();
+
+        Map<Station, Section> stationSectionMap = sections.stream()
+            .collect(Collectors.toMap(Section::getUpStation, Function.identity()));
+
+        while (stationSectionMap.containsKey(station)) {
+            stations.add(station);
+            station = stationSectionMap.get(station).getDownStation();
+        }
+
+        stations.add(station);
+        return stations;
     }
 
     public boolean isEmpty() {
         return sections.isEmpty();
     }
+
+    private Section getFirstSection() {
+        Set<Station> downStations = sections.stream().map(Section::getDownStation).collect(Collectors.toSet());
+        return sections.stream()
+            .filter(s -> !downStations.contains(s.getUpStation()))
+            .findAny()
+            .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Section getLastSection() {
+        Set<Station> upStations = sections.stream().map(Section::getUpStation).collect(Collectors.toSet());
+        return sections.stream()
+            .filter(s -> !upStations.contains(s.getDownStation()))
+            .findAny()
+            .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private boolean isAddSectionToFirst(Section section) {
+        Section firstSection = getFirstSection();
+        return firstSection.getUpStation().equals(section.getDownStation());
+    }
+
+    private boolean isAddSectionToLast(Section section) {
+        Section lastSection = getLastSection();
+        return lastSection.getDownStation().equals(section.getUpStation());
+    }
+
+    private void addSectionToMiddle(Section section) {
+        Section targetSection = sections.stream()
+            .filter(s -> s.getUpStation().equals(section.getUpStation()))
+            .findFirst()
+            .orElseThrow(IllegalArgumentException::new);
+
+        if (section.getDistance() >= targetSection.getDistance()) {
+            throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
+        }
+
+        targetSection.update(section.getDownStation(), section.getDistance());
+    }
+
+    private void validationNewSection(Section section) {
+        long existStationCount = getStations().stream()
+            .filter(s -> section.getUpStation().equals(s) || section.getDownStation().equals(s))
+            .count();
+
+        if (existStationCount == 2) {
+            throw new IllegalArgumentException("중복 되는 구간입니다.");
+        }
+
+        if (existStationCount == 0) {
+            throw new IllegalArgumentException("상행역과 하행역 둘 중 하나는 노선에 포함되어 있어야 합니다.");
+        }
+    }
+
 }

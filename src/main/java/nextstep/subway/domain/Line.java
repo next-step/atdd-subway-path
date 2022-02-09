@@ -30,7 +30,7 @@ public class Line extends BaseEntity {
 
     public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
         Line line = new Line(name, color);
-        line.sections.add(Section.of(line, upStation, downStation, distance));
+        line.sections.init(Section.of(line, upStation, downStation, distance));
         return line;
     }
 
@@ -63,7 +63,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return sections.getStations();
+        return sections.getSortedStations();
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
