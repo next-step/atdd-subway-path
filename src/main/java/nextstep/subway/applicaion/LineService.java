@@ -6,7 +6,6 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,10 +27,10 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-        if (stationIsNotEmpty(request)) {
+        if (validateStation(request)) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.addSection(new Section(line, upStation, downStation, request.getDistance()));
+            line.addSection(upStation, downStation, request.getDistance());
         }
         return createLineResponse(line);
     }
@@ -68,7 +67,7 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = finaById(lineId);
 
-        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        line.addSection(upStation, downStation, sectionRequest.getDistance());
     }
 
     private LineResponse createLineResponse(Line line) {
@@ -90,7 +89,7 @@ public class LineService {
     }
 
 
-    private boolean stationIsNotEmpty(LineRequest request) {
+    private boolean validateStation(LineRequest request) {
         return request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0;
     }
 

@@ -20,10 +20,10 @@ class LineTest {
         final Station 상행역 = new Station("상행역");
         final Station 하행역 = new Station("하행역");
 
-        line.addSection(new Section(line, 상행역, 하행역, 1));
+        line.addSection(상행역, 하행역, 1);
 
         final Station 새로운역 = new Station("새로운역");
-        line.addSection(new Section(line, 하행역, 새로운역, 1));
+        line.addSection(하행역, 새로운역, 1);
 
         assertThat(line.sections().size()).isEqualTo(2);
     }
@@ -36,12 +36,9 @@ class LineTest {
 
         final Station 상행역 = new Station("상행역");
         final Station 하행역 = new Station("하행역");
-        final Section section = new Section(line, 상행역, 하행역, 1);
 
-        final Section newSection = new Section(line, 하행역, new Station("새로운역"), 1);
-
-        line.addSection(section);
-        line.addSection(newSection);
+        line.addSection(상행역, 하행역, 1);
+        line.addSection(하행역, new Station("새로운역"), 1);
 
         // when
         List<Station> stations = line.sections().getAllStations();
@@ -58,13 +55,10 @@ class LineTest {
 
         final Station 상행역 = new Station("상행역");
         final Station 하행역 = new Station("하행역");
-        final Section section = new Section(line, 상행역, 하행역, 1);
-
         final Station 마지막역 = new Station("마지막역");
-        final Section newSection = new Section(line, 하행역, 마지막역, 1);
 
-        line.addSection(section);
-        line.addSection(newSection);
+        line.addSection(상행역, 하행역, 1);
+        line.addSection(하행역, 마지막역, 1);
 
         // when
         line.sections().deleteSection(마지막역);
