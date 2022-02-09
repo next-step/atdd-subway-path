@@ -46,7 +46,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("기존 구간의 왼쪽과 중간에 구간을 등록")
     @Test
-    void addLeftAndMiddleSection() {
+    void addDownSectionAtMiddle() {
 
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 5));
@@ -67,7 +67,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("기존 구간의 중간과 오른쪽에 구간을 등록")
     @Test
-    void addMiddleAndRightSection() {
+    void addUpSectionAtMiddle() {
 
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 양재역, 5));
@@ -86,7 +86,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("기존 구간의 오른쪽에 구간을 등록")
     @Test
-    void addRightSection() {
+    void addUpMostSection() {
 
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 5));
@@ -106,7 +106,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("기존 구간의 왼쪽에 구간을 등록")
     @Test
-    void addLeftSection() {
+    void addDownMostSection() {
 
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 강남역, 5));
@@ -126,7 +126,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("가장 왼쪽에 존재하는 역을 삭제 요청")
     @Test
-    void deleteLeftSection() {
+    void deleteDownMostSection() {
 
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 5));
@@ -146,7 +146,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("가장 오른쪽에 존재하는 역을 삭제 요청")
     @Test
-    void deleteRightSection() {
+    void deleteUpMostSection() {
 
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 5));
