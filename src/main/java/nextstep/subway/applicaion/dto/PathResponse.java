@@ -6,18 +6,18 @@ import java.util.List;
 public class PathResponse {
     private List<StationResponse> stations;
 
-    private Distance distance;
+    private Integer distance;
 
     public PathResponse(List<StationResponse> stations, Distance distance) {
         this.stations = stations;
-        this.distance = distance;
+        this.distance = distance.getValue();
     }
 
     public List<StationResponse> getStations() {
         return stations;
     }
 
-    public Distance getDistance() {
+    public Integer getDistance() {
         return distance;
     }
 }
