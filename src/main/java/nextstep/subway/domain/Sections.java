@@ -3,8 +3,10 @@ package nextstep.subway.domain;
 import nextstep.subway.exception.IllegalDeleteSectionException;
 import nextstep.subway.exception.IllegalDistanceException;
 import nextstep.subway.exception.NoMatchSectionException;
+import nextstep.subway.exception.NotExistedStationDeleteException;
 
 import javax.persistence.CascadeType;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,52 +18,52 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
-    private String startStationName;
+    private Long startStationId;
 
     public void initSection(Section section) {
-        changeStartStationName(section.getUpStation().getName());
+        changeStartStationId(section.getUpStation().getId());
         sections.add(section);
     }
 
     public void addSection(Section section) {
-        if (isAddMiddleAndRightSection(section)) {
-            addMiddleAndRightSection(section);
+        if (isAddUpSectionAtMiddle(section)) {
+            addUpSectionAtMiddle(section);
             return;
         }
-        if (isAddLeftAndMiddleSection(section)) {
-            addLeftAndMiddleSection(section);
+        if (isAddDownSectionAtMiddle(section)) {
+            addDownSectionAtMiddle(section);
             return;
         }
-        if (isLeftAddSection(section)) {
-            changeStartStationName(section.getUpStation().getName());
+        if (isAddSectionAtLeftest(section)) {
+            changeStartStationId(section.getUpStation().getId());
             sections.add(section);
             return;
         }
-        if (isRightAddSection(section)) {
+        if (isAddSectionAtRightest(section)) {
             sections.add(section);
             return;
         }
         throw new NoMatchSectionException();
     }
 
-    private boolean isAddLeftAndMiddleSection(Section section) {
+    private boolean isAddDownSectionAtMiddle(Section section) {
         return sections.stream().anyMatch(s -> s.isEqualDownStationName(section.getDownStation().getName()));
     }
 
-    private boolean isRightAddSection(Section section) {
+    private boolean isAddSectionAtRightest(Section section) {
         return sections.stream().anyMatch(s -> s.isEqualUpStationName(section.getDownStation().getName()));
     }
 
-    private boolean isLeftAddSection(Section section) {
+    private boolean isAddSectionAtLeftest(Section section) {
         return sections.stream().anyMatch(s -> s.isEqualDownStationName(section.getUpStation().getName()));
     }
 
-    private boolean isAddMiddleAndRightSection(Section section) {
+    private boolean isAddUpSectionAtMiddle(Section section) {
         return sections.stream().anyMatch(s -> s.isEqualUpStationName(section.getUpStation().getName()));
     }
 
-    private void addMiddleAndRightSection(Section section) {
-        changeStartStationName(section.getDownStation().getName());
+    private void addUpSectionAtMiddle(Section section) {
+        changeStartStationId(section.getDownStation().getId());
         Section existedSection = sections.stream()
                 .filter(s -> s.getUpStation().getName().equals(section.getUpStation().getName()))
                 .findFirst().get();
@@ -74,8 +76,8 @@ public class Sections {
         delete(existedSection);
     }
 
-    private void addLeftAndMiddleSection(Section section) {
-        changeStartStationName(section.getUpStation().getName());
+    private void addDownSectionAtMiddle(Section section) {
+        changeStartStationId(section.getUpStation().getId());
         Section existedSection = sections.stream()
                 .filter(s -> s.getDownStation().getName().equals(section.getDownStation().getName()))
                 .findFirst().get();
@@ -102,8 +104,8 @@ public class Sections {
     }
 
 
-    private void changeStartStationName(String name) {
-        this.startStationName = name;
+    private void changeStartStationId(Long id) {
+        this.startStationId = id;
     }
 
     public List<Station> getStations() {
@@ -133,26 +135,98 @@ public class Sections {
         if (sections.size() <= 1) {
             return sections;
         }
-        String name = startStationName;
+        Long id = startStationId;
         List<Section> result = new ArrayList<>();
         result.add(sections.stream()
-                .filter(section -> section.getUpStation().getName().equals(startStationName))
+                .filter(section -> section.getUpStation().getId().equals(startStationId))
                 .findFirst()
                 .get());
         while (result.size() != sections.size()) {
-            findNextUpStationName(name, result);
+            findNextUpStationId(id, result);
         }
         return result;
     }
 
-    private String findNextUpStationName(String name, List<Section> result) {
+    private Long findNextUpStationId(Long id, List<Section> result) {
         for (Section section : sections) {
-            if (name.equals(section.getDownStation().getName())) {
+            if (id.equals(section.getDownStation().getId())) {
                 result.add(section);
-                name = section.getUpStation().getName();
-                return name;
+                id = section.getUpStation().getId();
+                return id;
             }
         }
         return null;
+    }
+
+    public boolean isDeleteUpMostSection(Long stationId) {
+        return sections.stream()
+                .anyMatch(section -> section.isEqualUpStationId(stationId)) && !sections.stream()
+                .anyMatch(section -> section.isEqualDownStationId(stationId));
+    }
+
+    public boolean isDeleteDownMostSection(Long stationId) {
+        return sections.stream()
+                .anyMatch(section -> section.isEqualDownStationId(stationId)) && !sections.stream()
+                .anyMatch(section -> section.isEqualUpStationId(stationId));
+    }
+
+    public boolean isDeleteMiddleSection(Long stationId) {
+        return sections.stream()
+                .anyMatch(section -> section.isEqualDownStationId(stationId)) && sections.stream()
+                .anyMatch(section -> section.isEqualUpStationId(stationId));
+    }
+
+    public void deleteMiddleSection(Long stationId, Line line) {
+        if(stationId == startStationId){
+            changeStartStationId(getSections().stream()
+                    .filter(section -> section.isEqualDownStationId(stationId))
+                    .findFirst()
+                    .orElseThrow(EntityNotFoundException::new)
+                    .getUpStation().getId());
+        }
+        Section downSection = sections.stream().filter(section -> section.isEqualUpStationId(stationId))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException());
+
+        Section upSection = sections.stream().filter(section -> section.isEqualDownStationId(stationId))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException());
+
+        sections.remove(downSection);
+        sections.remove(upSection);
+
+        sections.add(new Section(line, downSection.getDownStation(), upSection.getUpStation(),
+                downSection.getDistance() + upSection.getDistance()));
+    }
+
+    public void deleteUpMostSection(Long stationId) {
+        Section rightSection = sections.stream().filter(section -> section.isEqualUpStationId(stationId))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException());
+        sections.remove(rightSection);
+    }
+
+    public void deleteDownMostSection(Long stationId) {
+        Section leftSection = sections.stream().filter(section -> section.isEqualDownStationId(stationId))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException());
+        startStationId = leftSection.getUpStation().getId();
+        sections.remove(leftSection);
+    }
+
+    public void deleteSection(Long stationId, Line line) {
+        if (isDeleteMiddleSection(stationId)) {
+            deleteMiddleSection(stationId, line);
+            return;
+        }
+        if (isDeleteUpMostSection(stationId)) {
+            deleteUpMostSection(stationId);
+            return;
+        }
+        if (isDeleteDownMostSection(stationId)) {
+            deleteDownMostSection(stationId);
+            return;
+        }
+        throw new NotExistedStationDeleteException();
     }
 }

@@ -13,12 +13,13 @@ public class Section {
     private Line line;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "up_station_id")
+    private Station upStation;
 
     private int distance;
 
@@ -65,9 +66,18 @@ public class Section {
         return "Section{" +
                 "id=" + id +
                 ", line=" + line +
-                ", upStation=" + upStation +
                 ", downStation=" + downStation +
+                ", upStation=" + upStation +
                 ", distance=" + distance +
                 '}';
     }
+
+    public boolean isEqualDownStationId(Long stationId) {
+        return downStation.getId() == stationId;
+    }
+
+    public boolean isEqualUpStationId(Long stationId) {
+        return upStation.getId() == stationId;
+    }
+
 }
