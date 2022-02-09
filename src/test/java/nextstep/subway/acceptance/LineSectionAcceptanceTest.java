@@ -22,6 +22,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     private Long 강남역;
     private Long 양재역;
     private Long 정자역;
+    private Long 판교역;
 
     /**
      * Given 지하철역과 노선 생성을 요청 하고
@@ -33,6 +34,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
         양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
         정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
 
         Map<String, String> lineCreateParams = createLineCreateParams(강남역, 양재역);
         신분당선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
@@ -88,7 +90,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역, 양재역);
     }
 
-    @DisplayName("중복된 구간 등록")
+    @DisplayName("중복된 구간 등록시 등록 실패")
     @Test
     void addSectionWithDuplicated() {
         // when
@@ -96,11 +98,18 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("등록할 수 없는 구간길이 등록")
+    @DisplayName("등록할 수 없는 구간길이 등록시 등록 실패")
     @Test
     void addSectionWithWrongDistance() {
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 11));
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("상행역 또는 하행역에 아무것도 포함되어있지 않으면 등록 실패")
+    @Test
+    void addSectionWithNotIncludeStation() {
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(판교역, 정자역, 11));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 

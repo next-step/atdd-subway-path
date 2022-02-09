@@ -22,13 +22,15 @@ public class Sections {
 	}
 
 	public void add(Section section) {
-		if (this.sections.isEmpty()){
+		if (this.sections.isEmpty()) {
 			this.sections.add(section);
 			return;
 		}
 
 		// 중복확인
 		isDuplicatedSection(section);
+		// 존재하지 않는 기준역 확인
+		isNotExistUpOrDownStation(section);
 		updateUpSection(section);
 		updateDownSection(section);
 
@@ -112,6 +114,22 @@ public class Sections {
 			.ifPresent(it -> {
 				throw new SubwayException.DuplicatedException();
 			});
+	}
+
+	private void isNotExistUpOrDownStation(Section section) {
+		this.sections.stream()
+			.filter(it -> !containsStation(section, it))
+			.findFirst()
+			.ifPresent(it -> {
+				throw new SubwayException.WrongParameterException();
+			});
+	}
+
+	private boolean containsStation(Section section, Section it) {
+		return it.isEqualUpStation(section.getUpStation())
+			|| it.isEqualUpStation(section.getDownStation())
+			|| it.isEqualDownStation(section.getUpStation())
+			|| it.isEqualDownStation(section.getDownStation());
 	}
 
 	private Station findFirstUpStation() {
