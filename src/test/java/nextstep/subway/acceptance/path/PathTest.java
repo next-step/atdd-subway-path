@@ -1,7 +1,6 @@
 package nextstep.subway.acceptance.path;
 
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
+import lombok.val;
 import nextstep.subway.acceptance.AcceptanceTest;
 import nextstep.subway.acceptance.test.utils.Lines;
 import nextstep.subway.acceptance.test.utils.Paths;
@@ -10,6 +9,12 @@ import nextstep.subway.utils.ApiUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+
+import java.util.HashMap;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 경로 검색")
 public class PathTest extends AcceptanceTest {
@@ -44,12 +49,15 @@ public class PathTest extends AcceptanceTest {
 
 
         // when
-        ExtractableResponse<Response> Response = ApiUtil.최단거리_탐색_API(Paths.최단거리_탐색);
-        System.out.println(Response.body());
-        System.out.println(Response.statusCode());
+        val response = ApiUtil.최단거리_탐색(Paths.최단거리_탐색);
 
         // then
-//        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<HashMap<String, String>> stations = response.body().jsonPath().getList("stations");
+        assertThat(stations.size()).isEqualTo(3);
+        assertThat(stations.get(0).get("name").equals("연신내")).isTrue();
+        assertThat(stations.get(1).get("name").equals("서울역")).isTrue();
+        assertThat(stations.get(2).get("name").equals("강남역")).isTrue();
     }
 
     @BeforeEach
