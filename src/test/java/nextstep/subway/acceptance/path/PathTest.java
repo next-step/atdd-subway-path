@@ -37,15 +37,15 @@ public class PathTest extends AcceptanceTest {
     @Test
     void 최단거리_탐색() {
         //given
-        ApiUtil.지하철역_생성_API(Stations.연신내역);
-        ApiUtil.지하철역_생성_API(Stations.서울역);
-        ApiUtil.지하철역_생성_API(Stations.강남역);
-        ApiUtil.지하철역_생성_API(Stations.삼성역);
+        ApiUtil.지하철역_생성(Stations.연신내역);
+        ApiUtil.지하철역_생성(Stations.서울역);
+        ApiUtil.지하철역_생성(Stations.강남역);
+        ApiUtil.지하철역_생성(Stations.삼성역);
 
-        ApiUtil.지하철_노선_생성_API(Lines.일호선_연신내역_서울역);
-        ApiUtil.지하철_노선_생성_API(Lines.이호선_연신내역_삼성역);
-        ApiUtil.지하철_노선_생성_API(Lines.삼호선_삼성역_강남역);
-        ApiUtil.지하철_노선_생성_API(Lines.사호선_강남역_서울역);
+        ApiUtil.지하철_노선_생성(Lines.일호선_연신내역_서울역);
+        ApiUtil.지하철_노선_생성(Lines.이호선_연신내역_삼성역);
+        ApiUtil.지하철_노선_생성(Lines.삼호선_삼성역_강남역);
+        ApiUtil.지하철_노선_생성(Lines.사호선_강남역_서울역);
 
 
         // when
