@@ -1,7 +1,9 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.exception.DuplicateException;
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,6 +50,9 @@ class LineTest {
 
         //then
         assertThat(이호선.getSections().getStations()).containsExactly(강남역, 역삼역, 합정역);
+        assertThat(이호선.getSections().getSections())
+                .extracting(Section::getDistance)
+                .containsExactly(Distance.from(100), Distance.from(거리));
     }
 
     /**
@@ -62,7 +67,9 @@ class LineTest {
 
         //then
         assertThat(이호선.getSections().getStations()).containsExactly(강남역, 합정역, 역삼역);
-//        assertThat(이호선.getSections().get)
+        assertThat(이호선.getSections().getSections())
+                .extracting(Section::getDistance)
+                .containsExactly(Distance.from(거리), Distance.from(거리));
     }
 
     /**
@@ -77,6 +84,9 @@ class LineTest {
 
         //then
         assertThat(이호선.getSections().getStations()).containsExactly(강남역, 합정역, 역삼역);
+        assertThat(이호선.getSections().getSections())
+                .extracting(Section::getDistance)
+                .containsExactly(Distance.from(거리), Distance.from(거리));
     }
 
     /**
@@ -91,6 +101,9 @@ class LineTest {
 
         //then
         assertThat(이호선.getSections().getStations()).containsExactly(합정역, 강남역, 역삼역);
+        assertThat(이호선.getSections().getSections())
+                .extracting(Section::getDistance)
+                .containsExactly(Distance.from(100), Distance.from(거리));
     }
 
     /**

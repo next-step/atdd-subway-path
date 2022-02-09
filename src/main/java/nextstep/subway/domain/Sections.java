@@ -20,6 +20,19 @@ public class Sections {
     protected Sections() {
     }
 
+    public List<Section> getSections() {
+        return sections;
+    }
+
+    public List<Station> getStations() {
+        return sections.stream()
+                .sorted()
+                .map(Section::getStations)
+                .flatMap(Collection::stream)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
     public void add(Line line, Station upStation, Station downStation, int distance) {
         final Section section = Section.of(line, upStation, downStation, distance);
 
@@ -112,15 +125,6 @@ public class Sections {
         int lastIndex = sections.size() - 1;
 
         return sections.get(lastIndex).getDownStation();
-    }
-
-    public List<Station> getStations() {
-        return sections.stream()
-                .sorted()
-                .map(Section::getStations)
-                .flatMap(Collection::stream)
-                .distinct()
-                .collect(Collectors.toList());
     }
 
     public void deleteLastSection() {
