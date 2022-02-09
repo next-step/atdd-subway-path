@@ -55,8 +55,8 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void addSection(Section section) {
-        this.sections.addSection(section);
+    public void addSection(Station upStation, Station downStation, int distance) {
+        this.sections.addSection(new Section(this, upStation, downStation, distance));
     }
 
     public Sections sections() {
