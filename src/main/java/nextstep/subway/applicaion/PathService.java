@@ -25,24 +25,21 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class PathService {
-
-    private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
     private final StationService stationService;
+    private final LineService lineService;
 
-    public PathService(LineRepository lineRepository, StationRepository stationRepository, StationService stationService) {
-        this.lineRepository = lineRepository;
+    public PathService(StationRepository stationRepository, StationService stationService, LineService lineService) {
         this.stationRepository = stationRepository;
         this.stationService = stationService;
+        this.lineService = lineService;
     }
 
     public PathResponse getShortestDistanceAndPath(Long sourceId, Long targetId) {
-        val allLines = lineRepository.findAll();
+        val lines = lineService.findAll();
         val sourceStation = stationRepository.getById(sourceId);
         val targetStation = stationRepository.getById(targetId);
-
-        Lines lines = new Lines(allLines);
 
         val shortestPath = lines.getShortestPath(sourceStation, targetStation);
         val shortestDistance = lines.getShortestPathDistance(sourceStation, targetStation);
