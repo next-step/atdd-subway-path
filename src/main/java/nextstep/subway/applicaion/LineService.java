@@ -43,6 +43,11 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
+    public List<Line> findAllLines() {
+        return lineRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
         return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
     }

@@ -28,13 +28,13 @@ public class Sections {
         boolean hasDownStation = hasDownStation(section.getDownStation());
 
         if (hasUpStation && hasDownStation) {
-            throw new CannotAddSectionException(section.upStationName(), section.downStationName());
+            throw CannotAddSectionException.existBoth(section.upStationName(), section.downStationName());
         }
 
         boolean existsSection = sections.stream()
                 .anyMatch(section1 -> section1.containsStations(section));
         if (!existsSection) {
-            throw new CannotAddSectionException();
+            throw CannotAddSectionException.notExist();
         }
 
         if (isAddFirstUpStation(section)) {
@@ -48,7 +48,7 @@ public class Sections {
 
         Section targetSection = findCombineSection(section);
         if (section.isGreaterThanDistance(targetSection.getDistance())) {
-            throw new CannotAddSectionException(targetSection.getDistance(), section.getDistance());
+            throw CannotAddSectionException.invalidDistance(targetSection.getDistance(), section.getDistance());
         }
 
         Section dividedSection = targetSection.divideSection(section);
@@ -76,7 +76,7 @@ public class Sections {
                 .filter(section1 -> section1.hasSameUpStation(section.getUpStation())
                         || section1.hasSameDownStation(section.getDownStation()))
                 .findFirst()
-                .orElseThrow(CannotAddSectionException::new);
+                .orElseThrow(CannotAddSectionException::notExist);
     }
 
     private boolean hasStation(Station station) {
@@ -166,11 +166,11 @@ public class Sections {
 
     public void deleteSection(Station station) {
         if (!hasStation(station)) {
-            throw new CannotDeleteSectionException(station.getName());
+            throw CannotDeleteSectionException.notExist(station.getName());
         }
 
         if (sections.size() == 1) {
-            throw new CannotDeleteSectionException();
+            throw CannotDeleteSectionException.minimumLimit();
         }
 
         Section lastDownSection = findLastDownSection();
@@ -214,5 +214,9 @@ public class Sections {
                 .filter(section -> section.hasSameDownStation(station))
                 .findFirst()
                 .orElseThrow(EntityNotFoundException::new);
+    }
+
+    public List<Section> get() {
+        return Collections.unmodifiableList(sections);
     }
 }

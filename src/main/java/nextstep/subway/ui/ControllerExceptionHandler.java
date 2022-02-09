@@ -2,11 +2,14 @@ package nextstep.subway.ui;
 
 import nextstep.subway.domain.exception.CannotAddSectionException;
 import nextstep.subway.domain.exception.CannotDeleteSectionException;
+import nextstep.subway.domain.exception.CannotFindPathException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import javax.persistence.EntityNotFoundException;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
@@ -23,7 +26,19 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(CannotDeleteSectionException.class)
     public ResponseEntity<String> handleICannotDeleteSectionException(CannotDeleteSectionException e) {
-        return ResponseEntity.badRequest()
+        return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(e.getMessage());
     }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+
+    @ExceptionHandler(CannotFindPathException.class)
+    public ResponseEntity<String> handleCannotFindPathException(CannotFindPathException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(e.getMessage());
+    }
+
 }
