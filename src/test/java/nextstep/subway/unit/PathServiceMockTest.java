@@ -38,23 +38,10 @@ public class PathServiceMockTest {
     private Line 일호선;
     private Line 이호선;
 
-    private Station 부평역;
-    private Station 신도림역;
-    private Station 강남역;
-    private Station 역삼역;
-
     @BeforeEach
     void setUp() {
-        부평역 = createStationEntity(1L, "부평역");
-        신도림역 = createStationEntity(2L, "신도림역");
-        강남역 = createStationEntity(3L, "강남역");
-        역삼역 = createStationEntity(4L, "역삼역");
-
         일호선 = createLineEntity("일호선", "red");
-        일호선.addSection(부평역, 신도림역, DEFAULT_DISTANCE);
-
         이호선 = createLineEntity("이호선", "green");
-        이호선.addSection(신도림역, 강남역, DEFAULT_DISTANCE);
 
         lines.add(일호선);
         lines.add(이호선);
@@ -64,6 +51,13 @@ public class PathServiceMockTest {
     @Test
     void shortPath() {
         // given
+        Station 부평역 = createStationEntity(1L, "부평역");
+        Station 신도림역 = createStationEntity(2L, "신도림역");
+        Station 강남역 = createStationEntity(3L, "강남역");
+
+        일호선.addSection(부평역, 신도림역, DEFAULT_DISTANCE);
+        이호선.addSection(신도림역, 강남역, DEFAULT_DISTANCE);
+
         int sumDistance = DEFAULT_DISTANCE * 2;
 
         when(stationService.findById(any())).thenReturn(부평역)
@@ -83,6 +77,12 @@ public class PathServiceMockTest {
     @DisplayName("동일한 출발지와 도착역으로 최단 경로 조회하면 예외 발생")
     @Test
     void sourceEqualsTargetException() {
+        // given
+        Station 부평역 = createStationEntity(1L, "부평역");
+        Station 신도림역 = createStationEntity(2L, "신도림역");
+
+        일호선.addSection(부평역, 신도림역, DEFAULT_DISTANCE);
+
         // when, then
         assertThatThrownBy(() -> pathService.shortPath(부평역.getId(), 부평역.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -92,6 +92,14 @@ public class PathServiceMockTest {
     @Test
     void notConnectException() {
         // given
+        Station 부평역 = createStationEntity(1L, "부평역");
+        Station 신도림역 = createStationEntity(2L, "신도림역");
+        Station 강남역 = createStationEntity(3L, "강남역");
+        Station 역삼역 = createStationEntity(4L, "역삼역");
+
+        일호선.addSection(부평역, 신도림역, DEFAULT_DISTANCE);
+        이호선.addSection(신도림역, 강남역, DEFAULT_DISTANCE);
+
         when(stationService.findById(any())).thenReturn(부평역)
                                             .thenReturn(역삼역);
         when(lineRepository.findAll()).thenReturn(lines);

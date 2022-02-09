@@ -3,9 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -77,13 +75,11 @@ public class Sections {
             return Collections.emptyList();
         }
 
-        sectionsSort();
-
         List<Station> stations = sections.stream()
-                .map(Section::getDownStation)
+                .sorted((previous, next) -> next.matchUpStationAndPreviousDownStation(previous))
+                .flatMap(section -> Arrays.stream(new Station[]{section.getUpStation(), section.getDownStation()}))
+                .distinct()
                 .collect(Collectors.toList());
-
-        stations.add(FIRST_SECTION_INDEX, sections.get(FIRST_SECTION_INDEX).getUpStation());
 
         return Collections.unmodifiableList(stations);
     }
@@ -117,7 +113,7 @@ public class Sections {
     }
 
     private void sectionsSort() {
-        Collections.sort(sections, (previous, next) -> next.matchUpStationAndPreviousDownStation(previous.getDownStation()));
+        Collections.sort(sections, (previous, next) -> next.matchUpStationAndPreviousDownStation(previous));
     }
 
     private boolean isEndSection(Station station) {

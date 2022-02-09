@@ -65,8 +65,8 @@ public class Section {
         upStation = newSection.getDownStation();
     }
 
-    public int matchUpStationAndPreviousDownStation(Station downStation) {
-        return this.upStation.equals(downStation) ? -1 : 0;
+    public int matchUpStationAndPreviousDownStation(Section previousSection) {
+        return this.upStation.equals(previousSection.getDownStation()) ? -1 : 0;
     }
 
     public Long getId() {

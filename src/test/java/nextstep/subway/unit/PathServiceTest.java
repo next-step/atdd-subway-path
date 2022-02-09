@@ -41,11 +41,11 @@ public class PathServiceTest {
 
     @BeforeEach
     void setUp() {
-        부평역 = stationRepository.save(createStationEntity("부평역"));
-        신도림역 = stationRepository.save(createStationEntity("신도림역"));
-        강남역 = stationRepository.save(createStationEntity("강남역"));
-        역삼역 = stationRepository.save(createStationEntity("역삼역"));
-        삼성역 = stationRepository.save(createStationEntity("삼성역"));
+        부평역 = stationRepository.save(createStationEntity(1L, "부평역"));
+        신도림역 = stationRepository.save(createStationEntity(2L, "신도림역"));
+        강남역 = stationRepository.save(createStationEntity(3L, "강남역"));
+        역삼역 = stationRepository.save(createStationEntity(4L, "역삼역"));
+        삼성역 = stationRepository.save(createStationEntity(5L, "삼성역"));
 
         일호선 = lineRepository.save(createLineEntity("일호선", "red"));
         일호선.addSection(부평역, 신도림역, DEFAULT_DISTANCE);
@@ -96,8 +96,8 @@ public class PathServiceTest {
                 .collect(Collectors.toList());
     }
 
-    private Station createStationEntity(String name) {
-        return new Station(name);
+    private Station createStationEntity(Long id, String name) {
+        return new Station(id, name);
     }
 
     private Line createLineEntity(String name, String color) {
