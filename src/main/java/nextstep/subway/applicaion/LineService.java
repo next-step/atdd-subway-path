@@ -3,10 +3,8 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.PairedStations;
-import nextstep.subway.domain.Station;
+import nextstep.subway.applicaion.dto.ShortestPathResponse;
+import nextstep.subway.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +16,12 @@ import java.util.stream.Collectors;
 public class LineService {
     private LineRepository lineRepository;
     private StationService stationService;
+    private ShortestPathFindAlgorithm<Station, Line, Integer> shortestPathFindAlgorithm;
 
-    public LineService(LineRepository lineRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, StationService stationService, ShortestPathFindAlgorithm<Station, Line, Integer> shortestPathFindAlgorithm) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
+        this.shortestPathFindAlgorithm = shortestPathFindAlgorithm;
     }
 
     public LineResponse saveLine(LineRequest request) {
@@ -72,5 +72,23 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
         line.deleteSection(station);
+    }
+
+    public ShortestPathResponse findShortestPath(Long sourceStationId, Long targetStationId) {
+        List<Line> lines = lineRepository.findAll();
+        Station sourceStation = stationService.findById(sourceStationId);
+        Station targetStation = stationService.findById(targetStationId);
+
+        if (sourceStation.equals(targetStation)) {
+            throw new IllegalArgumentException("출발역과 도착역이 동일합니다");
+        }
+
+        ShortestPath<Station, Integer> shortestPath = shortestPathFindAlgorithm.findShortestPath(sourceStation, targetStation, lines);
+
+        if (shortestPath.isNotExistPath()) {
+            throw new IllegalArgumentException("출발역에서 도착역까지 갈 수 있는 경로가 존재하지 않습니다");
+        }
+
+        return ShortestPathResponse.from(shortestPath);
     }
 }
