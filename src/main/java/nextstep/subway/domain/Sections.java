@@ -17,15 +17,14 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public void init(Section section) {
-        sections.add(section);
-    }
-
     public void add(Section section) {
-        validationNewSection(section);
-        if (!isAddSectionToFirst(section) && !isAddSectionToLast(section)) {
-            addSectionToMiddle(section);
+        if (sections.isEmpty()) {
+            sections.add(section);
+            return;
         }
+
+        validationNewSection(section);
+        updateExistingSection(section);
 
         sections.add(section);
     }
@@ -55,9 +54,12 @@ public class Sections {
     }
 
     public List<Station> getSortedStations() {
+        if (sections.isEmpty()) {
+            return new ArrayList<>();
+        }
+
         List<Station> stations = new ArrayList<>();
         Station station = getFirstSection().getUpStation();
-
         Map<Station, Section> stationSectionMap = sections.stream()
             .collect(Collectors.toMap(Section::getUpStation, Function.identity()));
 
@@ -68,10 +70,6 @@ public class Sections {
 
         stations.add(station);
         return stations;
-    }
-
-    public boolean isEmpty() {
-        return sections.isEmpty();
     }
 
     private Section getFirstSection() {
@@ -100,7 +98,11 @@ public class Sections {
         return lastSection.getDownStation().equals(section.getUpStation());
     }
 
-    private void addSectionToMiddle(Section section) {
+    private void updateExistingSection(Section section) {
+        if (isAddSectionToFirst(section) || isAddSectionToLast(section)) {
+            return;
+        }
+
         Section targetSection = sections.stream()
             .filter(s -> s.getUpStation().equals(section.getUpStation()))
             .findFirst()

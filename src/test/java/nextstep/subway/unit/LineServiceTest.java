@@ -30,7 +30,7 @@ public class LineServiceTest {
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         Station 역삼역 = stationRepository.save(new Station("역삼역"));
         Station 선릉역 = stationRepository.save(new Station("선릉역"));
-        Line 이호선 = lineRepository.save(Line.of("2호선", "green", 역삼역, 선릉역, 10));
+        Line 이호선 = lineRepository.save(Line.of("2호선", "green"));
 
         // when
         // lineService.addSection 호출

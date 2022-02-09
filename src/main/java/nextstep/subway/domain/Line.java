@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -30,7 +29,7 @@ public class Line extends BaseEntity {
 
     public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
         Line line = new Line(name, color);
-        line.sections.init(Section.of(line, upStation, downStation, distance));
+        line.sections.add(Section.of(line, upStation, downStation, distance));
         return line;
     }
 
