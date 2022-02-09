@@ -138,4 +138,8 @@ public class Sections {
     public List<Station> flatStations() {
         return new ArrayList<>(flatStations(new LinkedHashSet<>(), findEndUpSection()));
     }
+
+    public List<Section> getSections() {
+        return sections;
+    }
 }
