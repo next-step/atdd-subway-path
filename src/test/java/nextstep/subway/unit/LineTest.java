@@ -21,9 +21,9 @@ class LineTest {
     final Station 합정역 = Station.of("합정역");
     final Station 신촌역 = Station.of("신촌역");
 
-    final Line 이호선 = Line.of("2호선", "bg-green-600", 강남역, 역삼역, 100);
+    final Line 이호선 = Line.of("2호선", "bg-green-600", 강남역, 역삼역, Distance.from(100));
 
-    final int 거리 = 50;
+    final Distance 거리 = Distance.from(50);
 
     /**
      * Given 지하철역을 세개 생성하고 노선도 생성하였다고 가정한 후
@@ -52,7 +52,7 @@ class LineTest {
         assertThat(이호선.getSections().getStations()).containsExactly(강남역, 역삼역, 합정역);
         assertThat(이호선.getSections().getSections())
                 .extracting(Section::getDistance)
-                .containsExactly(Distance.from(100), Distance.from(거리));
+                .containsExactly(Distance.from(100), 거리);
     }
 
     /**
@@ -69,7 +69,7 @@ class LineTest {
         assertThat(이호선.getSections().getStations()).containsExactly(강남역, 합정역, 역삼역);
         assertThat(이호선.getSections().getSections())
                 .extracting(Section::getDistance)
-                .containsExactly(Distance.from(거리), Distance.from(거리));
+                .containsExactly(거리, 거리);
     }
 
     /**
@@ -86,7 +86,7 @@ class LineTest {
         assertThat(이호선.getSections().getStations()).containsExactly(강남역, 합정역, 역삼역);
         assertThat(이호선.getSections().getSections())
                 .extracting(Section::getDistance)
-                .containsExactly(Distance.from(거리), Distance.from(거리));
+                .containsExactly(거리, 거리);
     }
 
     /**
@@ -103,7 +103,7 @@ class LineTest {
         assertThat(이호선.getSections().getStations()).containsExactly(합정역, 강남역, 역삼역);
         assertThat(이호선.getSections().getSections())
                 .extracting(Section::getDistance)
-                .containsExactly(Distance.from(100), Distance.from(거리));
+                .containsExactly(Distance.from(100), 거리);
     }
 
     /**
@@ -113,8 +113,11 @@ class LineTest {
     @DisplayName("지하철 노선 중간에 잘못된 거리의 구간을 추가")
     @ParameterizedTest
     @ValueSource(ints = {-1, 0, 101})
-    void addWrongDistanceSection(int distance) {
-        // when & then
+    void addWrongDistanceSection(int value) {
+        // when
+        Distance distance = Distance.from(value);
+
+        // then
         assertThatThrownBy(() -> 이호선.addSection(합정역, 역삼역, distance)).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -170,7 +173,7 @@ class LineTest {
     @Test
     void removeSection() {
         //when
-        이호선.addSection(역삼역, 합정역, 50);
+        이호선.addSection(역삼역, 합정역, Distance.from(50));
         이호선.deleteSection(합정역);
 
         //then

@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.exception.DuplicateException;
+import nextstep.subway.applicaion.exception.NotExistSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -33,7 +34,7 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public void add(Line line, Station upStation, Station downStation, int distance) {
+    public void add(Line line, Station upStation, Station downStation, Distance distance) {
         final Section section = Section.of(line, upStation, downStation, distance);
 
         if (sections.isEmpty()) {
@@ -75,7 +76,8 @@ public class Sections {
 
         Section relatedSection = getRelatedUpStationSection(upStation);
 
-        relatedSection.upStationUpdate(section.getDownStation(), section.getDistance());
+        relatedSection.upStationUpdate(section.getDownStation());
+        relatedSection.divideDistance(section.getDistance());
         sections.add(section);
     }
 
@@ -103,7 +105,8 @@ public class Sections {
 
         Section relatedSection = getRelatedDownStationSection(downStation);
 
-        relatedSection.downStationUpdate(section.getUpStation(), section.getDistance());
+        relatedSection.downStationUpdate(section.getUpStation());
+        relatedSection.divideDistance(section.getDistance());
         sections.add(section);
     }
 
@@ -121,17 +124,29 @@ public class Sections {
                 .orElseThrow(() -> new IllegalArgumentException(NOT_EXIST_STATION));
     }
 
-    public Station getLastDownStation() {
-        int lastIndex = sections.size() - 1;
-
-        return sections.get(lastIndex).getDownStation();
-    }
-
-    public void deleteLastSection() {
-        sections.remove(sections.size() - 1);
-    }
-
     public int count() {
         return sections.size();
+    }
+
+    public void deleteSection(Station station) {
+        Section relatedUpStationSection = getRelatedUpStationSection(station);
+        Section relatedDownStationSection = getRelatedDownStationSection(station);
+
+        if (relatedUpStationSection.isNull() && relatedDownStationSection.isNull()) {
+            throw new NotExistSectionException(station.getName());
+        }
+
+        if (!relatedUpStationSection.isNull() && !relatedDownStationSection.isNull()) {
+            mergeSection(relatedUpStationSection, relatedDownStationSection);
+        }
+    }
+
+    private void mergeSection(Section relatedUpStationSection, Section relatedDownStationSection) {
+        Station appendStation = relatedUpStationSection.getDownStation();
+
+        relatedDownStationSection.downStationUpdate(appendStation);
+        relatedDownStationSection.addDistance(relatedUpStationSection.getDistance());
+
+        sections.remove(relatedUpStationSection);
     }
 }

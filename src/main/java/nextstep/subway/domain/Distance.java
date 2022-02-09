@@ -45,6 +45,10 @@ public class Distance {
         this.value -= target.getValue();
     }
 
+    public void addDistance(Distance distance) {
+        value += distance.getValue();
+    }
+
     @Override
     public boolean equals(Object target) {
         if (this == target) {

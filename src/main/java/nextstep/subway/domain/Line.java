@@ -22,7 +22,7 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
+    public static Line of(String name, String color, Station upStation, Station downStation, Distance distance) {
         Line line = new Line(name, color);
 
         line.addSection(upStation, downStation, distance);
@@ -30,7 +30,7 @@ public class Line extends BaseEntity {
         return line;
     }
 
-    public void addSection(Station upStation, Station downStation, int distance) {
+    public void addSection(Station upStation, Station downStation, Distance distance) {
         sections.add(this, upStation, downStation, distance);
     }
 
@@ -62,20 +62,12 @@ public class Line extends BaseEntity {
         return sections;
     }
 
-    public boolean isNotEqualDownStation(Station upStation) {
-        return !upStation.equals(sections.getLastDownStation());
-    }
-
     public void deleteSection(Station station) {
         if (haveOnlySection()) {
             throw new IllegalArgumentException("구간이 1개인 경우 삭제가 불가합니다.");
         }
 
-        if (isNotEqualDownStation(station)) {
-            throw new IllegalArgumentException("해당 역은 마지막 구간에 등록되어 있지 않습니다.");
-        }
-
-        sections.deleteLastSection();
+        sections.deleteSection(station);
     }
 
     private boolean haveOnlySection() {
