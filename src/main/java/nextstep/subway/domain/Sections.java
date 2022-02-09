@@ -17,10 +17,10 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
-    private String startStationName;
+    private Long startStationId;
 
     public void initSection(Section section) {
-        changeStartStationName(section.getUpStation().getName());
+        changeStartStationId(section.getUpStation().getId());
         sections.add(section);
     }
 
@@ -34,7 +34,7 @@ public class Sections {
             return;
         }
         if (isLeftAddSection(section)) {
-            changeStartStationName(section.getUpStation().getName());
+            changeStartStationId(section.getUpStation().getId());
             sections.add(section);
             return;
         }
@@ -62,7 +62,7 @@ public class Sections {
     }
 
     private void addMiddleAndRightSection(Section section) {
-        changeStartStationName(section.getDownStation().getName());
+        changeStartStationId(section.getDownStation().getId());
         Section existedSection = sections.stream()
                 .filter(s -> s.getUpStation().getName().equals(section.getUpStation().getName()))
                 .findFirst().get();
@@ -76,7 +76,7 @@ public class Sections {
     }
 
     private void addLeftAndMiddleSection(Section section) {
-        changeStartStationName(section.getUpStation().getName());
+        changeStartStationId(section.getUpStation().getId());
         Section existedSection = sections.stream()
                 .filter(s -> s.getDownStation().getName().equals(section.getDownStation().getName()))
                 .findFirst().get();
@@ -103,8 +103,8 @@ public class Sections {
     }
 
 
-    private void changeStartStationName(String name) {
-        this.startStationName = name;
+    private void changeStartStationId(Long id) {
+        this.startStationId = id;
     }
 
     public List<Station> getStations() {
@@ -134,24 +134,24 @@ public class Sections {
         if (sections.size() <= 1) {
             return sections;
         }
-        String name = startStationName;
+        Long id = startStationId;
         List<Section> result = new ArrayList<>();
         result.add(sections.stream()
-                .filter(section -> section.getUpStation().getName().equals(startStationName))
+                .filter(section -> section.getUpStation().getId().equals(startStationId))
                 .findFirst()
                 .get());
         while (result.size() != sections.size()) {
-            findNextUpStationName(name, result);
+            findNextUpStationId(id, result);
         }
         return result;
     }
 
-    private String findNextUpStationName(String name, List<Section> result) {
+    private Long findNextUpStationId(Long id, List<Section> result) {
         for (Section section : sections) {
-            if (name.equals(section.getDownStation().getName())) {
+            if (id.equals(section.getDownStation().getId())) {
                 result.add(section);
-                name = section.getUpStation().getName();
-                return name;
+                id = section.getUpStation().getId();
+                return id;
             }
         }
         return null;
@@ -170,14 +170,24 @@ public class Sections {
     }
 
     public void deleteMiddleSection(Long stationId, Line line) {
+        if(stationId == startStationId){
+            changeStartStationId(getSections().stream()
+                    .filter(section -> section.isEqualDownStationId(stationId))
+                    .findFirst()
+                    .orElseThrow(EntityNotFoundException::new)
+                    .getUpStation().getId());
+        }
         Section leftSection = sections.stream().filter(section -> section.isEqualUpStationId(stationId))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException());
+
         Section rightSection = sections.stream().filter(section -> section.isEqualDownStationId(stationId))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException());
+
         sections.remove(leftSection);
         sections.remove(rightSection);
+
         sections.add(new Section(line, leftSection.getDownStation(), rightSection.getUpStation(),
                 leftSection.getDistance() + rightSection.getDistance()));
     }
@@ -193,7 +203,7 @@ public class Sections {
         Section leftSection = sections.stream().filter(section -> section.isEqualDownStationId(stationId))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException());
-        startStationName = leftSection.getUpStation().getName();
+        startStationId = leftSection.getUpStation().getId();
         sections.remove(leftSection);
     }
 }
