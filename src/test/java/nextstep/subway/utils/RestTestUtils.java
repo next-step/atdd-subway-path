@@ -10,7 +10,7 @@ public class RestTestUtils {
         return URI.create(response.header("Location"));
     }
 
-    public static Long getCreatedResourceId(ExtractableResponse<Response> response) {
+    public static Long 응답ID추출(ExtractableResponse<Response> response) {
         return response.jsonPath().getLong("id");
     }
 }

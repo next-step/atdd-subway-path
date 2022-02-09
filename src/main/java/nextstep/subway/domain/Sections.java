@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -25,7 +26,7 @@ public class Sections {
             throw new IllegalArgumentException("추가하려는 신규 구간의 상행역, 하행역이 기존 구간 중 이미 모두 존재합니다.");
         }
 
-        if (isMiddleAdditionalMode(section)) {
+        if (isMiddleSectionHandleMode(section)) {
             handleMiddleAdditionalMode(section);
         }
 
@@ -49,11 +50,21 @@ public class Sections {
             throw new IllegalArgumentException("노선 구간에 종점역만 존재하여 더 이상 구간을 삭제할 수 없습니다.");
         }
 
-        if (isNotEndDownStation(station)) {
-            throw new IllegalArgumentException("삭제할 구간은 하행종점역 구간이 아닙니다.");
+        SectionsIncludingStation sectionsIncludingStation = new SectionsIncludingStation(findSectionsIncludingStation(station), station);
+
+        if (sectionsIncludingStation.hasNotAnySection()) {
+            throw new IllegalArgumentException("구간 중 해당 역이 등록 되어 있지 않아 삭제 할 수 없습니다.");
         }
 
-        sections.remove(getLastSection().orElseThrow(() -> new IllegalArgumentException("더 이상 삭제할 구간이 존재하지 않습니다.")));
+        if (sectionsIncludingStation.hasOnlyOneSection()) {
+            sections.remove(sectionsIncludingStation.getAnyOneSection());
+            return;
+        }
+
+        Section upSection = sectionsIncludingStation.getUpSection();
+        Section downSection = sectionsIncludingStation.getDownSection();
+        upSection.updateToRelocate(downSection);
+        sections.remove(downSection);
     }
 
     private Optional<Section> findByExistingSection(Section section) {
@@ -67,36 +78,12 @@ public class Sections {
                 .anyMatch(section -> section.isEqualsAllStations(newSection));
     }
 
-    private boolean isNotEndDownStation(Station station) {
-        return getEndDownStation().map(endDownStation -> !endDownStation.equals(station)).orElse(true);
-    }
-
     private boolean isEmptySections() {
         return sections.isEmpty();
     }
 
-
-    private Optional<Station> getEndDownStation() {
-        if (!getLastSection().isPresent()) {
-            return Optional.empty();
-        }
-
-        return Optional.of(getLastSection().get().getDownStation());
-    }
-
-
     private boolean hasOnlyEndStations() {
         return flatStations().size() == END_STATIONS_SIZE;
-    }
-
-    private Optional<Section> getLastSection() {
-        if (isEmptySections()) { //Defensive
-            Optional.empty();
-        }
-
-        int sectionLastIndex = sections.size() - 1;
-
-        return Optional.of(sections.get(sectionLastIndex));
     }
 
     private Section getFirstSection() {
@@ -115,11 +102,11 @@ public class Sections {
         return CursorableSectionFinder.find(getFirstSection(), new EndDownSectionFindStrategy(sections));
     }
 
-    private boolean isMiddleAdditionalMode(Section section) {
-        return !isEndSectionAdditionalMode(section);
+    private boolean isMiddleSectionHandleMode(Section section) {
+        return !isEndSectionHandleMode(section);
     }
 
-    private boolean isEndSectionAdditionalMode(Section section) {
+    private boolean isEndSectionHandleMode(Section section) {
         return findEndUpSection().isNext(section) || findEndDownSection().isPrevious(section);
     }
 
@@ -129,6 +116,12 @@ public class Sections {
 
     public Station findEndDownStation() {
         return findEndDownSection().getDownStation();
+    }
+
+    private Set<Section> findSectionsIncludingStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.hasStation(station))
+                .collect(Collectors.toSet());
     }
 
     public Set<Station> flatStations(Set<Station> stations, Section cursor) {

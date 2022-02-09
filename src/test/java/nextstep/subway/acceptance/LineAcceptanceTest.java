@@ -14,7 +14,7 @@ import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
-import static nextstep.subway.utils.RestTestUtils.getCreatedResourceId;
+import static nextstep.subway.utils.RestTestUtils.응답ID추출;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관리 기능")
@@ -25,8 +25,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     void 노선에_설정할_종점역_생성_요청() {
         super.setUp();
-        상행종점역 = getCreatedResourceId(지하철역_생성_요청("잠실역"));
-        하행종점역 = getCreatedResourceId(지하철역_생성_요청("몽촌토성역"));
+        상행종점역 = 응답ID추출(지하철역_생성_요청("잠실역"));
+        하행종점역 = 응답ID추출(지하철역_생성_요청("몽촌토성역"));
     }
 
     /**
