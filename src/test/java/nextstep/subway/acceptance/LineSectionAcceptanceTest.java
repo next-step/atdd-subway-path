@@ -246,10 +246,19 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * |                        |
      * 남부터미널역(4)  --- *3호선* ---   양재(3)
      */
+
+    /**
+     * given 위와 같은 지하철 역이 주어졌을 때
+     * when 교대역과 양재역의 최단거리를 구하면
+     * Then
+     * 1. 200 status code 가 반환된다.
+     * 2. 지하철역들과 최단거리가 반환된다
+     */
     @Test
     void path() {
         ExtractableResponse<Response> response = 역과역_사이에_최단거리(1L,3L);
         assertThat(response.jsonPath().getInt("distance")).isEqualTo(5);
+        assertThat(response.jsonPath().getList("stations.id")).containsExactly(1,4,3);
 
     }
 
