@@ -60,7 +60,7 @@ public class Section {
     }
 
     public boolean isDuplicateStation(Station upStation, Station downStation) {
-        return isEqualStationInSection(upStation, downStation) || isEqualStationInSection(downStation, upStation);
+        return isEqualSection(upStation, downStation) || isEqualSection(downStation, upStation);
     }
 
     public boolean isContainStation(Station station) {
@@ -79,7 +79,7 @@ public class Section {
         return this.distance <= distance;
     }
 
-    private boolean isEqualStationInSection(Station upStation, Station downStation) {
+    private boolean isEqualSection(Station upStation, Station downStation) {
         return this.upStation.equals(upStation) && this.downStation.equals(downStation);
     }
 }

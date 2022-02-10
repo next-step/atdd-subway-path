@@ -27,8 +27,8 @@ public class Sections {
 			return;
 		}
 
-		validDuplicationSection(upStation, downStation);
-		validIncludedAnyStation(upStation, downStation);
+		validDuplication(upStation, downStation);
+		validInclude(upStation, downStation);
 
 		updateMiddleSection(line, upStation, downStation, distance);
 
@@ -69,53 +69,47 @@ public class Sections {
 		return stations;
 	}
 
-	public void deleteLastSection(Station station) {
-		validEmpty();
-		validLastDownStation(station);
-		sections.removeIf(it -> it.isDownStation(station));
-	}
-
-	public void deleteMiddleSection(Station station) {
+	public void deleteSection(Station station) {
 		validEmpty();
 
-		Optional<Section> leftSection = findSectionByDownStation(station);
-		Optional<Section> rightSection = findSectionByUpStation(station);
+		Optional<Section> leftOptionalSection = findSectionByDownStation(station);
+		Optional<Section> rightOptionalSection = findSectionByUpStation(station);
 
-		if(leftSection.isPresent() && rightSection.isPresent()) {
-			Section left = leftSection.orElseThrow(IllegalArgumentException::new);
-			Section right = rightSection.orElseThrow(IllegalArgumentException::new);
+		if(isFindMiddleSection(leftOptionalSection, rightOptionalSection)) {
+			Section leftSection = leftOptionalSection.orElseThrow(IllegalArgumentException::new);
+			Section rightSection = rightOptionalSection.orElseThrow(IllegalArgumentException::new);
 
-			sections.remove(left);
-			sections.remove(right);
+			sections.remove(leftSection);
+			sections.remove(rightSection);
 
-			sections.add(new Section(left.getLine(), left.getUpStation(), right.getDownStation(),
-				left.getDistance() + right.getDistance()));
+			sections.add(new Section(leftSection.getLine(), leftSection.getUpStation(), rightSection.getDownStation(),
+				leftSection.getDistance() + rightSection.getDistance()));
 			return;
 		}
 
-		if(leftSection.isPresent() && !rightSection.isPresent()) {
-			Section left = leftSection.orElseThrow(IllegalArgumentException::new);
-			sections.remove(left);
+		if(isFindFirstSection(leftOptionalSection, rightOptionalSection)) {
+			Section leftSection = leftOptionalSection.orElseThrow(IllegalArgumentException::new);
+			sections.remove(leftSection);
 			return;
 		}
 
-		if(!leftSection.isPresent() && rightSection.isPresent()) {
-			Section right = rightSection.orElseThrow(IllegalArgumentException::new);
-			sections.remove(right);
+		if(isFindLastSection(leftOptionalSection, rightOptionalSection)) {
+			Section rightSection = rightOptionalSection.orElseThrow(IllegalArgumentException::new);
+			sections.remove(rightSection);
 			return;
 		}
 
 		throw new IllegalArgumentException();
 	}
 
-	private void validDuplicationSection(Station upStation, Station downStation) {
+	private void validDuplication(Station upStation, Station downStation) {
 		sections.stream()
 			.filter(it -> it.isDuplicateStation(upStation, downStation))
 			.findFirst()
 			.ifPresent(it -> { throw new IllegalArgumentException(ExceptionMessage.DUPLICATE_SECTION.getMessage()); });
 	}
 
-	private void validIncludedAnyStation(Station upStation, Station downStation) {
+	private void validInclude(Station upStation, Station downStation) {
 		sections.stream()
 			.filter(it -> it.isContainStation(upStation) || it.isContainStation(downStation))
 			.findFirst()
@@ -156,14 +150,6 @@ public class Sections {
 		}
 	}
 
-	private void validLastDownStation(Station station) {
-		Section lastSection = sections.get(sections.size() - 1);
-
-		if(!lastSection.isDownStation(station)) {
-			throw new IllegalArgumentException(ExceptionMessage.NOT_REMOVE_SECTION.getMessage());
-		}
-	}
-
 	private Optional<Section> findSectionByUpStation(Station station) {
 		return sections.stream()
 			.filter(it -> it.isUpStation(station))
@@ -174,5 +160,17 @@ public class Sections {
 		return sections.stream()
 			.filter(it -> it.isDownStation(station))
 			.findFirst();
+	}
+
+	private boolean isFindMiddleSection(Optional<Section> leftSection, Optional<Section> rightSection) {
+		return (leftSection.isPresent() && rightSection.isPresent());
+	}
+
+	private boolean isFindFirstSection(Optional<Section> leftSection, Optional<Section> rightSection) {
+		return (leftSection.isPresent() && !rightSection.isPresent());
+	}
+
+	private boolean isFindLastSection(Optional<Section> leftSection, Optional<Section> rightSection) {
+		return (!leftSection.isPresent() && rightSection.isPresent());
 	}
 }

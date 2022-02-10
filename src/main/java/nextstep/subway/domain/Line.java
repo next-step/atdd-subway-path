@@ -33,24 +33,12 @@ public class Line extends BaseEntity {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 
     public List<Section> getSections() {
@@ -61,15 +49,16 @@ public class Line extends BaseEntity {
         return sections.getStations();
     }
 
+    public void updateLine(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
     public void addSection(Station upStation, Station downStation, int distance) {
         sections.addSection(this, upStation, downStation, distance);
     }
 
-    public void deleteLastSection(Station station) {
-        sections.deleteLastSection(station);
-    }
-
-    public void deleteMiddleSection(Station station) {
-        sections.deleteMiddleSection(station);
+    public void deleteSection(Station station) {
+        sections.deleteSection(station);
     }
 }
