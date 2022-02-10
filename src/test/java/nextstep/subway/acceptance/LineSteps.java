@@ -81,4 +81,10 @@ public class LineSteps {
                 .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then().log().all().extract();
     }
+
+    public static ExtractableResponse<Response> 역과역_사이에_최단거리(Long source, Long target) {
+        return RestAssured.given().log().all()
+                .when().get("/paths?source={source}&target={target}", source, target)
+                .then().log().all().extract();
+    }
 }
