@@ -18,7 +18,7 @@ public class Sections {
 	private final int NOT_FOUND_INDEX = -1;
 	private final int MIN_SIZE = 1;
 
-	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+	@OneToMany(mappedBy = "line", cascade = {CascadeType.ALL, CascadeType.MERGE}, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
 
 	public void addSection(Line line, Station upStation, Station downStation, int distance) {
@@ -78,21 +78,34 @@ public class Sections {
 	public void deleteMiddleSection(Station station) {
 		validEmpty();
 
-		Section leftSection = sections.stream()
-			.filter(it -> it.isDownStation(station))
-			.findFirst()
-			.orElseThrow(IllegalAccessError::new);
+		Optional<Section> leftSection = findSectionByDownStation(station);
+		Optional<Section> rightSection = findSectionByUpStation(station);
 
-		Section rightSection = sections.stream()
-			.filter(it -> it.isUpStation(station))
-			.findFirst()
-			.orElseThrow(IllegalAccessError::new);
+		if(leftSection.isPresent() && rightSection.isPresent()) {
+			Section left = leftSection.orElseThrow(IllegalArgumentException::new);
+			Section right = rightSection.orElseThrow(IllegalArgumentException::new);
 
-		sections.remove(leftSection);
-		sections.remove(rightSection);
+			sections.remove(left);
+			sections.remove(right);
 
-		sections.add(new Section(leftSection.getLine(), leftSection.getUpStation(), rightSection.getDownStation(),
-			leftSection.getDistance() + rightSection.getDistance()));
+			sections.add(new Section(left.getLine(), left.getUpStation(), right.getDownStation(),
+				left.getDistance() + right.getDistance()));
+			return;
+		}
+
+		if(leftSection.isPresent() && !rightSection.isPresent()) {
+			Section left = leftSection.orElseThrow(IllegalArgumentException::new);
+			sections.remove(left);
+			return;
+		}
+
+		if(!leftSection.isPresent() && rightSection.isPresent()) {
+			Section right = rightSection.orElseThrow(IllegalArgumentException::new);
+			sections.remove(right);
+			return;
+		}
+
+		throw new IllegalArgumentException();
 	}
 
 	private void validDuplicationSection(Station upStation, Station downStation) {
@@ -154,6 +167,12 @@ public class Sections {
 	private Optional<Section> findSectionByUpStation(Station station) {
 		return sections.stream()
 			.filter(it -> it.isUpStation(station))
+			.findFirst();
+	}
+
+	private Optional<Section> findSectionByDownStation(Station station) {
+		return sections.stream()
+			.filter(it -> it.isDownStation(station))
 			.findFirst();
 	}
 }
