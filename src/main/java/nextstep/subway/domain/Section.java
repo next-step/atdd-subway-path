@@ -15,11 +15,11 @@ public class Section {
   @JoinColumn(name = "line_id")
   private Line line;
 
-  @ManyToOne(cascade = CascadeType.PERSIST)
+  @ManyToOne
   @JoinColumn(name = "up_station_id")
   private Station upStation;
 
-  @ManyToOne(cascade = CascadeType.PERSIST)
+  @ManyToOne
   @JoinColumn(name = "down_station_id")
   private Station downStation;
 
