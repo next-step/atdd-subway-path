@@ -1,7 +1,6 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,7 @@ class LineTest {
   @BeforeEach
   void setup() {
     사호선 = new Line("사호선", "blue");
-    사호선.addSection(new Section(사호선, 평촌역, 범계역, 3));
+    사호선.addSection(평촌역, 범계역, 3);
   }
 
   @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
@@ -25,7 +24,7 @@ class LineTest {
   void addSection() {
 
     // when
-    사호선.addSection(new Section(사호선, 인덕원역, 평촌역, 2));
+    사호선.addSection(인덕원역, 평촌역, 2);
 
     // then
     assertThat(사호선.getSections().getSectionStations()).containsExactly(인덕원역, 평촌역, 범계역);
@@ -43,7 +42,7 @@ class LineTest {
   @Test
   void removeFirstSection() {
     // given
-    사호선.addSection(new Section(사호선, 인덕원역, 평촌역, 2));
+    사호선.addSection(인덕원역, 평촌역, 2);
 
     // when
     사호선.removeSection(인덕원역);
@@ -56,7 +55,7 @@ class LineTest {
   @Test
   void removeLastSection() {
     // given
-    사호선.addSection(new Section(사호선, 인덕원역, 평촌역, 2));
+    사호선.addSection(인덕원역, 평촌역, 2);
 
     // when
     사호선.removeSection(범계역);
