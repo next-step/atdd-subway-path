@@ -128,8 +128,61 @@ class LineTest {
     void getStations() {
     }
 
-    @DisplayName("구간이 목록에서 마지막 역 삭제")
+    @DisplayName("지하철 구간 목록에서 마지막 역 삭제")
     @Test
-    void removeSection() {
+    void 마지막_역_삭제() {
+        // given
+        이호선.addSection(역삼역, 선릉역, 15);
+        // when
+        이호선.deleteSection(선릉역);
+
+        // then
+        List<Station> stations = 이호선.getStations();
+        assertThat(stations).containsExactly(교대역, 역삼역);
+    }
+
+    @DisplayName("지하철 구간 목록에서 맨 앞 역 삭제")
+    @Test
+    void 지하철_구간_맨_앞_역_삭제() {
+        // given
+        이호선.addSection(역삼역, 선릉역, 15);
+        // when
+        이호선.deleteSection(교대역);
+
+        // then
+        List<Station> stations = 이호선.getStations();
+        assertThat(stations).containsExactly(역삼역, 선릉역);
+    }
+
+    @DisplayName("지하철 구간 목록에서 중간역 삭제")
+    @Test
+    void 지하철_구간_중간역_삭제() {
+        // given
+        이호선.addSection(역삼역, 선릉역, 15);
+        // when
+        이호선.deleteSection(역삼역);
+
+        // then
+        List<Station> stations = 이호선.getStations();
+        assertThat(stations).containsExactly(교대역, 선릉역);
+    }
+
+    @DisplayName("구간이 목록에 없는 역 삭제")
+    @Test
+    void 지하철_구간_안에_없는_역_삭제() {
+        // given
+        이호선.addSection(역삼역, 선릉역, 15);
+
+        // when then
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> 이호선.deleteSection(강남역));
+    }
+
+    @DisplayName("지하철 하나 남은 구간의 역 삭제")
+    @Test
+    void 지하철_하나_남은_구간의_역_삭제() {
+        // when then
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> 이호선.deleteSection(교대역));
     }
 }
