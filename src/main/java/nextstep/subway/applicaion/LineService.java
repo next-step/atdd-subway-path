@@ -59,10 +59,10 @@ public class LineService {
     Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
 
     if (lineRequest.getName() != null) {
-      line.setName(lineRequest.getName());
+      line.updateName(lineRequest.getName());
     }
     if (lineRequest.getColor() != null) {
-      line.setColor(lineRequest.getColor());
+      line.updateColor(lineRequest.getColor());
     }
   }
 
@@ -75,7 +75,7 @@ public class LineService {
     Station downStation = stationService.findById(sectionRequest.getDownStationId());
     Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
-    line.getSections().addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+    line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
   }
 
   private LineResponse createLineResponse(Line line) {

@@ -53,7 +53,7 @@ public class LineSteps {
   public static void 지하철_노선_조회_요청_후_역_검증(Long lineId, List<Long> stationIds) {
     ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineId);
     assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    assertThat(response.jsonPath().getList("stations.id", Long.class)).containsAll(stationIds);
+    assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(stationIds.toArray(new Long[0]));
   }
 
 
