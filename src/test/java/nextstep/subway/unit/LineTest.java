@@ -1,27 +1,18 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@DataJpaTest
 class LineTest {
-    @Autowired
-    private StationRepository stationRepository;
-
-    @Autowired
-    private LineRepository lineRepository;
 
     Station 강남역;
     Station 양재역;
@@ -31,11 +22,17 @@ class LineTest {
 
     @BeforeEach
     void setUp() {
-        강남역 = stationRepository.save(new Station("강남역"));
-        양재역 = stationRepository.save(new Station("양재역"));
-        광교역 = stationRepository.save(new Station("광교역"));
-        수지구청역 = stationRepository.save(new Station("수지구청역"));
-        신분당선 = lineRepository.save(new Line("신분당선", "bg-red-600"));
+        강남역 = new Station("강남역");
+        양재역 = new Station("양재역");
+        광교역 = new Station("광교역");
+        수지구청역 = new Station("수지구청역");
+        신분당선 = new Line("신분당선", "bg-red-600");
+
+        ReflectionTestUtils.setField(강남역,"id",1L);
+        ReflectionTestUtils.setField(양재역,"id",2L);
+        ReflectionTestUtils.setField(광교역,"id",3L);
+        ReflectionTestUtils.setField(수지구청역,"id",4L);
+        ReflectionTestUtils.setField(신분당선,"id",1L);
     }
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
