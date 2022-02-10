@@ -192,6 +192,7 @@ public class SectionsTest {
     void removeMiddleSection() {
         // given
         Sections sections = createSections(createSection(강남역, 역삼역), createSection(역삼역, 삼성역));
+        int sumDistance = DEFAULT_DISTANCE * 2;
 
         // then
         sections.deleteSection(역삼역);
@@ -201,7 +202,7 @@ public class SectionsTest {
         assertAll(
                 () -> assertThat(sections.getSections()).hasSize(1),
                 () -> assertThat(sections.getStations()).containsExactly(강남역, 삼성역),
-                () -> assertThat(result.getDistance()).isEqualTo((DEFAULT_DISTANCE * 2))
+                () -> assertThat(result.getDistance()).isEqualTo(sumDistance)
         );
     }
 
