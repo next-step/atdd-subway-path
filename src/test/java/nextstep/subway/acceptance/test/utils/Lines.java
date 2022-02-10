@@ -1,6 +1,7 @@
 package nextstep.subway.acceptance.test.utils;
 
 import lombok.Builder;
+import nextstep.subway.utils.ApiUtil;
 import nextstep.subway.utils.BaseParams;
 
 public class Lines {
@@ -10,6 +11,11 @@ public class Lines {
     public static 지하철_노선_생성_파람 GTXA노선_하행_정보없음;
     public static 지하철_노선_생성_파람 GTXA노선_거리_음수;
     public static 지하철_노선_생성_파람 신분당선;
+
+    public static 지하철_노선_생성_파람 일호선_연신내역_서울역;
+    public static 지하철_노선_생성_파람 이호선_연신내역_삼성역;
+    public static 지하철_노선_생성_파람 삼호선_삼성역_강남역;
+    public static 지하철_노선_생성_파람 사호선_강남역_서울역;
 
     public static 지하철_노선_수정_파람 노선색상;
 
@@ -73,6 +79,38 @@ public class Lines {
                 .color("bg-red-500")
                 .upStationId(2L)
                 .downStationId(3L)
+                .distance(10)
+                .build();
+
+        일호선_연신내역_서울역 = 지하철_노선_생성_파람.builder()
+                .name("일호선")
+                .color("bg-red-100")
+                .upStationId(1L)
+                .downStationId(2L)
+                .distance(10)
+                .build();
+
+        이호선_연신내역_삼성역 = 지하철_노선_생성_파람.builder()
+                .name("이호선")
+                .color("bg-red-200")
+                .upStationId(1L)
+                .downStationId(4L)
+                .distance(10)
+                .build();
+
+        삼호선_삼성역_강남역 = 지하철_노선_생성_파람.builder()
+                .name("삼호선")
+                .color("bg-red-300")
+                .upStationId(4L)
+                .downStationId(3L)
+                .distance(10)
+                .build();
+
+        사호선_강남역_서울역 = 지하철_노선_생성_파람.builder()
+                .name("사호선")
+                .color("bg-red-400")
+                .upStationId(3L)
+                .downStationId(2L)
                 .distance(10)
                 .build();
 

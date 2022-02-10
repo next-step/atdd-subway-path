@@ -22,6 +22,10 @@ public class Sections {
         this.values = new ArrayList<>();
     }
 
+    public List<Section> getValues() {
+        return this.values;
+    }
+
     public void add(Section section) {
         if (!validateAddSection(section)) {
             throw new InvalidParameterException();
@@ -61,8 +65,14 @@ public class Sections {
         }
 
        val targetIndex = stations.indexOf(targetStation);
-        if (removeFirstSection(targetIndex)) { return; }
-        if (removeLastSection(targetIndex, stations.size())) { return; }
+        if (removeFirstSection(targetIndex)) {
+            return;
+        }
+
+        if (removeLastSection(targetIndex, stations.size())) {
+            return;
+        }
+
         removeMiddleSection(targetStation);
     }
 

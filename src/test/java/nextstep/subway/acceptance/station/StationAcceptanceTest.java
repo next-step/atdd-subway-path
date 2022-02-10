@@ -2,6 +2,7 @@ package nextstep.subway.acceptance.station;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import lombok.val;
 import nextstep.subway.acceptance.AcceptanceTest;
 import nextstep.subway.acceptance.test.utils.Stations;
 import nextstep.subway.utils.ApiUtil;
@@ -24,7 +25,7 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = ApiUtil.지하철역_생성_API(Stations.강남역);
+        ExtractableResponse<Response> response = ApiUtil.지하철역_생성(Stations.강남역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -41,10 +42,10 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철역_이름_중복_생성_방지_테스트() {
         // given
-        ApiUtil.지하철역_생성_API(Stations.강남역);
+        ApiUtil.지하철역_생성(Stations.강남역);
 
         // when
-        ExtractableResponse<Response> response = ApiUtil.지하철역_생성_API(Stations.강남역);
+        ExtractableResponse<Response> response = ApiUtil.지하철역_생성(Stations.강남역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
@@ -60,11 +61,11 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         /// given
-        ApiUtil.지하철역_생성_API(Stations.강남역);
-        ApiUtil.지하철역_생성_API(Stations.역삼역);
+        ApiUtil.지하철역_생성(Stations.강남역);
+        ApiUtil.지하철역_생성(Stations.역삼역);
 
         // when
-        ExtractableResponse<Response> response = ApiUtil.지하철역_전체_리스트_조회_API();
+        ExtractableResponse<Response> response = ApiUtil.지하철역_전체_리스트_조회();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<String> stationNames = response.jsonPath().getList("name");
@@ -80,11 +81,11 @@ class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = ApiUtil.지하철역_생성_API(Stations.강남역);
+        ExtractableResponse<Response> createResponse = ApiUtil.지하철역_생성(Stations.강남역);
 
         // when
         String uri = createResponse.header("Location");
-        ExtractableResponse<Response> response = ApiUtil.지하철역_삭제_API(uri);
+        val response = ApiUtil.지하철역_삭제(uri);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());

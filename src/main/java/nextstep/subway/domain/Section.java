@@ -75,15 +75,11 @@ public class Section extends BaseEntity {
 
     public void updateForAdd(Station downStation, Distance distance) {
         this.upStation = downStation;
-        setDistance(distance);
+        this.distance = distance;
     }
 
     public void updateForDelete(Station downStation, Distance distance) {
         this.downStation = downStation;
-        setDistance(distance);
-    }
-
-    private void setDistance(Distance distance) {
         this.distance = distance;
     }
 

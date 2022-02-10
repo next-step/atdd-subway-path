@@ -1,11 +1,13 @@
 package nextstep.subway.applicaion;
 
+import lombok.val;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Lines;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.DuplicatedException;
 import org.springframework.stereotype.Service;
@@ -27,8 +29,8 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         checkDuplicatedName(request);
 
-        Station upStation = stationService.findById(request.getUpStationId());
-        Station downStation = stationService.findById(request.getDownStationId());
+        Station upStation = stationService.getById(request.getUpStationId());
+        Station downStation = stationService.getById(request.getDownStationId());
 
         Line line = lineRepository.save(
                 Line.builder()
@@ -88,8 +90,8 @@ public class LineService {
     }
 
     public void saveSection(Long id, SectionRequest request) {
-        Station upStation = stationService.findById(request.getUpStationId());
-        Station downStation = stationService.findById(request.getDownStationId());
+        Station upStation = stationService.getById(request.getUpStationId());
+        Station downStation = stationService.getById(request.getDownStationId());
 
         Line line = lineRepository.getById(id);
 
@@ -100,5 +102,10 @@ public class LineService {
         Line line = lineRepository.getById(id);
 
         line.removeSection(stationId);
+    }
+
+    public Lines findAll() {
+        val lines = lineRepository.findAll();
+        return new Lines(lines);
     }
 }
