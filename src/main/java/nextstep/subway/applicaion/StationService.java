@@ -40,9 +40,7 @@ public class StationService {
     public StationResponse createStationResponse(Station station) {
         return new StationResponse(
                 station.getId(),
-                station.getName(),
-                station.getCreatedDate(),
-                station.getModifiedDate()
+                station.getName()
         );
     }
 
