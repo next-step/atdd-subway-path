@@ -16,6 +16,7 @@ import nextstep.subway.domain.exception.ExceptionMessage;
 @Embeddable
 public class Sections {
 	private final int NOT_FOUND_INDEX = -1;
+	private final int MIN_SIZE = 1;
 
 	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
@@ -68,13 +69,15 @@ public class Sections {
 		return stations;
 	}
 
-	public void deleteSection(Station station) {
+	public void deleteLastSection(Station station) {
 		validEmpty();
-		validDownStation(station);
+		validLastDownStation(station);
 		sections.removeIf(it -> it.isDownStation(station));
 	}
 
 	public void deleteMiddleSection(Station station) {
+		validEmpty();
+
 		Section leftSection = sections.stream()
 			.filter(it -> it.isDownStation(station))
 			.findFirst()
@@ -135,12 +138,12 @@ public class Sections {
 	}
 
 	private void validEmpty() {
-		if(sections.isEmpty() || sections.size() == 1) {
+		if(sections.isEmpty() || sections.size() == MIN_SIZE) {
 			throw new IllegalArgumentException(ExceptionMessage.NOT_REMOVE_SECTION.getMessage());
 		}
 	}
 
-	private void validDownStation(Station station) {
+	private void validLastDownStation(Station station) {
 		Section lastSection = sections.get(sections.size() - 1);
 
 		if(!lastSection.isDownStation(station)) {

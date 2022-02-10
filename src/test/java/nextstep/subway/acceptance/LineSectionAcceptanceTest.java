@@ -58,10 +58,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 지하철 노선 중간에 새로운 구간 추가를 요청 하면
+     * When 지하철 기존 구간 중간에 새로운 구간 추가를 요청 하면
      * Then 노선에 새로운 구간이 추가된다
      */
-    @DisplayName("지하철 노선에 구간을 등록")
+    @DisplayName("지하철 기존 구간 사이에 새로운 구간을 등록")
     @Test
     void 기존_노선_중간에_구간_추가() {
         // when
@@ -130,6 +130,20 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
+    }
+
+    /**
+     * Given 지하철 노선에 구간 추가를 요청 하고
+     * When 지하철 노선의 하나 남은 구간의 역 제거를 요청 하면
+     * Then BAD_REQUEST(400) 상태코드를 응답
+     */
+    @DisplayName("지하철 노선에 중간역 제거")
+    @Test
+    void 노선의_하나_남은_구간의_역_제거할때_에러() {
+        // when then
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
