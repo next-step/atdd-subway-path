@@ -26,4 +26,8 @@ public class LineRequest {
     public int getDistance() {
         return distance;
     }
+
+    public boolean isExistSectionParams() {
+        return upStationId != null && downStationId != null && distance > 0;
+    }
 }
