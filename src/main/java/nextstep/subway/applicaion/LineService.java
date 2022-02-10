@@ -16,6 +16,7 @@ import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @Transactional
@@ -83,7 +84,7 @@ public class LineService {
         line.deleteSection(stationId);
     }
 
-    public int getPath(Long source, Long target) {
+    public PathResponse getShortestPath(Long source, Long target) {
 
         List<Section> allSections = new ArrayList<>();
 
@@ -114,13 +115,34 @@ public class LineService {
         List<Long> shortestPath
                 = dijkstraShortestPath.getPath(source, target).getVertexList();
 
-        allSections.stream().filter()
 
         List<StationResponse> stationResponses = shortestPath.stream()
                 .map(stationId -> new StationResponse(stationService.findById(stationId)))
                 .collect(Collectors.toList());
 
-        PathResponse pathResponse = new PathResponse(stationResponses,);
-        return
+        return new PathResponse(stationResponses, getShortestDistance(stationResponses, allSections));
+    }
+
+    private int getShortestDistance(List<StationResponse> stationResponses, List<Section> allSections) {
+
+        return IntStream.rangeClosed(0, stationResponses.size() - 2)
+                .map(i -> allSections.stream()
+                        .filter(section -> section.getDownStation().getId() == stationResponses.get(i).getId() &&
+                                        section.getUpStation().getId() == stationResponses.get(i + 1).getId() ||
+                                        section.getUpStation().getId() == stationResponses.get(i).getId() &&
+                                                section.getDownStation().getId() == stationResponses.get(i + 1).getId())
+                        .map(section -> section.getDistance()).findFirst().get()).reduce(Integer::sum).getAsInt();
+    }
+
+
+    //TODO filter가 안되는 이유 찾기.
+    private boolean isMatchSection(StationResponse stationA, StationResponse stationB, List<Section> allSections) {
+        return allSections.stream()
+                .filter(section ->
+                        (section.getDownStation().getId() == stationA.getId() &&
+                                section.getUpStation().getId() == stationB.getId()) ||
+                                (section.getUpStation().getId() == stationA.getId() &&
+                                        section.getDownStation().getId() == stationB.getId()))
+                .findFirst().isPresent();
     }
 }

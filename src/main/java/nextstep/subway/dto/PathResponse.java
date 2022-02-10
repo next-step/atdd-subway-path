@@ -21,4 +21,20 @@ public class PathResponse {
     private List<StationResponse> convertStationResponse(List<Station> stations) {
         return stations.stream().map(station -> new StationResponse(station)).collect(Collectors.toList());
     }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public List<StationResponse> getStations() {
+        return stations;
+    }
+
+    @Override
+    public String toString() {
+        return "PathResponse{" +
+                "stations=" + stations +
+                ", distance=" + distance +
+                '}';
+    }
 }
