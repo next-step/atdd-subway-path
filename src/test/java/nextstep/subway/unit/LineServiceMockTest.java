@@ -46,6 +46,7 @@ public class LineServiceMockTest {
         given(stationService.findById(강남역.getId())).willReturn(강남역);
         given(lineRepository.findById(이호선.getId())).willReturn(Optional.of(이호선));
 
+
         SectionRequest sectionRequest = new SectionRequest(교대역.getId(), 강남역.getId(), 10);
 
         // when

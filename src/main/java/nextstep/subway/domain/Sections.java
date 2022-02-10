@@ -17,8 +17,8 @@ import nextstep.subway.domain.exception.ExceptionMessage;
 public class Sections {
 	private final int NOT_FOUND_INDEX = -1;
 	private final int MIN_SIZE = 1;
-
-	@OneToMany(mappedBy = "line", cascade = {CascadeType.ALL, CascadeType.MERGE}, orphanRemoval = true)
+  
+	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
 
 	public void addSection(Line line, Station upStation, Station downStation, int distance) {
