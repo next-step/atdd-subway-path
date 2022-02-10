@@ -60,8 +60,21 @@ public class Section {
         return Arrays.asList(this.upStation, this.downStation);
     }
 
+
     public boolean isDownStation(Station station) {
         return this.downStation.equals(station);
+    }
+
+    public boolean isUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public void updateUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void updateDownStation(Station downStation) {
+        this.downStation = downStation;
     }
 
     @Override

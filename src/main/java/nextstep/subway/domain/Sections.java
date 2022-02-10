@@ -1,5 +1,9 @@
 package nextstep.subway.domain;
 
+
+import javassist.NotFoundException;
+import org.springframework.data.crossstore.ChangeSetPersister;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -16,6 +20,8 @@ public class Sections {
     }
 
     public void addSection(Section section) {
+        final Section sectionFromDownStation = this.getSectionFromDownStation(section.getDownStation());
+        sectionFromDownStation.updateDownStation(section.getUpStation());
         this.sections.add(section);
     }
 
@@ -43,5 +49,59 @@ public class Sections {
 
     public int size() {
         return this.sections.size();
+    }
+
+    public boolean existUpStations(Station upStation) {
+        return this.sections.contains(upStation);
+    }
+
+    public boolean existDownStations(Station downStation) {
+        return this.sections.contains(downStation);
+    }
+
+    public Section getSectionFromUpStation(Station upStation) {
+        return sections.stream()
+                .filter(section -> section.isUpStation(upStation))
+                .findFirst()
+                .orElseGet(() -> new Section());
+    }
+
+    public Section getSectionFromDownStation(Station downStation) {
+        return sections.stream()
+                .filter(section -> section.isDownStation(downStation))
+                .findFirst()
+                .orElseGet(() -> new Section());
+    }
+
+    public boolean isFirst(Section section) {
+        final Station upStation = section.getUpStation();
+
+        if (getAllUpStations().contains(upStation) && !getAllDownStations().contains(upStation)) {
+            return true;
+        }
+        return false;
+
+    }
+
+    public boolean isLast(Section section) {
+        final Station downStation = section.getDownStation();
+
+        if (!getAllUpStations().contains(downStation) && getAllDownStations().contains(downStation)) {
+            return true;
+        }
+        return false;
+    }
+
+
+    private List<Station> getAllUpStations() {
+        return this.sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+    }
+
+    private List<Station> getAllDownStations() {
+        return this.sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
     }
 }

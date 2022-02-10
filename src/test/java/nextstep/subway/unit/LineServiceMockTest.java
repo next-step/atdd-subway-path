@@ -4,7 +4,6 @@ import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -15,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,7 +28,7 @@ public class LineServiceMockTest {
 
 
     @Test
-    void addSection() {
+    void addSection(){
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         final StationResponse upStationResponse = new StationResponse(1L, "상행역", LocalDateTime.now(), LocalDateTime.now());
