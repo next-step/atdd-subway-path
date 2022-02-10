@@ -91,7 +91,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 3));
 
     // then
-    List<Long> 지하철역_리스트 = createListOfStations(강남역, 양재역);
+    List<Long> 지하철역_리스트 = createListOfStations(강남역, 정자역, 양재역);
     지하철_노선_조회_요청_후_역_검증(신분당선, 지하철역_리스트);
   }
 
