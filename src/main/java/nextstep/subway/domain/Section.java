@@ -68,4 +68,13 @@ public class Section {
         this.downStation = upStation;
         this.distance -= distance;
     }
+
+    public boolean isSameDownStation(Section newSection) {
+        return downStation.equals(newSection.getDownStation());
+    }
+
+    public boolean isSameUpStation(Section newSection) {
+        return upStation.equals(newSection.getUpStation());
+    }
+
 }

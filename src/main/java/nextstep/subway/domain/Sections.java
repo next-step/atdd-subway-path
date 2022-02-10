@@ -58,7 +58,7 @@ public class Sections {
 
     private void updateUpSection(Section newSection) {
         Section findSection = this.sections.stream()
-                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+                .filter(section -> section.isSameUpStation(newSection))
                 .findAny()
                 .get();
 
@@ -67,7 +67,7 @@ public class Sections {
 
     private void updateDownSection(Section newSection) {
         Section findSection = this.sections.stream()
-                .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
+                .filter(section -> section.isSameDownStation(newSection))
                 .findAny()
                 .get();
 
