@@ -18,7 +18,9 @@ class LineTest {
     Station 양재역;
     Station 광교역;
     Station 수지구청역;
+    Station 왕십리역;
     Line 신분당선;
+    Line 경춘선;
 
     @BeforeEach
     void setUp() {
@@ -26,13 +28,16 @@ class LineTest {
         양재역 = new Station("양재역");
         광교역 = new Station("광교역");
         수지구청역 = new Station("수지구청역");
+        왕십리역 = new Station("왕십리역");
         신분당선 = new Line("신분당선", "bg-red-600");
+        경춘선 = new Line("경춘선", "bg-green-600");
 
         ReflectionTestUtils.setField(강남역,"id",1L);
         ReflectionTestUtils.setField(양재역,"id",2L);
         ReflectionTestUtils.setField(광교역,"id",3L);
         ReflectionTestUtils.setField(수지구청역,"id",4L);
         ReflectionTestUtils.setField(신분당선,"id",1L);
+        ReflectionTestUtils.setField(경춘선,"id",2L);
     }
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
@@ -160,6 +165,26 @@ class LineTest {
         assertThrows(RuntimeException.class, () -> {
             신분당선.addSection(강남역, 양재역, 10);
             신분당선.addSection(수지구청역, 광교역, 5);
+        });
+    }
+
+    @DisplayName("노선 삭제 실패 - 구간이 1개 남아있음")
+    @Test
+    void deleteSectionExceptionOneSection() {
+        assertThrows(RuntimeException.class, () -> {
+            신분당선.addSection(강남역, 양재역, 10);
+            신분당선.removeSection(강남역);
+        });
+    }
+
+    @DisplayName("노선 삭제 실패 - 라인에 요청한 역이 존재하지 않음")
+    @Test
+    void deleteSectionExceptionNoStation() {
+        assertThrows(RuntimeException.class, () -> {
+            신분당선.addSection(강남역, 양재역, 10);
+            신분당선.addSection(양재역, 광교역, 10);
+            경춘선.addSection(왕십리역, 수지구청역, 10);
+            신분당선.removeSection(수지구청역);
         });
     }
 }
