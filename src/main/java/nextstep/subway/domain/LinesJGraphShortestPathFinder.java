@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class LinesJGraphDijkstraAlgorithm implements ShortestPathFindAlgorithm<Station, Line, Integer> {
+public class LinesJGraphShortestPathFinder implements ShortestPathFinder<Station, Line, Integer> {
 
     private WeightedGraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
 

@@ -2,12 +2,14 @@ package nextstep.subway.domain;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 @Configuration
 public class ShortestPathFindConfig {
 
     @Bean
-    public ShortestPathFindAlgorithm<Station, Line, Integer> shortestPathFindAlgorithm() {
-        return new LinesJGraphDijkstraAlgorithm();
+    @Scope("prototype")
+    public ShortestPathFinder<Station, Line, Integer> shortestPathFindAlgorithm() {
+        return new LinesJGraphShortestPathFinder();
     }
 }

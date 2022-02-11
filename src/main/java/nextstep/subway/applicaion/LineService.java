@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 public class LineService {
     private LineRepository lineRepository;
     private StationService stationService;
-    private ShortestPathFindAlgorithm<Station, Line, Integer> shortestPathFindAlgorithm;
+    private ShortestPathFinder<Station, Line, Integer> shortestPathFinder;
 
-    public LineService(LineRepository lineRepository, StationService stationService, ShortestPathFindAlgorithm<Station, Line, Integer> shortestPathFindAlgorithm) {
+    public LineService(LineRepository lineRepository, StationService stationService, ShortestPathFinder<Station, Line, Integer> shortestPathFinder) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
-        this.shortestPathFindAlgorithm = shortestPathFindAlgorithm;
+        this.shortestPathFinder = shortestPathFinder;
     }
 
     public LineResponse saveLine(LineRequest request) {
@@ -83,7 +83,7 @@ public class LineService {
             throw new IllegalArgumentException("출발역과 도착역이 동일합니다");
         }
 
-        ShortestPath<Station, Integer> shortestPath = shortestPathFindAlgorithm.findShortestPath(sourceStation, targetStation, lines);
+        ShortestPath<Station, Integer> shortestPath = shortestPathFinder.findShortestPath(sourceStation, targetStation, lines);
 
         if (shortestPath.isNotExistPath()) {
             throw new IllegalArgumentException("출발역에서 도착역까지 갈 수 있는 경로가 존재하지 않습니다");

@@ -24,7 +24,7 @@ public class LineServiceMockTest extends ShortestPathTestableLinesFixture {
     private LineRepository lineRepository;
     @Mock
     private StationService stationService;
-    private ShortestPathFindAlgorithm<Station, Line, Integer> shortestPathFindAlgorithm = new LinesJGraphDijkstraAlgorithm();
+    private ShortestPathFinder<Station, Line, Integer> shortestPathFinder = new LinesJGraphShortestPathFinder();
 
     private final static Long 노선ID = 1L;
     private final static Long 상행종점역ID = 1L;
@@ -42,7 +42,7 @@ public class LineServiceMockTest extends ShortestPathTestableLinesFixture {
         when(stationService.findById(하행종점역ID)).thenReturn(하행종점역);
         when(lineRepository.findById(노선ID)).thenReturn(Optional.of(노선));
 
-        LineService lineService = new LineService(lineRepository, stationService, shortestPathFindAlgorithm);
+        LineService lineService = new LineService(lineRepository, stationService, shortestPathFinder);
         SectionRequest sectionRequest = new SectionRequest(상행종점역ID, 하행종점역ID, 100);
 
         // when
@@ -60,7 +60,7 @@ public class LineServiceMockTest extends ShortestPathTestableLinesFixture {
     @Test
     void findShortestPath() {
         // given
-        LineService lineService = new LineService(lineRepository, stationService, shortestPathFindAlgorithm);
+        LineService lineService = new LineService(lineRepository, stationService, shortestPathFinder);
         Station 출발역 = 강남역;
         Station 도착역 = 양재역;
         when(stationService.findById(출발역.getId())).thenReturn(출발역);
