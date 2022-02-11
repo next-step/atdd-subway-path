@@ -254,6 +254,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * 2. 지하철역들과 최단거리가 반환된다
      */
     @Test
+    @DisplayName("역과 역 사이의 최단거리 구하기")
     void path() {
         ExtractableResponse<Response> response = 역과역_사이에_최단거리(1L,3L);
         assertThat(response.statusCode()).isEqualTo(200);
