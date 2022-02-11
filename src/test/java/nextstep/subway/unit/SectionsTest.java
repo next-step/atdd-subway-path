@@ -4,6 +4,7 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.exception.DuplicateCreationException;
 import nextstep.subway.exception.IllegalAddSectionException;
+import nextstep.subway.exception.IllegalDeletionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ class SectionsTest {
   }
 
   @Test
-  @DisplayName("역 사이에 새로운 역을 등록할 수 있음")
+  @DisplayName("상행 종점역을 등록할 수 있음")
   void addUpSectionTest() {
     // given
     Section section = new Section(이호선, 역삼역, 강남역, 2);
@@ -75,5 +76,35 @@ class SectionsTest {
 
     // then
     assertThatThrownBy(() -> sections.addSection(section)).isInstanceOf(IllegalAddSectionException.class);
+  }
+
+  @Test
+  @DisplayName("구간들의 중간 역을 삭제할 수 있음")
+  void deleteMiddleStationTest() {
+    // given
+    Section section = new Section(이호선, 강남역, 교대역, 2);
+    sections.addSection(section);
+
+    // when
+    sections.deleteSectionFromStation(교대역);
+
+    // then
+    assertThat(sections.getSectionStations()).containsExactly(강남역, 서초역);
+    assertThat(sections.getLastSection().isPresent()).isTrue();
+    assertThat(sections.getLastSection().get().getDistance()).isEqualTo(5);
+  }
+
+  @Test
+  @DisplayName("구간이 하나만 존재할 때에는 삭제할 수 없음")
+  void deleteLastSectionTest() {
+    // then
+    assertThatThrownBy(() -> sections.deleteSectionFromStation(강남역)).isInstanceOf(IllegalDeletionException.class);
+  }
+
+  @Test
+  @DisplayName("구간에 존재하지 않는 역은 삭제할 수 없음")
+  void deleteInvalidStationTest() {
+    // then
+    assertThatThrownBy(() -> sections.deleteSectionFromStation(인덕원역)).isInstanceOf(IllegalDeletionException.class);
   }
 }

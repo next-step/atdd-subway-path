@@ -91,7 +91,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 3));
 
     // then
-    List<Long> 지하철역_리스트 = createListOfStations(강남역, 양재역);
+    List<Long> 지하철역_리스트 = createListOfStations(강남역, 정자역, 양재역);
     지하철_노선_조회_요청_후_역_검증(신분당선, 지하철역_리스트);
   }
 
@@ -144,6 +144,64 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     // then
     assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+  }
+
+
+  /**
+   * Given 새로운 구간을 추가하고
+   * When 구간들의 중간 역을 삭제하면
+   * Then 구간 삭제가 성공한다.
+   */
+  @DisplayName("노선 중간역 삭제(성공 케이스)")
+  @Test
+  void deleteMiddleSectionTest() {
+
+    // given
+    Long 양재시민의숲역 = 지하철역_생성_요청_후_ID_반환("양재시민의숲역");
+    지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 양재시민의숲역, 5));
+
+    // when
+    지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+    // then
+    List<Long> 지하철역_리스트 = new ArrayList<>();
+    지하철역_리스트.add(강남역);
+    지하철역_리스트.add(양재시민의숲역);
+    지하철_노선_조회_요청_후_역_검증(신분당선, 지하철역_리스트);
+  }
+
+  /*
+   * When 마지막 구간의 역을 삭제할 경우
+   * Then 구간 삭제가 실패한다.
+   */
+  @DisplayName("노선에 구간이 하나인 경우 삭제 실패")
+  @Test
+  void deleteLastSectionStationTest() {
+
+    // when
+    ExtractableResponse<Response> deleteResponse = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+    // then
+    assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+  }
+
+  /*
+   * Given 구간에 존재하지 않는 역을 생성하고
+   * When 해당 역으로 구간 삭제를 요청할 시
+   * Then 구간 삭제가 실패한다.
+   */
+  @DisplayName("구간에 존재하지 않는 역 삭제 실패")
+  @Test
+  void deleteInvalidStationTest() {
+
+    // given
+    Long 인덕원역 = 지하철역_생성_요청_후_ID_반환("인덕원역");
+
+    // when
+    ExtractableResponse<Response> deleteResponse = 지하철_노선에_지하철_구간_제거_요청(신분당선, 인덕원역);
+
+    // then
+    assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
   }
 
   private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {

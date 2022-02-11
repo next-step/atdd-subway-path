@@ -34,7 +34,7 @@ public class Line extends BaseEntity {
     return name;
   }
 
-  public void setName(String name) {
+  public void updateName(String name) {
     this.name = name;
   }
 
@@ -42,7 +42,7 @@ public class Line extends BaseEntity {
     return color;
   }
 
-  public void setColor(String color) {
+  public void updateColor(String color) {
     this.color = color;
   }
 
@@ -50,8 +50,8 @@ public class Line extends BaseEntity {
     return sections;
   }
 
-  public void addSection(Section section) {
-    sections.addSection(section);
+  public void addSection(Station upStation, Station downStation, int distance) {
+    sections.addSection(new Section(this, upStation, downStation, distance));
   }
 
   public void removeSection(Station station) {
