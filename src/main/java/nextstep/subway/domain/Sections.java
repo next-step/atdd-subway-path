@@ -29,7 +29,7 @@ public class Sections {
         this.sections.add(section);
     }
 
-    public List<Station> getAllStations2() {
+    public List<Station> getAllStations() {
         List<Station> result = new ArrayList<>();
         Section firstSection = this.findFirstSection()
                 .orElseThrow(() -> new IllegalArgumentException("호선의 첫번째 노선을 찾을 수 없습니다."));
