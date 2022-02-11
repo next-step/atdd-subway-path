@@ -23,7 +23,7 @@ class SectionsTest {
   }
 
   @Test
-  @DisplayName("역 사이에 새로운 역을 등록할 수 있음")
+  @DisplayName("상행 종점역을 등록할 수 있음")
   void addUpSectionTest() {
     // given
     Section section = new Section(이호선, 역삼역, 강남역, 2);
@@ -99,5 +99,12 @@ class SectionsTest {
   void deleteLastSectionTest() {
     // then
     assertThatThrownBy(() -> sections.deleteSectionFromStation(강남역)).isInstanceOf(IllegalDeletionException.class);
+  }
+
+  @Test
+  @DisplayName("구간에 존재하지 않는 역은 삭제할 수 없음")
+  void deleteInvalidStationTest() {
+    // then
+    assertThatThrownBy(() -> sections.deleteSectionFromStation(인덕원역)).isInstanceOf(IllegalDeletionException.class);
   }
 }
