@@ -18,7 +18,7 @@ public class LineFixtures {
             throw new IllegalArgumentException("노선 초기 생성시 1개 이상의 구간이 필요합니다.");
         }
 
-        Line 노선 = new Line("2호선", "green", new PairedStations(sections[0].getUpStation(), sections[0].getDownStation()), sections[0].getDistance());
+        Line 노선 = new Line(lineName, "green", new PairedStations(sections[0].getUpStation(), sections[0].getDownStation()), sections[0].getDistance());
 
         for (int i = 1; i < sectionsSize; i++) {
             Section section = sections[i];

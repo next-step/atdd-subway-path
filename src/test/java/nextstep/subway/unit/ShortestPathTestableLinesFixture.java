@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.util.List;
 
@@ -48,5 +49,11 @@ abstract class ShortestPathTestableLinesFixture {
     protected Line 노선_4호선 = 상행종점역부터_하행종점역까지_모든구간이_포함된_노선_생성("4호선",
             역삼역과_판교역_구간);
 
-    protected List<Line> lines = asList(노선_2호선, 노선_3호선, 노선_신분당선, 노선_4호선);
+    protected List<Line> lines;
+
+    @BeforeEach
+    void setUp() {
+        lines = asList(노선_2호선, 노선_3호선, 노선_신분당선, 노선_4호선);
+    }
+
 }
