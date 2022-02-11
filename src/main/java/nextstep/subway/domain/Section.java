@@ -1,8 +1,6 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -56,21 +54,12 @@ public class Section {
         return distance;
     }
 
-    public List<Station> getAllStations() {
-        return Arrays.asList(this.upStation, this.downStation);
-    }
-
-
     public boolean isDownStation(Station station) {
         return this.downStation.equals(station);
     }
 
     public boolean isUpStation(Station station) {
         return this.upStation.equals(station);
-    }
-
-    public void updateUpStation(Station upStation) {
-        this.upStation = upStation;
     }
 
     public void updateDownStation(Station downStation) {

@@ -41,7 +41,7 @@ class LineTest {
         line.addSection(하행역, new Station("새로운역"), 1);
 
         // when
-        List<Station> stations = line.sections().getAllStations();
+        List<Station> stations = line.sections().getAllStations2();
 
         // then
         assertThat(stations).hasSize(3);
@@ -64,7 +64,7 @@ class LineTest {
         line.sections().deleteSection(마지막역);
 
         // then
-        assertThat(line.sections().getAllStations().size()).isEqualTo(2);
+        assertThat(line.sections().getAllStations2().size()).isEqualTo(2);
     }
 
     @DisplayName("노선 생성시 구간 1개 자동 생성")

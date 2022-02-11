@@ -1,9 +1,6 @@
 package nextstep.subway.domain;
 
 
-import javassist.NotFoundException;
-import org.springframework.data.crossstore.ChangeSetPersister;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -25,9 +22,6 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-//        final Section sectionFromUpStation = this.getSectionFromUpStation(section.getDownStation());
-//        sectionFromUpStation.updateDownStation(section.getUpStation());
-//        this.sections.add(sectionFromUpStation);
         final Optional<Section> sectionFromDownStation = this.getSectionFromDownStation(section.getDownStation());
         if (sectionFromDownStation.isPresent()) {
             if (sectionFromDownStation.get().getDistance() < section.getDistance()) {
@@ -58,18 +52,6 @@ public class Sections {
             start = downStation;
         }
         return result;
-
-//        for (int i = 0; i < this.size(); i++) {
-//            if (allUpStations.(firstSection.getDownStation())) {
-//                result.add(firstSection.getDownStation());
-//            }
-//        }
-
-//        return this.sections
-//                .stream()
-//                .flatMap(section -> section.getAllStations().stream())
-//                .distinct()
-//                .collect(Collectors.toList());
     }
 
     private Optional<Section> findFirstSection() {
@@ -83,20 +65,6 @@ public class Sections {
         }
         return Optional.empty();
 
-//                .map(upStations -> {
-//                    if (!getAllDownStations().contains(station)) {
-//                        return station;
-//                    }
-//                    return station;
-//                });
-    }
-
-    public List<Station> getAllStations() {
-        return this.sections
-                .stream()
-                .flatMap(section -> section.getAllStations().stream())
-                .distinct()
-                .collect(Collectors.toList());
     }
 
     public void deleteSection(Station station) {
@@ -117,27 +85,16 @@ public class Sections {
         return this.sections.size();
     }
 
-    public boolean existUpStations(Station upStation) {
-        return this.sections.contains(upStation);
-    }
-
-    public boolean existDownStations(Station downStation) {
-        return this.sections.contains(downStation);
-    }
-
     public Optional<Section> getSectionFromUpStation(Station upStation) {
         return sections.stream()
                 .filter(section -> section.isUpStation(upStation))
                 .findFirst();
-//                .orElseGet(null);
     }
 
     public Optional<Section> getSectionFromDownStation(Station downStation) {
         return sections.stream()
                 .filter(section -> section.isDownStation(downStation))
                 .findFirst();
-//                .get();
-//                .orElseGet(null);
     }
 
     public boolean isFirst(Section section) {
