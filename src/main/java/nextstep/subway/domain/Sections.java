@@ -9,6 +9,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -19,10 +20,20 @@ public class Sections {
     public Sections() {
     }
 
+    public void firstAddSection(Section section) {
+        this.sections.add(section);
+    }
+
     public void addSection(Section section) {
-        final Section sectionFromDownStation = this.getSectionFromDownStation(section.getDownStation());
-        sectionFromDownStation.updateDownStation(section.getUpStation());
-        this.sections.add(sectionFromDownStation);
+//        final Section sectionFromUpStation = this.getSectionFromUpStation(section.getDownStation());
+//        sectionFromUpStation.updateDownStation(section.getUpStation());
+//        this.sections.add(sectionFromUpStation);
+        final Optional<Section> sectionFromDownStation = this.getSectionFromDownStation(section.getDownStation());
+        if (sectionFromDownStation.isPresent()) {
+            sectionFromDownStation.get().updateDownStation(section.getUpStation());
+        }
+//        this.sections.add(sectionFromDownStation);
+        this.sections.add(section);
     }
 
     public List<Station> getAllStations() {
@@ -36,7 +47,7 @@ public class Sections {
     public void deleteSection(Station station) {
         final int lastIndex = this.sections.size() - 1;
         final Section lastSection = this.sections.get(lastIndex);
-        if (!lastSection.isDownStation(station)) {
+        if (lastSection.isDownStation(station)) {
             throw new IllegalArgumentException();
         }
 
@@ -59,18 +70,19 @@ public class Sections {
         return this.sections.contains(downStation);
     }
 
-    public Section getSectionFromUpStation(Station upStation) {
+    public Optional<Section> getSectionFromUpStation(Station upStation) {
         return sections.stream()
                 .filter(section -> section.isUpStation(upStation))
-                .findFirst()
-                .orElseGet(() -> new Section());
+                .findFirst();
+//                .orElseGet(null);
     }
 
-    public Section getSectionFromDownStation(Station downStation) {
+    public Optional<Section> getSectionFromDownStation(Station downStation) {
         return sections.stream()
                 .filter(section -> section.isDownStation(downStation))
-                .findFirst()
-                .orElseGet(() -> new Section());
+                .findFirst();
+//                .get();
+//                .orElseGet(null);
     }
 
     public boolean isFirst(Section section) {

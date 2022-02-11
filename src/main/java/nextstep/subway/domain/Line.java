@@ -71,48 +71,51 @@ public class Line extends BaseEntity {
 
     public void firstAddSection(Station upStation, Station downStation, int distance) {
         final Section section = new Section(this, upStation, downStation, distance);
-        this.sections.addSection(section);
-        this.addSection(section);
+        this.sections.firstAddSection(section);
+        this.firstSection = section;
+        this.lastSection = section;
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
 
-        if (this.sections.existUpStations(upStation)) {
-            Section getSection = this.sections.getSectionFromUpStation(upStation);
-            if (this.sections.isFirst(getSection)) {
-                this.firstSection = getSection;
-            }
-        }
-
-        if (this.sections.existDownStations(downStation)) {
-            Section getSection = this.sections.getSectionFromDownStation(downStation);
-            if (this.sections.isLast(getSection)) {
-                this.lastSection = getSection;
-            }
-        }
+//        if (this.sections.existUpStations(upStation)) {
+//            Section getSection = this.sections.getSectionFromUpStation(upStation);
+//            if (this.sections.isFirst(getSection)) {
+//                this.firstSection = getSection;
+//            }
+//        }
+//
+//        if (this.sections.existDownStations(downStation)) {
+//            Section getSection = this.sections.getSectionFromDownStation(downStation);
+//            if (this.sections.isLast(getSection)) {
+//                this.lastSection = getSection;
+//            }
+//        }
 
         this.sections.addSection(new Section(this, upStation, downStation, distance));
     }
 
     public List<Station> getAllStations() {
-        List<Station> resultStations = new ArrayList<>();
-        resultStations.add(this.firstSection.getUpStation());
-        final Station currentDownStation = this.firstSection.getDownStation();
-        resultStations.add(currentDownStation);
 
-        Section sectionFromUpStation = this.sections.getSectionFromUpStation(currentDownStation);
-        while (true) {
-            final Station downStation = sectionFromUpStation.getDownStation();
-            resultStations.add(downStation);
-
-            final Section afterSection = this.sections.getSectionFromUpStation(downStation);
-//            sectionFromUpStation = afterSection;
-
-            if(afterSection.getDownStation().equals(downStation)) {
-                break;
-            }
-        }
-        return resultStations;
+        return sections.getAllStations();
+//        List<Station> resultStations = new ArrayList<>();
+//        resultStations.add(this.firstSection.getUpStation());
+//        final Station currentDownStation = this.firstSection.getDownStation();
+//        resultStations.add(currentDownStation);
+//
+//        Section sectionFromUpStation = this.sections.getSectionFromUpStation(currentDownStation);
+//        while (true) {
+//            final Station downStation = sectionFromUpStation.getDownStation();
+//            resultStations.add(downStation);
+//
+//            final Section afterSection = this.sections.getSectionFromUpStation(downStation);
+////            sectionFromUpStation = afterSection;
+//
+//            if(afterSection.getDownStation().equals(downStation)) {
+//                break;
+//            }
+//        }
+//        return resultStations;
 
 //        final Section sectionFromDownStation = this.sections.getSectionFromDownStation(firstSection.getDownStation());
     }

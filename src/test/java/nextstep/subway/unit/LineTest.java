@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LineTest {
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
@@ -56,15 +58,13 @@ class LineTest {
         final Station 하행역 = new Station("하행역");
         final Station 마지막역 = new Station("마지막역");
 
-        line.addSection(상행역, 하행역, 1);
+        line.firstAddSection(상행역, 하행역, 1);
         line.addSection(하행역, 마지막역, 1);
 
         // when
-        line.sections().deleteSection(마지막역);
-
-        // then
-        List<Station> stations = line.sections().getAllStations();;
-        assertThat(stations.size()).isEqualTo(2);
+        assertThrows(IllegalArgumentException.class, () -> {
+            line.sections().deleteSection(마지막역);
+        });
     }
 
     @DisplayName("노선 생성시 구간 1개 자동 생성")
@@ -87,7 +87,7 @@ class LineTest {
         final Station 하행역 = new Station("하행역");
 
         final Section section = new Section(line, 상행역, 하행역, 3);
-        line.addSection(section);
+        line.firstAddSection(상행역, 하행역, 3);
 
         assertThat(line.sections().isFirst(section)).isTrue();
         assertThat(line.sections().isLast(section)).isTrue();
@@ -100,7 +100,7 @@ class LineTest {
         final Station 상행역 = new Station("상행역");
         final Station 하행역 = new Station("하행역");
 
-        line.addSection(상행역, 하행역, 3);
+        line.firstAddSection(상행역, 하행역, 3);
 
         final Station 새로운역 = new Station("새로운역");
 
