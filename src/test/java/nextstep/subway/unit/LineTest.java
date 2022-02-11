@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LineTest {
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
@@ -62,9 +60,10 @@ class LineTest {
         line.addSection(하행역, 마지막역, 1);
 
         // when
-        assertThrows(IllegalArgumentException.class, () -> {
-            line.sections().deleteSection(마지막역);
-        });
+        line.sections().deleteSection(마지막역);
+
+        // then
+        assertThat(line.sections().getAllStations().size()).isEqualTo(2);
     }
 
     @DisplayName("노선 생성시 구간 1개 자동 생성")

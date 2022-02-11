@@ -47,7 +47,7 @@ public class Sections {
     public void deleteSection(Station station) {
         final int lastIndex = this.sections.size() - 1;
         final Section lastSection = this.sections.get(lastIndex);
-        if (lastSection.isDownStation(station)) {
+        if (!lastSection.isDownStation(station)) {
             throw new IllegalArgumentException();
         }
 
