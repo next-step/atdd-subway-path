@@ -27,6 +27,7 @@ public class SectionResponse {
     public Station getUpStation() {
         return upStation;
     }
+
     public int getDistance() {
         return distance;
     }

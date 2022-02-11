@@ -36,13 +36,11 @@ public class Lines {
     public List<Long> calculateShortestPath(Long source, Long target, List<StationResponse> allStations) {
         checkSourceEqualTarget(source, target);
         checkExistSourceAndTarget(source, target, allStations);
-        WeightedMultigraph<Long, DefaultWeightedEdge> graph
-                = new WeightedMultigraph(DefaultWeightedEdge.class);
+        WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
         addVertexToGraph(graph, allStations);
         addEdgeToGraph(graph, sections);
 
-        DijkstraShortestPath dijkstraShortestPath
-                = new DijkstraShortestPath(graph);
+        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
 
         checkConnectionBetweenSourceAndTarget(dijkstraShortestPath.getPath(source, target));
 
@@ -70,7 +68,8 @@ public class Lines {
         }
     }
 
-    private void addVertexToGraph(WeightedMultigraph<Long, DefaultWeightedEdge> graph, List<StationResponse> allStations) {
+    private void addVertexToGraph(WeightedMultigraph<Long, DefaultWeightedEdge> graph,
+            List<StationResponse> allStations) {
         allStations.stream()
                 .forEach(stationResponse -> {
                     graph.addVertex(stationResponse.getId());
@@ -79,14 +78,16 @@ public class Lines {
 
     private void addEdgeToGraph(WeightedMultigraph<Long, DefaultWeightedEdge> graph, List<Section> allSections) {
         allSections.stream().forEach(section -> {
-            graph.setEdgeWeight(graph.addEdge(section.getDownStation().getId(), section.getUpStation().getId()), section.getDistance());
+            graph.setEdgeWeight(graph.addEdge(section.getDownStation().getId(), section.getUpStation().getId()),
+                    section.getDistance());
         });
     }
 
     public int getShortestDistance(List<StationResponse> stationResponses) {
         return IntStream.rangeClosed(0, stationResponses.size() - 2)
                 .map(i -> sections.stream()
-                        .filter(section -> isMatchSection(stationResponses.get(i), stationResponses.get(i + 1), section))
+                        .filter(section -> isMatchSection(stationResponses.get(i), stationResponses.get(i + 1),
+                                section))
                         .map(section -> section.getDistance())
                         .findFirst()
                         .orElseThrow(() -> new UnConnectedSourceAndTargetException()))
