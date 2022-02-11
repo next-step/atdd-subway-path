@@ -30,13 +30,14 @@ public class LineService {
         if (validateStation(request)) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.addSection(upStation, downStation, request.getDistance());
+            line.firstAddSection(upStation, downStation, request.getDistance());
         }
         return createLineResponse(line);
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> showLines() {
+
         return lineRepository.findAll().stream()
                 .map(this::createLineResponse)
                 .collect(Collectors.toList());
@@ -102,7 +103,7 @@ public class LineService {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.sections().getAllStations();;
+        List<Station> stations = line.getAllStations();;
 
         return stations.stream()
                 .map(it -> stationService.createStationResponse(it))

@@ -22,7 +22,7 @@ public class Sections {
     public void addSection(Section section) {
         final Section sectionFromDownStation = this.getSectionFromDownStation(section.getDownStation());
         sectionFromDownStation.updateDownStation(section.getUpStation());
-        this.sections.add(section);
+        this.sections.add(sectionFromDownStation);
     }
 
     public List<Station> getAllStations() {

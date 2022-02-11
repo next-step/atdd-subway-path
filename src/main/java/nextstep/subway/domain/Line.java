@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -58,9 +60,19 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    public Sections sections() {
+        return this.sections;
+    }
+
 
     public void addSection(Section section) {
         this.addSection(section.getUpStation(), section.getDownStation(), section.getDistance());
+    }
+
+    public void firstAddSection(Station upStation, Station downStation, int distance) {
+        final Section section = new Section(this, upStation, downStation, distance);
+        this.sections.addSection(section);
+        this.addSection(section);
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
@@ -70,7 +82,6 @@ public class Line extends BaseEntity {
             if (this.sections.isFirst(getSection)) {
                 this.firstSection = getSection;
             }
-
         }
 
         if (this.sections.existDownStations(downStation)) {
@@ -83,9 +94,29 @@ public class Line extends BaseEntity {
         this.sections.addSection(new Section(this, upStation, downStation, distance));
     }
 
-    public Sections sections() {
-        return this.sections;
+    public List<Station> getAllStations() {
+        List<Station> resultStations = new ArrayList<>();
+        resultStations.add(this.firstSection.getUpStation());
+        final Station currentDownStation = this.firstSection.getDownStation();
+        resultStations.add(currentDownStation);
+
+        Section sectionFromUpStation = this.sections.getSectionFromUpStation(currentDownStation);
+        while (true) {
+            final Station downStation = sectionFromUpStation.getDownStation();
+            resultStations.add(downStation);
+
+            final Section afterSection = this.sections.getSectionFromUpStation(downStation);
+//            sectionFromUpStation = afterSection;
+
+            if(afterSection.getDownStation().equals(downStation)) {
+                break;
+            }
+        }
+        return resultStations;
+
+//        final Section sectionFromDownStation = this.sections.getSectionFromDownStation(firstSection.getDownStation());
     }
+
 
     @Override
     public boolean equals(Object o) {
