@@ -124,17 +124,20 @@ public class Sections {
     downSection.ifPresent(section -> sections.remove(section));
 
     if (upSection.isPresent() && downSection.isPresent()) {
-      Line line = upSection.get().getLine();
-      Station newUpStation = downSection.get().getUpStation();
-      Station newDownStation = upSection.get().getDownStation();
-      int distance = upSection.get().getDistance() + downSection.get().getDistance();
-
-      Section recoveredSection = new Section(line, newUpStation, newDownStation, distance);
-      sections.add(recoveredSection);
+      sections.add(addRecoveredSectionFromDeletion(upSection.get(), downSection.get()));
     }
 
     upSection.ifPresent(section -> sections.remove(section));
     downSection.ifPresent(section -> sections.remove(section));
+  }
+
+  private Section addRecoveredSectionFromDeletion(Section upSection, Section downSection){
+    Line line = upSection.getLine();
+    Station newUpStation = downSection.getUpStation();
+    Station newDownStation = upSection.getDownStation();
+    int distance = upSection.getDistance() + downSection.getDistance();
+
+    return new Section(line, newUpStation, newDownStation, distance);
   }
 
   private Section getFirstUpSection() {
