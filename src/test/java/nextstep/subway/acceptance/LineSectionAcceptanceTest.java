@@ -171,17 +171,34 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
   }
 
   /*
-### [X] Scenario: 노선에 구간이 하나인 경우 삭제 실패
-* Given 노선에 존재하지 않는 역들의 구간을 설정하고
-* When 해당 구간을 추가할 경우
-* Then 구간 추가가 실패한다.
+   * When 마지막 구간의 역을 삭제할 경우
+   * Then 구간 삭제가 실패한다.
    */
   @DisplayName("노선에 구간이 하나인 경우 삭제 실패")
   @Test
-  void deleteInvalidStationTest() {
+  void deleteLastSectionStationTest() {
 
     // when
     ExtractableResponse<Response> deleteResponse = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+    // then
+    assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+  }
+
+  /*
+   * Given 구간에 존재하지 않는 역을 생성하고
+   * When 해당 역으로 구간 삭제를 요청할 시
+   * Then 구간 삭제가 실패한다.
+   */
+  @DisplayName("구간에 존재하지 않는 역 삭제 실패")
+  @Test
+  void deleteInvalidStationTest() {
+    
+    // given
+    Long 인덕원역 = 지하철역_생성_요청_후_ID_반환("인덕원역");
+
+    // when
+    ExtractableResponse<Response> deleteResponse = 지하철_노선에_지하철_구간_제거_요청(신분당선, 인덕원역);
 
     // then
     assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
