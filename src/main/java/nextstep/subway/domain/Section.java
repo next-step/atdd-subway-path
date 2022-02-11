@@ -79,10 +79,6 @@ public class Section implements Comparable<Section> {
         this.distance.addDistance(distance);
     }
 
-    public boolean isNull() {
-        return this == null;
-    }
-
     @Override
     public int compareTo(Section section) {
         if (upStation.equals(section.getDownStation())) {

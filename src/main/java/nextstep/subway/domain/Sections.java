@@ -9,6 +9,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -67,86 +68,99 @@ public class Sections {
     }
 
     private void appendSection(Section section) {
-        final Station upStation = section.getUpStation();
+	    final Station upStation = section.getUpStation();
 
-        if (equalsLastStation(upStation)) {
-            sections.add(section);
-            return;
-        }
+	    if (equalsLastStation(upStation)) {
+		    sections.add(section);
+		    return;
+	    }
 
-        Section relatedSection = getRelatedUpStationSection(upStation);
+	    Section relatedSection = getRelatedUpStationSection(upStation)
+			    .orElseThrow(() -> new IllegalArgumentException(NOT_EXIST_STATION));
 
-        relatedSection.upStationUpdate(section.getDownStation());
-        relatedSection.divideDistance(section.getDistance());
-        sections.add(section);
+	    relatedSection.upStationUpdate(section.getDownStation());
+	    relatedSection.divideDistance(section.getDistance());
+	    sections.add(section);
     }
 
-    private boolean equalsLastStation(Station upStation) {
-        List<Station> stations = getStations();
-        Station lastStation = stations.get(stations.size() - 1);
+	private boolean equalsLastStation(Station upStation) {
+		List<Station> stations = getStations();
+		Station lastStation = stations.get(stations.size() - 1);
 
-        return lastStation.equals(upStation);
-    }
+		return lastStation.equals(upStation);
+	}
 
-    private Section getRelatedUpStationSection(Station upStation) {
-        return sections.stream()
-                .filter(generatedSection -> upStation.equals(generatedSection.getUpStation()))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(NOT_EXIST_STATION));
-    }
+	private Optional<Section> getRelatedUpStationSection(Station upStation) {
+		return sections.stream()
+				.filter(generatedSection -> upStation.equals(generatedSection.getUpStation()))
+				.findAny();
+	}
 
-    private void prependSection(Section section) {
-        final Station downStation = section.getDownStation();
+	private void prependSection(Section section) {
+		final Station downStation = section.getDownStation();
 
-        if (equalsFirstStation(downStation)) {
-            sections.add(section);
-            return;
-        }
+		if (equalsFirstStation(downStation)) {
+			sections.add(section);
+			return;
+		}
 
-        Section relatedSection = getRelatedDownStationSection(downStation);
+		Section relatedSection = getRelatedDownStationSection(downStation)
+				.orElseThrow(() -> new IllegalArgumentException(NOT_EXIST_STATION));
 
-        relatedSection.downStationUpdate(section.getUpStation());
-        relatedSection.divideDistance(section.getDistance());
-        sections.add(section);
-    }
+		relatedSection.downStationUpdate(section.getUpStation());
+		relatedSection.divideDistance(section.getDistance());
+		sections.add(section);
+	}
 
-    private boolean equalsFirstStation(Station downStation) {
-        List<Station> stations = getStations();
-        Station firstStation = stations.get(0);
+	private boolean equalsFirstStation(Station downStation) {
+		List<Station> stations = getStations();
+		Station firstStation = stations.get(0);
 
-        return firstStation.equals(downStation);
-    }
+		return firstStation.equals(downStation);
+	}
 
-    private Section getRelatedDownStationSection(Station downStation) {
-        return sections.stream()
-                .filter(generatedSection -> downStation.equals(generatedSection.getDownStation()))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(NOT_EXIST_STATION));
-    }
+	private Optional<Section> getRelatedDownStationSection(Station downStation) {
+		return sections.stream()
+				.filter(generatedSection -> downStation.equals(generatedSection.getDownStation()))
+				.findFirst();
+	}
 
-    public int count() {
-        return sections.size();
-    }
+	public int count() {
+		return sections.size();
+	}
 
-    public void deleteSection(Station station) {
-        Section relatedUpStationSection = getRelatedUpStationSection(station);
-        Section relatedDownStationSection = getRelatedDownStationSection(station);
+	public void deleteSection(Station station) {
 
-        if (relatedUpStationSection.isNull() && relatedDownStationSection.isNull()) {
-            throw new NotExistSectionException(station.getName());
-        }
+		Section relatedUpStationSection = getRelatedUpStationSection(station).orElse(null);
+		Section relatedDownStationSection = getRelatedDownStationSection(station).orElse(null);
 
-        if (!relatedUpStationSection.isNull() && !relatedDownStationSection.isNull()) {
-            mergeSection(relatedUpStationSection, relatedDownStationSection);
-        }
-    }
+		if (relatedUpStationSection == null && relatedDownStationSection == null) {
+			throw new NotExistSectionException(station.getName());
+		}
 
-    private void mergeSection(Section relatedUpStationSection, Section relatedDownStationSection) {
-        Station appendStation = relatedUpStationSection.getDownStation();
+		if (relatedUpStationSection != null && relatedDownStationSection != null) {
+			mergeSection(relatedUpStationSection, relatedDownStationSection);
+			return;
+		}
 
-        relatedDownStationSection.downStationUpdate(appendStation);
-        relatedDownStationSection.addDistance(relatedUpStationSection.getDistance());
+		if (relatedDownStationSection != null) {
+			exceptSection(relatedDownStationSection);
+			return;
+		}
 
-        sections.remove(relatedUpStationSection);
-    }
+		exceptSection(relatedUpStationSection);
+	}
+
+	private void mergeSection(Section relatedUpStationSection, Section relatedDownStationSection) {
+		Station appendStation = relatedUpStationSection.getDownStation();
+
+		relatedDownStationSection.downStationUpdate(appendStation);
+		relatedDownStationSection.addDistance(relatedUpStationSection.getDistance());
+
+		sections.remove(relatedUpStationSection);
+	}
+
+	private void exceptSection(Section relatedStationSection) {
+		sections.remove(relatedStationSection);
+	}
 }

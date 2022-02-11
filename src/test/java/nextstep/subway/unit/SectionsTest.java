@@ -18,7 +18,7 @@ public class SectionsTest {
 
 	Sections 구간들;
 
-	final Distance 거리 = Distance.from(200);
+	final Distance 거리 = Distance.from(100);
 
 	/**
 	 * Given 노선에 3개의 지하철역을 등록하였다고 가정한 후
@@ -53,6 +53,40 @@ public class SectionsTest {
 
 		//then
 		assertThat(구간들.getStations()).containsExactly(강남역, 합정역);
+		assertThat(구간들.getSections())
+				.extracting(Section::getDistance)
+				.containsExactly(Distance.from(200));
+	}
+
+	/**
+	 * When 노선의 첫 구간을 제거하면
+	 * Then 노선에 해당 구간이 삭제된다.
+	 */
+	@DisplayName("구간 목록 첫 구간을 삭제할 경우")
+	@Test
+	void deleteFirstSection() {
+		//when
+		구간들.deleteSection(강남역);
+
+		//then
+		assertThat(구간들.getStations()).containsExactly(역삼역, 합정역);
+		assertThat(구간들.getSections())
+				.extracting(Section::getDistance)
+				.containsExactly(거리);
+	}
+
+	/**
+	 * When 노선의 마지막 구간을 제거하면
+	 * Then 노선에 해당 구간이 삭제된다.
+	 */
+	@DisplayName("구간 목록 마지막 구간을 삭제할 경우")
+	@Test
+	void deleteLastSection() {
+		//when
+		구간들.deleteSection(합정역);
+
+		//then
+		assertThat(구간들.getStations()).containsExactly(강남역, 역삼역);
 		assertThat(구간들.getSections())
 				.extracting(Section::getDistance)
 				.containsExactly(거리);
