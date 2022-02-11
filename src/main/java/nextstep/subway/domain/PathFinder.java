@@ -13,7 +13,7 @@ public class PathFinder {
 
     public PathFinder(List<Line> lines) {
         this.graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-        lines.forEach(line -> line.registerInLineMap(this));
+        lines.forEach(line -> line.registerToPathFinder(this));
     }
 
     void registerSection(Station upStation, Station downStation, int distance) {
