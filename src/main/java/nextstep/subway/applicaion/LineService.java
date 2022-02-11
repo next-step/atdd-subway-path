@@ -79,15 +79,7 @@ public class LineService {
         Station sourceStation = stationService.findById(sourceStationId);
         Station targetStation = stationService.findById(targetStationId);
 
-        if (sourceStation.equals(targetStation)) {
-            throw new IllegalArgumentException("출발역과 도착역이 동일합니다");
-        }
-
         ShortestPath<Station, Integer> shortestPath = shortestPathFinder.findShortestPath(sourceStation, targetStation, lines);
-
-        if (shortestPath.isNotExistPath()) {
-            throw new IllegalArgumentException("출발역에서 도착역까지 갈 수 있는 경로가 존재하지 않습니다");
-        }
 
         return ShortestPathResponse.from(shortestPath);
     }

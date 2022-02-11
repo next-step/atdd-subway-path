@@ -34,13 +34,18 @@ public class LinesJGraphShortestPathFinder implements ShortestPathFinder<Station
     }
 
     @Override
-    public ShortestPath<Station, Integer> findShortestPath(Station source, Station destination, List<Line> data) {
-        initGraph(data);
+    public ShortestPath<Station, Integer> findShortestPath(Station source, Station destination, List<Line> lines) {
+
+        if (source.equals(destination)) {
+            throw new IllegalArgumentException("출발역과 도착역이 동일합니다.");
+        }
+
+        initGraph(lines);
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
         GraphPath<Station, DefaultWeightedEdge> graphPath = dijkstraShortestPath.getPath(source, destination);
 
         if (Objects.isNull(graphPath)) {
-            return ShortestPath.NONE;
+            throw new IllegalArgumentException("출발역에서 도착역까지의 경로를 찾을 수 없습니다.");
         }
 
         return ShortestPath.of(
