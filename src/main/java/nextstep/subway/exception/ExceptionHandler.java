@@ -30,4 +30,9 @@ public class ExceptionHandler {
     public ResponseEntity<HttpStatus> checkNotMatchDeleteSectionException() {
         return ResponseEntity.badRequest().build();
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(CantGetPathBySameStationException.class)
+    public ResponseEntity<HttpStatus> checkCantGetPathBySameStationException() {
+        return ResponseEntity.badRequest().build();
+    }
 }
