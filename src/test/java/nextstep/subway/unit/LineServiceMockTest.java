@@ -35,10 +35,10 @@ public class LineServiceMockTest {
         when(stationService.findById(1L)).thenReturn(new Station("상행역"));
 
         final StationResponse downStationResponse = new StationResponse(2L, "하행역", LocalDateTime.now(), LocalDateTime.now());
-        when(stationService.findById(2L)).thenReturn(new Station("상행역"));
+        when(stationService.findById(2L)).thenReturn(new Station("하행역"));
 
         final StationResponse newStationResponse = new StationResponse(3L, "새로운역", LocalDateTime.now(), LocalDateTime.now());
-        when(stationService.findById(3L)).thenReturn(new Station("상행역"));
+        when(stationService.findById(3L)).thenReturn(new Station("새로운역"));
 
         final Line line1 = new Line("1호선", "blue");
         when(lineRepository.save(line1)).thenReturn(new Line(1L, "1호선", "blue"));
@@ -48,16 +48,18 @@ public class LineServiceMockTest {
 
         // when
         // lineService.addSection 호출
-        final Line save = lineRepository.save(line1);
+        final Line savedLine = lineRepository.save(line1);
         final SectionRequest firstSectionRequest = new SectionRequest(upStationResponse.getId(), downStationResponse.getId(), 1);
-        lineService.addSection(save.getId(), firstSectionRequest);
+        final Station upStation = stationService.findById(upStationResponse.getId());
+        final Station downStation = stationService.findById(downStationResponse.getId());
+        lineService.firstAddSection(savedLine, upStation, downStation, firstSectionRequest.getDistance());
 
         final SectionRequest secondSectionRequest = new SectionRequest(downStationResponse.getId(), newStationResponse.getId(), 1);
-        lineService.addSection(save.getId(), secondSectionRequest);
+        lineService.addSection(savedLine.getId(), secondSectionRequest);
 
         // then
         // line.findLineById 메서드를 통해 검증
-        final LineResponse lineResponse = lineService.findById(save.getId());
+        final LineResponse lineResponse = lineService.findById(savedLine.getId());
         assertThat(lineResponse.getStations().size()).isEqualTo(3);
     }
 }

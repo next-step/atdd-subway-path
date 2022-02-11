@@ -30,9 +30,13 @@ public class LineService {
         if (validateStation(request)) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.firstAddSection(upStation, downStation, request.getDistance());
+            this.firstAddSection(line, upStation, downStation, request.getDistance());
         }
         return createLineResponse(line);
+    }
+
+    public void firstAddSection(Line line, Station upStation, Station downStation, int distance) {
+        line.firstAddSection(upStation, downStation, distance);
     }
 
     @Transactional(readOnly = true)
@@ -71,6 +75,7 @@ public class LineService {
         line.addSection(upStation, downStation, sectionRequest.getDistance());
     }
 
+
     private LineResponse createLineResponse(Line line) {
         return new LineResponse(
                 line.getId(),
@@ -103,7 +108,7 @@ public class LineService {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getAllStations();;
+        List<Station> stations = line.getAllStations();
 
         return stations.stream()
                 .map(it -> stationService.createStationResponse(it))

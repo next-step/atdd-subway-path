@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
@@ -96,27 +97,23 @@ public class Line extends BaseEntity {
 
     public List<Station> getAllStations() {
 
-        return sections.getAllStations();
+
+        // 기존 코드
+        return sections.getAllStations2();
+        // todo error 남, first, last를 디비에서 가지지 않아서
 //        List<Station> resultStations = new ArrayList<>();
 //        resultStations.add(this.firstSection.getUpStation());
 //        final Station currentDownStation = this.firstSection.getDownStation();
 //        resultStations.add(currentDownStation);
 //
-//        Section sectionFromUpStation = this.sections.getSectionFromUpStation(currentDownStation);
-//        while (true) {
-//            final Station downStation = sectionFromUpStation.getDownStation();
+//        Optional<Section> sectionFromUpStation = this.sections.getSectionFromUpStation(currentDownStation);
+//        while (sectionFromUpStation.isPresent()) {
+//            final Station downStation = sectionFromUpStation.get().getDownStation();
 //            resultStations.add(downStation);
 //
-//            final Section afterSection = this.sections.getSectionFromUpStation(downStation);
-////            sectionFromUpStation = afterSection;
-//
-//            if(afterSection.getDownStation().equals(downStation)) {
-//                break;
-//            }
+//            sectionFromUpStation = this.sections.getSectionFromUpStation(downStation);
 //        }
 //        return resultStations;
-
-//        final Section sectionFromDownStation = this.sections.getSectionFromDownStation(firstSection.getDownStation());
     }
 
 

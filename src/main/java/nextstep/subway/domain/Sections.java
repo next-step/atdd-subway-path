@@ -39,6 +39,58 @@ public class Sections {
         this.sections.add(section);
     }
 
+    public List<Station> getAllStations2() {
+        List<Station> result = new ArrayList<>();
+        Section firstSection = this.findFirstSection()
+                .orElseThrow(() -> new IllegalArgumentException("호선의 첫번째 노선을 찾을 수 없습니다."));
+
+        result.add(firstSection.getUpStation());
+        Station start = firstSection.getDownStation();
+        result.add(start);
+
+        while(true) {
+            final Optional<Section> findSection = this.getSectionFromUpStation(start);
+            if (!findSection.isPresent()) {
+                break;
+            }
+            final Station downStation = findSection.get().getDownStation();
+            result.add(downStation);
+            start = downStation;
+        }
+        return result;
+
+//        for (int i = 0; i < this.size(); i++) {
+//            if (allUpStations.(firstSection.getDownStation())) {
+//                result.add(firstSection.getDownStation());
+//            }
+//        }
+
+//        return this.sections
+//                .stream()
+//                .flatMap(section -> section.getAllStations().stream())
+//                .distinct()
+//                .collect(Collectors.toList());
+    }
+
+    private Optional<Section> findFirstSection() {
+        final List<Station> allUpStations = this.getAllUpStations();
+        final List<Station> allDownStations = this.getAllDownStations();
+
+        for (Station upStation : allUpStations) {
+            if (!allDownStations.contains(upStation)) {
+                return getSectionFromUpStation(upStation);
+            }
+        }
+        return Optional.empty();
+
+//                .map(upStations -> {
+//                    if (!getAllDownStations().contains(station)) {
+//                        return station;
+//                    }
+//                    return station;
+//                });
+    }
+
     public List<Station> getAllStations() {
         return this.sections
                 .stream()
