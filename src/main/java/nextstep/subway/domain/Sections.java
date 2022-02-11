@@ -16,7 +16,8 @@ import nextstep.subway.domain.exception.ExceptionMessage;
 @Embeddable
 public class Sections {
 	private final int NOT_FOUND_INDEX = -1;
-
+	private final int MIN_SIZE = 1;
+  
 	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
 
@@ -26,8 +27,8 @@ public class Sections {
 			return;
 		}
 
-		validDuplicationSection(upStation, downStation);
-		validIncludedAnyStation(upStation, downStation);
+		validDuplication(upStation, downStation);
+		validInclude(upStation, downStation);
 
 		updateMiddleSection(line, upStation, downStation, distance);
 
@@ -70,18 +71,45 @@ public class Sections {
 
 	public void deleteSection(Station station) {
 		validEmpty();
-		validDownStation(station);
-		sections.removeIf(it -> it.isDownStation(station));
+
+		Optional<Section> leftOptionalSection = findSectionByDownStation(station);
+		Optional<Section> rightOptionalSection = findSectionByUpStation(station);
+
+		if(isFindMiddleSection(leftOptionalSection, rightOptionalSection)) {
+			Section leftSection = leftOptionalSection.orElseThrow(IllegalArgumentException::new);
+			Section rightSection = rightOptionalSection.orElseThrow(IllegalArgumentException::new);
+
+			sections.remove(leftSection);
+			sections.remove(rightSection);
+
+			sections.add(new Section(leftSection.getLine(), leftSection.getUpStation(), rightSection.getDownStation(),
+				leftSection.getDistance() + rightSection.getDistance()));
+			return;
+		}
+
+		if(isFindFirstSection(leftOptionalSection, rightOptionalSection)) {
+			Section leftSection = leftOptionalSection.orElseThrow(IllegalArgumentException::new);
+			sections.remove(leftSection);
+			return;
+		}
+
+		if(isFindLastSection(leftOptionalSection, rightOptionalSection)) {
+			Section rightSection = rightOptionalSection.orElseThrow(IllegalArgumentException::new);
+			sections.remove(rightSection);
+			return;
+		}
+
+		throw new IllegalArgumentException();
 	}
 
-	private void validDuplicationSection(Station upStation, Station downStation) {
+	private void validDuplication(Station upStation, Station downStation) {
 		sections.stream()
 			.filter(it -> it.isDuplicateStation(upStation, downStation))
 			.findFirst()
 			.ifPresent(it -> { throw new IllegalArgumentException(ExceptionMessage.DUPLICATE_SECTION.getMessage()); });
 	}
 
-	private void validIncludedAnyStation(Station upStation, Station downStation) {
+	private void validInclude(Station upStation, Station downStation) {
 		sections.stream()
 			.filter(it -> it.isContainStation(upStation) || it.isContainStation(downStation))
 			.findFirst()
@@ -117,15 +145,7 @@ public class Sections {
 	}
 
 	private void validEmpty() {
-		if(sections.isEmpty() || sections.size() == 1) {
-			throw new IllegalArgumentException(ExceptionMessage.NOT_REMOVE_SECTION.getMessage());
-		}
-	}
-
-	private void validDownStation(Station station) {
-		Section lastSection = sections.get(sections.size() - 1);
-
-		if(!lastSection.isDownStation(station)) {
+		if(sections.isEmpty() || sections.size() == MIN_SIZE) {
 			throw new IllegalArgumentException(ExceptionMessage.NOT_REMOVE_SECTION.getMessage());
 		}
 	}
@@ -134,5 +154,23 @@ public class Sections {
 		return sections.stream()
 			.filter(it -> it.isUpStation(station))
 			.findFirst();
+	}
+
+	private Optional<Section> findSectionByDownStation(Station station) {
+		return sections.stream()
+			.filter(it -> it.isDownStation(station))
+			.findFirst();
+	}
+
+	private boolean isFindMiddleSection(Optional<Section> leftSection, Optional<Section> rightSection) {
+		return (leftSection.isPresent() && rightSection.isPresent());
+	}
+
+	private boolean isFindFirstSection(Optional<Section> leftSection, Optional<Section> rightSection) {
+		return (leftSection.isPresent() && !rightSection.isPresent());
+	}
+
+	private boolean isFindLastSection(Optional<Section> leftSection, Optional<Section> rightSection) {
+		return (!leftSection.isPresent() && rightSection.isPresent());
 	}
 }

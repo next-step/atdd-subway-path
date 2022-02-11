@@ -1,7 +1,7 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,9 +42,10 @@ public class LineServiceMockTest {
         Line 이호선 = new Line("2호선", "bg-green-600");
         ReflectionTestUtils.setField(이호선, "id", 1L);
 
-        when(stationService.findById(교대역.getId())).thenReturn(교대역);
-        when(stationService.findById(강남역.getId())).thenReturn(강남역);
-        when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
+        given(stationService.findById(교대역.getId())).willReturn(교대역);
+        given(stationService.findById(강남역.getId())).willReturn(강남역);
+        given(lineRepository.findById(이호선.getId())).willReturn(Optional.of(이호선));
+
 
         SectionRequest sectionRequest = new SectionRequest(교대역.getId(), 강남역.getId(), 10);
 
