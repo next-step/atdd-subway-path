@@ -131,7 +131,7 @@ public class Sections {
     downSection.ifPresent(section -> sections.remove(section));
   }
 
-  private Section addRecoveredSectionFromDeletion(Section upSection, Section downSection){
+  private Section addRecoveredSectionFromDeletion(Section upSection, Section downSection) {
     Line line = upSection.getLine();
     Station newUpStation = downSection.getUpStation();
     Station newDownStation = upSection.getDownStation();

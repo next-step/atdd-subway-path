@@ -193,7 +193,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
   @DisplayName("구간에 존재하지 않는 역 삭제 실패")
   @Test
   void deleteInvalidStationTest() {
-    
+
     // given
     Long 인덕원역 = 지하철역_생성_요청_후_ID_반환("인덕원역");
 
