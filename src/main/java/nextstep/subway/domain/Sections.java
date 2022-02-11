@@ -135,4 +135,8 @@ public class Sections {
                 upSection.getDistance() + downSection.getDistance()
         );
     }
+
+    public void registerInLineMap(PathFinder pathFinder) {
+        sections.forEach(section -> pathFinder.registerSection(section.getUpStation(), section.getDownStation(), section.getDistance()));
+    }
 }

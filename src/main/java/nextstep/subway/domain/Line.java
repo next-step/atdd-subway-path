@@ -76,6 +76,10 @@ public class Line extends BaseEntity {
         sections.remove(station);
     }
 
+    public void registerInLineMap(PathFinder pathFinder) {
+        sections.registerInLineMap(pathFinder);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
