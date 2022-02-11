@@ -50,9 +50,7 @@ public class LineServiceMockTest {
         // lineService.addSection 호출
         final Line savedLine = lineRepository.save(line1);
         final SectionRequest firstSectionRequest = new SectionRequest(upStationResponse.getId(), downStationResponse.getId(), 1);
-        final Station upStation = stationService.findById(upStationResponse.getId());
-        final Station downStation = stationService.findById(downStationResponse.getId());
-        lineService.firstAddSection(savedLine, upStation, downStation, firstSectionRequest.getDistance());
+        lineService.addSection(savedLine.getId(), firstSectionRequest);
 
         final SectionRequest secondSectionRequest = new SectionRequest(downStationResponse.getId(), newStationResponse.getId(), 1);
         lineService.addSection(savedLine.getId(), secondSectionRequest);

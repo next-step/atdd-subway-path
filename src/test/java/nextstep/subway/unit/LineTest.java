@@ -57,7 +57,7 @@ class LineTest {
         final Station 하행역 = new Station("하행역");
         final Station 마지막역 = new Station("마지막역");
 
-        line.firstAddSection(상행역, 하행역, 1);
+        line.addSection(상행역, 하행역, 1);
         line.addSection(하행역, 마지막역, 1);
 
         // when
@@ -87,7 +87,7 @@ class LineTest {
         final Station 하행역 = new Station("하행역");
 
         final Section section = new Section(line, 상행역, 하행역, 3);
-        line.firstAddSection(상행역, 하행역, 3);
+        line.addSection(상행역, 하행역, 3);
 
         assertThat(line.sections().isFirst(section)).isTrue();
         assertThat(line.sections().isLast(section)).isTrue();
@@ -100,7 +100,7 @@ class LineTest {
         final Station 상행역 = new Station("상행역");
         final Station 하행역 = new Station("하행역");
 
-        line.firstAddSection(상행역, 하행역, 3);
+        line.addSection(상행역, 하행역, 3);
 
         final Station 새로운역 = new Station("새로운역");
 

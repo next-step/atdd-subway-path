@@ -17,10 +17,6 @@ public class Sections {
     public Sections() {
     }
 
-    public void firstAddSection(Section section) {
-        this.sections.add(section);
-    }
-
     public void addSection(Section section) {
         final Optional<Section> sectionFromDownStation = this.getSectionFromDownStation(section.getDownStation());
         if (sectionFromDownStation.isPresent()) {

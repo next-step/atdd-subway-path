@@ -30,13 +30,9 @@ public class LineService {
         if (validateStation(request)) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            this.firstAddSection(line, upStation, downStation, request.getDistance());
+            line.addSection(upStation, downStation, request.getDistance());
         }
         return createLineResponse(line);
-    }
-
-    public void firstAddSection(Line line, Station upStation, Station downStation, int distance) {
-        line.firstAddSection(upStation, downStation, distance);
     }
 
     @Transactional(readOnly = true)
