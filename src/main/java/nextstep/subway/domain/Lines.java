@@ -31,9 +31,8 @@ public class Lines {
     }
 
     public List<Long> calculateShortestPath(Long source, Long target, List<StationResponse> allStations) {
-        if (source == target) {
-            throw new CantGetPathBySameStationException();
-        }
+        checkSourceEqualTarget(source, target);
+
         WeightedMultigraph<Long, DefaultWeightedEdge> graph
                 = new WeightedMultigraph(DefaultWeightedEdge.class);
         addVertexToGraph(graph, allStations);
@@ -43,6 +42,12 @@ public class Lines {
                 = new DijkstraShortestPath(graph);
 
         return dijkstraShortestPath.getPath(source, target).getVertexList();
+    }
+
+    private void checkSourceEqualTarget(Long source, Long target) {
+        if (source == target) {
+            throw new CantGetPathBySameStationException();
+        }
     }
 
     private void addVertexToGraph(WeightedMultigraph<Long, DefaultWeightedEdge> graph, List<StationResponse> allStations) {
@@ -61,10 +66,15 @@ public class Lines {
     public int getShortestDistance(List<StationResponse> stationResponses) {
         return IntStream.rangeClosed(0, stationResponses.size() - 2)
                 .map(i -> sections.stream()
-                        .filter(section -> section.getDownStation().getId() == stationResponses.get(i).getId() &&
-                                section.getUpStation().getId() == stationResponses.get(i + 1).getId() ||
-                                section.getUpStation().getId() == stationResponses.get(i).getId() &&
-                                        section.getDownStation().getId() == stationResponses.get(i + 1).getId())
-                        .map(section -> section.getDistance()).findFirst().get()).reduce(Integer::sum).getAsInt();
+                        .filter(section -> isMatchSection(stationResponses.get(i), stationResponses.get(i + 1), section))
+                        .map(section -> section.getDistance()).findFirst().get())
+                .reduce(Integer::sum).getAsInt();
+    }
+
+    private boolean isMatchSection(StationResponse stationA, StationResponse stationB, Section section) {
+        return (section.getDownStation().getId() == stationA.getId() &&
+                section.getUpStation().getId() == stationB.getId()) ||
+                (section.getUpStation().getId() == stationA.getId() &&
+                        section.getDownStation().getId() == stationB.getId());
     }
 }
