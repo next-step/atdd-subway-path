@@ -64,16 +64,15 @@ public class Line extends BaseEntity {
         return this.sections;
     }
 
-
-    public void addSection(Section section) {
-        this.addSection(section.getUpStation(), section.getDownStation(), section.getDistance());
-    }
-
     public void firstAddSection(Station upStation, Station downStation, int distance) {
         final Section section = new Section(this, upStation, downStation, distance);
         this.sections.firstAddSection(section);
         this.firstSection = section;
         this.lastSection = section;
+    }
+
+    public void addSection(Section section) {
+        this.addSection(section.getUpStation(), section.getDownStation(), section.getDistance());
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {

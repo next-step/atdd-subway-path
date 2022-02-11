@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LineTest {
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
@@ -176,7 +177,6 @@ class LineTest {
         line.addSection(newSection);
 
         // 상행역-(3)-하행역-(5)-새로운역
-        // todo distance 체크 필요
         final Station 또다른역 = new Station("또다른역");
         final Section lastSection = new Section(line, 또다른역, 새로운역, 2);
         line.addSection(lastSection);
@@ -185,5 +185,30 @@ class LineTest {
         assertThat(line.sections().isFirst(lastSection)).isFalse();
         assertThat(line.sections().isLast(lastSection)).isTrue();
     }
-    // todo 예외 추가
+
+    @DisplayName("노선 생성 후, 중간 추가 시 길이가 부족하면 에러 발생 확인")
+    @Test
+    void addSection6() {
+        final Line line = new Line();
+        final Station 상행역 = new Station("상행역");
+        final Station 하행역 = new Station("하행역");
+
+        line.addSection(상행역, 하행역, 3);
+
+        final Station 새로운역 = new Station("새로운역");
+
+        // distance 상관 없음
+        final Section newSection = new Section(line, 하행역, 새로운역, 1);
+        line.addSection(newSection);
+
+        // 상행역-(3)-하행역-(1)-새로운역
+        final Station 또다른역 = new Station("또다른역");
+        final Section lastSection = new Section(line, 또다른역, 새로운역, 2);
+
+        // distance 체크
+        assertThrows(IllegalArgumentException.class, () -> {
+            line.addSection(lastSection);
+        });
+    }
+
 }

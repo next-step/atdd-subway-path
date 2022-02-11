@@ -30,9 +30,12 @@ public class Sections {
 //        this.sections.add(sectionFromUpStation);
         final Optional<Section> sectionFromDownStation = this.getSectionFromDownStation(section.getDownStation());
         if (sectionFromDownStation.isPresent()) {
-            sectionFromDownStation.get().updateDownStation(section.getUpStation());
+            if (sectionFromDownStation.get().getDistance() < section.getDistance()) {
+                throw new IllegalArgumentException("노선 길이가 부족합니다");
+            }
+             sectionFromDownStation.get().updateDownStation(section.getUpStation());
         }
-//        this.sections.add(sectionFromDownStation);
+
         this.sections.add(section);
     }
 
