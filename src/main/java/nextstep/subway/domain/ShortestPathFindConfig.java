@@ -9,7 +9,7 @@ public class ShortestPathFindConfig {
 
     @Bean
     @Scope("prototype")
-    public ShortestPathFinder<Station, Line, Integer> shortestPathFindAlgorithm() {
+    public ShortestPathFinder<Station, Line, Integer> shortestPathFinder() {
         return new LinesJGraphShortestPathFinder();
     }
 }
