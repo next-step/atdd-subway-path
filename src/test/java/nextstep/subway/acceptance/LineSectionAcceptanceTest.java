@@ -146,6 +146,37 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
   }
 
+
+  /**
+   * Given 새로운 구간을 추가하고
+   * When 구간들의 중간 역을 삭제하면
+   * Then 구간 삭제가 성공한다.
+   */
+  @DisplayName("노선 중간역 삭제(성공 케이스)")
+  @Test
+  void deleteMiddleSectionTest() {
+
+    // given
+    Long 양재시민의숲역 = 지하철역_생성_요청_후_ID_반환("양재시민의숲역");
+    지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 양재시민의숲역, 5));
+
+    // when
+    지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+    // then
+    List<Long> 지하철역_리스트 = new ArrayList<>();
+    지하철역_리스트.add(강남역);
+    지하철역_리스트.add(양재시민의숲역);
+    지하철_노선_조회_요청_후_역_검증(신분당선, 지하철역_리스트);
+  }
+
+  /*
+### [X] Scenario: 노선에 구간이 하나인 경우 삭제 실패
+* Given 노선에 존재하지 않는 역들의 구간을 설정하고
+* When 해당 구간을 추가할 경우
+* Then 구간 추가가 실패한다.
+   */
+
   private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
     Map<String, String> lineCreateParams;
     lineCreateParams = new HashMap<>();
