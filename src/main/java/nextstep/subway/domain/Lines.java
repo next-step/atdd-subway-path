@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.exception.CantGetPathBySameStationException;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -30,6 +31,9 @@ public class Lines {
     }
 
     public List<Long> calculateShortestPath(Long source, Long target, List<StationResponse> allStations) {
+        if (source == target) {
+            throw new CantGetPathBySameStationException();
+        }
         WeightedMultigraph<Long, DefaultWeightedEdge> graph
                 = new WeightedMultigraph(DefaultWeightedEdge.class);
         addVertexToGraph(graph, allStations);

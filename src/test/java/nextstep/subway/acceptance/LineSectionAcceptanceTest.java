@@ -3,7 +3,6 @@ package nextstep.subway.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.applicaion.LineService;
-import nextstep.subway.dto.PathResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -257,9 +256,30 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void path() {
         ExtractableResponse<Response> response = 역과역_사이에_최단거리(1L,3L);
+        assertThat(response.statusCode()).isEqualTo(200);
         assertThat(response.jsonPath().getInt("distance")).isEqualTo(5);
         assertThat(response.jsonPath().getList("stations.id")).containsExactly(1,4,3);
 
+    }
+
+    /**
+     * 교대역(1)    --- *2호선* ---   강남역(2)
+     * |                        |
+     * *3호선*                   *신분당선*
+     * |                        |
+     * 남부터미널역(4)  --- *3호선* ---   양재(3)
+     */
+
+    /**
+     * given 위와 같은 지하철 역이 주어졌을 때
+     * when 교대역과 교대역의 최단거리를 구하면
+     * Then 400 status code 가 반환된다.
+     */
+    @DisplayName("출발역과 도착역이 같은 경우")
+    @Test
+    void cantGetPathBySameStationException() {
+        ExtractableResponse<Response> response = 역과역_사이에_최단거리(1L,1L);
+        assertThat(response.statusCode()).isEqualTo(400);
     }
 
     private Map<String, String> createLineCreateParams(Long downStationId, Long upStationId, int distance) {
