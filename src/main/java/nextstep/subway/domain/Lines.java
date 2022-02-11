@@ -2,6 +2,9 @@ package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.exception.CantGetPathBySameStationException;
+import nextstep.subway.exception.NotExistedStationDeleteException;
+import nextstep.subway.exception.UnConnectedSourceAndTargetException;
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -32,7 +35,7 @@ public class Lines {
 
     public List<Long> calculateShortestPath(Long source, Long target, List<StationResponse> allStations) {
         checkSourceEqualTarget(source, target);
-
+        checkExistSourceAndTarget(source, target, allStations);
         WeightedMultigraph<Long, DefaultWeightedEdge> graph
                 = new WeightedMultigraph(DefaultWeightedEdge.class);
         addVertexToGraph(graph, allStations);
@@ -41,7 +44,24 @@ public class Lines {
         DijkstraShortestPath dijkstraShortestPath
                 = new DijkstraShortestPath(graph);
 
-        return dijkstraShortestPath.getPath(source, target).getVertexList();
+        checkConnectionBetweenSourceAndTarget(dijkstraShortestPath.getPath(source, target));
+
+        List<Long> path = dijkstraShortestPath.getPath(source, target).getVertexList();
+
+        return path;
+    }
+
+    private void checkExistSourceAndTarget(Long source, Long target, List<StationResponse> allStations) {
+        if (!allStations.stream().anyMatch(stationResponse -> stationResponse.getId() == source)
+                || !allStations.stream().anyMatch(stationResponse -> stationResponse.getId() == target)) {
+            throw new NotExistedStationDeleteException();
+        }
+    }
+
+    private void checkConnectionBetweenSourceAndTarget(GraphPath graphPath) {
+        if (graphPath == null) {
+            throw new UnConnectedSourceAndTargetException();
+        }
     }
 
     private void checkSourceEqualTarget(Long source, Long target) {
@@ -67,7 +87,9 @@ public class Lines {
         return IntStream.rangeClosed(0, stationResponses.size() - 2)
                 .map(i -> sections.stream()
                         .filter(section -> isMatchSection(stationResponses.get(i), stationResponses.get(i + 1), section))
-                        .map(section -> section.getDistance()).findFirst().get())
+                        .map(section -> section.getDistance())
+                        .findFirst()
+                        .orElseThrow(() -> new UnConnectedSourceAndTargetException()))
                 .reduce(Integer::sum).getAsInt();
     }
 

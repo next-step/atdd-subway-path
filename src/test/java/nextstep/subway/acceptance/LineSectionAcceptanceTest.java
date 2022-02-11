@@ -104,6 +104,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 5));
 
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("sections.downStation.name", String.class)).containsExactly("강남역",
                 "양재역");
@@ -124,6 +125,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 강남역, 5));
 
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("sections.downStation.name", String.class)).containsExactly("정자역",
                 "강남역");
@@ -215,7 +217,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 존재하지 않는 상행역과 하행역을 가지는 구간 생성 요청")
     @Test
     void NoMatchSectionException() {
-
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선,
                 createSectionCreateParams(교대역, 남부터미널역, 5));
 
@@ -231,7 +232,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 이미 존재하는 상행역과 하행역을 가지는 구간 생성 요청")
     @Test
     void AllMatchSectionException() {
-
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선,
                 createSectionCreateParams(강남역, 양재역, 5));
 
@@ -282,15 +282,46 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(400);
     }
 
-    private Map<String, String> createLineCreateParams(Long downStationId, Long upStationId, int distance) {
-        Map<String, String> lineCreateParams;
-        lineCreateParams = new HashMap<>();
-        lineCreateParams.put("name", "신분당선");
-        lineCreateParams.put("color", "bg-red-600");
-        lineCreateParams.put("downStationId", downStationId + "");
-        lineCreateParams.put("upStationId", upStationId + "");
-        lineCreateParams.put("distance", distance + "");
-        return lineCreateParams;
+    /**
+     * 교대역(1)    --- *2호선* ---   강남역(2)
+     * |                        |
+     * *3호선*                   *신분당선*
+     * |                        |
+     * 남부터미널역(4)  --- *3호선* ---   양재(3)
+     */
+
+    /**
+     * given 위와 같은 지하철 역이 주어졌을 때
+     * when 교대역과 교대역의 최단거리를 구하면
+     * Then 400 status code 가 반환된다.
+     */
+    @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우")
+    @Test
+    void unConnectedSourceAndTargetException() {
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+
+        ExtractableResponse<Response> response = 역과역_사이에_최단거리(1L,5L);
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    /**
+     * 교대역(1)    --- *2호선* ---   강남역(2)
+     * |                        |
+     * *3호선*                   *신분당선*
+     * |                        |
+     * 남부터미널역(4)  --- *3호선* ---   양재(3)
+     */
+
+    /**
+     * given 위와 같은 지하철 역이 주어졌을 때
+     * when 교대역과 없는역의 최단거리를 구하면
+     * Then 400 status code 가 반환된다.
+     */
+    @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우")
+    @Test
+    void NotExistedSourceOrTargetException() {
+        ExtractableResponse<Response> response = 역과역_사이에_최단거리(1L,5L);
+        assertThat(response.statusCode()).isEqualTo(400);
     }
 
     private Map<String, String> createSectionCreateParams(Long downStationId, Long upStationId, int distance) {
