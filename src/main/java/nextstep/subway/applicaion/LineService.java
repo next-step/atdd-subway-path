@@ -85,55 +85,20 @@ public class LineService {
     }
 
     public PathResponse getShortestPath(Long source, Long target) {
-
-        List<Section> allSections = new ArrayList<>();
-
         List<Line> allLines = lineRepository.findAll();
-        allLines.stream().forEach(line -> {
-            line.getSections().stream()
-                    .forEach(section -> {
-                        allSections.add(section);
-                    });
-        });
-
-        WeightedMultigraph<Long, DefaultWeightedEdge> graph
-                = new WeightedMultigraph(DefaultWeightedEdge.class);
+        Lines lines = new Lines(allLines);
 
         List<StationResponse> allStations = stationService.findAllStations();
-        allStations.stream()
-                .forEach(stationResponse -> {
-                    graph.addVertex(stationResponse.getId());
-                });
-
-        allSections.stream().forEach(section -> {
-            graph.setEdgeWeight(graph.addEdge(section.getDownStation().getId(), section.getUpStation().getId()), section.getDistance());
-        });
-
-        DijkstraShortestPath dijkstraShortestPath
-                = new DijkstraShortestPath(graph);
-
-        List<Long> shortestPath
-                = dijkstraShortestPath.getPath(source, target).getVertexList();
-
+        List<Long> shortestPath = lines.calculateShortestPath(source, target, allStations);
 
         List<StationResponse> stationResponses = shortestPath.stream()
                 .map(stationId -> new StationResponse(stationService.findById(stationId)))
                 .collect(Collectors.toList());
 
-        return new PathResponse(stationResponses, getShortestDistance(stationResponses, allSections));
+        int shortestDistance = lines.getShortestDistance(stationResponses);
+
+        return new PathResponse(stationResponses, shortestDistance);
     }
-
-    private int getShortestDistance(List<StationResponse> stationResponses, List<Section> allSections) {
-
-        return IntStream.rangeClosed(0, stationResponses.size() - 2)
-                .map(i -> allSections.stream()
-                        .filter(section -> section.getDownStation().getId() == stationResponses.get(i).getId() &&
-                                        section.getUpStation().getId() == stationResponses.get(i + 1).getId() ||
-                                        section.getUpStation().getId() == stationResponses.get(i).getId() &&
-                                                section.getDownStation().getId() == stationResponses.get(i + 1).getId())
-                        .map(section -> section.getDistance()).findFirst().get()).reduce(Integer::sum).getAsInt();
-    }
-
 
     //TODO filter가 안되는 이유 찾기.
     private boolean isMatchSection(StationResponse stationA, StationResponse stationB, List<Section> allSections) {
@@ -145,4 +110,4 @@ public class LineService {
                                         section.getDownStation().getId() == stationB.getId()))
                 .findFirst().isPresent();
     }
-}
+};
