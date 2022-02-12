@@ -108,4 +108,18 @@ public class LinePathAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(responseStatusCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * When 동일한 출발 역과 도착 역으로 최단 경로를 요청 하면
+     * Then 지하철 경로 조회가 실패 된다.
+     */
+    @DisplayName("동일한 출발 역과 도착 역으로 지하철 경로 조회")
+    @Test
+    void getPathWithOneStation() {
+        // when
+        int responseStatusCode = 지하철_경로_조회(createPathReadParams(교대역, 교대역)).statusCode();
+
+        // then
+        assertThat(responseStatusCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

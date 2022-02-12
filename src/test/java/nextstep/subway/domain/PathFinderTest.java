@@ -67,6 +67,17 @@ class PathFinderTest {
                 .withMessage("연결이 되어 있지 않은 구간 입니다.");
     }
 
+    @DisplayName("동일한 출발 역과 도착 역으로 구간의 역 목록을 반환 시 예외")
+    @Test
+    void getShortestPathStationsWithOneStation() {
+        // when
+        PathFinder pathFinder = new PathFinder(List.of(이호선, 신분당선, 삼호선));
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() -> pathFinder.getShortestPathStations(교대역, 교대역))
+                .withMessage("동일한 출발 역과 도착 역으로는 최단 구간을 구할 수 없습니다.");
+    }
+
     @DisplayName("최단 구간의 거리를 반환")
     @Test
     void getShortestPathDistance() {
@@ -87,5 +98,16 @@ class PathFinderTest {
         // then
         assertThatIllegalArgumentException().isThrownBy(() -> pathFinder.getShortestPathDistance(교대역, unconnectedStation))
                 .withMessage("연결이 되어 있지 않은 구간 입니다.");
+    }
+
+    @DisplayName("동일한 출발 역과 도착 역으로 구간의 거리를 반환 시 예외")
+    @Test
+    void getShortestPathDistanceWithOneStation() {
+        // when
+        PathFinder pathFinder = new PathFinder(List.of(이호선, 신분당선, 삼호선));
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() -> pathFinder.getShortestPathDistance(교대역, 교대역))
+                .withMessage("동일한 출발 역과 도착 역으로는 최단 구간을 구할 수 없습니다.");
     }
 }
