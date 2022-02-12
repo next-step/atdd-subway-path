@@ -23,7 +23,7 @@ class LineTest {
 
     final Distance 거리 = Distance.from(50);
 
-    final Line 이호선 = Line.of("2호선", "bg-green-600", 강남역, 역삼역, 거리);
+    final Line 이호선 = Line.of("2호선", "bg-green-600", 강남역, 역삼역, Distance.from(100));
 
 
     /**
@@ -114,7 +114,7 @@ class LineTest {
      */
     @DisplayName("지하철 노선 중간에 잘못된 거리의 구간을 추가")
     @ParameterizedTest
-    @ValueSource(ints = {-1, 0, 101})
+    @ValueSource(ints = {101})
     void addWrongDistanceSection(int value) {
         // when
         Distance distance = Distance.from(value);
@@ -221,6 +221,6 @@ class LineTest {
         assertThat(이호선.getSections().getStations()).containsExactly(강남역, 합정역);
         assertThat(이호선.getSections().getSections())
                 .extracting(Section::getDistance)
-                .containsExactly(Distance.from(100));
+                .containsExactly(Distance.from(150));
     }
 }
