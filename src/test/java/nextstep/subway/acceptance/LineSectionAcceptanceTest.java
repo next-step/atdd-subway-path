@@ -229,10 +229,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
-     * When 지하철 노선에 존재하지 않는 구간 제거를 요청 하면
+     * When 지하철 노선에 존재하지 않는 역 제거를 요청 하면
      * Then 노선의 구간 제거가 실패한다.
      */
-    @DisplayName("지하철 노선의 존재하지 않는 구간을 제거")
+    @DisplayName("지하철 노선에 존재하지 않는 역 제거 요청")
     @Test
     void removeNotExistStation() {
         // given
