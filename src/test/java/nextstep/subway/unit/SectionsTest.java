@@ -1,5 +1,6 @@
 package nextstep.subway.unit;
 
+import nextstep.subway.applicaion.exception.NotExistSectionException;
 import nextstep.subway.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,11 +11,13 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class SectionsTest {
 	final Station 강남역 = Station.of("강남역");
 	final Station 역삼역 = Station.of("역삼역");
 	final Station 합정역 = Station.of("합정역");
+	final Station 홍대역 = Station.of("홍대역");
 
 	Sections 구간들;
 
@@ -28,6 +31,7 @@ public class SectionsTest {
 		ReflectionTestUtils.setField(강남역, "id", 1L);
 		ReflectionTestUtils.setField(역삼역, "id", 2L);
 		ReflectionTestUtils.setField(합정역, "id", 3L);
+		ReflectionTestUtils.setField(홍대역, "id", 4L);
 
 		final Line 이호선 = Line.of("2호선", "bg-green-600", 강남역, 역삼역, Distance.from(100));
 		ReflectionTestUtils.setField(이호선, "id", 1L);
@@ -90,5 +94,17 @@ public class SectionsTest {
 		assertThat(구간들.getSections())
 				.extracting(Section::getDistance)
 				.containsExactly(거리);
+	}
+
+	/**
+	 * When 노선에 존재하지 않는 구간을 제거요청하면
+	 * Then 노선의 구간 삭제가 실패된다.
+	 */
+	@DisplayName("구간 목록에 존재하지 않는 구간을 삭제할 경우")
+	@Test
+	void deleteNotExistSection() {
+		//when & then
+		assertThatThrownBy(() -> 구간들.deleteSection(홍대역))
+				.isInstanceOf(NotExistSectionException.class);
 	}
 }
