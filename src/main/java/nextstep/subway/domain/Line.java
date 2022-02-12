@@ -76,8 +76,8 @@ public class Line extends BaseEntity {
         sections.remove(station);
     }
 
-    public void registerToPathFinder(PathFinder pathFinder) {
-        sections.registerToPathFinder(pathFinder);
+    public List<Section> getSections() {
+        return sections.get();
     }
 
     @Override

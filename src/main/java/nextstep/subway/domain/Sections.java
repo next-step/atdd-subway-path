@@ -136,7 +136,7 @@ public class Sections {
         );
     }
 
-    public void registerToPathFinder(PathFinder pathFinder) {
-        sections.forEach(section -> pathFinder.registerSection(section.getUpStation(), section.getDownStation(), section.getDistance()));
+    public List<Section> get() {
+        return new ArrayList<>(sections);
     }
 }

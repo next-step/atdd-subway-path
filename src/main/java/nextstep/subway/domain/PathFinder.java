@@ -5,6 +5,7 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
+import java.util.Collection;
 import java.util.List;
 
 public class PathFinder {
@@ -13,10 +14,17 @@ public class PathFinder {
 
     public PathFinder(List<Line> lines) {
         this.graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-        lines.forEach(line -> line.registerToPathFinder(this));
+        lines.stream()
+                .map(Line::getSections)
+                .flatMap(Collection::stream)
+                .forEach(this::registerSection);
     }
 
-    void registerSection(Station upStation, Station downStation, int distance) {
+    void registerSection(Section section) {
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+        int distance = section.getDistance();
+
         if (!graph.containsVertex(upStation)) {
             graph.addVertex(upStation);
         }
