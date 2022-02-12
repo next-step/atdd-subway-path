@@ -77,4 +77,8 @@ public class Section {
         return upStation.equals(newSection.getUpStation());
     }
 
+    public boolean existStation(Station station) {
+        long id = station.getId();
+        return upStation.getId() == id || downStation.getId() == id;
+    }
 }

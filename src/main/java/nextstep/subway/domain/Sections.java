@@ -16,7 +16,7 @@ public class Sections {
     public List<Section> getSections() {
         List<Section> ordered = new ArrayList<>();
 
-        if(this.sections.isEmpty()){
+        if (this.sections.isEmpty()) {
             return ordered;
         }
 
@@ -86,11 +86,25 @@ public class Sections {
     }
 
     public void remove(Station station) {
+        validRemoveStation(station);
+
         if (!getLastStation().equals(station)) {
             throw new IllegalArgumentException();
         }
 
         sections.remove(sections.size() - 1);
+    }
+
+    private void validRemoveStation(Station station) {
+        if (sections.size() == 1) {
+            throw new RuntimeException("더 이상 역을 제거할 수 없습니다.");
+        }
+
+        boolean existStation = sections.stream().anyMatch(section -> section.existStation(station));
+
+        if(!existStation) {
+            throw new RuntimeException("해당 라인에" + station.getName() + "이 존재하지 않습니다.");
+        }
     }
 
     private List<Station> findDownStations() {
