@@ -12,14 +12,12 @@ import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.internal.matchers.Any;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,7 +43,7 @@ class LineServiceMockTest {
         LineService lineService = new LineService(lineRepository, stationService, sectionService);
 
         // when
-        lineService.addSection(1L, new SectionRequest(1L,2L,3));
+        lineService.addSection(1L, new SectionRequest(1L, 2L, 3));
 
         // then
         LineResponse lineResponse = lineService.findById(1L);

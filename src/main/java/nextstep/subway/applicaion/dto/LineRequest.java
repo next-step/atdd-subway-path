@@ -46,4 +46,4 @@ public class LineRequest {
     public boolean isColorValid() {
         return this.color != null;
     }
- }
+}

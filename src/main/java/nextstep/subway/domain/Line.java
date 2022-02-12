@@ -62,12 +62,12 @@ public class Line extends BaseEntity {
 
     public void deleteSection(Long stationId) {
         validateDeletion(stationId);
-        int lastSectionIdx = this.sections.size()-1;
+        int lastSectionIdx = this.sections.size() - 1;
         this.sections.remove(lastSectionIdx);
     }
 
     private void validateDeletion(Long stationId) {
-       if(!isLastSection(stationId)) {
+        if (!isLastSection(stationId)) {
             throw new IllegalArgumentException("마지막 구간만 삭제할 수 있습니다. stationId를 확인해주세요.");
         }
     }

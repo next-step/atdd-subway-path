@@ -72,6 +72,6 @@ class LineTest {
 
         // then
         List<Section> 삭제후_구간_목록 = line.getSections();
-        assertThat(삭제후_구간_목록.get(삭제후_구간_목록.size()-1)).isEqualTo(첫번째_구간);
+        assertThat(삭제후_구간_목록.get(삭제후_구간_목록.size() - 1)).isEqualTo(첫번째_구간);
     }
 }

@@ -1,11 +1,11 @@
 package nextstep.subway.applicaion.dto;
 
 public class SectionRequest {
-    private Long upStationId;
-    private Long downStationId;
-    private int distance;
+    private final Long upStationId;
+    private final Long downStationId;
+    private final int distance;
 
-    public SectionRequest (Long upStationId, Long downStationId, int distance){
+    public SectionRequest(Long upStationId, Long downStationId, int distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
