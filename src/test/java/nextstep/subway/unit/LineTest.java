@@ -21,7 +21,7 @@ class LineTest {
         판교역 = new Station("판교역");
         신분당선 = new Line("신분당선", "green");
 
-        Section section = new Section(신분당선, 강남역, 판교역, 10);
+        Section section = new Section(강남역, 판교역, 10);
         신분당선.addSection(section);
     }
 

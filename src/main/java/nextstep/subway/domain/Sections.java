@@ -10,7 +10,7 @@ import nextstep.subway.exception.AlreadyRegisterStationException;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST,
+    @OneToMany(cascade = {CascadeType.PERSIST,
             CascadeType.MERGE}, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
@@ -71,37 +71,6 @@ public class Sections {
     }
 
     private boolean insertSectionBetweenSections(Section registerSection) {
-        for (Section section : sections) {
-            int index = sections.indexOf(section);
-
-            if (section.getUpStation().equals(registerSection.getUpStation())) {
-                validateDistance(section, registerSection);
-
-                sections.remove(section);
-
-                sections.add(index, registerSection);
-                sections.add(index + 1
-                        , new Section(section.getLine(), registerSection.getDownStation(),
-                                section.getDownStation(),
-                                section.getDistance() - registerSection.getDistance()));
-
-                return true;
-            }
-
-            if (section.getDownStation().equals(registerSection.getDownStation())) {
-                validateDistance(section, registerSection);
-
-                sections.remove(section);
-
-                sections.add(index
-                        , new Section(section.getLine(), section.getUpStation(),
-                                registerSection.getUpStation(),
-                                section.getDistance() - registerSection.getDistance()));
-                sections.add(index + 1, registerSection);
-
-                return true;
-            }
-        }
 
         return false;
     }

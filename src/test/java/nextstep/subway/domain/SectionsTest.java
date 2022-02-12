@@ -14,7 +14,7 @@ class SectionsTest {
     Station down = new Station("양재역");
     int distance = 10;
 
-    Section section = new Section(line, up, down, distance);
+    Section section = new Section(up, down, distance);
 
     @BeforeEach
     void setUp() {
@@ -25,7 +25,7 @@ class SectionsTest {
     @Test
     void addSection() {
         Station newDown = new Station("판교");
-        Section section = new Section(line, up, newDown, 5);
+        Section section = new Section(up, newDown, 5);
         sections.addSection(section);
 
         List<Station> stations = sections.getStations();
