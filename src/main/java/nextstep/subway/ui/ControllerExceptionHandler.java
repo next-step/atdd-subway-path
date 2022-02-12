@@ -1,6 +1,7 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.exception.AlreadyRegisterStationException;
+import nextstep.subway.exception.CannotRegisterSectionException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -20,6 +21,11 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Void> handleIllegalArgumentException() {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(CannotRegisterSectionException.class)
+    public ResponseEntity<Void> handleCannotRegisterSectionException() {
         return ResponseEntity.badRequest().build();
     }
 }

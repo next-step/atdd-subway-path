@@ -8,6 +8,7 @@ import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class LineTest {
 
@@ -21,8 +22,7 @@ class LineTest {
         판교역 = new Station("판교역");
         신분당선 = new Line("신분당선", "green");
 
-        Section section = new Section(강남역, 판교역, 10);
-        신분당선.addSection(section);
+        신분당선.addSection(강남역, 판교역, 10);
     }
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
@@ -36,4 +36,5 @@ class LineTest {
     void getStations() {
         assertThat(신분당선.getStations()).containsExactly(강남역, 판교역);
     }
+
 }

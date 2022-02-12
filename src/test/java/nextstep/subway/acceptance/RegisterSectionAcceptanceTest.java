@@ -33,13 +33,13 @@ public class RegisterSectionAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
-        강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
-        양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
-        판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
+        this.강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
+        this.양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+        this.판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
 
         CreateLineRequest createLineRequest = new CreateLineRequest("신분당선", "red", 강남역, 양재역, 10);
 
-        신분당선 = 지하철_노선_생성_요청(createLineRequest).jsonPath().getLong("id");
+        this.신분당선 = 지하철_노선_생성_요청(createLineRequest).jsonPath().getLong("id");
     }
 
     @Test
@@ -99,7 +99,7 @@ public class RegisterSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
     void 등록_예외_상행역_하행역_하나도_안포함된_경우() {
         Long 교대역 = 지하철역_생성_요청("교대역").jsonPath().getLong("id");
-        Long 잠실역 = 지하철역_생성_요청("잠심역").jsonPath().getLong("id");
+        Long 잠실역 = 지하철역_생성_요청("잠실역").jsonPath().getLong("id");
         SectionRequest params = new SectionRequest(교대역, 잠실역, 5);
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, params);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

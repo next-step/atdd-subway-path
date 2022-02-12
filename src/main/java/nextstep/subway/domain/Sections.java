@@ -6,6 +6,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import nextstep.subway.exception.AlreadyRegisterStationException;
+import nextstep.subway.exception.CannotRegisterSectionException;
 
 @Embeddable
 public class Sections {
@@ -14,109 +15,131 @@ public class Sections {
             CascadeType.MERGE}, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
-    public void addSection(Section section) {
+    public Sections() {
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
         if (sections.isEmpty()) {
-            sections.add(section);
+            sections.add(new Section(upStation, downStation, distance));
+            return;
+        }
+        validationRegisteredStations(upStation, downStation);
+
+        if (registerSectionIsFirst(downStation)) {
+            sections.add(0, new Section(upStation, downStation, distance));
             return;
         }
 
-        validateRegisterStation(section.getUpStation(), section.getDownStation());
-
-        if (insertSectionIsUpStation(section)) {
+        if (registerSectionIsLast(upStation)) {
+            sections.add(sections.size() - 1, new Section(upStation, downStation, distance));
             return;
         }
 
-        if (insertSectionIsDownStation(section)) {
+        addSectionAtMiddle(upStation, downStation, distance);
+    }
+
+    private void addSectionAtMiddle(Station upStation, Station downStation, int distance) {
+        if (isNewStation(upStation)) {
+            Section section = findSectionIncludeDownStation(downStation);
+            validateDistance(section.getDistance(), distance);
+            sections.remove(section);
+            sections.add(new Section(section.getUpStation(), upStation, section.getDistance() - distance));
+            sections.add(new Section(upStation, downStation, distance));
             return;
         }
 
-        if (insertSectionBetweenSections(section)) {
+        if (isNewStation(downStation)) {
+            Section section = findSectionIncludeUpStation(upStation);
+            validateDistance(section.getDistance(), distance);
+            sections.remove(section);
+            sections.add(new Section(upStation, downStation, distance));
+            sections.add(new Section(downStation, section.getDownStation(), section.getDistance() - distance));
             return;
         }
-
-        throw new IllegalArgumentException("section 을 넣을 수 없습니다.");
+        throw new CannotRegisterSectionException();
     }
 
-    private void validateRegisterStation(Station upStation, Station downStation) {
-        boolean containUpStation = false;
-        boolean containDownStation = false;
-
-        for (Section section : sections) {
-            if (section.getUpStation().equals(upStation) || section.getDownStation().equals(upStation)) {
-                containUpStation = true;
-            }
-            if (section.getUpStation().equals(downStation) || section.getDownStation().equals(downStation)) {
-                containDownStation = true;
-            }
-        }
-        if (containUpStation && containDownStation) {
-            throw new AlreadyRegisterStationException();
+    private void validateDistance(int distance, int registerDistance) {
+        if (distance <= registerDistance) {
+            throw new CannotRegisterSectionException();
         }
     }
 
-    private boolean insertSectionIsUpStation(Section section) {
-        if (sections.get(0).getUpStation().equals(section.getDownStation())) {
-            sections.add(0, section);
-            return true;
-        }
-        return false;
+    private Section findSectionIncludeUpStation(Station upStation) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(upStation))
+                .findFirst()
+                .orElseThrow(CannotRegisterSectionException::new);
     }
 
-    private boolean insertSectionIsDownStation(Section section) {
-        if (sections.get(sections.size() - 1).getDownStation().equals(section.getUpStation())) {
-            sections.add(sections.size() - 1, section);
-            return true;
-        }
-        return false;
+    private Section findSectionIncludeDownStation(Station downStation) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(downStation))
+                .findFirst()
+                .orElseThrow(CannotRegisterSectionException::new);
     }
 
-    private boolean insertSectionBetweenSections(Section registerSection) {
-
-        return false;
+    private boolean isNewStation(Station station) {
+        return sections.stream()
+                .noneMatch(section -> section.containStation(station));
     }
 
-    private void validateDistance(Section section, Section registerSection) {
-        if (registerSection.getDistance() > section.getDistance()) {
-            throw new IllegalArgumentException("등록하려는 구간의 distance 가 등록된 구간 보다 깁니다.");
+    private boolean registerSectionIsLast(Station upStation) {
+        Section lastSection = lastSection();
+        return lastSection.getDownStation().equals(upStation);
+    }
+
+    private Section lastSection() {
+        return sections.stream()
+                .filter(section -> sections.stream()
+                        .noneMatch(otherSection -> otherSection.getUpStation().equals(section.getDownStation())))
+                .findFirst()
+                .orElseThrow(CannotRegisterSectionException::new);
+    }
+
+    private boolean registerSectionIsFirst(Station downStation) {
+        Section firstSection = firstSection();
+        return firstSection.getUpStation().equals(downStation);
+    }
+
+    private Section firstSection() {
+        return sections.stream()
+                .filter(section -> sections.stream()
+                        .noneMatch(otherSection -> section.getUpStation().equals(otherSection.getDownStation())))
+                .findFirst()
+                .orElseThrow(CannotRegisterSectionException::new);
+    }
+
+    private void validationRegisteredStations(Station upStation, Station downStation) {
+        if (getStations().contains(upStation) && getStations().contains(downStation)) {
+            throw new CannotRegisterSectionException();
         }
     }
 
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
 
-        Section firstSection = firstSection();
-        stations.add(firstSection.getUpStation());
+        Section currentSection = firstSection();
+        stations.add(currentSection.getUpStation());
 
-        Station downStation = firstSection.getDownStation();
-
-        while (sections.size() == stations.size() + 1) {
-            Section nextSection = nextSection(downStation);
-            Station upStation = nextSection.getUpStation();
-            downStation = nextSection.getDownStation();
-            stations.add(upStation);
+        while (hasNext(currentSection)) {
+            currentSection = nextSection(currentSection);
+            stations.add(currentSection.getUpStation());
         }
-
-        stations.add(downStation);
-
+        stations.add(currentSection.getDownStation());
         return stations;
     }
 
-    /**
-     * 상행역이 상행종점역인 구간 찾기
-     */
-    private Section firstSection() {
+    private Section nextSection(Section currentSection) {
         return sections.stream()
-                .filter(section -> sections.stream()
-                        .noneMatch(otherSection -> otherSection.getDownStation()
-                                .equals(section.getUpStation())))
-                .findFirst().orElseThrow(RuntimeException::new);
-    }
-
-    private Section nextSection(Station downStation) {
-        return sections.stream()
-                .filter(section -> section.getUpStation().equals(downStation))
+                .filter(section -> section.getUpStation().equals(currentSection.getDownStation()))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
+    }
+
+    private boolean hasNext(Section currentSection) {
+        return sections.stream()
+                .anyMatch(section -> section.getUpStation().equals(currentSection.getDownStation()));
     }
 
     public void removeSection() {
