@@ -131,24 +131,24 @@ public class Sections {
 
 	public void deleteSection(Station station) {
 
-		Section relatedUpStationSection = getRelatedUpStationSection(station).orElse(null);
-		Section relatedDownStationSection = getRelatedDownStationSection(station).orElse(null);
+		Optional<Section> relatedUpStationSection = getRelatedUpStationSection(station);
+		Optional<Section> relatedDownStationSection = getRelatedDownStationSection(station);
 
-		if (relatedUpStationSection == null && relatedDownStationSection == null) {
+		if (!relatedUpStationSection.isPresent() && !relatedDownStationSection.isPresent()) {
 			throw new NotExistSectionException(station.getName());
 		}
 
-		if (relatedUpStationSection != null && relatedDownStationSection != null) {
-			mergeSection(relatedUpStationSection, relatedDownStationSection);
+		if (relatedUpStationSection.isPresent() && relatedDownStationSection.isPresent()) {
+			mergeSection(relatedUpStationSection.get(), relatedDownStationSection.get());
 			return;
 		}
 
-		if (relatedDownStationSection != null) {
-			exceptSection(relatedDownStationSection);
+		if (relatedDownStationSection.isPresent()) {
+			exceptSection(relatedDownStationSection.get());
 			return;
 		}
 
-		exceptSection(relatedUpStationSection);
+		exceptSection(relatedUpStationSection.get());
 	}
 
 	private void mergeSection(Section relatedUpStationSection, Section relatedDownStationSection) {
