@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.applicaion.dto.CreateLineRequest;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,9 +37,9 @@ public class RegisterSectionAcceptanceTest extends AcceptanceTest {
         양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
         판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
 
-        LineRequest lineRequest = new LineRequest("신분당선", "red", 강남역, 양재역, 10);
+        CreateLineRequest createLineRequest = new CreateLineRequest("신분당선", "red", 강남역, 양재역, 10);
 
-        신분당선 = 지하철_노선_생성_요청(lineRequest).jsonPath().getLong("id");
+        신분당선 = 지하철_노선_생성_요청(createLineRequest).jsonPath().getLong("id");
     }
 
     @Test

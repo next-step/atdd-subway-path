@@ -3,6 +3,8 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.applicaion.dto.CreateLineRequest;
+import nextstep.subway.applicaion.dto.UpdateLineRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
+import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관리 기능")
@@ -24,7 +27,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green");
+        Long a역_id = 지하철역_생성_요청("A역").jsonPath().getLong("id");
+        Long b역_id = 지하철역_생성_요청("B역").jsonPath().getLong("id");
+
+        CreateLineRequest request = new CreateLineRequest("2호선", "green", a역_id, b역_id, 5);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(request);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -40,8 +47,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철_노선_생성_요청("2호선", "green");
-        지하철_노선_생성_요청("3호선", "orange");
+        Long a역_id = 지하철역_생성_요청("A역").jsonPath().getLong("id");
+        Long b역_id = 지하철역_생성_요청("B역").jsonPath().getLong("id");
+
+        CreateLineRequest 이호선 = new CreateLineRequest("2호선", "green", a역_id, b역_id, 5);
+        CreateLineRequest 삼호선 = new CreateLineRequest("3호선", "orange", a역_id, b역_id, 5);
+
+        지하철_노선_생성_요청(이호선);
+        지하철_노선_생성_요청(삼호선);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -60,7 +73,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        Long a역_id = 지하철역_생성_요청("A역").jsonPath().getLong("id");
+        Long b역_id = 지하철역_생성_요청("B역").jsonPath().getLong("id");
+
+        CreateLineRequest request = new CreateLineRequest("2호선", "green", a역_id, b역_id, 5);
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(request);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
@@ -79,11 +96,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        Long a역_id = 지하철역_생성_요청("A역").jsonPath().getLong("id");
+        Long b역_id = 지하철역_생성_요청("B역").jsonPath().getLong("id");
+
+        CreateLineRequest request = new CreateLineRequest("2호선", "green", a역_id, b역_id, 5);
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(request);
 
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "red");
+        UpdateLineRequest params = new UpdateLineRequest("새로운 호선", "새로운 색");
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
                 .body(params)
@@ -104,7 +124,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        Long a역_id = 지하철역_생성_요청("A역").jsonPath().getLong("id");
+        Long b역_id = 지하철역_생성_요청("B역").jsonPath().getLong("id");
+
+        CreateLineRequest request = new CreateLineRequest("2호선", "green", a역_id, b역_id, 5);
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(request);
 
         // when
         ExtractableResponse<Response> response = RestAssured
@@ -125,10 +149,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void duplicateName() {
         // given
-        지하철_노선_생성_요청("2호선", "green");
+        Long a역_id = 지하철역_생성_요청("A역").jsonPath().getLong("id");
+        Long b역_id = 지하철역_생성_요청("B역").jsonPath().getLong("id");
+
+        CreateLineRequest request = new CreateLineRequest("2호선", "green", a역_id, b역_id, 5);
+        지하철_노선_생성_요청(request);
 
         // when
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(request);
 
         // then
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

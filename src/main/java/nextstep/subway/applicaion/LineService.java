@@ -3,10 +3,11 @@ package nextstep.subway.applicaion;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.applicaion.dto.CreateLineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.applicaion.dto.UpdateLineRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
@@ -26,15 +27,13 @@ public class LineService {
         this.stationService = stationService;
     }
 
-    public LineResponse saveLine(LineRequest request) {
+    public LineResponse saveLine(CreateLineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-        if (request.getUpStationId() != null && request.getDownStationId() != null
-                && request.getDistance() != 0) {
-            Station upStation = stationService.findById(request.getUpStationId());
-            Station downStation = stationService.findById(request.getDownStationId());
 
-            line.addSection(new Section(line, upStation, downStation, request.getDistance()));
-        }
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+
+        line.addSection(new Section(line, upStation, downStation, request.getDistance()));
         return createLineResponse(line);
     }
 
@@ -52,15 +51,9 @@ public class LineService {
         return createLineResponse(line);
     }
 
-    public void updateLine(Long id, LineRequest lineRequest) {
+    public void updateLine(Long id, UpdateLineRequest updateLineRequest) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-
-        if (lineRequest.getName() != null) {
-            line.setName(lineRequest.getName());
-        }
-        if (lineRequest.getColor() != null) {
-            line.setColor(lineRequest.getColor());
-        }
+        line.update(updateLineRequest.getName(), updateLineRequest.getColor());
     }
 
     public void deleteLine(Long id) {
