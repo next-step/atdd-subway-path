@@ -29,20 +29,24 @@ public class Distance {
         return new Distance(value);
     }
 
-    public boolean canNotDivideDistance(int value) {
-        return this.value <= value || value <= 0;
+    public void reduceDistance(Distance target) {
+        validateDivideDistance(target);
+
+        this.value -= target.getValue();
     }
 
-    public void validateDivideDistance(Distance distance) {
+    private void validateDivideDistance(Distance distance) {
         if (canNotDivideDistance(distance.getValue())) {
             throw new IllegalArgumentException("거리는 추가할 구간 사이의 거리보다 크거나 0 이하로 설정할 수 없습니다.");
         }
     }
 
-    public void reduceDistance(Distance target) {
-        validateDivideDistance(target);
+    private boolean canNotDivideDistance(int value) {
+        return this.value <= value || value <= 0;
+    }
 
-        this.value -= target.getValue();
+    public void addDistance(Distance distance) {
+        value += distance.getValue();
     }
 
     @Override

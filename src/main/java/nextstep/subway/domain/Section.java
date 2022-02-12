@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Section implements Comparable<Section> {
@@ -34,12 +35,16 @@ public class Section implements Comparable<Section> {
         this.distance = distance;
     }
 
-    public static Section of(Line line, Station upStation, Station downStation, int distance) {
-        return new Section(line, upStation, downStation, Distance.from(distance));
+    public static Section of(Line line, Station upStation, Station downStation, Distance distance) {
+        return new Section(line, upStation, downStation, distance);
     }
 
     public Long getId() {
         return id;
+    }
+
+    public Line getLine() {
+        return line;
     }
 
     public Station getUpStation() {
@@ -52,6 +57,26 @@ public class Section implements Comparable<Section> {
 
     public Distance getDistance() {
         return distance;
+    }
+
+    public List<Station> getStations() {
+        return List.of(upStation, downStation);
+    }
+
+    public void upStationUpdate(Station station) {
+        this.upStation = station;
+    }
+
+    public void downStationUpdate(Station station) {
+        this.downStation = station;
+    }
+
+    public void divideDistance(Distance distance) {
+        this.distance.reduceDistance(distance);
+    }
+
+    public void addDistance(Distance distance) {
+        this.distance.addDistance(distance);
     }
 
     @Override
@@ -67,17 +92,23 @@ public class Section implements Comparable<Section> {
         return 0;
     }
 
-    public List<Station> getStations() {
-        return List.of(upStation, downStation);
+    @Override
+    public boolean equals(Object target) {
+        if (this == target) {
+            return true;
+        }
+
+        if (target == null || !(target instanceof Section)) {
+            return false;
+        }
+
+        Section section = (Section) target;
+
+        return id.equals(section.id);
     }
 
-    public void upStationUpdate(Station downStation, Distance divideDistance) {
-        distance.reduceDistance(divideDistance);
-        this.upStation = downStation;
-    }
-
-    public void downStationUpdate(Station upStation, Distance divideDistance) {
-        distance.reduceDistance(divideDistance);
-        this.downStation = upStation;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

@@ -2,10 +2,7 @@ package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,7 +35,7 @@ public class LineServiceTest {
         final Station 강남역 = stationRepository.save(Station.of("강남역"));
         final Station 역삼역 = stationRepository.save(Station.of("역삼역"));
         final Station 합정역 = stationRepository.save(Station.of("합정역"));
-        final Line 이호선 = lineRepository.save(Line.of("이호선", "green", 강남역, 역삼역, 100));
+        final Line 이호선 = lineRepository.save(Line.of("이호선", "green", 강남역, 역삼역, Distance.from(100)));
 
         SectionRequest sectionRequest = new SectionRequest();
         ReflectionTestUtils.setField(sectionRequest, "upStationId", 역삼역.getId());

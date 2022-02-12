@@ -5,6 +5,7 @@ import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.exception.DuplicateException;
 import nextstep.subway.applicaion.exception.NotExistLineException;
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -31,7 +32,9 @@ public class LineService {
         Station upStation = stationService.findById(request.getUpStationId());
         Station downStation = stationService.findById(request.getDownStationId());
 
-        Line line = lineRepository.save(Line.of(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
+        Distance distance = Distance.from(request.getDistance());
+
+        Line line = lineRepository.save(Line.of(request.getName(), request.getColor(), upStation, downStation, distance));
 
         return LineResponse.from(line);
     }
@@ -81,7 +84,9 @@ public class LineService {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
 
-        line.addSection(upStation, downStation, sectionRequest.getDistance());
+        Distance distance = Distance.from(sectionRequest.getDistance());
+
+        line.addSection(upStation, downStation, distance);
 
         return LineResponse.from(line);
     }

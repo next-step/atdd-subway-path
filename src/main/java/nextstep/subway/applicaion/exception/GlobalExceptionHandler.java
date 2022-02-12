@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler({NotExistLineException.class, NotExistStationException.class})
+    @ExceptionHandler({NotExistLineException.class, NotExistStationException.class, NotExistSectionException.class})
     public ResponseEntity<ErrorResponse> notExistException(Exception e) {
 
         return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);

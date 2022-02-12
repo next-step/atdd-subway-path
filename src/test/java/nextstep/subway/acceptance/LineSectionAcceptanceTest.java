@@ -22,8 +22,9 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     private Long 강남역;
     private Long 양재역;
     private Long 정자역;
-    final private int 거리 = 50;
     private Long 합정역;
+
+    final private int 거리 = 50;
 
     /**
      * Given 지하철역과 노선 생성을 요청 하고
@@ -164,6 +165,115 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 첫번째 역 제거를 요청 하면
+     * Then 노선의 역이 제거된다
+     */
+    @DisplayName("지하철 노선의 첫번째 역을 제거")
+    @Test
+    void removeFirstStation() {
+        // given
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 거리));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(양재역, 정자역);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 중간 역 제거를 요청 하면
+     * Then 노선의 역이 제거된다
+     */
+    @DisplayName("지하철 노선의 중간 역을 제거")
+    @Test
+    void removeMiddleStation() {
+        // given
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 거리));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 마지막 역 제거를 요청 하면
+     * Then 노선의 역이 제거된다
+     */
+    @DisplayName("지하철 노선의 마지막 역을 제거")
+    @Test
+    void removeLastStation() {
+        // given
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 거리));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선에 존재하지 않는 역 제거를 요청 하면
+     * Then 노선의 구간 제거가 실패한다.
+     */
+    @DisplayName("지하철 노선에 존재하지 않는 역 제거 요청")
+    @Test
+    void removeNotExistStation() {
+        // given
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 거리));
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 합정역);
+
+        // then
+        지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 지하철 노선에 구간이 하나만 있을 때 구간 제거를 요청 하면
+     * Then 노선의 구간 제거가 실패한다.
+     */
+    @DisplayName("지하철 노선 구간이 하나만 있을 때 첫번째 구간을 제거")
+    @Test
+    void removeFirstOnlyOneSection() {
+        // when
+        ExtractableResponse<Response> firstStationRemoveResponse = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        // then
+        지하철_노선_조회_요청(신분당선);
+        assertThat(firstStationRemoveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 지하철 노선에 구간이 하나만 있을 때 구간 제거를 요청 하면
+     * Then 노선의 구간 제거가 실패한다.
+     */
+    @DisplayName("지하철 노선 구간이 하나만 있을 때 마지막 구간을 제거")
+    @Test
+    void removeLastOnlyOneSection() {
+        // when
+        ExtractableResponse<Response> firstStationRemoveResponse = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        지하철_노선_조회_요청(신분당선);
+        assertThat(firstStationRemoveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
