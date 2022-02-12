@@ -3,10 +3,8 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.PairedStations;
-import nextstep.subway.domain.Station;
+import nextstep.subway.applicaion.dto.ShortestPathResponse;
+import nextstep.subway.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +16,12 @@ import java.util.stream.Collectors;
 public class LineService {
     private LineRepository lineRepository;
     private StationService stationService;
+    private ShortestPathFinder<Station, Line, Integer> shortestPathFinder;
 
-    public LineService(LineRepository lineRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, StationService stationService, ShortestPathFinder<Station, Line, Integer> shortestPathFinder) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
+        this.shortestPathFinder = shortestPathFinder;
     }
 
     public LineResponse saveLine(LineRequest request) {
@@ -72,5 +72,15 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
         line.deleteSection(station);
+    }
+
+    public ShortestPathResponse findShortestPath(Long sourceStationId, Long targetStationId) {
+        List<Line> lines = lineRepository.findAll();
+        Station sourceStation = stationService.findById(sourceStationId);
+        Station targetStation = stationService.findById(targetStationId);
+
+        ShortestPath<Station, Integer> shortestPath = shortestPathFinder.findShortestPath(sourceStation, targetStation, lines);
+
+        return ShortestPathResponse.from(shortestPath);
     }
 }

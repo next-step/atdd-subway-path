@@ -4,10 +4,9 @@ import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.ShortestPathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
 import nextstep.subway.utils.EntityFixtures;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,11 +19,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class LineServiceMockTest {
+public class LineServiceMockTest extends ShortestPathTestableLinesFixture {
     @Mock
     private LineRepository lineRepository;
     @Mock
     private StationService stationService;
+    private ShortestPathFinder<Station, Line, Integer> shortestPathFinder = new LinesJGraphShortestPathFinder();
 
     private final static Long 노선ID = 1L;
     private final static Long 상행종점역ID = 1L;
@@ -42,7 +42,7 @@ public class LineServiceMockTest {
         when(stationService.findById(하행종점역ID)).thenReturn(하행종점역);
         when(lineRepository.findById(노선ID)).thenReturn(Optional.of(노선));
 
-        LineService lineService = new LineService(lineRepository, stationService);
+        LineService lineService = new LineService(lineRepository, stationService, shortestPathFinder);
         SectionRequest sectionRequest = new SectionRequest(상행종점역ID, 하행종점역ID, 100);
 
         // when
@@ -56,4 +56,24 @@ public class LineServiceMockTest {
         assertThat(lineResponse.getStations().size()).isEqualTo(2);
         assertThat(lineResponse.getStations().stream().map(StationResponse::getId)).containsExactly(상행종점역ID, 하행종점역ID);
     }
+
+    @Test
+    void findShortestPath() {
+        // given
+        LineService lineService = new LineService(lineRepository, stationService, shortestPathFinder);
+        Station 출발역 = 강남역;
+        Station 도착역 = 양재역;
+        when(stationService.findById(출발역.getId())).thenReturn(출발역);
+        when(stationService.findById(도착역.getId())).thenReturn(도착역);
+        when(lineRepository.findAll()).thenReturn(lines);
+
+        // when
+        ShortestPathResponse shortestPathResponse = lineService.findShortestPath(출발역.getId(), 도착역.getId());
+
+        // then
+        assertThat(shortestPathResponse.getStations().stream().map(StationResponse::getId)).containsExactly(2L, 3L, 6L, 5L);
+        assertThat(shortestPathResponse.getDistance()).isEqualTo(1100);
+    }
+
+
 }

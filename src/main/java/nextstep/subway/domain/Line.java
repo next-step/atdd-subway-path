@@ -42,6 +42,10 @@ public class Line extends BaseEntity {
         return sections.flatStations();
     }
 
+    public List<Section> getSections() {
+        return sections.getSections();
+    }
+
     public Long getId() {
         return id;
     }
