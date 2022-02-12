@@ -59,16 +59,16 @@ class LineTest {
     void removeSection() {
         // given
         Line line = new Line("2호선", "green");
-        Station 강남역 = new Station("강남역");
-        Station 역삼역 = new Station("역삼역");
-        Station 홍대역 = new Station("홍대역");
-        Section 첫번째_구간 = new Section(null, 강남역, 역삼역, 3);
-        Section 두번째_구간 = new Section(null, 역삼역, 홍대역, 5);
+        Station 강남역 = new Station(1L, "강남역");
+        Station 역삼역 = new Station(2L, "역삼역");
+        Station 홍대역 = new Station(3L, "홍대역");
+        Section 첫번째_구간 = new Section(1L, line, 강남역, 역삼역, 3);
+        Section 두번째_구간 = new Section(2L, line, 역삼역, 홍대역, 5);
         line.addSection(첫번째_구간);
         line.addSection(두번째_구간);
 
         // when
-        line.deleteSection();
+        line.deleteSection(3L);
 
         // then
         List<Section> 삭제후_구간_목록 = line.getSections();

@@ -26,4 +26,24 @@ public class LineRequest {
     public int getDistance() {
         return distance;
     }
-}
+
+    public boolean isSaveLineRequestValid() {
+        if (upStationId == null) {
+            return false;
+        }
+
+        if (downStationId == null) {
+            return false;
+        }
+
+        return distance != 0;
+    }
+
+    public boolean isNameValid() {
+        return this.name != null;
+    }
+
+    public boolean isColorValid() {
+        return this.color != null;
+    }
+ }

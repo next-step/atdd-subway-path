@@ -2,7 +2,9 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -49,15 +51,32 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.stream()
+                .sorted(Comparator.comparing(Section::getId))
+                .collect(Collectors.toList());
     }
 
     public void addSection(Section section) {
         this.sections.add(section);
     }
 
-    public void deleteSection() {
+    public void deleteSection(Long stationId) {
+        validateDeletion(stationId);
         int lastSectionIdx = this.sections.size()-1;
         this.sections.remove(lastSectionIdx);
+    }
+
+    private void validateDeletion(Long stationId) {
+       if(!isLastSection(stationId)) {
+            throw new IllegalArgumentException("마지막 구간만 삭제할 수 있습니다. stationId를 확인해주세요.");
+        }
+    }
+
+    private boolean isLastSection(Long stationId) {
+        return getLastSection().getDownStation().hasSameId(stationId);
+    }
+
+    private Section getLastSection() {
+        return getSections().get(sections.size() - 1);
     }
 }
