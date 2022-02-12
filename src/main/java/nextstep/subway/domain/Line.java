@@ -51,4 +51,13 @@ public class Line extends BaseEntity {
     public List<Section> getSections() {
         return sections;
     }
+
+    public void addSection(Section section) {
+        this.sections.add(section);
+    }
+
+    public void deleteSection() {
+        int lastSectionIdx = this.sections.size()-1;
+        this.sections.remove(lastSectionIdx);
+    }
 }
