@@ -19,6 +19,7 @@ public class PathService {
         this.lineRepository = lineRepository;
     }
 
+    @Transactional(readOnly = true)
     public PathResponse getPath(Long source, Long target) {
         Station sourceStation = stationRepository.findById(source).orElseThrow(IllegalArgumentException::new);
         Station targetStation = stationRepository.findById(target).orElseThrow(IllegalArgumentException::new);
