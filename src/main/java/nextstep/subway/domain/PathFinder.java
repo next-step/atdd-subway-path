@@ -36,6 +36,10 @@ public class PathFinder {
     }
 
     private GraphPath<Station, DefaultWeightedEdge> getDijkstraShortestPath(Station source, Station target) {
+        if (source.equals(target)) {
+            throw new IllegalArgumentException("동일한 출발 역과 도착 역으로는 최단 구간을 구할 수 없습니다.");
+        }
+
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
 
         try {
