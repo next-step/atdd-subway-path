@@ -62,4 +62,21 @@ public class Section {
         this.distance = this.distance - minusDistance;
     }
 
+    public Section merge(Section section) {
+        if (!isDownStation(section.upStation)) {
+            throw new IllegalArgumentException("합치려는 구간의 상행역이 하행역과 같아야 합니다.");
+        }
+
+        return Section.of(line, upStation, section.downStation, distance + section.distance);
+    }
+
+
+    public boolean isUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
 }

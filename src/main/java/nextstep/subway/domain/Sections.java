@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -30,16 +31,24 @@ public class Sections {
     }
 
 
-    public void remove(Station lastStation) {
-        if (sections.size() <= SECTION_MIN_SIZE) {
-            throw new IllegalArgumentException("상행 종점역과 하행 종점역만 있는 경우(구간이 1개인 경우) 역을 삭제할 수 없습니다.");
+    public void remove(Station station) {
+        validationRemoveStation(station);
+
+        Optional<Section> firstSection = sections.stream()
+            .filter(s -> s.isDownStation(station))
+            .findAny();
+
+        Optional<Section> secondSection = sections.stream()
+            .filter(s -> s.isUpStation(station))
+            .findAny();
+
+        firstSection.ifPresent(section -> sections.remove(section));
+        secondSection.ifPresent(section -> sections.remove(section));
+
+        if (firstSection.isPresent() && secondSection.isPresent()) {
+            mergeExistingSections(firstSection.get(), secondSection.get());
         }
 
-        if (!getLastSection().getDownStation().equals(lastStation)) {
-            throw new IllegalArgumentException("지하철 노선에 등록된 역(하행 종점역)만 제거할 수 있습니다.");
-        }
-
-        sections.remove(getLastSection());
     }
 
     private List<Station> getStations() {
@@ -127,6 +136,20 @@ public class Sections {
         if (existStationCount == 0) {
             throw new IllegalArgumentException("상행역과 하행역 둘 중 하나는 노선에 포함되어 있어야 합니다.");
         }
+    }
+
+    private void validationRemoveStation(Station station) {
+        if (!getStations().contains(station)) {
+            throw new IllegalArgumentException("노선에 존재하는 역만 삭제할 수 있습니다.");
+        }
+
+        if (sections.size() <= SECTION_MIN_SIZE) {
+            throw new IllegalArgumentException("상행 종점역과 하행 종점역만 있는 경우(구간이 1개인 경우) 역을 삭제할 수 없습니다.");
+        }
+    }
+
+    private void mergeExistingSections(Section firstSection, Section secondSection) {
+        sections.add(firstSection.merge(secondSection));
     }
 
 }
