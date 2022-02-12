@@ -27,6 +27,14 @@ public class PathFinder {
         graph.setEdgeWeight(graph.addEdge(upStation, downStation), distance);
     }
 
+    public List<Station> getShortestPathStations(Station source, Station target) {
+        return getDijkstraShortestPath(source, target).getVertexList();
+    }
+
+    public Double getShortestPathDistance(Station source, Station target) {
+        return getDijkstraShortestPath(source, target).getWeight();
+    }
+
     private GraphPath<Station, DefaultWeightedEdge> getDijkstraShortestPath(Station source, Station target) {
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
 
@@ -37,13 +45,5 @@ public class PathFinder {
                     ? new IllegalArgumentException("연결이 되어 있지 않은 구간 입니다.")
                     : e;
         }
-    }
-
-    public List<Station> getShortestPathStations(Station source, Station target) {
-        return getDijkstraShortestPath(source, target).getVertexList();
-    }
-
-    public Double getShortestPathDistance(Station source, Station target) {
-        return getDijkstraShortestPath(source, target).getWeight();
     }
 }
