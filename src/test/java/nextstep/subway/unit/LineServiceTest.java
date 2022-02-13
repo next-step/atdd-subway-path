@@ -48,6 +48,6 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        assertThat(이호선.getSections().getStations().size()).isEqualTo(3);
+        assertThat(이호선.getStations().size()).isEqualTo(3);
     }
 }

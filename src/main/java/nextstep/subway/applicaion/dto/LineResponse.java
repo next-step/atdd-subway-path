@@ -24,7 +24,7 @@ public class LineResponse {
     }
 
     public static LineResponse from(Line line) {
-        List<StationResponse> stations = line.getSections().getStations().stream()
+        List<StationResponse> stations = line.getStations().stream()
                 .map(StationResponse::from)
                 .collect(Collectors.toList());
 
@@ -55,4 +55,3 @@ public class LineResponse {
         return modifiedDate;
     }
 }
-

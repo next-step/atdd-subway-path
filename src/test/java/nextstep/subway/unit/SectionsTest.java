@@ -37,9 +37,10 @@ public class SectionsTest {
 		ReflectionTestUtils.setField(이호선, "id", 1L);
 
 		이호선.addSection(역삼역, 합정역, Distance.from(100));
-		구간들 = 이호선.getSections();
 
+		구간들 = (Sections) ReflectionTestUtils.getField(이호선, "sections");
 		List<Section> sections = 구간들.getSections();
+
 		IntStream.rangeClosed(1, 2).forEach(index -> {
 			ReflectionTestUtils.setField(sections.get(index - 1), "id", Long.valueOf(index));
 		});
