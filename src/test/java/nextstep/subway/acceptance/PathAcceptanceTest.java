@@ -48,10 +48,6 @@ public class PathAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_지하철_구간_생성_요청(삼호선, createSectionCreateParams(남부터미널역, 양재역, 3));
 	}
 
-	/**
-	 * When 역과 역 사이의 최단 경로를 요청하면
-	 * Then 최단 경로와 거리를 얻는다.
-	 */
 	@DisplayName("최단 경로 조회")
 	@Test
 	public void 최단_경로_조회() {
@@ -64,10 +60,6 @@ public class PathAcceptanceTest extends AcceptanceTest {
 		assertThat(response.jsonPath().getInt("distance")).isEqualTo(5);
 	}
 
-	/**
-	 * When 출발역과 도착역이 같은 경우
-	 * Then 최단 경로 조회가 실패한다.
-	 */
 	@DisplayName("출발역과 도착역이 같은 역 조회")
 	@Test
 	public void 출발역과_도착역이_같은_경우() {
@@ -78,10 +70,6 @@ public class PathAcceptanceTest extends AcceptanceTest {
 		요청_응답_확인(response, HttpStatus.BAD_REQUEST);
 	}
 
-	/**
-	 * When 연결되어 있지 않은 출발역과 도착역으로 지하철 경로를 조회하면
-	 * Then 최단 경로 조회가 실패한다.
-	 */
 	@DisplayName("연결되어 있지 않은 역을 조회")
 	@Test
 	public void 연결되어_있지_않은_지하철_경로_조회() {
@@ -93,10 +81,6 @@ public class PathAcceptanceTest extends AcceptanceTest {
 		요청_응답_확인(response, HttpStatus.BAD_REQUEST);
 	}
 
-	/**
-	 * When 존재하지 않는 역으로 지하철 경로를 조회하면
-	 * Then 최단 경로 조회가 실패한다.
-	 */
 	@DisplayName("존재하지 않는 역을 조회")
 	@Test
 	public void 존재하지_않는_역의_지하철_경로_조회() {
