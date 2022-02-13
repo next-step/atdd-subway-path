@@ -21,16 +21,20 @@ public class Sections {
         this.sections = sections;
     }
 
-    public void addSection(Section section) {
-        final Optional<Section> sectionFromDownStation = this.getSectionFromDownStation(section.getDownStation());
+    public void addSection(Section sectionToAdd) {
+        final Optional<Section> sectionFromDownStation = this.getSectionFromDownStation(sectionToAdd.getDownStation());
         if (sectionFromDownStation.isPresent()) {
-            if (sectionFromDownStation.get().getDistance() < section.getDistance()) {
-                throw new IllegalArgumentException("노선 길이가 부족합니다");
-            }
-             sectionFromDownStation.get().updateDownStation(section.getUpStation());
+            validateDistance(sectionToAdd, sectionFromDownStation);
+            sectionFromDownStation.get().updateDownStation(sectionToAdd.getUpStation());
         }
 
-        this.sections.add(section);
+        this.sections.add(sectionToAdd);
+    }
+
+    private void validateDistance(Section section, Optional<Section> sectionFromDownStation) {
+        if (sectionFromDownStation.get().getDistance() < section.getDistance()) {
+            throw new IllegalArgumentException("노선 길이가 부족합니다");
+        }
     }
 
     public List<Station> getAllStations() {
