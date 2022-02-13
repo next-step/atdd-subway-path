@@ -111,7 +111,6 @@ class LineTest {
         assertThat(line.sections().isFirstStationFrom(firstSection)).isTrue();
     }
 
-    // todo 중간 추가
     @DisplayName("노선 생성 후, 하행종점 역 기준으로 하행역 구간 추가(종점 추가)")
     @Test
     void addSection4() {
