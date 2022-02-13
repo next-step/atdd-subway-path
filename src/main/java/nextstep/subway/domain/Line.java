@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import lombok.Builder;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -7,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Entity
+@Builder
 public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,16 +41,8 @@ public class Line extends BaseEntity {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 
     public List<Section> getSections() {
@@ -78,5 +73,22 @@ public class Line extends BaseEntity {
 
     private Section getLastSection() {
         return getSections().get(sections.size() - 1);
+    }
+
+    public void update(Line line) {
+        if (isNameValid()) {
+            name = line.getName();
+        }
+        if (isColorValid()) {
+            color = line.getColor();
+        }
+    }
+
+    private boolean isNameValid() {
+        return this.name != null;
+    }
+
+    private boolean isColorValid() {
+        return this.color != null;
     }
 }
