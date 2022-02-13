@@ -99,21 +99,12 @@ public class Sections {
 
     public boolean isFirstStationFrom(Section section) {
         final Station upStation = section.getUpStation();
-
-        if (getAllUpStations().contains(upStation) && !getAllDownStations().contains(upStation)) {
-            return true;
-        }
-        return false;
-
+        return getAllUpStations().contains(upStation) && !getAllDownStations().contains(upStation);
     }
 
     public boolean isLastStationFrom(Section section) {
         final Station downStation = section.getDownStation();
-
-        if (!getAllUpStations().contains(downStation) && getAllDownStations().contains(downStation)) {
-            return true;
-        }
-        return false;
+        return !getAllUpStations().contains(downStation) && getAllDownStations().contains(downStation);
     }
 
 
