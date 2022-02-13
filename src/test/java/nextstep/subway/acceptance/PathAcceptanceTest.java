@@ -2,6 +2,7 @@ package nextstep.subway.acceptance;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import static nextstep.subway.acceptance.LineSteps.*;
@@ -51,13 +52,15 @@ public class PathAcceptanceTest extends AcceptanceTest {
 	 * When 역과 역 사이의 최단 경로를 요청하면
 	 * Then 최단 경로와 거리를 얻는다.
 	 */
+	@DisplayName("최단 경로 조회")
+	@Test
 	public void 최단_경로_조회() {
 		// when
-		ExtractableResponse<Response> response = 지하철_최단_경로_조회(교대역, 강남역);
+		ExtractableResponse<Response> response = 지하철_최단_경로_조회(교대역, 양재역);
 
 		// then
 		요청_응답_확인(response, HttpStatus.OK);
-		assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(교대역, 강남역, 양재역);
+		assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(교대역, 남부터미널역, 양재역);
 		assertThat(response.jsonPath().getInt("distance")).isEqualTo(5);
 	}
 
@@ -65,6 +68,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
 	 * When 출발역과 도착역이 같은 경우
 	 * Then 최단 경로 조회가 실패한다.
 	 */
+	@DisplayName("출발역과 도착역이 같은 역 조회")
+	@Test
 	public void 출발역과_도착역이_같은_경우() {
 		// when
 		ExtractableResponse<Response> response = 지하철_최단_경로_조회(교대역, 교대역);
@@ -77,6 +82,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
 	 * When 연결되어 있지 않은 출발역과 도착역으로 지하철 경로를 조회하면
 	 * Then 최단 경로 조회가 실패한다.
 	 */
+	@DisplayName("연결되어 있지 않은 역을 조회")
+	@Test
 	public void 연결되어_있지_않은_지하철_경로_조회() {
 		// when
 		Long 사당역 = 지하철역_생성_요청("사당역").jsonPath().getLong("id");
@@ -90,6 +97,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
 	 * When 존재하지 않는 역으로 지하철 경로를 조회하면
 	 * Then 최단 경로 조회가 실패한다.
 	 */
+	@DisplayName("존재하지 않는 역을 조회")
+	@Test
 	public void 존재하지_않는_역의_지하철_경로_조회() {
 		// when
 		Long 존재하지_하지_않는_역 = 4885L;

@@ -89,7 +89,7 @@ public class LineSteps {
             .queryParams(params)
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/path")
+            .when().get("/paths")
             .then().log().all().extract();
     }
 }
