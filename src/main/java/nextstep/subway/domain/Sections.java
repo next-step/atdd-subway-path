@@ -140,7 +140,7 @@ public class Sections {
         result.add(sections.stream()
                 .filter(section -> section.getUpStation().getId().equals(startStationId))
                 .findFirst()
-                .get());
+                .orElseThrow(()->new EntityNotFoundException()));
         while (result.size() != sections.size()) {
             findNextUpStationId(id, result);
         }
