@@ -67,7 +67,10 @@ class LineTest {
     }
 
     private Line 노선_생성() {
-        return new Line("2호선", "green");
+        return Line.builder()
+                .name("2호선")
+                .color("green")
+                .build();
     }
 
     private void 역목록_초기화() {
@@ -77,13 +80,25 @@ class LineTest {
     }
 
     private Section 기존_구간_추가() {
-        Section section = new Section(1L, line, 강남역, 역삼역, 5);
+        Section section = Section.builder()
+                .id(1L)
+                .line(line)
+                .upStation(강남역)
+                .downStation(역삼역)
+                .distance(5)
+                .build();
         line.addSection(section);
         return section;
     }
 
     private Section 새로운_구간_추가() {
-        Section section = new Section(2L, line, 역삼역, 홍대역, 3);
+        Section section = Section.builder()
+                .id(2L)
+                .line(line)
+                .upStation(역삼역)
+                .downStation(홍대역)
+                .distance(3)
+                .build();
         line.addSection(section);
         return section;
 

@@ -39,7 +39,12 @@ class LineServiceMockTest {
         LineService lineService = new LineService(lineRepository, stationService);
 
         // when
-        lineService.addSection(1L, new SectionRequest(1L, 2L, 3));
+        SectionRequest sectionRequest = SectionRequest.builder()
+                .upStationId(1L)
+                .downStationId(2L)
+                .distance(3)
+                .build();
+        lineService.addSection(1L, sectionRequest);
 
         // then
         LineResponse lineResponse = lineService.findById(1L);

@@ -30,11 +30,17 @@ class LineServiceTest {
         Station 강남역 = stationRepository.save(new Station("강남역"));
         Station 역삼역 = stationRepository.save(new Station("역삼역"));
 
-        Line line = lineRepository.save(new Line("이호선", "green"));
+        Line line = lineRepository.save(Line.builder().name("이호선").color("green").build());
 
 
         // when
-        lineService.addSection(1L, new SectionRequest(강남역.getId(), 역삼역.getId(), 3));
+        SectionRequest sectionRequest = SectionRequest.builder()
+                .upStationId(강남역.getId())
+                .downStationId(역삼역.getId())
+                .distance(3)
+                .build();
+
+        lineService.addSection(1L, sectionRequest);
 
         // then
         assertThat(line.getSections()).hasSize(1);

@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.stream.Stream;
 @Entity
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class Line extends BaseEntity {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
@@ -22,14 +24,6 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
-
-    public Line() {
-    }
-
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
 
     public Long getId() {
         return id;
@@ -58,7 +52,12 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        Section section = new Section(this, upStation, downStation, distance);
+        Section section = Section.builder()
+                .line(this)
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(distance)
+                .build();
         this.sections.add(section);
     }
 
