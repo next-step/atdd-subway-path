@@ -21,11 +21,12 @@ public class GraphService {
     public PathResponse getShortestPath(Long source, Long target) {
         List<Line> allLines = lineRepository.findAll();
         Station sourceStation = stationRepository.findById(source).get();
-        Station targetStation = stationRepository.findById(source).get();
+        Station targetStation = stationRepository.findById(target).get();
 
         Graph graph = new Graph(allLines);
 
         List<Station> path = graph.dijkstraShortestPath(sourceStation, targetStation);
+
         int shortestDistance = graph.dijkstraShortestDistance(path);
 
         List<StationResponse> stationResponses = path.stream().map(station ->

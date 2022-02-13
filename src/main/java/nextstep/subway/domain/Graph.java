@@ -68,7 +68,6 @@ public class Graph {
         checkSourceEqualTarget(source, target);
         checkExistSourceAndTarget(source, target, allStations);
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-
         List<Station> path = dijkstraShortestPath.getPath(source, target).getVertexList();
         checkConnectionBetweenSourceAndTarget(path);
 
@@ -116,6 +115,10 @@ public class Graph {
 
     private void checkSourceEqualTarget(Station source, Station target) {
         if (source.equals(target)) {
+            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            System.out.println(source);
+            System.out.println(target);
+            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
             throw new CantGetPathBySameStationException();
         }
     }
