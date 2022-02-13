@@ -64,13 +64,6 @@ public class LineService {
 
     public void deleteSection(Long lineId, Long stationId) {
         Line line = findLineById(lineId);
-        Station station = stationService.findById(stationId);
-
-        // TODO 지우기
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-
         line.deleteSection(stationId);
     }
 }
