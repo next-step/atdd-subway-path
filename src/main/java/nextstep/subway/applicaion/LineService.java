@@ -27,11 +27,9 @@ public class LineService {
 
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-        if (validateStation(request)) {
-            Station upStation = stationService.findById(request.getUpStationId());
-            Station downStation = stationService.findById(request.getDownStationId());
-            line.addSection(upStation, downStation, request.getDistance());
-        }
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+        line.addSection(upStation, downStation, request.getDistance());
         return createLineResponse(line);
     }
 
@@ -50,13 +48,8 @@ public class LineService {
 
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = finaById(id);
-
-        if (lineRequest.getName() != null) {
-            line.setName(lineRequest.getName());
-        }
-        if (lineRequest.getColor() != null) {
-            line.setColor(lineRequest.getColor());
-        }
+        line.setName(lineRequest.getName());
+        line.setColor(lineRequest.getColor());
     }
 
     public void deleteLine(Long id) {
@@ -90,10 +83,6 @@ public class LineService {
         line.sections().deleteSection(station);
     }
 
-
-    private boolean validateStation(LineRequest request) {
-        return request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0;
-    }
 
     private Line finaById(Long id) {
         return lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);

@@ -1,6 +1,5 @@
 package nextstep.subway.unit;
 
-import javassist.NotFoundException;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
