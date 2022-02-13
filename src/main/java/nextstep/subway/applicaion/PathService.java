@@ -37,7 +37,13 @@ public class PathService {
 		Station target = stationRepository.getById(targetId);
 
 		LinePath linePath = new LinePath(lines);
-		return linePath.searchPath(source, target);
+		List<StationResponse> stations = linePath.searchPath(source, target)
+			.stream()
+			.map(StationResponse::from)
+			.collect(Collectors.toList());
+		int distance = linePath.getWeight(source, target);
+
+		return PathResponse.of(stations, distance);
 	}
 }
 
