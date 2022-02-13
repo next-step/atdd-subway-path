@@ -58,11 +58,6 @@ public class Line extends BaseEntity {
         this.sections.add(section);
     }
 
-    public void addSection(Station station, int distance) {
-        Section section = new Section(this, getLastSection().getUpStation(), station, distance);
-        this.sections.add(section);
-    }
-
     public void deleteSection(Long stationId) {
         validateDeletion(stationId);
         int lastSectionIdx = this.sections.size() - 1;
