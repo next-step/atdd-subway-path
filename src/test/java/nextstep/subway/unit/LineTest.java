@@ -177,6 +177,36 @@ class LineTest {
         });
     }
 
+    @DisplayName("첫번째 역 삭제")
+    @Test
+    void deleteSection_firstStation() {
+        //given
+        신분당선.addSection(강남역, 양재역, 10);
+        신분당선.addSection(양재역, 광교역, 5);
+
+        //when
+        신분당선.removeSection(강남역);
+
+        //then
+        assertThat(신분당선.getStations()).hasSize(2);
+        assertThat(신분당선.getStations()).contains(양재역, 광교역);
+    }
+
+    @DisplayName("마지막 역 삭제")
+    @Test
+    void deleteSection_LastStation() {
+        //given
+        신분당선.addSection(강남역, 양재역, 10);
+        신분당선.addSection(양재역, 광교역, 5);
+
+        //when
+        신분당선.removeSection(광교역);
+
+        //then
+        assertThat(신분당선.getStations()).hasSize(2);
+        assertThat(신분당선.getStations()).contains(강남역, 양재역);
+    }
+
     @DisplayName("노선 삭제 실패 - 라인에 요청한 역이 존재하지 않음")
     @Test
     void deleteSectionExceptionNoStation() {

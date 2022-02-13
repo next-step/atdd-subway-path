@@ -98,11 +98,11 @@ public class Sections {
         validRemoveStation(station);
 
         if (station.equalId(firstStation)) {
-            sections.remove(0);
+            this.sections.remove(sections.get(0));
         }
 
         if (station.equalId(lastStation)) {
-            sections.remove(sections.size() - 1);
+            this.sections.remove(sections.size() - 1);
         }
 
         if (!station.equalId(firstStation) && !station.equalId(lastStation)) {
