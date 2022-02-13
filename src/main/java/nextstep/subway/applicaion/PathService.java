@@ -18,6 +18,7 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.util.LinePath;
 
 @Service
 @Transactional
@@ -35,27 +36,8 @@ public class PathService {
 		Station source = stationRepository.getById(sourceId);
 		Station target = stationRepository.getById(targetId);
 
-		WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-
-		lines.stream()
-			.map(Line::getSections)
-			.flatMap(Collection::stream)
-			.forEach(it -> {
-				graph.addVertex(it.getUpStation());
-				graph.addVertex(it.getDownStation());
-
-				graph.setEdgeWeight(graph.addEdge(it.getUpStation(), it.getDownStation()), it.getDistance());
-			});
-
-		DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-		GraphPath path = dijkstraShortestPath.getPath(source, target);
-
-		List<Station> vertexList = path.getVertexList();
-		List<StationResponse> stations = vertexList.stream()
-			.map(StationResponse::from)
-			.collect(Collectors.toList());
-
-		return new PathResponse(stations, (int)path.getWeight());
+		LinePath linePath = new LinePath(lines);
+		return linePath.searchPath(source, target);
 	}
 }
 
