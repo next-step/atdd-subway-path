@@ -97,11 +97,14 @@ public class Sections {
         validRemoveStation(station);
 
         if (isFirstStation(station)) {
+
             this.sections.remove(sections.get(0));
+            return;
         }
 
         if (isLastStation(station)) {
-            this.sections.remove(sections.size() - 1);
+            this.sections.remove(sections.get(sections.size() - 1));
+            return;
         }
 
         if (!isFirstStation(station) && !isLastStation(station)) {
@@ -110,6 +113,7 @@ public class Sections {
             upSection.updateDownStation(downSection.getDownStation());
             upSection.plusDistance(downSection.getDistance());
             this.sections.remove(downSection);
+            return;
         }
     }
 
@@ -143,7 +147,7 @@ public class Sections {
         boolean existStation = sections.stream().anyMatch(section -> section.existStation(station));
 
         if (!existStation) {
-            throw new RuntimeException("해당 라인에" + station.getName() + "이 존재하지 않습니다.");
+            throw new RuntimeException("해당 라인에 " + station.getName() + "이 존재하지 않습니다.");
         }
     }
 
