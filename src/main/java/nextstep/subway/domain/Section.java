@@ -52,4 +52,28 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public boolean isDuplicateStation(Station upStation, Station downStation) {
+        return isEqualSection(upStation, downStation) || isEqualSection(downStation, upStation);
+    }
+
+    public boolean isContainStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
+    public boolean isUpStation(Station upStation) {
+        return this.upStation.equals(upStation);
+    }
+
+    public boolean isDownStation(Station downStation) {
+        return this.downStation.equals(downStation);
+    }
+
+    public boolean isGraterOrEqualThanExistingDistance(int distance) {
+        return this.distance <= distance;
+    }
+
+    private boolean isEqualSection(Station upStation, Station downStation) {
+        return this.upStation.equals(upStation) && this.downStation.equals(downStation);
+    }
 }

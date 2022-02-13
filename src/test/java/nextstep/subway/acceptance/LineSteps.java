@@ -1,5 +1,7 @@
 package nextstep.subway.acceptance;
 
+import static org.assertj.core.api.Assertions.*;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -78,6 +80,10 @@ public class LineSteps {
         return RestAssured.given().log().all()
                 .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then().log().all().extract();
+    }
+
+    public static void 지하철_노선에_역들을_확인(ExtractableResponse<Response> response, Long ...stationIds) {
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(stationIds);
     }
 
     public static ExtractableResponse<Response> 지하철_최단_경로_조회(Long sourceId, Long targetId) {
