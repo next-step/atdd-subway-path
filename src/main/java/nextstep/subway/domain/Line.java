@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 @Builder
@@ -96,5 +97,19 @@ public class Line extends BaseEntity {
 
     private boolean isColorValid() {
         return this.color != null;
+    }
+
+    public boolean hasAnySection() {
+        return !this.sections.isEmpty();
+    }
+
+    public List<Station> getStations() {
+        Stream<Station> downStations = this.sections.stream().map(Section::getDownStation);
+        Stream<Station> upStations = this.sections.stream().map(Section::getUpStation);
+
+        return Stream.concat(downStations, upStations)
+                .distinct()
+                .sorted(Comparator.comparing(Station::getId))
+                .collect(Collectors.toList());
     }
 }

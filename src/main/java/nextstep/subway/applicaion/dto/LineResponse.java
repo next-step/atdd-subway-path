@@ -24,26 +24,10 @@ public class LineResponse {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                createStationResponses(line),
+                StationResponse.of(line),
                 line.getCreatedDate(),
                 line.getModifiedDate()
         );
-    }
-
-    private static List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, line.getSections().get(0).getUpStation());
-
-        return stations.stream()
-                .map(StationResponse::of)
-                .collect(Collectors.toList());
     }
 
     public Long getId() {
