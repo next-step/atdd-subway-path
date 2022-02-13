@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
@@ -52,7 +53,7 @@ class LineTest {
         line.addSection(역삼역, 선릉역, 5);
 
         // when
-        line.deleteSection(선릉역);
+        line.removeStation(선릉역);
 
         // then
         assertThat(line.getStations()).doesNotContain(선릉역);
@@ -149,5 +150,68 @@ class LineTest {
         // when
         // then
         assertThrows(IllegalArgumentException.class, () -> line.addSection(강남역, 선릉역, 11));
+    }
+
+    @DisplayName("노선 중간에 있는 역 삭제")
+    @Test
+    void removeSectionInTheMiddle() {
+        // given
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+        Station 선릉역 = new Station("선릉역");
+        Line line = Line.of("2호선", "bg-green-600", 강남역, 역삼역, 10);
+        line.addSection(역삼역, 선릉역, 5);
+
+        // when
+        line.removeStation(역삼역);
+
+        // then
+        assertThat(line.getStations()).containsExactly(강남역, 선릉역);
+    }
+
+    @DisplayName("노선 마지막에 있는 종점역 삭제")
+    @Test
+    void removeSectionAtTheEnd() {
+        // given
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+        Station 선릉역 = new Station("선릉역");
+        Line line = Line.of("2호선", "bg-green-600", 강남역, 역삼역, 10);
+        line.addSection(역삼역, 선릉역, 5);
+
+        // when
+        line.removeStation(선릉역);
+
+        // then
+        assertThat(line.getStations()).containsExactly(강남역, 역삼역);
+    }
+
+    @DisplayName("노선에 등록되지 않은 역을 삭제할 경우")
+    @Test
+    void removeSectionNotRegisteredStation() {
+        // given
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+        Station 선릉역 = new Station("선릉역");
+        Line line = Line.of("2호선", "bg-green-600", 강남역, 역삼역, 10);
+
+        // when
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() -> line.removeStation(선릉역))
+            .withMessage("노선에 존재하는 역만 삭제할 수 있습니다.");
+    }
+
+    @DisplayName("노선에 구간이 하나일 때 이 구간을 삭제할 경우")
+    @Test
+    void removeLastSection() {
+        // given
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+        Line line = Line.of("2호선", "bg-green-600", 강남역, 역삼역, 10);
+
+        // when
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() -> line.removeStation(강남역))
+            .withMessage("상행 종점역과 하행 종점역만 있는 경우(구간이 1개인 경우) 역을 삭제할 수 없습니다.");
     }
 }
