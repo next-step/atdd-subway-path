@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import nextstep.subway.exception.AlreadyRegisterStationException;
 import nextstep.subway.exception.CannotRegisterSectionException;
@@ -11,8 +12,8 @@ import nextstep.subway.exception.CannotRegisterSectionException;
 @Embeddable
 public class Sections {
 
-    @OneToMany(cascade = {CascadeType.PERSIST,
-            CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "line_id")
     private final List<Section> sections = new ArrayList<>();
 
     public Sections() {
