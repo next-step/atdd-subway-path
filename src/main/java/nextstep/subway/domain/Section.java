@@ -69,13 +69,14 @@ public class Section {
         this.distance -= distance;
     }
 
-    public boolean isSameDownStation(Section newSection) {
-        return downStation.equals(newSection.getDownStation());
+    public boolean isSameDownStation(Station station) {
+        return downStation.equalId(station);
     }
 
-    public boolean isSameUpStation(Section newSection) {
-        return upStation.equals(newSection.getUpStation());
+    public boolean isSameUpStation(Station station) {
+        return upStation.equalId(station);
     }
+
 
     public boolean existStation(Station station) {
         long id = station.getId();

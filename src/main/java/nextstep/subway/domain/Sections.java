@@ -57,8 +57,10 @@ public class Sections {
     }
 
     private void updateUpSection(Section newSection) {
+        Station downStation = newSection.getDownStation();
+
         Section findSection = this.sections.stream()
-                .filter(section -> section.isSameUpStation(newSection))
+                .filter(section -> section.isSameUpStation(downStation))
                 .findAny()
                 .get();
 
@@ -66,8 +68,10 @@ public class Sections {
     }
 
     private void updateDownSection(Section newSection) {
+        Station upStation = newSection.getUpStation();
+
         Section findSection = this.sections.stream()
-                .filter(section -> section.isSameDownStation(newSection))
+                .filter(section -> section.isSameDownStation(upStation))
                 .findAny()
                 .get();
 
@@ -86,13 +90,39 @@ public class Sections {
     }
 
     public void remove(Station station) {
+        // order list
+        List<Section> sections = getSections();
+        Station firstStation = getFirstStation();
+        Station lastStation = getLastStation();
+
         validRemoveStation(station);
 
-        if (!getLastStation().equals(station)) {
-            throw new IllegalArgumentException();
+        if (station.equalId(firstStation)) {
+            sections.remove(0);
         }
 
-        sections.remove(sections.size() - 1);
+        if (station.equalId(lastStation)) {
+            sections.remove(sections.size() - 1);
+        }
+
+        if (!station.equalId(firstStation) && !station.equalId(lastStation)) {
+            // Section upSection = findUpSection(station);
+            // Section downSection = findDownSection(station);
+        }
+    }
+
+    private Section findDownSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.isSameDownStation(station))
+                .findAny()
+                .get();
+    }
+
+    private Section findUpSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.isSameUpStation(station))
+                .findAny()
+                .get();
     }
 
     private void validRemoveStation(Station station) {
@@ -102,7 +132,7 @@ public class Sections {
 
         boolean existStation = sections.stream().anyMatch(section -> section.existStation(station));
 
-        if(!existStation) {
+        if (!existStation) {
             throw new RuntimeException("해당 라인에" + station.getName() + "이 존재하지 않습니다.");
         }
     }
