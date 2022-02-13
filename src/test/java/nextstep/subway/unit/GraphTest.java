@@ -33,11 +33,11 @@ public class GraphTest {
     private List<Line> 모든라인;
 
     /**
-     * 교대역(1)    --- *2호선* ---   강남역(2)
-     * |                        |
-     * *3호선*                   *신분당선*
-     * |                        |
-     * 남부터미널역(4)  --- *3호선* ---   양재(3)
+     * 교대역(1)    --- *2호선/10* ---   강남역(2)
+     * |                                    |
+     * *3호선/3*                   *신분당선/10*
+     * |                                    |
+     * 남부터미널역(4)  --- *3호선/2* ---   양재(3)
      */
     @BeforeEach
     public void setUp() {
@@ -98,20 +98,20 @@ public class GraphTest {
     @Test
     public void 강남역에서_교대역_최단경로() {
         Graph graph = new Graph(모든라인);
-        assertThat(graph.dijkstraShortestPath(강남역.getId(), 교대역.getId())).isEqualTo(Arrays.asList(2L, 1L));
+        assertThat(graph.dijkstraShortestPath(강남역, 교대역)).isEqualTo(Arrays.asList(강남역, 교대역));
     }
 
     @Test
     public void 강남역에서_남부터미널역_최단거리() {
         Graph graph = new Graph(모든라인);
-        List<Long> path = graph.dijkstraShortestPath(강남역.getId(), 남부터미널역.getId());
+        List<Station> path = graph.dijkstraShortestPath(강남역, 남부터미널역);
         assertThat(graph.dijkstraShortestDistance(path)).isEqualTo(12);
     }
 
     @Test
     public void 강남역에서_교대역_최단거리() {
         Graph graph = new Graph(모든라인);
-        List<Long> path = graph.dijkstraShortestPath(강남역.getId(), 교대역.getId());
+        List<Station> path = graph.dijkstraShortestPath(강남역, 교대역);
         assertThat(graph.dijkstraShortestDistance(path)).isEqualTo(10);
     }
 }
