@@ -21,7 +21,7 @@ public class SectionsTest {
 
 	Sections 구간들;
 
-	final Distance 거리 = Distance.from(100);
+	final int 거리 = 100;
 
 	/**
 	 * Given 노선에 3개의 지하철역을 등록하였다고 가정한 후
@@ -60,7 +60,7 @@ public class SectionsTest {
 		assertThat(구간들.getStations()).containsExactly(강남역, 합정역);
 		assertThat(구간들.getSections())
 				.extracting(Section::getDistance)
-				.containsExactly(Distance.from(200));
+				.containsExactly(200);
 	}
 
 	/**

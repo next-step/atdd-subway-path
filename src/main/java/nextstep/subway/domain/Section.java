@@ -55,8 +55,8 @@ public class Section implements Comparable<Section> {
         return downStation;
     }
 
-    public Distance getDistance() {
-        return distance;
+    public int getDistance() {
+        return distance.getValue();
     }
 
     public List<Station> getStations() {
@@ -71,11 +71,11 @@ public class Section implements Comparable<Section> {
         this.downStation = station;
     }
 
-    public void divideDistance(Distance distance) {
+    public void divideDistance(int distance) {
         this.distance.reduceDistance(distance);
     }
 
-    public void addDistance(Distance distance) {
+    public void addDistance(int distance) {
         this.distance.addDistance(distance);
     }
 
