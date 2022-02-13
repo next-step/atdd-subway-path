@@ -94,7 +94,7 @@ class LineAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선 수정")
     @Test
-    void updateLine() {
+    void 지하철_노선_수정() {
         // given
         Long a역_id = 지하철역_생성_요청("A역").jsonPath().getLong("id");
         Long b역_id = 지하철역_생성_요청("B역").jsonPath().getLong("id");
@@ -122,7 +122,7 @@ class LineAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선 삭제")
     @Test
-    void deleteLine() {
+    void 지하철_노선_삭제() {
         // given
         Long a역_id = 지하철역_생성_요청("A역").jsonPath().getLong("id");
         Long b역_id = 지하철역_생성_요청("B역").jsonPath().getLong("id");
@@ -147,7 +147,7 @@ class LineAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("중복이름으로 지하철 노선 생성")
     @Test
-    void duplicateName() {
+    void 중복이름으로_지하철_노선_생성시_실패() {
         // given
         Long a역_id = 지하철역_생성_요청("A역").jsonPath().getLong("id");
         Long b역_id = 지하철역_생성_요청("B역").jsonPath().getLong("id");
