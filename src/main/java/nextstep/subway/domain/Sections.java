@@ -75,7 +75,8 @@ public class Sections {
                 .findAny()
                 .get();
 
-        findSection.updateDownStation(newSection.getUpStation(), newSection.getDistance());
+        findSection.updateDownStation(newSection.getUpStation());
+        findSection.minusDistance(newSection.getDistance());
     }
 
     public List<Station> getStations() {
@@ -92,35 +93,44 @@ public class Sections {
     public void remove(Station station) {
         // order list
         List<Section> sections = getSections();
-        Station firstStation = getFirstStation();
-        Station lastStation = getLastStation();
 
         validRemoveStation(station);
 
-        if (station.equalId(firstStation)) {
+        if (isFirstStation(station)) {
             this.sections.remove(sections.get(0));
         }
 
-        if (station.equalId(lastStation)) {
+        if (isLastStation(station)) {
             this.sections.remove(sections.size() - 1);
         }
 
-        if (!station.equalId(firstStation) && !station.equalId(lastStation)) {
-            // Section upSection = findUpSection(station);
-            // Section downSection = findDownSection(station);
+        if (!isFirstStation(station) && !isLastStation(station)) {
+            Section upSection = findUpSection(station);
+            Section downSection = findDownSection(station);
+            upSection.updateDownStation(downSection.getDownStation());
+            upSection.plusDistance(downSection.getDistance());
+            this.sections.remove(downSection);
         }
+    }
+
+    private boolean isFirstStation(Station station) {
+        return station.equalId(getFirstStation());
+    }
+
+    private boolean isLastStation(Station station) {
+        return station.equalId(getLastStation());
     }
 
     private Section findDownSection(Station station) {
         return sections.stream()
-                .filter(section -> section.isSameDownStation(station))
+                .filter(section -> section.isSameUpStation(station))
                 .findAny()
                 .get();
     }
 
     private Section findUpSection(Station station) {
         return sections.stream()
-                .filter(section -> section.isSameUpStation(station))
+                .filter(section -> section.isSameDownStation(station))
                 .findAny()
                 .get();
     }

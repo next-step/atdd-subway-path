@@ -207,6 +207,22 @@ class LineTest {
         assertThat(신분당선.getStations()).contains(강남역, 양재역);
     }
 
+    @DisplayName("중간 역 삭제")
+    @Test
+    void deleteSection_MiddleStation() {
+        //given
+        신분당선.addSection(강남역, 양재역, 10);
+        신분당선.addSection(양재역, 광교역, 5);
+
+        //when
+        신분당선.removeSection(양재역);
+
+        //then
+        assertThat(신분당선.getStations()).hasSize(2);
+        assertThat(신분당선.getStations()).contains(강남역, 광교역);
+        assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(15);
+    }
+
     @DisplayName("노선 삭제 실패 - 라인에 요청한 역이 존재하지 않음")
     @Test
     void deleteSectionExceptionNoStation() {
