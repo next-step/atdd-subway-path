@@ -33,7 +33,7 @@ public class Station extends BaseEntity {
         return name;
     }
 
-    public boolean hasSameId(Long id) {
-        return this.id.equals(id);
+    public boolean isEqualTo(Station station) {
+        return this.id.equals(station.id);
     }
 }

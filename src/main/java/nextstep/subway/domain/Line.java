@@ -65,13 +65,13 @@ public class Line extends BaseEntity {
     }
 
     private void validateDeletion(Long stationId) {
-        if (!isLastSection(stationId)) {
+        if (!isLastSection(new Station(stationId))) {
             throw new IllegalArgumentException("마지막 구간만 삭제할 수 있습니다. stationId를 확인해주세요.");
         }
     }
 
-    private boolean isLastSection(Long stationId) {
-        return getLastSection().getDownStation().hasSameId(stationId);
+    private boolean isLastSection(Station station) {
+        return getLastSection().getDownStation().isEqualTo(station);
     }
 
     private Section getLastSection() {
