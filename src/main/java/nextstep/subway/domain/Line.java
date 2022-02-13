@@ -61,8 +61,8 @@ public class Line extends BaseEntity {
         this.sections.add(section);
     }
 
-    public void deleteSection(Long stationId) {
-        validateDeletion(stationId);
+    public void deleteSection(Station station) {
+        validateDeletion(station);
         removeLastSection();
     }
 
@@ -71,8 +71,8 @@ public class Line extends BaseEntity {
         this.sections.remove(lastSectionIdx);
     }
 
-    private void validateDeletion(Long stationId) {
-        if (!isLastSection(new Station(stationId))) {
+    private void validateDeletion(Station station) {
+        if (!isLastSection(station)) {
             throw new IllegalArgumentException("마지막 구간만 삭제할 수 있습니다. stationId를 확인해주세요.");
         }
     }

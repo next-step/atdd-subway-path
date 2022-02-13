@@ -59,7 +59,7 @@ class LineTest {
         새로운_구간_추가();
 
         // when
-        line.deleteSection(3L);
+        line.deleteSection(홍대역);
 
         // then
         List<Section> 삭제후_구간_목록 = line.getSections();
