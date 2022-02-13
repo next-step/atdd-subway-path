@@ -21,11 +21,11 @@ class LineTest {
         Station 역삼역 = new Station("역삼역");
         Station 홍대역 = new Station("홍대역");
 
-        Section 기존_구간 = new Section(line, 강남역, 역삼역, 5);
+        Section 기존_구간 = new Section(1L, line, 강남역, 역삼역, 5);
         line.addSection(기존_구간);
 
         // when
-        Section 새로운_구간 = new Section(line, 역삼역, 홍대역, 3);
+        Section 새로운_구간 = new Section(2L, line, 역삼역, 홍대역, 3);
         line.addSection(새로운_구간);
 
         // then
@@ -42,9 +42,9 @@ class LineTest {
         Station 역삼역 = new Station("역삼역");
         Station 홍대역 = new Station("홍대역");
 
-        Section 기존_구간 = new Section(line, 강남역, 역삼역, 5);
+        Section 기존_구간 = new Section(1L, line, 강남역, 역삼역, 5);
         line.addSection(기존_구간);
-        Section 새로운_구간 = new Section(line, 역삼역, 홍대역, 3);
+        Section 새로운_구간 = new Section(2L, line, 역삼역, 홍대역, 3);
         line.addSection(새로운_구간);
 
         // when
