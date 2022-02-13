@@ -1,5 +1,8 @@
 package nextstep.subway.applicaion.dto;
 
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
+
 public class SectionRequest {
     private final Long upStationId;
     private final Long downStationId;
@@ -21,5 +24,14 @@ public class SectionRequest {
 
     public int getDistance() {
         return distance;
+    }
+
+    // TODO station 1D값 만 둬도되는지 질문
+    public Section toSection() {
+        return Section.builder()
+                .upStation(new Station(upStationId))
+                .downStation(new Station(downStationId))
+                .distance(distance)
+                .build();
     }
 }

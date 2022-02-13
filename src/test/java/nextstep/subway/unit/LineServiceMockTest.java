@@ -36,10 +36,6 @@ class LineServiceMockTest {
         Line line = new Line("2호선", "green");
         when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
 
-        Station 강남역 = new Station("강남역");
-        Station 역삼역 = new Station("역삼역");
-        when(sectionService.createSection(any(Line.class), any(SectionRequest.class))).thenReturn(new Section(line, 강남역, 역삼역, 3));
-
         LineService lineService = new LineService(lineRepository, stationService, sectionService);
 
         // when

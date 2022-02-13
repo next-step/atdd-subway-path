@@ -59,14 +59,14 @@ public class LineService {
 
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = findLineById(lineId);
-        Section section = sectionService.createSection(line, sectionRequest);
-        line.addSection(section);
+        line.addSection(sectionRequest.toSection());
     }
 
     public void deleteSection(Long lineId, Long stationId) {
         Line line = findLineById(lineId);
         Station station = stationService.findById(stationId);
 
+        // TODO 지우기
         if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
             throw new IllegalArgumentException();
         }

@@ -13,6 +13,9 @@ public class Station extends BaseEntity {
     public Station() {
     }
 
+    public Station(Long id) {
+
+    }
     public Station(String name) {
         this.name = name;
     }

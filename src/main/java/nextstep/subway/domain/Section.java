@@ -1,9 +1,14 @@
 package nextstep.subway.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
+@Builder
+@AllArgsConstructor
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,14 +33,6 @@ public class Section {
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
-        this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
-    }
-
-    public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
-        this.id = id;
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
