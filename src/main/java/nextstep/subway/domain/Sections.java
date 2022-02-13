@@ -97,7 +97,7 @@ public class Sections {
                 .findFirst();
     }
 
-    public boolean isFirst(Section section) {
+    public boolean isFirstStationFrom(Section section) {
         final Station upStation = section.getUpStation();
 
         if (getAllUpStations().contains(upStation) && !getAllDownStations().contains(upStation)) {
@@ -107,7 +107,7 @@ public class Sections {
 
     }
 
-    public boolean isLast(Section section) {
+    public boolean isLastStationFrom(Section section) {
         final Station downStation = section.getDownStation();
 
         if (!getAllUpStations().contains(downStation) && getAllDownStations().contains(downStation)) {

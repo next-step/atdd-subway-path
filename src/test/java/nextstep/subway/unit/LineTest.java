@@ -91,8 +91,8 @@ class LineTest {
         final Section section = new Section(line, 상행역, 하행역, 3);
         line.addSection(상행역, 하행역, 3);
 
-        assertThat(line.sections().isFirst(section)).isTrue();
-        assertThat(line.sections().isLast(section)).isTrue();
+        assertThat(line.sections().isFirstStationFrom(section)).isTrue();
+        assertThat(line.sections().isLastStationFrom(section)).isTrue();
     }
 
     @DisplayName("노선 생성 후, 상행종점역 기준으로 상행역 구간 추가 (종점 추가)")
@@ -110,7 +110,7 @@ class LineTest {
         final Section newSection = new Section(line, 새로운역, 상행역, 1);
         line.addSection(newSection);
 
-        assertThat(line.sections().isFirst(newSection)).isTrue();
+        assertThat(line.sections().isFirstStationFrom(newSection)).isTrue();
     }
 
     @DisplayName("노선 생성 후, 상행역 기준으로 상행역 구간 추가 (중간 추가)")
@@ -133,7 +133,7 @@ class LineTest {
         line.addSection(또다른역, 상행역, 2);
 
         // 새로운역-(3)-또다른역-(2)-상행역-(3)-하행역
-        assertThat(line.sections().isFirst(firstSection)).isTrue();
+        assertThat(line.sections().isFirstStationFrom(firstSection)).isTrue();
     }
 
     // todo 중간 추가
@@ -159,7 +159,7 @@ class LineTest {
         line.addSection(lastSection);
 
         // 상행역-(3)-하행역-(5)-새로운역-(2)-또다른역
-        assertThat(line.sections().isLast(lastSection)).isTrue();
+        assertThat(line.sections().isLastStationFrom(lastSection)).isTrue();
     }
 
     @DisplayName("노선 생성 후, 하행 역 기준으로 하행역 구간 추가(중간 추가)")
@@ -183,8 +183,8 @@ class LineTest {
         line.addSection(lastSection);
 
         // 상행역-(3)-하행역-(3)-또다른역(2)-새로운역-(2)
-        assertThat(line.sections().isFirst(lastSection)).isFalse();
-        assertThat(line.sections().isLast(lastSection)).isTrue();
+        assertThat(line.sections().isFirstStationFrom(lastSection)).isFalse();
+        assertThat(line.sections().isLastStationFrom(lastSection)).isTrue();
     }
 
     @DisplayName("노선 생성 후, 중간 추가 시 길이가 부족하면 에러 발생 확인")
