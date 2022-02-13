@@ -134,7 +134,7 @@ public class Sections {
 		Optional<Section> relatedUpStationSection = getRelatedUpStationSection(station);
 		Optional<Section> relatedDownStationSection = getRelatedDownStationSection(station);
 
-		if (!relatedUpStationSection.isPresent() && !relatedDownStationSection.isPresent()) {
+		if (relatedUpStationSection.isEmpty() && relatedDownStationSection.isEmpty()) {
 			throw new NotExistSectionException(station.getName());
 		}
 
