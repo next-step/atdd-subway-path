@@ -135,4 +135,8 @@ public class Sections {
                 upSection.getDistance() + downSection.getDistance()
         );
     }
+
+    public List<Section> get() {
+        return new ArrayList<>(sections);
+    }
 }

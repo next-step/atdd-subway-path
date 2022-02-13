@@ -63,18 +63,31 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
-    public static  Map<String, String> createLineCreateParams(String lineName, String lineColor, Long upStationId, Long downStationId) {
+    public static  Map<String, String> createLineCreateParams(String lineName, String lineColor, Long upStationId, Long downStationId, int distance) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
         lineCreateParams.put("name", lineName);
         lineCreateParams.put("color", lineColor);
         lineCreateParams.put("upStationId", upStationId + "");
         lineCreateParams.put("downStationId", downStationId + "");
-        lineCreateParams.put("distance", 10 + "");
+        lineCreateParams.put("distance", distance + "");
         return lineCreateParams;
+    }
+
+    public static  Map<String, String> createLineCreateParams(String lineName, String lineColor, Long upStationId, Long downStationId) {
+        return createLineCreateParams(lineName, lineColor, upStationId, downStationId, 10);
     }
 
     public static  Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         return createLineCreateParams("신분당선", "bg-red-600", upStationId, downStationId);
+    }
+
+    public static  Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
+        Map<String, String> lineCreateParams;
+        lineCreateParams = new HashMap<>();
+        lineCreateParams.put("upStationId", upStationId + "");
+        lineCreateParams.put("downStationId", downStationId + "");
+        lineCreateParams.put("distance", distance + "");
+        return lineCreateParams;
     }
 }
