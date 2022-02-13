@@ -2,26 +2,34 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.applicaion.LineService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
+    @Autowired
+    LineService lineService;
+
     private Long 신분당선;
+    private Long 이호선;
+    private Long 삼호선;
 
     private Long 강남역;
     private Long 양재역;
-    private Long 신도림역;
-    private Long 문래역;
+    private Long 교대역;
+    private Long 남부터미널역;
 
     /**
      * Given 지하철역과 노선 생성을 요청 하고
@@ -29,13 +37,17 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
+
+        교대역 = 지하철역_생성_요청("교대역").jsonPath().getLong("id");
         강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
         양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
-        신도림역 = 지하철역_생성_요청("신도림역").jsonPath().getLong("id");
-        문래역 = 지하철역_생성_요청("문래역").jsonPath().getLong("id");
+        남부터미널역 = 지하철역_생성_요청("남부터미널역").jsonPath().getLong("id");
 
-        Map<String, String> lineCreateParams = createLineCreateParams(강남역, 양재역, 10);
-        신분당선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
+        이호선 = 지하철_노선_생성_요청("2호선", "green", 교대역, 강남역, 10).jsonPath().getLong("id");
+        신분당선 = 지하철_노선_생성_요청("신분당선", "red", 강남역, 양재역, 10).jsonPath().getLong("id");
+        삼호선 = 지하철_노선_생성_요청("3호선", "orange", 교대역, 남부터미널역, 2).jsonPath().getLong("id");
+
+        지하철_노선에_지하철_구간_생성_요청(삼호선, createSectionCreateParams(남부터미널역, 양재역, 3));
     }
 
     /**
@@ -92,6 +104,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 5));
 
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("sections.downStation.name", String.class)).containsExactly("강남역",
                 "양재역");
@@ -112,6 +125,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 강남역, 5));
 
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("sections.downStation.name", String.class)).containsExactly("정자역",
                 "강남역");
@@ -190,7 +204,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 5));
 
-        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 신도림역);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 교대역);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -203,8 +217,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 존재하지 않는 상행역과 하행역을 가지는 구간 생성 요청")
     @Test
     void NoMatchSectionException() {
-
-        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신도림역, 문래역, 5));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선,
+                createSectionCreateParams(교대역, 남부터미널역, 5));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -218,21 +232,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 이미 존재하는 상행역과 하행역을 가지는 구간 생성 요청")
     @Test
     void AllMatchSectionException() {
-
-        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 5));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선,
+                createSectionCreateParams(강남역, 양재역, 5));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    private Map<String, String> createLineCreateParams(Long downStationId, Long upStationId, int distance) {
-        Map<String, String> lineCreateParams;
-        lineCreateParams = new HashMap<>();
-        lineCreateParams.put("name", "신분당선");
-        lineCreateParams.put("color", "bg-red-600");
-        lineCreateParams.put("downStationId", downStationId + "");
-        lineCreateParams.put("upStationId", upStationId + "");
-        lineCreateParams.put("distance", distance + "");
-        return lineCreateParams;
     }
 
     private Map<String, String> createSectionCreateParams(Long downStationId, Long upStationId, int distance) {

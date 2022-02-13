@@ -21,6 +21,23 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, Long downStationId
+            , Long upStationId, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("downStationId", downStationId.toString());
+        params.put("upStationId", upStationId.toString());
+        params.put("distance", Integer.toString(distance));
+
+        return RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all().extract();
+    }
+
     public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
         return RestAssured
                 .given().log().all()
@@ -62,6 +79,12 @@ public class LineSteps {
     public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_제거_요청(Long lineId, Long stationId) {
         return RestAssured.given().log().all()
                 .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
+                .then().log().all().extract();
+    }
+
+    public static ExtractableResponse<Response> 역과역_사이에_최단거리(Long source, Long target) {
+        return RestAssured.given().log().all()
+                .when().get("/paths?source={source}&target={target}", source, target)
                 .then().log().all().extract();
     }
 }

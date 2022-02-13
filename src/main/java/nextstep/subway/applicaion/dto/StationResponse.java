@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 public class StationResponse {
     private final Long id;
     private final String name;
-    private final LocalDateTime createdDate;
-    private final LocalDateTime modifiedDate;
+    private LocalDateTime createdDate;
+    private LocalDateTime modifiedDate;
 
     public StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
@@ -36,7 +36,12 @@ public class StationResponse {
         return createdDate;
     }
 
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
+    @Override
+    public String toString() {
+        return "StationResponse{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", createdDate=" + createdDate +
+                '}';
     }
 }
