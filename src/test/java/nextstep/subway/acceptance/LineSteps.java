@@ -58,6 +58,7 @@ public class LineSteps {
                 .given().log().all()
                 .when().get("/lines/{id}", id)
                 .then().log().all().extract();
+
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {

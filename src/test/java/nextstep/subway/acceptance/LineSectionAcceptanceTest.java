@@ -29,6 +29,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
+
         강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
         양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
         양재시민의숲역 = 지하철역_생성_요청("양재시민의숲역").jsonPath().getLong("id");

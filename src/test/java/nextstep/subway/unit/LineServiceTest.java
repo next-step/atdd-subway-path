@@ -52,5 +52,6 @@ public class LineServiceTest {
         assertThat(section.getUpStation()).isEqualTo(강남역);
         assertThat(section.getDownStation()).isEqualTo(역삼역);
         assertThat(section.getDistance()).isEqualTo(distance);
+
     }
 }

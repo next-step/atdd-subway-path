@@ -67,6 +67,7 @@ public class Section {
 
     public boolean isDownStation(Station downStation) {
         return this.downStation.equals(downStation);
+
     }
 
     public boolean isGraterOrEqualThanExistingDistance(int distance) {

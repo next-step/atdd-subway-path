@@ -61,6 +61,7 @@ public class LineService {
 
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
+
     }
 
     public void addSection(Long lineId, SectionRequest sectionRequest) {

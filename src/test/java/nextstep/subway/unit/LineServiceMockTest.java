@@ -34,6 +34,7 @@ public class LineServiceMockTest {
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         LineService lineService = new LineService(lineRepository, stationService);
 
+
         Station 교대역 = new Station("교대역");
         ReflectionTestUtils.setField(교대역, "id", 1L);
         Station 강남역 = new Station("강남역");

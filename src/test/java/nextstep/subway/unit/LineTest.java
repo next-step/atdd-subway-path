@@ -48,6 +48,7 @@ class LineTest {
             .findFirst()
             .orElseThrow(RuntimeException::new);
 
+
         assertAll(
             () -> assertThat(section.getUpStation().equals(역삼역)).isTrue(),
             () -> assertThat(section.getDownStation().equals(선릉역)).isTrue(),
