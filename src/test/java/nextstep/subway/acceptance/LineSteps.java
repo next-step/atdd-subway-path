@@ -5,14 +5,25 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.springframework.http.MediaType;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class LineSteps {
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
+    private final static String 이름 = "name";
+    private final static String 색상 = "color";
+    private final static String 상행선 = "upStationId";
+    private final static String 하행선 = "downStationId";
+    private final static String 거리 = "distance";
+    private final static String 노선 = "lineId";
+
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, long upStationId, long downStationId, int distance) {
+        Map<String, String> params = Map.of(
+                이름, "2호선",
+                색상, "green",
+                상행선, String.valueOf(upStationId),
+                하행선, String.valueOf(downStationId),
+                거리, String.valueOf(distance)
+        );
+
         return RestAssured
                 .given().log().all()
                 .body(params)
@@ -48,6 +59,21 @@ public class LineSteps {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
+                .then().log().all().extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청(long lineId, long upStationId, long downStationId, int distance) {
+        Map<String, String> params = Map.of(
+                노선, String.valueOf(lineId),
+                상행선, String.valueOf(upStationId),
+                하행선, String.valueOf(downStationId),
+                거리, String.valueOf(distance)
+        );
+
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when().post("/lines/{lineId}/sections", lineId)
                 .then().log().all().extract();
     }
 
