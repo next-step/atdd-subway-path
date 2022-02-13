@@ -2,9 +2,6 @@ package nextstep.subway.applicaion.dto;
 
 import nextstep.subway.domain.Line;
 
-import java.util.Collections;
-import java.util.OptionalInt;
-
 public class LineRequest {
     private String name;
     private String color;
