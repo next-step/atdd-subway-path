@@ -20,15 +20,23 @@ import java.util.stream.Collectors;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationService stationService;
-    private final SectionService sectionService;
 
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-        if (request.isSaveLineRequestValid()) {
-            Section section = sectionService.createSection(line, request);
-            line.addSection(section);
-        }
+        saveSection(request, line);
         return LineResponse.of(line);
+    }
+
+    private void saveSection(LineRequest request, Line line) {
+        if (request.isSaveLineRequestValid()) {
+            addSectionToLine(request, line);
+        }
+    }
+
+    private void addSectionToLine(LineRequest request, Line line) {
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+        line.addSection(upStation, downStation, request.getDistance());
     }
 
     @Transactional(readOnly = true)
@@ -49,7 +57,6 @@ public class LineService {
 
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = findLineById(id);
-
         line.update(lineRequest.toLine());
     }
 
@@ -59,8 +66,13 @@ public class LineService {
 
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = findLineById(lineId);
-        Section section = sectionService.createSection(line, sectionRequest);
-        line.addSection(section);
+        addSectionToLine(sectionRequest, line);
+    }
+
+    private void addSectionToLine(SectionRequest sectionRequest, Line line) {
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
+        line.addSection(upStation, downStation, sectionRequest.getDistance());
     }
 
     public void deleteSection(Long lineId, Long stationId) {
