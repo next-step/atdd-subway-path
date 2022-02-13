@@ -83,6 +83,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         Map<String, String> params = new HashMap<>();
+        params.put("name", "1호선");
         params.put("color", "red");
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
@@ -93,6 +94,26 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("지하철 노선 수정 시, name, color 값 없을 시 에러")
+    @Test
+    void updateLine2() {
+        // given
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("color", "red");
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put(createResponse.header("location"))
+                .then().log().all().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
 
     /**

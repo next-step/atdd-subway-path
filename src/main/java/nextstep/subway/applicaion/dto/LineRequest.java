@@ -1,7 +1,11 @@
 package nextstep.subway.applicaion.dto;
 
+import javax.validation.constraints.NotBlank;
+
 public class LineRequest {
+    @NotBlank
     private String name;
+    @NotBlank
     private String color;
     private Long upStationId;
     private Long downStationId;

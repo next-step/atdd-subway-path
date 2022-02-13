@@ -4,9 +4,13 @@ import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -38,7 +42,11 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @Valid @RequestBody LineRequest lineRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
         lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok().build();
     }
