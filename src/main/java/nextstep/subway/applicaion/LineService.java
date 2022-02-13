@@ -28,14 +28,10 @@ public class LineService {
 
     private void saveSection(LineRequest request, Line line) {
         if (request.isSaveLineRequestValid()) {
-            addSectionToLine(request, line);
+            Station upStation = stationService.findById(request.getUpStationId());
+            Station downStation = stationService.findById(request.getDownStationId());
+            line.addSection(upStation, downStation, request.getDistance());
         }
-    }
-
-    private void addSectionToLine(LineRequest request, Line line) {
-        Station upStation = stationService.findById(request.getUpStationId());
-        Station downStation = stationService.findById(request.getDownStationId());
-        line.addSection(upStation, downStation, request.getDistance());
     }
 
     @Transactional(readOnly = true)

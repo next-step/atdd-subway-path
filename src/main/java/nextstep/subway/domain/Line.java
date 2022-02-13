@@ -64,6 +64,10 @@ public class Line extends BaseEntity {
 
     public void deleteSection(Long stationId) {
         validateDeletion(stationId);
+        removeLastSection();
+    }
+
+    private void removeLastSection() {
         int lastSectionIdx = this.sections.size() - 1;
         this.sections.remove(lastSectionIdx);
     }
@@ -107,6 +111,10 @@ public class Line extends BaseEntity {
         Stream<Station> downStations = this.sections.stream().map(Section::getDownStation);
         Stream<Station> upStations = this.sections.stream().map(Section::getUpStation);
 
+        return allStationsOrderedById(downStations, upStations);
+    }
+
+    private List<Station> allStationsOrderedById(Stream<Station> downStations, Stream<Station> upStations) {
         return Stream.concat(downStations, upStations)
                 .distinct()
                 .sorted(Comparator.comparing(Station::getId))
