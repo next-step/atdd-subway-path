@@ -78,31 +78,4 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         line.deleteSection(stationId);
     }
-
-    public PathResponse getShortestPath(Long source, Long target) {
-        List<Line> allLines = lineRepository.findAll();
-        Lines lines = new Lines(allLines);
-
-        List<StationResponse> allStations = stationService.findAllStations();
-        List<Long> shortestPath = lines.calculateShortestPath(source, target, allStations);
-
-        List<StationResponse> stationResponses = shortestPath.stream()
-                .map(stationId -> new StationResponse(stationService.findById(stationId)))
-                .collect(Collectors.toList());
-
-        int shortestDistance = lines.getShortestDistance(stationResponses);
-
-        return new PathResponse(stationResponses, shortestDistance);
-    }
-
-    //TODO filter가 안되는 이유 찾기.
-    private boolean isMatchSection(StationResponse stationA, StationResponse stationB, List<Section> allSections) {
-        return allSections.stream()
-                .filter(section ->
-                        (section.getDownStation().getId() == stationA.getId() &&
-                                section.getUpStation().getId() == stationB.getId()) ||
-                                (section.getUpStation().getId() == stationA.getId() &&
-                                        section.getDownStation().getId() == stationB.getId()))
-                .findFirst().isPresent();
-    }
-};
+}
