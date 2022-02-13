@@ -2,10 +2,12 @@ package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -127,7 +129,6 @@ class LineTest {
         line.addSection(firstSection);
 
         // 새로운역-(5)-상행역-(3)-하행역
-        // todo distance 체크 필요
         final Station 또다른역 = new Station("또다른역");
         line.addSection(또다른역, 상행역, 2);
 
@@ -211,4 +212,23 @@ class LineTest {
         });
     }
 
+
+    @DisplayName("노선의 모든 역 순서대로 가져오기")
+    @Test
+    void getAllStations() {
+        final Line line = new Line();
+        final Station 상행역 = new Station("상행역");
+        final Station 하행역 = new Station("하행역");
+        final Station 새로운역 = new Station("새로운역");
+
+        // 상행역-(3)-하행역-(1)-새로운역
+        final Sections sections = new Sections(Arrays.asList(
+                new Section(line, 상행역, 하행역, 3),
+                new Section(line, 하행역, 새로운역, 1)
+        ));
+
+        final List<Station> allStations = sections.getAllStations();
+        assertThat(allStations).hasSize(3);
+        assertThat(allStations.get(0)).isEqualTo(상행역);
+    }
 }

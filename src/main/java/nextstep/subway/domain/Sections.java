@@ -17,6 +17,10 @@ public class Sections {
     public Sections() {
     }
 
+    public Sections(List<Section> sections) {
+        this.sections = sections;
+    }
+
     public void addSection(Section section) {
         final Optional<Section> sectionFromDownStation = this.getSectionFromDownStation(section.getDownStation());
         if (sectionFromDownStation.isPresent()) {
@@ -54,13 +58,13 @@ public class Sections {
         final List<Station> allUpStations = this.getAllUpStations();
         final List<Station> allDownStations = this.getAllDownStations();
 
-        for (Station upStation : allUpStations) {
-            if (!allDownStations.contains(upStation)) {
-                return getSectionFromUpStation(upStation);
-            }
+        final Optional<Station> optionalUpStation = allUpStations.stream()
+                .filter(upStation -> !allDownStations.contains(upStation))
+                .findFirst();
+        if (optionalUpStation.isPresent()) {
+            return this.getSectionFromUpStation(optionalUpStation.get());
         }
         return Optional.empty();
-
     }
 
     public void deleteSection(Station station) {
