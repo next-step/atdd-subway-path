@@ -22,12 +22,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     String upStationId;
     String downStationId;
     String newStationId;
+    ExtractableResponse<Response> createResponse;
 
     @BeforeEach
     public void setup() {
         upStationId = 지하철역_생성_요청("상행역").jsonPath().get("id").toString();
         downStationId = 지하철역_생성_요청("하행역").jsonPath().get("id").toString();
         newStationId = 지하철역_생성_요청("새로운역").jsonPath().get("id").toString();
+        createResponse = 지하철_노선_생성_요청("2호선", "green", upStationId, downStationId, "1");
     }
 
     /**
@@ -38,10 +40,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green", upStationId, downStationId, "1");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     /**
@@ -73,9 +74,6 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 조회")
     @Test
     void getLine() {
-        // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", upStationId, downStationId, "1");
-
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
 
@@ -92,9 +90,6 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 수정")
     @Test
     void updateLine() {
-        // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", upStationId, downStationId, "1");
-
         // when
         Map<String, String> params = new HashMap<>();
         params.put("name", "1호선");
@@ -116,9 +111,6 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 수정 시, name, color 값 없을 시 에러")
     @Test
     void updateLine2() {
-        // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", upStationId, downStationId, "1");
-
         // when
         Map<String, String> params = new HashMap<>();
         params.put("name", "1호선");
@@ -145,9 +137,6 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 삭제")
     @Test
     void deleteLine() {
-        // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", upStationId, downStationId, "1");
-
         // when
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()

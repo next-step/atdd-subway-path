@@ -32,7 +32,7 @@ public class Sections {
     }
 
     private void validateDistance(Section section, Optional<Section> sectionFromDownStation) {
-        if (sectionFromDownStation.get().getDistance() < section.getDistance()) {
+        if (sectionFromDownStation.get().getDistance() <= section.getDistance()) {
             throw new IllegalArgumentException("노선 길이가 부족합니다");
         }
     }
