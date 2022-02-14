@@ -1,7 +1,7 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.exception.ExceptionMessage;
+import nextstep.subway.domain.exception.ExceptionCode;
 
 class LineTest {
     private Line 이호선;
@@ -101,7 +101,7 @@ class LineTest {
         // when then
         assertThatIllegalArgumentException()
             .isThrownBy(() -> 이호선.addSection(역삼역, 교대역, 3))
-            .withMessageContaining(ExceptionMessage.DUPLICATE_SECTION.getMessage());
+            .withMessageContaining(ExceptionCode.DUPLICATE_SECTION.getMessage());
     }
 
     @DisplayName("등록할 구간의 상행역과 하행역 중 하나가 기존 구간에 포함되어 있지 않는 경우")
@@ -110,7 +110,7 @@ class LineTest {
         // when then
         assertThatIllegalArgumentException()
             .isThrownBy(() -> 이호선.addSection(강남역, 선릉역, 3))
-            .withMessageContaining(ExceptionMessage.DO_NOT_ADD_SECTION.getMessage());
+            .withMessageContaining(ExceptionCode.DO_NOT_ADD_SECTION.getMessage());
     }
 
     @DisplayName("구간 사이에 새로운 구간을 등록할 때 기존 구간보다 새로운 구간의 거리가 크거나 같을 경우")
@@ -120,7 +120,7 @@ class LineTest {
         // when then
         assertThatIllegalArgumentException()
             .isThrownBy(() -> 이호선.addSection(교대역, 강남역, distance))
-            .withMessageContaining(ExceptionMessage.DO_NOT_ADD_SECTION.getMessage());
+            .withMessageContaining(ExceptionCode.DO_NOT_ADD_SECTION.getMessage());
     }
 
     @DisplayName("노선에 속해있는 역 목록 조회")

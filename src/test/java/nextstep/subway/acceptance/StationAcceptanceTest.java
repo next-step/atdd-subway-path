@@ -25,7 +25,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
 
         // then
-        인수테스트_요청_응답_확인(response, HttpStatus.CREATED);
+        요청_응답_확인(response, HttpStatus.CREATED);
         assertThat(response.header("Location")).isNotBlank();
     }
 
@@ -49,7 +49,7 @@ class StationAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        인수테스트_요청_응답_확인(response, HttpStatus.OK);
+        요청_응답_확인(response, HttpStatus.OK);
         List<String> stationNames = response.jsonPath().getList("name");
         assertThat(stationNames).contains("강남역", "역삼역");
     }
@@ -74,7 +74,7 @@ class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        인수테스트_요청_응답_확인(response, HttpStatus.NO_CONTENT);
+        요청_응답_확인(response, HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -92,6 +92,6 @@ class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse = 지하철역_생성_요청("강남역");
 
         // then
-        인수테스트_요청_응답_확인(createResponse, HttpStatus.BAD_REQUEST);
+        요청_응답_확인(createResponse, HttpStatus.BAD_REQUEST);
     }
 }

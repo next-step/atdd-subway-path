@@ -17,12 +17,17 @@ public class StationResponse {
         this.modifiedDate = modifiedDate;
     }
 
+    public StationResponse(Long id, String name, LocalDateTime createdDate) {
+        this.id = id;
+        this.name = name;
+        this.createdDate = createdDate;
+    }
+
     public static StationResponse from(Station station) {
         return new StationResponse(
             station.getId(),
             station.getName(),
-            station.getCreatedDate(),
-            station.getModifiedDate()
+            station.getCreatedDate()
         );
     }
 

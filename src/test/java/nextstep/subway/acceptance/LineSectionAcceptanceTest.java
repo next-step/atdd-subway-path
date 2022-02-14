@@ -1,20 +1,18 @@
 package nextstep.subway.acceptance;
 
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
-import nextstep.subway.applicaion.dto.LineResponse;
+import static nextstep.subway.acceptance.LineSteps.*;
+import static nextstep.subway.acceptance.StationSteps.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static nextstep.subway.acceptance.LineSteps.*;
-import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
-import static org.assertj.core.api.Assertions.assertThat;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
@@ -53,7 +51,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        인수테스트_요청_응답_확인(response, HttpStatus.OK);
+        요청_응답_확인(response, HttpStatus.OK);
         지하철_노선에_역들을_확인(response, 강남역, 양재역, 양재시민의숲역);
     }
 
@@ -69,7 +67,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        인수테스트_요청_응답_확인(response, HttpStatus.OK);
+        요청_응답_확인(response, HttpStatus.OK);
         지하철_노선에_역들을_확인(response, 강남역, 양재시민의숲역, 양재역);
     }
 
@@ -86,7 +84,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
 
-        인수테스트_요청_응답_확인(response, HttpStatus.OK);
+        요청_응답_확인(response, HttpStatus.OK);
         지하철_노선에_역들을_확인(response, 청계산입구역, 강남역, 양재역);
     }
 
@@ -107,7 +105,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        인수테스트_요청_응답_확인(response, HttpStatus.OK);
+        요청_응답_확인(response, HttpStatus.OK);
         지하철_노선에_역들을_확인(response, 강남역, 정자역);
     }
 
@@ -121,7 +119,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     void 노선의_하나_남은_구간의_역_제거할때_에러() {
         // when then
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
-        인수테스트_요청_응답_확인(response, HttpStatus.BAD_REQUEST);
+        요청_응답_확인(response, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -143,7 +141,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        인수테스트_요청_응답_확인(response, HttpStatus.OK);
+        요청_응답_확인(response, HttpStatus.OK);
         지하철_노선에_역들을_확인(response, 양재역, 정자역);
     }
 
@@ -166,7 +164,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        인수테스트_요청_응답_확인(response, HttpStatus.OK);
+        요청_응답_확인(response, HttpStatus.OK);
         지하철_노선에_역들을_확인(response, 강남역, 양재역);
     }
 
@@ -183,7 +181,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // when then
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
-        인수테스트_요청_응답_확인(response, HttpStatus.BAD_REQUEST);
+        요청_응답_확인(response, HttpStatus.BAD_REQUEST);
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
