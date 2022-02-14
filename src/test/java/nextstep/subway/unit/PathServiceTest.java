@@ -4,6 +4,7 @@ import nextstep.subway.applicaion.PathService;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.applicaion.exception.NotExistStationException;
+import nextstep.subway.applicaion.exception.NotFoundPathException;
 import nextstep.subway.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,9 +33,12 @@ public class PathServiceTest {
 	private Station 합정역;
 	private Station 당산역;
 	private Station 김포공항역;
+	private Station 동묘앞역;
+	private Station 동대문역;
 	private Line 이호선;
 	private Line 구호선;
 	private Line 공항철도선;
+	private Line 일호선;
 
 	/**
 	 * 합정역    --- *2호선* ---   홍대입구역
@@ -42,6 +46,8 @@ public class PathServiceTest {
 	 * *2호선* 20              *공항철도선* 20
 	 * |            20            |
 	 * 당산역  --- *9호선* ---   김포공항역
+	 * .            20          .
+	 * 동묘앞역 --- *1호선* ---  동대문역
 	 */
 	@BeforeEach
 	public void setUp() {
@@ -49,13 +55,15 @@ public class PathServiceTest {
 		합정역 = stationRepository.save(Station.of("합정역"));
 		당산역 = stationRepository.save(Station.of("당산역"));
 		김포공항역 = stationRepository.save(Station.of("김포공항역"));
+		동묘앞역 = stationRepository.save(Station.of("동묘앞역"));
+		동대문역 = stationRepository.save(Station.of("동대문역"));
 
-		이호선 = lineRepository.save(Line.of("이호선", "green", 홍대입구역, 합정역, Distance.from(10)));
+		이호선 = lineRepository.save(Line.of("2호선", "green", 홍대입구역, 합정역, Distance.from(10)));
 		이호선.addSection(합정역, 당산역, Distance.from(20));
 
-		구호선 = lineRepository.save(Line.of("구호선", "gold", 당산역, 김포공항역, Distance.from(20)));
-
-		공항철도선 = lineRepository.save(Line.of("공항철도선", "green", 홍대입구역, 김포공항역, Distance.from(20)));
+		구호선 = lineRepository.save(Line.of("9호선", "gold", 당산역, 김포공항역, Distance.from(20)));
+		공항철도선 = lineRepository.save(Line.of("공항철도선", "blue", 홍대입구역, 김포공항역, Distance.from(20)));
+		일호선 = lineRepository.save(Line.of("1호선", "blue", 동묘앞역, 동대문역, Distance.from(20)));
 	}
 
 	@DisplayName("출발지와 도착지의 최단거리 도출에 성공한다.")
@@ -86,5 +94,13 @@ public class PathServiceTest {
 		//when & then
 		assertThatThrownBy(() -> pathService.findRoute(합정역.getId(), 99L))
 				.isInstanceOf(NotExistStationException.class);
+	}
+
+	@DisplayName("출발지와 도착지가 이어지지 않을 경우 최단거리 도출에 실패한다.")
+	@Test
+	void findNotConnectStationRoute() {
+		//when & then
+		assertThatThrownBy(() -> pathService.findRoute(합정역.getId(), 동묘앞역.getId()))
+				.isInstanceOf(NotFoundPathException.class);
 	}
 }

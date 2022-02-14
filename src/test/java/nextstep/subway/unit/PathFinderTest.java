@@ -70,7 +70,7 @@ public class PathFinderTest {
 	@MethodSource("variableStations")
 	void findUseDjkstraShortestPath(String message, Station depart, Station arrival, int routeCount) {
 		PathFinder pathFinder = PathFinder.from(Arrays.asList(이호선, 구호선, 공항철도선));
-		List<Station> paths = pathFinder.findRoute(depart, arrival).getVertexList();
+		List<Station> paths = pathFinder.findRoute(depart, arrival).get().getVertexList();
 
 		assertThat(paths).hasSize(routeCount);
 		assertThat(paths).startsWith(depart);

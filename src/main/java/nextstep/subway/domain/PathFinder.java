@@ -6,6 +6,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.List;
+import java.util.Optional;
 
 public class PathFinder {
 	private final WeightedMultigraph<Station, DefaultWeightedEdge> graph;
@@ -39,7 +40,7 @@ public class PathFinder {
 				.forEach(graph::addVertex);
 	}
 
-	public GraphPath findRoute(Station depart, Station arrival) {
-		return dijkstraShortestPath.getPath(depart, arrival);
+	public Optional<GraphPath> findRoute(Station depart, Station arrival) {
+		return Optional.ofNullable(dijkstraShortestPath.getPath(depart, arrival));
 	}
 }
