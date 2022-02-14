@@ -21,6 +21,9 @@ public class Sections {
 	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
 
+	public void addAll(List<Section> sections) {
+		this.sections.addAll(sections);
+	}
 
 	public void addSection(Line line, Station upStation, Station downStation, int distance) {
 		if(sections.isEmpty()) {
@@ -101,6 +104,11 @@ public class Sections {
 		}
 
 		throw new IllegalArgumentException();
+	}
+
+	public boolean isContain(Station station) {
+		return sections.stream()
+			.anyMatch(it -> it.isContainStation(station));
 	}
 
 	private void validDuplication(Station upStation, Station downStation) {
