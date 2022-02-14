@@ -37,4 +37,11 @@ class LineTest {
         assertThat(신분당선.getStations()).containsExactly(강남역, 판교역);
     }
 
+    @DisplayName("노선 업데이트")
+    @Test
+    void update() {
+        신분당선.update("뉴 신분당선", "new color");
+        assertThat(신분당선.getName()).isEqualTo("뉴 신분당선");
+        assertThat(신분당선.getColor()).isEqualTo("new color");
+    }
 }
