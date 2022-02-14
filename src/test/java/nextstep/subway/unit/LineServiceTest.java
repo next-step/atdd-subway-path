@@ -8,10 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -46,7 +42,7 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        final List<Section> sections = line.getSections();
-        assertThat(sections).isNotEmpty();
+        final Sections sections = line.sections();
+        assertThat(sections.isEmpty()).isFalse();
     }
 }

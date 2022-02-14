@@ -1,9 +1,6 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -57,24 +54,32 @@ public class Section {
         return distance;
     }
 
-    public List<Station> getAllStations() {
-        return Arrays.asList(this.upStation, this.downStation);
-    }
-
     public boolean isDownStation(Station station) {
         return this.downStation.equals(station);
     }
 
+    public boolean isUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public void updateDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Section)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Section)) {
+            return false;
+        }
         Section section = (Section) o;
-        return getDistance() == section.getDistance() && Objects.equals(getId(), section.getId()) && Objects.equals(getLine(), section.getLine()) && Objects.equals(getUpStation(), section.getUpStation()) && Objects.equals(getDownStation(), section.getDownStation());
+        return Objects.equals(getId(), section.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getLine(), getUpStation(), getDownStation(), getDistance());
+        return Objects.hash(getId());
     }
 }

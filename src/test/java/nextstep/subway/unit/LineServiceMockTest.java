@@ -4,7 +4,6 @@ import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -15,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,17 +28,17 @@ public class LineServiceMockTest {
 
 
     @Test
-    void addSection() {
+    void addSection(){
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         final StationResponse upStationResponse = new StationResponse(1L, "상행역", LocalDateTime.now(), LocalDateTime.now());
         when(stationService.findById(1L)).thenReturn(new Station("상행역"));
 
         final StationResponse downStationResponse = new StationResponse(2L, "하행역", LocalDateTime.now(), LocalDateTime.now());
-        when(stationService.findById(2L)).thenReturn(new Station("상행역"));
+        when(stationService.findById(2L)).thenReturn(new Station("하행역"));
 
         final StationResponse newStationResponse = new StationResponse(3L, "새로운역", LocalDateTime.now(), LocalDateTime.now());
-        when(stationService.findById(3L)).thenReturn(new Station("상행역"));
+        when(stationService.findById(3L)).thenReturn(new Station("새로운역"));
 
         final Line line1 = new Line("1호선", "blue");
         when(lineRepository.save(line1)).thenReturn(new Line(1L, "1호선", "blue"));
@@ -50,16 +48,16 @@ public class LineServiceMockTest {
 
         // when
         // lineService.addSection 호출
-        final Line save = lineRepository.save(line1);
+        final Line savedLine = lineRepository.save(line1);
         final SectionRequest firstSectionRequest = new SectionRequest(upStationResponse.getId(), downStationResponse.getId(), 1);
-        lineService.addSection(save.getId(), firstSectionRequest);
+        lineService.addSection(savedLine.getId(), firstSectionRequest);
 
         final SectionRequest secondSectionRequest = new SectionRequest(downStationResponse.getId(), newStationResponse.getId(), 1);
-        lineService.addSection(save.getId(), secondSectionRequest);
+        lineService.addSection(savedLine.getId(), secondSectionRequest);
 
         // then
         // line.findLineById 메서드를 통해 검증
-        final LineResponse lineResponse = lineService.findById(save.getId());
+        final LineResponse lineResponse = lineService.findById(savedLine.getId());
         assertThat(lineResponse.getStations().size()).isEqualTo(3);
     }
 }
