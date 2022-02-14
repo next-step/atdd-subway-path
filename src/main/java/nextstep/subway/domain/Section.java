@@ -66,6 +66,14 @@ public class Section {
         this.downStation = downStation;
     }
 
+    public void updateUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void addDistance(int distance) {
+        this.distance += distance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

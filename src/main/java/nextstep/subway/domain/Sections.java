@@ -11,6 +11,9 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+    public static final int MINIMUM_SIZE = 1;
+
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -72,13 +75,32 @@ public class Sections {
     }
 
     public void deleteSection(Station station) {
-        final int lastIndex = this.sections.size() - 1;
-        final Section lastSection = this.sections.get(lastIndex);
-        if (!lastSection.isDownStation(station)) {
-            throw new IllegalArgumentException();
+        if (sections.size() <= MINIMUM_SIZE) {
+            throw new IllegalArgumentException("구간이 하나인 노선은 삭제할 수 없습니다.");
         }
 
-        this.sections.remove(lastIndex);
+        final Optional<Section> sectionFromUpStation = this.getSectionFromUpStation(station);
+        final Optional<Section> sectionFromDownStation = this.getSectionFromDownStation(station);
+        if (sectionFromUpStation.isPresent()) { // 상행역에 속하면
+            final Section section = sectionFromUpStation.get();
+            if (this.isFirstStationFrom(section)) {
+                this.sections.remove(section);
+                return;
+            }
+        }
+
+        if (sectionFromDownStation.isPresent()) { // 하행역에 속하면
+            final Section section = sectionFromDownStation.get();
+            if (this.isLastStationFrom(section)) {
+                this.sections.remove(section);
+                return;
+            }
+        }
+
+        final Section middleSectionFromDownStation = this.getSectionFromDownStation(station).get();
+        sectionFromUpStation.get().updateUpStation(sectionFromDownStation.get().getUpStation());
+        sectionFromUpStation.get().addDistance(sectionFromDownStation.get().getDistance());
+        this.sections.remove(middleSectionFromDownStation);
     }
 
     public boolean isEmpty() {
