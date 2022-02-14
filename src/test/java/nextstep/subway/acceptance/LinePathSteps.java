@@ -1,5 +1,7 @@
 package nextstep.subway.acceptance;
 
+import static org.assertj.core.api.Assertions.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,5 +23,13 @@ public class LinePathSteps {
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when().get("/paths")
 			.then().log().all().extract();
+	}
+
+	public static void 최단_경로_지하철역을_확인(ExtractableResponse<Response> response, Long ...stationIds) {
+		assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(stationIds);
+	}
+
+	public static void 최단_경로_거리_확인(ExtractableResponse<Response> response, int distance) {
+		assertThat(response.jsonPath().getInt("distance")).isEqualTo(distance);
 	}
 }

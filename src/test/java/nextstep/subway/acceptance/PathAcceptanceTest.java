@@ -1,17 +1,16 @@
 package nextstep.subway.acceptance;
 
+import static nextstep.subway.acceptance.LinePathSteps.*;
+import static nextstep.subway.acceptance.LineSteps.*;
+import static nextstep.subway.acceptance.StationSteps.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-
-import static nextstep.subway.acceptance.LineSteps.*;
-import static nextstep.subway.acceptance.LinePathSteps.*;
-import static nextstep.subway.acceptance.StationSteps.*;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -57,8 +56,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
 		// then
 		요청_응답_확인(response, HttpStatus.OK);
-		assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(교대역, 남부터미널역, 양재역);
-		assertThat(response.jsonPath().getInt("distance")).isEqualTo(5);
+		최단_경로_지하철역을_확인(response, 교대역, 남부터미널역, 양재역);
+		최단_경로_거리_확인(response, 5);
 	}
 
 	@DisplayName("출발역과 도착역이 같은 역 조회")
