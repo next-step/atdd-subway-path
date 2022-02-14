@@ -17,8 +17,8 @@ public class LineSteps {
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, long upStationId, long downStationId, int distance) {
         Map<String, String> params = Map.of(
-                이름, "2호선",
-                색상, "green",
+                이름, name,
+                색상, color,
                 상행선, String.valueOf(upStationId),
                 하행선, String.valueOf(downStationId),
                 거리, String.valueOf(distance)

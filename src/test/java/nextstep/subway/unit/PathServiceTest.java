@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
 @SpringBootTest
@@ -56,15 +57,25 @@ public class PathServiceTest {
 		공항철도선 = lineRepository.save(Line.of("공항철도선", "green", 홍대입구역, 김포공항역, Distance.from(20)));
 	}
 
-	@DisplayName("출발지와 도착지의 최단거리 도출")
+	@DisplayName("출발지와 도착지의 최단거리 도출에 성공한다.")
 	@Test
 	void findRoute() {
+		//when
 		PathResponse pathResponse = pathService.findRoute(합정역.getId(), 김포공항역.getId());
 
+		//then
 		assertThat(pathResponse.getStations())
 				.extracting(StationResponse::getId)
 				.containsExactly(합정역.getId(), 홍대입구역.getId(), 김포공항역.getId());
 		assertThat(pathResponse.getDistance())
 				.isEqualTo(30);
+	}
+
+	@DisplayName("출발지와 도착지가 같을 경우 최단거리 도출에 실패한다.")
+	@Test
+	void findSameStationRoute() {
+		//when & then
+		assertThatThrownBy(() -> pathService.findRoute(합정역.getId(), 합정역.getId()))
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 }

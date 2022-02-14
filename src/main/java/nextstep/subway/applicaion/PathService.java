@@ -25,6 +25,10 @@ public class PathService {
 		Station depart = stationService.findById(departId);
 		Station arrival = stationService.findById(arrivalId);
 
+		if (depart.equals(arrival)) {
+			throw new IllegalArgumentException("출발지와 도착지를 동일한 역으로 설정할 수 없습니다.");
+		}
+
 		GraphPath paths = pathFinder.findRoute(depart, arrival);
 
 		return PathResponse.of(paths.getVertexList(), paths.getWeight());
