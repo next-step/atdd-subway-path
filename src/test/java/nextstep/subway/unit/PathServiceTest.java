@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.applicaion.PathService;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.applicaion.exception.NotExistStationException;
 import nextstep.subway.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -77,5 +78,13 @@ public class PathServiceTest {
 		//when & then
 		assertThatThrownBy(() -> pathService.findRoute(합정역.getId(), 합정역.getId()))
 				.isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@DisplayName("출발지나 도착지가 존재하지 않을 경우 최단거리 도출에 실패한다.")
+	@Test
+	void findNotExistStationRoute() {
+		//when & then
+		assertThatThrownBy(() -> pathService.findRoute(합정역.getId(), 99L))
+				.isInstanceOf(NotExistStationException.class);
 	}
 }
