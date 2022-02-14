@@ -204,7 +204,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
   }
 
-  private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
+  private static Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
     Map<String, String> lineCreateParams;
     lineCreateParams = new HashMap<>();
     lineCreateParams.put("name", "신분당선");
@@ -215,11 +215,11 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     return lineCreateParams;
   }
 
-  public Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId) {
+  public static Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId) {
     return createSectionCreateParams(upStationId, downStationId, 6);
   }
 
-  private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
+  public static Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
     Map<String, String> params = new HashMap<>();
     params.put("upStationId", upStationId + "");
     params.put("downStationId", downStationId + "");
@@ -227,7 +227,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     return params;
   }
 
-  private List<Long> createListOfStations(Long... stations) {
+  private static List<Long> createListOfStations(Long... stations) {
     return Arrays.asList(stations);
   }
 }
