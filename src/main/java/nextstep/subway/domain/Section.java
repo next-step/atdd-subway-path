@@ -68,8 +68,12 @@ public class Section {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Section)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Section)) {
+            return false;
+        }
         Section section = (Section) o;
         return Objects.equals(getId(), section.getId());
     }
