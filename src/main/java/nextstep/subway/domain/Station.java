@@ -15,6 +15,7 @@ public class Station extends BaseEntity {
     public Station() {
     }
 
+
     public Station(String name) {
         this.name = name;
     }

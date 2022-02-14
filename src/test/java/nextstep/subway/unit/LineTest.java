@@ -23,6 +23,7 @@ class LineTest {
     private Station 역삼역;
     private Station 선릉역;
 
+
     @BeforeEach
     void init() {
         // given

@@ -23,6 +23,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     private Long 양재시민의숲역;
     private Long 청계산입구역;
 
+
     /**
      * Given 지하철역과 노선 생성을 요청 하고
      */

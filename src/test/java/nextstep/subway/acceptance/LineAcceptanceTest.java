@@ -30,6 +30,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         요청_응답_확인(response, HttpStatus.CREATED);
     }
 
+
     /**
      * Given 지하철 노선 생성을 요청 하고
      * Given 새로운 지하철 노선 생성을 요청 하고
