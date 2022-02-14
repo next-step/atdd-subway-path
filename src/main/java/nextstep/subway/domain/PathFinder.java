@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -38,7 +39,7 @@ public class PathFinder {
 				.forEach(graph::addVertex);
 	}
 
-	public List<Station> findRoute(Station depart, Station arrival) {
-		return dijkstraShortestPath.getPath(depart, arrival).getVertexList();
+	public GraphPath findRoute(Station depart, Station arrival) {
+		return dijkstraShortestPath.getPath(depart, arrival);
 	}
 }
