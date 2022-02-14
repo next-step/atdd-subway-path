@@ -62,7 +62,7 @@ public class Sections {
         Section findSection = this.sections.stream()
                 .filter(section -> section.isSameUpStation(upStation))
                 .findAny()
-                .get();
+                .orElseThrow(()-> new RuntimeException("동일한 상행 종점역이 존재하지 않습니다."));
 
         findSection.updateUpStation(newSection.getDownStation(), newSection.getDistance());
     }
@@ -73,7 +73,7 @@ public class Sections {
         Section findSection = this.sections.stream()
                 .filter(section -> section.isSameDownStation(downStation))
                 .findAny()
-                .get();
+                .orElseThrow(()-> new RuntimeException("동일한 하행 종점역이 존재하지 않습니다."));
 
         findSection.updateDownStation(newSection.getUpStation());
         findSection.minusDistance(newSection.getDistance());
@@ -91,19 +91,17 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        // order list
-        List<Section> sections = getSections();
 
         validRemoveStation(station);
 
         if (isFirstStation(station)) {
 
-            this.sections.remove(sections.get(0));
+            this.sections.remove(getFirstSection());
             return;
         }
 
         if (isLastStation(station)) {
-            this.sections.remove(sections.get(sections.size() - 1));
+            this.sections.remove(getLastSection());
             return;
         }
 
@@ -129,14 +127,14 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.isSameUpStation(station))
                 .findAny()
-                .get();
+                .orElseThrow(()-> new RuntimeException("해당 상행이 존재하지 않습니다."));
     }
 
     private Section findUpSection(Station station) {
         return sections.stream()
                 .filter(section -> section.isSameDownStation(station))
                 .findAny()
-                .get();
+                .orElseThrow(()-> new RuntimeException("해당 하행역이 존재하지 않습니다."));
     }
 
     private void validRemoveStation(Station station) {
