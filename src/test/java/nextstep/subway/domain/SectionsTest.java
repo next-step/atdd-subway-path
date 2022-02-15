@@ -114,7 +114,8 @@ class SectionsTest {
     @Test
     @DisplayName("삭제하려는 역이 노선의 하행역 일 때")
     void 삭제하려는_역이_노선의_하행역() {
-
+        sections.removeSection(정자역);
+        assertThat(sections.getStations()).containsExactly(강남역, 양재역, 판교역);
     }
 
     @Test
