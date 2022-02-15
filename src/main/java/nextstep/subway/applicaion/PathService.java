@@ -1,7 +1,6 @@
 package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.PathResponse;
-import nextstep.subway.applicaion.exception.NotFoundPathException;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Station;
@@ -30,8 +29,7 @@ public class PathService {
 			throw new IllegalArgumentException("출발지와 도착지를 동일한 역으로 설정할 수 없습니다.");
 		}
 
-		GraphPath paths = pathFinder.findRoute(depart, arrival)
-				.orElseThrow(() -> new NotFoundPathException(depart.getName(), arrival.getName()));
+		GraphPath paths = pathFinder.findRoute(depart, arrival);
 
 		return PathResponse.of(paths.getVertexList(), paths.getWeight());
 	}

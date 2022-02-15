@@ -1,12 +1,12 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.applicaion.exception.NotFoundPathException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.List;
-import java.util.Optional;
 
 public class PathFinder {
 	private final WeightedMultigraph<Station, DefaultWeightedEdge> graph;
@@ -38,7 +38,13 @@ public class PathFinder {
 		line.getStations().forEach(graph::addVertex);
 	}
 
-	public Optional<GraphPath> findRoute(Station depart, Station arrival) {
-		return Optional.ofNullable(dijkstraShortestPath.getPath(depart, arrival));
+	public GraphPath findRoute(Station depart, Station arrival) {
+		GraphPath paths = dijkstraShortestPath.getPath(depart, arrival);
+
+		if (paths == null) {
+			throw new NotFoundPathException(depart.getName(), arrival.getName());
+		}
+
+		return paths;
 	}
 }
