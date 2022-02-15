@@ -6,8 +6,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import nextstep.subway.exception.AlreadyRegisterStationException;
 import nextstep.subway.exception.CannotRegisterSectionException;
+import nextstep.subway.exception.CannotRemoveSection;
 
 @Embeddable
 public class Sections {
@@ -151,8 +151,32 @@ public class Sections {
                 .anyMatch(section -> section.getUpStation().equals(currentSection.getDownStation()));
     }
 
-    public void removeSection() {
-        sections.remove(sections.size() - 1);
+    public void removeSection(Station station) {
+        validateSectionSize();
+        validateRemoveStation(station);
+
+        if (firstSection().containStation(station)) {
+            sections.remove(firstSection());
+            return;
+        }
+        if (lastSection().containStation(station)) {
+            sections.remove(lastSection());
+            return;
+        }
+
+    }
+
+    private void validateRemoveStation(Station station) {
+        sections.stream()
+                .filter(section -> section.containStation(station))
+                .findFirst()
+                .orElseThrow(CannotRemoveSection::new);
+    }
+
+    private void validateSectionSize() {
+        if (sections.size() <= 1) {
+            throw new CannotRemoveSection();
+        }
     }
 
     public List<Section> getSections() {

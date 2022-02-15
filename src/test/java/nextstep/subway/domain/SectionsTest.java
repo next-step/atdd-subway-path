@@ -100,4 +100,32 @@ class SectionsTest {
         assertThatThrownBy(() -> sections.addSection(중간역, 양재역, 10))
                 .isInstanceOf(CannotRegisterSectionException.class);
     }
+
+    @Test
+    @DisplayName("삭제하려는 역이 노선의 상행역 일 때")
+    void 삭제하려는_역이_노선의_상행역() {
+        sections.removeSection(강남역);
+        assertThat(sections.getStations()).containsExactly(양재역, 판교역, 정자역);
+    }
+
+    /**
+     * 강남역 --10-- 양재역 --5-- 판교역 --3-- 정자역
+     */
+    @Test
+    @DisplayName("삭제하려는 역이 노선의 하행역 일 때")
+    void 삭제하려는_역이_노선의_하행역() {
+
+    }
+
+    @Test
+    @DisplayName("삭제하려는 역이 중간에 위치 할 떄")
+    void 삭제하려는_역이_노선의_중간에_위치() {
+
+    }
+
+    @Test
+    @DisplayName("구간이 1개 이하인 노선에 삭제 요청")
+    void 구간이_1개_이하인_노선에_삭제() {
+
+    }
 }

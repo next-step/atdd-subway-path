@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -36,7 +35,7 @@ public class Line extends BaseEntity {
     }
 
     public void removeSection(Station station) {
-        sections.removeSection();
+        sections.removeSection(station);
     }
 
     public void update(String name, String color) {
