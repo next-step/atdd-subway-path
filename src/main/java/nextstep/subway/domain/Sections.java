@@ -82,26 +82,34 @@ public class Sections {
         final Optional<Section> sectionFromUpStation = this.getSectionFromUpStation(station);
         final Optional<Section> sectionFromDownStation = this.getSectionFromDownStation(station);
 
-        if (sectionFromUpStation.isPresent()) {
-            final Section section = sectionFromUpStation.get();
-            if (this.isFirstStationFrom(section)) {
-                this.sections.remove(section);
-                return;
-            }
+        if (removeIfFirstSection(sectionFromUpStation)) {
+            return;
         }
 
-        if (sectionFromDownStation.isPresent()) {
-            final Section section = sectionFromDownStation.get();
-            if (this.isLastStationFrom(section)) {
-                this.sections.remove(section);
-                return;
-            }
+        if (removeIfLastSection(sectionFromDownStation)) {
+            return;
         }
 
         final Section middleSectionFromDownStation = this.getSectionFromDownStation(station).get();
         sectionFromUpStation.get().updateUpStation(sectionFromDownStation.get().getUpStation());
         sectionFromUpStation.get().addDistance(sectionFromDownStation.get().getDistance());
         this.sections.remove(middleSectionFromDownStation);
+    }
+
+    private boolean removeIfLastSection(Optional<Section> sectionFromDownStation) {
+        if (sectionFromDownStation.isPresent() && this.isLastStationFrom(sectionFromDownStation.get())) {
+            this.sections.remove(sectionFromDownStation.get());
+            return true;
+        }
+        return false;
+    }
+
+    private boolean removeIfFirstSection(Optional<Section> sectionFromUpStation) {
+        if (sectionFromUpStation.isPresent() && this.isFirstStationFrom(sectionFromUpStation.get())) {
+            this.sections.remove(sectionFromUpStation.get());
+            return true;
+        }
+        return false;
     }
 
     public boolean isEmpty() {
