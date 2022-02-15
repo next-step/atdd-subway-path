@@ -64,7 +64,10 @@ public class DeleteSectionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("구간 개수가 1이하인 노선에 삭제 요청")
     void 구간_개수가_1_이하인_노선에_삭제_요청() {
+        CreateLineRequest createLineRequest = new CreateLineRequest("뉴신분당선", "red", 강남역, 양재역, 10);
+        Long 구간이_1개인_노선 = 지하철_노선_생성_요청(createLineRequest).jsonPath().getLong("id");
 
+        assertThat(지하철_노선에_지하철_구간_제거_요청(구간이_1개인_노선, 강남역).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test

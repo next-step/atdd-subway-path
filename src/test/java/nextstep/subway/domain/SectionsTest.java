@@ -1,12 +1,11 @@
 package nextstep.subway.domain;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import nextstep.subway.exception.CannotRegisterSectionException;
-import nextstep.subway.exception.CannotRemoveSection;
+import nextstep.subway.exception.CannotRemoveSectionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -133,6 +132,7 @@ class SectionsTest {
         sections = new Sections();
         sections.addSection(강남역, 양재역, 10);
 
-        assertThatThrownBy(() -> sections.removeSection(강남역)).isInstanceOf(CannotRemoveSection.class);
+        assertThatThrownBy(() -> sections.removeSection(강남역)).isInstanceOf(
+                CannotRemoveSectionException.class);
     }
 }

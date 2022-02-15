@@ -2,6 +2,7 @@ package nextstep.subway.ui;
 
 import nextstep.subway.exception.AlreadyRegisterStationException;
 import nextstep.subway.exception.CannotRegisterSectionException;
+import nextstep.subway.exception.CannotRemoveSectionException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -28,4 +29,11 @@ public class ControllerExceptionHandler {
     public ResponseEntity<Void> handleCannotRegisterSectionException() {
         return ResponseEntity.badRequest().build();
     }
+
+    @ExceptionHandler(CannotRemoveSectionException.class)
+    public ResponseEntity<Void> handleCannotRemoveSectionException() {
+        return ResponseEntity.badRequest().build();
+    }
+
+
 }

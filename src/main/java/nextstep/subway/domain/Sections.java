@@ -7,7 +7,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import nextstep.subway.exception.CannotRegisterSectionException;
-import nextstep.subway.exception.CannotRemoveSection;
+import nextstep.subway.exception.CannotRemoveSectionException;
 
 @Embeddable
 public class Sections {
@@ -183,12 +183,12 @@ public class Sections {
         sections.stream()
                 .filter(section -> section.containStation(station))
                 .findFirst()
-                .orElseThrow(CannotRemoveSection::new);
+                .orElseThrow(CannotRemoveSectionException::new);
     }
 
     private void validateSectionSize() {
         if (sections.size() <= 1) {
-            throw new CannotRemoveSection();
+            throw new CannotRemoveSectionException();
         }
     }
 
