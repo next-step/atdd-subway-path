@@ -24,20 +24,18 @@ public class PathFinder {
 	}
 
 	private void makeGraph(List<Line> lines) {
-		lines.stream().forEach(this::addVertex);
-		lines.stream().forEach(this::addEdgeWeight);
+		lines.forEach(this::addVertex);
+		lines.forEach(this::addEdgeWeight);
 	}
 
 	private void addEdgeWeight(Line line) {
-		line.getSections().stream()
-				.forEach(section -> {
-					graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
-				});
+		line.getSections().forEach(section -> {
+			graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
+		});
 	}
 
 	private void addVertex(Line line) {
-		line.getStations().stream()
-				.forEach(graph::addVertex);
+		line.getStations().forEach(graph::addVertex);
 	}
 
 	public Optional<GraphPath> findRoute(Station depart, Station arrival) {
