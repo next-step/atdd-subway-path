@@ -71,8 +71,11 @@ public class DeleteSectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("삭제역이 노선의 중간")
+    @DisplayName("삭제역이 노선의 중간인 경우")
     void 삭제역이_노선의_중간() {
-
+        assertAll (
+                () -> assertThat(지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역).statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(지하철_노선_조회_요청(신분당선).jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 판교역)
+        );
     }
 }
