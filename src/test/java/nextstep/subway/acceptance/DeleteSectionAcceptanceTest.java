@@ -53,9 +53,12 @@ public class DeleteSectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("삭제역이 노선의 하행역")
+    @DisplayName("삭제역이 노선의 하행역일때 구간 삭제")
     void 삭제역이_노선의_하행역() {
-
+        assertAll (
+                () -> assertThat(지하철_노선에_지하철_구간_제거_요청(신분당선, 판교역).statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(지하철_노선_조회_요청(신분당선).jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역)
+        );
     }
 
     @Test
