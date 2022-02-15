@@ -130,6 +130,9 @@ class SectionsTest {
     @Test
     @DisplayName("구간이 1개 이하인 노선에 삭제 요청")
     void 구간이_1개_이하인_노선에_삭제() {
+        sections = new Sections();
+        sections.addSection(강남역, 양재역, 10);
 
+        assertThatThrownBy(() -> sections.removeSection(강남역)).isInstanceOf(CannotRemoveSection.class);
     }
 }
