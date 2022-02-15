@@ -78,7 +78,7 @@ public class PathFinderAcceptanceTest extends AcceptanceTest {
 	 * When 출발역과 도착역을 존재하지 않는 역으로 최단 경로 조회 요청하면
 	 * Then 최단 경로가 조회 실패한다.
 	 */
-	@DisplayName("출발역과 도착역 중 미존재하는 역이 있을 경우 최단 경로를 조회 성공한다.")
+	@DisplayName("출발역과 도착역 중 미존재하는 역이 있을 경우 최단 경로를 조회 실패한다.")
 	@Test
 	void findNotExistStationRoute() {
 		ExtractableResponse<Response> response = PathFinderSteps.최단경로_조회(합정역, 99L);
@@ -90,7 +90,7 @@ public class PathFinderAcceptanceTest extends AcceptanceTest {
 	 * When 출발역과 도착역이 이어지지 않는 역으로 최단 경로 조회 요청하면
 	 * Then 최단 경로가 조회 실패한다.
 	 */
-	@DisplayName("출발역과 도착역이 이어지지 않을 경우 최단 경로를 조회 성공한다.")
+	@DisplayName("출발역과 도착역이 이어지지 않을 경우 최단 경로를 조회 실패한다.")
 	@Test
 	void findNotConnectStationRoute() {
 		ExtractableResponse<Response> response = PathFinderSteps.최단경로_조회(합정역, 동묘앞역);
