@@ -6,7 +6,6 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.DuplicateCreationException;
 import org.springframework.stereotype.Service;
@@ -41,6 +40,11 @@ public class LineService {
       line.addSection(upStation, downStation, request.getDistance());
     }
     return createLineResponse(line);
+  }
+
+  @Transactional(readOnly = true)
+  public List<Line> getLines() {
+    return lineRepository.findAll();
   }
 
   @Transactional(readOnly = true)

@@ -59,7 +59,7 @@ class PathAcceptanceTest extends AcceptanceTest {
     ExtractableResponse<Response> searchResponse = 최단거리_검색(교대역, 양재역);
 
     // then
-    assertThat(searchResponse.statusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(searchResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
   }
 
   /*
@@ -78,7 +78,7 @@ class PathAcceptanceTest extends AcceptanceTest {
     ExtractableResponse<Response> searchResponse = 최단거리_검색(남부터미널역, 인덕원역);
 
     // then
-    assertThat(searchResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertThat(searchResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
   }
 
   /*
@@ -96,7 +96,7 @@ class PathAcceptanceTest extends AcceptanceTest {
     ExtractableResponse<Response> searchResponse = 최단거리_검색(정부과천청사역, 인덕원역);
 
     // then
-    assertThat(searchResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertThat(searchResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
   }
 
   /*
@@ -110,6 +110,6 @@ class PathAcceptanceTest extends AcceptanceTest {
     ExtractableResponse<Response> searchResponse = 최단거리_검색(교대역, 교대역);
 
     // then
-    assertThat(searchResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertThat(searchResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
   }
 }

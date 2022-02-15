@@ -7,16 +7,18 @@ import nextstep.subway.exception.NotFoundException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
-  @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+  @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
   private List<Section> sections = new ArrayList<>();
 
   public Sections() {
@@ -51,21 +53,6 @@ public class Sections {
       });
 
     sections.add(section);
-  }
-
-  private void validateInsertion(Section section) {
-    // 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
-    boolean upStationIncluded = isUpStationSameNameIncluded(section.getUpStation());
-    boolean downStationIncluded = isUpStationSameNameIncluded(section.getDownStation());
-
-    if (upStationIncluded && downStationIncluded) {
-      throw new DuplicateCreationException();
-    }
-
-    if ((!upStationIncluded) && (!downStationIncluded)) {
-      throw new IllegalAddSectionException();
-    }
-
   }
 
   public boolean isEmpty() {
@@ -129,6 +116,26 @@ public class Sections {
 
     upSection.ifPresent(section -> sections.remove(section));
     downSection.ifPresent(section -> sections.remove(section));
+  }
+
+  public Stream<Section> stream() {
+    // 오직 스트림에서만 사용하기 위함
+    return sections.stream();
+  }
+
+  private void validateInsertion(Section section) {
+    // 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
+    boolean upStationIncluded = isUpStationSameNameIncluded(section.getUpStation());
+    boolean downStationIncluded = isUpStationSameNameIncluded(section.getDownStation());
+
+    if (upStationIncluded && downStationIncluded) {
+      throw new DuplicateCreationException();
+    }
+
+    if ((!upStationIncluded) && (!downStationIncluded)) {
+      throw new IllegalAddSectionException();
+    }
+
   }
 
   private Section addRecoveredSectionFromDeletion(Section upSection, Section downSection) {

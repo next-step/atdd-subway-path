@@ -3,9 +3,7 @@ package nextstep.subway.unit;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class PathQueryServiceTest {
-
-
+class PathServiceMockTest {
   @Test
   @DisplayName("두 역 조회 시 성공")
   void successfulTest() {
