@@ -16,7 +16,7 @@ public class Sections {
     public List<Section> getSections() {
         List<Section> ordered = new ArrayList<>();
 
-        if(this.sections.isEmpty()){
+        if (this.sections.isEmpty()) {
             return ordered;
         }
 
@@ -57,21 +57,26 @@ public class Sections {
     }
 
     private void updateUpSection(Section newSection) {
+        Station upStation = newSection.getUpStation();
+
         Section findSection = this.sections.stream()
-                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+                .filter(section -> section.isSameUpStation(upStation))
                 .findAny()
-                .get();
+                .orElseThrow(()-> new RuntimeException("동일한 상행 종점역이 존재하지 않습니다."));
 
         findSection.updateUpStation(newSection.getDownStation(), newSection.getDistance());
     }
 
     private void updateDownSection(Section newSection) {
-        Section findSection = this.sections.stream()
-                .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
-                .findAny()
-                .get();
+        Station downStation = newSection.getDownStation();
 
-        findSection.updateDownStation(newSection.getUpStation(), newSection.getDistance());
+        Section findSection = this.sections.stream()
+                .filter(section -> section.isSameDownStation(downStation))
+                .findAny()
+                .orElseThrow(()-> new RuntimeException("동일한 하행 종점역이 존재하지 않습니다."));
+
+        findSection.updateDownStation(newSection.getUpStation());
+        findSection.minusDistance(newSection.getDistance());
     }
 
     public List<Station> getStations() {
@@ -86,11 +91,62 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        if (!getLastStation().equals(station)) {
-            throw new IllegalArgumentException();
+
+        validRemoveStation(station);
+
+        if (isFirstStation(station)) {
+
+            this.sections.remove(getFirstSection());
+            return;
         }
 
-        sections.remove(sections.size() - 1);
+        if (isLastStation(station)) {
+            this.sections.remove(getLastSection());
+            return;
+        }
+
+        if (!isFirstStation(station) && !isLastStation(station)) {
+            Section upSection = findUpSection(station);
+            Section downSection = findDownSection(station);
+            upSection.updateDownStation(downSection.getDownStation());
+            upSection.plusDistance(downSection.getDistance());
+            this.sections.remove(downSection);
+            return;
+        }
+    }
+
+    private boolean isFirstStation(Station station) {
+        return station.equalId(getFirstStation());
+    }
+
+    private boolean isLastStation(Station station) {
+        return station.equalId(getLastStation());
+    }
+
+    private Section findDownSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.isSameUpStation(station))
+                .findAny()
+                .orElseThrow(()-> new RuntimeException("해당 상행이 존재하지 않습니다."));
+    }
+
+    private Section findUpSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.isSameDownStation(station))
+                .findAny()
+                .orElseThrow(()-> new RuntimeException("해당 하행역이 존재하지 않습니다."));
+    }
+
+    private void validRemoveStation(Station station) {
+        if (sections.size() == 1) {
+            throw new RuntimeException("더 이상 역을 제거할 수 없습니다.");
+        }
+
+        boolean existStation = sections.stream().anyMatch(section -> section.existStation(station));
+
+        if (!existStation) {
+            throw new RuntimeException("해당 라인에 " + station.getName() + "이 존재하지 않습니다.");
+        }
     }
 
     private List<Station> findDownStations() {

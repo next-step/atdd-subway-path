@@ -1,41 +1,43 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@DataJpaTest
 class LineTest {
-    @Autowired
-    private StationRepository stationRepository;
-
-    @Autowired
-    private LineRepository lineRepository;
 
     Station 강남역;
     Station 양재역;
     Station 광교역;
     Station 수지구청역;
+    Station 왕십리역;
     Line 신분당선;
+    Line 경춘선;
 
     @BeforeEach
     void setUp() {
-        강남역 = stationRepository.save(new Station("강남역"));
-        양재역 = stationRepository.save(new Station("양재역"));
-        광교역 = stationRepository.save(new Station("광교역"));
-        수지구청역 = stationRepository.save(new Station("수지구청역"));
-        신분당선 = lineRepository.save(new Line("신분당선", "bg-red-600"));
+        강남역 = new Station("강남역");
+        양재역 = new Station("양재역");
+        광교역 = new Station("광교역");
+        수지구청역 = new Station("수지구청역");
+        왕십리역 = new Station("왕십리역");
+        신분당선 = new Line("신분당선", "bg-red-600");
+        경춘선 = new Line("경춘선", "bg-green-600");
+
+        ReflectionTestUtils.setField(강남역,"id",1L);
+        ReflectionTestUtils.setField(양재역,"id",2L);
+        ReflectionTestUtils.setField(광교역,"id",3L);
+        ReflectionTestUtils.setField(수지구청역,"id",4L);
+        ReflectionTestUtils.setField(신분당선,"id",1L);
+        ReflectionTestUtils.setField(경춘선,"id",2L);
     }
 
     @DisplayName("구간 목록 마지막에 새로운 구간을 추가할 경우")
@@ -163,6 +165,72 @@ class LineTest {
         assertThrows(RuntimeException.class, () -> {
             신분당선.addSection(강남역, 양재역, 10);
             신분당선.addSection(수지구청역, 광교역, 5);
+        });
+    }
+
+    @DisplayName("노선 삭제 실패 - 구간이 1개 남아있음")
+    @Test
+    void deleteSectionExceptionOneSection() {
+        assertThrows(RuntimeException.class, () -> {
+            신분당선.addSection(강남역, 양재역, 10);
+            신분당선.removeSection(강남역);
+        });
+    }
+
+    @DisplayName("첫번째 역 삭제")
+    @Test
+    void deleteSection_firstStation() {
+        //given
+        신분당선.addSection(강남역, 양재역, 10);
+        신분당선.addSection(양재역, 광교역, 5);
+
+        //when
+        신분당선.removeSection(강남역);
+
+        //then
+        assertThat(신분당선.getStations()).hasSize(2);
+        assertThat(신분당선.getStations()).contains(양재역, 광교역);
+    }
+
+    @DisplayName("마지막 역 삭제")
+    @Test
+    void deleteSection_LastStation() {
+        //given
+        신분당선.addSection(강남역, 양재역, 10);
+        신분당선.addSection(양재역, 광교역, 5);
+
+        //when
+        신분당선.removeSection(광교역);
+
+        //then
+        assertThat(신분당선.getStations()).hasSize(2);
+        assertThat(신분당선.getStations()).contains(강남역, 양재역);
+    }
+
+    @DisplayName("중간 역 삭제")
+    @Test
+    void deleteSection_MiddleStation() {
+        //given
+        신분당선.addSection(강남역, 양재역, 10);
+        신분당선.addSection(양재역, 광교역, 5);
+
+        //when
+        신분당선.removeSection(양재역);
+
+        //then
+        assertThat(신분당선.getStations()).hasSize(2);
+        assertThat(신분당선.getStations()).contains(강남역, 광교역);
+        assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(15);
+    }
+
+    @DisplayName("노선 삭제 실패 - 라인에 요청한 역이 존재하지 않음")
+    @Test
+    void deleteSectionExceptionNoStation() {
+        assertThrows(RuntimeException.class, () -> {
+            신분당선.addSection(강남역, 양재역, 10);
+            신분당선.addSection(양재역, 광교역, 10);
+            경춘선.addSection(왕십리역, 수지구청역, 10);
+            신분당선.removeSection(수지구청역);
         });
     }
 }

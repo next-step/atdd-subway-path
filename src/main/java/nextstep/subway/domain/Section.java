@@ -61,11 +61,32 @@ public class Section {
         this.distance -= distance;
     }
 
-    public void updateDownStation(Station upStation, int distance) {
+    public void updateDownStation(Station upStation) {
+        this.downStation = upStation;
+    }
+
+    public void minusDistance(int distance){
         if (this.distance <= distance) {
             throw new RuntimeException("기존 노선의 길이보다 길다.");
         }
-        this.downStation = upStation;
         this.distance -= distance;
+    }
+
+    public void plusDistance(int distance){
+        this.distance += distance;
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return downStation.equalId(station);
+    }
+
+    public boolean isSameUpStation(Station station) {
+        return upStation.equalId(station);
+    }
+
+
+    public boolean existStation(Station station) {
+        long id = station.getId();
+        return upStation.getId() == id || downStation.getId() == id;
     }
 }
