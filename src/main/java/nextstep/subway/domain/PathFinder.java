@@ -13,7 +13,7 @@ public class PathFinder {
 	private final DijkstraShortestPath dijkstraShortestPath;
 
 	private PathFinder(List<Line> lines) {
-		this.graph = new WeightedMultigraph<Station, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+		this.graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
 		this.dijkstraShortestPath = new DijkstraShortestPath(graph);
 
 		makeGraph(lines);
@@ -38,7 +38,7 @@ public class PathFinder {
 		line.getStations().forEach(graph::addVertex);
 	}
 
-	public GraphPath findRoute(Station depart, Station arrival) {
+	public GraphPath findRoute(List<Line> lines, Station depart, Station arrival) {
 		GraphPath paths = dijkstraShortestPath.getPath(depart, arrival);
 
 		if (paths == null) {
