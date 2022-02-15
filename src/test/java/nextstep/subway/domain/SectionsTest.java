@@ -1,10 +1,12 @@
 package nextstep.subway.domain;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import nextstep.subway.exception.CannotRegisterSectionException;
+import nextstep.subway.exception.CannotRemoveSection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -121,7 +123,8 @@ class SectionsTest {
     @Test
     @DisplayName("삭제하려는 역이 중간에 위치 할 떄")
     void 삭제하려는_역이_노선의_중간에_위치() {
-
+        sections.removeSection(양재역);
+        assertThat(sections.getStations()).containsExactly(강남역, 판교역, 정자역);
     }
 
     @Test

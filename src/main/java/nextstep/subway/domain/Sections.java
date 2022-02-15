@@ -153,20 +153,33 @@ public class Sections {
 
     public void removeSection(Station station) {
         validateSectionSize();
-        validateRemoveStation(station);
+        validateContainStation(station);
 
-        if (firstSection().containStation(station)) {
+        if (firstSection().isUpStation(station)) {
             sections.remove(firstSection());
             return;
         }
-        if (lastSection().containStation(station)) {
+        if (lastSection().isDownStation(station)) {
             sections.remove(lastSection());
             return;
         }
 
+        removeSectionAtMiddle(station);
     }
 
-    private void validateRemoveStation(Station station) {
+    private void removeSectionAtMiddle(Station station) {
+        Section sectionIncludeUpStation = findSectionIncludeUpStation(station);
+        Section sectionIncludeDownStation = findSectionIncludeDownStation(station);
+
+        sections.remove(sectionIncludeUpStation);
+        sections.remove(sectionIncludeDownStation);
+
+        int distance = sectionIncludeUpStation.getDistance() + sectionIncludeDownStation.getDistance();
+
+        sections.add(new Section(sectionIncludeDownStation.getUpStation(), sectionIncludeUpStation.getDownStation(), distance));
+    }
+
+    private void validateContainStation(Station station) {
         sections.stream()
                 .filter(section -> section.containStation(station))
                 .findFirst()
@@ -182,4 +195,5 @@ public class Sections {
     public List<Section> getSections() {
         return sections;
     }
+
 }
