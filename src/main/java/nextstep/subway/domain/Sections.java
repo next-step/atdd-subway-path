@@ -41,23 +41,31 @@ public class Sections {
 
     private void addSectionAtMiddle(Station upStation, Station downStation, int distance) {
         if (isNewStation(upStation)) {
-            Section section = findSectionIncludeDownStation(downStation);
-            validateDistance(section.getDistance(), distance);
-            sections.remove(section);
-            sections.add(new Section(section.getUpStation(), upStation, section.getDistance() - distance));
-            sections.add(new Section(upStation, downStation, distance));
+            addSectionWhereUpStationIsNew(upStation, downStation, distance);
             return;
         }
 
         if (isNewStation(downStation)) {
-            Section section = findSectionIncludeUpStation(upStation);
-            validateDistance(section.getDistance(), distance);
-            sections.remove(section);
-            sections.add(new Section(upStation, downStation, distance));
-            sections.add(new Section(downStation, section.getDownStation(), section.getDistance() - distance));
+            addSectionWhereDownStationIsNew(upStation, downStation, distance);
             return;
         }
         throw new CannotRegisterSectionException();
+    }
+
+    private void addSectionWhereUpStationIsNew(Station upStation, Station downStation, int distance) {
+        Section section = findSectionIncludeDownStation(downStation);
+        validateDistance(section.getDistance(), distance);
+        sections.remove(section);
+        sections.add(new Section(section.getUpStation(), upStation, section.getDistance() - distance));
+        sections.add(new Section(upStation, downStation, distance));
+    }
+
+    private void addSectionWhereDownStationIsNew(Station upStation, Station downStation, int distance) {
+        Section section = findSectionIncludeUpStation(upStation);
+        validateDistance(section.getDistance(), distance);
+        sections.remove(section);
+        sections.add(new Section(upStation, downStation, distance));
+        sections.add(new Section(downStation, section.getDownStation(), section.getDistance() - distance));
     }
 
     private void validateDistance(int distance, int registerDistance) {
