@@ -24,6 +24,7 @@ public class LineService {
         this.stationService = stationService;
     }
 
+
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {

@@ -11,7 +11,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
-import nextstep.subway.domain.exception.ExceptionMessage;
+import nextstep.subway.domain.exception.ExceptionCode;
 
 @Embeddable
 public class Sections {
@@ -20,6 +20,10 @@ public class Sections {
   
 	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
+
+	public void addAll(List<Section> sections) {
+		this.sections.addAll(sections);
+	}
 
 	public void addSection(Line line, Station upStation, Station downStation, int distance) {
 		if(sections.isEmpty()) {
@@ -102,18 +106,23 @@ public class Sections {
 		throw new IllegalArgumentException();
 	}
 
+	public boolean isContain(Station station) {
+		return sections.stream()
+			.anyMatch(it -> it.isContainStation(station));
+	}
+
 	private void validDuplication(Station upStation, Station downStation) {
 		sections.stream()
 			.filter(it -> it.isDuplicateStation(upStation, downStation))
 			.findFirst()
-			.ifPresent(it -> { throw new IllegalArgumentException(ExceptionMessage.DUPLICATE_SECTION.getMessage()); });
+			.ifPresent(it -> { throw new IllegalArgumentException(ExceptionCode.DUPLICATE_SECTION.getMessage()); });
 	}
 
 	private void validInclude(Station upStation, Station downStation) {
 		sections.stream()
 			.filter(it -> it.isContainStation(upStation) || it.isContainStation(downStation))
 			.findFirst()
-			.orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.DO_NOT_ADD_SECTION.getMessage()));
+			.orElseThrow(() -> new IllegalArgumentException(ExceptionCode.DO_NOT_ADD_SECTION.getMessage()));
 	}
 
 	private void updateMiddleSection(Line line, Station upStation, Station downStation, int distance) {
@@ -128,7 +137,7 @@ public class Sections {
 
 		Section section = sections.get(index);
 		if(section.isGraterOrEqualThanExistingDistance(distance)) {
-			throw new IllegalArgumentException(ExceptionMessage.DO_NOT_ADD_SECTION.getMessage());
+			throw new IllegalArgumentException(ExceptionCode.DO_NOT_ADD_SECTION.getMessage());
 		}
 
 		if(section.isUpStation(upStation)) {
@@ -146,7 +155,7 @@ public class Sections {
 
 	private void validEmpty() {
 		if(sections.isEmpty() || sections.size() == MIN_SIZE) {
-			throw new IllegalArgumentException(ExceptionMessage.NOT_REMOVE_SECTION.getMessage());
+			throw new IllegalArgumentException(ExceptionCode.NOT_REMOVE_SECTION.getMessage());
 		}
 	}
 
