@@ -81,7 +81,8 @@ public class Sections {
 
         final Optional<Section> sectionFromUpStation = this.getSectionFromUpStation(station);
         final Optional<Section> sectionFromDownStation = this.getSectionFromDownStation(station);
-        if (sectionFromUpStation.isPresent()) { // 상행역에 속하면
+
+        if (sectionFromUpStation.isPresent()) {
             final Section section = sectionFromUpStation.get();
             if (this.isFirstStationFrom(section)) {
                 this.sections.remove(section);
@@ -89,7 +90,7 @@ public class Sections {
             }
         }
 
-        if (sectionFromDownStation.isPresent()) { // 하행역에 속하면
+        if (sectionFromDownStation.isPresent()) {
             final Section section = sectionFromDownStation.get();
             if (this.isLastStationFrom(section)) {
                 this.sections.remove(section);

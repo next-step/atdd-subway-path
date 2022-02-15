@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 public class Section {
@@ -72,22 +71,5 @@ public class Section {
 
     public void addDistance(int distance) {
         this.distance += distance;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Section)) {
-            return false;
-        }
-        Section section = (Section) o;
-        return Objects.equals(getId(), section.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId());
     }
 }
