@@ -38,6 +38,14 @@ public class Section {
         return upStation.equals(station) || downStation.equals(station);
     }
 
+    public boolean isUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
     public Long getId() {
         return id;
     }
@@ -54,4 +62,13 @@ public class Section {
         return distance;
     }
 
+    @Override
+    public String toString() {
+        return "Section{" +
+
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
+    }
 }

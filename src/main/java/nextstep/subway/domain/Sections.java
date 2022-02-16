@@ -6,8 +6,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import nextstep.subway.exception.AlreadyRegisterStationException;
 import nextstep.subway.exception.CannotRegisterSectionException;
+import nextstep.subway.exception.CannotRemoveSectionException;
 
 @Embeddable
 public class Sections {
@@ -41,23 +41,31 @@ public class Sections {
 
     private void addSectionAtMiddle(Station upStation, Station downStation, int distance) {
         if (isNewStation(upStation)) {
-            Section section = findSectionIncludeDownStation(downStation);
-            validateDistance(section.getDistance(), distance);
-            sections.remove(section);
-            sections.add(new Section(section.getUpStation(), upStation, section.getDistance() - distance));
-            sections.add(new Section(upStation, downStation, distance));
+            addSectionWhereUpStationIsNew(upStation, downStation, distance);
             return;
         }
 
         if (isNewStation(downStation)) {
-            Section section = findSectionIncludeUpStation(upStation);
-            validateDistance(section.getDistance(), distance);
-            sections.remove(section);
-            sections.add(new Section(upStation, downStation, distance));
-            sections.add(new Section(downStation, section.getDownStation(), section.getDistance() - distance));
+            addSectionWhereDownStationIsNew(upStation, downStation, distance);
             return;
         }
         throw new CannotRegisterSectionException();
+    }
+
+    private void addSectionWhereUpStationIsNew(Station upStation, Station downStation, int distance) {
+        Section section = findSectionIncludeDownStation(downStation);
+        validateDistance(section.getDistance(), distance);
+        sections.remove(section);
+        sections.add(new Section(section.getUpStation(), upStation, section.getDistance() - distance));
+        sections.add(new Section(upStation, downStation, distance));
+    }
+
+    private void addSectionWhereDownStationIsNew(Station upStation, Station downStation, int distance) {
+        Section section = findSectionIncludeUpStation(upStation);
+        validateDistance(section.getDistance(), distance);
+        sections.remove(section);
+        sections.add(new Section(upStation, downStation, distance));
+        sections.add(new Section(downStation, section.getDownStation(), section.getDistance() - distance));
     }
 
     private void validateDistance(int distance, int registerDistance) {
@@ -143,11 +151,49 @@ public class Sections {
                 .anyMatch(section -> section.getUpStation().equals(currentSection.getDownStation()));
     }
 
-    public void removeSection() {
-        sections.remove(sections.size() - 1);
+    public void removeSection(Station station) {
+        validateSectionSize();
+        validateContainStation(station);
+
+        if (firstSection().isUpStation(station)) {
+            sections.remove(firstSection());
+            return;
+        }
+        if (lastSection().isDownStation(station)) {
+            sections.remove(lastSection());
+            return;
+        }
+
+        removeSectionAtMiddle(station);
+    }
+
+    private void removeSectionAtMiddle(Station station) {
+        Section sectionIncludeUpStation = findSectionIncludeUpStation(station);
+        Section sectionIncludeDownStation = findSectionIncludeDownStation(station);
+
+        sections.remove(sectionIncludeUpStation);
+        sections.remove(sectionIncludeDownStation);
+
+        int distance = sectionIncludeUpStation.getDistance() + sectionIncludeDownStation.getDistance();
+
+        sections.add(new Section(sectionIncludeDownStation.getUpStation(), sectionIncludeUpStation.getDownStation(), distance));
+    }
+
+    private void validateContainStation(Station station) {
+        sections.stream()
+                .filter(section -> section.containStation(station))
+                .findFirst()
+                .orElseThrow(CannotRemoveSectionException::new);
+    }
+
+    private void validateSectionSize() {
+        if (sections.size() <= 1) {
+            throw new CannotRemoveSectionException();
+        }
     }
 
     public List<Section> getSections() {
         return sections;
     }
+
 }

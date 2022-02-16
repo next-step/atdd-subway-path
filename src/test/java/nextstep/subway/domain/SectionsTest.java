@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import nextstep.subway.exception.CannotRegisterSectionException;
+import nextstep.subway.exception.CannotRemoveSectionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -99,5 +100,39 @@ class SectionsTest {
         Station 중간역 = new Station("중간역");
         assertThatThrownBy(() -> sections.addSection(중간역, 양재역, 10))
                 .isInstanceOf(CannotRegisterSectionException.class);
+    }
+
+    @Test
+    @DisplayName("삭제하려는 역이 노선의 상행역 일 때")
+    void 삭제하려는_역이_노선의_상행역() {
+        sections.removeSection(강남역);
+        assertThat(sections.getStations()).containsExactly(양재역, 판교역, 정자역);
+    }
+
+    /**
+     * 강남역 --10-- 양재역 --5-- 판교역 --3-- 정자역
+     */
+    @Test
+    @DisplayName("삭제하려는 역이 노선의 하행역 일 때")
+    void 삭제하려는_역이_노선의_하행역() {
+        sections.removeSection(정자역);
+        assertThat(sections.getStations()).containsExactly(강남역, 양재역, 판교역);
+    }
+
+    @Test
+    @DisplayName("삭제하려는 역이 중간에 위치 할 떄")
+    void 삭제하려는_역이_노선의_중간에_위치() {
+        sections.removeSection(양재역);
+        assertThat(sections.getStations()).containsExactly(강남역, 판교역, 정자역);
+    }
+
+    @Test
+    @DisplayName("구간이 1개 이하인 노선에 삭제 요청")
+    void 구간이_1개_이하인_노선에_삭제() {
+        sections = new Sections();
+        sections.addSection(강남역, 양재역, 10);
+
+        assertThatThrownBy(() -> sections.removeSection(강남역)).isInstanceOf(
+                CannotRemoveSectionException.class);
     }
 }
