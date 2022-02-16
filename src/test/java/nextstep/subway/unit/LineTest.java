@@ -37,7 +37,7 @@ class LineTest {
         ReflectionTestUtils.setField(신촌역, "id", 4L);
 
         ReflectionTestUtils.setField(이호선, "id", 1L);
-        ReflectionTestUtils.setField(이호선.getSections().getSections().get(0), "id", 1L);
+        ReflectionTestUtils.setField(이호선.getSections().get(0), "id", 1L);
     }
 
     /**
@@ -51,10 +51,10 @@ class LineTest {
         이호선.addSection(역삼역, 합정역, 거리);
 
         //then
-        assertThat(이호선.getSections().getStations()).containsExactly(강남역, 역삼역, 합정역);
-        assertThat(이호선.getSections().getSections())
+        assertThat(이호선.getStations()).containsExactly(강남역, 역삼역, 합정역);
+        assertThat(이호선.getSections())
                 .extracting(Section::getDistance)
-                .containsExactly(Distance.from(100), 거리);
+                .containsExactly(100, 50);
     }
 
     /**
@@ -68,10 +68,10 @@ class LineTest {
         이호선.addSection(강남역, 합정역, 거리);
 
         //then
-        assertThat(이호선.getSections().getStations()).containsExactly(강남역, 합정역, 역삼역);
-        assertThat(이호선.getSections().getSections())
+        assertThat(이호선.getStations()).containsExactly(강남역, 합정역, 역삼역);
+        assertThat(이호선.getSections())
                 .extracting(Section::getDistance)
-                .containsExactly(거리, 거리);
+                .containsExactly(50, 50);
     }
 
     /**
@@ -85,10 +85,10 @@ class LineTest {
         이호선.addSection(합정역, 역삼역, 거리);
 
         //then
-        assertThat(이호선.getSections().getStations()).containsExactly(강남역, 합정역, 역삼역);
-        assertThat(이호선.getSections().getSections())
+        assertThat(이호선.getStations()).containsExactly(강남역, 합정역, 역삼역);
+        assertThat(이호선.getSections())
                 .extracting(Section::getDistance)
-                .containsExactly(거리, 거리);
+                .containsExactly(50, 50);
     }
 
     /**
@@ -102,10 +102,10 @@ class LineTest {
         이호선.addSection(합정역, 강남역, 거리);
 
         //then
-        assertThat(이호선.getSections().getStations()).containsExactly(합정역, 강남역, 역삼역);
-        assertThat(이호선.getSections().getSections())
+        assertThat(이호선.getStations()).containsExactly(합정역, 강남역, 역삼역);
+        assertThat(이호선.getSections())
                 .extracting(Section::getDistance)
-                .containsExactly(Distance.from(100), 거리);
+                .containsExactly(100, 50);
     }
 
     /**
@@ -164,7 +164,7 @@ class LineTest {
     @Test
     void getStations() {
         //then
-        assertThat(이호선.getSections().getStations()).containsExactly(강남역, 역삼역);
+        assertThat(이호선.getStations()).containsExactly(강남역, 역삼역);
     }
 
     /**
@@ -176,12 +176,12 @@ class LineTest {
     void removeSection() {
         //when
         이호선.addSection(역삼역, 합정역, 거리);
-        ReflectionTestUtils.setField(이호선.getSections().getSections().get(1), "id", 2L);
+        ReflectionTestUtils.setField(이호선.getSections().get(1), "id", 2L);
         
         이호선.deleteSection(합정역);
 
         //then
-        assertThat(이호선.getSections().getStations()).containsExactly(강남역, 역삼역);
+        assertThat(이호선.getStations()).containsExactly(강남역, 역삼역);
     }
 
     /**
@@ -193,15 +193,15 @@ class LineTest {
     void removeFirstStation() {
         //when
         이호선.addSection(역삼역, 합정역, 거리);
-        ReflectionTestUtils.setField(이호선.getSections().getSections().get(1), "id", 2L);
+        ReflectionTestUtils.setField(이호선.getSections().get(1), "id", 2L);
 
         이호선.deleteSection(강남역);
 
         //then
-        assertThat(이호선.getSections().getStations()).containsExactly(역삼역, 합정역);
-        assertThat(이호선.getSections().getSections())
+        assertThat(이호선.getStations()).containsExactly(역삼역, 합정역);
+        assertThat(이호선.getSections())
                 .extracting(Section::getDistance)
-                .containsExactly(거리);
+                .containsExactly(50);
     }
 
     /**
@@ -213,14 +213,14 @@ class LineTest {
     void removeMiddleStation() {
         //when
         이호선.addSection(역삼역, 합정역, 거리);
-        ReflectionTestUtils.setField(이호선.getSections().getSections().get(1), "id", 2L);
+        ReflectionTestUtils.setField(이호선.getSections().get(1), "id", 2L);
 
         이호선.deleteSection(역삼역);
 
         //then
-        assertThat(이호선.getSections().getStations()).containsExactly(강남역, 합정역);
-        assertThat(이호선.getSections().getSections())
+        assertThat(이호선.getStations()).containsExactly(강남역, 합정역);
+        assertThat(이호선.getSections())
                 .extracting(Section::getDistance)
-                .containsExactly(Distance.from(150));
+                .containsExactly(150);
     }
 }

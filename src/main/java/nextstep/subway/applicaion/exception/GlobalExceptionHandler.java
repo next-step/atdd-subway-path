@@ -21,6 +21,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler({NotFoundPathException.class})
+    public ResponseEntity<ErrorResponse> notFoundException(Exception e) {
+
+        return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler({IllegalArgumentException.class})
     public ResponseEntity<ErrorResponse> illegalException(Exception e) {
 

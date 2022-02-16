@@ -21,7 +21,7 @@ public class SectionsTest {
 
 	Sections 구간들;
 
-	final Distance 거리 = Distance.from(100);
+	final int 거리 = 100;
 
 	/**
 	 * Given 노선에 3개의 지하철역을 등록하였다고 가정한 후
@@ -37,9 +37,10 @@ public class SectionsTest {
 		ReflectionTestUtils.setField(이호선, "id", 1L);
 
 		이호선.addSection(역삼역, 합정역, Distance.from(100));
-		구간들 = 이호선.getSections();
 
+		구간들 = (Sections) ReflectionTestUtils.getField(이호선, "sections");
 		List<Section> sections = 구간들.getSections();
+
 		IntStream.rangeClosed(1, 2).forEach(index -> {
 			ReflectionTestUtils.setField(sections.get(index - 1), "id", Long.valueOf(index));
 		});
@@ -59,7 +60,7 @@ public class SectionsTest {
 		assertThat(구간들.getStations()).containsExactly(강남역, 합정역);
 		assertThat(구간들.getSections())
 				.extracting(Section::getDistance)
-				.containsExactly(Distance.from(200));
+				.containsExactly(200);
 	}
 
 	/**
