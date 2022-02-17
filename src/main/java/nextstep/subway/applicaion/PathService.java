@@ -4,6 +4,7 @@ import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.UnLinkedStationsException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,7 +21,13 @@ public class PathService {
   }
 
   public PathResponse findShortestPath(Long source, Long target) {
+
+    if (source.equals(target)) {
+      throw new UnLinkedStationsException();
+    }
+
     List<Line> lines = lineService.getLines();
+
     Station sourceStation = stationService.findById(source);
     Station targetStation = stationService.findById(target);
     PathFinder pathFinder = new PathFinder(lines);
