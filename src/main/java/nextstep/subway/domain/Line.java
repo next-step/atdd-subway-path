@@ -21,9 +21,7 @@ public class Line extends BaseEntity {
     @Embedded
     private final Sections sections = new Sections();
 
-    protected Line() {
-        //
-    }
+    protected Line() { }
 
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this(name, color);
@@ -155,11 +153,6 @@ public class Line extends BaseEntity {
         return sections.findLastUpSection();
     }
 
-    private Section findLastDownSection() {
-
-        return sections.findLastDownSection();
-    }
-
     public List<Section> getSections() {
 
         return sections.values();
@@ -183,9 +176,5 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 }
