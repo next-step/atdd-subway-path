@@ -26,11 +26,6 @@ public class LineResponse {
         this.modifiedDate = modifiedDate;
     }
 
-    /**
-     * 상행 종점이 상행역인 구간을 먼저 찾는다.
-     * 그 다음, 해당 구간의 하행역이 상행역인 다른 구간을 찾는다.
-     * 2번을 반복하다가 하행 종점역을 찾으면 조회를 멈춘다.
-     */
     public static LineResponse of(Line line) {
 
         return new LineResponse(
