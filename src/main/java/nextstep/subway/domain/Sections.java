@@ -46,6 +46,15 @@ public class Sections {
 						.findAny().orElseThrow(RuntimeException::new);
 	}
 
+	public boolean containStation(final Station station) {
+		for (Section section : sections) {
+			if (section.containStation(station)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public Section findLastDownSection() {
 		List<Station> upStations = sections
 						.stream()
@@ -65,13 +74,6 @@ public class Sections {
 	public int size() {
 
 		return sections.size();
-	}
-
-	public void isExist(Station upStation, Station downStation) {
-		if (!sections.contains(upStation) && !sections.contains(downStation)) {
-
-			throw new RuntimeException("등록하고자하는 구간의 역이 존재하지 않습니다.");
-		}
 	}
 
 	public int remove(Station station) {

@@ -49,7 +49,10 @@ public class Line extends BaseEntity {
 
     public void addSection(Station upStation, Station downStation, int distance) {
 
-        sections.isExist(upStation, downStation);
+        if (!sections.containStation(upStation) && !sections.containStation(downStation)) {
+
+            throw new RuntimeException("등록하고자하는 역이 존재하지않습니다.");
+        }
 
         Optional<Section> sectionWithUpStation = sections.findSectionWithUpStation(upStation);
 

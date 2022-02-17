@@ -39,6 +39,11 @@ public class Section {
         return this.upStation.equals(upStation) && this.downStation.equals(downStation);
     }
 
+    public boolean containStation(Station station) {
+
+        return this.upStation.equals(station) || this.downStation.equals(station);
+    }
+
     public Long getId() {
         return id;
     }
