@@ -63,7 +63,7 @@ public class Section {
     }
 
     public Section merge(Section section) {
-        if (!isDownStation(section.upStation)) {
+        if (!hasDownStationAs(section.upStation)) {
             throw new IllegalArgumentException("합치려는 구간의 상행역이 하행역과 같아야 합니다.");
         }
 
@@ -71,11 +71,11 @@ public class Section {
     }
 
 
-    public boolean isUpStation(Station station) {
+    public boolean hasUpStationAs(Station station) {
         return upStation.equals(station);
     }
 
-    public boolean isDownStation(Station station) {
+    public boolean hasDownStationAs(Station station) {
         return downStation.equals(station);
     }
 
