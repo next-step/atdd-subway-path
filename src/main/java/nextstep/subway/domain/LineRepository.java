@@ -11,7 +11,7 @@ public interface LineRepository extends JpaRepository<Line, Long> {
 
   @Query("select distinct l from Line l " +
     "join fetch l.sections ss " +
-    "join fetch ss.sections s "  +
+    "join fetch ss.sections s " +
     "join fetch s.upStation up " +
     "join fetch s.downStation down")
   List<Line> findAllWithSections();
