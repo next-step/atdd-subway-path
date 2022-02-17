@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -152,4 +153,7 @@ public class Sections {
         sections.add(firstSection.merge(secondSection));
     }
 
+    public List<Section> getSectionList() {
+        return Collections.unmodifiableList(sections);
+    }
 }
