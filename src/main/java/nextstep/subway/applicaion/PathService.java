@@ -27,7 +27,7 @@ public class PathService {
         Station target = stationService.findById(targetId);
         List<Line> lines = lineRepository.findAll();
 
-        PathFinder pathFinder = PathFinder.of(lines);
+        PathFinder pathFinder = PathFinder.from(lines);
         Path shortestPath = pathFinder.searchPath(source, target);
         return PathResponse.from(shortestPath);
     }

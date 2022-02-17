@@ -9,13 +9,12 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
 public class PathFinder {
-
     private WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
 
     private PathFinder() {
     }
 
-    public static PathFinder of(List<Line> lines) {
+    public static PathFinder from(List<Line> lines) {
         PathFinder pathFinder = new PathFinder();
         pathFinder.init(lines);
         return pathFinder;
@@ -65,5 +64,4 @@ public class PathFinder {
             throw new IllegalArgumentException("노선에 포함된 역의 경로만 조회 가능합니다.");
         }
     }
-
 }
