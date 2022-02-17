@@ -47,6 +47,10 @@ public class StationSteps {
         return response;
     }
 
+    public static Long 지하철역_생성(String name) {
+        return 지하철역_생성_요청(name).jsonPath().getLong("id");
+    }
+
     public static void 지하철역_생성됨(ExtractableResponse<Response> response) {
         assertStatus(response ,HttpStatus.CREATED);
         assertThat(response.header("Location")).isNotBlank();

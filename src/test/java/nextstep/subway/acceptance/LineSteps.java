@@ -145,6 +145,11 @@ public class LineSteps {
         assertThat(response.statusCode()).isEqualTo(status.value());
     }
 
+    public static Long 지하철_노선_생성(String name, String color, Long upStationId, Long downStationId, int distance) {
+        return 지하철_노선_생성_요청(createLineCreateParams(name, color, upStationId, downStationId, distance))
+                .jsonPath().getLong("id");
+    }
+
     public static Map<String, String> createLineCreateParams(String name, String color, Long upStationId, Long downStationId, int distance) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
