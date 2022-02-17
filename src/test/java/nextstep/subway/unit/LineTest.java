@@ -38,7 +38,7 @@ class LineTest {
 
         assertThat(line.allStations()).containsExactly(강남역, 양재역, 정자역);
         assertThat(section.getDownStation()).isEqualTo(정자역);
-        assertThat(section.getDistance()).isEqualTo(10);
+        assertThat(section.getLine().allSections()).extracting(Section::getDistance).containsExactly(10, 10);
     }
 
     @DisplayName("구간 목록 맨처음에 새로운 구간을 추가할 경우")
@@ -53,7 +53,7 @@ class LineTest {
 
         assertThat(line.allStations()).containsExactly(정자역, 강남역, 양재역);
         assertThat(section.getUpStation()).isEqualTo(정자역);
-        assertThat(section.getDistance()).isEqualTo(10);
+        assertThat(section.getLine().allSections()).extracting(Section::getDistance).containsExactly(10, 10);
     }
 
     @DisplayName("구간 중간에 상행역을 기준으로 새로운 구간을 추가")
@@ -68,7 +68,7 @@ class LineTest {
 
         assertThat(line.allStations()).containsExactly(강남역, 정자역, 양재역);
         assertThat(section.getDownStation()).isEqualTo(정자역);
-        assertThat(section.getDistance()).isEqualTo(5);
+        assertThat(section.getLine().allSections()).extracting(Section::getDistance).containsExactly(5, 5);
     }
 
     @DisplayName("구간 중간에 하행역을 기준으로 새로운 구간을 추가")
@@ -83,7 +83,7 @@ class LineTest {
 
         assertThat(line.allStations()).containsExactly(강남역, 정자역, 양재역);
         assertThat(section.getDownStation()).isEqualTo(정자역);
-        assertThat(section.getDistance()).isEqualTo(5);
+        assertThat(section.getLine().allSections()).extracting(Section::getDistance).containsExactly(5, 5);
     }
 
     @DisplayName("등록할 수 없는 구간길이를 등록했을때, 예외발생 확인")
