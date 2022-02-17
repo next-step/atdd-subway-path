@@ -89,7 +89,7 @@ public class Line extends BaseEntity {
             throw new RuntimeException("구간 사이 등록할 때, 길이가 같습니다.");
         }
 
-        if (originalSection.isEqual(newUpStation, newDownStation)) {
+        if (originalSection.haveStations(newUpStation, newDownStation)) {
 
             throw new RuntimeException("이미 두 역으로 생성된 존재하는 구간입니다.");
         }
