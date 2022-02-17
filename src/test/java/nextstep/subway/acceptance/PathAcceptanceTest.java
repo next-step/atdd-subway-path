@@ -2,10 +2,10 @@ package nextstep.subway.acceptance;
 
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
+import static nextstep.subway.acceptance.PathSteps.경로_조회_요청;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 @DisplayName("지하철 경로 검색")
 public class PathAcceptanceTest extends AcceptanceTest {
@@ -72,17 +71,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void searchShortestPath() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("source", 남부터미널역.toString());
-        params.put("target", 강남역.toString());
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .params(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .get("/path")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = 경로_조회_요청(남부터미널역, 강남역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -100,17 +89,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void searchShortestPathDoesNotExistPath() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("source", 강남역.toString());
-        params.put("target", 청량리역.toString());
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .params(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .get("/path")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = 경로_조회_요청(강남역, 청량리역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());;
@@ -125,17 +104,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void searchShortestPathSourceEqualsTarget() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("source", 강남역.toString());
-        params.put("target", 강남역.toString());
-
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .params(params)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .get("/path")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = 경로_조회_요청(강남역, 강남역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());;
