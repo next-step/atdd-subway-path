@@ -79,14 +79,14 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
+        if (line.sectionsIsEmpty()) {
             return Collections.emptyList();
         }
 
         List<Station> stations = line.getStations();
 
         return stations.stream()
-                .map(it -> stationService.createStationResponse(it))
+                .map(stationService::createStationResponse)
                 .collect(Collectors.toList());
     }
 

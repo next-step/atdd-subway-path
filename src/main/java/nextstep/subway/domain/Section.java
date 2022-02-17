@@ -7,6 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.WeightedMultigraph;
 
 @Entity
 public class Section {
@@ -46,6 +48,12 @@ public class Section {
         return downStation.equals(station);
     }
 
+    public void putSection(WeightedMultigraph<Station, DefaultWeightedEdge> subwayMap) {
+        subwayMap.addVertex(upStation);
+        subwayMap.addVertex(downStation);
+        subwayMap.setEdgeWeight(subwayMap.addEdge(upStation, downStation), distance);
+    }
+
     public Long getId() {
         return id;
     }
@@ -62,13 +70,4 @@ public class Section {
         return distance;
     }
 
-    @Override
-    public String toString() {
-        return "Section{" +
-
-                ", upStation=" + upStation +
-                ", downStation=" + downStation +
-                ", distance=" + distance +
-                '}';
-    }
 }

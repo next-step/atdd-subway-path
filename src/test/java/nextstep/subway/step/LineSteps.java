@@ -1,4 +1,4 @@
-package nextstep.subway.acceptance;
+package nextstep.subway.step;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -36,15 +36,6 @@ public class LineSteps {
         return RestAssured
                 .given().log().all()
                 .when().get("/lines/{id}", id)
-                .then().log().all().extract();
-    }
-
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Object params) {
-        return RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
                 .then().log().all().extract();
     }
 

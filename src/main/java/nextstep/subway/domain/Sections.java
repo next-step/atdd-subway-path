@@ -8,6 +8,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import nextstep.subway.exception.CannotRegisterSectionException;
 import nextstep.subway.exception.CannotRemoveSectionException;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.WeightedMultigraph;
 
 @Embeddable
 public class Sections {
@@ -190,6 +192,16 @@ public class Sections {
         if (sections.size() <= 1) {
             throw new CannotRemoveSectionException();
         }
+    }
+
+    public void putSections(WeightedMultigraph<Station, DefaultWeightedEdge> subwayMap) {
+        for (Section section : sections) {
+            section.putSection(subwayMap);
+        }
+    }
+
+    public int size() {
+        return sections.size();
     }
 
     public List<Section> getSections() {

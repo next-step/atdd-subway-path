@@ -43,6 +43,10 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    public boolean sectionsIsEmpty() {
+        return sections.getSections().isEmpty();
+    }
+
     public Long getId() {
         return id;
     }
@@ -51,20 +55,15 @@ public class Line extends BaseEntity {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
     }
 
-    public List<Section> getSections() {
-        return sections.getSections();
+    public Sections getSections() {
+        return sections;
     }
 
     public List<Station> getStations() {
         return sections.getStations();
     }
-
 }
