@@ -26,7 +26,7 @@ public class PathService {
       throw new UnLinkedStationsException();
     }
 
-    List<Line> lines = lineService.getLines();
+    List<Line> lines = lineService.getLinesWithSections();
 
     Station sourceStation = stationService.findById(source);
     Station targetStation = stationService.findById(target);

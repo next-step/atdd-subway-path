@@ -48,6 +48,11 @@ public class LineService {
   }
 
   @Transactional(readOnly = true)
+  public List<Line> getLinesWithSections() {
+    return lineRepository.findAllWithSections();
+  }
+
+  @Transactional(readOnly = true)
   public List<LineResponse> showLines() {
     return lineRepository.findAll().stream()
       .map(this::createLineResponse)
