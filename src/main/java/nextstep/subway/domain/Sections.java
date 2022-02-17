@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
-  @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
   private List<Section> sections = new ArrayList<>();
 
   public Sections() {
