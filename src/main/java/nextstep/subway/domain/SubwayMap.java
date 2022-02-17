@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import java.util.List;
+import nextstep.subway.exception.SourceAndTargetNotConnectedException;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -22,7 +23,12 @@ public class SubwayMap {
 
 
     public List<Station> getShortestPath(Station source, Station target) {
-        return dijkstraShortestPath.getPath(source, target).getVertexList();
+        try {
+            return dijkstraShortestPath.getPath(source, target).getVertexList();
+        } catch (NullPointerException e) {
+            throw new SourceAndTargetNotConnectedException();
+        }
+
     }
 
     public double getShortestDistance(Station source, Station target) {

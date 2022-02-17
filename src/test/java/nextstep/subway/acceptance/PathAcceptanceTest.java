@@ -12,6 +12,7 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 public class PathAcceptanceTest extends AcceptanceTest {
 
@@ -30,6 +31,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
     private Long 미금역;
     private Long 판교역;
 
+    private Long 없는역;
+
     /** test setting
      *         (사호선)            (오호선)
      * (일호선) [교대역] --- 10 --- [강남역] --- 5 --- [역삼역]
@@ -40,7 +43,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
      *          ㅣ                 ㅣ
      *          11                15
      *          ㅣ                 ㅣ
-     * (삼호선) [미금역] --- 20 --- [판교역]
+     * (삼호선) [미금역] --- 20 --- [판교역]          [없는역]
      *
      */
 
@@ -55,6 +58,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         도곡역 = 지하철역_생성_요청("도곡역").jsonPath().getLong("id");
         미금역 = 지하철역_생성_요청("미금역").jsonPath().getLong("id");
         판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
+        없는역 = 지하철역_생성_요청("없는역").jsonPath().getLong("id");
 
         CreateLineRequest lineOneRequest = new CreateLineRequest("1호선", "red", 교대역, 강남역, 10);
         일호선 = 지하철_노선_생성_요청(lineOneRequest).jsonPath().getLong("id");
@@ -82,10 +86,21 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("최단 경로 조회")
-    void shortestPath() {
-        List<Long> stationsId = 경로_조회(교대역, 판교역).jsonPath().getList("stations");
-
+    void 최단_경로_조회() {
+        List<Long> stationsId = 경로_조회(강남역, 미금역).jsonPath().getList("stations.id", Long.class);
         assertThat(stationsId).containsExactly(강남역, 양재역, 남부역, 미금역);
+    }
+
+    @Test
+    @DisplayName("경로 조회 예외 - 역이 연결되어 있지 않을떄")
+    void 역이_연결되어_있지_않은역_조회() {
+        assertThat(경로_조회(교대역, 없는역).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("경로 조회 예외 - 출발역과 도착역이 같을때")
+    void 출발역과_도착역이_같을때() {
+        assertThat(경로_조회(교대역, 교대역).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
 }
