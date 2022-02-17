@@ -5,14 +5,12 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 
 import static nextstep.subway.acceptance.LineSectionAcceptanceTest.createSectionCreateParams;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청_후_ID_반환;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
-import static nextstep.subway.acceptance.PathSteps.최단거리_검색;
+import static nextstep.subway.acceptance.PathSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청_후_ID_반환;
-import static org.assertj.core.api.Assertions.assertThat;
 
 class PathAcceptanceTest extends AcceptanceTest {
 
@@ -59,7 +57,7 @@ class PathAcceptanceTest extends AcceptanceTest {
     ExtractableResponse<Response> searchResponse = 최단거리_검색(교대역, 양재역);
 
     // then
-    assertThat(searchResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+    상태_조회_성공_확인(searchResponse);
   }
 
   /*
@@ -78,7 +76,7 @@ class PathAcceptanceTest extends AcceptanceTest {
     ExtractableResponse<Response> searchResponse = 최단거리_검색(남부터미널역, 인덕원역);
 
     // then
-    assertThat(searchResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    상태_조회_잘못된_요청_확인(searchResponse);
   }
 
   /*
@@ -96,7 +94,7 @@ class PathAcceptanceTest extends AcceptanceTest {
     ExtractableResponse<Response> searchResponse = 최단거리_검색(정부과천청사역, 인덕원역);
 
     // then
-    assertThat(searchResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    상태_조회_잘못된_요청_확인(searchResponse);
   }
 
   /*
@@ -110,6 +108,6 @@ class PathAcceptanceTest extends AcceptanceTest {
     ExtractableResponse<Response> searchResponse = 최단거리_검색(교대역, 교대역);
 
     // then
-    assertThat(searchResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    상태_조회_잘못된_요청_확인(searchResponse);
   }
 }
