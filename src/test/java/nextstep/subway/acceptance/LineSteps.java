@@ -9,10 +9,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LineSteps {
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
+
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(
+            String name,
+            String color,
+            Long upStationId,
+            Long downStationId,
+            int distance
+    ) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
+        params.put("upStationId", String.valueOf(upStationId));
+        params.put("downStationId", String.valueOf(downStationId));
+        params.put("distance", String.valueOf(distance));
+
         return RestAssured
                 .given().log().all()
                 .body(params)
