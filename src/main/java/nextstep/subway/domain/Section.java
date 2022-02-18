@@ -11,7 +11,7 @@ public class Section {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(cascade = CascadeType.PERSIST)
+  @ManyToOne
   @JoinColumn(name = "line_id")
   private Line line;
 

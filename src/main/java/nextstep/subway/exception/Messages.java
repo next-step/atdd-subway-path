@@ -5,7 +5,8 @@ public enum Messages {
   DUPLICATE_CREATION("Duplication Creation"),
   ILLEGAL_DELETION("Deletion Forbidden"),
   DUPLICATE_SECTION_STATION("Section's Stations Duplicated"),
-  ILLEGAL_ADD_SECTION("Illegal Add Section");
+  ILLEGAL_ADD_SECTION("Illegal Add Section"),
+  UNLINKED_STATIONS("Not Linked Stations");
 
   private final String message;
 

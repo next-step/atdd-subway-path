@@ -46,6 +46,7 @@ public class StationService {
     );
   }
 
+  @Transactional(readOnly = true)
   public Station findById(Long id) {
     return stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
   }

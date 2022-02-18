@@ -20,6 +20,33 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
   private Long 강남역;
   private Long 양재역;
 
+  private static Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
+    Map<String, String> lineCreateParams;
+    lineCreateParams = new HashMap<>();
+    lineCreateParams.put("name", "신분당선");
+    lineCreateParams.put("color", "bg-red-600");
+    lineCreateParams.put("upStationId", upStationId + "");
+    lineCreateParams.put("downStationId", downStationId + "");
+    lineCreateParams.put("distance", 10 + "");
+    return lineCreateParams;
+  }
+
+  public static Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId) {
+    return createSectionCreateParams(upStationId, downStationId, 6);
+  }
+
+  public static Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
+    Map<String, String> params = new HashMap<>();
+    params.put("upStationId", upStationId + "");
+    params.put("downStationId", downStationId + "");
+    params.put("distance", distance + "");
+    return params;
+  }
+
+  private static List<Long> createListOfStations(Long... stations) {
+    return Arrays.asList(stations);
+  }
+
   /**
    * Given 지하철역과 노선 생성을 요청 하고
    */
@@ -146,7 +173,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
   }
 
-
   /**
    * Given 새로운 구간을 추가하고
    * When 구간들의 중간 역을 삭제하면
@@ -202,32 +228,5 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     // then
     assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-  }
-
-  private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
-    Map<String, String> lineCreateParams;
-    lineCreateParams = new HashMap<>();
-    lineCreateParams.put("name", "신분당선");
-    lineCreateParams.put("color", "bg-red-600");
-    lineCreateParams.put("upStationId", upStationId + "");
-    lineCreateParams.put("downStationId", downStationId + "");
-    lineCreateParams.put("distance", 10 + "");
-    return lineCreateParams;
-  }
-
-  public Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId) {
-    return createSectionCreateParams(upStationId, downStationId, 6);
-  }
-
-  private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
-    Map<String, String> params = new HashMap<>();
-    params.put("upStationId", upStationId + "");
-    params.put("downStationId", downStationId + "");
-    params.put("distance", distance + "");
-    return params;
-  }
-
-  private List<Long> createListOfStations(Long... stations) {
-    return Arrays.asList(stations);
   }
 }

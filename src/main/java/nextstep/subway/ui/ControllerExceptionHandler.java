@@ -13,7 +13,9 @@ public class ControllerExceptionHandler {
     DataIntegrityViolationException.class,
     IllegalAddSectionException.class,
     IllegalDeletionException.class,
-    DuplicateSectionStationException.class
+    DuplicateSectionStationException.class,
+    UnLinkedStationsException.class,
+    IllegalArgumentException.class
   })
   public ResponseEntity<Void> handleIllegalArgsException(Exception e) {
     return ResponseEntity.badRequest().build();
