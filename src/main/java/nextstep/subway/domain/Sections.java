@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,21 +35,28 @@ public class Sections {
     public void remove(Station station) {
         validationRemoveStation(station);
 
-        Optional<Section> firstSection = sections.stream()
-            .filter(s -> s.isDownStation(station))
-            .findAny();
+        Optional<Section> sectionHasUpStation = findSectionHasUpStationAs(station);
+        Optional<Section> sectionHasDownStation = findSectionHasDownStationAs(station);
 
-        Optional<Section> secondSection = sections.stream()
-            .filter(s -> s.isUpStation(station))
-            .findAny();
+        sectionHasUpStation.ifPresent(section -> sections.remove(section));
+        sectionHasDownStation.ifPresent(section -> sections.remove(section));
 
-        firstSection.ifPresent(section -> sections.remove(section));
-        secondSection.ifPresent(section -> sections.remove(section));
-
-        if (firstSection.isPresent() && secondSection.isPresent()) {
-            mergeExistingSections(firstSection.get(), secondSection.get());
+        if (sectionHasUpStation.isPresent() && sectionHasDownStation.isPresent()) {
+            mergeExistingSections(sectionHasUpStation.get(), sectionHasDownStation.get());
         }
 
+    }
+
+    private Optional<Section> findSectionHasDownStationAs(Station station) {
+        return sections.stream()
+            .filter(s -> s.hasUpStationAs(station))
+            .findAny();
+    }
+
+    private Optional<Section> findSectionHasUpStationAs(Station station) {
+        return sections.stream()
+            .filter(s -> s.hasDownStationAs(station))
+            .findAny();
     }
 
     private List<Station> getStations() {
@@ -152,4 +160,7 @@ public class Sections {
         sections.add(firstSection.merge(secondSection));
     }
 
+    public List<Section> getSectionList() {
+        return Collections.unmodifiableList(sections);
+    }
 }
