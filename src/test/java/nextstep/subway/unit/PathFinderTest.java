@@ -1,5 +1,6 @@
 package nextstep.subway.unit;
 
+import static nextstep.subway.unit.PathFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
@@ -8,44 +9,21 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Path;
 import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Station;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class PathFinderTest {
-    private Station 강남역;
-    private Station 교대역;
-    private Station 양재역;
-    private Station 남부터미널역;
-
-    private Line 이호선;
-    private Line 삼호선;
-    private Line 신분당선;
-
-    @BeforeEach
-    void setUp() {
-        강남역 = new Station("강남역");
-        교대역 = new Station("교대역");
-        이호선 = Line.of("2호선", "bg-green-600", 교대역, 강남역, 10);
-
-        양재역 = new Station("양재역");
-        신분당선 = Line.of("신분당선", "bg-red-500", 강남역, 양재역, 5);
-
-        남부터미널역 = new Station("남부터미널역");
-        삼호선 = Line.of("3호선", "bg-orange-500", 교대역, 남부터미널역, 5);
-        삼호선.addSection(남부터미널역, 양재역, 15);
-    }
 
     @DisplayName("최단 거리 조회하기")
     @Test
     void searchPath() {
         // when
-        PathFinder pathFinder = PathFinder.from(Arrays.asList(이호선, 신분당선, 삼호선));
+        PathFinder pathFinder = PathFinder.from(노선_목록);
         Path path = pathFinder.searchPath(교대역, 양재역);
 
         // then
-        assertThat(path.getStations()).containsExactly(교대역, 강남역, 양재역);
-        assertThat(path.getDistance()).isEqualTo(15);
+        assertThat(path.getStations()).containsExactly(교대역, 남부터미널역, 양재역);
+        assertThat(path.getDistance()).isEqualTo(교대역_남부터미널역_거리 + 남부터미널역_양재역_거리);
     }
 
     @DisplayName("출발역과 도착역이 동일 할 경우")
@@ -53,7 +31,7 @@ public class PathFinderTest {
     void searchPathSourceEqualsTarget() {
         // when
         // then
-        PathFinder pathFinder = PathFinder.from(Arrays.asList(이호선, 신분당선, 삼호선));
+        PathFinder pathFinder = PathFinder.from(노선_목록);
         assertThatIllegalArgumentException().isThrownBy(() -> pathFinder.searchPath(교대역, 교대역))
             .withMessage("출발역과 도착역이 동일합니다.");
     }
@@ -80,7 +58,7 @@ public class PathFinderTest {
         Station 시청역 = new Station("시청역");
         // when
         // then
-        PathFinder pathFinder = PathFinder.from(Arrays.asList(이호선, 신분당선, 삼호선));
+        PathFinder pathFinder = PathFinder.from(노선_목록);
         assertThatIllegalArgumentException().isThrownBy(() -> pathFinder.searchPath(교대역, 시청역))
             .withMessage("노선에 포함된 역의 경로만 조회 가능합니다.");
     }
