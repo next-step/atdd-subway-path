@@ -13,15 +13,21 @@ public class SubwayMap {
 
     public SubwayMap(List<Line> lines) {
         WeightedMultigraph<Station, DefaultWeightedEdge> subwayMap = new WeightedMultigraph(DefaultWeightedEdge.class);
-
         for (Line line : lines) {
-            Sections sections = line.getSections();
-            sections.putSections(subwayMap);
+            List<Section> sections = line.getSections();
+            subwayMapAddStation(sections, subwayMap);
         }
-
         this.dijkstraShortestPath = new DijkstraShortestPath(subwayMap);
     }
 
+    private void subwayMapAddStation(List<Section> sections, WeightedMultigraph<Station, DefaultWeightedEdge> subwayMap) {
+        for (Section section : sections) {
+            subwayMap.addVertex(section.getUpStation());
+            subwayMap.addVertex(section.getDownStation());
+            subwayMap.setEdgeWeight(subwayMap.addEdge(section.getUpStation(),
+                    section.getDownStation()), section.getDistance());
+        }
+    }
 
     public List<Station> getShortestPath(Station source, Station target) {
         validStations(source, target);
