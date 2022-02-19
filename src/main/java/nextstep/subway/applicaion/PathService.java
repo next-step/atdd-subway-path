@@ -7,6 +7,7 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.domain.SubwayMap;
+import nextstep.subway.exception.NotFoundStationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,8 +23,8 @@ public class PathService {
 
     public ShortestPathResponse getShortestPath(Long sourceId, Long targetId) {
         List<Line> lines = lineRepository.findAll();
-        Station source = stationRepository.findById(sourceId).orElseThrow(RuntimeException::new);
-        Station target = stationRepository.findById(targetId).orElseThrow(RuntimeException::new);
+        Station source = stationRepository.findById(sourceId).orElseThrow(NotFoundStationException::new);
+        Station target = stationRepository.findById(targetId).orElseThrow(NotFoundStationException::new);
 
         SubwayMap map = new SubwayMap(lines);
 
