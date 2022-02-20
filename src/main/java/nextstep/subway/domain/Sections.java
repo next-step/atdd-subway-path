@@ -171,20 +171,32 @@ public class Sections {
 			.filter(it -> it.isEqualDownStation(station))
 			.findFirst();
 
+		// 중간역 지울때
+		// station 을 상행역으로 갖는 구간과 하행역으로 갖는 구간을 이어주어야 한다.
+		connectStations(upSection, downSection);
+
 		deleteUpSection(upSection);
 		deleteDownSection(downSection);
 
 	}
 
-	private void deleteDownSection(Optional<Section> downSection) {
-		if (downSection.isPresent()){
-			this.sections.remove(downSection.get());
+	private void connectStations(Optional<Section> upSection, Optional<Section> downSection) {
+		if (upSection.isPresent() && downSection.isPresent()) {
+			Section section = new Section(
+				upSection.get().getLine(),
+				downSection.get().getUpStation(),
+				upSection.get().getDownStation(),
+				upSection.get().getDistance() + downSection.get().getDistance()
+			);
+			this.sections.add(section);
 		}
 	}
 
+	private void deleteDownSection(Optional<Section> downSection) {
+		downSection.ifPresent(section -> this.sections.remove(section));
+	}
+
 	private void deleteUpSection(Optional<Section> upSection) {
-		if (upSection.isPresent()){
-			this.sections.remove(upSection.get());
-		}
+		upSection.ifPresent(section -> this.sections.remove(section));
 	}
 }

@@ -97,4 +97,18 @@ public class LineServiceTest {
 
 		assertThat(line.allStations()).containsExactly(강남역, 양재역);
 	}
+
+	@DisplayName("중간에 있는 역을 제거")
+	@Test
+	void deleteMiddleSection() {
+		// given
+		// lineService.addSection 호출
+		lineService.addSection(신분당선.getId(), new SectionRequest(양재역.getId(), 정자역.getId(), 10));
+
+		// when
+		Line line = lineService.findById(신분당선.getId());
+		line.deleteSection(양재역);
+
+		assertThat(line.allStations()).containsExactly(강남역, 정자역);
+	}
 }

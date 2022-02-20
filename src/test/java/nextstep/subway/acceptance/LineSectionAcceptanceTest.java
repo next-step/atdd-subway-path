@@ -161,6 +161,15 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         //  상행역으로 갖는 구간(1)의 상행역과
         //  하행역으로 갖는 구간(2)의 하행역을 새로운 구간으로 만들고, 이때 거리는 (1).거리 + (2).거리
         //  (1)과 (2) 구간은 삭제한다.
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 10));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
     }
 
     @DisplayName("마지막 하행역 제거")
