@@ -64,6 +64,10 @@ public class Line extends BaseEntity {
         sections.removeByIndex(index);
     }
 
+    public void deleteSection(Station station) {
+        sections.delete(station);
+    }
+
     public List<Section> allSections(){
         return sections.findAll();
     }

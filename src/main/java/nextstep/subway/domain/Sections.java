@@ -153,4 +153,10 @@ public class Sections {
 			.filter(section -> section.isEqualUpStation(station))
 			.findFirst();
 	}
+
+	public void delete(Station station) {
+		if (this.sections.size() <= 1) {
+			throw new SubwayException.CanNotDeleteException("구간이 하나일 때는 지울 수 없습니다");
+		}
+	}
 }
