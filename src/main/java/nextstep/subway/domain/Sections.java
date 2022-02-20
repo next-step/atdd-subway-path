@@ -158,5 +158,18 @@ public class Sections {
 		if (this.sections.size() <= 1) {
 			throw new SubwayException.CanNotDeleteException("구간이 하나일 때는 지울 수 없습니다");
 		}
+
+		// 상행역 지울때.
+		// station 을 상형역으로 갖는 구간을 찾아 지운다
+		Optional<Section> upSection = this.sections.stream()
+			.filter(it -> it.isEqualUpStation(station))
+			.findFirst();
+
+		deleteUpSection(upSection);
+
+	}
+
+	private void deleteUpSection(Optional<Section> upSection) {
+		this.sections.remove(upSection.get());
 	}
 }

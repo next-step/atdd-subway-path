@@ -114,34 +114,16 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    /**
-     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
-     * When 지하철 노선의 마지막 구간 제거를 요청 하면
-     * Then 노선에 구간이 제거된다
-     */
-    @Disabled
-    @DisplayName("지하철 노선에 구간을 제거")
-    @Test
-    void removeLineSection() {
-        // given
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 10));
-
-        // when
-        지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
-
-        // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
-    }
-
     // TODO : 지하철 노선 제거 (새로운 요건)
     //  1. 기존에는 마지막 역 삭제만 가능했는데 위치에 상관 없이 삭제가 가능하도록 수정
     //  2. 종점이 제거될 경우 다음으로 오던 역이 종점이 됨
     //  3. 중간역이 제거될 경우 재배치를 함
     //  4. 구간이 하나이면 제거 할 수 없음.
-
+    /**
+     * Given 2개 이상의 구간을 가진 지하철 노선에
+     * When 가장 상행역의 구간 제거를 요청 하면
+     * Then 노선에 구간이 제거된다
+     */
     @DisplayName("가장 상위의 상행역 제거")
     @Test
     void removeFirstLineSection() {
@@ -154,7 +136,15 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         //  A 를 상행역으로 갖는 구간을 찾자.
         //  찾아서 지우고
         //  찾은게 첫번째 구간이면, 첫번째 구간만 지우면 끝
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 10));
 
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(양재역, 정자역);
     }
 
     @DisplayName("중간에 있는 역 제거")
