@@ -1,8 +1,8 @@
 package nextstep.subway.domain;
 
 import java.util.List;
-import nextstep.subway.exception.SourceAndTargetNotConnectedException;
-import nextstep.subway.exception.SourceAndTargetSameException;
+import nextstep.subway.error.exception.SourceAndTargetNotConnectedException;
+import nextstep.subway.error.exception.SourceAndTargetSameException;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;

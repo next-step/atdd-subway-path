@@ -7,7 +7,7 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.domain.SubwayMap;
-import nextstep.subway.exception.NotFoundStationException;
+import nextstep.subway.error.exception.NotFoundStationException;
 import org.springframework.stereotype.Service;
 
 @Service

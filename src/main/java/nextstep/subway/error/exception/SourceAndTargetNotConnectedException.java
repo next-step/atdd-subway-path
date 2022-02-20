@@ -1,4 +1,4 @@
-package nextstep.subway.exception;
+package nextstep.subway.error.exception;
 
 public class SourceAndTargetNotConnectedException extends RuntimeException {
     private static final String MESSAGE = "역이 연결되어있지 않습니다.";

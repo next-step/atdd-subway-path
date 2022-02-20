@@ -1,4 +1,4 @@
-package nextstep.subway.exception;
+package nextstep.subway.error.exception;
 
 public class EmptySectionException extends RuntimeException {
 

@@ -1,17 +1,19 @@
-package nextstep.subway.ui;
+package nextstep.subway.error;
 
-import nextstep.subway.exception.AlreadyRegisterStationException;
-import nextstep.subway.exception.CannotRegisterSectionException;
-import nextstep.subway.exception.CannotRemoveSectionException;
-import nextstep.subway.exception.SourceAndTargetNotConnectedException;
-import nextstep.subway.exception.SourceAndTargetSameException;
+import nextstep.subway.error.exception.AlreadyRegisterStationException;
+import nextstep.subway.error.exception.CannotRegisterSectionException;
+import nextstep.subway.error.exception.CannotRemoveSectionException;
+import nextstep.subway.error.exception.ErrorCode;
+import nextstep.subway.error.exception.SourceAndTargetNotConnectedException;
+import nextstep.subway.error.exception.SourceAndTargetSameException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class ControllerExceptionHandler {
+public class GlobalExceptionHandler {
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Void> handleIllegalArgsException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
@@ -43,7 +45,8 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler(SourceAndTargetSameException.class)
-    public ResponseEntity<Void> handleSourceAndTargetSameException() {
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<ErrorResponse> handleSourceAndTargetSameException() {
+        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.SOURCE_AND_TARGET_SAME);
+        return new ResponseEntity<>(errorResponse, errorResponse.getStatus());
     }
 }
