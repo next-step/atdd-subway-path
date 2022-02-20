@@ -63,4 +63,10 @@ class SubwayMapTest {
          assertThat(subwayMap.getShortestPath(강남역, 교대역)).containsExactly(강남역, 역삼역, 교대역);
     }
 
+    @Test
+    @DisplayName("두 역 사이의 최단 거리 계산")
+    void 최단_거리_계산() {
+         assertThat(subwayMap.getShortestDistance(강남역, 교대역)).isEqualTo(17);
+    }
+
 }
