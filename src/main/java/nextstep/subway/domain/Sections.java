@@ -80,14 +80,6 @@ public class Sections {
 		return this.sections;
 	}
 
-	public Section findByIndex(int index) {
-		return this.sections.get(index);
-	}
-
-	public void removeByIndex(int index) {
-		this.sections.remove(index);
-	}
-
 	private void updateDownSection(Section section) {
 		findUpSection(section.getUpStation())
 			.ifPresent(it -> {
