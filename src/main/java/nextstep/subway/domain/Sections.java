@@ -37,6 +37,21 @@ public class Sections {
 		this.sections.add(section);
 	}
 
+	public void delete(Station station) {
+		if (this.sections.size() <= 1) {
+			throw new SubwayException.CanNotDeleteException("구간이 하나일 때는 지울 수 없습니다");
+		}
+		checkNotExistStation(station);
+
+		Optional<Section> upSection = findUpSection(station);
+		Optional<Section> downSection = findDownSection(station);
+
+		connectStations(upSection, downSection);
+
+		deleteUpSection(upSection);
+		deleteDownSection(downSection);
+	}
+
 	public List<Station> findAllStations() {
 		//  첫번째 상행역을 찾고, 그 뒤로 구간에 연결되는 하행역을 찾는다
 		List<Station> stations = new ArrayList<>();
@@ -45,7 +60,7 @@ public class Sections {
 
 		while (true) {
 			Station station = upStation;
-			Optional<Section> section = findSectionByUpStation(station);
+			Optional<Section> section = findUpSection(station);
 			if (!section.isPresent()) {
 				break;
 			}
@@ -74,15 +89,7 @@ public class Sections {
 	}
 
 	private void updateDownSection(Section section) {
-		// ex)
-		// 기존 : A - B
-		// 신규 : A - C
-		// A 가 상행역으로 같음 => 기존구간을 삭제하고 하행역끼리 연결 (C - B)
-		// 그 후 신규 구간 추가 (A - C)
-		// => A - C, C - B 로 구간 생성
-		this.sections.stream()
-			.filter(it -> it.isEqualUpStation(section.getUpStation()))
-			.findFirst()
+		findUpSection(section.getUpStation())
 			.ifPresent(it -> {
 				sections.add(new Section(section.getLine(), section.getDownStation(), it.getDownStation(),
 					it.getDistance() - section.getDistance()));
@@ -91,15 +98,7 @@ public class Sections {
 	}
 
 	private void updateUpSection(Section section) {
-		// ex)
-		// 기존 : A - B
-		// 신규 : C - B
-		// B 가 하행역으로 같음 => 기존구간을 삭제하고 상행역끼리 연결 (A - C)
-		// 그 후 신규 구간 추가 (C - B)
-		// => A - C, C - B 로 구간 생성
-		this.sections.stream()
-			.filter(it -> it.isEqualDownStation(section.getDownStation()))
-			.findFirst()
+		findDownSection(section.getDownStation())
 			.ifPresent(it -> {
 				sections.add(new Section(section.getLine(), it.getUpStation(), section.getUpStation(),
 					it.getDistance() - section.getDistance()));
@@ -133,7 +132,6 @@ public class Sections {
 	}
 
 	private Station findFirstUpStation() {
-		//  상행역 중 하행역이 없는게 첫번째 역
 		List<Station> upStations = this.sections.stream()
 			.map(Section::getUpStation)
 			.collect(Collectors.toList());
@@ -148,36 +146,26 @@ public class Sections {
 			.orElseThrow(SubwayException.NotFoundException::new);
 	}
 
-	private Optional<Section> findSectionByUpStation(Station station) {
+	private Optional<Section> findDownSection(Station station) {
 		return this.sections.stream()
-			.filter(section -> section.isEqualUpStation(station))
+			.filter(it -> it.isEqualDownStation(station))
 			.findFirst();
 	}
 
-	public void delete(Station station) {
-		if (this.sections.size() <= 1) {
-			throw new SubwayException.CanNotDeleteException("구간이 하나일 때는 지울 수 없습니다");
-		}
-
-		// 상행역 지울때.
-		// station 을 상형역으로 갖는 구간을 찾아 지운다
-		Optional<Section> upSection = this.sections.stream()
+	private Optional<Section> findUpSection(Station station) {
+		return this.sections.stream()
 			.filter(it -> it.isEqualUpStation(station))
 			.findFirst();
+	}
 
-		// 하행역 지울떄.
-		// station 을 하행역으로 갖는 구간을 찾아 지운다.
-		Optional<Section> downSection = this.sections.stream()
-			.filter(it -> it.isEqualDownStation(station))
+	private void checkNotExistStation(Station station) {
+		Optional<Station> stationOpt = findAllStations().stream()
+			.filter(it -> it.equals(station))
 			.findFirst();
 
-		// 중간역 지울때
-		// station 을 상행역으로 갖는 구간과 하행역으로 갖는 구간을 이어주어야 한다.
-		connectStations(upSection, downSection);
-
-		deleteUpSection(upSection);
-		deleteDownSection(downSection);
-
+		if (!stationOpt.isPresent()) {
+			throw new SubwayException.CanNotDeleteException("존재하지 않는 역은 지울 수 없습니다.");
+		}
 	}
 
 	private void connectStations(Optional<Section> upSection, Optional<Section> downSection) {

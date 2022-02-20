@@ -70,6 +70,15 @@ public class LineServiceTest {
 			SubwayException.CanNotDeleteException.class);
 	}
 
+	@DisplayName("존재하지 않는 역을 제거하려고 하면 에러")
+	@Test
+	void deleteSectionWithNotExistStation() {
+		// when
+		Line line = lineService.findById(신분당선.getId());
+		assertThatThrownBy(() -> {line.deleteSection(정자역);}).isInstanceOf(
+			SubwayException.CanNotDeleteException.class);
+	}
+
 	@DisplayName("가장 상위의 상행역을 제거")
 	@Test
 	void deleteFirstSection() {
