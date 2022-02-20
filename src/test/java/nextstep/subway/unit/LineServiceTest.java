@@ -69,4 +69,32 @@ public class LineServiceTest {
 		assertThatThrownBy(() -> {line.deleteSection(강남역);}).isInstanceOf(
 			SubwayException.CanNotDeleteException.class);
 	}
+
+	@DisplayName("가장 상위의 상행역을 제거")
+	@Test
+	void deleteFirstSection() {
+		// given
+		// lineService.addSection 호출
+		lineService.addSection(신분당선.getId(), new SectionRequest(양재역.getId(), 정자역.getId(), 10));
+
+		// when
+		Line line = lineService.findById(신분당선.getId());
+		line.deleteSection(강남역);
+
+		assertThat(line.allStations()).containsExactly(양재역, 정자역);
+	}
+
+	@DisplayName("가장 마지막 역을 제거")
+	@Test
+	void deleteLastSection() {
+		// given
+		// lineService.addSection 호출
+		lineService.addSection(신분당선.getId(), new SectionRequest(양재역.getId(), 정자역.getId(), 10));
+
+		// when
+		Line line = lineService.findById(신분당선.getId());
+		line.deleteSection(정자역);
+
+		assertThat(line.allStations()).containsExactly(강남역, 양재역);
+	}
 }

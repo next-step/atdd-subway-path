@@ -165,11 +165,26 @@ public class Sections {
 			.filter(it -> it.isEqualUpStation(station))
 			.findFirst();
 
+		// 하행역 지울떄.
+		// station 을 하행역으로 갖는 구간을 찾아 지운다.
+		Optional<Section> downSection = this.sections.stream()
+			.filter(it -> it.isEqualDownStation(station))
+			.findFirst();
+
 		deleteUpSection(upSection);
+		deleteDownSection(downSection);
 
 	}
 
+	private void deleteDownSection(Optional<Section> downSection) {
+		if (downSection.isPresent()){
+			this.sections.remove(downSection.get());
+		}
+	}
+
 	private void deleteUpSection(Optional<Section> upSection) {
-		this.sections.remove(upSection.get());
+		if (upSection.isPresent()){
+			this.sections.remove(upSection.get());
+		}
 	}
 }

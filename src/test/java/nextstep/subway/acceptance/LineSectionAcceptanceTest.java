@@ -176,6 +176,15 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         //  D 를 하행역으로 갖는 구간을 찾자.
         //  D 를 하행역으로 가진 구간을 찾고
         //  삭제한다.
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 10));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
     @DisplayName("구간이 하나일때는 제거할 수 없음")
