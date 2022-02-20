@@ -86,9 +86,9 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     @Test
     @DisplayName("최단 경로 조회")
-    void 최단_경로_조회() {
-        List<Long> stationsId = 경로_조회(강남역, 미금역).jsonPath().getList("stations.id", Long.class);
-        assertThat(stationsId).containsExactly(강남역, 양재역, 남부역, 미금역);
+    void 최단_경로_조회(Long source, Long target, List<Long> resultsId) {
+        List<Long> stationsId = 경로_조회(source, target).jsonPath().getList("stations.id", Long.class);
+        assertThat(stationsId).isEqualTo(resultsId);
     }
 
     @Test
