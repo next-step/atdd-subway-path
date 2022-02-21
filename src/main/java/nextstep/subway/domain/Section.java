@@ -62,13 +62,4 @@ public class Section {
         return distance;
     }
 
-    @Override
-    public String toString() {
-        return "Section{" +
-
-                ", upStation=" + upStation +
-                ", downStation=" + downStation +
-                ", distance=" + distance +
-                '}';
-    }
 }

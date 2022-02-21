@@ -6,8 +6,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import nextstep.subway.exception.CannotRegisterSectionException;
-import nextstep.subway.exception.CannotRemoveSectionException;
+import nextstep.subway.error.exception.CannotRegisterSectionException;
+import nextstep.subway.error.exception.CannotRemoveSectionException;
 
 @Embeddable
 public class Sections {

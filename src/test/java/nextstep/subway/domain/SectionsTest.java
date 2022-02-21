@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
-import nextstep.subway.exception.CannotRegisterSectionException;
-import nextstep.subway.exception.CannotRemoveSectionException;
+import nextstep.subway.error.exception.CannotRegisterSectionException;
+import nextstep.subway.error.exception.CannotRemoveSectionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
