@@ -98,4 +98,8 @@ public class LineService {
         Station station = stationService.findById(stationId);
         line.removeSection(station);
     }
+
+    public List<Line> findAll() {
+        return lineRepository.findAll();
+    }
 }

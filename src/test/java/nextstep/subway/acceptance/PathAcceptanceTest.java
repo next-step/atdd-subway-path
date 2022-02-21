@@ -64,7 +64,7 @@ class PathAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("name")).containsExactly("강남역", "교대역", "남부터미널역");
+        assertThat(response.jsonPath().getList("stations.name")).containsExactly("강남역", "교대역", "남부터미널역");
     }
 
     private ExtractableResponse<Response> 최단_경로_조회_요청(Long sourceId, Long targetId) {
