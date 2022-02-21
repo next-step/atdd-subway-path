@@ -147,7 +147,7 @@ public class LineTest {
                 .isThrownBy(() -> 이호선.addSection(교대역, 삼성역, distance));
     }
 
-    @DisplayName("노선에서 구간을 삭제하면, 구강의 길이가 병합")
+    @DisplayName("노선에서 구간을 삭제하면, 구간의 길이가 병합")
     @Test
     void removeSection() {
         // given
