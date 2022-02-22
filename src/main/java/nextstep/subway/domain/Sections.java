@@ -201,6 +201,8 @@ public class Sections {
     }
 
     public int totalDistance() {
-        return 0;
+        return sectionList.stream()
+                .mapToInt(Section::getDistance)
+                .sum();
     }
 }
