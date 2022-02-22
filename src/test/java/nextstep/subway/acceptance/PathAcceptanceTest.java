@@ -1,15 +1,11 @@
 package nextstep.subway.acceptance;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
@@ -76,6 +72,30 @@ class PathAcceptanceTest extends AcceptanceTest {
     public void sameSourceAndTargetStations() {
         // when
         ExtractableResponse<Response> response = 최단_경로_조회_요청(강남역, 강남역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * given 연결되어있지 않은 두 개의 노선을 추가 요청한 후
+     * when 연결되어있지 않은 역간의 최단 경로 조회를 요청하면
+     * then 조회 요청이 실패한다.
+     */
+    @DisplayName("지하철 최단 경로 조회 실패 - 연결되지 않은 경로")
+    @Test
+    public void notConnectedPath() {
+        // given
+        long 홍대역 = 지하철역_생성_요청("홍대역").jsonPath().getLong("id");
+        long 합정역 = 지하철역_생성_요청("합정역").jsonPath().getLong("id");
+        long 신촌역 = 지하철역_생성_요청("신촌역").jsonPath().getLong("id");
+        long 당산역 = 지하철역_생성_요청("당산역").jsonPath().getLong("id");
+
+        지하철_노선_생성_요청("4호선", "black", 홍대역, 합정역, 10);
+        지하철_노선_생성_요청("5호선", "white", 신촌역, 당산역, 2);
+
+        // when
+        ExtractableResponse<Response> response = 최단_경로_조회_요청(홍대역, 당산역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
