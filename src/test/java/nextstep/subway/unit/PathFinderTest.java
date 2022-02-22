@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.*;
+import nextstep.subway.exception.FindPathFailException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,7 +69,7 @@ public class PathFinderTest {
 
         // when & then
         assertThatThrownBy(() -> pathFinder.findShortestPath(강남역, 강남역))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(FindPathFailException.class)
                 .hasMessage("같은 출발역과 도착역 경로 조회 불가");
     }
 }

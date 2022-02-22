@@ -1,6 +1,7 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.exception.AddSectionFailException;
+import nextstep.subway.exception.FindPathFailException;
 import nextstep.subway.exception.RemoveSectionFailException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,8 @@ public class ControllerExceptionHandler {
     @ExceptionHandler({
             DataIntegrityViolationException.class,
             AddSectionFailException.class,
-            RemoveSectionFailException.class
+            RemoveSectionFailException.class,
+            FindPathFailException.class
     })
     public ResponseEntity<Void> handleIllegalArgsException(Exception e) {
         return ResponseEntity.badRequest().build();
