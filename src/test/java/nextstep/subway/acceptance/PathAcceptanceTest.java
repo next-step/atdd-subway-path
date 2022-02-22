@@ -9,11 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
+import static nextstep.subway.acceptance.PathSteps.최단_경로_조회_요청;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -67,17 +67,17 @@ class PathAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.name")).containsExactly("강남역", "교대역", "남부터미널역");
     }
 
-    private ExtractableResponse<Response> 최단_경로_조회_요청(Long sourceId, Long targetId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("source", sourceId);
-        params.put("target", targetId);
+    /**
+     * when 출발역과 도착역이 같은 최단 경로 조회를 요청하면
+     * then 조회 요청이 실패한다.
+     */
+    @DisplayName("지하철 최단 경로 조회 실패 - 같은 역간의 경로")
+    @Test
+    public void sameSourceAndTargetStations() {
+        // when
+        ExtractableResponse<Response> response = 최단_경로_조회_요청(강남역, 강남역);
 
-        return RestAssured
-                .given().log().all()
-                .params(params)
-                .when()
-                .get("/paths")
-                .then().log().all()
-                .extract();
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
