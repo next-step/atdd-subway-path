@@ -100,4 +100,20 @@ class PathAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * when 존재하지 않는 역을 포함한 최단 경로 조회를 요청하면
+     * then 조회 요청이 실패한다.
+     */
+    @DisplayName("지하철 최단 경로 조회 실패 - 존재하지 않는 역")
+    @Test
+    public void invalidStation() {
+        long invalidStationId = 99L;
+
+        // when
+        ExtractableResponse<Response> response = 최단_경로_조회_요청(강남역, invalidStationId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
