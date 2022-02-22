@@ -26,6 +26,10 @@ public class PathFinder {
     }
 
     public Path findShortestPath(Station sourceStation, Station targetStation) {
+        if (sourceStation.equals(targetStation)) {
+            throw new IllegalArgumentException("같은 출발역과 도착역 경로 조회 불가");
+        }
+
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
         GraphPath<Station, DefaultWeightedEdge> graphPath = dijkstraShortestPath.getPath(sourceStation, targetStation);
         return new Path(graphPath.getVertexList(), graphPath.getWeight());
