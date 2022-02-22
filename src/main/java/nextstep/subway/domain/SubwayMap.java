@@ -2,7 +2,7 @@ package nextstep.subway.domain;
 
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
+import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,7 +15,7 @@ public class SubwayMap {
     }
 
     public Path findPath(Station source, Station target) {
-        WeightedMultigraph<Station, SectionEdge> graph = createGraph();
+        SimpleDirectedWeightedGraph<Station, SectionEdge> graph = createGraph();
 
         DijkstraShortestPath<Station, SectionEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
         List<Section> sections = dijkstraShortestPath.getPath(source, target).getEdgeList().stream()
@@ -25,22 +25,23 @@ public class SubwayMap {
         return new Path(new Sections(sections));
     }
 
-    private WeightedMultigraph<Station, SectionEdge> createGraph() {
-        WeightedMultigraph graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+    private SimpleDirectedWeightedGraph<Station, SectionEdge> createGraph() {
+        SimpleDirectedWeightedGraph graph = new SimpleDirectedWeightedGraph(DefaultWeightedEdge.class);
 
         addVertexes(graph);
         setEdgeWeight(graph);
+        setOppositeEdgeWeight(graph);
 
         return graph;
     }
 
-    private void addVertexes(WeightedMultigraph<Station, SectionEdge> graph) {
+    private void addVertexes(SimpleDirectedWeightedGraph<Station, SectionEdge> graph) {
         lines.stream()
                 .flatMap(line -> line.getStations().stream())
                 .forEach(graph::addVertex);
     }
 
-    private void setEdgeWeight(WeightedMultigraph<Station, SectionEdge> graph) {
+    private void setEdgeWeight(SimpleDirectedWeightedGraph<Station, SectionEdge> graph) {
         lines.stream()
                 .flatMap(line -> line.getSections().stream())
                 .forEach(section -> {
@@ -48,6 +49,22 @@ public class SubwayMap {
                     graph.addEdge(section.getUpStation(), section.getDownStation(), sectionEdge);
                     graph.setEdgeWeight(sectionEdge, section.getDistance());
                 });
+    }
+
+    private void setOppositeEdgeWeight(SimpleDirectedWeightedGraph<Station, SectionEdge> graph) {
+        lines.stream()
+                .flatMap(line -> line.getSections().stream())
+                .map(section -> new Section(
+                        section.getLine(),
+                        section.getDownStation(),
+                        section.getUpStation(),
+                        section.getDistance()))
+                .forEach(section -> {
+                    SectionEdge sectionEdge = new SectionEdge(section);
+                    graph.addEdge(section.getUpStation(), section.getDownStation(), sectionEdge);
+                    graph.setEdgeWeight(sectionEdge, section.getDistance());
+                });
+
     }
 
     private static class SectionEdge extends DefaultWeightedEdge {
