@@ -33,6 +33,10 @@ public class PathFinder {
 
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
         GraphPath<Station, DefaultWeightedEdge> graphPath = dijkstraShortestPath.getPath(sourceStation, targetStation);
-        return new Path(graphPath.getVertexList(), graphPath.getWeight());
+        try {
+            return new Path(graphPath.getVertexList(), graphPath.getWeight());
+        } catch (NullPointerException e) {
+            throw new FindPathFailException("연결되지 않은 경로");
+        }
     }
 }
