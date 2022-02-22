@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("최단 경로 조회")
 public class PathFinderTest {
@@ -57,5 +58,17 @@ public class PathFinderTest {
         // then
         assertThat(path.getStations()).containsExactly(강남역, 군자역, 천호역);
         assertThat(path.getDistance()).isEqualTo(8);
+    }
+
+    @DisplayName("같은 출발역 도착역간의 경로 조회시 에러가 발생한다")
+    @Test
+    void sameStationsThrowException() {
+        // given
+        PathFinder pathFinder = new PathFinder(lines);
+
+        // when & then
+        assertThatThrownBy(() -> pathFinder.findShortestPath(강남역, 강남역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("같은 출발역과 도착역 경로 조회 불가");
     }
 }
