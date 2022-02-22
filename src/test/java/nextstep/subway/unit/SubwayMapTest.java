@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
 public class SubwayMapTest {
@@ -69,6 +70,51 @@ public class SubwayMapTest {
 
         // then
         assertThat(path.stations()).containsExactly(교대역, 남부터미널역, 양재역);
+        assertThat(path.totalDistance()).isEqualTo(5);
+    }
+
+    @DisplayName("최단 경로 조회 - 경로가 연결되어 있지 않음")
+    @Test
+    void findPath2() {
+        // given
+        Station source = 교대역;
+        Station target = new Station("강변역");
+        SubwayMap subwayMap = new SubwayMap(lines);
+
+        // when & then
+        assertThatThrownBy(() -> subwayMap.findPath(source, target))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("최단 경로 조회 - 출발역과 도착역이 같음")
+    @Test
+    void findPath3() {
+        // given
+        Station source = 교대역;
+        Station target = 교대역;
+        SubwayMap subwayMap = new SubwayMap(lines);
+
+        // when
+        Path path = subwayMap.findPath(source, target);
+
+        // then
+        assertThat(path.stations()).isEmpty();
+        assertThat(path.totalDistance()).isEqualTo(0);
+    }
+
+    @DisplayName("최단 경로 조회 - 반대 경로")
+    @Test
+    void findPath4() {
+        // given
+        Station source = 양재역;
+        Station target = 교대역;
+        SubwayMap subwayMap = new SubwayMap(lines);
+
+        // when
+        Path path = subwayMap.findPath(source, target);
+
+        // then
+        assertThat(path.stations()).containsExactly(양재역, 남부터미널역, 교대역);
         assertThat(path.totalDistance()).isEqualTo(5);
     }
 }
