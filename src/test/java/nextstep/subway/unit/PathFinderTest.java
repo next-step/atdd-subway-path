@@ -72,4 +72,28 @@ public class PathFinderTest {
                 .isInstanceOf(FindPathFailException.class)
                 .hasMessage("같은 출발역과 도착역 경로 조회 불가");
     }
+
+    @DisplayName("연결되지 않은 출발역 도착역간의 경로 조회시 에러가 발생한다")
+    @Test
+    void notConnectedPath() {
+        // given
+        Station 강동역 = new Station(4L, "강동역");
+        Station 마천역 = new Station(5L, "마천역");
+        Line 육호선 = new Line("육호선", "노란색");
+        육호선.addSection(Section.of(육호선, 강동역, 마천역, 1));
+
+        Station 잠실역 = new Station(6L, "잠실역");
+        Station 중곡역 = new Station(7L, "중곡역");
+        Line 칠호선 = new Line("칠호선", "초록색");
+        칠호선.addSection(Section.of(칠호선, 잠실역, 중곡역, 1));
+
+        lines = Arrays.asList(육호선, 칠호선);
+
+        PathFinder pathFinder = new PathFinder(lines);
+
+        // when & then
+        assertThatThrownBy(() -> pathFinder.findShortestPath(강동역, 잠실역))
+                .isInstanceOf(FindPathFailException.class)
+                .hasMessage("연결되지 않은 경로");
+    }
 }
