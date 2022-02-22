@@ -31,8 +31,10 @@ public class PathFinderTest {
         오호선.addSection(Section.of(오호선, 군자역, 천호역, 3));
         List<Line> lines = Arrays.asList(신분당선, 구분당선, 오호선);
 
+        PathFinder pathFinder = new PathFinder(lines);
+
         // when
-        Path path = PathFinder.findShortestPath(lines, 강남역, 천호역);
+        Path path = pathFinder.findShortestPath(강남역, 천호역);
 
         // then
         assertThat(path.getStations()).containsExactly(강남역, 군자역, 천호역);
