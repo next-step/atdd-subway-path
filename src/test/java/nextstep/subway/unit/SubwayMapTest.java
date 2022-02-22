@@ -26,6 +26,7 @@ public class SubwayMapTest {
     private Line 삼호선;
 
     private List<Line> lines;
+    private SubwayMap subwayMap;
 
     /**
      * 교대역    --- *2호선*(5) ---   강남역
@@ -55,18 +56,14 @@ public class SubwayMapTest {
         삼호선.addSection(남부터미널역, 양재역, 3);
 
         lines = Lists.newArrayList(신분당선, 이호선, 삼호선);
+        subwayMap = new SubwayMap(lines);
     }
 
     @DisplayName("최단 경로 조회")
     @Test
     void findPath() {
-        // given
-        Station source = 교대역;
-        Station target = 양재역;
-        SubwayMap subwayMap = new SubwayMap(lines);
-
         // when
-        Path path = subwayMap.findPath(source, target);
+        Path path = subwayMap.findPath(교대역, 양재역);
 
         // then
         assertThat(path.stations()).containsExactly(교대역, 남부터미널역, 양재역);
@@ -77,25 +74,18 @@ public class SubwayMapTest {
     @Test
     void findPath2() {
         // given
-        Station source = 교대역;
-        Station target = new Station("강변역");
-        SubwayMap subwayMap = new SubwayMap(lines);
+        Station 강변역 = new Station("강변역");
 
         // when & then
-        assertThatThrownBy(() -> subwayMap.findPath(source, target))
+        assertThatThrownBy(() -> subwayMap.findPath(교대역, 강변역))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("최단 경로 조회 - 출발역과 도착역이 같음")
     @Test
     void findPath3() {
-        // given
-        Station source = 교대역;
-        Station target = 교대역;
-        SubwayMap subwayMap = new SubwayMap(lines);
-
         // when
-        Path path = subwayMap.findPath(source, target);
+        Path path = subwayMap.findPath(교대역, 교대역);
 
         // then
         assertThat(path.stations()).isEmpty();
@@ -105,13 +95,8 @@ public class SubwayMapTest {
     @DisplayName("최단 경로 조회 - 반대 경로")
     @Test
     void findPath4() {
-        // given
-        Station source = 양재역;
-        Station target = 교대역;
-        SubwayMap subwayMap = new SubwayMap(lines);
-
         // when
-        Path path = subwayMap.findPath(source, target);
+        Path path = subwayMap.findPath(양재역, 교대역);
 
         // then
         assertThat(path.stations()).containsExactly(양재역, 남부터미널역, 교대역);
