@@ -22,6 +22,13 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sectionList = new ArrayList<>();
 
+    public Sections() {
+    }
+
+    public Sections(List<Section> sections) {
+        this.sectionList = sections;
+    }
+
     public void addSection(Section section) {
         if (isAlreadyExistSection(section) || nonExistStation(section)) {
             throw new IllegalArgumentException(ALREADY_EXIST_SECTION_MESSAGE);
@@ -191,5 +198,9 @@ public class Sections {
 
         addNextSection(section, stations);
         return stations;
+    }
+
+    public int totalDistance() {
+        return 0;
     }
 }
