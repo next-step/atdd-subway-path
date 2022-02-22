@@ -2,6 +2,7 @@ package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -163,5 +164,17 @@ class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> 신분당선.deleteSection(양재역))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("sections의 전체 거리를 계산한다.")
+    @Test
+    void totalDistance() {
+        // given
+        Station 판교역 = new Station("판교역");
+        신분당선.addSection(양재역, 판교역, 6);
+        Sections sections = new Sections(신분당선.getSections());
+
+        // when & then
+        assertThat(sections.totalDistance()).isEqualTo(16);
     }
 }

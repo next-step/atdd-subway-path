@@ -17,17 +17,23 @@ public class Sections {
     private static final String NO_SAME_UP_STATION_SECTION_EXIST_MESSAGE = "해당 역이 상행역인 구간이 존재하지 않습니다.";
     private static final String NO_SAME_DOWN_STATION_SECTION_EXIST_MESSAGE = "해당 역이 하행역인 구간이 존재하지 않습니다.";
     private static final String CANNOT_DELETE_MIN_SIZE_SECTION_MESSAGE = "구간이 1개일 때는 제거할 수 없습니다.";
-    private static final int LAST_INDEX_VALUE = 1;
     private static final int MIN_SECTION_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private final List<Section> sectionList = new ArrayList<>();
+    private List<Section> sectionList = new ArrayList<>();
+
+    public Sections() {
+    }
+
+    public Sections(List<Section> sections) {
+        this.sectionList = sections;
+    }
 
     public void addSection(Section section) {
         if (isAlreadyExistSection(section) || nonExistStation(section)) {
             throw new IllegalArgumentException(ALREADY_EXIST_SECTION_MESSAGE);
         }
-        
+
         if (isMiddleSection(section)) {
             addMiddleSection(section);
             return;
@@ -42,37 +48,33 @@ public class Sections {
 
     private boolean nonExistStation(Section section) {
         return !sectionList.isEmpty() && noneMatch(otherSection ->
-                        section.getUpStation().equals(otherSection.getUpStation())
+                section.getUpStation().equals(otherSection.getUpStation())
                         || section.getUpStation().equals(otherSection.getDownStation())
                         || section.getDownStation().equals(otherSection.getUpStation())
                         || section.getDownStation().equals(otherSection.getDownStation())
-                );
+        );
     }
 
     private boolean isMiddleSection(Section section) {
         return anyMatch(otherSection ->
-                        section.getUpStation().equals(otherSection.getUpStation())
-                                || section.getDownStation().equals(otherSection.getDownStation()));
+                section.getUpStation().equals(otherSection.getUpStation())
+                        || section.getDownStation().equals(otherSection.getDownStation()));
     }
 
     private void addMiddleSection(Section section) {
-        Optional<Section> sameUpStationSection = findSectionBy(section::hasSameUpStation);
-        if (sameUpStationSection.isPresent()) {
-            Section beforeSection = sameUpStationSection.get();
-            Section changedSection = beforeSection.changeUpStation(section);
-            replaceSection(beforeSection, changedSection);
-            sectionList.add(section);
-            return;
-        }
+        findSectionBy(section::hasSameDownStation)
+                .ifPresent(foundSection -> {
+                    Section changedSection = foundSection.changeDownStation(section);
+                    replaceSection(foundSection, changedSection);
+                    sectionList.add(section);
+                });
 
-        Optional<Section> sameDownStationSection = findSectionBy(section::hasSameDownStation);
-        if (sameDownStationSection.isPresent()) {
-            Section beforeSection = sameDownStationSection.get();
-            Section changedSection = beforeSection.changeDownStation(section);
-            replaceSection(beforeSection, changedSection);
-            sectionList.add(section);
-            return;
-        }
+        findSectionBy(section::hasSameUpStation)
+                .ifPresent(foundSection -> {
+                    Section changedSection = foundSection.changeUpStation(section);
+                    replaceSection(foundSection, changedSection);
+                    sectionList.add(section);
+                });
     }
 
     private void replaceSection(Section beforeSection, Section changedSection) {
@@ -94,9 +96,8 @@ public class Sections {
     private void addNextSection(Section section, List<Station> stations) {
         stations.add(section.getDownStation());
 
-        Optional<Section> nextSection = findSectionBy(section::isPreviousSection);
-
-        nextSection.ifPresent(sectionNext -> addNextSection(nextSection.get(), stations));
+        findSectionBy(section::isPreviousSection)
+                .ifPresent(nextSection -> addNextSection(nextSection, stations));
     }
 
     public void deleteSection(Station station) {
@@ -145,8 +146,10 @@ public class Sections {
     }
 
     private void removeMiddleSection(Station station) {
-        Section upSection = findSectionBy(section -> section.getDownStation().equals(station), NO_SAME_DOWN_STATION_SECTION_EXIST_MESSAGE);
-        Section downSection = findSectionBy(section -> section.getUpStation().equals(station), NO_SAME_UP_STATION_SECTION_EXIST_MESSAGE);
+        Section upSection = findSectionBy(section -> section.getDownStation().equals(station),
+                NO_SAME_DOWN_STATION_SECTION_EXIST_MESSAGE);
+        Section downSection = findSectionBy(section -> section.getUpStation().equals(station),
+                NO_SAME_UP_STATION_SECTION_EXIST_MESSAGE);
 
         combineSections(upSection, downSection);
     }
@@ -195,5 +198,11 @@ public class Sections {
 
         addNextSection(section, stations);
         return stations;
+    }
+
+    public int totalDistance() {
+        return sectionList.stream()
+                .mapToInt(Section::getDistance)
+                .sum();
     }
 }

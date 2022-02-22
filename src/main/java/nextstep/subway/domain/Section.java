@@ -4,8 +4,6 @@ import javax.persistence.*;
 
 @Entity
 public class Section {
-    private static final String INVALID_DISTANCE_MESSAGE = "신규 역 사이의 길이가 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.";
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,7 +20,8 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     public Section() {
 
@@ -32,21 +31,26 @@ public class Section {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
+        this.distance = new Distance(distance);
+    }
+
+    public Section(Line line, Station upStation, Station downStation, Distance distance) {
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
     public Section changeUpStation(Section otherSection) {
-        validateDistance(otherSection.distance);
-        return new Section(line, otherSection.downStation, downStation, distance - otherSection.distance);
+        return new Section(line, otherSection.downStation, downStation, distance.minus(otherSection.distance));
     }
 
     public Section changeDownStation(Section otherSection) {
-        validateDistance(otherSection.distance);
-        return new Section(line, upStation, otherSection.upStation, distance - otherSection.distance);
+        return new Section(line, upStation, otherSection.upStation, distance.minus(otherSection.distance));
     }
 
     public Section combine(Section downSection) {
-        return new Section(line, upStation, downSection.downStation, distance + downSection.distance);
+        return new Section(line, upStation, downSection.downStation, distance.plus(downSection.distance));
     }
 
     public boolean equalsUpAndDownStation(Section section) {
@@ -69,12 +73,6 @@ public class Section {
         return upStation.equals(otherSection.downStation);
     }
 
-    private void validateDistance(int otherDistance) {
-        if (distance <= otherDistance) {
-            throw new IllegalArgumentException(INVALID_DISTANCE_MESSAGE);
-        }
-    }
-
     public Long getId() {
         return id;
     }
@@ -92,6 +90,6 @@ public class Section {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.getDistance();
     }
 }
