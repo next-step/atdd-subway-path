@@ -30,16 +30,16 @@ public class LineServiceTest {
     private Station 군자역;
     private Station 아차산역;
     private Station 광나루역;
-    private Line _5호선;
+    private Line 오호선;
 
     @BeforeEach
     void setup() {
         군자역 = stationRepository.save(new Station("군자역"));
         아차산역 = stationRepository.save(new Station("아차산역"));
         광나루역 = stationRepository.save(new Station("광나루역"));
-        _5호선 = new Line("5호선", "보라색");
-        _5호선.getSections().add(Section.of(_5호선, 군자역, 아차산역, 10));
-        lineRepository.save(_5호선);
+        오호선 = new Line("5호선", "보라색");
+        오호선.getSections().add(Section.of(오호선, 군자역, 아차산역, 10));
+        lineRepository.save(오호선);
     }
 
     @DisplayName("마지막 구간에 구간 추가")
@@ -50,10 +50,10 @@ public class LineServiceTest {
         SectionRequest request = new SectionRequest(아차산역.getId(), 광나루역.getId(), distance);
 
         // when
-        lineService.addSection(_5호선.getId(), request);
+        lineService.addSection(오호선.getId(), request);
 
         // then
-        List<Section> sections = _5호선.getSections();
+        List<Section> sections = 오호선.getSections();
         Section lastSection = sections.get(sections.size() - 1);
         assertThat(lastSection.getUpStation()).isEqualTo(아차산역);
         assertThat(lastSection.getDownStation()).isEqualTo(광나루역);
@@ -66,13 +66,13 @@ public class LineServiceTest {
         // given
         int distance = 5;
         SectionRequest request = new SectionRequest(군자역.getId(), 광나루역.getId(), distance);
-        lineService.addSection(_5호선.getId(), request);
+        lineService.addSection(오호선.getId(), request);
 
         // when
-        lineService.deleteSection(_5호선.getId(), 광나루역.getId());
+        lineService.deleteSection(오호선.getId(), 광나루역.getId());
 
         // then
-        LineResponse line = lineService.findLine(_5호선.getId());
+        LineResponse line = lineService.findLine(오호선.getId());
         List<StationResponse> stations = line.getStations();
 
         assertThat(stations).hasSize(2);

@@ -39,13 +39,13 @@ public class LineServiceMockTest {
         long lineId = 1L;
         SectionRequest request = new SectionRequest(upStationId, downStationId, distance);
 
-        Line _5호선 = new Line("5호선", "보라색");
-        _5호선.getSections().add(Section.of(_5호선, 군자역, 아차산역, request.getDistance()));
+        Line 오호선 = new Line("5호선", "보라색");
+        오호선.getSections().add(Section.of(오호선, 군자역, 아차산역, request.getDistance()));
 
         LineService lineService = new LineService(lineRepository, stationService);
         given(stationService.findById(upStationId)).willReturn(아차산역);
         given(stationService.findById(downStationId)).willReturn(광나루역);
-        given(lineRepository.findById(lineId)).willReturn(Optional.of(_5호선));
+        given(lineRepository.findById(lineId)).willReturn(Optional.of(오호선));
 
         // when
         // lineService.addSection 호출

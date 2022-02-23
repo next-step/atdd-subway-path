@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SectionTest {
 
-    private Line _5호선;
+    private Line 오호선;
     private Station 군자역;
     private Station 아차산역;
     private Station 광나루역;
@@ -21,23 +21,23 @@ class SectionTest {
     @BeforeEach
     void setup() {
         // given
-        _5호선 = new Line("5호선", "파란색");
+        오호선 = new Line("5호선", "파란색");
         군자역 = new Station("군자역");
         아차산역 = new Station("아차산역");
         광나루역 = new Station("광나루역");
         distance = 10;
-        section = Section.of(_5호선, 군자역, 아차산역, distance);
-        _5호선.addSection(section);
+        section = Section.of(오호선, 군자역, 아차산역, distance);
+        오호선.addSection(section);
     }
 
     @DisplayName("of 메소드는 받은 파라미터로 Section을 생성하여 반환한다.")
     @Test
     void of() {
         // when
-        Section section = Section.of(_5호선, 군자역, 아차산역, distance);
+        Section section = Section.of(오호선, 군자역, 아차산역, distance);
 
         // then
-        assertThat(section.getLine()).isEqualTo(_5호선);
+        assertThat(section.getLine()).isEqualTo(오호선);
         assertThat(section.getUpStation()).isEqualTo(군자역);
         assertThat(section.getDownStation()).isEqualTo(아차산역);
         assertThat(section.getDistance()).isEqualTo(distance);
