@@ -104,8 +104,82 @@ class LineTest {
         }).isInstanceOf(SubwayException.DuplicatedException.class);
     }
 
-    @DisplayName("구간이 목록에서 마지막 역 삭제")
+    @DisplayName("구간의 목록에서 마지막 역 삭제")
     @Test
     void removeSection() {
+        // given
+        // 구간이 2개 이상이도록 추가
+        line.addSection(new Section(line, 강남역, 양재역, 10));
+        line.addSection(new Section(line, 양재역, 정자역, 10));
+
+        // when
+        line.deleteSection(정자역);
+
+        // then
+        assertThat(line.allStations()).containsExactly(강남역, 양재역);
+    }
+
+    @DisplayName("구간의 목록에서 첫번째 역 삭제 ")
+    @Test
+    void removeFirstSection() {
+        // given
+        // 구간이 2개 이상이도록 추가
+        line.addSection(new Section(line, 강남역, 양재역, 10));
+        line.addSection(new Section(line, 양재역, 정자역, 10));
+
+        // when
+        line.deleteSection(강남역);
+
+        // then
+        assertThat(line.allStations()).containsExactly(양재역, 정자역);
+    }
+
+    @DisplayName("구간의 목록에서 중간 역 삭제")
+    @Test
+    void removeMiddleSection() {
+        // given
+        // 구간이 2개 이상이도록 추가
+        line.addSection(new Section(line, 강남역, 양재역, 10));
+        line.addSection(new Section(line, 양재역, 정자역, 10));
+
+        // when
+        line.deleteSection(양재역);
+
+        // then
+        Section section = line.allSections().stream()
+            .filter(it -> it.getUpStation() == 강남역)
+            .findFirst().orElseThrow(RuntimeException::new);
+
+        assertThat(line.allStations()).containsExactly(강남역, 정자역);
+        assertThat(section.getLine().allSections()).extracting(Section::getDistance).containsExactly(20);
+    }
+
+    @DisplayName("구간이 하나일때는 역을 제거할 수 없음")
+    @Test
+    void removeSectionWhenHasOnlySection() {
+        // given
+        // 구간을 1개만 등록
+        line.addSection(new Section(line, 강남역, 양재역, 10));
+
+        assertThatThrownBy(
+            () -> {
+                line.deleteSection(양재역);
+            }
+        ).isInstanceOf(SubwayException.CanNotDeleteException.class);
+    }
+
+    @DisplayName("존재하지 않는 역 제거할 수 없음")
+    @Test
+    void removeNotExistStation() {
+        // given
+        Station 역삼역 = new Station("역삼역");
+        line.addSection(new Section(line, 강남역, 양재역, 10));
+        line.addSection(new Section(line, 양재역, 정자역, 10));
+
+        assertThatThrownBy(
+            () -> {
+                line.deleteSection(역삼역);
+            }
+        ).isInstanceOf(SubwayException.CanNotDeleteException.class);
     }
 }

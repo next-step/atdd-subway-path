@@ -14,11 +14,12 @@ import nextstep.subway.exception.SubwayException;
 @Embeddable
 public class Sections {
 
+	private static final int MIN_SIZE = 1;
+
 	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
 
 	public Sections() {
-
 	}
 
 	public void add(Section section) {
@@ -38,7 +39,7 @@ public class Sections {
 	}
 
 	public void delete(Station station) {
-		if (this.sections.size() <= 1) {
+		if (this.sections.size() <= MIN_SIZE) {
 			throw new SubwayException.CanNotDeleteException("구간이 하나일 때는 지울 수 없습니다");
 		}
 		checkNotExistStation(station);
@@ -151,13 +152,12 @@ public class Sections {
 	}
 
 	private void checkNotExistStation(Station station) {
-		Optional<Station> stationOpt = findAllStations().stream()
+		findAllStations().stream()
 			.filter(it -> it.equals(station))
-			.findFirst();
-
-		if (!stationOpt.isPresent()) {
-			throw new SubwayException.CanNotDeleteException("존재하지 않는 역은 지울 수 없습니다.");
-		}
+			.findFirst()
+			.orElseThrow(() -> {
+				throw new SubwayException.CanNotDeleteException("존재하지 않는 역은 지울 수 없습니다.");
+			});
 	}
 
 	private void connectStations(Optional<Section> upSection, Optional<Section> downSection) {
