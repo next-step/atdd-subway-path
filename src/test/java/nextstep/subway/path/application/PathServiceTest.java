@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.path.domain.PathRepository;
 import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.path.exception.InvalidSourceTargetException;
 import nextstep.subway.path.exception.PathNotFoundException;
@@ -33,9 +32,6 @@ class PathServiceTest {
     @Autowired
     private LineRepository lineRepository;
 
-    @Autowired
-    private PathRepository pathRepository;
-
     private PathService pathService;
 
     private Station 교대역;
@@ -57,7 +53,7 @@ class PathServiceTest {
         신분당선 = lineRepository.save(new Line("신분당선", "red", 강남역, 양재역, 10));
         삼호선 = lineRepository.save(new Line("3호선", "green", 교대역, 남부터미널역, 2));
 
-        pathService = new PathService(pathRepository, stationRepository);
+        pathService = new PathService(stationRepository, lineRepository);
     }
 
     @DisplayName("출발역부터 도착역까지의 최단 경로를 조회할 수 있다.")
