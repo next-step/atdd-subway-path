@@ -74,7 +74,7 @@ public class Section {
         throw new InvalidSectionSplitException();
     }
 
-    public Section merge(Section nextSection) {
+    public Section mergeUpStationWithDownStation(Section nextSection) {
         if (!downStation.equals(nextSection.upStation)) {
             throw new SectionMergeFailedException();
         }

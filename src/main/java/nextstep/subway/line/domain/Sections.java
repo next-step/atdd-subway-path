@@ -88,15 +88,21 @@ public class Sections {
         return searchedSections;
     }
 
-    private Section mergeSections(List<Section> sections, Station station) {
-        Section upSection = sections.stream().filter(
-                section -> station.equals(section.getDownStation())
-        ).findAny().orElseThrow(SectionMergeFailedException::new);
-        Section downSection = sections.stream().filter(
-                section -> station.equals(section.getUpStation())
-        ).findAny().orElseThrow(SectionMergeFailedException::new);
-        return upSection.merge(downSection);
+    private Section searchSection(Section section) {
+        List<Section> searchedSections = searchSections(section.getUpStation(), section.getDownStation());
+        return searchedSections.get(FIRST_INDEX);
+    }
 
+    private Section mergeSections(List<Section> sections, Station station) {
+        Section upSection = sections.stream()
+                .filter(section -> station.equals(section.getDownStation()))
+                .findAny()
+                .orElseThrow(SectionMergeFailedException::new);
+        Section downSection = sections.stream()
+                .filter(section -> station.equals(section.getUpStation()))
+                .findAny()
+                .orElseThrow(SectionMergeFailedException::new);
+        return upSection.mergeUpStationWithDownStation(downSection);
     }
 
     private void validateAddSection(Section section) {
@@ -106,9 +112,7 @@ public class Sections {
     }
 
     private void addMiddleSections(Section section) {
-        Section searchedSection = searchSections(
-                section.getUpStation(), section.getDownStation()
-        ).get(FIRST_INDEX);
+        Section searchedSection = searchSection(section);
         if (!isSectionAlreadyRegistered(section)
                 && searchedSection.isSplittable(section)) {
             sections.remove(searchedSection);
