@@ -84,12 +84,6 @@ public class LineService {
 		Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 		Station station = stationService.findById(stationId);
 
-		if (!line.sectionByIndex(line.lastIndexOfSections())
-			.getDownStation()
-			.equals(station)) {
-			throw new SubwayException.CanNotDeleteException();
-		}
-
-		line.removeSectionByIndex(line.lastIndexOfSections());
+		line.deleteSection(station);
 	}
 }

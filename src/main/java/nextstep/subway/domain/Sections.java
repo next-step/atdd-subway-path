@@ -14,11 +14,12 @@ import nextstep.subway.exception.SubwayException;
 @Embeddable
 public class Sections {
 
+	private static final int MIN_SIZE = 1;
+
 	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
 
 	public Sections() {
-
 	}
 
 	public void add(Section section) {
@@ -37,6 +38,21 @@ public class Sections {
 		this.sections.add(section);
 	}
 
+	public void delete(Station station) {
+		if (this.sections.size() <= MIN_SIZE) {
+			throw new SubwayException.CanNotDeleteException("구간이 하나일 때는 지울 수 없습니다");
+		}
+		checkNotExistStation(station);
+
+		Optional<Section> upSection = findUpSection(station);
+		Optional<Section> downSection = findDownSection(station);
+
+		connectStations(upSection, downSection);
+
+		deleteUpSection(upSection);
+		deleteDownSection(downSection);
+	}
+
 	public List<Station> findAllStations() {
 		//  첫번째 상행역을 찾고, 그 뒤로 구간에 연결되는 하행역을 찾는다
 		List<Station> stations = new ArrayList<>();
@@ -45,7 +61,7 @@ public class Sections {
 
 		while (true) {
 			Station station = upStation;
-			Optional<Section> section = findSectionByUpStation(station);
+			Optional<Section> section = findUpSection(station);
 			if (!section.isPresent()) {
 				break;
 			}
@@ -65,24 +81,8 @@ public class Sections {
 		return this.sections;
 	}
 
-	public Section findByIndex(int index) {
-		return this.sections.get(index);
-	}
-
-	public void removeByIndex(int index) {
-		this.sections.remove(index);
-	}
-
 	private void updateDownSection(Section section) {
-		// ex)
-		// 기존 : A - B
-		// 신규 : A - C
-		// A 가 상행역으로 같음 => 기존구간을 삭제하고 하행역끼리 연결 (C - B)
-		// 그 후 신규 구간 추가 (A - C)
-		// => A - C, C - B 로 구간 생성
-		this.sections.stream()
-			.filter(it -> it.isEqualUpStation(section.getUpStation()))
-			.findFirst()
+		findUpSection(section.getUpStation())
 			.ifPresent(it -> {
 				sections.add(new Section(section.getLine(), section.getDownStation(), it.getDownStation(),
 					it.getDistance() - section.getDistance()));
@@ -91,15 +91,7 @@ public class Sections {
 	}
 
 	private void updateUpSection(Section section) {
-		// ex)
-		// 기존 : A - B
-		// 신규 : C - B
-		// B 가 하행역으로 같음 => 기존구간을 삭제하고 상행역끼리 연결 (A - C)
-		// 그 후 신규 구간 추가 (C - B)
-		// => A - C, C - B 로 구간 생성
-		this.sections.stream()
-			.filter(it -> it.isEqualDownStation(section.getDownStation()))
-			.findFirst()
+		findDownSection(section.getDownStation())
 			.ifPresent(it -> {
 				sections.add(new Section(section.getLine(), it.getUpStation(), section.getUpStation(),
 					it.getDistance() - section.getDistance()));
@@ -133,7 +125,6 @@ public class Sections {
 	}
 
 	private Station findFirstUpStation() {
-		//  상행역 중 하행역이 없는게 첫번째 역
 		List<Station> upStations = this.sections.stream()
 			.map(Section::getUpStation)
 			.collect(Collectors.toList());
@@ -148,9 +139,44 @@ public class Sections {
 			.orElseThrow(SubwayException.NotFoundException::new);
 	}
 
-	private Optional<Section> findSectionByUpStation(Station station) {
+	private Optional<Section> findDownSection(Station station) {
 		return this.sections.stream()
-			.filter(section -> section.isEqualUpStation(station))
+			.filter(it -> it.isEqualDownStation(station))
 			.findFirst();
+	}
+
+	private Optional<Section> findUpSection(Station station) {
+		return this.sections.stream()
+			.filter(it -> it.isEqualUpStation(station))
+			.findFirst();
+	}
+
+	private void checkNotExistStation(Station station) {
+		findAllStations().stream()
+			.filter(it -> it.equals(station))
+			.findFirst()
+			.orElseThrow(() -> {
+				throw new SubwayException.CanNotDeleteException("존재하지 않는 역은 지울 수 없습니다.");
+			});
+	}
+
+	private void connectStations(Optional<Section> upSection, Optional<Section> downSection) {
+		if (upSection.isPresent() && downSection.isPresent()) {
+			Section section = new Section(
+				upSection.get().getLine(),
+				downSection.get().getUpStation(),
+				upSection.get().getDownStation(),
+				upSection.get().getDistance() + downSection.get().getDistance()
+			);
+			this.sections.add(section);
+		}
+	}
+
+	private void deleteDownSection(Optional<Section> downSection) {
+		downSection.ifPresent(section -> this.sections.remove(section));
+	}
+
+	private void deleteUpSection(Optional<Section> upSection) {
+		upSection.ifPresent(section -> this.sections.remove(section));
 	}
 }
