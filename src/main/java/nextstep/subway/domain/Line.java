@@ -50,4 +50,8 @@ public class Line {
     public List<Section> getSections() {
         return sections;
     }
+
+    public void addSection(Station 구로디지털단지역, Station 신대방역, int i) {
+
+    }
 }
