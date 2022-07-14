@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -15,12 +16,17 @@ public class Line {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
+    public Line() {
+    }
+
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this(name, color);
+        addSection(upStation, downStation, distance);
     }
 
     public Long getId() {
@@ -56,6 +62,14 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        return null;
+        List<Station> stations = this.sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+        stations.add(getLastDownStation());
+        return stations;
+    }
+
+    private Station getLastDownStation() {
+        return this.sections.get(this.sections.size() - 1).getDownStation();
     }
 }
