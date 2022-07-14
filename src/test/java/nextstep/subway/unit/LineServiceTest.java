@@ -29,5 +29,6 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
+
     }
 }

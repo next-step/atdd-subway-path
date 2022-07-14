@@ -15,12 +15,12 @@ public class Line {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public Line() {
-    }
-
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
     }
 
     public Long getId() {
@@ -53,5 +53,9 @@ public class Line {
 
     public void addSection(Station upStation, Station downStation, int distance) {
         this.sections.add(new Section(this, upStation, downStation, distance));
+    }
+
+    public List<Station> getStations() {
+        return null;
     }
 }
