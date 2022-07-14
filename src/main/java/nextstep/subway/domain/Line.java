@@ -51,7 +51,7 @@ public class Line {
         return sections;
     }
 
-    public void addSection(Station 구로디지털단지역, Station 신대방역, int i) {
-
+    public void addSection(Station upStation, Station downStation, int distance) {
+        this.sections.add(new Section(this, upStation, downStation, distance));
     }
 }
