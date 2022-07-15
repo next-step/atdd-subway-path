@@ -52,8 +52,8 @@ class LineTest {
 	void removeSection() {
 		//given
 
-		line.addSection(강남역, 역삼역, DISTANCE);
-		line.addSection(역삼역, 선릉역, DISTANCE);
+		line.addSection(강남역, 역삼역, DISTANCE, 1L);
+		line.addSection(역삼역, 선릉역, DISTANCE, 2L);
 		//when
 		line.removeSection(선릉역);
 		//then
@@ -66,8 +66,8 @@ class LineTest {
 		//given
 
 		//when
-		line.addSection(강남역, 역삼역, DISTANCE);
-		line.addSection(역삼역, 선릉역, DISTANCE);
+		line.addSection(강남역, 역삼역, DISTANCE, 1L);
+		line.addSection(역삼역, 선릉역, DISTANCE, 2L);
 
 		//then
 		assertThatThrownBy(() -> line.removeSection(역삼역))

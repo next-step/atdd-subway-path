@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,13 +46,12 @@ public class Sections {
 	}
 
 	private Section getLastSection() {
-		return sections.get(sections.size() - 1);
-		/*
+		//return sections.get(sections.size() - 1);
+
 		return sections.stream()
 			.sorted(Comparator.comparing(Section::getId).reversed())
 			.findFirst()
 			.orElseThrow(IllegalArgumentException::new);
 
-		 */
 	}
 }

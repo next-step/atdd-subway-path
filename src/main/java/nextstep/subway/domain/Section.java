@@ -39,6 +39,14 @@ public class Section {
 		this.distance = distance;
 	}
 
+	public Section(Long sectionId, Line line, Station upStation, Station downStation, int distance) {
+		this.id = sectionId;
+		this.line = line;
+		this.upStation = upStation;
+		this.downStation = downStation;
+		this.distance = distance;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -60,8 +68,6 @@ public class Section {
 	}
 
 	public boolean isSameWithDownStation(long stationId) {
-		System.out.println(downStation.getId());
-		System.out.println(stationId);
 		return this.downStation.getId() == stationId;
 	}
 
