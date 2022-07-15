@@ -10,6 +10,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
+import org.springframework.util.CollectionUtils;
+
 public class Sections {
 	@OneToMany(mappedBy = "line",
 		cascade = {CascadeType.PERSIST, CascadeType.MERGE},
@@ -25,8 +27,12 @@ public class Sections {
 	}
 
 	public List<Station> getStations() {
+
+		if (CollectionUtils.isEmpty(sections) || sections.size() <= 0) {
+			Collections.emptyList();
+		}
 		List<Station> stations = sections.stream()
-			.map(a -> a.getDownStation())
+			.map(value -> value.getDownStation())
 			.collect(Collectors.toList());
 		stations.add(0, sections.get(0).getUpStation());
 		return Collections.unmodifiableList(stations);
