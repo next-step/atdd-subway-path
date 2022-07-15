@@ -28,7 +28,7 @@ class LineTest {
 		Line line = new Line(1L, "신분당선", "color");
 		line.addSection(new Station(1L, "강남역"), new Station(2L, "역삼역"), 1);
 		//then
-		assertThat(line.getSections()).hasSize(1);
+		assertThat(line.getStations()).hasSize(2);
 	}
 
 	@Test
