@@ -73,6 +73,23 @@ public class LineServiceMockTest {
         assertThat(response.getStations()).hasSize(2);
     }
 
+    @DisplayName("지하철 노선 수정")
+    @Test
+    void updateLine() {
+        // given
+        when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
+
+        LineService lineService = new LineService(lineRepository, stationService);
+
+        // when
+        lineService.updateLine(이호선.getId(), new LineRequest("신분당선", "red"));
+
+        // then
+        Line line = lineService.findLineById(이호선.getId());
+        assertThat(line.getName()).isEqualTo("신분당선");
+        assertThat(line.getColor()).isEqualTo("red");
+    }
+
     static class Stub {
         static final Station 구로디지털단지역 = new Station("구로디지털단지역");
         static final Station 신대방역 = new Station("신대방역");

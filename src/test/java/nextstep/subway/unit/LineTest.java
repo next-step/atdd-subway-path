@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 import static nextstep.subway.unit.LineTest.Stub.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("지하철 구간 관련")
+@DisplayName("지하철 노선 관련")
 class LineTest {
 
     @DisplayName("지하철 구간 추가")
@@ -54,6 +54,20 @@ class LineTest {
         // then
         assertThat(line.getSections()).hasSize(1);
         assertThat(line.getStations()).contains(구로디지털단지역, 신대방역);
+    }
+
+    @DisplayName("지하철 노선 수정")
+    @Test
+    void updateLine() {
+        // given
+        Line line = 이호선_생성.get();
+
+        // when
+        line.update("신분당선", "red");
+
+        // then
+        assertThat(line.getName()).isEqualTo("신분당선");
+        assertThat(line.getColor()).isEqualTo("red");
     }
 
     static class Stub {

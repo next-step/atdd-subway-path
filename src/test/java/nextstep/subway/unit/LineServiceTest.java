@@ -77,4 +77,21 @@ public class LineServiceTest {
         assertThat(response.getColor()).isEqualTo("green");
         assertThat(response.getStations()).hasSize(2);
     }
+
+    @DisplayName("지하철 노선 수정")
+    @Test
+    void updateLine() {
+        // given
+        Station 구로디지털단지역 = stationRepository.save(new Station("구로디지털단지역"));
+        Station 신대방역 = stationRepository.save(new Station("신대방역"));
+        Line 이호선 = lineRepository.save(new Line("2호선", "green", 구로디지털단지역, 신대방역, 10));
+
+        // when
+        lineService.updateLine(이호선.getId(), new LineRequest("신분당선", "red"));
+
+        // then
+        Line line = lineService.findLineById(이호선.getId());
+        assertThat(line.getName()).isEqualTo("신분당선");
+        assertThat(line.getColor()).isEqualTo("red");
+    }
 }
