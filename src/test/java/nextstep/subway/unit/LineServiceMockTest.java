@@ -53,6 +53,23 @@ public class LineServiceMockTest {
         assertThat(line.getStations()).contains(구로디지털단지역, 신대방역, 신림역);
     }
 
+    @DisplayName("지하철 구간 삭제")
+    @Test
+    void deleteSection() {
+        // given
+        when(stationService.findById(신림역.getId())).thenReturn(신림역);
+        when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
+
+        LineService lineService = new LineService(lineRepository, stationService);
+        이호선.addSection(신대방역, 신림역, 8);
+
+        // when
+        lineService.deleteSection(이호선.getId(), 이호선.getLastDownStation().getId());
+
+        // then
+        assertThat(이호선.getStations()).contains(구로디지털단지역, 신대방역);
+    }
+
     @DisplayName("지하철 노선 생성")
     @Test
     void saveLine() {
