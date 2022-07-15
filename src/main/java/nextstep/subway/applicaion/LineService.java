@@ -78,7 +78,7 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
+        if (line.hasNoSection()) {
             return Collections.emptyList();
         }
 
@@ -86,7 +86,7 @@ public class LineService {
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
 
-        stations.add(0, line.getSections().get(0).getUpStation());
+        stations.add(0, line.getFirstUpStation());
 
         return stations.stream()
                 .map(it -> stationService.createStationResponse(it))

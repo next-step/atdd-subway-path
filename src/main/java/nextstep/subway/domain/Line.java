@@ -72,4 +72,12 @@ public class Line {
     public void removeLastSection() {
         sections.remove(sections.size() - 1);
     }
+
+    public Station getFirstUpStation() {
+        return sections.get(0).getUpStation();
+    }
+
+    public boolean hasNoSection() {
+        return sections.isEmpty();
+    }
 }

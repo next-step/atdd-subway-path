@@ -96,6 +96,20 @@ class LineTest {
     }
 
     @Test
+    void getFirstUpStation() {
+        // given
+        final Line line = new Line();
+        final Station upStation = upStation();
+        line.addSection(upStation, downStation(), 3);
+
+        // when
+        final Station result = line.getFirstUpStation();
+
+        // then
+        assertThat(result).isEqualTo(upStation);
+    }
+
+    @Test
     void getStations() {
     }
 
