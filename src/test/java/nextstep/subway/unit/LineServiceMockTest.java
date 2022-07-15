@@ -33,6 +33,72 @@ public class LineServiceMockTest {
     private StationService stationService;
 
     @Test
+    void deleteSectionFail_LineNotExists() {
+        // given
+        final long lineId = 1L;
+        doReturn(Optional.empty())
+                .when(lineRepository)
+                .findById(lineId);
+
+        // when
+        final IllegalArgumentException result = assertThrows(
+                IllegalArgumentException.class,
+                () -> target.deleteSection(lineId, 2L));
+
+        // then
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    void deleteSectionFail_NotLastDownStation() {
+        // given
+        final long lineId = 1L;
+        final Line line = new Line("name", "color");
+        doReturn(Optional.of(line))
+                .when(lineRepository)
+                .findById(lineId);
+
+        final Station upStation = new Station(100L, "A");
+        doReturn(upStation)
+                .when(stationService)
+                .findById(upStation.getId());
+
+        line.addSection(upStation, new Station(200L, "A"), 10);
+
+        // when
+        final IllegalArgumentException result = assertThrows(
+                IllegalArgumentException.class,
+                () -> target.deleteSection(lineId, upStation.getId()));
+
+        // then
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    void deleteSectionSuccess() {
+        // given
+        final long lineId = 1L;
+        final Line line = new Line("name", "color");
+        doReturn(Optional.of(line))
+                .when(lineRepository)
+                .findById(lineId);
+
+        final Station upStation = new Station(100L, "A");
+
+        final Station downStation = new Station(200L, "A");
+        doReturn(downStation)
+                .when(stationService)
+                .findById(downStation.getId());
+        line.addSection(upStation, downStation, 10);
+
+        // when
+        target.deleteSection(lineId, downStation.getId());
+
+        // then
+        assertThat(line.getSections()).isEmpty();
+    }
+
+    @Test
     void saveLineSuccess_NotSection() {
         // given
 
