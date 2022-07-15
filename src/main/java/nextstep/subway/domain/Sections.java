@@ -23,6 +23,12 @@ public class Sections {
 		return sections;//Collections.unmodifiableList(sections);
 	}
 
+	public List<Station> getStations() {
+		List<Station> stations = new ArrayList<>();
+		sections.forEach(station -> stations.addAll(station.getAllStations()));
+		return stations;
+	}
+
 	public void add(Section addSection) {
 		this.sections.add(addSection);
 	}

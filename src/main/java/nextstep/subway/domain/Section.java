@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -57,6 +60,10 @@ public class Section {
 
 	public int getDistance() {
 		return distance;
+	}
+
+	public List<Station> getAllStations() {
+		return Arrays.asList(upStation, downStation);
 	}
 
 	public boolean isRemovable(long stationId) {
