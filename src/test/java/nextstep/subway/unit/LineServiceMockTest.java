@@ -2,6 +2,8 @@ package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
+import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -17,16 +19,20 @@ import java.util.Optional;
 
 import static nextstep.subway.unit.LineServiceMockTest.Stub.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @DisplayName("지하철 구간 관련 with Mock")
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
+
     @Mock
     private LineRepository lineRepository;
+
     @Mock
     private StationService stationService;
 
+    @DisplayName("지하철 구간 추가")
     @Test
     void addSection() {
         // given
@@ -47,11 +53,31 @@ public class LineServiceMockTest {
         assertThat(line.getStations()).contains(구로디지털단지역, 신대방역, 신림역);
     }
 
-    protected static class Stub {
-        public static final Station 구로디지털단지역 = new Station("구로디지털단지역");
-        public static final Station 신대방역 = new Station("신대방역");
-        public static final Station 신림역 = new Station("신림역");
-        public static final Line 이호선 = new Line("이호선", "green", 구로디지털단지역, 신대방역, 10);
+    @DisplayName("지하철 노선 생성")
+    @Test
+    void saveLine() {
+        // given
+        when(stationService.findById(구로디지털단지역.getId())).thenReturn(구로디지털단지역);
+        when(stationService.findById(신대방역.getId())).thenReturn(신대방역);
+        when(lineRepository.save(any())).thenReturn(이호선);
+
+        LineService lineService = new LineService(lineRepository, stationService);
+
+        // when
+        LineResponse response = lineService.saveLine(new LineRequest("2호선", "green", 구로디지털단지역.getId(), 신대방역.getId(), 10));
+
+        // then
+        assertThat(response.getId()).isEqualTo(1L);
+        assertThat(response.getName()).isEqualTo("2호선");
+        assertThat(response.getColor()).isEqualTo("green");
+        assertThat(response.getStations()).hasSize(2);
+    }
+
+    static class Stub {
+        static final Station 구로디지털단지역 = new Station("구로디지털단지역");
+        static final Station 신대방역 = new Station("신대방역");
+        static final Station 신림역 = new Station("신림역");
+        static final Line 이호선 = new Line("2호선", "green", 구로디지털단지역, 신대방역, 10);
 
         static {
             ReflectionTestUtils.setField(구로디지털단지역, "id", 1L);

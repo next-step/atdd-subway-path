@@ -1,6 +1,8 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
+import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -57,5 +59,22 @@ public class LineServiceTest {
         // then
         // line.getSections 메서드를 통해 검증
         assertThat(이호선.getStations()).contains(구로디지털단지역, 신대방역, 신림역);
+    }
+
+    @DisplayName("지하철 노선 생성")
+    @Test
+    void saveLine() {
+        // given
+        Station 구로디지털단지역 = stationRepository.save(new Station("구로디지털단지역"));
+        Station 신대방역 = stationRepository.save(new Station("신대방역"));
+
+        // when
+        LineResponse response = lineService.saveLine(new LineRequest("2호선", "green", 구로디지털단지역.getId(), 신대방역.getId(), 10));
+
+        // then
+        assertThat(response.getId()).isEqualTo(1L);
+        assertThat(response.getName()).isEqualTo("2호선");
+        assertThat(response.getColor()).isEqualTo("green");
+        assertThat(response.getStations()).hasSize(2);
     }
 }
