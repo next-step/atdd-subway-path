@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
@@ -25,7 +26,7 @@ public class LineServiceTest {
     private LineRepository lineRepository;
 
     @Test
-    void addSection() {
+    void addSectionSuccess() {
         // given
         final Line line = new Line("name", "color");
         final Line savedLine = lineRepository.save(line);
@@ -39,4 +40,17 @@ public class LineServiceTest {
         // then
         assertThat(savedLine.getSections()).isNotEmpty();
     }
+
+    @Test
+    void addSectionFail_LineNotFound() {
+        // given
+        final Line line = new Line("name", "color");
+
+        // when
+        final IllegalArgumentException result = assertThrows(IllegalArgumentException.class, () -> target.addSection(1L, new SectionRequest()));
+
+        // then
+        assertThat(result).isNotNull();
+    }
+
 }
