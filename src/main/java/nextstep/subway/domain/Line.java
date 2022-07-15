@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.applicaion.dto.LineRequest;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,5 +78,14 @@ public class Line {
 
     public void removeSection(Section section) {
         this.sections.remove(section);
+    }
+
+    public void update(String name, String color) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (color != null) {
+            this.color = color;
+        }
     }
 }

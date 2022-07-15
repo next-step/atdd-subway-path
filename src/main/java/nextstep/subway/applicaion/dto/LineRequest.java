@@ -13,9 +13,13 @@ public class LineRequest {
     @Min(value = 1)
     private int distance;
 
-    public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public LineRequest(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+        this(name, color);
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
