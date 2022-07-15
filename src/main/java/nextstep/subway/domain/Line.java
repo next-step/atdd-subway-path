@@ -56,4 +56,20 @@ public class Line {
             this.color = color;
         }
     }
+
+    public boolean isLastDownStation(final Station station) {
+        return getLastDownStation().equals(station);
+    }
+
+    private Station getLastDownStation() {
+        return getLastSection().getDownStation();
+    }
+
+    private Section getLastSection() {
+        return sections.get(sections.size() - 1);
+    }
+
+    public void removeLastSection() {
+        sections.remove(sections.size() - 1);
+    }
 }
