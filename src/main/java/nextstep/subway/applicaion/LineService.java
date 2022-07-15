@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class LineService {
-    private LineRepository lineRepository;
-    private StationService stationService;
+    private final LineRepository lineRepository;
+    private final StationService stationService;
 
     public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
@@ -41,12 +41,12 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        return createLineResponse(findLine(id));
     }
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = findLine(id);
         line.update(lineRequest.getName(), lineRequest.getColor());
     }
 
@@ -57,7 +57,7 @@ public class LineService {
 
     @Transactional
     public void addSection(Long lineId, SectionRequest request) {
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = findLine(lineId);
         addSection(line, request.getUpStationId(), request.getDownStationId(), request.getDistance());
     }
 
@@ -79,19 +79,24 @@ public class LineService {
     private List<StationResponse> createStationResponses(Line line) {
         List<Station> stations = line.getStations();
         return stations.stream()
-                .map(it -> stationService.createStationResponse(it))
+                .map(stationService::createStationResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = findLine(lineId);
 
         if (!line.isLastDownStation(stationService.findById(stationId))) {
             throw new IllegalArgumentException();
         }
 
         line.removeLastSection();
+    }
+
+    private Line findLine(final Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(IllegalArgumentException::new);
     }
 
 }
