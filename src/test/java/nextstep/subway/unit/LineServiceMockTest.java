@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -17,6 +18,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -29,6 +31,48 @@ public class LineServiceMockTest {
     private LineRepository lineRepository;
     @Mock
     private StationService stationService;
+
+    @Test
+    void saveLineSuccess_NotSection() {
+        // given
+
+        doReturn(new Line("name", "color"))
+                .when(lineRepository)
+                .save(any(Line.class));
+
+        // when
+        final LineResponse result = target.saveLine(new LineRequest("name", "color"));
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.getStations()).isEmpty();
+    }
+
+    @Test
+    void saveLineSuccess_WithSection() {
+        // given
+
+        doReturn(new Line("name", "color"))
+                .when(lineRepository)
+                .save(any(Line.class));
+
+        final long upStationId = 100L;
+        doReturn(mock(Station.class))
+                .when(stationService)
+                .findById(upStationId);
+
+        final long downStationId = 200L;
+        doReturn(mock(Station.class))
+                .when(stationService)
+                .findById(downStationId);
+
+        // when
+        final LineResponse result = target.saveLine(new LineRequest("name", "color", upStationId, downStationId, 1));
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.getStations()).isNotEmpty();
+    }
 
     @Test
     void addSectionSuccess() {
@@ -55,6 +99,7 @@ public class LineServiceMockTest {
         // then
         assertThat(line.getSections()).isNotEmpty();
     }
+
     @Test
     void addSectionFail_LineNotFound() {
         // given
