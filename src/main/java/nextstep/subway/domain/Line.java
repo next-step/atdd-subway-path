@@ -77,4 +77,16 @@ public class Line {
 		this.sections.remove(station);
 	}
 
+	public void changeName(String lineName) {
+		if (lineName != null) {
+			this.name = lineName;
+		}
+	}
+
+	public void changeColor(String lineColor) {
+		if (lineColor != null) {
+			this.color = lineColor;
+		}
+	}
+
 }
