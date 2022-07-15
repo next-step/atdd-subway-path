@@ -6,7 +6,6 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,7 +77,7 @@ public class LineService {
     private List<StationResponse> createStationResponses(Line line) {
         if (line.getSections().isEmpty()) {
             return Collections.emptyList();
-        };
+        }
 
         return line.getStations().stream()
                 .map(stationService::createStationResponse)
@@ -87,14 +86,7 @@ public class LineService {
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = findLineById(lineId);
-        Station station = stationService.findById(stationId);
-
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-
-        line.getSections().remove(line.getSections().size() - 1);
+        findLineById(lineId).removeSection(stationService.findById(stationId));
     }
 
 }

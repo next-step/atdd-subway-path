@@ -1,12 +1,9 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.applicaion.dto.LineRequest;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Entity
 public class Line {
@@ -66,18 +63,25 @@ public class Line {
 
     public List<Station> getStations() {
         List<Station> stations = this.sections.stream()
-                .map(Section::getUpStation)
+                .map(Section::getDownStation)
                 .collect(Collectors.toList());
-        stations.add(getLastDownStation());
+        stations.add(0, getFirstUpStation());
         return stations;
     }
 
-    private Station getLastDownStation() {
+    private Station getFirstUpStation() {
+        return this.sections.get(0).getUpStation();
+    }
+
+    public Station getLastDownStation() {
         return this.sections.get(this.sections.size() - 1).getDownStation();
     }
 
-    public void removeSection(Section section) {
-        this.sections.remove(section);
+    public void removeSection(Station station) {
+        if (!getLastDownStation().equals(station)) {
+            throw new IllegalArgumentException();
+        }
+        this.sections.remove(this.sections.size() - 1);
     }
 
     public void update(String name, String color) {
