@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import static nextstep.subway.utils.LineTestSources.*;
+import static nextstep.subway.utils.StationTestSources.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -34,7 +36,7 @@ public class LineServiceTest {
         // when
         final IllegalArgumentException result = assertThrows(
                 IllegalArgumentException.class,
-                () -> target.deleteSection(1L, 2L));
+                () -> target.deleteSection(lineId, downStationId));
 
         // then
         assertThat(result).isNotNull();
@@ -43,9 +45,9 @@ public class LineServiceTest {
     @Test
     void deleteSectionFail_NotLastDownStation() {
         // given
-        final Station savedUpStation = stationRepository.save(new Station("station"));
-        final Station savedDownStation = stationRepository.save(new Station("station"));
-        final LineResponse lineResponse = target.saveLine(new LineRequest("name", "color", savedUpStation.getId(), savedDownStation.getId(), 3));
+        final Station savedUpStation = stationRepository.save(upStation());
+        final Station savedDownStation = stationRepository.save(downStation());
+        final LineResponse lineResponse = target.saveLine(lineRequest(savedUpStation.getId(), savedDownStation.getId()));
 
         // when
         final IllegalArgumentException result = assertThrows(
@@ -59,9 +61,9 @@ public class LineServiceTest {
     @Test
     void deleteSectionSuccess() {
         // given
-        final Station savedUpStation = stationRepository.save(new Station("station"));
-        final Station savedDownStation = stationRepository.save(new Station("station"));
-        final LineResponse lineResponse = target.saveLine(new LineRequest("name", "color", savedUpStation.getId(), savedDownStation.getId(), 3));
+        final Station savedUpStation = stationRepository.save(upStation());
+        final Station savedDownStation = stationRepository.save(downStation());
+        final LineResponse lineResponse = target.saveLine(lineRequest(savedUpStation.getId(), savedDownStation.getId()));
 
         // when
         target.deleteSection(lineResponse.getId(), savedDownStation.getId());
@@ -75,7 +77,7 @@ public class LineServiceTest {
         // given
 
         // when
-        final LineResponse result = target.saveLine(new LineRequest("name", "color"));
+        final LineResponse result = target.saveLine(lineRequest());
 
         // then
         assertThat(result).isNotNull();
@@ -85,11 +87,11 @@ public class LineServiceTest {
     @Test
     void saveLineSuccess_WithSection() {
         // given
-        final Station savedUpStation = stationRepository.save(new Station("station"));
-        final Station savedDownStation = stationRepository.save(new Station("station"));
+        final Station savedUpStation = stationRepository.save(upStation());
+        final Station savedDownStation = stationRepository.save(downStation());
 
         // when
-        final LineResponse result = target.saveLine(new LineRequest("name", "color", savedUpStation.getId(), savedDownStation.getId(), 3));
+        final LineResponse result = target.saveLine(lineRequest(savedUpStation.getId(), savedDownStation.getId()));
 
         // then
         assertThat(result).isNotNull();
@@ -99,14 +101,13 @@ public class LineServiceTest {
     @Test
     void addSectionSuccess() {
         // given
-        final Line line = new Line("name", "color");
-        final Line savedLine = lineRepository.save(line);
+        final Line savedLine = lineRepository.save(line());
 
-        final Station savedUpStation = stationRepository.save(new Station("station"));
-        final Station savedDownStation = stationRepository.save(new Station("station"));
+        final Station savedUpStation = stationRepository.save(upStation());
+        final Station savedDownStation = stationRepository.save(downStation());
 
         // when
-        target.addSection(savedLine.getId(), new SectionRequest(savedUpStation.getId(), savedDownStation.getId(), 10));
+        target.addSection(savedLine.getId(), sectionRequest(savedUpStation.getId(), savedDownStation.getId()));
 
         // then
         assertThat(savedLine.getSections()).isNotEmpty();
@@ -115,12 +116,11 @@ public class LineServiceTest {
     @Test
     void addSectionFail_LineNotFound() {
         // given
-        final Line line = new Line("name", "color");
 
         // when
         final IllegalArgumentException result = assertThrows(
                 IllegalArgumentException.class,
-                () -> target.addSection(1L, new SectionRequest()));
+                () -> target.addSection(lineId, new SectionRequest()));
 
         // then
         assertThat(result).isNotNull();
@@ -129,11 +129,11 @@ public class LineServiceTest {
     @Test
     void updateLineSuccess() {
         // given
-        final Line line = new Line("name", "color");
+        final Line line = line();
         final Line savedLine = lineRepository.save(line);
 
         // when
-        target.updateLine(savedLine.getId(), new LineRequest(null, null));
+        target.updateLine(savedLine.getId(), lineRequest());
 
         // then
         assertThat(savedLine.getName()).isEqualTo(line.getName());
@@ -147,7 +147,7 @@ public class LineServiceTest {
         // when
         final IllegalArgumentException result = assertThrows(
                 IllegalArgumentException.class,
-                () -> target.updateLine(1L, new LineRequest(null, null)));
+                () -> target.updateLine(lineId, lineRequest()));
 
         // then
         assertThat(result).isNotNull();

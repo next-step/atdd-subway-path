@@ -16,11 +16,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static nextstep.subway.utils.LineTestSources.*;
+import static nextstep.subway.utils.StationTestSources.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
@@ -35,7 +36,6 @@ public class LineServiceMockTest {
     @Test
     void deleteSectionFail_LineNotExists() {
         // given
-        final long lineId = 1L;
         doReturn(Optional.empty())
                 .when(lineRepository)
                 .findById(lineId);
@@ -43,7 +43,7 @@ public class LineServiceMockTest {
         // when
         final IllegalArgumentException result = assertThrows(
                 IllegalArgumentException.class,
-                () -> target.deleteSection(lineId, 2L));
+                () -> target.deleteSection(lineId, downStationId));
 
         // then
         assertThat(result).isNotNull();
@@ -52,13 +52,12 @@ public class LineServiceMockTest {
     @Test
     void deleteSectionFail_NotLastDownStation() {
         // given
-        final long lineId = 1L;
-        final Line line = new Line("name", "color");
+        final Line line = line();
         doReturn(Optional.of(line))
                 .when(lineRepository)
                 .findById(lineId);
 
-        final Station upStation = new Station(100L, "A");
+        final Station upStation = upStation();
         doReturn(upStation)
                 .when(stationService)
                 .findById(upStation.getId());
@@ -77,19 +76,16 @@ public class LineServiceMockTest {
     @Test
     void deleteSectionSuccess() {
         // given
-        final long lineId = 1L;
-        final Line line = new Line("name", "color");
+        final Line line = line();
         doReturn(Optional.of(line))
                 .when(lineRepository)
                 .findById(lineId);
 
-        final Station upStation = new Station(100L, "A");
-
-        final Station downStation = new Station(200L, "A");
+        final Station downStation = downStation();
         doReturn(downStation)
                 .when(stationService)
                 .findById(downStation.getId());
-        line.addSection(upStation, downStation, 10);
+        line.addSection(upStation(), downStation, 10);
 
         // when
         target.deleteSection(lineId, downStation.getId());
@@ -102,12 +98,12 @@ public class LineServiceMockTest {
     void saveLineSuccess_NotSection() {
         // given
 
-        doReturn(new Line("name", "color"))
+        doReturn(line())
                 .when(lineRepository)
                 .save(any(Line.class));
 
         // when
-        final LineResponse result = target.saveLine(new LineRequest("name", "color"));
+        final LineResponse result = target.saveLine(lineRequest());
 
         // then
         assertThat(result).isNotNull();
@@ -118,22 +114,20 @@ public class LineServiceMockTest {
     void saveLineSuccess_WithSection() {
         // given
 
-        doReturn(new Line("name", "color"))
+        doReturn(line())
                 .when(lineRepository)
                 .save(any(Line.class));
 
-        final long upStationId = 100L;
-        doReturn(mock(Station.class))
+        doReturn(upStation())
                 .when(stationService)
                 .findById(upStationId);
 
-        final long downStationId = 200L;
-        doReturn(mock(Station.class))
+        doReturn(downStation())
                 .when(stationService)
                 .findById(downStationId);
 
         // when
-        final LineResponse result = target.saveLine(new LineRequest("name", "color", upStationId, downStationId, 1));
+        final LineResponse result = target.saveLine(lineRequest(upStationId, downStationId));
 
         // then
         assertThat(result).isNotNull();
@@ -143,24 +137,21 @@ public class LineServiceMockTest {
     @Test
     void addSectionSuccess() {
         // given
-        final long lineId = 1L;
-        final Line line = new Line("name", "color");
+        final Line line = line();
         doReturn(Optional.of(line))
                 .when(lineRepository)
                 .findById(lineId);
 
-        final long upStationId = 100L;
-        doReturn(mock(Station.class))
+        doReturn(upStation())
                 .when(stationService)
-                        .findById(upStationId);
+                .findById(upStationId);
 
-        final long downStationId = 200L;
-        doReturn(mock(Station.class))
+        doReturn(downStation())
                 .when(stationService)
-                        .findById(downStationId);
+                .findById(downStationId);
 
         // when
-        target.addSection(lineId, new SectionRequest(upStationId, downStationId, 1));
+        target.addSection(lineId, sectionRequest(upStationId, downStationId));
 
         // then
         assertThat(line.getSections()).isNotEmpty();
@@ -169,7 +160,6 @@ public class LineServiceMockTest {
     @Test
     void addSectionFail_LineNotFound() {
         // given
-        final long lineId = 1L;
         doReturn(Optional.empty())
                 .when(lineRepository)
                 .findById(lineId);
@@ -186,10 +176,9 @@ public class LineServiceMockTest {
     @Test
     void updateLineSuccess() {
         // given
-        final long lineId = 1L;
-        final LineRequest lineRequest = new LineRequest("newName", "newColor");
+        final LineRequest lineRequest = lineRequest();
 
-        final Line line = new Line("name", "color");
+        final Line line = line();
         doReturn(Optional.of(line))
                 .when(lineRepository)
                 .findById(lineId);
@@ -205,7 +194,6 @@ public class LineServiceMockTest {
     @Test
     void updateLineFail_LineNotFound() {
         // given
-        final long lineId = 1L;
         doReturn(Optional.empty())
                 .when(lineRepository)
                 .findById(lineId);
@@ -213,7 +201,7 @@ public class LineServiceMockTest {
         // when
         final IllegalArgumentException result = assertThrows(
                 IllegalArgumentException.class,
-                () -> target.updateLine(lineId, new LineRequest(null, null)));
+                () -> target.updateLine(lineId, lineRequest()));
 
         // then
         assertThat(result).isNotNull();
