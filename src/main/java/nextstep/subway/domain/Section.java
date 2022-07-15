@@ -55,7 +55,7 @@ public class Section {
 	}
 
 	public Station getDownStation() {
-		return downStation;
+		return this.downStation;
 	}
 
 	public int getDistance() {

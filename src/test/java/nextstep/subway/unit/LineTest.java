@@ -31,8 +31,9 @@ class LineTest {
 		//when
 		Line line = new Line(1L, "신분당선", "color");
 		line.addSection(new Station(1L, "강남역"), new Station(2L, "역삼역"), 1);
+		line.addSection(new Station(2L, "역삼역"), new Station(3L, "신도림"), 1);
 		//then
-		assertThat(line.getStations()).hasSize(2);
+		assertThat(line.getStations()).hasSize(3);
 	}
 
 	@DisplayName("지하철 구간 삭제")

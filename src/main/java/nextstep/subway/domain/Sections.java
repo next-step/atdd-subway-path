@@ -1,7 +1,9 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
@@ -17,18 +19,16 @@ public class Sections {
 	public Sections() {
 	}
 
-	public Sections(List<Section> sections) {
-		this.sections = sections;
-	}
-
 	public List<Section> getSections() {
-		return sections;//Collections.unmodifiableList(sections);
+		return Collections.unmodifiableList(sections);
 	}
 
 	public List<Station> getStations() {
-		List<Station> stations = new ArrayList<>();
-		sections.forEach(station -> stations.addAll(station.getAllStations()));
-		return stations;
+		List<Station> stations = sections.stream()
+			.map(a -> a.getDownStation())
+			.collect(Collectors.toList());
+		stations.add(0, sections.get(0).getUpStation());
+		return Collections.unmodifiableList(stations);
 	}
 
 	public void add(Section addSection) {
