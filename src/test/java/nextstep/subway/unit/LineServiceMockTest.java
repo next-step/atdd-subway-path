@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import static nextstep.subway.unit.LineServiceMockTest.Stub.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -105,6 +106,21 @@ public class LineServiceMockTest {
         Line line = lineService.findLineById(이호선.getId());
         assertThat(line.getName()).isEqualTo("신분당선");
         assertThat(line.getColor()).isEqualTo("red");
+    }
+
+    @DisplayName("지하철 노선 삭제")
+    @Test
+    void deleteLine() {
+        // given
+        when(lineRepository.findById(이호선.getId())).thenReturn(Optional.empty());
+        LineService lineService = new LineService(lineRepository, stationService);
+
+        // when
+        lineService.deleteLine(이호선.getId());
+
+        // then
+        assertThatThrownBy(() -> lineService.findLineById(이호선.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     static class Stub {

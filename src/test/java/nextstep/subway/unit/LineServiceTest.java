@@ -19,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철 구간 관련 without Mock")
 @SpringBootTest
@@ -110,5 +111,21 @@ public class LineServiceTest {
         Line line = lineService.findLineById(이호선.getId());
         assertThat(line.getName()).isEqualTo("신분당선");
         assertThat(line.getColor()).isEqualTo("red");
+    }
+
+    @DisplayName("지하철 노선 삭제")
+    @Test
+    void deleteLine() {
+        // given
+        Station 구로디지털단지역 = stationRepository.save(new Station("구로디지털단지역"));
+        Station 신대방역 = stationRepository.save(new Station("신대방역"));
+        Line 이호선 = lineRepository.save(new Line("2호선", "green", 구로디지털단지역, 신대방역, 10));
+
+        // when
+        lineService.deleteLine(이호선.getId());
+
+        // then
+        assertThatThrownBy(() -> lineService.findLineById(이호선.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
