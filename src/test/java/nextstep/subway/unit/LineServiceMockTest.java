@@ -8,6 +8,7 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +34,13 @@ public class LineServiceMockTest {
     @Mock
     private StationService stationService;
 
+    private LineService lineService;
+
+    @BeforeEach
+    void setUp() {
+        this.lineService = new LineService(lineRepository, stationService);
+    }
+
     @DisplayName("지하철 구간 추가")
     @Test
     void addSection() {
@@ -41,8 +49,6 @@ public class LineServiceMockTest {
         when(stationService.findById(신대방역.getId())).thenReturn(신대방역);
         when(stationService.findById(신림역.getId())).thenReturn(신림역);
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
-
-        LineService lineService = new LineService(lineRepository, stationService);
 
         // when
         // lineService.addSection 호출
@@ -61,7 +67,6 @@ public class LineServiceMockTest {
         when(stationService.findById(신림역.getId())).thenReturn(신림역);
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
-        LineService lineService = new LineService(lineRepository, stationService);
         이호선.addSection(신대방역, 신림역, 8);
 
         // when
@@ -79,8 +84,6 @@ public class LineServiceMockTest {
         when(stationService.findById(신대방역.getId())).thenReturn(신대방역);
         when(lineRepository.save(any())).thenReturn(이호선);
 
-        LineService lineService = new LineService(lineRepository, stationService);
-
         // when
         LineResponse response = lineService.saveLine(new LineRequest("2호선", "green", 구로디지털단지역.getId(), 신대방역.getId(), 10));
 
@@ -97,8 +100,6 @@ public class LineServiceMockTest {
         // given
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
-        LineService lineService = new LineService(lineRepository, stationService);
-
         // when
         lineService.updateLine(이호선.getId(), new LineRequest("신분당선", "red"));
 
@@ -113,7 +114,6 @@ public class LineServiceMockTest {
     void deleteLine() {
         // given
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.empty());
-        LineService lineService = new LineService(lineRepository, stationService);
 
         // when
         lineService.deleteLine(이호선.getId());
