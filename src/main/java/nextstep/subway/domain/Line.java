@@ -72,4 +72,8 @@ public class Line {
     private Station getLastDownStation() {
         return this.sections.get(this.sections.size() - 1).getDownStation();
     }
+
+    public void removeSection(Section section) {
+        this.sections.remove(section);
+    }
 }
