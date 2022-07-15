@@ -62,4 +62,5 @@ public class Section {
 	public boolean isRemovable(long stationId) {
 		return this.downStation.getId() == stationId;
 	}
+
 }
