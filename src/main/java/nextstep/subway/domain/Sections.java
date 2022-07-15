@@ -5,11 +5,13 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 
 public class Sections {
 	@OneToMany(mappedBy = "line",
 		cascade = {CascadeType.PERSIST, CascadeType.MERGE},
 		orphanRemoval = true)
+	@OrderBy("id asc")
 	private List<Section> sections = new ArrayList<>();
 
 	public Sections() {
@@ -34,6 +36,22 @@ public class Sections {
 	}
 
 	public void remove(Station station) {
-		sections.removeIf(section -> section.isRemovable(station.getId()));
+
+		if (!getLastSection().isSameWithDownStation(station.getId())) {
+			throw new IllegalArgumentException();
+		}
+
+		sections.removeIf(section -> section.equals(getLastSection()));
+	}
+
+	private Section getLastSection() {
+		return sections.get(sections.size() - 1);
+		/*
+		return sections.stream()
+			.sorted(Comparator.comparing(Section::getId).reversed())
+			.findFirst()
+			.orElseThrow(IllegalArgumentException::new);
+
+		 */
 	}
 }

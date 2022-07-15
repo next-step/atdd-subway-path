@@ -66,7 +66,9 @@ public class Section {
 		return Arrays.asList(upStation, downStation);
 	}
 
-	public boolean isRemovable(long stationId) {
+	public boolean isSameWithDownStation(long stationId) {
+		System.out.println(downStation.getId());
+		System.out.println(stationId);
 		return this.downStation.getId() == stationId;
 	}
 

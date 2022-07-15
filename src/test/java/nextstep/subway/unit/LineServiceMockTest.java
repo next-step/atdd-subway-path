@@ -11,10 +11,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import nextstep.subway.applicaion.LineService;
-import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -22,13 +22,10 @@ public class LineServiceMockTest {
 	@Mock
 	private LineRepository lineRepository;
 	@Mock
-	private StationService stationService;
-
-	@Mock
 	private StationRepository stationRepository;
 
 	private static String LINE2 = "2호선";
-	private static String LINE2_COLOR = "2호선";
+	private static String LINE2_COLOR = "green";
 
 	@Test
 	void addSection() {
@@ -37,7 +34,11 @@ public class LineServiceMockTest {
 		// lineRepository, stationService stub 설정을 통해 초기값 셋팅
 		when(lineRepository.findById(any()))
 			.thenReturn(Optional.of(new Line(LINE2, LINE2_COLOR)));
-		LineService lineService = new LineService(lineRepository, stationService, stationRepository);
+		when(stationRepository.findById(1L))
+			.thenReturn(Optional.of(new Station(1L, "강남역")));
+		when(stationRepository.findById(2L))
+			.thenReturn(Optional.of(new Station(2L, "역삼역")));
+		LineService lineService = new LineService(lineRepository, stationRepository);
 
 		// when
 		// lineService.addSection 호출
