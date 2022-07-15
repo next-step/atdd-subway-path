@@ -1,8 +1,8 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -11,14 +11,25 @@ import nextstep.subway.domain.Station;
 
 class LineTest {
 
+	static Station 강남역 = new Station(1L, "강남역");
+	static Station 역삼역 = new Station(2L, "역삼역");
+	static Station 선릉역 = new Station(3L, "선릉역");
+
+	static int DISTANCE = 9;
+	Line line = new Line();
+
+	@BeforeEach
+	void setUp() {
+		line = new Line(1L, "신분당선", "color");
+	}
+
 	@DisplayName("지하철 구간 추가")
 	@Test
 	void addSection() {
 		//given
-		Line line = new Line(1L, "신분당선", "color");
 
 		//when
-		line.addSection(new Station(1L, "강남역"), new Station(2L, "역삼역"), 1);
+		line.addSection(강남역, 역삼역, DISTANCE);
 
 		//then
 		assertThat(line.getSections()).hasSize(1);
@@ -29,9 +40,9 @@ class LineTest {
 	void getStations() {
 		//given
 		//when
-		Line line = new Line(1L, "신분당선", "color");
-		line.addSection(new Station(1L, "강남역"), new Station(2L, "역삼역"), 1);
-		line.addSection(new Station(2L, "역삼역"), new Station(3L, "신도림"), 1);
+
+		line.addSection(강남역, 역삼역, DISTANCE);
+		line.addSection(역삼역, 선릉역, DISTANCE);
 		//then
 		assertThat(line.getStations()).hasSize(3);
 	}
@@ -40,26 +51,27 @@ class LineTest {
 	@Test
 	void removeSection() {
 		//given
-		Line line = new Line(1L, "신분당선", "color");
-		line.addSection(new Station(1L, "강남역"), new Station(2L, "역삼역"), 1);
+
+		line.addSection(강남역, 역삼역, DISTANCE);
+		line.addSection(역삼역, 선릉역, DISTANCE);
 		//when
-		line.removeSection(new Station(2L, "역삼역"));
+		line.removeSection(선릉역);
 		//then
-		assertThat(line.getSections()).hasSize(0);
+		assertThat(line.getSections()).hasSize(1);
 	}
 
 	@DisplayName("지하철 구간 삭제 실패")
 	@Test
 	void removeSectionFail1() {
 		//given
-		Line line = new Line(1L, "신분당선", "color");
 
 		//when
-		line.addSection(new Station(1L, "강남역"), new Station(2L, "역삼역"), 1);
-		line.addSection(new Station(2L, "역삼역"), new Station(3L, "신도림"), 1);
+		line.addSection(강남역, 역삼역, DISTANCE);
+		line.addSection(역삼역, 선릉역, DISTANCE);
 
 		//then
-		assertThrows(IllegalArgumentException.class,
-			() -> line.removeSection(new Station(2L, "역삼역")));
+		assertThatThrownBy(() -> line.removeSection(역삼역))
+			.isInstanceOf(IllegalArgumentException.class);
+
 	}
 }
