@@ -1,7 +1,6 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +24,7 @@ class LineTest {
         line.addSection(구로디지털단지역, 신대방역, 10);
 
         // then
-        assertThat(line.getSections()).hasSize(1);
+        assertThat(line.getSections().size()).isEqualTo(1);
     }
 
     @DisplayName("지하철 노선에 등록된 지하철역 조회")
@@ -48,11 +47,10 @@ class LineTest {
         Line line = 이호선_생성.get();
 
         // when
-        Section section = line.getSections().get(1);
-        line.removeSection(section.getDownStation());
+        line.removeSection(신림역);
 
         // then
-        assertThat(line.getSections()).hasSize(1);
+        assertThat(line.getSections().size()).isEqualTo(1);
         assertThat(line.getStations()).contains(구로디지털단지역, 신대방역);
     }
 
