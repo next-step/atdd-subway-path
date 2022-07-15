@@ -2,6 +2,7 @@ package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
+import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -63,7 +64,45 @@ public class LineServiceMockTest {
                 .findById(lineId);
 
         // when
-        final IllegalArgumentException result = assertThrows(IllegalArgumentException.class, () -> target.addSection(lineId, new SectionRequest()));
+        final IllegalArgumentException result = assertThrows(
+                IllegalArgumentException.class,
+                () -> target.addSection(lineId, new SectionRequest()));
+
+        // then
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    void updateLineSuccess() {
+        // given
+        final long lineId = 1L;
+        final LineRequest lineRequest = new LineRequest("newName", "newColor");
+
+        final Line line = new Line("name", "color");
+        doReturn(Optional.of(line))
+                .when(lineRepository)
+                .findById(lineId);
+
+        // when
+        target.updateLine(lineId, lineRequest);
+
+        // then
+        assertThat(line.getName()).isEqualTo(lineRequest.getName());
+        assertThat(line.getColor()).isEqualTo(lineRequest.getColor());
+    }
+
+    @Test
+    void updateLineFail_LineNotFound() {
+        // given
+        final long lineId = 1L;
+        doReturn(Optional.empty())
+                .when(lineRepository)
+                .findById(lineId);
+
+        // when
+        final IllegalArgumentException result = assertThrows(
+                IllegalArgumentException.class,
+                () -> target.updateLine(lineId, new LineRequest(null, null)));
 
         // then
         assertThat(result).isNotNull();
