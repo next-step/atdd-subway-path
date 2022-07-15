@@ -18,6 +18,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -26,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Transactional
 @ActiveProfiles("test")
 public class LineServiceTest {
+
     @Autowired
     private StationRepository stationRepository;
 
@@ -38,6 +42,12 @@ public class LineServiceTest {
     @Autowired
     private DatabaseCleanup databaseCleanup;
 
+    private Stub stub;
+
+    public LineServiceTest() {
+        this.stub = new Stub();
+    }
+
     @AfterEach
     void tearDown() {
         databaseCleanup.execute();
@@ -48,10 +58,10 @@ public class LineServiceTest {
     void addSection() {
         // given
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
-        Station 구로디지털단지역 = stationRepository.save(new Station("구로디지털단지역"));
-        Station 신대방역 = stationRepository.save(new Station("신대방역"));
-        Station 신림역 = stationRepository.save(new Station("신림역"));
-        Line 이호선 = lineRepository.save(new Line("2호선", "green", 구로디지털단지역, 신대방역, 10));
+        Station 구로디지털단지역 = stub.구로디지털단지역_생성.get();
+        Station 신대방역 = stub.신대방역_생성.get();
+        Station 신림역 = stub.신림역_생성.get();
+        Line 이호선 = stub.이호선_생성.apply(구로디지털단지역, 신대방역);
 
         // when
         // lineService.addSection 호출
@@ -66,11 +76,10 @@ public class LineServiceTest {
     @Test
     void deleteSection() {
         // given
-        Station 구로디지털단지역 = stationRepository.save(new Station("구로디지털단지역"));
-        Station 신대방역 = stationRepository.save(new Station("신대방역"));
-        Station 신림역 = stationRepository.save(new Station("신림역"));
-        Line 이호선 = lineRepository.save(new Line("2호선", "green", 구로디지털단지역, 신대방역, 10));
-        이호선.addSection(신대방역, 신림역, 8);
+        Station 구로디지털단지역 = stub.구로디지털단지역_생성.get();
+        Station 신대방역 = stub.신대방역_생성.get();
+        Line 이호선 = stub.이호선_생성.apply(구로디지털단지역, 신대방역);
+        이호선.addSection(이호선.getLastDownStation(), stub.신림역_생성.get(), 8);
 
         // when
         lineService.deleteSection(이호선.getId(), 이호선.getLastDownStation().getId());
@@ -83,8 +92,8 @@ public class LineServiceTest {
     @Test
     void saveLine() {
         // given
-        Station 구로디지털단지역 = stationRepository.save(new Station("구로디지털단지역"));
-        Station 신대방역 = stationRepository.save(new Station("신대방역"));
+        Station 구로디지털단지역 = stub.구로디지털단지역_생성.get();
+        Station 신대방역 = stub.신대방역_생성.get();
 
         // when
         LineResponse response = lineService.saveLine(new LineRequest("2호선", "green", 구로디지털단지역.getId(), 신대방역.getId(), 10));
@@ -100,9 +109,7 @@ public class LineServiceTest {
     @Test
     void updateLine() {
         // given
-        Station 구로디지털단지역 = stationRepository.save(new Station("구로디지털단지역"));
-        Station 신대방역 = stationRepository.save(new Station("신대방역"));
-        Line 이호선 = lineRepository.save(new Line("2호선", "green", 구로디지털단지역, 신대방역, 10));
+        Line 이호선 = stub.이호선_생성.apply(stub.구로디지털단지역_생성.get(), stub.신대방역_생성.get());
 
         // when
         lineService.updateLine(이호선.getId(), new LineRequest("신분당선", "red"));
@@ -117,9 +124,7 @@ public class LineServiceTest {
     @Test
     void deleteLine() {
         // given
-        Station 구로디지털단지역 = stationRepository.save(new Station("구로디지털단지역"));
-        Station 신대방역 = stationRepository.save(new Station("신대방역"));
-        Line 이호선 = lineRepository.save(new Line("2호선", "green", 구로디지털단지역, 신대방역, 10));
+        Line 이호선 = stub.이호선_생성.apply(stub.구로디지털단지역_생성.get(), stub.신대방역_생성.get());
 
         // when
         lineService.deleteLine(이호선.getId());
@@ -128,4 +133,19 @@ public class LineServiceTest {
         assertThatThrownBy(() -> lineService.findLineById(이호선.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    private class Stub {
+        private final Supplier<Station> 구로디지털단지역_생성 = () -> saveStation("구로디지털단지역");
+        private final Supplier<Station> 신대방역_생성 = () -> saveStation("신대방역");
+        private final Supplier<Station> 신림역_생성 = () -> saveStation("신림역");
+
+        private final BiFunction<Station, Station, Line> 이호선_생성 =
+                (Station upStation, Station downStation) ->
+                        lineRepository.save(new Line("2호선", "green", upStation, downStation, 10));
+
+        private Station saveStation(String name) {
+            return stationRepository.save(new Station(name));
+        }
+    }
+
 }
