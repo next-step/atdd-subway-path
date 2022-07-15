@@ -2,7 +2,9 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -73,11 +75,32 @@ public class Line {
         sections.remove(sections.size() - 1);
     }
 
-    public Station getFirstUpStation() {
+    public List<Station> getStations() {
+        if (hasNoSection()) {
+            return Collections.emptyList();
+        }
+
+        List<Station> stations = getAllDownStations();
+        addFirstUpStation(stations);
+        return stations;
+    }
+
+    private List<Station> getAllDownStations() {
+        return sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+    }
+
+
+    private boolean hasNoSection() {
+        return sections.isEmpty();
+    }
+
+    private void addFirstUpStation(final List<Station> stations) {
+        stations.add(0, getFirstUpStation());
+    }
+    private Station getFirstUpStation() {
         return sections.get(0).getUpStation();
     }
 
-    public boolean hasNoSection() {
-        return sections.isEmpty();
-    }
 }

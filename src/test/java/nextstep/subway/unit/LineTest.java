@@ -4,6 +4,8 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static nextstep.subway.utils.StationTestSources.downStation;
 import static nextstep.subway.utils.StationTestSources.upStation;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -96,24 +98,26 @@ class LineTest {
     }
 
     @Test
-    void getFirstUpStation() {
-        // given
+    void getStations_Empty() {
         final Line line = new Line();
-        final Station upStation = upStation();
-        line.addSection(upStation, downStation(), 3);
 
         // when
-        final Station result = line.getFirstUpStation();
+        final List<Station> result = line.getStations();
 
         // then
-        assertThat(result).isEqualTo(upStation);
+        assertThat(result).isEmpty();
     }
 
     @Test
-    void getStations() {
+    void getStations_NotEmpty() {
+        final Line line = new Line();
+        line.addSection(upStation(), downStation(), 3);
+
+        // when
+        final List<Station> result = line.getStations();
+
+        // then
+        assertThat(result).isNotEmpty();
     }
 
-    @Test
-    void removeSection() {
-    }
 }
