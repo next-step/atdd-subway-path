@@ -49,7 +49,7 @@ class LineTest {
 
         // when
         Section section = line.getSections().get(1);
-        line.removeSection(section);
+        line.deleteSection(section.getDownStation());
 
         // then
         assertThat(line.getSections()).hasSize(1);
