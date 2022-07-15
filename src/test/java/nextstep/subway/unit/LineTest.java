@@ -22,6 +22,36 @@ class LineTest {
     }
 
     @Test
+    void update_null() {
+        // given
+        final String name = "name";
+        final String color = "color";
+        final Line line = new Line(name, color);
+
+        // when
+        line.update(null, null);
+
+        // then
+        assertThat(line.getName()).isEqualTo(name);
+        assertThat(line.getColor()).isEqualTo(color);
+    }
+
+    @Test
+    void update_notnull() {
+        // given
+        final String name = "name";
+        final String color = "color";
+        final Line line = new Line(null, null);
+
+        // when
+        line.update(name, color);
+
+        // then
+        assertThat(line.getName()).isEqualTo(name);
+        assertThat(line.getColor()).isEqualTo(color);
+    }
+
+    @Test
     void getStations() {
     }
 
