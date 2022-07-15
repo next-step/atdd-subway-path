@@ -39,4 +39,5 @@ public class Section {
     public Station getDownStation() {
         return downStation;
     }
+
 }
