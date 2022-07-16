@@ -13,7 +13,7 @@
     - [x] showLines
     - [x] findById
     - [x] updateLine
-    - [ ] deleteLine
+    - [x] deleteLine
     - [ ] deleteSection
     - [ ] saveStation
     - [ ] findAllStations
@@ -25,7 +25,7 @@
     - [x] showLines
     - [x] findById
     - [x] updateLine
-    - [ ] deleteLine
+    - [x] deleteLine
     - [ ] deleteSection
     - [ ] saveStation
     - [ ] findAllStations

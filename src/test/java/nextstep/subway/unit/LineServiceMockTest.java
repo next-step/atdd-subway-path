@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -116,5 +117,14 @@ public class LineServiceMockTest {
             assertThat(response.getName()).isEqualTo("2호선");
             assertThat(response.getColor()).isEqualTo("bg-lime-300");
         });
+    }
+
+    @Test
+    void 노선을_삭제하라() {
+        // when
+        lineService.deleteLine(1L);
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() -> lineService.findById(1L));
     }
 }
