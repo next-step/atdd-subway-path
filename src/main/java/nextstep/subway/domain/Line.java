@@ -36,6 +36,20 @@ public class Line {
         }
     }
 
+    public void deleteSection(Station station) {
+        Section lastSection = sections.get(getLastIndex());
+
+        if (!lastSection.matchDownStation(station)) {
+            throw new IllegalArgumentException("하행 종점역만 삭제 가능합니다.");
+        }
+
+        sections.remove(getLastIndex());
+    }
+
+    private int getLastIndex() {
+        return sections.size() - 1;
+    }
+
     public Long getId() {
         return id;
     }

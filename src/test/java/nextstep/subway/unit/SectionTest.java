@@ -44,4 +44,34 @@ public class SectionTest {
         );
     }
 
+    @Test
+    void 하행역을_비교하여_같으면_참을_반환한다() {
+        // given
+        Line line = new Line("2호선", "green");
+        Station upStation = new Station("암사역");
+        Station downStation = new Station("모란역");
+        Section section = new Section(line, upStation, downStation, 10);
+
+        // when
+        boolean matchDownStation = section.matchDownStation(downStation);
+
+        // then
+        assertThat(matchDownStation).isTrue();
+    }
+
+    @Test
+    void 하행역을_비교하여_다르면_거짓을_반환한다() {
+        // given
+        Line line = new Line("2호선", "green");
+        Station upStation = new Station("암사역");
+        Station downStation = new Station("모란역");
+        Section section = new Section(line, upStation, downStation, 10);
+
+        // when
+        boolean matchDownStation = section.matchDownStation(upStation);
+
+        // then
+        assertThat(matchDownStation).isFalse();
+    }
+
 }
