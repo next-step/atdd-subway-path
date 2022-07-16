@@ -12,7 +12,7 @@
     - [x] saveLine
     - [x] showLines
     - [x] findById
-    - [ ] updateLine
+    - [x] updateLine
     - [ ] deleteLine
     - [ ] deleteSection
     - [ ] saveStation
@@ -24,7 +24,7 @@
     - [x] saveLine
     - [x] showLines
     - [x] findById
-    - [ ] updateLine
+    - [x] updateLine
     - [ ] deleteLine
     - [ ] deleteSection
     - [ ] saveStation

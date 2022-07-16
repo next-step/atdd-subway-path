@@ -97,4 +97,19 @@ public class LineServiceTest {
             assertThat(response.getColor()).isEqualTo("bg-pink-500");
         });
     }
+
+    @Test
+    void 노선을_정보를_수정하라() {
+        // given
+        Line line = lineRepository.save(new Line("8호선", "bg-pink-500"));
+
+        // when
+        lineService.updateLine(line.getId(), new LineRequest("2호선", "bg-lime-300", 1L, 2L, 10));
+
+        // then
+        assertAll(() -> {
+            assertThat(line.getName()).isEqualTo("2호선");
+            assertThat(line.getColor()).isEqualTo("bg-lime-300");
+        });
+    }
 }
