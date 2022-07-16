@@ -14,7 +14,7 @@
     - [x] findById
     - [x] updateLine
     - [x] deleteLine
-    - [ ] deleteSection
+    - [x] deleteSection
     - [ ] saveStation
     - [ ] findAllStations
     - [ ] deleteStationById
@@ -26,7 +26,7 @@
     - [x] findById
     - [x] updateLine
     - [x] deleteLine
-    - [ ] deleteSection
+    - [x] deleteSection
     - [ ] saveStation
     - [ ] findAllStations
     - [ ] deleteStationById

@@ -117,13 +117,27 @@ public class LineServiceTest {
     @Test
     void 노선을_삭제한다() {
         // given
-        Line line = lineRepository.save(new Line("8호선", "bg-pink-500"));
+        Station upStation = stationRepository.save(new Station("암사역"));
+        Station downStation = stationRepository.save(new Station("모란역"));
+        LineResponse response = lineService.saveLine(new LineRequest("8호선", "bg-pink-500", upStation.getId(), downStation.getId(), 20));
 
         // when
-        lineService.deleteLine(line.getId());
+        lineService.deleteSection(response.getId(), downStation.getId());
 
         // then
-        assertThatIllegalArgumentException().isThrownBy(() -> lineService.findById(1L));
+        assertThat(lineService.findById(response.getId()).getStations()).isEmpty();
     }
 
+    @Test
+    void 마지막_구간이_아닌_다른_구간을_삭제하면_예외를_반환한다() {
+        // given
+        Station upStation = stationRepository.save(new Station("암사역"));
+        Station downStation = stationRepository.save(new Station("모란역"));
+        LineResponse response = lineService.saveLine(new LineRequest("8호선", "bg-pink-500", upStation.getId(), downStation.getId(), 20));
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() ->
+                lineService.deleteSection(response.getId(), upStation.getId())
+        );
+    }
 }

@@ -5,9 +5,9 @@ import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -104,7 +104,7 @@ public class LineServiceMockTest {
     }
 
     @Test
-    void 노선을_정보를_수정하라() {
+    void 노선을_정보를_수정한다() {
         // given
         given(lineRepository.findById(1L)).willReturn(Optional.of(new Line("8호선", "bg-pink-500")));
 
@@ -120,11 +120,46 @@ public class LineServiceMockTest {
     }
 
     @Test
-    void 노선을_삭제하라() {
+    void 노선을_삭제한다() {
         // when
         lineService.deleteLine(1L);
 
         // then
         assertThatIllegalArgumentException().isThrownBy(() -> lineService.findById(1L));
+    }
+
+    @Test
+    void 구간을_삭제한다() {
+        // given
+        Line line = new Line("8호선", "bg-pink-500");
+        Station upStation = new Station("암사역");
+        Station downStation = new Station("모란역");
+        line.getSections().add(new Section(line, upStation, downStation, 20));
+
+        given(lineRepository.findById(1L)).willReturn(Optional.of(line));
+        given(stationService.findById(2L)).willReturn(downStation);
+
+        // when
+        lineService.deleteSection(1L, 2L);
+
+        // then
+        assertThat(lineService.findById(1L).getStations()).isEmpty();
+    }
+
+    @Test
+    void 마지막_구간이_아닌_다른_구간을_삭제하면_예외를_반환한다() {
+        // given
+        Line line = new Line("8호선", "bg-pink-500");
+        Station upStation = new Station("암사역");
+        Station downStation = new Station("모란역");
+        line.getSections().add(new Section(line, upStation, downStation, 20));
+
+        given(lineRepository.findById(1L)).willReturn(Optional.of(line));
+        given(stationService.findById(1L)).willReturn(upStation);
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() ->
+                lineService.deleteSection(1L, 1L)
+        );
     }
 }
