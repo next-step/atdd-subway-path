@@ -41,6 +41,18 @@ public class StationServiceMockTest {
     }
 
     @Test
+    void 역을_조회한다() {
+        // given
+        given(stationRepository.findById(1L)).willReturn(Optional.of(new Station("암사역")));
+
+        // when
+        Station station = stationService.findById(1L);
+
+        // then
+        assertThat(station.getName()).isEqualTo("암사역");
+    }
+
+    @Test
     void 역_목록을_조회한다() {
         // given
         given(stationRepository.findAll()).willReturn(

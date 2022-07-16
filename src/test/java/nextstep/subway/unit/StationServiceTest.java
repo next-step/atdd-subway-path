@@ -36,6 +36,19 @@ public class StationServiceTest {
     }
 
     @Test
+    void 역을_조회한다() {
+        // given
+        Station station = stationRepository.save(new Station("암사역"));
+
+        // when
+        Station generatedStation = stationService.findById(station.getId());
+
+        // then
+        assertThat(generatedStation.getName()).isEqualTo("암사역");
+
+    }
+
+    @Test
     void 역_목록을_조회한다() {
         // given
         stationRepository.save(new Station("암사역"));
