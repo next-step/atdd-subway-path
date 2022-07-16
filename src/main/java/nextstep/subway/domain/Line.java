@@ -34,4 +34,7 @@ public class Line {
         this.color = color;
     }
 
+    public void addSection(Section section) {
+        this.sections.add(section);
+    }
 }

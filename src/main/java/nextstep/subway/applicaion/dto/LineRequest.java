@@ -25,4 +25,8 @@ public class LineRequest {
         this.distance = distance;
     }
 
+    public boolean isCreateSection() {
+        return this.upStationId != null && this.downStationId != null && this.distance != 0;
+    }
+
 }
