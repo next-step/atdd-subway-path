@@ -88,7 +88,7 @@ public class LineServiceTest {
         Line line = lineRepository.save(new Line("8호선", "bg-pink-500"));
 
         // when
-        LineResponse response = lineService.findById(line.getId());
+        LineResponse response = lineService.getLine(line.getId());
 
         // then
         assertAll(() -> {
@@ -123,7 +123,7 @@ public class LineServiceTest {
         lineService.deleteSection(response.getId(), downStation.getId());
 
         // then
-        assertThat(lineService.findById(response.getId()).getStations()).isEmpty();
+        assertThat(lineService.getLine(response.getId()).getStations()).isEmpty();
     }
 
     @Test

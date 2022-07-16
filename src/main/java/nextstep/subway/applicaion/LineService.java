@@ -40,16 +40,17 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findById(Long id) {
-        return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+    public LineResponse getLine(Long id) {
+        return createLineResponse(findById(id));
     }
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = findById(id);
         line.changeInfo(lineRequest.getName(), lineRequest.getColor());
 
     }
+
 
     @Transactional
     public void deleteLine(Long id) {
@@ -60,7 +61,7 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = findById(lineId);
         Section section = new Section(line, upStation, downStation, sectionRequest.getDistance());
         line.addSection(section);
     }
@@ -82,8 +83,14 @@ public class LineService {
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = findById(lineId);
         Station station = stationService.findById(stationId);
         line.deleteSection(station);
+    }
+
+    private Line findById(Long id) {
+        return lineRepository.findById(id).orElseThrow(() ->
+                new IllegalArgumentException("구간이 존재하지 않습니다")
+        );
     }
 }

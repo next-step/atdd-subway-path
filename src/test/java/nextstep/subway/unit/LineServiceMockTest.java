@@ -48,7 +48,7 @@ public class LineServiceMockTest {
 
         // then
         // line.findLineById 메서드를 통해 검증
-        assertThat(lineService.findById(1L).getStations()).hasSize(2);
+        assertThat(lineService.getLine(1L).getStations()).hasSize(2);
     }
 
     @Test
@@ -94,7 +94,7 @@ public class LineServiceMockTest {
         given(lineRepository.findById(1L)).willReturn(Optional.of(new Line("8호선", "bg-pink-500")));
 
         // when
-        LineResponse response = lineService.findById(1L);
+        LineResponse response = lineService.getLine(1L);
 
         // then
         assertAll(() -> {
@@ -112,7 +112,7 @@ public class LineServiceMockTest {
         lineService.updateLine(1L, new LineRequest("2호선", "bg-lime-300", 1L, 2L, 10));
 
         // then
-        LineResponse response = lineService.findById(1L);
+        LineResponse response = lineService.getLine(1L);
         assertAll(() -> {
             assertThat(response.getName()).isEqualTo("2호선");
             assertThat(response.getColor()).isEqualTo("bg-lime-300");
@@ -125,7 +125,7 @@ public class LineServiceMockTest {
         lineService.deleteLine(1L);
 
         // then
-        assertThatIllegalArgumentException().isThrownBy(() -> lineService.findById(1L));
+        assertThatIllegalArgumentException().isThrownBy(() -> lineService.getLine(1L));
     }
 
     @Test
@@ -143,7 +143,7 @@ public class LineServiceMockTest {
         lineService.deleteSection(1L, 2L);
 
         // then
-        assertThat(lineService.findById(1L).getStations()).isEmpty();
+        assertThat(lineService.getLine(1L).getStations()).isEmpty();
     }
 
     @Test
