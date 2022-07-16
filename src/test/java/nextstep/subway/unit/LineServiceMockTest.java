@@ -98,6 +98,7 @@ public class LineServiceMockTest {
         then(exception).isInstanceOf(IndexOutOfBoundsException.class);
     }
 
+    @DisplayName("존재하는 라인의 색과 이름을 변경할 수 있다")
     @Test
     public void line_update_success_test() {
         // given
@@ -114,6 +115,7 @@ public class LineServiceMockTest {
         then(line.getColor()).isEqualTo("blue");
     }
 
+    @DisplayName("존재하지 않는 라인을 수정하려 하는 경우 예외가 발생한다")
     @Test
     public void line_update_fail_test() {
         // given

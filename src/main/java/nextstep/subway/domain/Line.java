@@ -42,16 +42,8 @@ public class Line {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 
     public List<Section> getSections() {
@@ -84,6 +76,15 @@ public class Line {
             throw new IllegalArgumentException();
         }
         sections.remove(lastSection);
+    }
+
+    public void update(String name, String color) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (color != null) {
+            this.color = color;
+        }
     }
 
     private Section getFirstSection() {
