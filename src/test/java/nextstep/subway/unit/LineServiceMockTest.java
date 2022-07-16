@@ -1,28 +1,53 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.applicaion.StationService;
-import nextstep.subway.domain.LineRepository;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import nextstep.subway.applicaion.LineService;
+import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
+
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
-    @Mock
-    private LineRepository lineRepository;
-    @Mock
-    private StationService stationService;
+	@Mock
+	private LineRepository lineRepository;
+	@Mock
+	private StationRepository stationRepository;
 
-    @Test
-    void addSection() {
-        // given
-        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
+	private static String LINE2 = "2호선";
+	private static String LINE2_COLOR = "green";
 
-        // when
-        // lineService.addSection 호출
+	@Test
+	void addSection() {
+		long lineId = 1;
+		// given
+		// lineRepository, stationService stub 설정을 통해 초기값 셋팅
+		when(lineRepository.findById(any()))
+			.thenReturn(Optional.of(new Line(LINE2, LINE2_COLOR)));
+		when(stationRepository.findById(1L))
+			.thenReturn(Optional.of(new Station(1L, "강남역")));
+		when(stationRepository.findById(2L))
+			.thenReturn(Optional.of(new Station(2L, "역삼역")));
+		LineService lineService = new LineService(lineRepository, stationRepository);
 
-        // then
-        // line.findLineById 메서드를 통해 검증
-    }
+		// when
+		// lineService.addSection 호출
+		lineService.addSection(lineId, new SectionRequest(1L, 2L, 3));
+
+		// then
+		// line.findLineById 메서드를 통해 검증
+		Line resultLine = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+		assertThat(resultLine.getSections()).hasSize(1);
+
+	}
 }
