@@ -133,7 +133,7 @@ public class LineServiceMockTest {
 
         doReturn(true)
                 .when(sectionCondition)
-                .isSatisfiedBy(any(Line.class), any(AddSectionRequest.class));
+                .matches(any(Line.class), any(AddSectionRequest.class));
 
         // when
         final LineResponse result = target.saveLine(lineRequest(upStationId, downStationId));
@@ -160,7 +160,7 @@ public class LineServiceMockTest {
 
         doReturn(true)
                 .when(sectionCondition)
-                .isSatisfiedBy(any(Line.class), any(AddSectionRequest.class));
+                .matches(any(Line.class), any(AddSectionRequest.class));
 
         // when
         target.addSection(lineId, sectionRequest(upStationId, downStationId));
@@ -187,7 +187,7 @@ public class LineServiceMockTest {
 
         doReturn(false)
                 .when(sectionCondition)
-                .isSatisfiedBy(any(Line.class), any(AddSectionRequest.class));
+                .matches(any(Line.class), any(AddSectionRequest.class));
 
         // when
         target.addSection(lineId, sectionRequest(upStationId, downStationId));

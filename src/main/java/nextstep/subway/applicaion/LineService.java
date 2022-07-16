@@ -64,7 +64,7 @@ public class LineService {
         Station upStation = stationService.findById(upStationId);
         Station downStation = stationService.findById(downStationId);
         final AddSectionRequest addSectionRequest = new AddSectionRequest(upStation, downStation, distance);
-        if (sectionConditionComposite.isSatisfiedBy(line, addSectionRequest)) {
+        if (sectionConditionComposite.matches(line, addSectionRequest)) {
             sectionConditionComposite.add(line, addSectionRequest);
         }
 

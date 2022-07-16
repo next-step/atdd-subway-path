@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 class EmptySectionsCondition implements SectionCondition {
 
     @Override
-    public boolean isSatisfiedBy(Line line, final AddSectionRequest addSectionRequest) {
+    public boolean matches(Line line, final AddSectionRequest addSectionRequest) {
         return line.hasNoSection();
     }
 

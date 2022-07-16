@@ -17,7 +17,7 @@ class EmptySectionsConditionTest {
         final Line line = new Line();
 
         // when
-        final boolean result = emptySectionsCondition.isSatisfiedBy(line, new AddSectionRequest(station(1), station(2), 10));
+        final boolean result = emptySectionsCondition.matches(line, new AddSectionRequest(station(1), station(2), 10));
 
         // then
         assertThat(result).isTrue();
@@ -32,7 +32,7 @@ class EmptySectionsConditionTest {
         line.addSection(station(1), station(2), 10);
 
         // when
-        final boolean result = emptySectionsCondition.isSatisfiedBy(line, new AddSectionRequest(station(2), station(3), 10));
+        final boolean result = emptySectionsCondition.matches(line, new AddSectionRequest(station(2), station(3), 10));
 
         // then
         assertThat(result).isFalse();

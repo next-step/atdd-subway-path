@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 class BetweenOnDownStationCondition implements SectionCondition {
 
     @Override
-    public boolean isSatisfiedBy(Line line, final AddSectionRequest request) {
+    public boolean matches(Line line, final AddSectionRequest request) {
         if (!hasRequestDownStationMatchedSection(line, request.getDownStation())) {
             return false;
         }
@@ -39,21 +39,21 @@ class BetweenOnDownStationCondition implements SectionCondition {
         final List<Section> sections = line.getSections();
         final Section section = findDownStationMatchedSection(sections, request.getDownStation());
 
-        validateSectionLength(request, section.getDistance());
+        validateDistance(request, section.getDistance());
         updateSection(line, request, sections, section);
     }
 
-    private void updateSection(final Line line, final AddSectionRequest addSectionRequest, final List<Section> sections, final Section section) {
-        section.updateDownStationAndDistance(addSectionRequest.getUpStation(), section.getDistance() - addSectionRequest.getDistance());
-        line.addSection(sections.indexOf(section) + 1, createSection(line, addSectionRequest));
+    private void updateSection(final Line line, final AddSectionRequest request, final List<Section> sections, final Section section) {
+        section.updateDownStationAndDistance(request.getUpStation(), section.getDistance() - request.getDistance());
+        line.addSection(sections.indexOf(section) + 1, createSection(line, request));
     }
 
-    private Section createSection(final Line line, final AddSectionRequest addSectionRequest) {
-        return new Section(line, addSectionRequest.getUpStation(), addSectionRequest.getDownStation(), addSectionRequest.getDistance());
+    private Section createSection(final Line line, final AddSectionRequest request) {
+        return new Section(line, request.getUpStation(), request.getDownStation(), request.getDistance());
     }
 
-    private void validateSectionLength(final AddSectionRequest addSectionRequest, final int sectionDistance) {
-        if (addSectionRequest.getDistance() >= sectionDistance) {
+    private void validateDistance(final AddSectionRequest request, final int sectionDistance) {
+        if (request.getDistance() >= sectionDistance) {
             throw new IllegalArgumentException("distance must be less than sectionDistance");
         }
     }

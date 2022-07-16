@@ -12,14 +12,26 @@ import java.util.List;
 class FirstUpStationCondition implements SectionCondition {
 
     @Override
-    public boolean isSatisfiedBy(final Line line, final AddSectionRequest addSectionRequest) {
+    public boolean matches(final Line line, final AddSectionRequest request) {
         final List<Station> stations = line.getStations();
-        return addSectionRequest.getDownStation().equals(line.getFirstStation(stations)) && !stations.contains(addSectionRequest.getUpStation());
+        return isDownStationMatchesFirstStation(line, request, stations) && isUpStationNotRegistered(request, stations);
+    }
+
+    private boolean isDownStationMatchesFirstStation(final Line line, final AddSectionRequest request, final List<Station> stations) {
+        return request.getDownStation().equals(line.getFirstStation(stations));
+    }
+
+    private boolean isUpStationNotRegistered(final AddSectionRequest request, final List<Station> stations) {
+        return !stations.contains(request.getUpStation());
     }
 
     @Override
-    public void add(final Line line, final AddSectionRequest addSectionRequest) {
-        line.addSection(0, new Section(line, addSectionRequest.getUpStation(), addSectionRequest.getDownStation(), addSectionRequest.getDistance()));
+    public void add(final Line line, final AddSectionRequest request) {
+        line.addSection(0, createSection(line, request));
     }
-    
+
+    private Section createSection(final Line line, final AddSectionRequest request) {
+        return new Section(line, request.getUpStation(), request.getDownStation(), request.getDistance());
+    }
+
 }

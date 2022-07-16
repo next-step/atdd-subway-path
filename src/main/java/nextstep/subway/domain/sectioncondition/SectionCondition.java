@@ -5,7 +5,7 @@ import nextstep.subway.domain.Line;
 
 public interface SectionCondition {
 
-    boolean isSatisfiedBy(Line line, AddSectionRequest addSectionRequest);
+    boolean matches(Line line, AddSectionRequest addSectionRequest);
 
     void add(Line line, AddSectionRequest addSectionRequest);
 
