@@ -30,9 +30,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
         양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
-
-        Map<String, String> lineCreateParams = createLineCreateParams(강남역, 양재역);
-        신분당선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
+        신분당선 = 지하철_노선_생성_요청("신분당선", "bg-red-600", 강남역, 양재역, 10).jsonPath()
+                .getLong("id");
     }
 
     /**
@@ -73,14 +72,14 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
-    private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
+    public static Map<String, String> createLineCreateParams(String name, String color, Long upStationId, Long downStationId, int distance) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
-        lineCreateParams.put("name", "신분당선");
-        lineCreateParams.put("color", "bg-red-600");
+        lineCreateParams.put("name", name);
+        lineCreateParams.put("color", color);
         lineCreateParams.put("upStationId", upStationId + "");
         lineCreateParams.put("downStationId", downStationId + "");
-        lineCreateParams.put("distance", 10 + "");
+        lineCreateParams.put("distance", distance + "");
         return lineCreateParams;
     }
 

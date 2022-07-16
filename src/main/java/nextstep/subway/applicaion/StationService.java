@@ -44,6 +44,6 @@ public class StationService {
     }
 
     public Station findById(Long id) {
-        return stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        return stationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 역을 찾을 수 없습니다. id: " + id));
     }
 }

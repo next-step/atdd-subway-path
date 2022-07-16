@@ -3,10 +3,13 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineSteps {
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
@@ -22,10 +25,12 @@ public class LineSteps {
     }
 
     public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
-        return RestAssured
+        ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
                 .when().get("/lines")
                 .then().log().all().extract();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        return response;
     }
 
     public static ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> createResponse) {
@@ -42,13 +47,26 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
-        return RestAssured
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId, int distance) {
+        ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
-                .body(params)
+                .body(createLineCreateParams(name, color, upStationId, downStationId, distance))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all().extract();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        return response;
+    }
+
+    public static Map<String, String> createLineCreateParams(String name, String color, Long upStationId, Long downStationId, int distance) {
+        Map<String, String> lineCreateParams;
+        lineCreateParams = new HashMap<>();
+        lineCreateParams.put("name", name);
+        lineCreateParams.put("color", color);
+        lineCreateParams.put("upStationId", upStationId + "");
+        lineCreateParams.put("downStationId", downStationId + "");
+        lineCreateParams.put("distance", distance + "");
+        return lineCreateParams;
     }
 
     public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청(Long lineId, Map<String, String> params) {
