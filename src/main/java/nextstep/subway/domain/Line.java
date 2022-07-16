@@ -77,6 +77,10 @@ public class Line {
 		this.sections.add(new Section(sectionId, this, upStation, downStation, distance));
 	}
 
+	private boolean isAbleAdd(Station upStation, Station downStation, int distance) {
+		return upStation != null && downStation != null && distance > 0;
+	}
+
 	public void removeSection(Station station) {
 		this.sections.remove(station);
 	}

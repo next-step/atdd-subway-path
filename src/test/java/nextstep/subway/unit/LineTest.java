@@ -74,4 +74,30 @@ class LineTest {
 			.isInstanceOf(IllegalArgumentException.class);
 
 	}
+
+	@DisplayName("노선 이름변경")
+	@Test
+	void changeName() {
+		//given
+
+		//when
+		line.changeName("3호선");
+
+		//then
+		assertThat(line.getName()).isEqualTo("3호선");
+
+	}
+
+	@DisplayName("노선 색상 변경")
+	@Test
+	void changeColor() {
+		//given
+
+		//when
+		line.changeColor("blue");
+
+		//then
+		assertThat(line.getColor()).isEqualTo("blue");
+
+	}
 }
