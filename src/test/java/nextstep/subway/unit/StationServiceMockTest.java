@@ -11,6 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -34,5 +36,21 @@ public class StationServiceMockTest {
 
         // then
         assertThat(response.getName()).isEqualTo("암사역");
+    }
+
+    @Test
+    void 역_목록을_조회한다() {
+        // given
+        given(stationRepository.findAll()).willReturn(
+                List.of(
+                        new Station("암사역"), new Station("모란역")
+                )
+        );
+
+        // when
+        List<StationResponse> allStations = stationService.findAllStations();
+
+        // then
+        assertThat(allStations).hasSize(2);
     }
 }

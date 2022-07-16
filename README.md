@@ -16,7 +16,7 @@
     - [x] deleteLine
     - [x] deleteSection
     - [x] saveStation
-    - [ ] findAllStations
+    - [x] findAllStations
     - [ ] deleteStationById
     - [ ] findById
   - [ ] 구간 서비스 단위 테스트 without Mock (LineServiceTest)
@@ -28,7 +28,7 @@
     - [x] deleteLine
     - [x] deleteSection
     - [x] saveStation
-    - [ ] findAllStations
+    - [x] findAllStations
     - [ ] deleteStationById
     - [ ] findById
   - [ ] 단위 테스트를 기반으로 비즈니스 로직을 리팩터링 하세요.
