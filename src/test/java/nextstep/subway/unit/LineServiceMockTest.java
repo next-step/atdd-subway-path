@@ -2,7 +2,10 @@ package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
+import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -15,6 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 
@@ -42,5 +47,24 @@ public class LineServiceMockTest {
         // then
         // line.findLineById 메서드를 통해 검증
         assertThat(lineService.findById(1L).getStations()).hasSize(2);
+    }
+
+    @Test
+    void 노선을_저장한다() {
+        // given
+        LineRequest request = new LineRequest("8호선", "bg-pink-500", 1L, 2L, 17);
+        given(lineRepository.save(any())).willReturn(new Line(request.getName(), request.getColor()));
+        given(stationService.findById(1L)).willReturn(new Station("암사역"));
+        given(stationService.findById(2L)).willReturn(new Station("모란역"));
+
+        // when
+        LineResponse response = lineService.saveLine(request);
+
+        // then
+        assertAll(() -> {
+            assertThat(response.getName()).isEqualTo("8호선");
+            assertThat(response.getColor()).isEqualTo("bg-pink-500");
+            assertThat(response.getStations()).hasSize(2);
+        });
     }
 }

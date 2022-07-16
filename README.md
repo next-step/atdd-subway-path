@@ -9,7 +9,7 @@
   - [ ] 구간 단위 테스트 (LineTest)
   - [ ] 구간 서비스 단위 테스트 with Mock (LineServiceMockTest)
     - [x] addSection
-    - [ ] saveLine
+    - [x] saveLine
     - [ ] showLines
     - [ ] findById
     - [ ] updateLine
@@ -21,7 +21,7 @@
     - [ ] findById
   - [ ] 구간 서비스 단위 테스트 without Mock (LineServiceTest)
     - [x] addSection
-    - [ ] saveLine
+    - [x] saveLine
     - [ ] showLines
     - [ ] findById
     - [ ] updateLine

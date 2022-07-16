@@ -1,6 +1,8 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
+import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
 import org.junit.jupiter.api.Test;
@@ -39,6 +41,24 @@ public class LineServiceTest {
         assertAll(() -> {
             assertThat(line.getSections().get(0).getUpStation()).isEqualTo(upStation);
             assertThat(line.getSections().get(0).getDownStation()).isEqualTo(downStation);
+        });
+    }
+
+    @Test
+    void 노선을_저장한다() {
+        // given
+        Line line = lineRepository.save(new Line("8호선", "bg-pink-500"));
+        Station upStation = stationRepository.save(new Station("암사역"));
+        Station downStation = stationRepository.save(new Station("모란역"));
+
+        // when
+        LineResponse response = lineService.saveLine(new LineRequest("8호선", "bg-pink-500", upStation.getId(), downStation.getId(), 20));
+
+        // then
+        assertAll(() -> {
+            assertThat(response.getName()).isEqualTo("8호선");
+            assertThat(response.getColor()).isEqualTo("bg-pink-500");
+            assertThat(response.getStations()).hasSize(2);
         });
     }
 }

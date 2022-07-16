@@ -1,10 +1,12 @@
 package nextstep.subway.applicaion.dto;
 
+import java.util.Objects;
+
 public class StationResponse {
     private Long id;
     private String name;
 
-    public StationResponse() {
+    private StationResponse() {
     }
 
     public StationResponse(Long id, String name) {
