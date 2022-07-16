@@ -87,6 +87,10 @@ public class Line {
         }
     }
 
+    public boolean isEmptySections() {
+        return sections.isEmpty();
+    }
+
     private Section getFirstSection() {
         return sections.get(0);
     }
