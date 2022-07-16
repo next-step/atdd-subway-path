@@ -14,8 +14,8 @@ class EmptySectionsCondition implements SectionCondition {
     }
 
     @Override
-    public void add(Line line, final AddSectionRequest addSectionRequest) {
-        line.addSection(new Section(line, addSectionRequest.getUpStation(), addSectionRequest.getDownStation(), addSectionRequest.getDistance()));
+    public void add(Line line, final AddSectionRequest request) {
+        line.addSection(new Section(line, request.getUpStation(), request.getDownStation(), request.getDistance()));
     }
 
 }

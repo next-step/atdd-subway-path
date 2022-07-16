@@ -7,30 +7,27 @@ import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 @Component
 class BetweenOnUpStationCondition implements SectionCondition {
 
     @Override
     public boolean matches(Line line, final AddSectionRequest request) {
-        if (!hasRequestUpStationMatchedSection(line, request)) {
+        if (!hasUpStationMatchedSection(line, request.getUpStation())) {
             return false;
         }
 
-        return isRequestDownStationNotRegistered(line, request.getDownStation());
+        return !line.hasStation(request.getDownStation());
     }
 
-    private boolean hasRequestUpStationMatchedSection(final Line line, final AddSectionRequest request) {
+    private boolean hasUpStationMatchedSection(final Line line, final Station upStation) {
         return line.getSections().stream()
-                .anyMatch(v -> isUpStationMatches(v, request.getUpStation()));
+                .anyMatch(isUpStationMatches(upStation));
     }
 
-    private boolean isUpStationMatches(final Section v, final Station upStation) {
-        return v.getUpStation().equals(upStation);
-    }
-
-    private boolean isRequestDownStationNotRegistered(final Line line, final Station downStation) {
-        return !line.getStations().contains(downStation);
+    private Predicate<Section> isUpStationMatches(final Station upStation) {
+        return v -> v.getUpStation().equals(upStation);
     }
 
     @Override
@@ -42,14 +39,9 @@ class BetweenOnUpStationCondition implements SectionCondition {
         updateSection(line, addSectionRequest, sections, section);
     }
 
-    private void updateSection(final Line line, final AddSectionRequest request, final List<Section> sections, final Section section) {
-        line.addSection(sections.indexOf(section) + 1, new Section(line, request.getDownStation(), section.getDownStation(), section.getDistance() - request.getDistance()));
-        section.updateDownStationAndDistance(request.getDownStation(), request.getDistance());
-    }
-
     private Section findUpStationMatchedSection(final List<Section> sections, final Station upStation) {
         return sections.stream()
-                .filter(v -> isUpStationMatches(v, upStation))
+                .filter(isUpStationMatches(upStation))
                 .findFirst()
                 .orElseThrow(IllegalStateException::new);
     }
@@ -58,6 +50,11 @@ class BetweenOnUpStationCondition implements SectionCondition {
         if (request.getDistance() >= sectionDistance) {
             throw new IllegalArgumentException("distance must be less than sectionDistance");
         }
+    }
+
+    private void updateSection(final Line line, final AddSectionRequest request, final List<Section> sections, final Section section) {
+        line.addSection(sections.indexOf(section) + 1, new Section(line, request.getDownStation(), section.getDownStation(), section.getDistance() - request.getDistance()));
+        section.updateDownStationAndDistance(request.getDownStation(), request.getDistance());
     }
 
 }

@@ -39,7 +39,6 @@ public class Line {
         return Collections.unmodifiableList(sections);
     }
 
-
     public void update(final String name, final String color) {
         if (name != null) {
             this.name = name;
@@ -48,18 +47,6 @@ public class Line {
         if (color != null) {
             this.color = color;
         }
-    }
-
-    public boolean isLastDownStation(final Station station) {
-        return getLastStation(getStations()).equals(station);
-    }
-
-    public Station getFirstStation(final List<Station> stations) {
-        return stations.get(0);
-    }
-
-    public Station getLastStation(final List<Station> stations) {
-        return stations.get(stations.size() - 1);
     }
 
     public void removeLastSection() {
@@ -132,10 +119,6 @@ public class Line {
         return null;
     }
 
-    public void addSection(final Station upStation, final Station downStation, final int distance) {
-        addSection(new Section(this, upStation, downStation, distance));
-    }
-
     public void addSection(final Section section) {
         sections.add(section);
     }
@@ -144,4 +127,18 @@ public class Line {
         sections.add(index, section);
     }
 
+    public boolean isLastDownStation(final Station station) {
+        final List<Station> stations = getStations();
+
+        return stations.get(stations.size() - 1).equals(station);
+    }
+
+    public boolean isFirstStation(final Station station) {
+        final List<Station> stations = getStations();
+        return stations.get(0).equals(station);
+    }
+
+    public boolean hasStation(final Station station) {
+        return getStations().contains(station);
+    }
 }

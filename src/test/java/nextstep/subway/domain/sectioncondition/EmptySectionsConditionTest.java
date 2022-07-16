@@ -4,6 +4,7 @@ import nextstep.subway.applicaion.dto.AddSectionRequest;
 import nextstep.subway.domain.Line;
 import org.junit.jupiter.api.Test;
 
+import static nextstep.subway.utils.LineTestSources.section;
 import static nextstep.subway.utils.StationTestSources.station;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,7 +30,7 @@ class EmptySectionsConditionTest {
         final EmptySectionsCondition emptySectionsCondition = new EmptySectionsCondition();
 
         final Line line = new Line();
-        line.addSection(station(1), station(2), 10);
+        line.addSection(section(line, station(1), station(2)));
 
         // when
         final boolean result = emptySectionsCondition.matches(line, new AddSectionRequest(station(2), station(3), 10));

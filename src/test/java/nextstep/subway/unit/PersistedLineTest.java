@@ -7,22 +7,16 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static nextstep.subway.utils.LineTestSources.section;
 import static nextstep.subway.utils.StationTestSources.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class PersistedLineTest {
 
-    static class PersistedLine extends Line {
-
-        @Override
-        public void addSection(final Station upStation, final Station downStation, final int distance) {
-            super.addSection(new Section(this, upStation, downStation, distance));
-        }
-    }
 
     @Test
     void getStations_Empty() {
-        final Line line = new PersistedLine();
+        final Line line = new Line();
 
         // when
         final List<Station> result = line.getStations();
@@ -34,14 +28,14 @@ class PersistedLineTest {
     @Test
     void getStations_3Stations() {
         // given
-        final Line line = new PersistedLine();
+        final Line line = new Line();
         final Station station1 = station(1);
         final Station station2 = station(2);
         final Station station3 = station(3);
 
         // when (3, 1), (1, 2) -> (1, 2), (3, 1)
-        line.addSection(station1, station2, 10);
-        line.addSection(station3, station1, 10);
+        line.addSection(section(line, station1, station2));
+        line.addSection(section(line, station3, station1));
 
         final List<Station> result = line.getStations();
 
@@ -51,16 +45,16 @@ class PersistedLineTest {
 
     @Test
     void getStations_4Stations() {
-        final Line line = new PersistedLine();
+        final Line line = new Line();
         final Station station1 = station(1);
         final Station station2 = station(2);
         final Station station3 = station(3);
         final Station station4 = station(4);
 
         // when (4, 3), (3, 1), (1, 2) -> (1, 2), (3, 1), (4, 3)
-        line.addSection(station1, station2, 10);
-        line.addSection(station3, station1, 10);
-        line.addSection(station4, station3, 10);
+        line.addSection(section(line, station1, station2));
+        line.addSection(section(line, station3, station1));
+        line.addSection(section(line, station4, station3));
 
         final List<Station> result = line.getStations();
 
