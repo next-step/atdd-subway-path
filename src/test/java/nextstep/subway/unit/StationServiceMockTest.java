@@ -12,8 +12,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -52,5 +54,14 @@ public class StationServiceMockTest {
 
         // then
         assertThat(allStations).hasSize(2);
+    }
+
+    @Test
+    void 역을_삭제한다() {
+        // when
+        stationService.deleteStationById(1L);
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() -> stationService.findById(1L));
     }
 }

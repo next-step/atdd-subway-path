@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 @SpringBootTest
 @Transactional
@@ -45,5 +46,17 @@ public class StationServiceTest {
 
         // then
         assertThat(allStations).hasSize(2);
+    }
+
+    @Test
+    void 역을_삭제한다() {
+        // given
+        Station station = stationRepository.save(new Station("암사역"));
+
+        // when
+        stationService.deleteStationById(station.getId());
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() -> stationService.findById(station.getId()));
     }
 }
