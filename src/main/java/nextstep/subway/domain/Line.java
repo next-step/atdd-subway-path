@@ -14,8 +14,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections;
 
     protected Line() {
     }
@@ -23,10 +23,7 @@ public class Line {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
-    }
-
-    public void addSection(Section section) {
-        sections.add(section);
+        this.sections = new Sections();
     }
 
     public void changeInfo(String name, String color) {
@@ -38,25 +35,16 @@ public class Line {
         }
     }
 
+    public void addSection(Section section) {
+        sections.addSection(section);
+    }
+
     public void deleteSection(Station station) {
-        Section lastSection = sections.get(getLastIndex());
-
-        if (!lastSection.matchDownStation(station)) {
-            throw new IllegalArgumentException("하행 종점역만 삭제 가능합니다.");
-        }
-
-        sections.remove(getLastIndex());
+        sections.deleteSection(station);
     }
 
     public List<Station> getStations() {
-        return sections.stream().map(Section::getStations)
-                .flatMap(List::stream)
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
-    private int getLastIndex() {
-        return sections.size() - 1;
+        return sections.getStations();
     }
 
     public Long getId() {
@@ -72,6 +60,6 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 }
