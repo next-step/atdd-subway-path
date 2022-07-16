@@ -5,7 +5,10 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNullElseGet;
 
@@ -40,5 +43,12 @@ public class Line {
     public void updateNameAndColor(String updateName, String updateColor) {
         this.name = requireNonNullElseGet(updateName, () -> this.name);
         this.color = requireNonNullElseGet(updateColor, () -> this.color);
+    }
+
+    public List<Station> getStations() {
+        return this.sections.stream()
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .distinct()
+                .collect(Collectors.toUnmodifiableList());
     }
 }
