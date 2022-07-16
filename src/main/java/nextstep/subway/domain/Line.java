@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -12,8 +11,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -23,31 +22,52 @@ public class Line {
         this.color = color;
     }
 
-    public Long getId() {
-        return id;
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this(name, color);
+        addSection(upStation, downStation, distance);
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public Sections getSections() {
+        return sections;
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public void addSection(Station upStation, Station downStation, int distance) {
+        this.sections.add(new Section(this, upStation, downStation, distance));
+    }
+
+    public List<Station> getStations() {
+        return this.sections.getStations();
+    }
+
+    public Station getLastDownStation() {
+        return this.sections.getLastDownStation();
+    }
+
+    public void removeSection(Station station) {
+        if (!this.sections.isLastDownStation(station)) {
+            throw new IllegalArgumentException();
+        }
+        this.sections.remove();
+    }
+
+    public void update(String name, String color) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (color != null) {
+            this.color = color;
+        }
     }
 }
