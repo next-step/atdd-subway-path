@@ -27,8 +27,8 @@
     - [ ] 지하철 구간 추가 비즈니스 로직을 리팩터링
     - [ ] 지하철 구간 수정 비즈니스 로직을 리팩터링
     - [ ] 지하철 구간 삭제 비즈니스 로직을 리팩터링
-- [ ] 지하철 역 관련 단위테스트를 완성하세요.
-  - [ ] 지하철 역 단위 테스트 (StationTest)
+- [x] 지하철 역 관련 단위테스트를 완성하세요.
+  - [x] 지하철 역 단위 테스트 (StationTest)
   - [x] 지하철 역 서비스 단위 테스트 with Mock (StationServiceMockTest)
     - [x] saveStation
     - [x] findAllStations
