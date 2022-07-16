@@ -1,9 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -29,10 +27,6 @@ public class Line {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
@@ -46,7 +40,29 @@ public class Line {
     }
 
     public void addSection(final Station upStation, final Station downStation, final int distance) {
-        sections.add(new Section(this, upStation, downStation, distance));
+        if (sections.isEmpty()) {
+            sections.add(new Section(this, upStation, downStation, distance));
+            return;
+        }
+
+        final List<Station> stations = getStations();
+        if (connectableToLastDownStation(upStation, downStation, stations)) {
+            sections.add(new Section(this, upStation, downStation, distance));
+            return;
+        }
+
+        if (connectableToFirstUpStation(upStation, downStation, stations)) {
+            sections.add(0, new Section(this, upStation, downStation, distance));
+            return;
+        }
+    }
+
+    private boolean connectableToFirstUpStation(final Station upStation, final Station downStation, final List<Station> stations) {
+        return downStation.equals(getFirstStation(stations)) && !stations.contains(upStation);
+    }
+
+    private boolean connectableToLastDownStation(final Station upStation, final Station downStation, final List<Station> stations) {
+        return upStation.equals(getLastStation(stations)) && !stations.contains(downStation);
     }
 
     public void update(final String name, final String color) {
@@ -60,15 +76,15 @@ public class Line {
     }
 
     public boolean isLastDownStation(final Station station) {
-        return getLastDownStation().equals(station);
+        return getLastStation(getStations()).equals(station);
     }
 
-    private Station getLastDownStation() {
-        return getLastSection().getDownStation();
+    private Station getFirstStation(final List<Station> stations) {
+        return stations.get(0);
     }
 
-    private Section getLastSection() {
-        return sections.get(sections.size() - 1);
+    private Station getLastStation(final List<Station> stations) {
+        return stations.get(stations.size() - 1);
     }
 
     public void removeLastSection() {
@@ -80,9 +96,24 @@ public class Line {
             return Collections.emptyList();
         }
 
-        List<Station> stations = getAllDownStations();
-        addFirstUpStation(stations);
-        return stations;
+        final Station firstUpStation = getFirstUpStation();
+        final List<Station> stations = findAllDownStationsInOrder(firstUpStation);
+        stations.add(0, firstUpStation);
+
+        return Collections.unmodifiableList(stations);
+    }
+
+    private boolean hasNoSection() {
+        return sections.isEmpty();
+    }
+
+    private Station getFirstUpStation() {
+        final List<Station> allDownStations = getAllDownStations();
+        return sections.stream()
+                .filter(v -> !allDownStations.contains(v.getUpStation()))
+                .findFirst()
+                .map(Section::getUpStation)
+                .orElseThrow(IllegalStateException::new);
     }
 
     private List<Station> getAllDownStations() {
@@ -91,16 +122,39 @@ public class Line {
                 .collect(Collectors.toList());
     }
 
+    private List<Station> findAllDownStationsInOrder(final Station firstUpStation) {
+        final List<Station> stationList = new ArrayList<>();
 
-    private boolean hasNoSection() {
-        return sections.isEmpty();
+        Station target = firstUpStation;
+        Queue<Section> sectionQueue = new LinkedList<>(sections);
+        while (!sectionQueue.isEmpty()) {
+            final Section section = sectionQueue.poll();
+
+            // 마지막 구간은 이어지는 곳이 없으므로, downStation을 더하고 break;
+            if (sectionQueue.isEmpty()) {
+                stationList.add(section.getDownStation());
+                break;
+            }
+
+            final Station connectedDownStation = findConnectedDownStation(target, section);
+            if (connectedDownStation != null) {
+                stationList.add(connectedDownStation);
+                target = connectedDownStation;
+            } else {
+                sectionQueue.offer(section);
+            }
+        }
+
+        return stationList;
     }
 
-    private void addFirstUpStation(final List<Station> stations) {
-        stations.add(0, getFirstUpStation());
-    }
-    private Station getFirstUpStation() {
-        return sections.get(0).getUpStation();
+    private Station findConnectedDownStation(Station target, final Section section) {
+        // 이어지는 구간인 경우 downStation을 추가하고, target을 변경해줌
+        if (section.getUpStation().equals(target)) {
+            return section.getDownStation();
+        }
+
+        return null;
     }
 
 }

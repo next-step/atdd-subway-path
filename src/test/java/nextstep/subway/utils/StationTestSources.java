@@ -7,6 +7,10 @@ public class StationTestSources {
     public static final long upStationId = 100L;
     public static final long downStationId = 101L;
 
+    public static Station station(final long stationId) {
+        return new Station(stationId, "station");
+    }
+
     public static Station upStation() {
         return new Station(upStationId, "upStation");
     }
