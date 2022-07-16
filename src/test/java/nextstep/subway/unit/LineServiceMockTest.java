@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,6 +66,24 @@ public class LineServiceMockTest {
             assertThat(response.getName()).isEqualTo("8호선");
             assertThat(response.getColor()).isEqualTo("bg-pink-500");
             assertThat(response.getStations()).hasSize(2);
+        });
+    }
+
+    @Test
+    void 노선목록을_조회한다() {
+        // given
+        given(lineRepository.findAll()).willReturn(
+                List.of(new Line("8호선", "bg-pink-500"), new Line("2호선", "bg-lime-300"))
+        );
+
+        // when
+        List<LineResponse> lineResponses = lineService.showLines();
+
+        // then
+        assertAll(() -> {
+            assertThat(lineResponses).hasSize(2);
+            assertThat(lineResponses.stream().map(LineResponse::getName)).containsExactly("8호선", "2호선");
+            assertThat(lineResponses.stream().map(LineResponse::getColor)).containsExactly("bg-pink-500", "bg-lime-300");
         });
     }
 }

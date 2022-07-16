@@ -10,8 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.BDDMockito.given;
 
 @SpringBootTest
 @Transactional
@@ -59,6 +62,23 @@ public class LineServiceTest {
             assertThat(response.getName()).isEqualTo("8호선");
             assertThat(response.getColor()).isEqualTo("bg-pink-500");
             assertThat(response.getStations()).hasSize(2);
+        });
+    }
+
+    @Test
+    void 노선목록을_조회한다() {
+        // given
+        lineRepository.save(new Line("8호선", "bg-pink-500"));
+        lineRepository.save(new Line("2호선", "bg-lime-300"));
+
+        // when
+        List<LineResponse> lineResponses = lineService.showLines();
+
+        // then
+        assertAll(() -> {
+            assertThat(lineResponses).hasSize(2);
+            assertThat(lineResponses.stream().map(LineResponse::getName)).containsExactly("8호선", "2호선");
+            assertThat(lineResponses.stream().map(LineResponse::getColor)).containsExactly("bg-pink-500", "bg-lime-300");
         });
     }
 }
