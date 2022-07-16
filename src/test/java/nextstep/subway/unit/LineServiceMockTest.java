@@ -86,4 +86,19 @@ public class LineServiceMockTest {
             assertThat(lineResponses.stream().map(LineResponse::getColor)).containsExactly("bg-pink-500", "bg-lime-300");
         });
     }
+
+    @Test
+    void 노선을_조회한다() {
+        // given
+        given(lineRepository.findById(1L)).willReturn(Optional.of(new Line("8호선", "bg-pink-500")));
+
+        // when
+        LineResponse response = lineService.findById(1L);
+
+        // then
+        assertAll(() -> {
+            assertThat(response.getName()).isEqualTo("8호선");
+            assertThat(response.getColor()).isEqualTo("bg-pink-500");
+        });
+    }
 }

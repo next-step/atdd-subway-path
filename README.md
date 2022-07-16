@@ -11,7 +11,7 @@
     - [x] addSection
     - [x] saveLine
     - [x] showLines
-    - [ ] findById
+    - [x] findById
     - [ ] updateLine
     - [ ] deleteLine
     - [ ] deleteSection
@@ -23,7 +23,7 @@
     - [x] addSection
     - [x] saveLine
     - [x] showLines
-    - [ ] findById
+    - [x] findById
     - [ ] updateLine
     - [ ] deleteLine
     - [ ] deleteSection
