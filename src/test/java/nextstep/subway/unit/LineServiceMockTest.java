@@ -2,6 +2,7 @@ package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
+import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -16,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -92,9 +92,40 @@ public class LineServiceMockTest {
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
         // when
-        IndexOutOfBoundsException exception = assertThrows(IndexOutOfBoundsException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
+        Exception exception = assertThrows(IndexOutOfBoundsException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
 
         // then
-        assertThat(exception).isInstanceOf(IndexOutOfBoundsException.class);
+        then(exception).isInstanceOf(IndexOutOfBoundsException.class);
+    }
+
+    @Test
+    public void line_update_success_test() {
+        // given
+        Line line = new Line(3L, "2호선", "green");
+        LineRequest request = new LineRequest("변경된 호선", "blue");
+
+        given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
+
+        // when
+        lineService.updateLine(line.getId(), request);
+
+        // then
+        then(line.getName()).isEqualTo("변경된 호선");
+        then(line.getColor()).isEqualTo("blue");
+    }
+
+    @Test
+    public void line_update_fail_test() {
+        // given
+        LineRequest request = new LineRequest("변경된 호선", "blue");
+
+        given(lineRepository.findById(anyLong())).willThrow(new IllegalArgumentException());
+
+        // when
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> lineService.updateLine(1L, request));
+
+        // then
+        then(exception).isInstanceOf(IllegalArgumentException.class);
+
     }
 }
