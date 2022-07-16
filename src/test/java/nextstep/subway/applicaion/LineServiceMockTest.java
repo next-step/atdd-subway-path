@@ -20,7 +20,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,7 +37,28 @@ class LineServiceMockTest {
     @Test
     @DisplayName("Line을 저장하면, 기대 결과가 정상적으로 나온다.")
     void saveLineTest() {
-        createMockLineResponse("4호선", "blue", "중앙역", "한대앞역");
+        // given
+        Line createLine = new Line(1L, "4호선", "blue");
+        when(lineRepository.save(any())).thenReturn(createLine);
+
+        Station station1 = new Station("중앙역");
+        Station station2 = new Station("한대앞역");
+
+        when(stationService.findById(1L)).thenReturn(station1);
+        when(stationService.findById(2L)).thenReturn(station2);
+        when(stationService.createStationResponse(station1)).thenReturn(new StationResponse(1L, station1.getName()));
+        when(stationService.createStationResponse(station2)).thenReturn(new StationResponse(2L, station2.getName()));
+
+        // when
+        LineResponse lineResponse = lineService.saveLine(new LineRequest("4호선", "blue", 1L, 2L, 10));
+
+        // then
+        assertThat(lineResponse.getName()).isEqualTo("4호선");
+        assertThat(lineResponse.getColor()).isEqualTo("blue");
+        assertThat(lineResponse.getStations()).hasSize(2);
+        assertThat(lineResponse.getStations().get(0).getName()).isEqualTo(station1.getName());
+        assertThat(lineResponse.getStations().get(1).getName()).isEqualTo(station2.getName());
+
     }
 
     @Test
@@ -75,7 +95,6 @@ class LineServiceMockTest {
     @Test
     @DisplayName("Line을 삭제하면 deleteById가 호출되며 정상적으로 삭제된다.")
     void deleteLineTest() {
-
         // when
         lineService.deleteLine(1L);
         verify(lineRepository, times(1)).deleteById(1L);
@@ -88,69 +107,39 @@ class LineServiceMockTest {
     @DisplayName("Line에 역을 추가하면 추가한 역이 함께 조회가 된다.")
     @Transactional
     void addSectionTest() {
-        LineResponse mockLineResponse = createMockLineResponse("4호선", "blue", "중앙역", "한대앞역");
-        addStation(mockLineResponse, "상록수역");
+        // given
+        when(stationService.findById(1L)).thenReturn(new Station("중앙역"));
+        when(stationService.findById(2L)).thenReturn(new Station("한대앞역"));
+        when(lineRepository.findById(1L)).thenReturn(Optional.of(new Line(1L, "4호선", "blue")));
+
+        // when
+        lineService.addSection(1L, new SectionRequest(1L, 2L, 10));
+
+        // then
+        LineResponse lineResopnse = lineService.findById(1L);
+        assertThat(lineResopnse.getStations()).hasSize(2);
     }
 
     @Test
+    @DisplayName("Line에 구간을 제거하면 정상 제거가 된다.")
     void deleteSectionTest() {
-        LineResponse mockLineResponse = createMockLineResponse("4호선", "blue", "중앙역", "한대앞역");
-        addStation(mockLineResponse, "상록수역");
-
-        // then
-        lineService.deleteSection(1L, 3L);
-
-        LineResponse lineResponse3 = lineService.findById(1L);
-
-        assertThat(lineResponse3.getStations()).hasSize(2);
-        assertThat(lineResponse3.getStations()).doesNotContain(new StationResponse(3L, "상록수역"));
-    }
-
-    private LineResponse createMockLineResponse(String lineName, String lineColor, String stationsName1, String stationName2) {
         // given
-        Line createLine = new Line(1L, lineName, lineColor);
-        when(lineRepository.save(any())).thenReturn(createLine);
-        when(lineRepository.findById(1L)).thenReturn(Optional.of(createLine));
-
-        Station station1 = new Station(stationsName1);
-        Station station2 = new Station(stationName2);
-
-        when(stationService.findById(1L)).thenReturn(station1);
-        when(stationService.findById(2L)).thenReturn(station2);
-        when(stationService.createStationResponse(station1)).thenReturn(new StationResponse(1L, station1.getName()));
-        when(stationService.createStationResponse(station2)).thenReturn(new StationResponse(2L, station2.getName()));
+        when(stationService.findById(1L)).thenReturn(new Station("중앙역"));
+        when(stationService.findById(2L)).thenReturn(new Station("한대앞역"));
+        when(stationService.findById(3L)).thenReturn(new Station("상록수역"));
+        when(lineRepository.findById(1L)).thenReturn(Optional.of(new Line(1L, "4호선", "blue")));
+        lineService.addSection(1L, new SectionRequest(1L, 2L, 10));
+        lineService.addSection(1L, new SectionRequest(2L, 3L, 10));
 
         // when
-        LineResponse lineResponse = lineService.saveLine(new LineRequest(lineName, lineColor, 1L, 2L, 10));
+        lineService.deleteSection(1L, 3L);
+
 
         // then
-        assertThat(lineResponse.getName()).isEqualTo(lineName);
-        assertThat(lineResponse.getColor()).isEqualTo(lineColor);
+        LineResponse lineResponse = lineService.findById(1L);
+
         assertThat(lineResponse.getStations()).hasSize(2);
-        assertThat(lineResponse.getStations().get(0).getName()).isEqualTo(station1.getName());
-        assertThat(lineResponse.getStations().get(1).getName()).isEqualTo(station2.getName());
-
-
-        return lineResponse;
-    }
-
-    private void addStation(LineResponse lineResponse, String addStationName) {
-
-        Station newStation = new Station(addStationName);
-        long newStationId = lineResponse.getStations().size() + 1;
-
-        when(stationService.findById(newStationId)).thenReturn(newStation);
-        lineService.addSection(lineResponse.getId(), new SectionRequest((long) lineResponse.getStations().size(), newStationId, 10));
-
-        when(stationService.createStationResponse(newStation)).thenReturn(new StationResponse(newStationId, newStation.getName()));
-        LineResponse lineResponse2 = lineService.findById(lineResponse.getId());
-
-        assertThat(lineResponse2.getStations()).hasSize(lineResponse.getStations().size() + 1);
-        assertThat(lineResponse2.getStations().get(getLastIndex(lineResponse2)).getName()).isEqualTo(newStation.getName());
-    }
-
-    private int getLastIndex(LineResponse lineResponse2) {
-        return lineResponse2.getStations().size() - 1;
+        assertThat(lineResponse.getStations()).doesNotContain(new StationResponse(3L, "상록수역"));
     }
 
 }
