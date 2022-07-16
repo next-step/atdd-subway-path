@@ -1,5 +1,6 @@
 package nextstep.subway.applicaion;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
@@ -13,19 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class LineService {
-    private LineRepository lineRepository;
-    private StationService stationService;
-
-    public LineService(LineRepository lineRepository, StationService stationService) {
-        this.lineRepository = lineRepository;
-        this.stationService = stationService;
-    }
+    private final LineRepository lineRepository;
+    private final StationService stationService;
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
