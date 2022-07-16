@@ -4,8 +4,6 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -26,6 +24,66 @@ class LineTest {
         assertAll(() -> {
             assertThat(line.getSections()).hasSize(1);
             assertThat(line.getSections()).containsExactly(section);
+        });
+    }
+
+    @Test
+    void 노선_정보를_수정하라() {
+        // given
+        Line line = new Line("2호선", "green");
+
+        // when
+        line.changeInfo("8호선", "pink");
+
+        // then
+        assertAll(() -> {
+            assertThat(line.getName()).isEqualTo("8호선");
+            assertThat(line.getColor()).isEqualTo("pink");
+        });
+    }
+
+    @Test
+    void 노선_정보를_수정_시_이름이_null_인경우_이름은_변경되지_않는다() {
+        // given
+        Line line = new Line("2호선", "green");
+
+        // when
+        line.changeInfo(null, "pink");
+
+        // then
+        assertAll(() -> {
+            assertThat(line.getName()).isEqualTo("2호선");
+            assertThat(line.getColor()).isEqualTo("pink");
+        });
+    }
+
+    @Test
+    void 노선_정보를_수정_시_색상이_null_인경우_색상은_변경되지_않는다() {
+        // given
+        Line line = new Line("2호선", "green");
+
+        // when
+        line.changeInfo("8호선", null);
+
+        // then
+        assertAll(() -> {
+            assertThat(line.getName()).isEqualTo("8호선");
+            assertThat(line.getColor()).isEqualTo("green");
+        });
+    }
+
+    @Test
+    void 노선_정보를_수정_시_이름과_색상이_null_인경우_둘다_변경되지_않는다() {
+        // given
+        Line line = new Line("2호선", "green");
+
+        // when
+        line.changeInfo(null, null);
+
+        // then
+        assertAll(() -> {
+            assertThat(line.getName()).isEqualTo("2호선");
+            assertThat(line.getColor()).isEqualTo("green");
         });
     }
 
