@@ -98,6 +98,21 @@ public class LineServiceMockTest {
         then(exception).isInstanceOf(IndexOutOfBoundsException.class);
     }
 
+    @DisplayName("존재하지 않는 line에 구간삭제 요청시 예외가 발생한다")
+    @Test
+    public void delete_section_when_no_line() {
+        // given
+        Station downStation = new Station(2L, "건대입구역");
+
+        given(lineRepository.findById(anyLong())).willThrow(new IllegalArgumentException());
+
+        // when
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> lineService.deleteSection(1L, downStation.getId()));
+
+        // then
+        then(exception).isInstanceOf(IllegalArgumentException.class);
+    }
+
     @DisplayName("존재하는 라인의 색과 이름을 변경할 수 있다")
     @Test
     public void line_update_success_test() {
