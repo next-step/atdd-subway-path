@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Line {
@@ -77,11 +78,32 @@ public class Line {
         sections.remove(getLastIndex());
     }
 
+    public void deleteLastSection(Station station) {
+        Section lastSection = sections.get(getLastIndex());
+        if (!lastSection.hasDownStation(station)) {
+            throw new IllegalArgumentException();
+        }
+        sections.remove(lastSection);
+    }
+
     private Section getFirstSection() {
         return sections.get(0);
     }
 
     private int getLastIndex() {
         return sections.size() - 1;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Line line = (Line) o;
+        return Objects.equals(getId(), line.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }
