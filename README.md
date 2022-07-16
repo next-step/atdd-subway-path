@@ -3,10 +3,11 @@
 
 
 TODO List
-[x] 성공하는 테스트 코드 먼저 작성하기
+
+### 성공하는 테스트 코드 먼저 작성하기
  - [x] LineTest
  - [x] LineServiceMockTest
  - [x] LineServiceTest
 
-[] LineService 내 로직을 각 도메인 클래스에 옮기기
- - [] TDD 사이클로 리팩토링 작성해보기
+### LineService 내 로직을 각 도메인 클래스에 옮기기
+ - [x] TDD 사이클로 리팩토링 작성해보기
