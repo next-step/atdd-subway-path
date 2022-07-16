@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -50,5 +49,21 @@ public class Line {
                 .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
                 .distinct()
                 .collect(Collectors.toUnmodifiableList());
+    }
+
+    public void deleteStation(Station station) {
+        if (!station.equals(lastStation())) {
+            throw new IllegalArgumentException();
+        }
+
+        this.sections.remove(sectionsLastIndex());
+    }
+
+    private Station lastStation() {
+        return this.sections.get(sectionsLastIndex()).getDownStation();
+    }
+
+    private int sectionsLastIndex() {
+        return this.sections.size() - 1;
     }
 }

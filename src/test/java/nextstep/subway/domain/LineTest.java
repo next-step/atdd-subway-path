@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 class LineTest {
 
@@ -55,5 +55,34 @@ class LineTest {
         assertThat(line.getStations()).hasSize(2);
         assertThat(line.getStations()).containsAnyOf(station1, station2);
 
+    }
+
+    @Test
+    @DisplayName("제거할 역이 Line의 마지막 역인 경우 제거된다.")
+    void deleteStationTest() {
+        Station station1 = new Station("중앙역");
+        Station station2 = new Station("한대앞역");
+        Station station3 = new Station("상록수역");
+
+        line.addSection(new Section(line, station1, station2, 10));
+        line.addSection(new Section(line, station2, station3, 10));
+        assertThat(line.getStations()).hasSize(3);
+
+        line.deleteStation(station3);
+        assertThat(line.getStations()).hasSize(2);
+        assertThat(line.getStations()).doesNotContain(station3);
+    }
+
+    @Test
+    @DisplayName("제거할 역이 Line의 마지막 역이 아닌경우 에러가 발생한다.")
+    void deleteStationFailTest() {
+
+        Station station1 = new Station("중앙역");
+        Station station2 = new Station("한대앞역");
+
+        line.addSection(new Section(line, station1, station2, 10));
+
+        assertThatIllegalArgumentException().isThrownBy(() -> line.deleteStation(station1));
+        assertThatIllegalArgumentException().isThrownBy(() -> line.deleteStation(new Station("없는역")));
     }
 }
