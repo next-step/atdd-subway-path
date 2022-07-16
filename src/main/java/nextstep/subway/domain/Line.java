@@ -1,16 +1,15 @@
 package nextstep.subway.domain;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Objects.requireNonNullElseGet;
+
 @Getter
-@Setter
 @Entity
 @NoArgsConstructor
 public class Line {
@@ -36,5 +35,10 @@ public class Line {
 
     public void addSection(Section section) {
         this.sections.add(section);
+    }
+
+    public void updateNameAndColor(String updateName, String updateColor) {
+        this.name = requireNonNullElseGet(updateName, () -> this.name);
+        this.color = requireNonNullElseGet(updateColor, () -> this.color);
     }
 }

@@ -3,6 +3,10 @@ package nextstep.subway.applicaion.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
+import static java.util.Objects.*;
+
 @Getter
 @NoArgsConstructor
 public class LineRequest {
