@@ -19,6 +19,11 @@ public class Station {
         this.name = name;
     }
 
+    public Station(final Long id, final String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }
