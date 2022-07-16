@@ -100,7 +100,7 @@ public class LineServiceTest {
     }
 
     @Test
-    void 노선을_정보를_수정하라() {
+    void 노선을_정보를_수정한다() {
         // given
         Line line = lineRepository.save(new Line("8호선", "bg-pink-500"));
 
@@ -115,7 +115,7 @@ public class LineServiceTest {
     }
 
     @Test
-    void 노선을_삭제하라() {
+    void 노선을_삭제한다() {
         // given
         Line line = lineRepository.save(new Line("8호선", "bg-pink-500"));
 
@@ -125,4 +125,5 @@ public class LineServiceTest {
         // then
         assertThatIllegalArgumentException().isThrownBy(() -> lineService.findById(1L));
     }
+
 }
