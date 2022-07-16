@@ -36,74 +36,9 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return Collections.unmodifiableList(sections);
     }
 
-    public void addSection(final Station upStation, final Station downStation, final int distance) {
-        if (sections.isEmpty()) {
-            sections.add(new Section(this, upStation, downStation, distance));
-            return;
-        }
-
-        final List<Station> stations = getStations();
-        if (connectableToLastDownStation(upStation, downStation, stations)) {
-            sections.add(new Section(this, upStation, downStation, distance));
-            return;
-        }
-
-        if (connectableToFirstUpStation(upStation, downStation, stations)) {
-            sections.add(0, new Section(this, upStation, downStation, distance));
-            return;
-        }
-
-        if (connectableToBetweenSectionOnUpStation(upStation, downStation, stations)) {
-            // (1, 2) -> (2, 4) -> (2, 3)
-            final Section section = sections.stream()
-                    .filter(v -> v.getUpStation().equals(upStation))
-                    .findFirst()
-                    .orElseThrow(IllegalStateException::new);
-            final int sectionDistance = section.getDistance();
-            if (distance >= sectionDistance) {
-                throw new IllegalArgumentException("distance must be less than sectionDistance");
-            }
-
-            sections.add(sections.indexOf(section) + 1, new Section(this, downStation, section.getDownStation(), sectionDistance - distance));
-            section.updateSection(downStation, distance);
-        }
-
-        if (connectableToBetweenSectionOnDownStation(upStation, downStation, stations)) {
-            // (1, 3) -> (3, 4) -> (2, 3)
-            final Section section = sections.stream()
-                    .filter(v -> v.getDownStation().equals(downStation))
-                    .findFirst()
-                    .orElseThrow(IllegalStateException::new);
-
-            final int sectionDistance = section.getDistance();
-            if (distance >= sectionDistance) {
-                throw new IllegalArgumentException("distance must be less than sectionDistance");
-            }
-
-            section.updateSection(upStation, sectionDistance - distance);
-            sections.add(sections.indexOf(section) + 1, new Section(this, upStation, downStation, distance));
-        }
-
-    }
-
-    private boolean connectableToBetweenSectionOnDownStation(final Station upStation, final Station downStation, final List<Station> stations) {
-        return !stations.contains(upStation) && stations.contains(downStation);
-    }
-
-    private boolean connectableToBetweenSectionOnUpStation(final Station upStation, final Station downStation, final List<Station> stations) {
-        return stations.contains(upStation) && !stations.contains(downStation);
-    }
-
-    private boolean connectableToFirstUpStation(final Station upStation, final Station downStation, final List<Station> stations) {
-        return downStation.equals(getFirstStation(stations)) && !stations.contains(upStation);
-    }
-
-    private boolean connectableToLastDownStation(final Station upStation, final Station downStation, final List<Station> stations) {
-        return upStation.equals(getLastStation(stations)) && !stations.contains(downStation);
-    }
 
     public void update(final String name, final String color) {
         if (name != null) {
@@ -119,11 +54,11 @@ public class Line {
         return getLastStation(getStations()).equals(station);
     }
 
-    private Station getFirstStation(final List<Station> stations) {
+    public Station getFirstStation(final List<Station> stations) {
         return stations.get(0);
     }
 
-    private Station getLastStation(final List<Station> stations) {
+    public Station getLastStation(final List<Station> stations) {
         return stations.get(stations.size() - 1);
     }
 
@@ -143,7 +78,7 @@ public class Line {
         return Collections.unmodifiableList(stations);
     }
 
-    private boolean hasNoSection() {
+    public boolean hasNoSection() {
         return sections.isEmpty();
     }
 
@@ -195,6 +130,18 @@ public class Line {
         }
 
         return null;
+    }
+
+    public void addSection(final Station upStation, final Station downStation, final int distance) {
+        addSection(new Section(this, upStation, downStation, distance));
+    }
+
+    public void addSection(final Section section) {
+        sections.add(section);
+    }
+
+    public void addSection(final int index, final Section section) {
+        sections.add(index, section);
     }
 
 }

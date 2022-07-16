@@ -45,7 +45,7 @@ public class Section {
         return distance;
     }
 
-    void updateSection(final Station downStation, final int distance) {
+    public void updateDownStationAndDistance(final Station downStation, final int distance) {
         this.downStation = downStation;
         this.distance = distance;
     }

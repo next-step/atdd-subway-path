@@ -16,7 +16,7 @@ class PersistedLineTest {
 
         @Override
         public void addSection(final Station upStation, final Station downStation, final int distance) {
-            getSections().add(new Section(this, upStation, downStation, distance));
+            super.addSection(new Section(this, upStation, downStation, distance));
         }
     }
 
