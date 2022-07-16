@@ -5,8 +5,8 @@
 
 ### 요구사항
 ### 기능 요구사항
-- [ ] 지하철 구간 관련 단위 테스트를 완성하세요. 
-  - [ ] 구간 단위 테스트 (LineTest)
+- [x] 지하철 구간 관련 단위 테스트를 완성하세요. 
+  - [x] 구간 단위 테스트 (LineTest)
   - [x] 구간 서비스 단위 테스트 with Mock (LineServiceMockTest)
     - [x] addSection
     - [x] saveLine
@@ -23,10 +23,11 @@
     - [x] updateLine
     - [x] deleteLine
     - [x] deleteSection
-  - [ ] 단위 테스트를 기반으로 비즈니스 로직을 리팩터링 하세요.
+  - [x] 단위 테스트를 기반으로 비즈니스 로직을 리팩터링 하세요.
     - [x] 지하철 구간 추가 비즈니스 로직을 리팩터링
     - [x] 지하철 구간 수정 비즈니스 로직을 리팩터링
     - [x] 지하철 구간 삭제 비즈니스 로직을 리팩터링
+    - [x] 지하철 구간에 등록 된 지하철 역 조회 비즈니스 로직을 리팩토링
 - [x] 지하철 역 관련 단위테스트를 완성하세요.
   - [x] 지하철 역 단위 테스트 (StationTest)
   - [x] 지하철 역 서비스 단위 테스트 with Mock (StationServiceMockTest)

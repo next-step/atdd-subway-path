@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Section {
@@ -36,6 +37,10 @@ public class Section {
 
     public boolean matchDownStation(Station station) {
         return downStation.equals(station);
+    }
+
+    public List<Station> getStations() {
+        return List.of(upStation, downStation);
     }
 
     public Long getId() {

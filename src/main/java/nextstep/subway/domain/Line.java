@@ -2,7 +2,9 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -44,6 +46,13 @@ public class Line {
         }
 
         sections.remove(getLastIndex());
+    }
+
+    public List<Station> getStations() {
+        return sections.stream().map(Section::getStations)
+                .flatMap(List::stream)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     private int getLastIndex() {

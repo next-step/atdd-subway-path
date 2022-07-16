@@ -11,7 +11,6 @@ import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,18 +75,8 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, line.getSections().get(0).getUpStation());
-
-        return stations.stream()
-                .map(it -> stationService.createStationResponse(it))
+        return line.getStations().stream()
+                .map(stationService::createStationResponse)
                 .collect(Collectors.toList());
     }
 

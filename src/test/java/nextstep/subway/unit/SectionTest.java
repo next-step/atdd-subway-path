@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -74,4 +76,18 @@ public class SectionTest {
         assertThat(matchDownStation).isFalse();
     }
 
+    @Test
+    void 구간에_등록된_역을_조회한다() {
+        // given
+        Line line = new Line("2호선", "green");
+        Station upStation = new Station("암사역");
+        Station downStation = new Station("모란역");
+        Section section = new Section(line, upStation, downStation, 10);
+
+        // when
+        List<Station> stations = section.getStations();
+
+        // then
+        assertThat(stations).containsExactly(upStation, downStation);
+    }
 }
