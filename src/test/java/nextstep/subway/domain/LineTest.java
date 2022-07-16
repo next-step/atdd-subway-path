@@ -19,10 +19,10 @@ class LineTest {
     @Test
     @DisplayName("구간이 정상적으로 추가된다.")
     void addSectionTest() {
-        assertThat(line.getSections()).isEmpty();
+        assertThat(line.getSections().size()).isEqualTo(0);
 
         line.addSection(new Section(line, new Station("중앙역"), new Station("한대앞역"), 10));
-        assertThat(line.getSections()).hasSize(1);
+        assertThat(line.getSections().size()).isEqualTo(1);
     }
 
     @Test

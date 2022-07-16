@@ -4,10 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNullElseGet;
 
@@ -22,8 +19,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line(String name, String color) {
         this(null, name, color);
@@ -45,25 +42,15 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        return this.sections.stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                .distinct()
-                .collect(Collectors.toUnmodifiableList());
+        return this.sections.getStations();
     }
 
     public void deleteStation(Station station) {
-        if (!station.equals(lastStation())) {
+
+        if (!station.equals(sections.lastStation())) {
             throw new IllegalArgumentException();
         }
 
-        this.sections.remove(sectionsLastIndex());
-    }
-
-    private Station lastStation() {
-        return this.sections.get(sectionsLastIndex()).getDownStation();
-    }
-
-    private int sectionsLastIndex() {
-        return this.sections.size() - 1;
+        this.sections.deleteLastStation();
     }
 }
