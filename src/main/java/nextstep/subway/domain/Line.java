@@ -50,4 +50,32 @@ public class Line {
     public List<Section> getSections() {
         return sections;
     }
+
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public List<Station> getStations() {
+        final List<Station> stations = new ArrayList<>();
+        stations.add(getFirstSection().getUpStation());
+        for (Section section : sections) {
+            stations.add(section.getDownStation());
+        }
+        return new ArrayList<>(stations);
+    }
+
+    public void removeLastSection() {
+        if (sections.isEmpty()) {
+            throw new IllegalStateException("삭제할 section이 존재하지 않습니다.");
+        }
+        sections.remove(getLastIndex());
+    }
+
+    private Section getFirstSection() {
+        return sections.get(0);
+    }
+
+    private int getLastIndex() {
+        return sections.size() - 1;
+    }
 }
