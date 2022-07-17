@@ -12,8 +12,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = new Sections();
 
     public Line() {
     }
@@ -36,7 +36,7 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return Collections.unmodifiableList(sections);
+        return sections.getSections();
     }
 
     public void update(final String name, final String color) {
@@ -50,7 +50,7 @@ public class Line {
     }
 
     public void removeLastSection() {
-        sections.remove(sections.size() - 1);
+        sections.removeLast();
     }
 
     public boolean hasNoSection() {
@@ -62,43 +62,7 @@ public class Line {
             return Collections.emptyList();
         }
 
-        return Collections.unmodifiableList(findAllStationsInOrder());
-    }
-
-    private List<Station> findAllStationsInOrder() {
-        final List<Station> stationList = new ArrayList<>();
-        final List<Section> sectionList = getSections();
-
-        Station target = getFirstUpStation();
-        while (target != null) {
-            stationList.add(target);
-            target = findConnectedDownStation(sectionList, target);
-        }
-
-        return stationList;
-    }
-
-    private Station getFirstUpStation() {
-        final List<Station> allDownStations = getAllDownStations();
-        return sections.stream()
-                .filter(v -> !allDownStations.contains(v.getUpStation()))
-                .findFirst()
-                .map(Section::getUpStation)
-                .orElseThrow(IllegalStateException::new);
-    }
-
-    private List<Station> getAllDownStations() {
-        return sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-    }
-
-    private Station findConnectedDownStation(final List<Section> sectionList, final Station target) {
-        return sectionList.stream()
-                .filter(v -> v.getUpStation().equals(target))
-                .map(Section::getDownStation)
-                .findAny()
-                .orElse(null);
+        return sections.findAllStationsInOrder();
     }
 
     public void addSection(final Section section) {
@@ -112,7 +76,7 @@ public class Line {
     }
 
     public void addSection(final Section target, final Section section) {
-        sections.add(sections.indexOf(target) + 1, section);
+        sections.add(getSections().indexOf(target) + 1, section);
         section.setLine(this);
     }
 
