@@ -31,13 +31,9 @@ public class LineService {
 	public LineResponse saveLine(LineRequest request) {
 		Line line = lineRepository.save(Line.of(request.getName(), request.getColor()));
 
-		if (!request.isRegistrableOfSection()) {
-			return createLineResponse(line);
-		}
-
-		Station upStation = findStationById(request.getUpStationId());
-		Station downStation = findStationById(request.getDownStationId());
-		line.addSection(upStation, downStation, request.getDistance());
+		line.addSection(findStationById(request.getUpStationId()),
+			findStationById(request.getDownStationId()),
+			request.getDistance());
 
 		return createLineResponse(line);
 	}

@@ -37,7 +37,7 @@ public class StationService {
 		stationRepository.deleteById(id);
 	}
 
-	public StationResponse createStationResponse(Station station) {
+	private StationResponse createStationResponse(Station station) {
 		return new StationResponse(
 			station.getId(),
 			station.getName()

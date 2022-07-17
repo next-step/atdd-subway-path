@@ -70,6 +70,9 @@ public class Line {
 	}
 
 	public void addSection(Station upStation, Station downStation, int distance) {
+		if (!isAbleAdd(upStation, downStation, distance)) {
+			return;
+		}
 		this.sections.add(new Section(this, upStation, downStation, distance));
 	}
 
