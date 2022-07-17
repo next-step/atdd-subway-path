@@ -62,6 +62,10 @@ public class Line {
         section.makeRelation(this);
     }
 
+    public void deleteSection(Station station) {
+        sections.delete(station);
+    }
+
     public List<Station> getStations() {
         return sections.getStations();
     }
