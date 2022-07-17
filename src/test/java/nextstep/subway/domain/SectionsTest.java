@@ -4,18 +4,33 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SectionsTest {
 
-    @DisplayName("지하철 구간 중간에 새로운 역을 추가")
+    @DisplayName("지하철 구간 중간에 새로운 역을 추가 - 상행 종점 기준")
     @Test
-    void addSection() {
+    void addSectionFocusUpStation() {
         // given
         Sections sections = new Sections();
         sections.add(new Section(Stub.구로디지털단지역, Stub.신림역, 10));
 
         // when
         sections.add(new Section(Stub.구로디지털단지역, Stub.신대방역, 3));
+
+        // then
+        assertThat(sections.getStations()).contains(Stub.구로디지털단지역, Stub.신대방역, Stub.신림역);
+    }
+
+    @DisplayName("지하철 구간 중간에 새로운 역을 추가 - 하행행 종점 기준")
+    @Test
+    void addSectionFocusDownStation() {
+        // given
+        Sections sections = new Sections();
+        sections.add(new Section(Stub.구로디지털단지역, Stub.신림역, 10));
+
+        // when
+        sections.add(new Section(Stub.신대방역, Stub.신림역, 6));
 
         // then
         assertThat(sections.getStations()).contains(Stub.구로디지털단지역, Stub.신대방역, Stub.신림역);
@@ -47,6 +62,42 @@ class SectionsTest {
 
         // then
         assertThat(sections.getStations()).contains(Stub.구로디지털단지역, Stub.신대방역, Stub.신림역);
+    }
+
+    @DisplayName("지하철 구간 중간에 새로운 역을 추가할 때 거리가 같은 경우 예외")
+    @Test
+    void doNotSameDistanceAddSection() {
+        // given
+        Sections sections = new Sections();
+        sections.add(new Section(Stub.구로디지털단지역, Stub.신림역, 10));
+
+        // then
+        assertThatThrownBy(() -> sections.add(new Section(Stub.구로디지털단지역, Stub.신대방역, 10)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void doNotDuplicatedStations() {
+        // given
+        Sections sections = new Sections();
+        sections.add(new Section(Stub.구로디지털단지역, Stub.신림역, 10));
+
+        // then
+        assertThatThrownBy(() -> sections.add(new Section(Stub.구로디지털단지역, Stub.신림역, 1)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void doNotUnknownStations() {
+        // given
+        Sections sections = new Sections();
+        sections.add(new Section(Stub.구로디지털단지역, Stub.신림역, 10));
+
+        // then
+        assertThatThrownBy(() -> sections.add(new Section(Stub.대림역, Stub.신대방역, 6)))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     private static class Stub {
