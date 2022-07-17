@@ -15,6 +15,7 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -137,6 +138,31 @@ public class LineServiceMockTest {
 
         // when //then
         assertThatThrownBy(() -> lineService.addSection(1L, new SectionRequest(1L, 2L, 10)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("지하철 구간 삭제시 노선을 찾지 못하면 예외발생")
+    @Test
+    void deleteSectionException() {
+        // given
+        given(lineRepository.findById(1L)).willReturn(Optional.empty());
+
+        // when // then
+        assertThatThrownBy(() -> lineService.deleteSection(1L, 1L))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("지하철 구간 삭제시 하행종점역이 포함되지 않는 구간을 삭제시 예외발생")
+    @Test
+    void deleteSectionException2() {
+        // given
+        Line 신분당선 = new Line("신분당선", "yellow");
+        신분당선.getSections().add(new Section(신분당선, new Station("강남역"), new Station("역삼역"), 10));
+        given(lineRepository.findById(1L)).willReturn(Optional.of(신분당선));
+        given(stationService.findById(1L)).willReturn(new Station("강남역"));
+
+        // when // then
+        assertThatThrownBy(() -> lineService.deleteSection(1L, 1L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
