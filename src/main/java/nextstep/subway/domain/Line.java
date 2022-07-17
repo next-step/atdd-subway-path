@@ -29,24 +29,8 @@ public class Line {
         this.color = color;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
     public void addSection(Section section) {
         this.sections.add(section);
-    }
-
-    public List<Station> getStations() {
-        return sections.getStations();
     }
 
     public void deleteLastSection(Station station) {
@@ -57,10 +41,6 @@ public class Line {
         return sections.isEmpty();
     }
 
-    public int getSectionsSize() {
-        return sections.getSize();
-    }
-
     public void update(String name, String color) {
         if (name != null) {
             this.name = name;
@@ -68,6 +48,26 @@ public class Line {
         if (color != null) {
             this.color = color;
         }
+    }
+
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
+    public int getSectionsSize() {
+        return sections.getSize();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     @Override
