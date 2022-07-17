@@ -9,6 +9,8 @@ import java.util.List;
 @Embeddable
 public class Sections {
 
+    private static final int FIRST_SECTION_INDEX = 0;
+    
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -52,7 +54,7 @@ public class Sections {
     }
 
     private Section getFirstSection() {
-        return sections.get(0);
+        return sections.get(FIRST_SECTION_INDEX);
     }
 
     private int getLastIndex() {
