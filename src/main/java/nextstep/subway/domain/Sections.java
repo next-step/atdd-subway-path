@@ -14,26 +14,38 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section newSection) {
-        // 기존에 추가
-        sections.stream()
-                .filter(item -> item.isSameUpStation(newSection.getUpStation()))
-                .findFirst()
-                .ifPresent(section -> {
-                    if (section.isAddBetween(newSection.getDistance())) {
-                        int index = this.sections.indexOf(section);
+        if (!this.isEmpty() && !this.getStations().contains(newSection.getUpStation()) && !this.getStations().contains(newSection.getDownStation())) {
+            throw new IllegalArgumentException("아예 없음");
+        }
+
+        for (Section section : sections) {
+            if (section.isSameStations(newSection)) {
+                throw new IllegalArgumentException("중복");
+            }
+
+            if (section.isAddBetween(newSection)) {
+                if (section.isEnoughDistance(newSection.getDistance())) {
+                    int index = this.sections.indexOf(section);
+
+                    if (section.isSameAsUpStation(newSection.getUpStation())) {
                         this.sections.add(index, newSection);
-                        section.update(newSection.getDownStation(), newSection.getDistance());
+                        section.changeDownSection(newSection.getDownStation(), newSection.getDistance());
                         return;
                     }
-                });
+                    this.sections.add(index+1, newSection);
+                    section.changeUpSection(newSection.getUpStation(), newSection.getDistance());
+                    return;
+                } else {
+                    throw new IllegalArgumentException("거리가 같거나 큼");
+                }
+            }
 
-        sections.stream()
-                .filter(item -> item.isSameUpStation(newSection.getDownStation()))
-                .findFirst()
-                .ifPresent(section -> {
-                    int index = this.sections.indexOf(section);
-                    this.sections.add(index, newSection);
-                });
+            if (section.isSameAsUpStation(newSection.getDownStation())) {
+                int index = this.sections.indexOf(section);
+                this.sections.add(index, newSection);
+                return;
+            }
+        }
 
         this.sections.add(newSection);
     }

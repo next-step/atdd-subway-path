@@ -48,21 +48,31 @@ public class Section {
         return distance;
     }
 
-    public boolean isAddBetween(int distance) {
+    public boolean isEnoughDistance(int distance) {
         return this.distance > distance;
     }
 
-    public boolean isSameUpStation(Station upStation) {
-        return this.upStation.equals(upStation);
+    public boolean isAddBetween(Section section) {
+        return this.upStation.equals(section.upStation) || this.downStation.equals(section.downStation);
     }
 
-    public void update(Station newUpStation, int distance) {
+    public void changeUpSection(Station newDownStation, int distance) {
+        this.downStation = newDownStation;
+        this.distance = minusDistance(distance);
+    }
+
+    public void changeDownSection(Station newUpStation, int distance) {
         this.upStation = newUpStation;
         this.distance = minusDistance(distance);
     }
 
     public int minusDistance(int distance) {
         return this.distance - distance;
+    }
+
+    public boolean isSameAsUpStation(Station station) {
+        boolean equals = this.upStation.equals(station);
+        return equals;
     }
 
     @Override
@@ -74,5 +84,9 @@ public class Section {
                 ", downStation=" + downStation +
                 ", distance=" + distance +
                 '}';
+    }
+
+    public boolean isSameStations(Section section) {
+        return this.upStation.equals(section.upStation) && this.downStation.equals(section.downStation);
     }
 }
