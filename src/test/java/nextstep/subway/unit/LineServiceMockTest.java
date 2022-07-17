@@ -33,9 +33,9 @@ public class LineServiceMockTest {
 
     @DisplayName("지하철 노선 생성")
     @Test
-    void saveLine(){
+    void saveLine() {
         //given
-        given(lineRepository.save(any())).willReturn(new Line("신분당선","yellow"));
+        given(lineRepository.save(any())).willReturn(new Line("신분당선", "yellow"));
         given(stationService.findById(1L)).willReturn(new Station("강남역"));
         given(stationService.findById(2L)).willReturn(new Station("역삼역"));
 
@@ -46,6 +46,25 @@ public class LineServiceMockTest {
         assertThat(lineResponse.getName()).isEqualTo("신분당선");
         assertThat(lineResponse.getColor()).isEqualTo("yellow");
         assertThat(lineResponse.getStations()).hasSize(2);
+    }
+
+    @DisplayName("지하철 노선 목록 조회 테스트")
+    @Test
+    void showLines() {
+        //given
+        given(lineRepository.findAll()).willReturn(List.of(
+                new Line("신분당선", "yellow"),
+                new Line("2호선", "green")));
+
+        //when
+        List<LineResponse> lineResponses = lineService.showLines();
+
+        //then
+        assertThat(lineResponses).hasSize(2);
+        assertThat(lineResponses.get(0).getName()).isEqualTo("신분당선");
+        assertThat(lineResponses.get(0).getColor()).isEqualTo("yellow");
+        assertThat(lineResponses.get(1).getName()).isEqualTo("2호선");
+        assertThat(lineResponses.get(1).getColor()).isEqualTo("green");
     }
 
     @DisplayName("지하철 구간 생성")
