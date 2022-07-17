@@ -8,14 +8,10 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
-import nextstep.subway.utils.DatabaseCleanup;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.function.BiFunction;
@@ -27,7 +23,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DisplayName("지하철 구간 관련 without Mock")
 @SpringBootTest
 @Transactional
-@ActiveProfiles("test")
 public class LineServiceTest {
 
     @Autowired
@@ -39,36 +34,25 @@ public class LineServiceTest {
     @Autowired
     private LineService lineService;
 
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
-
     private Stub stub;
 
     public LineServiceTest() {
         this.stub = new Stub();
     }
 
-    @AfterEach
-    void tearDown() {
-        databaseCleanup.execute();
-    }
-
     @DisplayName("지하철 구간 등록")
     @Test
     void addSection() {
         // given
-        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         Station 구로디지털단지역 = stub.구로디지털단지역_생성.get();
         Station 신대방역 = stub.신대방역_생성.get();
         Station 신림역 = stub.신림역_생성.get();
         Line 이호선 = stub.이호선_생성.apply(구로디지털단지역, 신대방역);
 
         // when
-        // lineService.addSection 호출
         lineService.addSection(이호선.getId(), new SectionRequest(신대방역.getId(), 신림역.getId(), 8));
 
         // then
-        // line.getSections 메서드를 통해 검증
         assertThat(이호선.getStations()).contains(구로디지털단지역, 신대방역, 신림역);
     }
 

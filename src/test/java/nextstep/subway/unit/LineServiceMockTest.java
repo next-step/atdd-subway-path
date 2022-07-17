@@ -45,17 +45,14 @@ public class LineServiceMockTest {
     @Test
     void addSection() {
         // given
-        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         when(stationService.findById(신대방역.getId())).thenReturn(신대방역);
         when(stationService.findById(신림역.getId())).thenReturn(신림역);
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
         // when
-        // lineService.addSection 호출
         lineService.addSection(이호선.getId(), new SectionRequest(신대방역.getId(), 신림역.getId(), 8));
 
         // then
-        // line.findLineById 메서드를 통해 검증
         Line line = lineService.findLineById(이호선.getId());
         assertThat(line.getStations()).contains(구로디지털단지역, 신대방역, 신림역);
     }
