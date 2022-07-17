@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.exception.DuplicateSectionException;
 import nextstep.subway.exception.InvalidDistanceException;
 import nextstep.subway.exception.NotFoundStationException;
+import nextstep.subway.exception.NotFountSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -38,11 +38,7 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        List<Station> stations = this.sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-        stations.add(0, getFirstUpStation());
-        return stations;
+        return mapStations(getFirstSection(), new ArrayList<>());
     }
 
     public Station getLastDownStation() {
@@ -57,8 +53,31 @@ public class Sections {
         return size() == 0;
     }
 
-    private Station getFirstUpStation() {
-        return this.sections.get(0).getUpStation();
+    private List<Station> mapStations(Section section, List<Station> stations) {
+        stations.add(section.getUpStation());
+
+        Section nextSection = findSection(section);
+        if (nextSection == null) {
+            stations.add(section.getDownStation());
+            return stations;
+        }
+
+        return mapStations(nextSection, stations);
+    }
+
+    private Section findSection(Section currentSection) {
+        return this.sections.stream()
+                .filter(section -> section.isSameAsUpStation(currentSection.getDownStation()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Section getFirstSection() {
+        return this.sections.stream()
+                .filter(section -> this.sections.stream()
+                        .noneMatch(other -> section.isSameAsUpStation(other.getDownStation())))
+                .findFirst()
+                .orElseThrow(NotFountSectionException::new);
     }
 
     private void addSection(Section newSection) {
@@ -101,7 +120,7 @@ public class Sections {
     private Optional<Section> getSectionForFilter(Predicate<Section> filterAction) {
         return sections.stream()
                 .filter(filterAction)
-                .findAny();
+                .findFirst();
     }
 
     private void addUpSection(Section newSection, Section section) {
@@ -127,17 +146,17 @@ public class Sections {
     }
 
     private void validateNotFountStations(Section newSection) {
-        if (isNotFountStations(newSection)) {
+        if (isNotFoundStations(newSection)) {
             throw new NotFoundStationException();
         }
     }
 
-    private boolean isNotFountStations(Section newSection) {
-        return !isIncludeStation(newSection.getUpStation())
-                && !isIncludeStation(newSection.getDownStation());
+    private boolean isNotFoundStations(Section newSection) {
+        return !containStation(newSection.getUpStation())
+                && !containStation(newSection.getDownStation());
     }
 
-    private boolean isIncludeStation(Station newSection) {
+    private boolean containStation(Station newSection) {
         return this.getStations().contains(newSection);
     }
 
