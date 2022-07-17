@@ -13,6 +13,7 @@ import java.util.Map;
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
@@ -20,9 +21,11 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     private Long 강남역;
     private Long 양재역;
+    private Long 신규역;
 
     /**
      * Given 지하철역과 노선 생성을 요청 하고
+     * Given 신규로 추가할 역을 생성 한다
      */
     @BeforeEach
     public void setUp() {
@@ -30,9 +33,30 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
         양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+        신규역 = 지하철역_생성_요청("신규역").jsonPath().getLong("id");
 
         Map<String, String> lineCreateParams = createLineCreateParams(강남역, 양재역);
         신분당선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
+    }
+
+    /**
+     * When 기존 구간의 상행 종점역과 동일한 하행역을 가지고
+     * When 구간 생성 요청 하면
+     * Then 구간 생성이 성공하고
+     * Then 역 목록을 응답 받는다
+     */
+    @DisplayName("신규 구간의 하행역이 기존 구간의 상행 종점역과 동일할 경우 상행종점역 으로 구간 추가하기 ")
+    @Test
+    public void add_first_up_section_at_line() {
+        // when
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신규역, 강남역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신규역, 강남역, 양재역)
+        );
     }
 
     /**
