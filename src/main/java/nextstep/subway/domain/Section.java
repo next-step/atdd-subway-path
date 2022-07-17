@@ -56,14 +56,14 @@ public class Section {
         return this.upStation.equals(section.upStation) || this.downStation.equals(section.downStation);
     }
 
-    public void changeUpSection(Station newDownStation, int distance) {
-        this.downStation = newDownStation;
-        this.distance = minusDistance(distance);
+    public void changeUpSection(Section newSection) {
+        this.downStation = newSection.upStation;
+        this.distance = minusDistance(newSection.distance);
     }
 
-    public void changeDownSection(Station newUpStation, int distance) {
-        this.upStation = newUpStation;
-        this.distance = minusDistance(distance);
+    public void changeDownSection(Section newSection) {
+        this.upStation = newSection.downStation;
+        this.distance = minusDistance(newSection.distance);
     }
 
     public int minusDistance(int distance) {
@@ -71,22 +71,15 @@ public class Section {
     }
 
     public boolean isSameAsUpStation(Station station) {
-        boolean equals = this.upStation.equals(station);
-        return equals;
+        return this.upStation.equals(station);
     }
 
-    @Override
-    public String toString() {
-        return "Section{" +
-                "id=" + id +
-                ", line=" + line +
-                ", upStation=" + upStation +
-                ", downStation=" + downStation +
-                ", distance=" + distance +
-                '}';
+    public boolean isSameAsDownStation(Station station) {
+        return this.downStation.equals(station);
     }
 
     public boolean isSameStations(Section section) {
         return this.upStation.equals(section.upStation) && this.downStation.equals(section.downStation);
     }
+
 }
