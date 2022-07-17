@@ -1,8 +1,10 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 import java.util.List;
 import java.util.Optional;
@@ -66,6 +68,33 @@ public class LineServiceMockTest {
         assertThat(lineResponses.get(1).getName()).isEqualTo("2호선");
         assertThat(lineResponses.get(1).getColor()).isEqualTo("green");
     }
+
+    @DisplayName("지하철 노선 조회 테스트")
+    @Test
+    void findById() {
+        //given
+        given(lineRepository.findById(1L)).willReturn(Optional.of(new Line("신분당선", "yellow")));
+
+        //when
+        LineResponse response = lineService.findById(1L);
+
+        //then
+        assertThat(response.getName()).isEqualTo("신분당선");
+        assertThat(response.getColor()).isEqualTo("yellow");
+    }
+
+    @DisplayName("지하철 노선 수정 시 기존 노선을 찾지 못하면 예외발생")
+    @Test
+    void updateLineIllegalArgumentException() {
+        //given
+        given(lineRepository.findById(1L)).willReturn(Optional.empty());
+
+        //when then
+        assertThatThrownBy(()->{
+            lineService.updateLine(1L, new LineRequest("신분당선","yellow"));
+        }).isInstanceOf(IllegalArgumentException.class);
+    }
+
 
     @DisplayName("지하철 구간 생성")
     @Test
