@@ -16,7 +16,7 @@
 - [x] new ArrayList 로 wrapping한 부분 수정
 - [ ] Line에서 상행역을 가져오는 메서드 만들기
 - [ ] Line에서 마지막 구간을 가져오는 메서드 만들기
-- [ ] Line.deleteLastSection 에서 부정조건 피하기
+- [x] Line.deleteLastSection 에서 부정조건 피하기
 - [ ] Line.getFirstSection 매직넘버 0피하기
 - [ ] LineServiceMockTest에서 구현 완료된 부분의 주석 제거
 - [x] 불필요한 Line.removeLastSection 제거

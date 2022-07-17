@@ -54,8 +54,8 @@ public class Section {
         return distance;
     }
 
-    public boolean hasDownStation(Station station) {
-        return this.downStation.equals(station);
+    public boolean dontHasDownStation(Station station) {
+        return !this.downStation.equals(station);
     }
 
     @Override

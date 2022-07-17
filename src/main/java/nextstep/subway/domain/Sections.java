@@ -37,7 +37,7 @@ public class Sections {
             throw new IllegalStateException();
         }
         Section lastSection = sections.get(getLastIndex());
-        if (!lastSection.hasDownStation(station)) {
+        if (lastSection.dontHasDownStation(station)) {
             throw new IllegalStateException();
         }
         sections.remove(lastSection);
