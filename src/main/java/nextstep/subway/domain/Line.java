@@ -25,23 +25,11 @@ public class Line {
         this.color = color;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public void changeName(String name) {
         if (!StringUtils.hasText(name)) {
             return;
         }
         this.name = name;
-    }
-
-    public String getColor() {
-        return color;
     }
 
     public void changeColor(String color) {
@@ -59,6 +47,18 @@ public class Line {
 
     public void deleteSection(Station station) {
         sections.delete(station);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     public List<Station> getStations() {

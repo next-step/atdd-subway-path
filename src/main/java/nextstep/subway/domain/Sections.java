@@ -24,7 +24,7 @@ public class Sections {
 
     public List<Station> getStations() {
         return values.stream()
-                .map(Section::stations)
+                .map(Section::getStations)
                 .flatMap(List::stream)
                 .distinct()
                 .collect(Collectors.toList());

@@ -40,11 +40,11 @@ public class Section {
         this.line = line;
     }
 
-    public List<Station> stations() {
-        return List.of(upStation, downStation);
-    }
-
     public boolean isMatchDownStation(Station station) {
         return downStation.equals(station);
+    }
+
+    public List<Station> getStations() {
+        return List.of(upStation, downStation);
     }
 }
