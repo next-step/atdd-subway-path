@@ -25,6 +25,10 @@ public class Section {
     public Section() {
     }
 
+    public Section(Station upStation, Station downStation, int distance) {
+        this(null, upStation, downStation, distance);
+    }
+
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
