@@ -21,8 +21,4 @@ class LineTest {
         // then
         assertThat(line.getStations()).containsOnly(upStation, downStation);
     }
-
-    @Test
-    void removeSection() {
-    }
 }
