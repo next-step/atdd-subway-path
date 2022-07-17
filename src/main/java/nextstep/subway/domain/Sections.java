@@ -17,19 +17,12 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    protected Sections() {
-    }
-
-    public Sections(List<Section> sections) {
-        this.sections = sections;
-    }
-
     public void add(Section section) {
         this.sections.add(section);
     }
 
     public List<Station> getStations() {
-        if (sections.isEmpty()) {
+        if (isEmptySections()) {
             return Collections.emptyList();
         }
 
@@ -43,7 +36,7 @@ public class Sections {
     }
 
     public void deleteLastSection(Station station) {
-        if (isInValidSize()) {
+        if (isEmptySections()) {
             throw new IllegalStateException(NOT_EXIST_SECTIONS_EXCEPTION);
         }
 
@@ -67,7 +60,7 @@ public class Sections {
         return sections.size() - 1;
     }
 
-    private boolean isInValidSize() {
+    private boolean isEmptySections() {
         return sections.isEmpty();
     }
 
