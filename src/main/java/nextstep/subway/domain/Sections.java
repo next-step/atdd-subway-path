@@ -42,7 +42,12 @@ public class Sections {
     }
 
     public Station getLastDownStation() {
-        return this.sections.get(size() - 1).getDownStation();
+        return this.sections.stream()
+                .filter(section -> this.sections.stream()
+                        .noneMatch(other -> other.isSameAsUpStation(section.getDownStation())))
+                .findFirst()
+                .map(Section::getDownStation)
+                .orElseThrow(NotFountSectionException::new);
     }
 
     public int size() {
@@ -87,23 +92,23 @@ public class Sections {
             throw new DuplicateSectionException();
         }
 
-        if (addSectionTemplate(section -> section.isAddBetween(newSection),
+        if (addSectionAction(section -> section.isAddBetween(newSection),
                 section -> addBetweenSection(newSection, section))) {
             return;
         }
 
-        if (addSectionTemplate(section -> section.isSameAsUpStation(newSection.getDownStation()),
+        if (addSectionAction(section -> section.isSameAsUpStation(newSection.getDownStation()),
                 section -> addUpSection(newSection, section))) {
             return;
         }
 
-        if (addSectionTemplate(section -> section.isSameAsDownStation(newSection.getUpStation()),
+        if (addSectionAction(section -> section.isSameAsDownStation(newSection.getUpStation()),
                 section -> this.sections.add(newSection))) {
             return;
         }
     }
 
-    private boolean addSectionTemplate(Predicate<Section> filterAction, Consumer<Section> addAction) {
+    private boolean addSectionAction(Predicate<Section> filterAction, Consumer<Section> addAction) {
         Optional<Section> section = getSectionForFilter(filterAction);
         if (section.isPresent()) {
             addAction.accept(section.get());
