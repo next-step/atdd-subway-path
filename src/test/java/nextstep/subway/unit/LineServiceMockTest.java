@@ -67,7 +67,7 @@ public class LineServiceMockTest {
                 .when(stationService)
                 .findById(upStation.getId());
 
-        line.addSection(section(line, upStation, station(200L)));
+        line.addSection(section(upStation, station(200L)));
 
         // when
         final IllegalArgumentException result = assertThrows(
@@ -91,7 +91,7 @@ public class LineServiceMockTest {
                 .when(stationService)
                 .findById(downStation.getId());
 
-        line.addSection(section(line, upStation(), downStation));
+        line.addSection(section(upStation(), downStation));
 
         // when
         target.deleteSection(lineId, downStation.getId());

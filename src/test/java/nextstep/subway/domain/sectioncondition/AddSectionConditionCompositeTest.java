@@ -49,8 +49,8 @@ class AddSectionConditionCompositeTest {
         final Station station3 = station(3);
         final Station station4 = station(4);
 
-        line.addSection(new Section(line, station1, station3, 10));
-        line.addSection(new Section(line, station3, station4, 10));
+        line.addSection(new Section(station1, station3, 10));
+        line.addSection(new Section(station3, station4, 10));
 
         // when
         target.addSection(line, new AddSectionRequest(station2, station3, 4));
@@ -71,8 +71,8 @@ class AddSectionConditionCompositeTest {
         final Station station4 = station(4);
 
 
-        line.addSection(new Section(line, station1, station3, 10));
-        line.addSection(new Section(line, station3, station4, 10));
+        line.addSection(new Section(station1, station3, 10));
+        line.addSection(new Section(station3, station4, 10));
 
         // when
         final IllegalArgumentException result = assertThrows(
@@ -93,8 +93,8 @@ class AddSectionConditionCompositeTest {
         final Station station3 = station(3);
         final Station station4 = station(4);
 
-        line.addSection(new Section(line, station1, station2, 10));
-        line.addSection(new Section(line, station2, station4, 10));
+        line.addSection(new Section(station1, station2, 10));
+        line.addSection(new Section(station2, station4, 10));
 
         // when
         target.addSection(line, new AddSectionRequest(station2, station3, 4));
@@ -115,8 +115,8 @@ class AddSectionConditionCompositeTest {
         final Station station3 = station(3);
         final Station station4 = station(4);
 
-        line.addSection(new Section(line, station1, station2, 10));
-        line.addSection(new Section(line, station2, station4, 10));
+        line.addSection(new Section(station1, station2, 10));
+        line.addSection(new Section(station2, station4, 10));
 
         // when
         final IllegalArgumentException result = assertThrows(
@@ -142,7 +142,7 @@ class AddSectionConditionCompositeTest {
         final Station station2 = station(2);
         final Station station3 = station(3);
 
-        line.addSection(new Section(line, station2, station3, 10));
+        line.addSection(new Section(station2, station3, 10));
 
         // when
         target.addSection(line, new AddSectionRequest(station1, station2, 10));
@@ -159,7 +159,7 @@ class AddSectionConditionCompositeTest {
         final Station station2 = station(2);
         final Station station3 = station(3);
 
-        line.addSection(new Section(line, station1, station2, 10));
+        line.addSection(new Section(station1, station2, 10));
 
         // when
         target.addSection(line, new AddSectionRequest(station2, station3, 10));

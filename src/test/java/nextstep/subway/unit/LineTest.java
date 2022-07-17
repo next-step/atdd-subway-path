@@ -47,7 +47,7 @@ class LineTest {
         // given
         final Line line = new Line();
         final Station downStation = downStation();
-        line.addSection(section(line, upStation(), downStation));
+        line.addSection(section(upStation(), downStation));
 
         // when
         final boolean result = line.isLastDownStation(downStation);
@@ -61,7 +61,7 @@ class LineTest {
         // given
         final Line line = new Line();
         final Station upStation = upStation();
-        line.addSection(section(line, upStation, downStation()));
+        line.addSection(section(upStation, downStation()));
 
         // when
         final boolean result = line.isLastDownStation(upStation);
@@ -75,7 +75,7 @@ class LineTest {
         // given
         final Line line = new Line();
         final Station downStation = downStation();
-        line.addSection(section(line, upStation(), downStation));
+        line.addSection(section(upStation(), downStation));
 
         // when
         final boolean result = line.isFirstStation(downStation);
@@ -89,7 +89,7 @@ class LineTest {
         // given
         final Line line = new Line();
         final Station upStation = upStation();
-        line.addSection(section(line, upStation, downStation()));
+        line.addSection(section(upStation, downStation()));
 
         // when
         final boolean result = line.isLastDownStation(upStation);
@@ -103,7 +103,7 @@ class LineTest {
         // given
         final Line line = new Line();
         final Station downStation = downStation();
-        line.addSection(section(line, upStation(), downStation));
+        line.addSection(section(upStation(), downStation));
 
         // when
         final boolean result = line.containsStation(downStation);
@@ -116,7 +116,7 @@ class LineTest {
     void hasStationTrue() {
         // given
         final Line line = new Line();
-        line.addSection(section(line, upStation(), downStation()));
+        line.addSection(section(upStation(), downStation()));
 
         // when
         final boolean result = line.containsStation(station(10));
@@ -130,7 +130,7 @@ class LineTest {
         // given
         final Line line = new Line();
         final Station downStation = downStation();
-        line.addSection(section(line, upStation(), downStation));
+        line.addSection(section(upStation(), downStation));
 
         // when
         line.removeLastSection();
@@ -159,8 +159,8 @@ class LineTest {
         final Station station3 = station(3);
 
         // when (3, 1), (1, 2) -> (1, 2), (3, 1)
-        line.addSection(section(line, station1, station2));
-        line.addSection(section(line, station3, station1));
+        line.addSection(section(station1, station2));
+        line.addSection(section(station3, station1));
 
         final List<Station> result = line.getStations();
 
@@ -177,9 +177,9 @@ class LineTest {
         final Station station4 = station(4);
 
         // when (4, 3), (3, 1), (1, 2) -> (1, 2), (3, 1), (4, 3)
-        line.addSection(section(line, station1, station2));
-        line.addSection(section(line, station3, station1));
-        line.addSection(section(line, station4, station3));
+        line.addSection(section(station1, station2));
+        line.addSection(section(station3, station1));
+        line.addSection(section(station4, station3));
 
         final List<Station> result = line.getStations();
 

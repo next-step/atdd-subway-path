@@ -25,12 +25,12 @@ public class LineTestSources {
         return new SectionRequest(upStationId, downStationId, 10);
     }
 
-    public static Section section(final Line line, final Station upStation, final Station downStation) {
-        return new Section(line, upStation, downStation, 10);
+    public static Section section(final Station upStation, final Station downStation) {
+        return new Section(upStation, downStation, 10);
     }
 
-    public static Section section(final Line line, final Station upStation, final Station downStation, final int distance) {
-        return new Section(line, upStation, downStation, distance);
+    public static Section section(final Station upStation, final Station downStation, final int distance) {
+        return new Section(upStation, downStation, distance);
     }
 
 }

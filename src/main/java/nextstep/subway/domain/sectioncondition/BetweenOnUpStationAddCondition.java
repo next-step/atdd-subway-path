@@ -38,7 +38,7 @@ class BetweenOnUpStationAddCondition implements AddSectionCondition {
                 .orElseThrow(IllegalStateException::new);
 
         validateDistance(addSectionRequest, section.getDistance());
-        updateSection(line, addSectionRequest, sections, section);
+        updateSection(line, addSectionRequest, section);
     }
 
     private Optional<Section> findUpStationMatchedSection(final List<Section> sections, final Station upStation) {
@@ -53,9 +53,13 @@ class BetweenOnUpStationAddCondition implements AddSectionCondition {
         }
     }
 
-    private void updateSection(final Line line, final AddSectionRequest request, final List<Section> sections, final Section section) {
-        line.addSection(sections.indexOf(section) + 1, new Section(line, request.getDownStation(), section.getDownStation(), section.getDistance() - request.getDistance()));
+    private void updateSection(final Line line, final AddSectionRequest request, final Section section) {
+        line.addSection(section, createSection(request, section));
         section.updateDownStationAndDistance(request.getDownStation(), request.getDistance());
+    }
+
+    private Section createSection(final AddSectionRequest request, final Section section) {
+        return new Section(request.getDownStation(), section.getDownStation(), section.getDistance() - request.getDistance());
     }
 
 }

@@ -53,6 +53,10 @@ public class Line {
         sections.remove(sections.size() - 1);
     }
 
+    public boolean hasNoSection() {
+        return sections.isEmpty();
+    }
+
     public List<Station> getStations() {
         if (hasNoSection()) {
             return Collections.emptyList();
@@ -61,8 +65,17 @@ public class Line {
         return Collections.unmodifiableList(findAllStationsInOrder());
     }
 
-    public boolean hasNoSection() {
-        return sections.isEmpty();
+    private List<Station> findAllStationsInOrder() {
+        final List<Station> stationList = new ArrayList<>();
+        final List<Section> sectionList = getSections();
+
+        Station target = getFirstUpStation();
+        while (target != null) {
+            stationList.add(target);
+            target = findConnectedDownStation(sectionList, target);
+        }
+
+        return stationList;
     }
 
     private Station getFirstUpStation() {
@@ -80,19 +93,6 @@ public class Line {
                 .collect(Collectors.toList());
     }
 
-    private List<Station> findAllStationsInOrder() {
-        final List<Station> stationList = new ArrayList<>();
-        final List<Section> sectionList = getSections();
-
-        Station target = getFirstUpStation();
-        while (target != null) {
-            stationList.add(target);
-            target = findConnectedDownStation(sectionList, target);
-        }
-
-        return stationList;
-    }
-
     private Station findConnectedDownStation(final List<Section> sectionList, final Station target) {
         return sectionList.stream()
                 .filter(v -> v.getUpStation().equals(target))
@@ -103,10 +103,17 @@ public class Line {
 
     public void addSection(final Section section) {
         sections.add(section);
+        section.setLine(this);
     }
 
     public void addSection(final int index, final Section section) {
         sections.add(index, section);
+        section.setLine(this);
+    }
+
+    public void addSection(final Section target, final Section section) {
+        sections.add(sections.indexOf(target) + 1, section);
+        section.setLine(this);
     }
 
     public boolean isLastDownStation(final Station station) {

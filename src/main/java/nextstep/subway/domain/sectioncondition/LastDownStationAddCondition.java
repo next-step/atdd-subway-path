@@ -16,11 +16,7 @@ class LastDownStationAddCondition implements AddSectionCondition {
 
     @Override
     public void addSection(final Line line, final AddSectionRequest addSectionRequest) {
-        line.addSection(createSection(line, addSectionRequest));
-    }
-
-    private Section createSection(final Line line, final AddSectionRequest addSectionRequest) {
-        return new Section(line, addSectionRequest.getUpStation(), addSectionRequest.getDownStation(), addSectionRequest.getDistance());
+        line.addSection(addSectionRequest.toSection());
     }
 
 }

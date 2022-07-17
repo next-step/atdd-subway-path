@@ -30,7 +30,7 @@ class EmptySectionsConditionTest {
         final EmptySectionsAddCondition emptySectionsCondition = new EmptySectionsAddCondition();
 
         final Line line = new Line();
-        line.addSection(section(line, station(1), station(2)));
+        line.addSection(section(station(1), station(2)));
 
         // when
         final boolean result = emptySectionsCondition.matches(line, new AddSectionRequest(station(2), station(3), 10));
