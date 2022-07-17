@@ -44,4 +44,35 @@ public class Section {
         return downStation;
     }
 
+    public int getDistance() {
+        return distance;
+    }
+
+    public boolean isAddBetween(int distance) {
+        return this.distance > distance;
+    }
+
+    public boolean isSameUpStation(Station upStation) {
+        return this.upStation.equals(upStation);
+    }
+
+    public void update(Station newUpStation, int distance) {
+        this.upStation = newUpStation;
+        this.distance = minusDistance(distance);
+    }
+
+    public int minusDistance(int distance) {
+        return this.distance - distance;
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", line=" + line +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
+    }
 }

@@ -13,8 +13,21 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public void add(Section section) {
-        this.sections.add(section);
+    public void add(Section newSection) {
+        // 기존에 추가
+        sections.stream()
+                .filter(item -> item.isSameUpStation(newSection.getUpStation()))
+                .findFirst()
+                .ifPresent(section -> {
+                    if (section.isAddBetween(newSection.getDistance())) {
+                        int index = this.sections.indexOf(section);
+                        this.sections.add(index, newSection);
+                        section.update(newSection.getDownStation(), newSection.getDistance());
+                        return;
+                    }
+                });
+
+        this.sections.add(newSection);
     }
 
     public void remove() {
@@ -49,4 +62,10 @@ public class Sections {
         return size() == 0;
     }
 
+    @Override
+    public String toString() {
+        return "Sections{" +
+                "sections=" + sections +
+                '}';
+    }
 }
