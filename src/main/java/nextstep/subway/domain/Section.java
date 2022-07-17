@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -53,5 +54,9 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public List<Station> stations() {
+        return List.of(upStation, downStation);
     }
 }
