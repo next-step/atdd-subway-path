@@ -82,20 +82,16 @@ public class LineService {
 
 	}
 
-	private LineResponse createLineResponse(Line line) {
-		return new LineResponse(
-			line.getId(),
-			line.getName(),
-			line.getColor(),
-			createStationResponses(line)
-		);
+	@Transactional
+	public void deleteSection(Long lineId, Long stationId) {
+		Line line = lineRepository.findById(lineId)
+			.orElseThrow(IllegalArgumentException::new);
+		Station station = findStationById(stationId);
+		line.removeSection(station);
 	}
 
-	private StationResponse createStationResponse(Station station) {
-		return new StationResponse(
-			station.getId(),
-			station.getName()
-		);
+	private LineResponse createLineResponse(Line line) {
+		return LineResponse.of(line, createStationResponses(line));
 	}
 
 	private List<StationResponse> createStationResponses(Line line) {
@@ -105,15 +101,8 @@ public class LineService {
 
 		return line.getStations()
 			.stream()
-			.map(this::createStationResponse)
+			.map(station -> StationResponse.of(station))
 			.collect(Collectors.toList());
 	}
 
-	@Transactional
-	public void deleteSection(Long lineId, Long stationId) {
-		Line line = lineRepository.findById(lineId)
-			.orElseThrow(IllegalArgumentException::new);
-		Station station = findStationById(stationId);
-		line.removeSection(station);
-	}
 }
