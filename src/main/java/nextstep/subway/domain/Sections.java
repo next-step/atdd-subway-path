@@ -11,6 +11,8 @@ import java.util.List;
 public class Sections {
 
     private static final int FIRST_SECTION_INDEX = 0;
+    private static final String NOT_EXIST_SECTIONS_EXCEPTION = "삭제할 Sections이 존재하지 않습니다.";
+    private static final String NOT_SAME_DOWN_STATION_EXCEPTION = "마지막 구간의 하행종점역이 삭제할 하행종점역과 일치하지 않습니다";
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -40,11 +42,11 @@ public class Sections {
 
     public void deleteLastSection(Station station) {
         if (isInValidSize()) {
-            throw new IllegalStateException();
+            throw new IllegalStateException(NOT_EXIST_SECTIONS_EXCEPTION);
         }
         Section lastSection = getLastSection();
         if (lastSection.dontHasDownStation(station)) {
-            throw new IllegalStateException();
+            throw new IllegalStateException(NOT_SAME_DOWN_STATION_EXCEPTION);
         }
         sections.remove(lastSection);
     }
