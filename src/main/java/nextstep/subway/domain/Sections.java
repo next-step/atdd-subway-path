@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 public class Sections {
 
+    private static final int EMPTY_VALUE = 0;
+    private static final int ONE = 1;
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> values = new ArrayList<>();
 
@@ -38,4 +41,27 @@ public class Sections {
     public boolean hasStations() {
         return !values.isEmpty();
     }
+
+    public void delete(Station station) {
+        Section lastSection = findLastSection();
+        if (lastSection == null) {
+            throw new IllegalStateException();
+        }
+        if (!lastSection.isMatchDownStation(station)) {
+            throw new IllegalArgumentException();
+        }
+        values.remove(lastSection);
+    }
+
+    private Section findLastSection() {
+        if (lastIndex() < EMPTY_VALUE) {
+            return null;
+        }
+        return values.get(lastIndex());
+    }
+
+    private int lastIndex() {
+        return values.size() - ONE;
+    }
+
 }

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SectionsTest {
 
@@ -23,4 +24,50 @@ class SectionsTest {
                                                             new Station(2L, "역삼역"),
                                                             new Station(3L, "선릉역"));
     }
+
+    @Test
+    @DisplayName("구간을 삭제하면 하행종점역이 사라진다.")
+    void delete_section() {
+        // given
+        Sections sections = new Sections();
+        Section section = new Section(StationTest.GANGNAM_STATION, StationTest.YEOKSAM_STATION, 10);
+        Section newSection = new Section(StationTest.YEOKSAM_STATION, StationTest.SEOLLEUNG_STATION, 5);
+
+        sections.add(section);
+        sections.add(newSection);
+
+        // when
+        sections.delete(StationTest.SEOLLEUNG_STATION);
+
+        // then
+        assertThat(sections.getStations()).doesNotContain(new Station(3L, "선릉역"));
+    }
+
+    @Test
+    @DisplayName("삭제요청한 구간이 마지막 구간이 아니면 예외를 반환한다.")
+    void invalid_delete_not_last_section() {
+        // given
+        Sections sections = new Sections();
+        Section section = new Section(StationTest.GANGNAM_STATION, StationTest.YEOKSAM_STATION, 10);
+        Section newSection = new Section(StationTest.YEOKSAM_STATION, StationTest.SEOLLEUNG_STATION, 5);
+
+        sections.add(section);
+        sections.add(newSection);
+
+        // then
+        assertThatThrownBy(() -> sections.delete(StationTest.YEOKSAM_STATION))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("구간이 아무 것도 없을 때 삭제 시 예외를 반환한다.")
+    void invalid_delete_not_found_section() {
+        // given
+        Sections sections = new Sections();
+
+        // then
+        assertThatThrownBy(() -> sections.delete(StationTest.YEOKSAM_STATION))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
 }

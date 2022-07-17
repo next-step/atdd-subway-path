@@ -70,4 +70,8 @@ public class Section {
     public List<Station> stations() {
         return List.of(upStation, downStation);
     }
+
+    public boolean isMatchDownStation(Station station) {
+        return downStation.equals(station);
+    }
 }
