@@ -4,13 +4,14 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Embeddable
 public class Sections {
 
     private static final int FIRST_SECTION_INDEX = 0;
-    
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -26,8 +27,11 @@ public class Sections {
     }
 
     public List<Station> getStations() {
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
         final List<Station> stations = new ArrayList<>();
-        stations.add(getFirstSection().getUpStation());
+        stations.add(getFirstUpStation());
         for (Section section : sections) {
             stations.add(section.getDownStation());
         }
@@ -63,5 +67,9 @@ public class Sections {
 
     private boolean isInValidSize() {
         return sections.isEmpty();
+    }
+
+    private Station getFirstUpStation() {
+        return getFirstSection().getUpStation();
     }
 }
