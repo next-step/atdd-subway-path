@@ -1,12 +1,15 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import java.util.List;
 import java.util.Optional;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
+import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
@@ -27,6 +30,23 @@ public class LineServiceMockTest {
     private StationService stationService;
     @InjectMocks
     private LineService lineService;
+
+    @DisplayName("지하철 노선 생성")
+    @Test
+    void saveLine(){
+        //given
+        given(lineRepository.save(any())).willReturn(new Line("신분당선","yellow"));
+        given(stationService.findById(1L)).willReturn(new Station("강남역"));
+        given(stationService.findById(2L)).willReturn(new Station("역삼역"));
+
+        //when
+        LineResponse lineResponse = lineService.saveLine(new LineRequest("신분당선", "yellow", 1L, 2L, 10));
+
+        //then
+        assertThat(lineResponse.getName()).isEqualTo("신분당선");
+        assertThat(lineResponse.getColor()).isEqualTo("yellow");
+        assertThat(lineResponse.getStations()).hasSize(2);
+    }
 
     @DisplayName("지하철 구간 생성")
     @Test
