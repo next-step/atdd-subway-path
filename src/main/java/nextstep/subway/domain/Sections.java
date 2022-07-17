@@ -27,6 +27,14 @@ public class Sections {
                     }
                 });
 
+        sections.stream()
+                .filter(item -> item.isSameUpStation(newSection.getDownStation()))
+                .findFirst()
+                .ifPresent(section -> {
+                    int index = this.sections.indexOf(section);
+                    this.sections.add(index, newSection);
+                });
+
         this.sections.add(newSection);
     }
 
