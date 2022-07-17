@@ -99,12 +99,14 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
     @Test
     void given_newSection_when_sameDistance_then_exception() {
-        // when
+        // given
         Long 신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
 
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 신논현역, 10));
+
         // then
-        assertThatThrownBy(() -> 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 신논현역, 10)))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -114,9 +116,11 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test
     void given_newSection_when_duplicatedStations_then_exception() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 5));
+
         // then
-        assertThatThrownBy(() -> 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 5)))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -127,12 +131,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void given_newSection_when_unknownInSection_then_exception() {
         // when
-        Long 양재시민의숲역 = 지하철역_생성_요청("양재시민의숲역").jsonPath().getLong("id");
-        Long 청계산입구역 = 지하철역_생성_요청("청계산입구역").jsonPath().getLong("id");
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 5));
 
         // then
-        assertThatThrownBy(() -> 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 5)))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**

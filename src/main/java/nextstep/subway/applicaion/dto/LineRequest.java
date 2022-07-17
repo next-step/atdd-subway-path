@@ -13,6 +13,9 @@ public class LineRequest {
     @Min(value = 1)
     private int distance;
 
+    public LineRequest() {
+    }
+
     public LineRequest(String name, String color) {
         this.name = name;
         this.color = color;
