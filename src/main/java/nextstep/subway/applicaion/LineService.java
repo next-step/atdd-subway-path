@@ -29,22 +29,27 @@ public class LineService {
             Station downStation = stationService.findById(request.getDownStationId());
             line.addSection(upStation, downStation, request.getDistance());
         }
-        return createLineResponse(line);
+        return LineResponse.from(line);
     }
 
     public List<LineResponse> showLines() {
         return lineRepository.findAll().stream()
-                .map(this::createLineResponse)
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
-        return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        Line line = findLine(id);
+        return LineResponse.from(line);
+    }
+
+    private Line findLine(Long id) {
+        return lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
     }
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = findLine(id);
 
         if (lineRequest.getName() != null) {
             line.setName(lineRequest.getName());
@@ -63,18 +68,14 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = findLine(lineId);
 
         line.addSection(upStation, downStation, sectionRequest.getDistance());
     }
 
-    private LineResponse createLineResponse(Line line) {
-        return LineResponse.from(line);
-    }
-
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = findLine(lineId);
         Station station = stationService.findById(stationId);
         line.deleteSection(station);
     }
