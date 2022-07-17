@@ -34,4 +34,8 @@ public class Sections {
     public void add(Section section) {
         values.add(section);
     }
+
+    public boolean hasStations() {
+        return !values.isEmpty();
+    }
 }
