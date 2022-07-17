@@ -5,9 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,9 +16,8 @@ public class Line {
     private Long id;
     private String name;
     private String color;
-
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line(String name, String color) {
         this.name = name;
@@ -52,18 +49,15 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.toList();
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        sections.add(new Section(this, upStation, downStation, distance));
+        Section section = new Section(this, upStation, downStation, distance);
+        sections.add(section);
     }
 
     public List<Station> getStations() {
-        return sections.stream()
-                .map(Section::stations)
-                .flatMap(List::stream)
-                .distinct()
-                .collect(Collectors.toList());
+        return sections.stations();
     }
 }

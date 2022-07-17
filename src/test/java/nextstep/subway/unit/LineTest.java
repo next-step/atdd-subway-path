@@ -25,10 +25,6 @@ class LineTest {
     }
 
     @Test
-    void getStations() {
-    }
-
-    @Test
     void removeSection() {
     }
 }
