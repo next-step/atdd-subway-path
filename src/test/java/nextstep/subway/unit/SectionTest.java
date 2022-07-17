@@ -1,6 +1,6 @@
 package nextstep.subway.unit;
 
-import static nextstep.subway.unit.LineTest.*;
+import static nextstep.subway.unit.LineStaticValues.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
@@ -44,5 +44,5 @@ public class SectionTest {
 		assertThat(stations).hasSize(3)
 			.containsExactly(강남역, 역삼역, 선릉역);
 	}
-	
+
 }

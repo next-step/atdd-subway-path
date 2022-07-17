@@ -1,24 +1,17 @@
 package nextstep.subway.unit;
 
+import static nextstep.subway.unit.LineStaticValues.*;
 import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import nextstep.subway.common.exception.BusinessException;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
 
 class LineTest {
 
-	static final Long 강남역Id = 1L;
-	static final Long 역삼역Id = 2L;
-	static final Long 선릉역Id = 3L;
-	static Station 강남역 = new Station(강남역Id, "강남역");
-	static Station 역삼역 = new Station(역삼역Id, "역삼역");
-	static Station 선릉역 = new Station(선릉역Id, "선릉역");
-
-	static int DISTANCE = 9;
 	Line line;
 
 	@BeforeEach
@@ -79,7 +72,7 @@ class LineTest {
 
 		//then
 		assertThatThrownBy(() -> line.removeSection(역삼역))
-			.isInstanceOf(IllegalArgumentException.class);
+			.isInstanceOf(BusinessException.class);
 
 	}
 
@@ -89,10 +82,10 @@ class LineTest {
 		//given
 
 		//when
-		line.changeName("3호선");
+		line.changeName(LINE3_NAME);
 
 		//then
-		assertThat(line.getName()).isEqualTo("3호선");
+		assertThat(line.getName()).isEqualTo(LINE3_NAME);
 
 	}
 
@@ -102,10 +95,10 @@ class LineTest {
 		//given
 
 		//when
-		line.changeColor("blue");
+		line.changeColor(LINE3_COLOR);
 
 		//then
-		assertThat(line.getColor()).isEqualTo("blue");
+		assertThat(line.getColor()).isEqualTo(LINE3_COLOR);
 
 	}
 }
