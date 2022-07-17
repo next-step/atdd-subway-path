@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,7 +11,7 @@ import static java.util.Objects.requireNonNullElseGet;
 
 @Getter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Line {
 
     @Id
@@ -46,7 +47,6 @@ public class Line {
     }
 
     public void deleteStation(Station station) {
-
         if (!station.equals(sections.lastStation())) {
             throw new IllegalArgumentException();
         }
