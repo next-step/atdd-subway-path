@@ -4,14 +4,12 @@ import lombok.RequiredArgsConstructor;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,23 +69,7 @@ public class LineService {
     }
 
     private LineResponse createLineResponse(Line line) {
-        return new LineResponse(
-                line.getId(),
-                line.getName(),
-                line.getColor(),
-                createStationResponses(line)
-        );
-    }
-
-    private List<StationResponse> createStationResponses(Line line) {
-        if (!line.hasStations()) {
-            return Collections.emptyList();
-        }
-
-        return line.getStations()
-                .stream()
-                .map(stationService::createStationResponse)
-                .collect(Collectors.toList());
+        return LineResponse.from(line);
     }
 
     @Transactional
