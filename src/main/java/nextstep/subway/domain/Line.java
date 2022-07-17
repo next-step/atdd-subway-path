@@ -70,18 +70,11 @@ public class Line {
 	}
 
 	public void addSection(Station upStation, Station downStation, int distance) {
-		if (!isAbleAdd(upStation, downStation, distance)) {
-			return;
-		}
 		this.sections.add(new Section(this, upStation, downStation, distance));
 	}
 
-	public void addSection(Station upStation, Station downStation, int distance, Long sectionId) {
-		this.sections.add(new Section(sectionId, this, upStation, downStation, distance));
-	}
-
-	private boolean isAbleAdd(Station upStation, Station downStation, int distance) {
-		return upStation != null && downStation != null && distance > 0;
+	public boolean isAbleAddSection(Long upStationId, Long downStationId, int distance) {
+		return upStationId != null && downStationId != null && distance > 0;
 	}
 
 	public void removeSection(Station station) {

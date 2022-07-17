@@ -2,7 +2,6 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -46,20 +45,20 @@ public class Sections {
 
 	public void remove(Station station) {
 
-		if (!getLastSection().isSameWithDownStation(station.getId())) {
+		Section lastSection = getLastSection();
+		if (!lastSection.isSameWithDownStation(station.getId())) {
 			throw new IllegalArgumentException();
 		}
 
-		sections.removeIf(section -> section.equals(getLastSection()));
+		sections.removeIf(section -> section.equals(lastSection));
 	}
 
 	private Section getLastSection() {
-		//return sections.get(sections.size() - 1);
 
 		return sections.stream()
-			.sorted(Comparator.comparing(Section::getId).reversed())
+			.skip(sections.size() - 1)
 			.findFirst()
-			.orElseThrow(IllegalArgumentException::new);
+			.orElseThrow(IllegalAccessError::new);
 
 	}
 }
