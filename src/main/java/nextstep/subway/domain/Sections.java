@@ -30,16 +30,8 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public List<Section> toList() {
-        return values;
-    }
-
     public void add(Section section) {
         values.add(section);
-    }
-
-    public boolean hasStations() {
-        return !values.isEmpty();
     }
 
     public void delete(Station station) {

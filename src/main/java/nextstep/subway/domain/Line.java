@@ -28,10 +28,6 @@ public class Line {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
@@ -46,14 +42,6 @@ public class Line {
 
     public void setColor(String color) {
         this.color = color;
-    }
-
-    public List<Section> getSections() {
-        return sections.toList();
-    }
-
-    public boolean hasStations() {
-        return sections.hasStations();
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {

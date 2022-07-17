@@ -30,13 +30,6 @@ public class Section {
     @Embedded
     private Distance distance;
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
-        this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = new Distance(distance);
-    }
-
     public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
@@ -45,26 +38,6 @@ public class Section {
 
     protected void makeRelation(Line line) {
         this.line = line;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Line getLine() {
-        return line;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public Distance getDistance() {
-        return distance;
     }
 
     public List<Station> stations() {
