@@ -46,12 +46,12 @@ public class Line {
         }
     }
 
-    public List<Station> getStations() {
-        return sections.getStations();
+    public boolean isEmptySections() {
+        return sections.isEmptySections();
     }
 
-    public List<Section> getSections() {
-        return sections.getSections();
+    public List<Station> getStations() {
+        return sections.getStations();
     }
 
     public Long getId() {

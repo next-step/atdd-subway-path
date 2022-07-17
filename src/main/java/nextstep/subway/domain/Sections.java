@@ -21,10 +21,6 @@ public class Sections {
         this.sections.add(section);
     }
 
-    public List<Section> getSections() {
-        return new ArrayList<>(sections);
-    }
-
     public List<Station> getStations() {
         if (isEmptySections()) {
             return Collections.emptyList();
@@ -36,7 +32,7 @@ public class Sections {
             stations.add(section.getDownStation());
         }
 
-        return stations;
+        return Collections.unmodifiableList(stations);
     }
 
     public void deleteLastSection(Station station) {
@@ -52,23 +48,23 @@ public class Sections {
         sections.remove(lastSection);
     }
 
+    public boolean isEmptySections() {
+        return sections.isEmpty();
+    }
+
     private Section getFirstSection() {
         return sections.get(FIRST_SECTION_INDEX);
+    }
+
+    private Section getLastSection() {
+        return sections.get(getLastIndex());
     }
 
     private int getLastIndex() {
         return sections.size() - 1;
     }
 
-    private boolean isEmptySections() {
-        return sections.isEmpty();
-    }
-
     private Station getFirstUpStation() {
         return getFirstSection().getUpStation();
-    }
-
-    private Section getLastSection() {
-        return sections.get(getLastIndex());
     }
 }

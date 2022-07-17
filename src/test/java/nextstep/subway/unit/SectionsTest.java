@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class SectionsTest {
@@ -39,10 +38,7 @@ public class SectionsTest {
         sections.add(newSection);
 
         // then
-        assertAll(() -> {
-            assertThat(sections.getSections()).hasSize(1);
-            assertThat(sections.getSections()).containsExactly(newSection);
-        });
+        assertThat(sections.getStations()).containsExactly(upStation, downStation);
     }
 
     @DisplayName("Sections에 등록된 모든 역을 조회한다")
@@ -70,7 +66,7 @@ public class SectionsTest {
         sections.deleteLastSection(downStation);
 
         // then
-        assertThat(sections.getSections()).isEmpty();
+        assertThat(sections.isEmptySections()).isTrue();
     }
 
     @DisplayName("하행종점역이 일치하지 않을때 Sections의 마지막 section을 삭제하려 하면 예외가 발생한다")

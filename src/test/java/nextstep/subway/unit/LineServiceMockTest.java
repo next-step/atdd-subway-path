@@ -52,7 +52,7 @@ public class LineServiceMockTest {
 
         // then
         Line findLine = lineRepository.findById(lineId).get();
-        then(findLine.getSections()).hasSize(1);
+        then(findLine.isEmptySections()).isFalse();
     }
 
     @DisplayName("구간이 하나 있는 line에 구간삭제 요청시 성공한다")
@@ -72,7 +72,7 @@ public class LineServiceMockTest {
 
         // then
         Line findLine = lineRepository.findById(line.getId()).get();
-        then(findLine.getSections()).isEmpty();
+        then(findLine.isEmptySections()).isTrue();
     }
 
     @DisplayName("구간이 없는 line에 구간삭제 요청시 예외가 발생한다")
