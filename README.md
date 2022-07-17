@@ -9,6 +9,14 @@
 - [x] Mock 없이 구간 서비스 단위 테스트 (LineServiceTest)
 - [x] 단위 테스트를 기반으로 비즈니스 로직을 리팩터링 하기
 
+## Step1 PR 추가 수정 TODO List
+
+- [ ] Sections.dontHasDonwStation 의 이름 변경하기
+- [ ] Line의 getSectionsSize 에 대하여 고민하기, 단순 테스트를 위한 메서드인가?
+- [ ] Sections의 getStations, deleteLastSection 빈 행 적용기
+- [ ] Sections의 getStations()에서 isInValidSize 의 적용과 이름이 적당한지 생각해보기
+- [ ] Section과 Sections에 대한 단위테스트 작성
+
 ## Step1 PR 수정 TODO list
 
 - [x] Line의 getter를 비지니스 메서드보다 아래에 두기
