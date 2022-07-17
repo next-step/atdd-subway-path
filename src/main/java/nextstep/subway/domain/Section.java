@@ -54,7 +54,7 @@ public class Section {
         return distance;
     }
 
-    public boolean dontHasDownStation(Station station) {
+    public boolean hasNotDownStation(Station station) {
         return !this.downStation.equals(station);
     }
 

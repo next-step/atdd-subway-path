@@ -32,11 +32,13 @@ public class Sections {
         if (sections.isEmpty()) {
             return Collections.emptyList();
         }
+
         final List<Station> stations = new ArrayList<>();
         stations.add(getFirstUpStation());
         for (Section section : sections) {
             stations.add(section.getDownStation());
         }
+
         return stations;
     }
 
@@ -44,10 +46,12 @@ public class Sections {
         if (isInValidSize()) {
             throw new IllegalStateException(NOT_EXIST_SECTIONS_EXCEPTION);
         }
+
         Section lastSection = getLastSection();
-        if (lastSection.dontHasDownStation(station)) {
+        if (lastSection.hasNotDownStation(station)) {
             throw new IllegalStateException(NOT_SAME_DOWN_STATION_EXCEPTION);
         }
+
         sections.remove(lastSection);
     }
 
