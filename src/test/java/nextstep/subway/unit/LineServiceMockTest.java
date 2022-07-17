@@ -17,8 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
-import static nextstep.subway.unit.LineServiceMockTest.Stub.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -45,6 +45,11 @@ public class LineServiceMockTest {
     @Test
     void addSection() {
         // given
+        Line 이호선 = Stub.이호선_생성.get();
+        Station 구로디지털단지역 = Stub.구로디지털단지역_생성.get();
+        Station 신대방역 = Stub.신대방역_생성.get();
+        Station 신림역 = Stub.신림역_생성.get();
+
         when(stationService.findById(신대방역.getId())).thenReturn(신대방역);
         when(stationService.findById(신림역.getId())).thenReturn(신림역);
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
@@ -61,6 +66,11 @@ public class LineServiceMockTest {
     @Test
     void deleteSection() {
         // given
+        Line 이호선 = Stub.이호선_생성.get();
+        Station 구로디지털단지역 = Stub.구로디지털단지역_생성.get();
+        Station 신대방역 = Stub.신대방역_생성.get();
+        Station 신림역 = Stub.신림역_생성.get();
+
         when(stationService.findById(신림역.getId())).thenReturn(신림역);
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
@@ -77,6 +87,10 @@ public class LineServiceMockTest {
     @Test
     void saveLine() {
         // given
+        Line 이호선 = Stub.이호선_생성.get();
+        Station 구로디지털단지역 = Stub.구로디지털단지역_생성.get();
+        Station 신대방역 = Stub.신대방역_생성.get();
+
         when(stationService.findById(구로디지털단지역.getId())).thenReturn(구로디지털단지역);
         when(stationService.findById(신대방역.getId())).thenReturn(신대방역);
         when(lineRepository.save(any())).thenReturn(이호선);
@@ -95,6 +109,8 @@ public class LineServiceMockTest {
     @Test
     void updateLine() {
         // given
+        Line 이호선 = Stub.이호선_생성.get();
+
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
         // when
@@ -110,6 +126,8 @@ public class LineServiceMockTest {
     @Test
     void deleteLine() {
         // given
+        Line 이호선 = Stub.이호선_생성.get();
+
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.empty());
 
         // when
@@ -120,17 +138,20 @@ public class LineServiceMockTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    static class Stub {
-        static final Station 구로디지털단지역 = new Station("구로디지털단지역");
-        static final Station 신대방역 = new Station("신대방역");
-        static final Station 신림역 = new Station("신림역");
-        static final Line 이호선 = new Line("2호선", "green", 구로디지털단지역, 신대방역, 10);
+    private static class Stub {
+        public static final Supplier<Station> 구로디지털단지역_생성 = () -> createStation(1L, "구로디지털단지역");
+        public static final Supplier<Station> 신대방역_생성 = () -> createStation(2L, "신대방역");
+        public static final Supplier<Station> 신림역_생성 = () -> createStation(3L, "신림역");
+        public static final Supplier<Line> 이호선_생성 = () -> {
+            Line line = new Line("2호선", "green", 구로디지털단지역_생성.get(), 신대방역_생성.get(), 10);
+            ReflectionTestUtils.setField(line, "id", 1L);
+            return line;
+        };
 
-        static {
-            ReflectionTestUtils.setField(구로디지털단지역, "id", 1L);
-            ReflectionTestUtils.setField(신대방역, "id", 2L);
-            ReflectionTestUtils.setField(신림역, "id", 3L);
-            ReflectionTestUtils.setField(이호선, "id", 1L);
+        public static Station createStation(Long id, String name) {
+            Station station = new Station(name);
+            ReflectionTestUtils.setField(station, "id", id);
+            return station;
         }
 
     }
