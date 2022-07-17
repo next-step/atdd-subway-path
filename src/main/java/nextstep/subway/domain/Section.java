@@ -43,26 +43,6 @@ public class Section {
 		this.distance = distance;
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public Line getLine() {
-		return line;
-	}
-
-	public Station getUpStation() {
-		return upStation;
-	}
-
-	public Station getDownStation() {
-		return this.downStation;
-	}
-
-	public int getDistance() {
-		return distance;
-	}
-
 	public List<Station> getStation(long index) {
 		if (index == 1) {
 			return Arrays.asList(this.upStation, this.downStation);
@@ -90,4 +70,25 @@ public class Section {
 	public int hashCode() {
 		return Objects.hash(id, line, upStation, downStation, distance);
 	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public Line getLine() {
+		return line;
+	}
+
+	public Station getUpStation() {
+		return upStation;
+	}
+
+	public Station getDownStation() {
+		return this.downStation;
+	}
+
+	public int getDistance() {
+		return distance;
+	}
+
 }

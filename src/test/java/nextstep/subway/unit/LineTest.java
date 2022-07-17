@@ -11,9 +11,12 @@ import nextstep.subway.domain.Station;
 
 class LineTest {
 
-	static Station 강남역 = new Station(1L, "강남역");
-	static Station 역삼역 = new Station(2L, "역삼역");
-	static Station 선릉역 = new Station(3L, "선릉역");
+	static final Long 강남역Id = 1L;
+	static final Long 역삼역Id = 2L;
+	static final Long 선릉역Id = 3L;
+	static Station 강남역 = new Station(강남역Id, "강남역");
+	static Station 역삼역 = new Station(역삼역Id, "역삼역");
+	static Station 선릉역 = new Station(선릉역Id, "선릉역");
 
 	static int DISTANCE = 9;
 	Line line;
@@ -35,7 +38,7 @@ class LineTest {
 		assertThat(line.getSections()).hasSize(1);
 	}
 
-	@DisplayName("지하철 구간 조회")
+	@DisplayName("지하철 구간 조회_2개")
 	@Test
 	void getStations() {
 		//given
@@ -47,11 +50,18 @@ class LineTest {
 		assertThat(line.getStations()).hasSize(3);
 	}
 
+	@DisplayName("지하철 구간 조회_0개")
+	@Test
+	void getStationsZero() {
+		//when
+		//then
+		assertThat(line.getStations()).hasSize(0);
+	}
+
 	@DisplayName("지하철 구간 삭제")
 	@Test
 	void removeSection() {
 		//given
-
 		line.addSection(강남역, 역삼역, DISTANCE);
 		line.addSection(역삼역, 선릉역, DISTANCE);
 		//when
@@ -60,11 +70,9 @@ class LineTest {
 		assertThat(line.getSections()).hasSize(1);
 	}
 
-	@DisplayName("지하철 구간 삭제 실패")
+	@DisplayName("지하철 구간 삭제 실패_삭제역이 마지막 하행선역이 아닌경우")
 	@Test
 	void removeSectionFail1() {
-		//given
-
 		//when
 		line.addSection(강남역, 역삼역, DISTANCE);
 		line.addSection(역삼역, 선릉역, DISTANCE);

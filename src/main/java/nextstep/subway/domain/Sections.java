@@ -54,7 +54,6 @@ public class Sections {
 	}
 
 	private Section getLastSection() {
-
 		return sections.stream()
 			.skip(sections.size() - 1)
 			.findFirst()
