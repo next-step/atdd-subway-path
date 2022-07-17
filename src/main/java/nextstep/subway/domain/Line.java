@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.util.List;
@@ -32,7 +33,10 @@ public class Line {
         return name;
     }
 
-    public void setName(String name) {
+    public void changeName(String name) {
+        if (!StringUtils.hasText(name)) {
+            return;
+        }
         this.name = name;
     }
 
@@ -40,7 +44,10 @@ public class Line {
         return color;
     }
 
-    public void setColor(String color) {
+    public void changeColor(String color) {
+        if (!StringUtils.hasText(color)) {
+            return;
+        }
         this.color = color;
     }
 
