@@ -13,18 +13,18 @@ import static nextstep.subway.utils.StationTestSources.station;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class SectionConditionCompositeTest {
+class AddSectionConditionCompositeTest {
 
-    private SectionCondition target;
+    private AddSectionCondition target;
 
     @BeforeEach
     void setUp() {
-        target = new SectionConditionComposite(List.of(
-                new EmptySectionsCondition(),
-                new LastDownStationCondition(),
-                new FirstUpStationCondition(),
-                new BetweenOnUpStationCondition(),
-                new BetweenOnDownStationCondition()));
+        target = new AddSectionConditionComposite(List.of(
+                new EmptySectionsAddCondition(),
+                new LastDownStationAddCondition(),
+                new FirstUpStationAddCondition(),
+                new BetweenOnUpStationAddCondition(),
+                new BetweenOnDownStationAddCondition()));
     }
 
     @Test
@@ -34,7 +34,7 @@ class SectionConditionCompositeTest {
 //        line.addSection(station(1), station(2), 10);
 
         // when
-        target.add(line, new AddSectionRequest(station(2), station(3), 10));
+        target.addSection(line, new AddSectionRequest(station(2), station(3), 10));
 
         // then
         assertThat(line.getSections()).hasSize(1);
@@ -53,7 +53,7 @@ class SectionConditionCompositeTest {
         line.addSection(new Section(line, station3, station4, 10));
 
         // when
-        target.add(line, new AddSectionRequest(station2, station3, 4));
+        target.addSection(line, new AddSectionRequest(station2, station3, 4));
 
         // then
         final List<Section> sections = line.getSections();
@@ -77,7 +77,7 @@ class SectionConditionCompositeTest {
         // when
         final IllegalArgumentException result = assertThrows(
                 IllegalArgumentException.class,
-                () -> target.add(line, new AddSectionRequest(station2, station3, 100)));
+                () -> target.addSection(line, new AddSectionRequest(station2, station3, 100)));
 
         // then
         assertThat(result).isNotNull();
@@ -97,7 +97,7 @@ class SectionConditionCompositeTest {
         line.addSection(new Section(line, station2, station4, 10));
 
         // when
-        target.add(line, new AddSectionRequest(station2, station3, 4));
+        target.addSection(line, new AddSectionRequest(station2, station3, 4));
 
         // then
         final List<Section> sections = line.getSections();
@@ -121,7 +121,7 @@ class SectionConditionCompositeTest {
         // when
         final IllegalArgumentException result = assertThrows(
                 IllegalArgumentException.class,
-                () -> target.add(line, new AddSectionRequest(station2, station3, 100)));
+                () -> target.addSection(line, new AddSectionRequest(station2, station3, 100)));
 
         // then
         assertThat(result).isNotNull();
@@ -145,7 +145,7 @@ class SectionConditionCompositeTest {
         line.addSection(new Section(line, station2, station3, 10));
 
         // when
-        target.add(line, new AddSectionRequest(station1, station2, 10));
+        target.addSection(line, new AddSectionRequest(station1, station2, 10));
 
         // then
         assertThat(line.getStations()).containsExactly(station1, station2, station3);
@@ -162,7 +162,7 @@ class SectionConditionCompositeTest {
         line.addSection(new Section(line, station1, station2, 10));
 
         // when
-        target.add(line, new AddSectionRequest(station2, station3, 10));
+        target.addSection(line, new AddSectionRequest(station2, station3, 10));
 
         // then
         assertThat(line.getStations()).containsExactly(station1, station2, station3);

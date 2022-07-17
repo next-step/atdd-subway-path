@@ -7,10 +7,11 @@ import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 @Component
-class BetweenOnUpStationCondition implements SectionCondition {
+class BetweenOnUpStationAddCondition implements AddSectionCondition {
 
     @Override
     public boolean matches(Line line, final AddSectionRequest request) {
@@ -22,8 +23,8 @@ class BetweenOnUpStationCondition implements SectionCondition {
     }
 
     private boolean hasUpStationMatchedSection(final Line line, final Station upStation) {
-        return line.getSections().stream()
-                .anyMatch(isUpStationMatches(upStation));
+        return findUpStationMatchedSection(line.getSections(), upStation)
+                .isPresent();
     }
 
     private Predicate<Section> isUpStationMatches(final Station upStation) {
@@ -31,19 +32,19 @@ class BetweenOnUpStationCondition implements SectionCondition {
     }
 
     @Override
-    public void add(Line line, final AddSectionRequest addSectionRequest) {
+    public void addSection(Line line, final AddSectionRequest addSectionRequest) {
         final List<Section> sections = line.getSections();
-        final Section section = findUpStationMatchedSection(sections, addSectionRequest.getUpStation());
+        final Section section = findUpStationMatchedSection(sections, addSectionRequest.getUpStation())
+                .orElseThrow(IllegalStateException::new);
 
         validateDistance(addSectionRequest, section.getDistance());
         updateSection(line, addSectionRequest, sections, section);
     }
 
-    private Section findUpStationMatchedSection(final List<Section> sections, final Station upStation) {
+    private Optional<Section> findUpStationMatchedSection(final List<Section> sections, final Station upStation) {
         return sections.stream()
                 .filter(isUpStationMatches(upStation))
-                .findFirst()
-                .orElseThrow(IllegalStateException::new);
+                .findFirst();
     }
 
     private void validateDistance(final AddSectionRequest request, final int sectionDistance) {

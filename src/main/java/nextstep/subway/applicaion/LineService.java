@@ -4,7 +4,7 @@ import nextstep.subway.applicaion.dto.*;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.sectioncondition.SectionCondition;
+import nextstep.subway.domain.sectioncondition.AddSectionCondition;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationService stationService;
-    private final SectionCondition sectionConditionComposite;
+    private final AddSectionCondition addSectionCondition;
 
-    public LineService(LineRepository lineRepository, StationService stationService, final SectionCondition sectionConditionComposite) {
+    public LineService(LineRepository lineRepository, StationService stationService, final AddSectionCondition addSectionCondition) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
-        this.sectionConditionComposite = sectionConditionComposite;
+        this.addSectionCondition = addSectionCondition;
     }
 
     @Transactional
@@ -64,8 +64,8 @@ public class LineService {
         Station upStation = stationService.findById(upStationId);
         Station downStation = stationService.findById(downStationId);
         final AddSectionRequest addSectionRequest = new AddSectionRequest(upStation, downStation, distance);
-        if (sectionConditionComposite.matches(line, addSectionRequest)) {
-            sectionConditionComposite.add(line, addSectionRequest);
+        if (addSectionCondition.matches(line, addSectionRequest)) {
+            addSectionCondition.addSection(line, addSectionRequest);
         }
 
     }

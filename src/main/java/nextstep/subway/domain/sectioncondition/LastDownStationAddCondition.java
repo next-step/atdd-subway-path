@@ -6,7 +6,7 @@ import nextstep.subway.domain.Section;
 import org.springframework.stereotype.Component;
 
 @Component
-class LastDownStationCondition implements SectionCondition {
+class LastDownStationAddCondition implements AddSectionCondition {
 
     @Override
     public boolean matches(final Line line, final AddSectionRequest request) {
@@ -15,7 +15,7 @@ class LastDownStationCondition implements SectionCondition {
     }
 
     @Override
-    public void add(final Line line, final AddSectionRequest addSectionRequest) {
+    public void addSection(final Line line, final AddSectionRequest addSectionRequest) {
         line.addSection(createSection(line, addSectionRequest));
     }
 

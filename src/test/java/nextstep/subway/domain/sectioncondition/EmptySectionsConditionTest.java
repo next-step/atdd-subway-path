@@ -13,7 +13,7 @@ class EmptySectionsConditionTest {
     @Test
     void isSatisfiedBy_Empty() {
         // given
-        final EmptySectionsCondition emptySectionsCondition = new EmptySectionsCondition();
+        final EmptySectionsAddCondition emptySectionsCondition = new EmptySectionsAddCondition();
 
         final Line line = new Line();
 
@@ -27,7 +27,7 @@ class EmptySectionsConditionTest {
     @Test
     void isSatisfiedBy_NotEmpty() {
         // given
-        final EmptySectionsCondition emptySectionsCondition = new EmptySectionsCondition();
+        final EmptySectionsAddCondition emptySectionsCondition = new EmptySectionsAddCondition();
 
         final Line line = new Line();
         line.addSection(section(line, station(1), station(2)));

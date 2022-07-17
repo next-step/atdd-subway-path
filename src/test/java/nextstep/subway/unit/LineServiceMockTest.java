@@ -9,7 +9,7 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.sectioncondition.SectionCondition;
+import nextstep.subway.domain.sectioncondition.AddSectionCondition;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,7 +36,7 @@ public class LineServiceMockTest {
     @Mock
     private StationService stationService;
     @Mock
-    private SectionCondition sectionCondition;
+    private AddSectionCondition addSectionCondition;
 
     @Test
     void deleteSectionFail_LineNotExists() {
@@ -133,7 +133,7 @@ public class LineServiceMockTest {
                 .findById(downStationId);
 
         doReturn(true)
-                .when(sectionCondition)
+                .when(addSectionCondition)
                 .matches(any(Line.class), any(AddSectionRequest.class));
 
         // when
@@ -160,14 +160,14 @@ public class LineServiceMockTest {
                 .findById(downStationId);
 
         doReturn(true)
-                .when(sectionCondition)
+                .when(addSectionCondition)
                 .matches(any(Line.class), any(AddSectionRequest.class));
 
         // when
         target.addSection(lineId, sectionRequest(upStationId, downStationId));
 
         // then
-        verify(sectionCondition).add(any(Line.class), any(AddSectionRequest.class));
+        verify(addSectionCondition).addSection(any(Line.class), any(AddSectionRequest.class));
     }
 
     @Test
@@ -187,7 +187,7 @@ public class LineServiceMockTest {
                 .findById(downStationId);
 
         doReturn(false)
-                .when(sectionCondition)
+                .when(addSectionCondition)
                 .matches(any(Line.class), any(AddSectionRequest.class));
 
         // when
