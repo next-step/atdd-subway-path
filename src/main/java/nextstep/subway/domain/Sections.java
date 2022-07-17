@@ -29,7 +29,7 @@ public class Sections {
         for (Section section : sections) {
             stations.add(section.getDownStation());
         }
-        return new ArrayList<>(stations);
+        return stations;
     }
 
     public void deleteLastSection(Station station) {
