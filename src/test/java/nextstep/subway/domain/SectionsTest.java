@@ -35,6 +35,20 @@ class SectionsTest {
         assertThat(sections.getStations()).contains(Stub.대림역, Stub.구로디지털단지역, Stub.신대방역);
     }
 
+    @DisplayName("새로운 하행 종점역 추가")
+    @Test
+    void addNewDownStation() {
+        // given
+        Sections sections = new Sections();
+        sections.add(new Section(Stub.구로디지털단지역, Stub.신대방역, 4));
+
+        // when
+        sections.add(new Section(Stub.신대방역, Stub.신림역, 6));
+
+        // then
+        assertThat(sections.getStations()).contains(Stub.구로디지털단지역, Stub.신대방역, Stub.신림역);
+    }
+
     private static class Stub {
         public static final Station 대림역 = new Station("대림역");
         public static final Station 구로디지털단지역 = new Station("구로디지털단지역");
