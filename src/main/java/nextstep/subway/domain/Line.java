@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import java.util.stream.Collectors;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,5 +50,12 @@ public class Line {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public List<Station> getStations() {
+        return sections.stream()
+                .map(Section::getStations)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
     }
 }
