@@ -20,6 +20,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,8 +43,8 @@ class LineServiceMockTest {
         Line createLine = new Line(1L, "4호선", "blue");
         when(lineRepository.save(any())).thenReturn(createLine);
 
-        Station station1 = new Station("중앙역");
-        Station station2 = new Station("한대앞역");
+        final Station station1 = new Station("중앙역");
+        final Station station2 = new Station("한대앞역");
 
         when(stationService.findById(1L)).thenReturn(station1);
         when(stationService.findById(2L)).thenReturn(station2);
@@ -50,15 +52,16 @@ class LineServiceMockTest {
         when(stationService.createStationResponse(station2)).thenReturn(new StationResponse(2L, station2.getName()));
 
         // when
-        LineResponse lineResponse = lineService.saveLine(new LineRequest("4호선", "blue", 1L, 2L, 10));
+        final LineResponse lineResponse = lineService.saveLine(new LineRequest("4호선", "blue", 1L, 2L, 10));
 
         // then
-        assertThat(lineResponse.getName()).isEqualTo("4호선");
-        assertThat(lineResponse.getColor()).isEqualTo("blue");
-        assertThat(lineResponse.getStations()).hasSize(2);
-        assertThat(lineResponse.getStations().get(0).getName()).isEqualTo(station1.getName());
-        assertThat(lineResponse.getStations().get(1).getName()).isEqualTo(station2.getName());
-
+        assertAll(
+                () -> assertEquals("4호선", lineResponse.getName()),
+                () -> assertEquals("blue", lineResponse.getColor()),
+                () -> assertEquals(2, lineResponse.getStations().size()),
+                () -> assertEquals(station1.getName(), lineResponse.getStations().get(0).getName()),
+                () -> assertEquals(station2.getName(), lineResponse.getStations().get(1).getName())
+        );
     }
 
     @Test

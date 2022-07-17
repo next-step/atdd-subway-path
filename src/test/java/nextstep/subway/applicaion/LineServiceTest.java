@@ -4,10 +4,8 @@ import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
-import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -47,9 +47,12 @@ class LineServiceTest {
         List<LineResponse> lineResponses = lineService.showLines();
 
         // then
-        assertThat(lineResponses).hasSize(2);
-        assertThat(lineResponses.get(0).getName()).isEqualTo("4호선");
-        assertThat(lineResponses.get(1).getName()).isEqualTo("2호선");
+
+        assertAll(
+                () -> assertEquals(2, lineResponses.size(), "Line을 두개 생성 후 전체 조회하면 2개가 조회되어야 한다."),
+                () -> assertEquals("4호선", lineResponses.get(0).getName(), "생성한 순서가 보장되어야 한다."),
+                () -> assertEquals("2호선", lineResponses.get(1).getName(), "생성한 순서가 보장되어야 한다.")
+        );
 
     }
 
@@ -57,13 +60,14 @@ class LineServiceTest {
     @DisplayName("Line 상세 정보가 조회된다.")
     void findByIdTest() {
         // when
-        LineResponse findLineResponse = lineService.findById(lineResponse.getId());
+        final LineResponse findLineResponse = lineService.findById(lineResponse.getId());
 
         // then
-        assertThat(lineResponse.getId()).isEqualTo(findLineResponse.getId());
-        assertThat(lineResponse.getName()).isEqualTo(findLineResponse.getName());
-        assertThat(lineResponse.getColor()).isEqualTo(findLineResponse.getColor());
-
+        assertAll(
+                () -> assertEquals(findLineResponse.getId(), lineResponse.getId()),
+                () -> assertEquals(findLineResponse.getName(), lineResponse.getName()),
+                () -> assertEquals(findLineResponse.getColor(), lineResponse.getColor())
+        );
     }
 
     @Test
@@ -114,19 +118,21 @@ class LineServiceTest {
 
     private LineResponse createLine(String lineName, String lineColor, String upStationName, String downStationName) {
         // given
-        Station upStation = stationRepository.save(new Station(upStationName));
-        Station downStation = stationRepository.save(new Station(downStationName));
+        final Station upStation = stationRepository.save(new Station(upStationName));
+        final Station downStation = stationRepository.save(new Station(downStationName));
 
 
         // when
-        LineResponse lineResponse = lineService.saveLine(new LineRequest(lineName, lineColor, upStation.getId(), downStation.getId(), 10));
+        final LineResponse lineResponse = lineService.saveLine(new LineRequest(lineName, lineColor, upStation.getId(), downStation.getId(), 10));
 
         // then
-        assertThat(lineResponse.getName()).isEqualTo(lineName);
-        assertThat(lineResponse.getColor()).isEqualTo(lineColor);
-        assertThat(lineResponse.getStations()).hasSize(2);
-        assertThat(lineResponse.getStations().get(0).getName()).isEqualTo(upStationName);
-        assertThat(lineResponse.getStations().get(1).getName()).isEqualTo(downStationName);
+        assertAll(
+                () -> assertEquals(lineName, lineResponse.getName()),
+                () -> assertEquals(lineColor, lineResponse.getColor()),
+                () -> assertEquals(2, lineResponse.getStations().size()),
+                () -> assertEquals(upStationName, lineResponse.getStations().get(0).getName()),
+                () -> assertEquals(downStationName, lineResponse.getStations().get(1).getName())
+        );
 
         return lineResponse;
     }
