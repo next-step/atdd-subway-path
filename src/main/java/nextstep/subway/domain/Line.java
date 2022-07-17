@@ -58,11 +58,7 @@ public class Line {
             return Collections.emptyList();
         }
 
-        final Station firstUpStation = getFirstUpStation();
-        final List<Station> stations = findAllDownStationsInOrder(firstUpStation);
-        stations.add(0, firstUpStation);
-
-        return Collections.unmodifiableList(stations);
+        return Collections.unmodifiableList(findAllStationsInOrder());
     }
 
     public boolean hasNoSection() {
@@ -84,39 +80,25 @@ public class Line {
                 .collect(Collectors.toList());
     }
 
-    private List<Station> findAllDownStationsInOrder(final Station firstUpStation) {
+    private List<Station> findAllStationsInOrder() {
         final List<Station> stationList = new ArrayList<>();
+        final List<Section> sectionList = getSections();
 
-        Station target = firstUpStation;
-        Queue<Section> sectionQueue = new LinkedList<>(sections);
-        while (!sectionQueue.isEmpty()) {
-            final Section section = sectionQueue.poll();
-
-            // 마지막 구간은 이어지는 곳이 없으므로, downStation을 더하고 break;
-            if (sectionQueue.isEmpty()) {
-                stationList.add(section.getDownStation());
-                break;
-            }
-
-            final Station connectedDownStation = findConnectedDownStation(target, section);
-            if (connectedDownStation != null) {
-                stationList.add(connectedDownStation);
-                target = connectedDownStation;
-            } else {
-                sectionQueue.offer(section);
-            }
+        Station target = getFirstUpStation();
+        while (target != null) {
+            stationList.add(target);
+            target = findConnectedDownStation(sectionList, target);
         }
 
         return stationList;
     }
 
-    private Station findConnectedDownStation(Station target, final Section section) {
-        // 이어지는 구간인 경우 downStation을 추가하고, target을 변경해줌
-        if (section.getUpStation().equals(target)) {
-            return section.getDownStation();
-        }
-
-        return null;
+    private Station findConnectedDownStation(final List<Section> sectionList, final Station target) {
+        return sectionList.stream()
+                .filter(v -> v.getUpStation().equals(target))
+                .map(Section::getDownStation)
+                .findAny()
+                .orElse(null);
     }
 
     public void addSection(final Section section) {
