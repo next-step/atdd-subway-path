@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Section {
@@ -20,9 +21,10 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
-    public Section() {
+    protected Section() {
 
     }
 
@@ -30,15 +32,19 @@ public class Section {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
+    }
+
+    public boolean matchDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    public List<Station> getStations() {
+        return List.of(upStation, downStation);
     }
 
     public Long getId() {
         return id;
-    }
-
-    public Line getLine() {
-        return line;
     }
 
     public Station getUpStation() {
@@ -49,7 +55,4 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
-        return distance;
-    }
 }
