@@ -50,8 +50,8 @@ public class Line {
         return sections.getStations();
     }
 
-    public int getSectionsSize() {
-        return sections.getSize();
+    public List<Section> getSections() {
+        return sections.getSections();
     }
 
     public Long getId() {

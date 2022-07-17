@@ -21,6 +21,10 @@ public class Sections {
         this.sections.add(section);
     }
 
+    public List<Section> getSections() {
+        return new ArrayList<>(sections);
+    }
+
     public List<Station> getStations() {
         if (isEmptySections()) {
             return Collections.emptyList();
@@ -46,10 +50,6 @@ public class Sections {
         }
 
         sections.remove(lastSection);
-    }
-
-    public int getSize() {
-        return sections.size();
     }
 
     private Section getFirstSection() {

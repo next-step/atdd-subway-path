@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LineTest {
@@ -31,10 +32,14 @@ class LineTest {
         // given
 
         // when
-        line.addSection(new Section(line, upStation, downStation, 10));
+        Section newSection = new Section(line, upStation, downStation, 10);
+        line.addSection(newSection);
 
         // then
-        assertThat(line.getSectionsSize()).isEqualTo(1);
+        assertAll(() -> {
+            assertThat(line.getSections()).hasSize(1);
+            assertThat(line.getSections()).containsExactly(newSection);
+        });
     }
 
     @DisplayName("이미 section이 있는 line에 신규 section을 추가한다")
@@ -48,7 +53,7 @@ class LineTest {
         line.addSection(new Section(line, downStation, newStation, 10));
 
         // then
-        assertThat(line.getSectionsSize()).isEqualTo(2);
+        assertThat(line.getSections()).hasSize(2);
     }
 
     @DisplayName("Line에 포함된 모든 역을 조회한다")
@@ -74,7 +79,7 @@ class LineTest {
         line.deleteLastSection(downStation);
 
         // then
-        assertThat(line.getSectionsSize()).isEqualTo(0);
+        assertThat(line.getSections()).isEmpty();
     }
 
     @DisplayName("Line에 section이 없는데 section을 제거하려 한 경우 예외를 발생한다")
