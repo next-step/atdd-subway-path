@@ -18,7 +18,7 @@
 - [ ] Line에서 마지막 구간을 가져오는 메서드 만들기
 - [x] Line.deleteLastSection 에서 부정조건 피하기
 - [x] Line.getFirstSection 매직넘버 0피하기
-- [ ] LineServiceMockTest에서 구현 완료된 부분의 주석 제거
+- [x] LineServiceMockTest에서 구현 완료된 부분의 주석 제거
 - [x] 불필요한 Line.removeLastSection 제거
 - [x] Sections를 1급 컬렉션으로 변경
 - [x] Line<Section> 외부 노출 막기

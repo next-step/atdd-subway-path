@@ -37,7 +37,6 @@ public class LineServiceMockTest {
     @Test
     void addSection() {
         // given
-        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         Long lineId = 3L;
         Long upStationId = 1L;
         Long downStationId = 2L;
@@ -49,11 +48,9 @@ public class LineServiceMockTest {
         SectionRequest request = new SectionRequest(upStationId, downStationId, 10);
 
         // when
-        // lineService.addSection 호출
         lineService.addSection(lineId, request);
 
         // then
-        // line.findLineById 메서드를 통해 검증
         Line findLine = lineRepository.findById(lineId).get();
         then(findLine.getSectionsSize()).isEqualTo(1);
     }
@@ -62,7 +59,6 @@ public class LineServiceMockTest {
     @Test
     public void delete_section_test() {
         // given
-        // 역과 라인을 생성하고, 라인에 구간을 등록시킨다
         Station upStation = new Station(1L, "강남역");
         Station downStation = new Station(2L, "건대입구역");
         Line line = new Line(3L, "2호선", "green");
@@ -72,11 +68,9 @@ public class LineServiceMockTest {
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
         // when
-        // 라인에서 구간을 삭제하면
         lineService.deleteSection(line.getId(), downStation.getId());
 
         // then
-        // 라인의 구간은 비어있게 된다
         Line findLine = lineRepository.findById(line.getId()).get();
         then(findLine.getSectionsSize()).isEqualTo(0);
     }
@@ -117,7 +111,6 @@ public class LineServiceMockTest {
     @Test
     public void delete_section_when_not_matched_down_station() {
         // given
-        // 역과 라인을 생성하고, 라인에 구간을 등록시킨다
         Station upStation = new Station(1L, "강남역");
         Station downStation = new Station(2L, "건대입구역");
         Station anotherStation = new Station(4L, "성수역");
