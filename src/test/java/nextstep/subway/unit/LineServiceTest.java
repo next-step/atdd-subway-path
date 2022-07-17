@@ -37,6 +37,6 @@ public class LineServiceTest {
         lineService.addSection(line.getId(), sectionRequest);
 
         // then
-        assertThat(line.getSections()).containsOnly(new Section(line, gangnam, yeoksam, 10));
+        assertThat(line.getStations()).containsOnly(gangnam, yeoksam);
     }
 }
