@@ -21,8 +21,14 @@ class LineTest {
     void addSectionTest() {
         assertThat(line.getSections().size()).isEqualTo(0);
 
-        line.addSection(new Section(line, new Station("중앙역"), new Station("한대앞역"), 10));
+        Station addUpStation = new Station("중앙역");
+        Station addDownStation = new Station("한대앞역");
+        line.addSection(new Section(line, addUpStation, addDownStation, 10));
         assertThat(line.getSections().size()).isEqualTo(1);
+
+        Section addSection = line.getSections().get(0);
+        assertThat(addSection.getUpStation().getName()).isEqualTo(addUpStation.getName());
+        assertThat(addSection.getDownStation().getName()).isEqualTo(addDownStation.getName());
     }
 
     @Test

@@ -18,6 +18,10 @@ public class Sections {
         this.sections.add(section);
     }
 
+    public Section get(int index) {
+        return this.sections.get(index);
+    }
+
     public List<Station> getStations() {
         return this.sections.stream()
                 .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
