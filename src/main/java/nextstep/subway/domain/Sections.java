@@ -42,7 +42,7 @@ public class Sections {
         if (isInValidSize()) {
             throw new IllegalStateException();
         }
-        Section lastSection = sections.get(getLastIndex());
+        Section lastSection = getLastSection();
         if (lastSection.dontHasDownStation(station)) {
             throw new IllegalStateException();
         }
@@ -71,5 +71,9 @@ public class Sections {
 
     private Station getFirstUpStation() {
         return getFirstSection().getUpStation();
+    }
+
+    private Section getLastSection() {
+        return sections.get(getLastIndex());
     }
 }
