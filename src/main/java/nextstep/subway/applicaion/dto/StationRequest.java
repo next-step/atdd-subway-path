@@ -1,9 +1,12 @@
 package nextstep.subway.applicaion.dto;
 
-public class StationRequest {
-    private String name;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-    public String getName() {
-        return name;
-    }
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+public class StationRequest {
+
+    private String name;
 }
