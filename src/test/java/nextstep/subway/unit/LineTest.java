@@ -16,7 +16,7 @@ class LineTest {
 	static Station 선릉역 = new Station(3L, "선릉역");
 
 	static int DISTANCE = 9;
-	Line line = new Line();
+	Line line;
 
 	@BeforeEach
 	void setUp() {

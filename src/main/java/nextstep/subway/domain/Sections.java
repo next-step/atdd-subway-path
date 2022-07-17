@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
@@ -31,10 +30,13 @@ public class Sections {
 		if (CollectionUtils.isEmpty(sections) || sections.size() <= 0) {
 			Collections.emptyList();
 		}
-		List<Station> stations = sections.stream()
-			.map(value -> value.getDownStation())
-			.collect(Collectors.toList());
-		stations.add(0, sections.get(0).getUpStation());
+
+		List<Station> stations = new ArrayList<>();
+		int indexOfSections = 1;
+		for (Section section : sections) {
+			stations.addAll(section.getStation(indexOfSections++));
+		}
+
 		return Collections.unmodifiableList(stations);
 	}
 

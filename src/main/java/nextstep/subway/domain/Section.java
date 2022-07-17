@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.CascadeType;
@@ -67,6 +69,13 @@ public class Section {
 
 	public int getDistance() {
 		return distance;
+	}
+
+	public List<Station> getStation(long index) {
+		if (index == 1) {
+			return Arrays.asList(this.upStation, this.downStation);
+		}
+		return Arrays.asList(this.downStation);
 	}
 
 	public boolean isSameWithDownStation(long stationId) {
