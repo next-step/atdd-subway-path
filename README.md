@@ -15,7 +15,7 @@
 - [x] Line의 getSectionsSize 에 대하여 고민하기, 단순 테스트를 위한 메서드인가?
 - [x] Sections의 getStations, deleteLastSection 빈 행 적용기
 - [x] Sections의 getStations()에서 isInValidSize 의 적용과 이름이 적당한지 생각해보기
-- [ ] Section과 Sections에 대한 단위테스트 작성
+- [x] Section과 Sections에 대한 단위테스트 작성
 
 ## Step1 PR 수정 TODO list
 
