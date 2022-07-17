@@ -40,7 +40,7 @@ public class LineServiceTest {
         // then
         // line.getSections 메서드를 통해 검증
         Line findLine = lineRepository.findById(savedLine.getId()).get();
-        then(findLine.getSections()).hasSize(1);
+        then(findLine.getSectionsSize()).isEqualTo(1);
         then(findLine.getStations()).extracting("name").containsExactly("강남역", "건대입구역");
     }
 }

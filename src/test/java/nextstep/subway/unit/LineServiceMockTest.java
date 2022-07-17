@@ -55,7 +55,7 @@ public class LineServiceMockTest {
         // then
         // line.findLineById 메서드를 통해 검증
         Line findLine = lineRepository.findById(lineId).get();
-        then(findLine.getSections()).hasSize(1);
+        then(findLine.getSectionsSize()).isEqualTo(1);
     }
 
     @DisplayName("구간이 하나 있는 line에 구간삭제 요청시 성공한다")
@@ -78,7 +78,7 @@ public class LineServiceMockTest {
         // then
         // 라인의 구간은 비어있게 된다
         Line findLine = lineRepository.findById(line.getId()).get();
-        then(findLine.getSections()).isEmpty();
+        then(findLine.getSectionsSize()).isEqualTo(0);
     }
 
     @DisplayName("구간이 없는 line에 구간삭제 요청시 예외가 발생한다")
@@ -92,10 +92,10 @@ public class LineServiceMockTest {
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
         // when
-        Exception exception = assertThrows(IndexOutOfBoundsException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
+        Exception exception = assertThrows(IllegalStateException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
 
         // then
-        then(exception).isInstanceOf(IndexOutOfBoundsException.class);
+        then(exception).isInstanceOf(IllegalStateException.class);
     }
 
     @DisplayName("존재하지 않는 line에 구간삭제 요청시 예외가 발생한다")
@@ -128,10 +128,10 @@ public class LineServiceMockTest {
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
         // when
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
+        Exception exception = assertThrows(IllegalStateException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
 
         // then
-        then(exception).isInstanceOf(IllegalArgumentException.class);
+        then(exception).isInstanceOf(IllegalStateException.class);
     }
 
     @DisplayName("존재하는 라인의 색과 이름을 변경할 수 있다")

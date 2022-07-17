@@ -12,13 +12,13 @@
 ## Step1 PR 수정 TODO list
 
 - [ ] Line의 getter를 비지니스 메서드보다 아래에 두기
-- [ ] IndexOutOfBoundsException 던지는 부분에 대한 변경
+- [x] IndexOutOfBoundsException 던지는 부분에 대한 변경
 - [ ] new ArrayList 로 wrapping한 부분 수정
 - [ ] Line에서 상행역을 가져오는 메서드 만들기
 - [ ] Line에서 마지막 구간을 가져오는 메서드 만들기
 - [ ] Line.deleteLastSection 에서 부정조건 피하기
 - [ ] Line.getFirstSection 매직넘버 0피하기
 - [ ] LineServiceMockTest에서 구현 완료된 부분의 주석 제거
-- [ ] 불필요한 Line.removeLastSection 제거
-- [ ] Sections를 1급 컬렉션으로 변경
-- [ ] Line<Section> 외부 노출 막기
+- [x] 불필요한 Line.removeLastSection 제거
+- [x] Sections를 1급 컬렉션으로 변경
+- [x] Line<Section> 외부 노출 막기

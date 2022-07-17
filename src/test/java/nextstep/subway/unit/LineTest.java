@@ -34,7 +34,7 @@ class LineTest {
         line.addSection(new Section(line, upStation, downStation, 10));
 
         // then
-        assertThat(line.getSections()).hasSize(1);
+        assertThat(line.getSectionsSize()).isEqualTo(1);
     }
 
     @DisplayName("이미 section이 있는 line에 신규 section을 추가한다")
@@ -48,7 +48,7 @@ class LineTest {
         line.addSection(new Section(line, downStation, newStation, 10));
 
         // then
-        assertThat(line.getSections()).hasSize(2);
+        assertThat(line.getSectionsSize()).isEqualTo(2);
     }
 
     @DisplayName("Line에 포함된 모든 역을 조회한다")
@@ -71,10 +71,10 @@ class LineTest {
         line.addSection(new Section(line, upStation, downStation, 10));
 
         // when
-        line.removeLastSection();
+        line.deleteLastSection(downStation);
 
         // then
-        assertThat(line.getSections()).isEmpty();
+        assertThat(line.getSectionsSize()).isEqualTo(0);
     }
 
     @DisplayName("Line에 section이 없는데 section을 제거하려 한 경우 예외를 발생한다")
@@ -83,7 +83,7 @@ class LineTest {
         // given
 
         // when
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> line.removeLastSection());
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> line.deleteLastSection(downStation));
 
         // then
         assertThat(exception).isInstanceOf(IllegalStateException.class);

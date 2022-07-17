@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,8 +12,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -34,10 +33,6 @@ public class Line {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
@@ -46,36 +41,24 @@ public class Line {
         return color;
     }
 
-    public List<Section> getSections() {
-        return sections;
-    }
-
     public void addSection(Section section) {
-        sections.add(section);
+        this.sections.add(section);
     }
 
     public List<Station> getStations() {
-        final List<Station> stations = new ArrayList<>();
-        stations.add(getFirstSection().getUpStation());
-        for (Section section : sections) {
-            stations.add(section.getDownStation());
-        }
-        return new ArrayList<>(stations);
-    }
-
-    public void removeLastSection() {
-        if (sections.isEmpty()) {
-            throw new IllegalStateException("삭제할 section이 존재하지 않습니다.");
-        }
-        sections.remove(getLastIndex());
+        return sections.getStations();
     }
 
     public void deleteLastSection(Station station) {
-        Section lastSection = sections.get(getLastIndex());
-        if (!lastSection.hasDownStation(station)) {
-            throw new IllegalArgumentException();
-        }
-        sections.remove(lastSection);
+        sections.deleteLastSection(station);
+    }
+
+    public boolean isEmptySections() {
+        return sections.isEmpty();
+    }
+
+    public int getSectionsSize() {
+        return sections.getSize();
     }
 
     public void update(String name, String color) {
@@ -85,18 +68,6 @@ public class Line {
         if (color != null) {
             this.color = color;
         }
-    }
-
-    public boolean isEmptySections() {
-        return sections.isEmpty();
-    }
-
-    private Section getFirstSection() {
-        return sections.get(0);
-    }
-
-    private int getLastIndex() {
-        return sections.size() - 1;
     }
 
     @Override
