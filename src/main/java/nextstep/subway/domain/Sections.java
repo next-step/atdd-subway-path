@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import static nextstep.subway.common.exception.errorcode.EntityErrorCode.*;
+import static nextstep.subway.common.exception.errorcode.StatusErrorCode.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,6 +12,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
 import org.springframework.util.CollectionUtils;
+
+import nextstep.subway.common.exception.BusinessException;
 
 public class Sections {
 	@OneToMany(mappedBy = "line",
@@ -47,7 +52,7 @@ public class Sections {
 
 		Section lastSection = getLastSection();
 		if (!lastSection.isSameWithDownStation(station.getId())) {
-			throw new IllegalArgumentException();
+			throw new BusinessException(INVALID_STATUS);
 		}
 
 		sections.removeIf(section -> section.equals(lastSection));
@@ -57,7 +62,7 @@ public class Sections {
 		return sections.stream()
 			.skip(sections.size() - 1)
 			.findFirst()
-			.orElseThrow(IllegalAccessError::new);
+			.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
 
 	}
 }
