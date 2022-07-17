@@ -28,7 +28,7 @@ class SectionsTest {
         sections.add(section2);
 
         // when
-        List<Station> stations = sections.stations();
+        List<Station> stations = sections.getStations();
 
         // then
         assertThat(stations).containsOnly(gangnam, yeoksam, seolleung);

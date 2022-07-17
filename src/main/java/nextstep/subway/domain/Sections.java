@@ -19,7 +19,7 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> values = new ArrayList<>();
 
-    public List<Station> stations() {
+    public List<Station> getStations() {
         return values.stream()
                 .map(Section::stations)
                 .flatMap(List::stream)
