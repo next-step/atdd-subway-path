@@ -37,6 +37,16 @@ public class Section {
         this.distance = new Distance(distance);
     }
 
+    public Section(Station upStation, Station downStation, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = new Distance(distance);
+    }
+
+    protected void makeRelation(Line line) {
+        this.line = line;
+    }
+
     public Long getId() {
         return id;
     }
