@@ -5,6 +5,9 @@ import java.util.Objects;
 
 @Entity
 public class Section {
+
+    private static final String SECTION_MINIMUM_DISTANCE_EXCEPTION = "구간의 최소거리는 1이상 입니다";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,10 +31,18 @@ public class Section {
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
+        if (isInValidDistance(distance)) {
+            throw new IllegalArgumentException(SECTION_MINIMUM_DISTANCE_EXCEPTION);
+        }
+
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private boolean isInValidDistance(int distance) {
+        return distance <= 0;
     }
 
     public Long getId() {
