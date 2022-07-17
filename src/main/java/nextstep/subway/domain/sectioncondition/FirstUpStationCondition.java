@@ -11,7 +11,7 @@ class FirstUpStationCondition implements SectionCondition {
     @Override
     public boolean matches(final Line line, final AddSectionRequest request) {
         return line.isFirstStation(request.getDownStation())
-                && !line.hasStation(request.getUpStation());
+                && !line.containsStation(request.getUpStation());
     }
 
     @Override

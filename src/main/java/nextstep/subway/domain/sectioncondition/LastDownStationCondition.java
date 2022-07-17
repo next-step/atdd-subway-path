@@ -11,7 +11,7 @@ class LastDownStationCondition implements SectionCondition {
     @Override
     public boolean matches(final Line line, final AddSectionRequest request) {
         return line.isLastDownStation(request.getUpStation())
-                && !line.hasStation(request.getDownStation());
+                && !line.containsStation(request.getDownStation());
     }
 
     @Override

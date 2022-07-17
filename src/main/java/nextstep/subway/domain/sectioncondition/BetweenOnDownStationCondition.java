@@ -18,7 +18,7 @@ class BetweenOnDownStationCondition implements SectionCondition {
             return false;
         }
 
-        return !line.hasStation(request.getUpStation());
+        return !line.containsStation(request.getUpStation());
     }
 
     private boolean hasDownStationMatchedSection(final Line line, final Station downStation) {
@@ -53,8 +53,8 @@ class BetweenOnDownStationCondition implements SectionCondition {
     }
 
     private void updateSection(final Line line, final AddSectionRequest request, final List<Section> sections, final Section section) {
-        section.updateDownStationAndDistance(request.getUpStation(), section.getDistance() - request.getDistance());
         line.addSection(sections.indexOf(section) + 1, createSection(line, request));
+        section.updateDownStationAndDistance(request.getUpStation(), section.getDistance() - request.getDistance());
     }
 
     private Section createSection(final Line line, final AddSectionRequest request) {

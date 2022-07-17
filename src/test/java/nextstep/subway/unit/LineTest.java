@@ -104,7 +104,7 @@ class LineTest {
         line.addSection(section(line, upStation(), downStation));
 
         // when
-        final boolean result = line.hasStation(downStation);
+        final boolean result = line.containsStation(downStation);
 
         // then
         assertThat(result).isTrue();
@@ -117,7 +117,7 @@ class LineTest {
         line.addSection(section(line, upStation(), downStation()));
 
         // when
-        final boolean result = line.hasStation(station(10));
+        final boolean result = line.containsStation(station(10));
 
         // then
         assertThat(result).isFalse();

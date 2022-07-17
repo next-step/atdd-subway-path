@@ -138,7 +138,7 @@ public class Line {
         return stations.get(0).equals(station);
     }
 
-    public boolean hasStation(final Station station) {
+    public boolean containsStation(final Station station) {
         return getStations().contains(station);
     }
 }

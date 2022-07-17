@@ -18,7 +18,7 @@ class BetweenOnUpStationCondition implements SectionCondition {
             return false;
         }
 
-        return !line.hasStation(request.getDownStation());
+        return !line.containsStation(request.getDownStation());
     }
 
     private boolean hasUpStationMatchedSection(final Line line, final Station upStation) {
