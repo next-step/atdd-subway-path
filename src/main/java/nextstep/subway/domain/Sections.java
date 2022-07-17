@@ -49,10 +49,6 @@ public class Sections {
         sections.remove(lastSection);
     }
 
-    public boolean isEmpty() {
-        return sections.isEmpty();
-    }
-
     public int getSize() {
         return sections.size();
     }

@@ -37,10 +37,6 @@ public class Line {
         sections.deleteLastSection(station);
     }
 
-    public boolean isEmptySections() {
-        return sections.isEmpty();
-    }
-
     public void update(String name, String color) {
         if (name != null) {
             this.name = name;
