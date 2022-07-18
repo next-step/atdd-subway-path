@@ -36,6 +36,14 @@ public class Section {
         this.distance = new Distance(distance);
     }
 
+    public void changeUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void changeDownStation(Station station) {
+        this.downStation = station;
+    }
+
     public boolean matchDownStation(Station station) {
         return downStation.equals(station);
     }

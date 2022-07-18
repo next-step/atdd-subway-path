@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,7 +20,8 @@ public class Sections {
         if (sections.size() > MINIMUM_SECTIONS_SIZE) {
             isContains(addedSection);
             Section matchedSection = getMatchedSection(addedSection);
-            matchedSection.changeDistance(addedSection.getDistance());
+            changeMatchStation(addedSection, matchedSection);
+            changeAroundStationByMatchStation(addedSection, matchedSection);
         }
         sections.add(addedSection);
     }
@@ -42,6 +44,34 @@ public class Sections {
         return matchSection.get();
     }
 
+    private void changeMatchStation(Section addedSection, Section matchedSection) {
+        if (matchedSection.getUpStation().equals(addedSection.getUpStation())) {
+            matchedSection.changeUpStation(addedSection.getDownStation());
+            matchedSection.changeDistance(addedSection.getDistance());
+        }
+        if (matchedSection.getDownStation().equals(addedSection.getDownStation())) {
+            matchedSection.changeDownStation(addedSection.getUpStation());
+            matchedSection.changeDistance(addedSection.getDistance());
+        }
+    }
+
+    private void changeAroundStationByMatchStation(Section addedSection, Section matchedSection) {
+        Optional<Section> aroundMatchedSection = sections.stream()
+                .filter(section -> !matchedSection.equals(section))
+                .filter(addedSection::anyMatch)
+                .findFirst();
+
+        if (aroundMatchedSection.isPresent()) {
+            Section aroundSection = aroundMatchedSection.get();
+            if (aroundSection.getDownStation().equals(matchedSection.getUpStation())) {
+                aroundSection.changeDownStation(addedSection.getUpStation());
+            } else {
+                aroundSection.changeUpStation(addedSection.getDownStation());
+            }
+        }
+    }
+
+
     public void deleteSection(Station station) {
         Section lastSection = sections.get(getLastIndex());
 
@@ -53,11 +83,40 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        return getSortedSection()
-                .map(Section::getStations)
-                .flatMap(List::stream)
-                .distinct()
-                .collect(Collectors.toList());
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Station> stations = new ArrayList<>();
+        Station downStation = findFirstUpStation();
+        stations.add(downStation);
+
+        while (sections.size() + 1 != stations.size()) {
+            downStation = findNextLineStation(downStation).getDownStation();
+            stations.add(downStation);
+        }
+
+        return Collections.unmodifiableList(stations);
+    }
+
+    private Station findFirstUpStation() {
+        return sections.stream()
+                .map(Section::getUpStation)
+                .filter(this::isStartStation)
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Section findNextLineStation(Station finalDownStation) {
+        return sections.stream()
+                .filter(it -> finalDownStation.equals(it.getUpStation()))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private boolean isStartStation(Station station) {
+        return sections.stream()
+                .noneMatch(currentStation -> station.equals(currentStation.getDownStation()));
     }
 
     private int getLastIndex() {
@@ -65,12 +124,8 @@ public class Sections {
     }
 
     public List<Section> getSections() {
-        return getSortedSection()
-                .collect(Collectors.toList());
-    }
-
-    private Stream<Section> getSortedSection() {
         return sections.stream()
-                .sorted((s1, s2) -> s1.getUpStation().getName().compareTo(s2.getDownStation().getName()));
+                .sorted((s1, s2) -> s1.getUpStation().getName().compareTo(s2.getDownStation().getName()))
+                .collect(Collectors.toList());
     }
 }

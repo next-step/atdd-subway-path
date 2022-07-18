@@ -71,6 +71,16 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선 상행 종점역에 새로운 구간을 추가를 요청 하면
      * Then 노선에 새로운 구간이 추가된다
      */
+    @Test
+    void 지하철_노선_구간_상행_종점역에_새로운_구간을_추가() {
+        // when
+        var 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 강남역, 5));
+
+        // then
+        var 지하철_노선_목록_조회_응답 = 지하철_노선_목록을_조회한다();
+        지하철_노선이_포함되어있다(지하철_노선_목록_조회_응답, 정자역, 강남역, 양재역);
+    }
 
     /**
      * When 지하철 노선 상행 종점역에 새로운 구간을 추가를 요청 하면
