@@ -127,6 +127,21 @@ public class SectionsTest {
         assertThat(exception).isInstanceOf(SectionsException.class);
     }
 
+    @DisplayName("역 사이에 새로운 역 추가할때, 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다")
+    @Test
+    public void dd_section_fail_by_already_register_up_down_stations() {
+        // given
+        Sections sections = new Sections();
+        sections.add(section);
+
+        // when
+        Section newSection = new Section(line, upStation, downStation, 15);
+        SectionsException exception = assertThrows(SectionsException.class, () -> sections.add(newSection));
+
+        // then
+        assertThat(exception).isInstanceOf(SectionsException.class);
+    }
+
     @DisplayName("Sections에 등록된 모든 역을 조회한다")
     @Test
     public void get_all_station_in_section() {
