@@ -50,4 +50,16 @@ public class Line {
     public List<Section> getSections() {
         return sections;
     }
+
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public void deleteSection(Section section) {
+        sections.stream()
+                .filter(e -> e.equals(section))
+                .findFirst()
+                .ifPresent(sections::remove);
+
+    }
 }
