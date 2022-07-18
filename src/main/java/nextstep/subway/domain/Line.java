@@ -3,6 +3,8 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import nextstep.subway.domain.exception.InvalidLineColorException;
+import nextstep.subway.domain.exception.InvalidLineNameException;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
@@ -27,14 +29,14 @@ public class Line {
 
     public void changeName(String name) {
         if (!StringUtils.hasText(name)) {
-            return;
+            throw new InvalidLineNameException();
         }
         this.name = name;
     }
 
     public void changeColor(String color) {
         if (!StringUtils.hasText(color)) {
-            return;
+            throw new InvalidLineColorException();
         }
         this.color = color;
     }
