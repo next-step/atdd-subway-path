@@ -14,7 +14,6 @@ import java.util.List;
 public class Sections {
 
     private static final int FIRST_SECTION_INDEX = 0;
-    private static final String NOT_SAME_DOWN_STATION_EXCEPTION = "마지막 구간의 하행종점역이 삭제할 하행종점역과 일치하지 않습니다";
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -71,7 +70,7 @@ public class Sections {
 
         Section lastSection = getLastSection();
         if (lastSection.hasNotDownStation(station)) {
-            throw new IllegalStateException(NOT_SAME_DOWN_STATION_EXCEPTION);
+            throw new SectionsException(ErrorCode.NOT_SAME_DOWN_STATION_EXCEPTION);
         }
 
         sections.remove(lastSection);

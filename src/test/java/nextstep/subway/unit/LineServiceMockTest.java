@@ -153,10 +153,10 @@ public class LineServiceMockTest {
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
         // when
-        Exception exception = assertThrows(IllegalStateException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
+        Exception exception = assertThrows(SectionsException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
 
         // then
-        then(exception).isInstanceOf(IllegalStateException.class);
+        then(exception).isInstanceOf(SectionsException.class);
     }
 
     @DisplayName("존재하는 라인의 색과 이름을 변경할 수 있다")

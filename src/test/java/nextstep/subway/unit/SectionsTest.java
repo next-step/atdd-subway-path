@@ -163,9 +163,9 @@ public class SectionsTest {
         sections.add(section);
 
         // when
-        Exception exception = assertThrows(IllegalStateException.class, () -> sections.deleteLastSection(upStation));
+        Exception exception = assertThrows(SectionsException.class, () -> sections.deleteLastSection(upStation));
 
         // then
-        assertThat(exception).isInstanceOf(IllegalStateException.class);
+        assertThat(exception).isInstanceOf(SectionsException.class);
     }
 }
