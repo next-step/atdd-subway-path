@@ -13,6 +13,7 @@ import java.util.Map;
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
@@ -83,13 +84,33 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("신규 구간의 상행역이 기존 구간의 상행역과 동일할 경우 중간에 구간을 추가할 수 있다")
     @Test
-    public void add_station_at_line_middle() {
+    public void add_section_at_line_middle() {
         // when
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 신규역, 3));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         지하철_역_순서_확인(response, 강남역, 신규역, 양재역);
+    }
+
+    /**
+     * When 기존 구간의 상행 종점역과 동일한 상행역을 가지고
+     * When 새로운 하행역 기존의 구간 거리보다 같거나 클떄
+     * When 구간 생성을 요청하면
+     * Then 구간 생성이 실패한다
+     */
+    @DisplayName("역 사이에 새로운 역 추가할때, 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다")
+    @Test
+    public void add_section_fail_by_over_distance() {
+        // when
+        int overDistance = 11;
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 신규역, overDistance));
+
+        // then
+        assertAll(
+                () -> assertThat(response.jsonPath().getString("message")).isEqualTo("기존의 구간 길이보다 긴 신규구간을 중간에 추가할 수 없습니다"),
+                () -> assertThat(response.jsonPath().getInt("status")).isEqualTo(HttpStatus.BAD_REQUEST.value())
+        );
     }
 
     /**
