@@ -1,6 +1,8 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.fixture;
 
-class StationTest {
+import nextstep.subway.domain.Station;
+
+public class StationFixture {
 
     public static final Station GANGNAM_STATION = new Station(1L, "강남역");
     public static final Station YEOKSAM_STATION = new Station(2L, "역삼역");

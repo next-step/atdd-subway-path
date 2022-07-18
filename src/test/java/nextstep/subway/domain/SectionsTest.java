@@ -5,6 +5,7 @@ import nextstep.subway.domain.exception.SectionDeleteException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static nextstep.subway.domain.fixture.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -14,8 +15,8 @@ class SectionsTest {
     @DisplayName("모든 구간의 지하철 역들을 반환한다.")
     void getStations() {
         //given
-        Section section = new Section(StationTest.GANGNAM_STATION, StationTest.YEOKSAM_STATION, 10);
-        Section section2 = new Section(StationTest.YEOKSAM_STATION, StationTest.SEOLLEUNG_STATION, 10);
+        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section section2 = new Section(YEOKSAM_STATION, SEOLLEUNG_STATION, 10);
 
         Sections sections = new Sections();
         sections.add(section);
@@ -32,14 +33,14 @@ class SectionsTest {
     void delete_section() {
         // given
         Sections sections = new Sections();
-        Section section = new Section(StationTest.GANGNAM_STATION, StationTest.YEOKSAM_STATION, 10);
-        Section newSection = new Section(StationTest.YEOKSAM_STATION, StationTest.SEOLLEUNG_STATION, 5);
+        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section newSection = new Section(YEOKSAM_STATION, SEOLLEUNG_STATION, 5);
 
         sections.add(section);
         sections.add(newSection);
 
         // when
-        sections.delete(StationTest.SEOLLEUNG_STATION);
+        sections.delete(SEOLLEUNG_STATION);
 
         // then
         assertThat(sections.getStations()).doesNotContain(new Station(3L, "선릉역"));
@@ -50,14 +51,14 @@ class SectionsTest {
     void invalid_delete_not_last_section() {
         // given
         Sections sections = new Sections();
-        Section section = new Section(StationTest.GANGNAM_STATION, StationTest.YEOKSAM_STATION, 10);
-        Section newSection = new Section(StationTest.YEOKSAM_STATION, StationTest.SEOLLEUNG_STATION, 5);
+        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section newSection = new Section(YEOKSAM_STATION, SEOLLEUNG_STATION, 5);
 
         sections.add(section);
         sections.add(newSection);
 
         // then
-        assertThatThrownBy(() -> sections.delete(StationTest.YEOKSAM_STATION))
+        assertThatThrownBy(() -> sections.delete(YEOKSAM_STATION))
                 .isInstanceOf(SectionDeleteException.class);
     }
 
@@ -68,7 +69,7 @@ class SectionsTest {
         Sections sections = new Sections();
 
         // then
-        assertThatThrownBy(() -> sections.delete(StationTest.YEOKSAM_STATION))
+        assertThatThrownBy(() -> sections.delete(YEOKSAM_STATION))
                 .isInstanceOf(NotExistSectionException.class);
     }
 
