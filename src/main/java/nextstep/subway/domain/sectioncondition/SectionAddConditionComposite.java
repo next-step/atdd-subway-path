@@ -9,28 +9,28 @@ import java.util.List;
 
 @Primary
 @Component
-class AddSectionConditionComposite implements AddSectionCondition {
+class SectionAddConditionComposite implements SectionAddCondition {
 
-    private final List<AddSectionCondition> addSectionConditions;
+    private final List<SectionAddCondition> sectionAddConditions;
 
-    public AddSectionConditionComposite(final List<AddSectionCondition> addSectionConditions) {
-        this.addSectionConditions = addSectionConditions;
+    public SectionAddConditionComposite(final List<SectionAddCondition> sectionAddConditions) {
+        this.sectionAddConditions = sectionAddConditions;
     }
 
     @Override
     public boolean matches(Line line, final AddSectionRequest addSectionRequest) {
-        return addSectionConditions.stream()
+        return sectionAddConditions.stream()
                 .anyMatch(condition -> condition.matches(line, addSectionRequest));
     }
 
     @Override
     public void addSection(final Line line, final AddSectionRequest request) {
-        final AddSectionCondition addSectionCondition = findMatches(line, request);
-        addSectionCondition.addSection(line, request);
+        final SectionAddCondition sectionAddCondition = findMatches(line, request);
+        sectionAddCondition.addSection(line, request);
     }
 
-    private AddSectionCondition findMatches(final Line line, final AddSectionRequest addSectionRequest) {
-        return addSectionConditions.stream()
+    private SectionAddCondition findMatches(final Line line, final AddSectionRequest addSectionRequest) {
+        return sectionAddConditions.stream()
                 .filter(condition -> condition.matches(line, addSectionRequest))
                 .findAny()
                 .orElseThrow(IllegalStateException::new);

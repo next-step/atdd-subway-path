@@ -2,11 +2,10 @@ package nextstep.subway.domain.sectioncondition;
 
 import nextstep.subway.applicaion.dto.AddSectionRequest;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 import org.springframework.stereotype.Component;
 
 @Component
-class LastDownStationAddCondition implements AddSectionCondition {
+class LastDownStationAddCondition implements SectionAddCondition {
 
     @Override
     public boolean matches(final Line line, final AddSectionRequest request) {

@@ -5,7 +5,7 @@ import nextstep.subway.domain.Line;
 import org.springframework.stereotype.Component;
 
 @Component
-class FirstUpStationAddCondition implements AddSectionCondition {
+class FirstUpStationAddCondition implements SectionAddCondition {
 
     @Override
     public boolean matches(final Line line, final AddSectionRequest request) {

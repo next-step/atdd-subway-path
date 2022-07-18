@@ -13,13 +13,13 @@ import static nextstep.subway.utils.StationTestSources.station;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class AddSectionConditionCompositeTest {
+class SectionAddConditionCompositeTest {
 
-    private AddSectionCondition target;
+    private SectionAddCondition target;
 
     @BeforeEach
     void setUp() {
-        target = new AddSectionConditionComposite(List.of(
+        target = new SectionAddConditionComposite(List.of(
                 new EmptySectionsAddCondition(),
                 new LastDownStationAddCondition(),
                 new FirstUpStationAddCondition(),

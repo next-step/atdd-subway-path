@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 @Component
-class BetweenOnUpStationAddCondition implements AddSectionCondition {
+class BetweenOnUpStationAddCondition implements SectionAddCondition {
 
     @Override
     public boolean matches(Line line, final AddSectionRequest request) {
