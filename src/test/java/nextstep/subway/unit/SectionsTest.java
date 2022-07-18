@@ -58,6 +58,23 @@ public class SectionsTest {
         assertThat(sections.getStations()).containsExactly(newStation, upStation, downStation);
     }
 
+    @DisplayName("노선의 하행역과 신규 추가할 구간의 상행역이 동일할 경우 노선의 뒷부분에 신규 구간을 추가할 수 있다.")
+    @Test
+    public void add_section_back_at_line() {
+        // given
+        Sections sections = new Sections();
+        sections.add(section);
+
+        Station newStation = new Station(3L, "신규역");
+
+        // when
+        Section newSection = new Section(line, downStation, newStation, 5);
+        sections.add(newSection);
+
+        // then
+        assertThat(sections.getStations()).containsExactly(upStation, downStation, newStation);
+    }
+
     @DisplayName("Sections에 등록된 모든 역을 조회한다")
     @Test
     public void get_all_station_in_section() {
