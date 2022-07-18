@@ -32,6 +32,14 @@ public class Sections {
             throw new SectionsException(ErrorCode.ALREADY_BOTH_STATION_REGISTER_EXCEPTION);
         }
 
+        if (hasUpStation) {
+            Section findSection = findSectionByUpStation(section.getUpStation());
+            Station findDownStation = findSection.getDownStation();
+            findSection.updateDownStation(section.getDownStation());
+            sections.add(new Section(section.getLine(), section.getDownStation(), findDownStation, section.getDistance()));
+            return;
+        }
+
         if (isSectionsUpStation(section.getDownStation())) {
             sections.add(section);
             return;
@@ -41,6 +49,13 @@ public class Sections {
             sections.add(section);
             return;
         }
+    }
+
+    private Section findSectionByUpStation(Station upStation) {
+        return sections.stream()
+                .filter(section -> section.hasSameUpStation(upStation))
+                .findFirst()
+                .orElseThrow(() -> new SectionsException(ErrorCode.NOT_FOUND_SECTION_EXCEPTION));
     }
 
     public List<Station> getStations() {

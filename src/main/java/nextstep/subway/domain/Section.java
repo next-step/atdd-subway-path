@@ -45,6 +45,10 @@ public class Section {
         return distance <= 0;
     }
 
+    public void updateDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
     public boolean hasNotDownStation(Station station) {
         return !this.downStation.equals(station);
     }
