@@ -2,13 +2,13 @@ package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.BDDMockito.given;
 
 import java.util.List;
-import java.util.Optional;
 import nextstep.subway.applicaion.LineService;
+import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
@@ -31,6 +31,25 @@ public class LineServiceTest {
     @Autowired
     private LineService lineService;
 
+    @DisplayName("지하철 노선 생성")
+    @Test
+    void saveLine() {
+        //given
+        Station 강남역 = stationRepository.save(new Station("강남역"));
+        Station 역삼역 = stationRepository.save(new Station("역삼역"));
+
+        //when
+        LineResponse response = lineService.saveLine(
+                new LineRequest("신분당선", "yellow", 강남역.getId(), 역삼역.getId(), 10));
+
+        //then
+        assertThat(response.getName()).isEqualTo("신분당선");
+        assertThat(response.getColor()).isEqualTo("yellow");
+        assertThat(response.getStations()).containsExactly(
+                new StationResponse(강남역.getId(), "강남역"),
+                new StationResponse(역삼역.getId(), "역삼역"));
+    }
+
     @DisplayName("지하철 구간 생성")
     @Test
     void addSection() {
@@ -48,7 +67,7 @@ public class LineServiceTest {
         // line.getSections 메서드를 통해 검증
         Section section = 신분당선.getSections().get(0);
         assertThat(section.getLine()).isEqualTo(신분당선);
-        assertThat(section.getStations()).containsExactly(강남역,역삼역);
+        assertThat(section.getStations()).containsExactly(강남역, 역삼역);
     }
 
     @DisplayName("지하철 구간 추가시 노선을 찾지 못하면 예외발생")
