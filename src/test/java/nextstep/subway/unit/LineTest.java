@@ -21,7 +21,7 @@ class LineTest {
         Section 지하철구간 = new Section(신분당선, 강남역, 역삼역 , 10);
 
         //when
-        신분당선.getSections().add(지하철구간);
+        신분당선.addSection(지하철구간);
 
         //then
         assertThat(신분당선.getSections()).containsExactly(지하철구간);
@@ -37,7 +37,7 @@ class LineTest {
         Section 지하철구간 = new Section(신분당선, 강남역, 역삼역 , 10);
 
         //when
-        신분당선.getSections().add(지하철구간);
+        신분당선.addSection(지하철구간);
 
         //then
         assertThat(신분당선.getStations()).containsExactly(강남역,역삼역);

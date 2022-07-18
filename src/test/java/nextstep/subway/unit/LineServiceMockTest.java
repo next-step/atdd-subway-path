@@ -157,7 +157,7 @@ public class LineServiceMockTest {
     void deleteSectionException2() {
         // given
         Line 신분당선 = new Line("신분당선", "yellow");
-        신분당선.getSections().add(new Section(신분당선, new Station("강남역"), new Station("역삼역"), 10));
+        신분당선.addSection(new Section(신분당선, new Station("강남역"), new Station("역삼역"), 10));
         given(lineRepository.findById(1L)).willReturn(Optional.of(신분당선));
         given(stationService.findById(1L)).willReturn(new Station("강남역"));
 
