@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import nextstep.subway.domain.exception.NotExistSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -36,9 +37,6 @@ public class Sections {
 
     public void delete(Station station) {
         Section lastSection = findLastSection();
-        if (lastSection == null) {
-            throw new IllegalStateException();
-        }
         if (!lastSection.isMatchDownStation(station)) {
             throw new IllegalArgumentException();
         }
@@ -47,7 +45,7 @@ public class Sections {
 
     private Section findLastSection() {
         if (lastIndex() < EMPTY_VALUE) {
-            return null;
+            throw new NotExistSectionException();
         }
         return values.get(lastIndex());
     }

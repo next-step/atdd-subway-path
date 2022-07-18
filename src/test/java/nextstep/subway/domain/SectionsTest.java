@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exception.NotExistSectionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -67,7 +68,7 @@ class SectionsTest {
 
         // then
         assertThatThrownBy(() -> sections.delete(StationTest.YEOKSAM_STATION))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(NotExistSectionException.class);
     }
 
 }
