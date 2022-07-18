@@ -23,4 +23,17 @@ class SectionTest {
         });
     }
 
+    @Test
+    @DisplayName("상행역 혹은 하행역 중에 동일한 역이 있으면 True, 없으면 False 를 리턴한다.")
+    void hasStations() {
+        // given
+        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, 10);
+
+        // when
+        assertAll(() -> {
+            assertThat(section.hasStation(new Station(1L, "강남역"))).isTrue();
+            assertThat(section.hasStation(new Station(2L, "역삼역"))).isTrue();
+            assertThat(section.hasStation(new Station(3L, "선릉역"))).isFalse();
+        });
+    }
 }

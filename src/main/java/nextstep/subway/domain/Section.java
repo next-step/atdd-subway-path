@@ -44,7 +44,19 @@ public class Section {
         return downStation.equals(station);
     }
 
+    public boolean hasStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
     public List<Station> getStations() {
         return List.of(upStation, downStation);
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 }
