@@ -11,6 +11,10 @@ public class ResponseUtils {
         return response.jsonPath().getLong("id");
     }
 
+    public static String getLineName(ExtractableResponse<Response> response) {
+        return response.jsonPath().getString("name");
+    }
+
     public static List<Long> getStationIds(ExtractableResponse<Response> response) {
         return response.jsonPath().getList("stations.id", Long.class);
     }
