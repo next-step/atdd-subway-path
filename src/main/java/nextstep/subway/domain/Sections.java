@@ -48,7 +48,7 @@ public class Sections {
     public Station getLastDownStation() {
         return this.sections.stream()
                 .filter(section -> this.sections.stream()
-                        .noneMatch(other -> other.isSameAsUpStation(section.getDownStation())))
+                        .noneMatch(other -> other.isSameUpStationForDown(section)))
                 .findFirst()
                 .map(Section::getDownStation)
                 .orElseThrow(NotFountSectionException::new);
@@ -76,7 +76,7 @@ public class Sections {
 
     private Section findSection(Section currentSection) {
         return this.sections.stream()
-                .filter(section -> section.isSameAsUpStation(currentSection.getDownStation()))
+                .filter(section -> section.isSameUpStationForDown(currentSection))
                 .findFirst()
                 .orElse(null);
     }
@@ -84,7 +84,7 @@ public class Sections {
     private Section getFirstSection() {
         return this.sections.stream()
                 .filter(section -> this.sections.stream()
-                        .noneMatch(other -> section.isSameAsUpStation(other.getDownStation())))
+                        .noneMatch(other -> section.isSameUpStationForDown(other)))
                 .findFirst()
                 .orElseThrow(NotFountSectionException::new);
     }
@@ -96,17 +96,12 @@ public class Sections {
             throw new DuplicateSectionException();
         }
 
-        if (addSectionAction(section -> section.isAddBetween(newSection),
+        if (addSectionAction(section -> section.isBetweenSection(newSection),
                 section -> addBetweenSection(newSection, section))) {
             return;
         }
 
-        if (addSectionAction(section -> section.isSameAsUpStation(newSection.getDownStation()),
-                section -> addUpSection(newSection, section))) {
-            return;
-        }
-
-        if (addSectionAction(section -> section.isSameAsDownStation(newSection.getUpStation()),
+        if (addSectionAction(section -> section.isLeafSection(newSection),
                 section -> this.sections.add(newSection))) {
             return;
         }
@@ -132,25 +127,18 @@ public class Sections {
                 .findFirst();
     }
 
-    private void addUpSection(Section newSection, Section section) {
-        int index = this.sections.indexOf(section);
-        this.sections.add(index, newSection);
-    }
-
     private void addBetweenSection(Section newSection, Section section) {
         if (!section.isEnoughDistance(newSection.getDistance())) {
             throw new InvalidDistanceException(section.getDistance());
         }
 
-        int index = this.sections.indexOf(section);
-
-        if (section.isSameAsUpStation(newSection.getUpStation())) {
-            this.sections.add(index, newSection);
+        if (section.isSameUpStationIn(newSection)) {
+            this.sections.add(newSection);
             section.changeDownSection(newSection);
             return;
         }
 
-        this.sections.add(index + 1, newSection);
+        this.sections.add(newSection);
         section.changeUpSection(newSection);
     }
 

@@ -52,8 +52,12 @@ public class Section {
         return this.distance > distance;
     }
 
-    public boolean isAddBetween(Section section) {
+    public boolean isBetweenSection(Section section) {
         return this.upStation.equals(section.upStation) || this.downStation.equals(section.downStation);
+    }
+
+    public boolean isLeafSection(Section section) {
+        return this.upStation.equals(section.downStation) || this.downStation.equals(section.upStation);
     }
 
     public void changeUpSection(Section newSection) {
@@ -70,16 +74,15 @@ public class Section {
         return this.distance - distance;
     }
 
-    public boolean isSameAsUpStation(Station station) {
-        return this.upStation.equals(station);
-    }
-
-    public boolean isSameAsDownStation(Station station) {
-        return this.downStation.equals(station);
+    public boolean isSameUpStationForDown(Section section) {
+        return this.upStation.equals(section.downStation);
     }
 
     public boolean isSameStations(Section section) {
         return this.upStation.equals(section.upStation) && this.downStation.equals(section.downStation);
     }
 
+    public boolean isSameUpStationIn(Section section) {
+        return this.upStation.equals(section.upStation);
+    }
 }
