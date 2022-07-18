@@ -50,6 +50,24 @@ public class LineServiceTest {
                 new StationResponse(역삼역.getId(), "역삼역"));
     }
 
+    @DisplayName("지하철 노선 목록 조회")
+    @Test
+    void showLines() {
+        //given
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "yellow"));
+        Line 분당선 = lineRepository.save(new Line("분당선", "red"));
+
+        //when
+        List<LineResponse> lineResponses = lineService.showLines();
+
+        //then
+        assertThat(lineResponses).hasSize(2);
+        assertThat(lineResponses).containsExactly(
+                new LineResponse(신분당선.getId(),신분당선.getName(),신분당선.getColor()),
+                new LineResponse(분당선.getId(),분당선.getName(),분당선.getColor())
+        );
+    }
+
     @DisplayName("지하철 구간 생성")
     @Test
     void addSection() {
