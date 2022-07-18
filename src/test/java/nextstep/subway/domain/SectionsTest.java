@@ -1,7 +1,9 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exception.InvalidMatchEndStationException;
 import nextstep.subway.domain.exception.NotExistSectionException;
 import nextstep.subway.domain.exception.SectionDeleteException;
+import nextstep.subway.domain.exception.StationAlreadyExistsException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +28,53 @@ class SectionsTest {
         assertThat(sections.getStations()).containsOnly(new Station(1L, "강남역"),
                                                             new Station(2L, "역삼역"),
                                                             new Station(3L, "선릉역"));
+    }
+
+    @Test
+    @DisplayName("구간이 추가되면 새로운 구간의 상행역과 하행역을 조회할 수 있다.")
+    void new_section() {
+        // given
+        Sections sections = new Sections();
+
+        // when
+        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        sections.add(section);
+
+        // then
+        assertThat(sections.getStations()).containsOnly(new Station(1L, "강남역"),
+                new Station(2L, "역삼역"));
+    }
+
+    @Test
+    @DisplayName("추가하려는 구간의 상행역이 해당 노선의 하행 종점역과 같지 않으면 예외를 반환한다.")
+    void invalid_new_section_wrong_upStation() {
+        // given
+        Sections sections = new Sections();
+        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        sections.add(section);
+
+        // when
+        Section newSection = new Section(GANGNAM_STATION, SEOLLEUNG_STATION, 5);
+
+        // then
+        assertThatThrownBy(() -> sections.add(newSection))
+                .isInstanceOf(InvalidMatchEndStationException.class);
+    }
+
+    @Test
+    @DisplayName("추가하려는 구간의 하행역이 해당 노선의 지하철역 일 경우 예외를 반환한다.")
+    void invalid_new_section_wrong_downStation() {
+        // given
+        Sections sections = new Sections();
+        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        sections.add(section);
+
+        // when
+        Section newSection = new Section(YEOKSAM_STATION, GANGNAM_STATION, 5);
+
+        // then
+        assertThatThrownBy(() -> sections.add(newSection))
+                .isInstanceOf(StationAlreadyExistsException.class);
     }
 
     @Test

@@ -3,8 +3,10 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import nextstep.subway.domain.exception.InvalidMatchEndStationException;
 import nextstep.subway.domain.exception.NotExistSectionException;
 import nextstep.subway.domain.exception.SectionDeleteException;
+import nextstep.subway.domain.exception.StationAlreadyExistsException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -33,7 +35,24 @@ public class Sections {
     }
 
     public void add(Section section) {
-        values.add(section);
+        if (!values.isEmpty()) {
+            validateSection(section);
+        }
+        this.values.add(section);
+    }
+
+    private void validateSection(Section additionalSection) {
+        Section lastSection = findLastSection();
+        if (!lastSection.isMatchDownStation(additionalSection.getUpStation())) {
+            throw new InvalidMatchEndStationException(additionalSection.getUpStation().getId());
+        }
+        if(this.hasStation(additionalSection.getDownStation())) {
+            throw new StationAlreadyExistsException(additionalSection.getDownStation().getId());
+        }
+    }
+
+    private boolean hasStation(Station station) {
+        return values.stream().anyMatch(section -> section.hasStation(station));
     }
 
     public void delete(Station station) {
@@ -54,5 +73,4 @@ public class Sections {
     private int lastIndex() {
         return values.size() - ONE;
     }
-
 }
