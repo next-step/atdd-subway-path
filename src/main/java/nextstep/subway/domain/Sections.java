@@ -5,6 +5,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -19,6 +20,15 @@ public class Sections {
             if (sections.contains(section)) {
                 throw new IllegalArgumentException("같은 구간이 있습니다.");
             }
+
+            Optional<Section> matchSection = sections.stream()
+                    .filter(section::anyMatch)
+                    .findFirst();
+
+            if (matchSection.isEmpty()) {
+                throw new IllegalArgumentException("상행역 하행역이 모두 포함되어있지 않습니다");
+            }
+
         }
         sections.add(section);
     }

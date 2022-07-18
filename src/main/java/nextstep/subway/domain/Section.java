@@ -40,6 +40,11 @@ public class Section {
         return downStation.equals(station);
     }
 
+    public Boolean anyMatch(Section otherSection) {
+        return getStations().stream()
+                .anyMatch(otherSection.getStations()::contains);
+    }
+
     public List<Station> getStations() {
         return List.of(upStation, downStation);
     }
