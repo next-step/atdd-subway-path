@@ -77,4 +77,8 @@ public class Section {
         result = 31 * result + getDistance();
         return result;
     }
+
+    public boolean equalsDownStation(Station station) {
+        return downStation.equals(station);
+    }
 }

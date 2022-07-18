@@ -103,10 +103,11 @@ public class LineService {
         Station station = stationService.findById(stationId);
         final Section lastSection = line.getLastSection();
 
-        if (!lastSection.getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
+        if (lastSection.equalsDownStation(station)) {
+            line.deleteSection(lastSection);
+            return;
         }
 
-        line.deleteSection(lastSection);
+        throw new IllegalArgumentException();
     }
 }
