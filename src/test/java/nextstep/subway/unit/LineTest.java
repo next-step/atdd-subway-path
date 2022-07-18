@@ -57,4 +57,47 @@ class LineTest {
         //then
         assertThat(신분당선.isEmptySections()).isTrue();
     }
+
+    @DisplayName("지하철 노선 수정")
+    @Test
+    void changeNameAndColor(){
+        //given
+        Line 신분당선 = new Line("신분당선", "yellow");
+
+        //when
+        신분당선.changeNameAndColor("분당선","green");
+
+        //then
+        assertThat(신분당선.getName()).isEqualTo("분당선");
+        assertThat(신분당선.getColor()).isEqualTo("green");
+    }
+
+    @DisplayName("지하철 구간 비었는지 확인")
+    @Test
+    void isEmptySections(){
+        //given
+        Line 신분당선 = new Line("신분당선", "yellow");
+
+        //when
+        boolean isEmpty = 신분당선.isEmptySections();
+
+        //then
+        assertThat(isEmpty).isTrue();
+    }
+
+    @DisplayName("지하철 노선 하행종점역과 같은지 확인")
+    @Test
+    void isEqualLastSectionDownStation(){
+        //given
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+        Line 신분당선 = new Line("신분당선", "yellow");
+        신분당선.addSection(new Section(신분당선, 강남역, 역삼역 , 10));
+
+        //when
+        boolean isEqualLastSectionDownStation = 신분당선.isEqualLastSectionDownStation(역삼역);
+
+        //then
+        assertThat(isEqualLastSectionDownStation).isTrue();
+    }
 }
