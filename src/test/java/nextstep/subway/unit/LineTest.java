@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.sections.SectionsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -84,9 +85,9 @@ class LineTest {
         // given
 
         // when
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> line.deleteLastSection(downStation));
+        Exception exception = assertThrows(SectionsException.class, () -> line.deleteLastSection(downStation));
 
         // then
-        assertThat(exception).isInstanceOf(IllegalStateException.class);
+        assertThat(exception).isInstanceOf(SectionsException.class);
     }
 }
