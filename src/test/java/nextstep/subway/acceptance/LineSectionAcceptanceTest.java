@@ -132,6 +132,29 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * When 기존 구간의 상행 종점역과 다른 상행역을 가지고
+     * When 기존 구간의 하행 종점역과 다른 하행역을 가지고
+     * When 구간 생성을 요청하면
+     * Then 구간 생성이 실패한다
+     */
+    @DisplayName("역 사이에 새로운 역 추가할때, 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다")
+    @Test
+    public void add_section_fail_by_not_exist_up_down_stations() {
+        // given
+        Long 없는역1 = 지하철역_생성_요청("없는역1").jsonPath().getLong("id");
+        Long 없는역2 = 지하철역_생성_요청("없는역2").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(없는역1, 없는역2, 3));
+
+        // then
+        assertAll(
+                () -> assertThat(response.jsonPath().getString("message")).isEqualTo("상행역과 하행역 모두 찾을 수 없습니다"),
+                () -> assertThat(response.jsonPath().getInt("status")).isEqualTo(HttpStatus.NOT_FOUND.value())
+        );
+    }
+
+    /**
      * When 지하철 노선에 새로운 구간 추가를 요청 하면
      * Then 노선에 새로운 구간이 추가된다
      */
