@@ -6,24 +6,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static nextstep.subway.utils.StationTestSources.downStation;
-import static nextstep.subway.utils.StationTestSources.upStation;
+import static nextstep.subway.utils.LineTestSources.section;
+import static nextstep.subway.utils.StationTestSources.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 class LineTest {
-
-    @Test
-    void addSection() {
-        // given
-        final Line line = new Line();
-
-        // when
-        line.addSection(mock(Station.class), mock(Station.class), 10);
-
-        // then
-        assertThat(line.getSections()).isNotEmpty();
-    }
 
     @Test
     void update_null() {
@@ -60,7 +47,7 @@ class LineTest {
         // given
         final Line line = new Line();
         final Station downStation = downStation();
-        line.addSection(upStation(), downStation, 3);
+        line.addSection(section(upStation(), downStation));
 
         // when
         final boolean result = line.isLastDownStation(downStation);
@@ -74,10 +61,65 @@ class LineTest {
         // given
         final Line line = new Line();
         final Station upStation = upStation();
-        line.addSection(upStation, downStation(), 3);
+        line.addSection(section(upStation, downStation()));
 
         // when
         final boolean result = line.isLastDownStation(upStation);
+
+        // then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void isFirstStationFalse() {
+        // given
+        final Line line = new Line();
+        final Station downStation = downStation();
+        line.addSection(section(upStation(), downStation));
+
+        // when
+        final boolean result = line.isFirstStation(downStation);
+
+        // then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void isFirstStationTrue() {
+        // given
+        final Line line = new Line();
+        final Station upStation = upStation();
+        line.addSection(section(upStation, downStation()));
+
+        // when
+        final boolean result = line.isLastDownStation(upStation);
+
+        // then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void hasStationFalse() {
+        // given
+        final Line line = new Line();
+        final Station downStation = downStation();
+        line.addSection(section(upStation(), downStation));
+
+        // when
+        final boolean result = line.containsStation(downStation);
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void hasStationTrue() {
+        // given
+        final Line line = new Line();
+        line.addSection(section(upStation(), downStation()));
+
+        // when
+        final boolean result = line.containsStation(station(10));
 
         // then
         assertThat(result).isFalse();
@@ -88,7 +130,7 @@ class LineTest {
         // given
         final Line line = new Line();
         final Station downStation = downStation();
-        line.addSection(upStation(), downStation, 3);
+        line.addSection(section(upStation(), downStation));
 
         // when
         line.removeLastSection();
@@ -109,15 +151,40 @@ class LineTest {
     }
 
     @Test
-    void getStations_NotEmpty() {
+    void getStations_3Stations() {
+        // given
         final Line line = new Line();
-        line.addSection(upStation(), downStation(), 3);
+        final Station station1 = station(1);
+        final Station station2 = station(2);
+        final Station station3 = station(3);
 
-        // when
+        // when (3, 1), (1, 2) -> (1, 2), (3, 1)
+        line.addSection(section(station1, station2));
+        line.addSection(section(station3, station1));
+
         final List<Station> result = line.getStations();
 
         // then
-        assertThat(result).isNotEmpty();
+        assertThat(result).containsExactly(station3, station1, station2);
+    }
+
+    @Test
+    void getStations_4Stations() {
+        final Line line = new Line();
+        final Station station1 = station(1);
+        final Station station2 = station(2);
+        final Station station3 = station(3);
+        final Station station4 = station(4);
+
+        // when (4, 3), (3, 1), (1, 2) -> (1, 2), (3, 1), (4, 3)
+        line.addSection(section(station1, station2));
+        line.addSection(section(station3, station1));
+        line.addSection(section(station4, station3));
+
+        final List<Station> result = line.getStations();
+
+        // then
+        assertThat(result).containsExactly(station4, station3, station1, station2);
     }
 
 }

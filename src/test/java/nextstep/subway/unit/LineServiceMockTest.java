@@ -2,12 +2,14 @@ package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
+import nextstep.subway.applicaion.dto.AddSectionRequest;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.sectioncondition.SectionAddCondition;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
@@ -32,6 +35,8 @@ public class LineServiceMockTest {
     private LineRepository lineRepository;
     @Mock
     private StationService stationService;
+    @Mock
+    private SectionAddCondition sectionAddCondition;
 
     @Test
     void deleteSectionFail_LineNotExists() {
@@ -62,7 +67,7 @@ public class LineServiceMockTest {
                 .when(stationService)
                 .findById(upStation.getId());
 
-        line.addSection(upStation, new Station(200L, "A"), 10);
+        line.addSection(section(upStation, station(200L)));
 
         // when
         final IllegalArgumentException result = assertThrows(
@@ -85,7 +90,8 @@ public class LineServiceMockTest {
         doReturn(downStation)
                 .when(stationService)
                 .findById(downStation.getId());
-        line.addSection(upStation(), downStation, 10);
+
+        line.addSection(section(upStation(), downStation));
 
         // when
         target.deleteSection(lineId, downStation.getId());
@@ -126,12 +132,15 @@ public class LineServiceMockTest {
                 .when(stationService)
                 .findById(downStationId);
 
+        doReturn(true)
+                .when(sectionAddCondition)
+                .matches(any(Line.class), any(AddSectionRequest.class));
+
         // when
         final LineResponse result = target.saveLine(lineRequest(upStationId, downStationId));
 
         // then
         assertThat(result).isNotNull();
-        assertThat(result.getStations()).isNotEmpty();
     }
 
     @Test
@@ -150,11 +159,42 @@ public class LineServiceMockTest {
                 .when(stationService)
                 .findById(downStationId);
 
+        doReturn(true)
+                .when(sectionAddCondition)
+                .matches(any(Line.class), any(AddSectionRequest.class));
+
         // when
         target.addSection(lineId, sectionRequest(upStationId, downStationId));
 
         // then
-        assertThat(line.getSections()).isNotEmpty();
+        verify(sectionAddCondition).addSection(any(Line.class), any(AddSectionRequest.class));
+    }
+
+    @Test
+    void addSectionFail() {
+        // given
+        final Line line = line();
+        doReturn(Optional.of(line))
+                .when(lineRepository)
+                .findById(lineId);
+
+        doReturn(upStation())
+                .when(stationService)
+                .findById(upStationId);
+
+        doReturn(downStation())
+                .when(stationService)
+                .findById(downStationId);
+
+        doReturn(false)
+                .when(sectionAddCondition)
+                .matches(any(Line.class), any(AddSectionRequest.class));
+
+        // when
+        target.addSection(lineId, sectionRequest(upStationId, downStationId));
+
+        // then
+        assertThat(line.getSections()).isEmpty();
     }
 
     @Test

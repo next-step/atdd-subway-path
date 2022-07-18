@@ -1,9 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -14,8 +12,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = new Sections();
 
     public Line() {
     }
@@ -29,10 +27,6 @@ public class Line {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
@@ -42,11 +36,7 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
-    }
-
-    public void addSection(final Station upStation, final Station downStation, final int distance) {
-        sections.add(new Section(this, upStation, downStation, distance));
+        return sections.getSections();
     }
 
     public void update(final String name, final String color) {
@@ -59,20 +49,12 @@ public class Line {
         }
     }
 
-    public boolean isLastDownStation(final Station station) {
-        return getLastDownStation().equals(station);
-    }
-
-    private Station getLastDownStation() {
-        return getLastSection().getDownStation();
-    }
-
-    private Section getLastSection() {
-        return sections.get(sections.size() - 1);
-    }
-
     public void removeLastSection() {
-        sections.remove(sections.size() - 1);
+        sections.removeLast();
+    }
+
+    public boolean hasNoSection() {
+        return sections.isEmpty();
     }
 
     public List<Station> getStations() {
@@ -80,27 +62,36 @@ public class Line {
             return Collections.emptyList();
         }
 
-        List<Station> stations = getAllDownStations();
-        addFirstUpStation(stations);
-        return stations;
+        return sections.findAllStationsInOrder();
     }
 
-    private List<Station> getAllDownStations() {
-        return sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
+    public void addSection(final Section section) {
+        sections.add(section);
+        section.setLine(this);
     }
 
-
-    private boolean hasNoSection() {
-        return sections.isEmpty();
+    public void addSection(final int index, final Section section) {
+        sections.add(index, section);
+        section.setLine(this);
     }
 
-    private void addFirstUpStation(final List<Station> stations) {
-        stations.add(0, getFirstUpStation());
-    }
-    private Station getFirstUpStation() {
-        return sections.get(0).getUpStation();
+    public void addSection(final Section target, final Section section) {
+        sections.add(getSections().indexOf(target) + 1, section);
+        section.setLine(this);
     }
 
+    public boolean isLastDownStation(final Station station) {
+        final List<Station> stations = getStations();
+
+        return stations.get(stations.size() - 1).equals(station);
+    }
+
+    public boolean isFirstStation(final Station station) {
+        final List<Station> stations = getStations();
+        return stations.get(0).equals(station);
+    }
+
+    public boolean containsStation(final Station station) {
+        return getStations().contains(station);
+    }
 }

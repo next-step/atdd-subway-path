@@ -1,16 +1,13 @@
 package nextstep.subway.applicaion;
 
-import nextstep.subway.applicaion.dto.LineRequest;
-import nextstep.subway.applicaion.dto.LineResponse;
-import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.applicaion.dto.*;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.sectioncondition.SectionAddCondition;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,10 +16,12 @@ import java.util.stream.Collectors;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationService stationService;
+    private final SectionAddCondition sectionAddCondition;
 
-    public LineService(LineRepository lineRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, StationService stationService, final SectionAddCondition sectionAddCondition) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
+        this.sectionAddCondition = sectionAddCondition;
     }
 
     @Transactional
@@ -64,7 +63,11 @@ public class LineService {
     private void addSection(final Line line, final Long upStationId, final Long downStationId, final int distance) {
         Station upStation = stationService.findById(upStationId);
         Station downStation = stationService.findById(downStationId);
-        line.addSection(upStation, downStation, distance);
+        final AddSectionRequest addSectionRequest = new AddSectionRequest(upStation, downStation, distance);
+        if (sectionAddCondition.matches(line, addSectionRequest)) {
+            sectionAddCondition.addSection(line, addSectionRequest);
+        }
+
     }
 
     private LineResponse createLineResponse(Line line) {
