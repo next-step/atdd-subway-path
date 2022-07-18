@@ -123,20 +123,15 @@ public class LineServiceTest {
     @Test
     void addSection() {
         // given
-        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         Station 강남역 = stationRepository.save(new Station("강남역"));
         Station 역삼역 = stationRepository.save(new Station("역삼역"));
         Line 신분당선 = lineRepository.save(new Line("신분당선", "yellow"));
 
         // when
-        // lineService.addSection 호출
         lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 10));
 
         // then
-        // line.getSections 메서드를 통해 검증
-        Section section = 신분당선.getSections().get(0);
-        assertThat(section.getLine()).isEqualTo(신분당선);
-        assertThat(section.getStations()).containsExactly(강남역, 역삼역);
+        assertThat(신분당선.getStations()).containsExactly(강남역, 역삼역);
     }
 
     @DisplayName("지하철 구간 추가시 노선을 찾지 못하면 예외발생")

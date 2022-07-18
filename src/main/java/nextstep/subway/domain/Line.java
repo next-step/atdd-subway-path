@@ -34,11 +34,7 @@ public class Line {
         return color;
     }
 
-    public List<Section> getSections() {
-        return sections.getSections();
-    }
-
-    public boolean isEmptySection(){
+    public boolean isEmptySections(){
         return sections.isEmpty();
     }
 
