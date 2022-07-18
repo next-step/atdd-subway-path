@@ -22,52 +22,39 @@ class SectionsTest {
         line = new Line("4호선", "blue");
         station1 = new Station("중앙역");
         station2 = new Station("한대앞역");
+
+        sections.add(new Section(line, station1, station2, 10));
     }
 
     @Test
     @DisplayName("구간이 정상적으로 추가된다.")
     void addTest() {
-        addSectionMockSection();
         assertThat(sections.size()).isEqualTo(1);
     }
 
     @Test
     @DisplayName("구간이 정상적으로 조회된다.")
     void getStationsTest() {
-        assertThat(sections.getStations()).isEmpty();
-        addSectionMockSection();
         assertThat(sections.getStations()).containsAnyOf(station1, station2);
     }
 
     @Test
-    @DisplayName("구간의 마지막 역이 조회된다.")
-    void lastStationTest() {
-        addSectionMockSection();
-        assertThat(sections.lastStation()).isEqualTo(station2);
-    }
-
-    @Test
-    @DisplayName("구간의 마지막 역이 삭제된다.")
-    void deleteLastStationTest() {
+    @DisplayName("제거할 역이 마지막 역인 경우 제거된다.")
+    void deleteStationTest() {
         Station station3 = new Station("상록수역");
-        addSectionMockSection();
         sections.add(new Section(line, station2, station3, 10));
 
-        sections.deleteLastStation();
+        assertThat(sections.size()).isEqualTo(2);
 
-        assertThat(sections.lastStation()).isEqualTo(station2);
+        sections.deleteStation(station3);
+        assertThat(sections.getStations()).hasSize(2);
+        assertThat(sections.getStations()).doesNotContain(station3);
     }
 
     @Test
-    @DisplayName("구간의 마지막 Index가 조회된다.")
-    void sectionsLastIndexTest() {
-        assertThat(sections.sectionsLastIndex()).isEqualTo(-1);
-        addSectionMockSection();
-
-        assertThat(sections.sectionsLastIndex()).isEqualTo(0);
-    }
-
-    private void addSectionMockSection() {
-        sections.add(new Section(line, station1, station2, 10));
+    @DisplayName("제거할 역이 마지막 역이 아닌경우 에러가 발생한다.")
+    void deleteStationFailTest() {
+        assertThatIllegalArgumentException().isThrownBy(() -> sections.deleteStation(station1));
+        assertThatIllegalArgumentException().isThrownBy(() -> sections.deleteStation(new Station("없는역")));
     }
 }

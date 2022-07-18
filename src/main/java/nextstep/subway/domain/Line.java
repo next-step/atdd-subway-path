@@ -47,10 +47,6 @@ public class Line {
     }
 
     public void deleteStation(Station station) {
-        if (!station.equals(sections.lastStation())) {
-            throw new IllegalArgumentException();
-        }
-
-        this.sections.deleteLastStation();
+        this.sections.deleteStation(station);
     }
 }

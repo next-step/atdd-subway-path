@@ -29,19 +29,28 @@ public class Sections {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    public Station lastStation() {
-        return this.sections.get(sectionsLastIndex()).getDownStation();
-    }
-
-    public void deleteLastStation() {
-        this.sections.remove(sectionsLastIndex());
-    }
-
     public int size() {
         return this.sections.size();
     }
 
-    public int sectionsLastIndex() {
+
+    public void deleteStation(Station station) {
+        if (!station.equals(lastStation())) {
+            throw new IllegalArgumentException();
+        }
+
+        deleteLastStation();
+    }
+
+    private Station lastStation() {
+        return this.sections.get(sectionsLastIndex()).getDownStation();
+    }
+
+    private void deleteLastStation() {
+        this.sections.remove(sectionsLastIndex());
+    }
+
+    private int sectionsLastIndex() {
         return this.sections.size() - 1;
     }
 }
