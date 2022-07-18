@@ -52,4 +52,29 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Section)) return false;
+
+        Section section = (Section) o;
+
+        if (getDistance() != section.getDistance()) return false;
+        if (getId() != null ? !getId().equals(section.getId()) : section.getId() != null) return false;
+        if (getLine() != null ? !getLine().equals(section.getLine()) : section.getLine() != null) return false;
+        if (getUpStation() != null ? !getUpStation().equals(section.getUpStation()) : section.getUpStation() != null)
+            return false;
+        return getDownStation() != null ? getDownStation().equals(section.getDownStation()) : section.getDownStation() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getId() != null ? getId().hashCode() : 0;
+        result = 31 * result + (getLine() != null ? getLine().hashCode() : 0);
+        result = 31 * result + (getUpStation() != null ? getUpStation().hashCode() : 0);
+        result = 31 * result + (getDownStation() != null ? getDownStation().hashCode() : 0);
+        result = 31 * result + getDistance();
+        return result;
+    }
 }
