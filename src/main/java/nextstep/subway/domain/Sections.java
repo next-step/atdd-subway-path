@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import nextstep.subway.domain.exception.NotExistSectionException;
+import nextstep.subway.domain.exception.SectionDeleteException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -38,7 +39,7 @@ public class Sections {
     public void delete(Station station) {
         Section lastSection = findLastSection();
         if (!lastSection.isMatchDownStation(station)) {
-            throw new IllegalArgumentException();
+            throw new SectionDeleteException(station.getId());
         }
         values.remove(lastSection);
     }
