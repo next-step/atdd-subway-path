@@ -27,7 +27,6 @@ public class Section {
     private int distance;
 
     public Section() {
-
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
@@ -46,7 +45,10 @@ public class Section {
     }
 
     public Section divideSectionByMiddle(Section section) {
-        return new Section(this.line, section.getDownStation(), this.downStation, this.distance - section.getDistance());
+        if (section.hasSameUpStation(this.upStation)) {
+            return new Section(this.line, section.getDownStation(), this.downStation, this.distance - section.getDistance());
+        }
+        return new Section(this.line, this.upStation, section.getUpStation(), this.distance - section.getDistance());
     }
 
     public boolean hasNotDownStation(Station station) {

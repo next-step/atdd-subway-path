@@ -42,17 +42,15 @@ public class Sections {
             return;
         }
 
-        if (hasUpStation) {
-            Section findSection = findSectionByUpStation(section.getUpStation());
-            if (section.isGreaterThanDistance(findSection.getDistance())) {
-                throw new SectionsException(ErrorCode.SECTION_DISTANCE_EXCEPTION);
-            }
-
-            Section lastHalfSection = findSection.divideSectionByMiddle(section);
-            sections.remove(findSection);
-            sections.add(lastHalfSection);
-            sections.add(section);
+        Section findSection = findTargetSection(section);
+        if (section.isGreaterThanDistance(findSection.getDistance())) {
+            throw new SectionsException(ErrorCode.SECTION_DISTANCE_EXCEPTION);
         }
+
+        Section halfSection = findSection.divideSectionByMiddle(section);
+        sections.remove(findSection);
+        sections.add(halfSection);
+        sections.add(section);
     }
 
     public List<Station> getStations() {
@@ -84,9 +82,9 @@ public class Sections {
         return sections.isEmpty();
     }
 
-    private Section findSectionByUpStation(Station upStation) {
+    private Section findTargetSection(Section section) {
         return sections.stream()
-                .filter(section -> section.hasSameUpStation(upStation))
+                .filter(s -> s.hasSameUpStation(s.getUpStation()) || s.hasSameDownStation(s.getDownStation()))
                 .findFirst()
                 .orElseThrow(() -> new SectionsException(ErrorCode.NOT_FOUND_SECTION_EXCEPTION));
     }
