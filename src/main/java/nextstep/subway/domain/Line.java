@@ -49,10 +49,6 @@ public class Line {
         return color;
     }
 
-    public void setColor(String color) {
-        this.color = color;
-    }
-
     public List<Section> getSections() {
         return sections.getSections();
     }
@@ -63,5 +59,10 @@ public class Line {
 
     public void addSection(Section section) {
         sections.add(section);
+    }
+
+    public void changeNameAndColor(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 }
