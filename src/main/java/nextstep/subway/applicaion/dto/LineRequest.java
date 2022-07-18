@@ -1,16 +1,10 @@
 package nextstep.subway.applicaion.dto;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-
 public class LineRequest {
     private String name;
     private String color;
-    @NotNull
     private Long upStationId;
-    @NotNull
     private Long downStationId;
-    @Min(value = 1)
     private int distance;
 
     public LineRequest() {
@@ -46,5 +40,9 @@ public class LineRequest {
 
     public int getDistance() {
         return distance;
+    }
+
+    public boolean hasSection() {
+        return this.upStationId != null && this.downStationId != null && this.distance != 0;
     }
 }

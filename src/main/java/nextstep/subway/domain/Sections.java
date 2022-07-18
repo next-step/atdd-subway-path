@@ -9,6 +9,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -38,6 +39,9 @@ public class Sections {
     }
 
     public List<Station> getStations() {
+        if (isEmpty()) {
+            return Collections.emptyList();
+        }
         return mapStations(getFirstSection(), new ArrayList<>());
     }
 
