@@ -1,8 +1,6 @@
 package nextstep.subway.domain;
 
-import java.util.stream.Collectors;
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,12 +19,6 @@ public class Line {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
-    }
-
-    public Line(String name, String color, Sections sections) {
-        this.name = name;
-        this.color = color;
-        this.sections = sections;
     }
 
     public Long getId() {
