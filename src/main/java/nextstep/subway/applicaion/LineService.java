@@ -29,12 +29,16 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-        if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
+        if (isCreateSectionCondition(request)) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
             line.addSection(new Section(line, upStation, downStation, request.getDistance()));
         }
         return createLineResponse(line);
+    }
+
+    private boolean isCreateSectionCondition(LineRequest request) {
+        return request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0;
     }
 
     public List<LineResponse> showLines() {
@@ -83,7 +87,7 @@ public class LineService {
         List<Station> stations = line.getStations();
 
         return stations.stream()
-                .map(it -> stationService.createStationResponse(it))
+                .map(stationService::createStationResponse)
                 .collect(Collectors.toList());
     }
 
