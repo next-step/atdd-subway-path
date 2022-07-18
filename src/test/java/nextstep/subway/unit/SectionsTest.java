@@ -129,13 +129,30 @@ public class SectionsTest {
 
     @DisplayName("역 사이에 새로운 역 추가할때, 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다")
     @Test
-    public void dd_section_fail_by_already_register_up_down_stations() {
+    public void add_section_fail_by_already_register_up_down_stations() {
         // given
         Sections sections = new Sections();
         sections.add(section);
 
         // when
-        Section newSection = new Section(line, upStation, downStation, 15);
+        Section newSection = new Section(line, upStation, downStation, 3);
+        SectionsException exception = assertThrows(SectionsException.class, () -> sections.add(newSection));
+
+        // then
+        assertThat(exception).isInstanceOf(SectionsException.class);
+    }
+
+    @DisplayName("역 사이에 새로운 역 추가할때, 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다")
+    @Test
+    public void add_section_fail_by_not_exist_up_down_stations() {
+        // given
+        Sections sections = new Sections();
+        sections.add(section);
+        Station 없는역1 = new Station(3L, "없는역1");
+        Station 없는역2 = new Station(4L, "없는역2");
+
+        // when
+        Section newSection = new Section(line, 없는역1, 없는역2, 3);
         SectionsException exception = assertThrows(SectionsException.class, () -> sections.add(newSection));
 
         // then

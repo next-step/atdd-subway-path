@@ -44,11 +44,14 @@ public class Sections {
         if (section.isGreaterThanDistance(findSection.getDistance())) {
             throw new SectionsException(ErrorCode.SECTION_DISTANCE_EXCEPTION);
         }
-
         Section halfSection = findSection.divideSectionByMiddle(section);
         sections.remove(findSection);
         sections.add(halfSection);
         sections.add(section);
+
+        if (!hasUpStation && !hasDownStation) {
+            throw new SectionsException(ErrorCode.NOT_FOUND_BOTH_STATION_EXCEPTION);
+        }
     }
 
     public List<Station> getStations() {
