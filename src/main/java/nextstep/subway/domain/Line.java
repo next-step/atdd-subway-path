@@ -53,6 +53,10 @@ public class Line {
         return sections.getSections();
     }
 
+    public boolean isEmptySection(){
+        return sections.isEmpty();
+    }
+
     public List<Station> getStations() {
         return sections.getStations();
     }
