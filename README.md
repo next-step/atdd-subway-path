@@ -6,7 +6,7 @@
 - [] 지하철 구간 관련 단위 테스트를 완성
   - [] 구간 단위 테스트 (LineTest)
   - [] 구간 서비스 단위 테스트 with Mock (LineServiceMockTest)
-    - [] addSection
+    - [x] addSection
     - [] deleteSection
     - [] saveLine
     - [] showLines
