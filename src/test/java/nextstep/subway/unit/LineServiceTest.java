@@ -2,8 +2,12 @@ package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
 
+import java.util.List;
+import java.util.Optional;
 import nextstep.subway.applicaion.LineService;
+import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -56,6 +60,67 @@ public class LineServiceTest {
 
         // when //then
         assertThatThrownBy(() -> lineService.addSection(1L, new SectionRequest(강남역.getId(), 역삼역.getId(), 10)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("지하철 구간 삭제")
+    @Test
+    void deleteSection() {
+        //given
+        Station 강남역 = stationRepository.save(new Station("강남역"));
+        Station 역삼역 = stationRepository.save(new Station("역삼역"));
+        Station 잠심역 = stationRepository.save(new Station("잠실역"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "yellow"));
+        lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 10));
+        lineService.addSection(신분당선.getId(), new SectionRequest(역삼역.getId(), 잠심역.getId(), 10));
+
+        //when
+        lineService.deleteSection(신분당선.getId(), 잠심역.getId());
+
+        //then
+        List<LineResponse> lineResponses = lineService.showLines();
+        assertThat(lineResponses).hasSize(1);
+    }
+
+    @DisplayName("지하철 구간 삭제시 노선을 찾지 못하면 예외발생")
+    @Test
+    void deleteSectionException() {
+        Station 강남역 = stationRepository.save(new Station("강남역"));
+
+        // when // then
+        assertThatThrownBy(() -> lineService.deleteSection(1L, 강남역.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("지하철 구간 삭제시 하행종점역이 포함되지 않는 구간을 삭제시 예외발생")
+    @Test
+    void deleteSectionException2() {
+        // given
+        Station 강남역 = stationRepository.save(new Station("강남역"));
+        Station 역삼역 = stationRepository.save(new Station("역삼역"));
+        Station 잠실역 = stationRepository.save(new Station("잠실역"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "yellow"));
+
+        lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 10));
+
+        // when // then
+        assertThatThrownBy(() -> lineService.deleteSection(신분당선.getId(), 잠실역.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("지하철 구간 삭제시 지하철역이 조회되지 않으면 예외발생")
+    @Test
+    void deleteSectionException3() {
+        // given
+        Station 강남역 = stationRepository.save(new Station("강남역"));
+        Station 역삼역 = stationRepository.save(new Station("역삼역"));
+        Long 잠실역 = 3L;
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "yellow"));
+
+        lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 10));
+
+        // when // then
+        assertThatThrownBy(() -> lineService.deleteSection(신분당선.getId(), 잠실역))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
