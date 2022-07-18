@@ -40,8 +40,8 @@ public class Section {
         this.line = line;
     }
 
-    public boolean isMatchDownStation(Station station) {
-        return downStation.equals(station);
+    public boolean isMissMatchDownStation(Station station) {
+        return !downStation.equals(station);
     }
 
     public boolean hasStation(Station station) {

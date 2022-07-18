@@ -26,17 +26,21 @@ public class Line {
     }
 
     public void changeName(String name) {
-        if (!StringUtils.hasText(name)) {
+        if (isNullOrBlank(name)) {
             return;
         }
         this.name = name;
     }
 
     public void changeColor(String color) {
-        if (!StringUtils.hasText(color)) {
+        if (isNullOrBlank(color)) {
             return;
         }
         this.color = color;
+    }
+
+    private boolean isNullOrBlank(String value) {
+        return value == null || value.isBlank();
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {

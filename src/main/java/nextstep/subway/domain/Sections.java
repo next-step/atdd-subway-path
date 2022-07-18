@@ -35,15 +35,19 @@ public class Sections {
     }
 
     public void add(Section section) {
-        if (!values.isEmpty()) {
+        if (this.hasSections()) {
             validateSection(section);
         }
         this.values.add(section);
     }
 
+    private boolean hasSections() {
+        return values.size() > EMPTY_VALUE;
+    }
+
     private void validateSection(Section additionalSection) {
         Section lastSection = findLastSection();
-        if (!lastSection.isMatchDownStation(additionalSection.getUpStation())) {
+        if (lastSection.isMissMatchDownStation(additionalSection.getUpStation())) {
             throw new InvalidMatchEndStationException(additionalSection.getUpStation().getId());
         }
         if(this.hasStation(additionalSection.getDownStation())) {
@@ -57,7 +61,7 @@ public class Sections {
 
     public void delete(Station station) {
         Section lastSection = findLastSection();
-        if (!lastSection.isMatchDownStation(station)) {
+        if (lastSection.isMissMatchDownStation(station)) {
             throw new SectionDeleteException(station.getId());
         }
         values.remove(lastSection);
