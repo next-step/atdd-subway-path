@@ -34,6 +34,11 @@ public class Sections {
 
         if (hasUpStation) {
             Section findSection = findSectionByUpStation(section.getUpStation());
+
+            if (findSection.getDistance() <= section.getDistance()) {
+                throw new SectionsException(ErrorCode.SECTION_DISTANCE_EXCEPTION);
+            }
+
             Station findDownStation = findSection.getDownStation();
             findSection.updateDownStation(section.getDownStation());
             sections.add(new Section(section.getLine(), section.getDownStation(), findDownStation, section.getDistance()));

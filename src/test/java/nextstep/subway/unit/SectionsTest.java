@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.sections.SectionsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -90,6 +91,23 @@ public class SectionsTest {
 
         // then
         assertThat(sections.getStations()).containsExactly(upStation, newStation, downStation);
+    }
+
+    @DisplayName("중간에 구간을 추가할 때, 신규로 추가되는 구간의 길이가 기존 구간보다 길다면 예외를 던진다")
+    @Test
+    public void add_section_middle_at_line_fail() {
+        // given
+        Sections sections = new Sections();
+        sections.add(section);
+
+        Station newStation = new Station(3L, "신규역");
+
+        // when
+        Section newSection = new Section(line, upStation, newStation, 15);
+        SectionsException exception = assertThrows(SectionsException.class, () -> sections.add(newSection));
+
+        // then
+        assertThat(exception).isInstanceOf(SectionsException.class);
     }
 
     @DisplayName("Sections에 등록된 모든 역을 조회한다")
