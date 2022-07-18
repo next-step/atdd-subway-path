@@ -74,6 +74,25 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * When 기존 구간의 상행 종점역과 동일한 상행역을 가지고
+     * When 구간 생성 요청 하면
+     * Then 구간 생성이 성공하고
+     * Then (신규역 - 하행역)의 길이는 기존 구간의 길이에서 (상행역 - 신규역)의 길이를 뺸 길이로 할당하고
+     * Then (상행역 - 신규역 - 하행역)의 순서로 배치되고
+     * Then 역 목록을 응답 받는다
+     */
+    @DisplayName("신규 구간의 상행역이 기존 구간의 상행역과 동일할 경우 중간에 구간을 추가할 수 있다")
+    @Test
+    public void add_station_at_line_middle() {
+        // when
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 신규역, 3));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_역_순서_확인(response, 강남역, 신규역, 양재역);
+    }
+
+    /**
      * When 지하철 노선에 새로운 구간 추가를 요청 하면
      * Then 노선에 새로운 구간이 추가된다
      */
@@ -123,10 +142,14 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId) {
+        return createSectionCreateParams(upStationId, downStationId, 6);
+    }
+
+    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, Integer distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");
-        params.put("distance", 6 + "");
+        params.put("distance", distance.toString());
         return params;
     }
 }
