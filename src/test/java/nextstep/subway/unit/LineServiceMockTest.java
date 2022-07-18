@@ -88,21 +88,21 @@ public class LineServiceMockTest {
     void saveLine() {
         // given
         Line 이호선 = Stub.이호선_생성.get();
-        Station 구로디지털단지역 = Stub.구로디지털단지역_생성.get();
         Station 신대방역 = Stub.신대방역_생성.get();
+        Station 신림역 = Stub.신림역_생성.get();
 
-        when(stationService.findById(구로디지털단지역.getId())).thenReturn(구로디지털단지역);
         when(stationService.findById(신대방역.getId())).thenReturn(신대방역);
+        when(stationService.findById(신림역.getId())).thenReturn(신림역);
         when(lineRepository.save(any())).thenReturn(이호선);
 
         // when
-        LineResponse response = lineService.saveLine(new LineRequest("2호선", "green", 구로디지털단지역.getId(), 신대방역.getId(), 10));
+        LineResponse response = lineService.saveLine(new LineRequest("2호선", "green", 신대방역.getId(), 신림역.getId(), 10));
 
         // then
         assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getName()).isEqualTo("2호선");
         assertThat(response.getColor()).isEqualTo("green");
-        assertThat(response.getStations()).hasSize(2);
+        assertThat(response.getStations()).hasSize(3);
     }
 
     @DisplayName("지하철 노선 수정")
