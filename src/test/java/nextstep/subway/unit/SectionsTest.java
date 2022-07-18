@@ -34,6 +34,25 @@ public class SectionsTest {
     }
 
     @Test
+    void 구간을_추가시_같은_구간인_경우_예외를_발생시킨다() {
+        // given
+        Line line = new Line("2호선", "green");
+        Station upStation = new Station("암사역");
+        Station downStation = new Station("모란역");
+        Section section = new Section(line, upStation, downStation, 10);
+        Section section2 = new Section(line, upStation, downStation, 10);
+        Sections sections = new Sections();
+
+        // when
+        sections.addSection(section);
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() ->
+                sections.addSection(section2)
+        );
+    }
+
+    @Test
     void 구간에서_등록된_역을_조회한다() {
         // given
         Line line = new Line("2호선", "green");
