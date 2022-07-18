@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import java.util.stream.Collectors;
 import javax.persistence.*;
 import java.util.List;
 
@@ -49,10 +50,6 @@ public class Line {
         return sections.isEmpty();
     }
 
-    public List<Station> getStations() {
-        return sections.getStations();
-    }
-
     public void addSection(Section section) {
         sections.add(section);
     }
@@ -60,5 +57,12 @@ public class Line {
     public void changeNameAndColor(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public List<Station> getStations(){
+        return sections.getStations()
+                .stream()
+                .distinct()
+                .collect(Collectors.toList());
     }
 }
