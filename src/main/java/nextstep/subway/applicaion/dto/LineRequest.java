@@ -19,8 +19,7 @@ public class LineRequest {
     }
 
     public LineRequest(String name, String color) {
-        this.name = name;
-        this.color = color;
+        this(name,color,null,null,0);
     }
 
     public String getName() {

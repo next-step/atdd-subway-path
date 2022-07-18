@@ -17,7 +17,7 @@ public class SectionRequest {
         return distance;
     }
 
-    public SectionRequest() {
+    private SectionRequest() {
     }
 
     public SectionRequest(Long upStationId, Long downStationId, int distance) {
