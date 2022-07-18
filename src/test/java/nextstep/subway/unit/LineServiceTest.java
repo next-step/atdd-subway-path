@@ -104,6 +104,21 @@ public class LineServiceTest {
         assertThat(response.getColor()).isEqualTo("yellow");
     }
 
+    @DisplayName("지하철 노선 삭제")
+    @Test
+    void deleteLine() {
+        //given
+        lineRepository.save(new Line("신분당선", "yellow"));
+        Line 분당선 = lineRepository.save(new Line("분당선 ", "red"));
+
+        //when
+        lineService.deleteLine(분당선.getId());
+
+        //then
+        List<LineResponse> lineResponses = lineService.showLines();
+        assertThat(lineResponses).hasSize(1);
+    }
+
     @DisplayName("지하철 구간 생성")
     @Test
     void addSection() {
