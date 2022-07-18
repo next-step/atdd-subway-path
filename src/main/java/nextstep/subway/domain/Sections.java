@@ -11,26 +11,35 @@ import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
-
+    private final int MINIMUM_SECTIONS_SIZE = 0;
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public void addSection(Section section) {
-        if (sections.size() > 0) {
-            if (sections.contains(section)) {
-                throw new IllegalArgumentException("같은 구간이 있습니다.");
-            }
-
-            Optional<Section> matchSection = sections.stream()
-                    .filter(section::anyMatch)
-                    .findFirst();
-
-            if (matchSection.isEmpty()) {
-                throw new IllegalArgumentException("상행역 하행역이 모두 포함되어있지 않습니다");
-            }
-
+    public void addSection(Section addedSection) {
+        if (sections.size() > MINIMUM_SECTIONS_SIZE) {
+            isContains(addedSection);
+            Section matchedSection = getMatchedSection(addedSection);
+            matchedSection.changeDistance(addedSection.getDistance());
         }
-        sections.add(section);
+        sections.add(addedSection);
+    }
+
+    private void isContains(Section section) {
+        if (sections.contains(section)) {
+            throw new IllegalArgumentException("같은 구간이 있습니다.");
+        }
+    }
+
+    private Section getMatchedSection(Section section) {
+        Optional<Section> matchSection = sections.stream()
+                .filter(section::anyMatch)
+                .findFirst();
+
+        if (matchSection.isEmpty()) {
+            throw new IllegalArgumentException("상행역 하행역이 모두 포함되어있지 않습니다");
+        }
+
+        return matchSection.get();
     }
 
     public void deleteSection(Station station) {

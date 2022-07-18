@@ -26,4 +26,41 @@ public class DistanceTest {
                 new Distance(input)
         );
     }
+
+    @Test
+    void 거리를_뺀다() {
+        // given
+        Distance distance1 = new Distance(2);
+        Distance distance2 = new Distance(1);
+
+        // when
+        Distance newDistance = distance1.minus(distance2);
+
+        // then
+        assertThat(newDistance).isEqualTo(new Distance(1));
+    }
+
+    @Test
+    void 거리가_같은_경우_예외를_일으킨다() {
+        // given
+        Distance distance1 = new Distance(1);
+        Distance distance2 = new Distance(1);
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() ->
+                distance1.minus(distance2)
+        );
+    }
+
+    @Test
+    void 대상_거리가_비교하는_거리보다_작은_경우_예외를_일으킨다() {
+        // given
+        Distance distance1 = new Distance(1);
+        Distance distance2 = new Distance(2);
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() ->
+                distance1.minus(distance2)
+        );
+    }
 }

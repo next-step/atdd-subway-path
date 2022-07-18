@@ -45,6 +45,10 @@ public class Section {
                 .anyMatch(otherSection.getStations()::contains);
     }
 
+    public void changeDistance(Distance distance) {
+        this.distance = this.distance.minus(distance);
+    }
+
     public List<Station> getStations() {
         return List.of(upStation, downStation);
     }
@@ -59,6 +63,10 @@ public class Section {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public Distance getDistance() {
+        return distance;
     }
 
     @Override

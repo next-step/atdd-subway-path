@@ -81,6 +81,15 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선 구간 사이에 거리가 비슷한 새로운 구간을 추가를 요청 하면
      * Then 노선에 새로운 구간이 추가되지 않는다
      */
+    @Test
+    void 지하철_노선_구간_사이에_같은_거리를_가진_구간을_등록() {
+        // when
+        var 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        var 구간_생성_요청_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 10));
+
+        // then
+        구간_추가를_실패한다(구간_생성_요청_응답);
+    }
 
     /**
      * When 지하철 노선 구간 사이에 똑같은 구간을 추가를 요청 하면
