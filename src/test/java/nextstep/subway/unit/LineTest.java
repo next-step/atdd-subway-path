@@ -43,11 +43,8 @@ class LineTest {
 
         final Section 강남_역삼_구간 = new Section(line, 강남역, 역삼역, 2);
         final Section 역삼_선릉_구간 = new Section(line, 역삼역, 선릉역, 3);
-
         line.addSection(강남_역삼_구간);
         line.addSection(역삼_선릉_구간);
-
-        assertThat(line.getSections()).contains(강남_역삼_구간, 역삼_선릉_구간);
 
         line.deleteSection(역삼_선릉_구간);
 
