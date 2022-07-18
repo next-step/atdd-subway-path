@@ -75,4 +75,11 @@ public class LineSteps {
                 () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(ids)
         );
     }
+
+    public static void 생성_실패_확인(ExtractableResponse<Response> response, HttpStatus status, String message) {
+        assertAll(
+                () -> assertThat(response.jsonPath().getString("message")).isEqualTo(message),
+                () -> assertThat(response.jsonPath().getInt("status")).isEqualTo(status.value())
+        );
+    }
 }

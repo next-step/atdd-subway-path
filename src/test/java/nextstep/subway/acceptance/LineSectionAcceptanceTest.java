@@ -12,8 +12,6 @@ import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
@@ -107,10 +105,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 신규역, overDistance));
 
         // then
-        assertAll(
-                () -> assertThat(response.jsonPath().getString("message")).isEqualTo("기존의 구간 길이보다 긴 신규구간을 중간에 추가할 수 없습니다"),
-                () -> assertThat(response.jsonPath().getInt("status")).isEqualTo(HttpStatus.BAD_REQUEST.value())
-        );
+        생성_실패_확인(response, HttpStatus.BAD_REQUEST, "기존의 구간 길이보다 긴 신규구간을 중간에 추가할 수 없습니다");
     }
 
     /**
@@ -125,10 +120,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 3));
 
         // then
-        assertAll(
-                () -> assertThat(response.jsonPath().getString("message")).isEqualTo("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다"),
-                () -> assertThat(response.jsonPath().getInt("status")).isEqualTo(HttpStatus.BAD_REQUEST.value())
-        );
+        생성_실패_확인(response, HttpStatus.BAD_REQUEST, "상행역과 하행역이 이미 노선에 모두 등록되어 있습니다");
     }
 
     /**
@@ -148,10 +140,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(없는역1, 없는역2, 3));
 
         // then
-        assertAll(
-                () -> assertThat(response.jsonPath().getString("message")).isEqualTo("상행역과 하행역 모두 찾을 수 없습니다"),
-                () -> assertThat(response.jsonPath().getInt("status")).isEqualTo(HttpStatus.NOT_FOUND.value())
-        );
+        생성_실패_확인(response, HttpStatus.NOT_FOUND, "상행역과 하행역 모두 찾을 수 없습니다");
     }
 
     /**
@@ -167,8 +156,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+        지하철_역_순서_확인(response, 강남역, 양재역, 정자역);
     }
 
     /**
@@ -188,8 +176,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+        지하철_역_순서_확인(response, 강남역, 양재역);
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
