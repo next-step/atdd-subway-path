@@ -65,4 +65,12 @@ public class Line {
                 .distinct()
                 .collect(Collectors.toList());
     }
+
+    public boolean isEqualLastSectionDownStation(Station station){
+        return sections.isEqualLastSectionDownStation(station);
+    }
+
+    public void removeSection(){
+        sections.remove();
+    }
 }

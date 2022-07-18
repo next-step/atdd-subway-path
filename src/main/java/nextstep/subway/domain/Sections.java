@@ -31,4 +31,18 @@ public class Sections {
     public boolean isEmpty() {
         return this.sections.isEmpty();
     }
+
+    public boolean isEqualLastSectionDownStation(Station station){
+        return getLastSection().getDownStation().equals(station);
+    }
+
+    public void remove() {
+        sections.remove(getLastSection());
+    }
+
+    private Section getLastSection() {
+        return sections.stream()
+                .reduce((prev, next) -> next)
+                .orElseThrow(() -> new IllegalArgumentException("구간이 존재하지 않습니다."));
+    }
 }

@@ -92,11 +92,11 @@ public class LineService {
         Line line = findLineById(lineId);
         Station station = stationService.findById(stationId);
 
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
+        if (!line.isEqualLastSectionDownStation(station)) {
             throw new IllegalArgumentException();
         }
 
-        line.getSections().remove(line.getSections().size() - 1);
+        line.removeSection();
     }
 
     private Line findLineById(Long lineId) {
