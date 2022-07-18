@@ -63,9 +63,30 @@ public class LineServiceTest {
         //then
         assertThat(lineResponses).hasSize(2);
         assertThat(lineResponses).containsExactly(
-                new LineResponse(신분당선.getId(),신분당선.getName(),신분당선.getColor()),
-                new LineResponse(분당선.getId(),분당선.getName(),분당선.getColor())
+                new LineResponse(신분당선.getId(), 신분당선.getName(), 신분당선.getColor()),
+                new LineResponse(분당선.getId(), 분당선.getName(), 분당선.getColor())
         );
+    }
+
+    @DisplayName("지하철 노선 조회")
+    @Test
+    void findById() {
+        //given
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "yellow"));
+
+        //when
+        LineResponse response = lineService.findById(신분당선.getId());
+
+        //then
+        assertThat(response.getName()).isEqualTo("신분당선");
+        assertThat(response.getColor()).isEqualTo("yellow");
+    }
+
+    @DisplayName("지하철 노선 조회시 없으면 예외발생")
+    @Test
+    void findByIdException() {
+        assertThatThrownBy(() -> lineService.findById(1L))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("지하철 구간 생성")
