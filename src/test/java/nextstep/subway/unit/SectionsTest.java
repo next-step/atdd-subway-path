@@ -18,14 +18,14 @@ public class SectionsTest {
     Line line;
     Station upStation;
     Station downStation;
-    Section newSection;
+    Section section;
 
     @BeforeEach
     void setUp() {
         line = new Line("2호선", "green");
         upStation = new Station(1L, "강남역");
         downStation = new Station(2L, "건대입구역");
-        newSection = new Section(line, upStation, downStation, 10);
+        section = new Section(line, upStation, downStation, 10);
     }
 
     @DisplayName("구간을 성공적으로 추가한다")
@@ -35,10 +35,27 @@ public class SectionsTest {
         Sections sections = new Sections();
 
         // when
-        sections.add(newSection);
+        sections.add(section);
 
         // then
         assertThat(sections.getStations()).containsExactly(upStation, downStation);
+    }
+
+    @DisplayName("노선의 상행역과 신규 추가할 구간의 하행역이 동일할 경우 노선의 앞부분에 신규 구간을 추가할 수 있다.")
+    @Test
+    public void add_section_front_at_line() {
+        // given
+        Sections sections = new Sections();
+        sections.add(section);
+
+        Station newStation = new Station(3L, "신규역");
+
+        // when
+        Section newSection = new Section(line, newStation, upStation, 5);
+        sections.add(newSection);
+
+        // then
+        assertThat(sections.getStations()).containsExactly(newStation, upStation, downStation);
     }
 
     @DisplayName("Sections에 등록된 모든 역을 조회한다")
@@ -46,7 +63,7 @@ public class SectionsTest {
     public void get_all_station_in_section() {
         // given
         Sections sections = new Sections();
-        sections.add(newSection);
+        sections.add(section);
 
         // when
         List<Station> stations = sections.getStations();
@@ -60,7 +77,7 @@ public class SectionsTest {
     public void delete_last_section() {
         // given
         Sections sections = new Sections();
-        sections.add(newSection);
+        sections.add(section);
 
         // when
         sections.deleteLastSection(downStation);
@@ -74,7 +91,7 @@ public class SectionsTest {
     public void delete_last_section_when_not_same_down_station() {
         // given
         Sections sections = new Sections();
-        sections.add(newSection);
+        sections.add(section);
 
         // when
         Exception exception = assertThrows(IllegalStateException.class, () -> sections.deleteLastSection(upStation));

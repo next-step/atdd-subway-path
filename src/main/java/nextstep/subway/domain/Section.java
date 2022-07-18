@@ -45,6 +45,18 @@ public class Section {
         return distance <= 0;
     }
 
+    public boolean hasNotDownStation(Station station) {
+        return !this.downStation.equals(station);
+    }
+
+    public boolean hasSameUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean hasSameDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
     public Long getId() {
         return id;
     }
@@ -63,10 +75,6 @@ public class Section {
 
     public int getDistance() {
         return distance;
-    }
-
-    public boolean hasNotDownStation(Station station) {
-        return !this.downStation.equals(station);
     }
 
     @Override

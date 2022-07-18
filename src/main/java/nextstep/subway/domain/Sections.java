@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.ErrorCode;
+import nextstep.subway.exception.sections.SectionsException;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -18,7 +21,26 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
-        this.sections.add(section);
+        if (sections.isEmpty()) {
+            sections.add(section);
+            return;
+        }
+
+        boolean hasUpStation = hasSameUpStation(section.getUpStation());
+        boolean hasDownStation = hasSameDownStation(section.getDownStation());
+        if (hasUpStation && hasDownStation) {
+            throw new SectionsException(ErrorCode.ALREADY_BOTH_STATION_REGISTER_EXCEPTION);
+        }
+
+        if (isSectionsUpStation(section.getDownStation())) {
+            sections.add(section);
+            return;
+        }
+
+        if (isSectionsDownStation(section.getUpStation())) {
+            sections.add(section);
+            return;
+        }
     }
 
     public List<Station> getStations() {
@@ -27,10 +49,8 @@ public class Sections {
         }
 
         final List<Station> stations = new ArrayList<>();
-        stations.add(getFirstUpStation());
-        for (Section section : sections) {
-            stations.add(section.getDownStation());
-        }
+        Station firstUpStation = getFirstUpStation();
+        addStationByOrder(stations, firstUpStation);
 
         return Collections.unmodifiableList(stations);
     }
@@ -52,6 +72,42 @@ public class Sections {
         return sections.isEmpty();
     }
 
+    private void addStationByOrder(List<Station> stations, Station upStation) {
+        stations.add(upStation);
+
+        for (int i = 0; i < sections.size(); i++) {
+            Station nextStation = findNextStation(upStation);
+            stations.add(nextStation);
+            upStation = nextStation;
+        }
+    }
+
+    private Station findNextStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.hasSameUpStation(station))
+                .findFirst()
+                .map(Section::getDownStation)
+                .orElse(station);
+    }
+
+    private boolean hasSameUpStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.hasSameUpStation(station));
+    }
+
+    private boolean hasSameDownStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.hasSameDownStation(station));
+    }
+
+    private boolean isSectionsUpStation(Station station) {
+        return getFirstSection().hasSameUpStation(station);
+    }
+
+    private boolean isSectionsDownStation(Station station) {
+        return getLastSection().hasSameDownStation(station);
+    }
+
     private Section getFirstSection() {
         return sections.get(FIRST_SECTION_INDEX);
     }
@@ -65,6 +121,16 @@ public class Sections {
     }
 
     private Station getFirstUpStation() {
-        return getFirstSection().getUpStation();
+        Station startStation = getFirstSection().getUpStation();
+        return getFirstUpStation(startStation);
+    }
+
+    private Station getFirstUpStation(Station startStation) {
+        return sections.stream()
+                .filter(section -> section.hasSameDownStation(startStation))
+                .findFirst()
+                .map(Section::getUpStation)
+                .map(this::getFirstUpStation)
+                .orElse(startStation);
     }
 }

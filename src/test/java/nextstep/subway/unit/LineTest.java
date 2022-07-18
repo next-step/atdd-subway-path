@@ -20,9 +20,9 @@ class LineTest {
 
     @BeforeEach
     void setUp() {
-        upStation = new Station("강남역");
-        downStation = new Station("건대입구역");
-        line = new Line("2호선", "green");
+        upStation = new Station(1L, "강남역");
+        downStation = new Station(2L, "건대입구역");
+        line = new Line(3L, "2호선", "green");
     }
 
     @DisplayName("비어있는 line에 신규 section을 추가한다")
