@@ -80,11 +80,7 @@ public class LineService {
         Line line = findLineById(lineId);
         Station station = findStationById(stationId);
 
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-
-        line.getSections().remove(line.getSections().size() - 1);
+        line.removeSection(station);
     }
 
     private Line findLineById(Long id) {

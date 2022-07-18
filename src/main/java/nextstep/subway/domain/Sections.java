@@ -36,4 +36,16 @@ public class Sections {
 
         return unmodifiableList(stations);
     }
+
+    public void removeSection(Station station) {
+        if (!lastSection().getDownStation().equals(station)) {
+            throw new IllegalArgumentException("삭제하려는 역이 노선에 등록되지 않은 역이거나, 마지막 구간의 역이 아닙니다.");
+        }
+
+        value.remove(lastSection());
+    }
+
+    private Section lastSection() {
+        return value.get(value.size() - 1);
+    }
 }

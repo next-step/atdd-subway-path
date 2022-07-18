@@ -31,6 +31,10 @@ public class Line {
         section.line(this);
     }
 
+    public void removeSection(Station station) {
+        sections.removeSection(station);
+    }
+
     public List<Station> allStations() {
         return sections.allStations();
     }
