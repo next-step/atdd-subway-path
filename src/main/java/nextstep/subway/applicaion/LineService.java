@@ -101,7 +101,7 @@ public class LineService {
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
-        final Section lastSection = line.getSections().get(line.getSections().size() - 1);
+        final Section lastSection = line.getLastSection();
 
         if (!lastSection.getDownStation().equals(station)) {
             throw new IllegalArgumentException();
