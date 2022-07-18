@@ -8,6 +8,8 @@ import nextstep.subway.exception.sections.SectionsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
@@ -111,8 +113,9 @@ public class SectionsTest {
     }
 
     @DisplayName("중간에 구간을 추가할 때, 신규로 추가되는 구간의 길이가 기존 구간보다 길다면 예외를 던진다")
-    @Test
-    public void add_section_middle_at_line_fail() {
+    @ValueSource(ints = {10, 11})
+    @ParameterizedTest
+    public void add_section_middle_at_line_fail(int overDistance) {
         // given
         Sections sections = new Sections();
         sections.add(section);
@@ -120,7 +123,7 @@ public class SectionsTest {
         Station newStation = new Station(3L, "신규역");
 
         // when
-        Section newSection = new Section(line, upStation, newStation, 15);
+        Section newSection = new Section(line, upStation, newStation, overDistance);
         SectionsException exception = assertThrows(SectionsException.class, () -> sections.add(newSection));
 
         // then
