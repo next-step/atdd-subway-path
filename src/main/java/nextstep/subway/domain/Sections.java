@@ -23,4 +23,8 @@ public class Sections {
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
     }
+
+    public void add(Section section) {
+        sections.add(section);
+    }
 }
