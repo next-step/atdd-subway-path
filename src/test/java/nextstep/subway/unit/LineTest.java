@@ -16,19 +16,32 @@ class LineTest {
 
 	@BeforeEach
 	void setUp() {
-		line = new Line(1L, "신분당선", "color");
+		line = new Line(1L, "신분당선", "yellow");
 	}
 
 	@DisplayName("지하철 구간 추가")
 	@Test
 	void addSection() {
-		//given
-
 		//when
 		line.addSection(강남역, 역삼역, DISTANCE);
 
 		//then
 		assertThat(line.getSections()).hasSize(1);
+	}
+
+	@DisplayName("마지막 구간 앞에 새로운 구간 추가")
+	@Test
+	void addSectionTo() {
+		//Given
+		line.addSection(강남역, 양재역, DISTANCE);
+		line.addSection(양재역, 정자역, DISTANCE);
+
+		//when
+		line.addSection(양재역, 양재시민의숲역, DISTANCE);
+
+		//then
+		assertThat(line.getStations()).hasSize(4)
+			.containsExactly(강남역, 양재역, 양재시민의숲역, 정자역);
 	}
 
 	@DisplayName("지하철 구간 조회_2개")
@@ -48,7 +61,7 @@ class LineTest {
 	void getStationsZero() {
 		//when
 		//then
-		assertThat(line.getStations()).hasSize(0);
+		assertThat(line.getStations()).isEmpty();
 	}
 
 	@DisplayName("지하철 구간 삭제")

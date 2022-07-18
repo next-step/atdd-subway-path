@@ -8,8 +8,15 @@ public class LineStaticValues {
 	static final Long 강남역Id = 1L;
 	static final Long 역삼역Id = 2L;
 	static final Long 선릉역Id = 3L;
+	static final Long 양재역Id = 4L;
+	static final Long 정자역Id = 5L;
+	static final Long 양재시민의숲역Id = 5L;
 	static Station 강남역 = new Station(강남역Id, "강남역");
 	static Station 역삼역 = new Station(역삼역Id, "역삼역");
 	static Station 선릉역 = new Station(선릉역Id, "선릉역");
+	static Station 양재역 = new Station(양재역Id, "양재역");
+	static Station 정자역 = new Station(정자역Id, "정자역");
+	static Station 양재시민의숲역 = new Station(양재시민의숲역Id, "양재시민의숲역");
+
 	static int DISTANCE = 9;
 }
