@@ -31,6 +31,10 @@ public class Line {
         section.line(this);
     }
 
+    public List<Station> allStations() {
+        return sections.allStations();
+    }
+
     public Long getId() {
         return id;
     }

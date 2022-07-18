@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Collections.*;
+import static java.util.stream.Collectors.*;
 
 @Embeddable
 public class Sections {
@@ -20,5 +21,19 @@ public class Sections {
 
     public List<Section> getValue() {
         return unmodifiableList(value);
+    }
+
+    public List<Station> allStations() {
+        if (value.isEmpty()) {
+            return emptyList();
+        }
+
+        List<Station> stations = value.stream()
+                .map(Section::getDownStation)
+                .collect(toList());
+
+        stations.add(0, value.get(0).getUpStation());
+
+        return unmodifiableList(stations);
     }
 }
