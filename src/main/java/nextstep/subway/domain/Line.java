@@ -1,53 +1,52 @@
 package nextstep.subway.domain;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Objects.requireNonNullElseGet;
+
+@Getter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Line {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
-
-    public Line() {
-    }
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
+        this(null, name, color);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
+    public Line(Long id, String name, String color) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
         this.name = name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
         this.color = color;
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public void addSection(Section section) {
+        this.sections.add(section);
+    }
+
+    public void updateNameAndColor(String updateName, String updateColor) {
+        this.name = requireNonNullElseGet(updateName, () -> this.name);
+        this.color = requireNonNullElseGet(updateColor, () -> this.color);
+    }
+
+    public List<Station> getStations() {
+        return this.sections.getStations();
+    }
+
+    public void deleteStation(Station station) {
+        this.sections.deleteStation(station);
     }
 }

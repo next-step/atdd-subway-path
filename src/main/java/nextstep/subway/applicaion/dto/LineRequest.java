@@ -1,29 +1,36 @@
 package nextstep.subway.applicaion.dto;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.util.Objects;
+
+import static java.util.Objects.*;
+
+@Getter
+@NoArgsConstructor
 public class LineRequest {
+
     private String name;
     private String color;
     private Long upStationId;
     private Long downStationId;
     private int distance;
 
-    public String getName() {
-        return name;
+    public LineRequest(String name, String color) {
+        this(name, color, null, null, 0);
     }
 
-    public String getColor() {
-        return color;
+    public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+        this.name = name;
+        this.color = color;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
     }
 
-    public Long getUpStationId() {
-        return upStationId;
+    public boolean isCreateSection() {
+        return this.upStationId != null && this.downStationId != null && this.distance != 0;
     }
 
-    public Long getDownStationId() {
-        return downStationId;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
 }

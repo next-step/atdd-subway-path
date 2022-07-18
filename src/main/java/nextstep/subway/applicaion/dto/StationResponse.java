@@ -1,5 +1,8 @@
 package nextstep.subway.applicaion.dto;
 
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode
 public class StationResponse {
     private Long id;
     private String name;
