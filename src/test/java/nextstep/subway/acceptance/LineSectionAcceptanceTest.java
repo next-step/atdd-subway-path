@@ -13,10 +13,10 @@ import java.util.Map;
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
+
     private Long 신분당선;
 
     private Long 강남역;
@@ -53,10 +53,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신규역, 강남역, 양재역)
-        );
+        지하철_역_순서_확인(response, 신규역, 강남역, 양재역);
     }
 
     /**
@@ -72,12 +69,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 신규역));
 
         // then
-        // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 신규역)
-        );
+        지하철_역_순서_확인(response, 강남역, 양재역, 신규역);
     }
 
     /**
