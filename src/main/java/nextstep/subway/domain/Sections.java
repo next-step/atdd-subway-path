@@ -32,19 +32,6 @@ public class Sections {
             throw new SectionsException(ErrorCode.ALREADY_BOTH_STATION_REGISTER_EXCEPTION);
         }
 
-        if (hasUpStation) {
-            Section findSection = findSectionByUpStation(section.getUpStation());
-
-            if (findSection.getDistance() <= section.getDistance()) {
-                throw new SectionsException(ErrorCode.SECTION_DISTANCE_EXCEPTION);
-            }
-
-            Station findDownStation = findSection.getDownStation();
-            findSection.updateDownStation(section.getDownStation());
-            sections.add(new Section(section.getLine(), section.getDownStation(), findDownStation, section.getDistance()));
-            return;
-        }
-
         if (isSectionsUpStation(section.getDownStation())) {
             sections.add(section);
             return;
@@ -54,13 +41,18 @@ public class Sections {
             sections.add(section);
             return;
         }
-    }
 
-    private Section findSectionByUpStation(Station upStation) {
-        return sections.stream()
-                .filter(section -> section.hasSameUpStation(upStation))
-                .findFirst()
-                .orElseThrow(() -> new SectionsException(ErrorCode.NOT_FOUND_SECTION_EXCEPTION));
+        if (hasUpStation) {
+            Section findSection = findSectionByUpStation(section.getUpStation());
+            if (section.isGreaterThanDistance(findSection.getDistance())) {
+                throw new SectionsException(ErrorCode.SECTION_DISTANCE_EXCEPTION);
+            }
+
+            Section lastHalfSection = findSection.divideSectionByMiddle(section);
+            sections.remove(findSection);
+            sections.add(lastHalfSection);
+            sections.add(section);
+        }
     }
 
     public List<Station> getStations() {
@@ -90,6 +82,13 @@ public class Sections {
 
     public boolean isEmptySections() {
         return sections.isEmpty();
+    }
+
+    private Section findSectionByUpStation(Station upStation) {
+        return sections.stream()
+                .filter(section -> section.hasSameUpStation(upStation))
+                .findFirst()
+                .orElseThrow(() -> new SectionsException(ErrorCode.NOT_FOUND_SECTION_EXCEPTION));
     }
 
     private void addStationByOrder(List<Station> stations, Station upStation) {

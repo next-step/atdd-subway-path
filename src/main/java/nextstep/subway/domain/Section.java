@@ -41,12 +41,12 @@ public class Section {
         this.distance = distance;
     }
 
-    private boolean isInValidDistance(int distance) {
-        return distance <= 0;
+    public boolean isGreaterThanDistance(int distance) {
+        return this.distance >= distance;
     }
 
-    public void updateDownStation(Station downStation) {
-        this.downStation = downStation;
+    public Section divideSectionByMiddle(Section section) {
+        return new Section(this.line, section.getDownStation(), this.downStation, this.distance - section.getDistance());
     }
 
     public boolean hasNotDownStation(Station station) {
@@ -79,6 +79,10 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    private boolean isInValidDistance(int distance) {
+        return distance <= 0;
     }
 
     @Override
