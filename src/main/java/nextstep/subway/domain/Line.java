@@ -13,7 +13,7 @@ public class Line {
     private String name;
     private String color;
     @Embedded
-    private Sections sections;
+    private Sections sections = new Sections();
 
     public Line() {
     }
