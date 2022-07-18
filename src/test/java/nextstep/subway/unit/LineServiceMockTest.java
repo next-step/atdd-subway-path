@@ -29,6 +29,7 @@ public class LineServiceMockTest {
     private LineService lineService;
 
     @Test
+    @DisplayName("구간을 추가하면 해당 구간의 역을 조회할 수 있다.")
     void addSection() {
         // given
         final long lineId = 1L;
@@ -76,6 +77,7 @@ public class LineServiceMockTest {
     }
 
     @Test
+    @DisplayName("삭제하려는 구간은 마지막 구간만 가능하다.")
     void deleteSection_invalid() {
         // given
         final long lineId = 1L;

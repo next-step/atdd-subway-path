@@ -24,6 +24,7 @@ public class LineServiceTest {
     private LineService lineService;
 
     @Test
+    @DisplayName("구간을 추가하면 해당 구간의 역을 조회할 수 있다.")
     void addSection() {
         // given
         Station gangnam = createStation("강남역");
