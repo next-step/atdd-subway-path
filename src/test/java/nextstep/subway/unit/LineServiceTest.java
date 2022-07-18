@@ -89,6 +89,21 @@ public class LineServiceTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+    @DisplayName("지하철 노선 수정")
+    @Test
+    void updateLine() {
+        //given
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "yellow"));
+
+        //when
+        lineService.updateLine(신분당선.getId(), new LineRequest("분당선","yellow"));
+
+        //then
+        LineResponse response = lineService.findById(신분당선.getId());
+        assertThat(response.getName()).isEqualTo("분당선");
+        assertThat(response.getColor()).isEqualTo("yellow");
+    }
+
     @DisplayName("지하철 구간 생성")
     @Test
     void addSection() {
