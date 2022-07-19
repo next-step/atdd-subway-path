@@ -6,6 +6,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,6 +28,7 @@ public class LineServiceTest {
     private final int DEFAULT_DISTANCE = 10;
 
     @Test
+    @DisplayName("구간을 생성한다.")
     void addSection() {
         // given
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅

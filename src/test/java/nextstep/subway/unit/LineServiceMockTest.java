@@ -3,21 +3,18 @@ package nextstep.subway.unit;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -33,7 +30,9 @@ public class LineServiceMockTest {
     private LineService lineService;
 
     private final int DEFAULT_DISTANCE = 10;
+
     @Test
+    @DisplayName("구간을 생성한다.")
     void addSection() {
 
         long lineId = 1L;
