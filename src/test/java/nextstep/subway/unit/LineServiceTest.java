@@ -31,9 +31,9 @@ public class LineServiceTest {
     @Test
     void addSection() {
         // given
-        Station 광교역 = 역을_등록한다("광교역");
-        Station 광교중앙역 = 역을_등록한다("광교중앙역");
-        Line 신분당선 = 노선을_등록한다("신분당선", "red");
+        Station 광교역 = 광교역_생성();
+        Station 광교중앙역 = 광교중앙역_생성();
+        Line 신분당선 = 신분당선_생성();
 
         // when
         lineService.addSection(신분당선.getId(), new SectionRequest(광교역.getId(), 광교중앙역.getId(), 10));
@@ -48,9 +48,9 @@ public class LineServiceTest {
     @Test
     void deleteSection() {
         //given
-        Station 광교역 = 역을_등록한다("광교역");
-        Station 광교중앙역 = 역을_등록한다("광교중앙역");
-        Line 신분당선 = 노선을_등록한다("신분당선", "red");
+        Station 광교역 = 광교역_생성();
+        Station 광교중앙역 = 광교중앙역_생성();
+        Line 신분당선 = 신분당선_생성();
 
         //when
         lineService.addSection(신분당선.getId(), new SectionRequest(광교역.getId(), 광교중앙역.getId(), 10));
@@ -64,15 +64,14 @@ public class LineServiceTest {
     @Test
     void saveLine() {
         //given
-        Station 광교역 = 역을_등록한다("광교역");
-        Station 광교중앙역 = 역을_등록한다("광교중앙역");
-        Line 신분당선 = 노선을_등록한다("신분당선", "red");
+        Station 광교역 = 광교역_생성();
+        Station 광교중앙역 = 광교중앙역_생성();
+        Line 신분당선 = 신분당선_생성();
 
         //when
         LineResponse 신분당선_응답 = lineService.saveLine(new LineRequest(신분당선.getName(), 신분당선.getColor(), 광교역.getId(), 광교중앙역.getId(), 10));
 
         //then
-        LineResponse response = lineService.findById(신분당선.getId());
         assertAll(
                 () -> assertThat(신분당선_응답.getName()).isEqualTo("신분당선"),
                 () -> assertThat(신분당선_응답.getStations()).hasSize(2)
@@ -82,7 +81,7 @@ public class LineServiceTest {
     @Test
     void showLines() {
         //given
-        노선을_등록한다("신분당선", "red");
+        신분당선_생성();
 
         //when
         List<LineResponse> 노선_응답 = lineService.showLines();
@@ -94,11 +93,23 @@ public class LineServiceTest {
         );
     }
 
-    private Line 노선을_등록한다(String lineName, String color) {
-        return lineRepository.save(new Line(lineName, color));
+    private Station 광교역_생성() {
+        return 역을_등록한다("광교역");
     }
 
-    private Station 역을_등록한다(String stationName) {
-        return stationRepository.save(new Station(stationName));
+    private Line 신분당선_생성() {
+        return 노선을_등록한다("신분당선", "red");
+    }
+
+    private Station 광교중앙역_생성() {
+        return 역을_등록한다("광교중앙역");
+    }
+
+    private Line 노선을_등록한다(String name, String color) {
+        return lineRepository.save(new Line(name, color));
+    }
+
+    private Station 역을_등록한다(String name) {
+        return stationRepository.save(new Station(name));
     }
 }
