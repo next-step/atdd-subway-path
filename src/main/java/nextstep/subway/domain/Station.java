@@ -9,7 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Getter
-@EqualsAndHashCode
 @Entity
 public class Station {
     @Id

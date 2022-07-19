@@ -41,4 +41,8 @@ public class Line {
     public List<Section> getSections() {
         return sections.getSections();
     }
+
+    public boolean isLastStation(Long stationId) {
+        return sections.isLastStation(stationId);
+    }
 }

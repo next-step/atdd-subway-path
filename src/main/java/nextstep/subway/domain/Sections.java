@@ -20,4 +20,9 @@ public class Sections {
     public void add(Section section) {
         sections.add(section);
     }
+
+    public boolean isLastStation(Long stationId) {
+        Section lastSection = sections.get(sections.size() - 1);
+        return lastSection.isDownStation(stationId);
+    }
 }
