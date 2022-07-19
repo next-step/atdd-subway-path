@@ -58,13 +58,13 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 	 *  When 추가된 지하철 구간 상행역과 하행역사이에 새로운 구간을 요청하면 ( A역  - B역 )
 	 *  Then 새로운 구간이 추가된다. ( A역  - B역 - C역 )
 	 */
-	@DisplayName("새로 추가된 구간 상행역이, 기존 상행역과 같은경우")
+	@DisplayName("기존 구간사이에 구간 추가")
 	@Test
 	void addLineTopSectionBaseOnUpStation() {
 		//Given
 		Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
 		지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
-
+		// 강남 - 양재 - 정자
 		//When
 		Long 양재시민의숲 = 지하철역_생성_요청("양재시민의숲").jsonPath().getLong("id");
 		지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 양재시민의숲));
@@ -80,7 +80,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 	 *  When 추가된 지하철 구간 상행역과 위에 새로운 구간을 요청하면 ( B역  - A역 )
 	 *  Then 새로운 구간이 추가된다. ( B역  - A역 - C역 )
 	 */
-	@DisplayName("새로 추가된 구간 하행역이, 기존 상행역과 같은경우")
+	@DisplayName("상행 종점에 구간 추가")
 	@Test
 	void addLineDownSectionBaseOnUpStation() {
 		//Given
@@ -88,13 +88,35 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
 
 		//When
-		Long 양재시민의숲 = 지하철역_생성_요청("양재시민의숲").jsonPath().getLong("id");
-		지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 양재시민의숲));
+		Long 신논현역 = 지하철역_생성_요청("신논현").jsonPath().getLong("id");
+		지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역));
 
 		// then
 		ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-		assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 양재시민의숲, 정자역);
+		assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신논현역, 강남역, 양재역, 정자역);
+	}
+
+	/**
+	 *  Given 지하철 노선에 새로운 구간 추가 요청하고 ( A역  - C역 )
+	 *  When 추가된 지하철 구간 상행역과 위에 새로운 구간을 요청하면 ( C역  - D역 )
+	 *  Then 새로운 구간이 추가된다. ( A역  - C역 - D역 )
+	 */
+	@DisplayName("하행 종점에 신규 구간 추가")
+	@Test
+	void AddSectionToEndOfDownStation() {
+		//Given
+		Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+		지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+
+		//When
+		Long 미금역 = 지하철역_생성_요청("미금역").jsonPath().getLong("id");
+		지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 미금역));
+
+		// then
+		ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역, 미금역);
 	}
 
 	/**

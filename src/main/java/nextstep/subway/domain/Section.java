@@ -1,16 +1,21 @@
 package nextstep.subway.domain;
 
+import static nextstep.subway.common.exception.errorcode.EntityErrorCode.*;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import nextstep.subway.common.exception.BusinessException;
 
 @Entity
 public class Section {
@@ -32,6 +37,9 @@ public class Section {
 
 	private int distance;
 
+	@Embedded
+	private SectionIndex sectionIndex = new SectionIndex();
+
 	public Section() {
 
 	}
@@ -50,8 +58,49 @@ public class Section {
 		return Arrays.asList(this.downStation);
 	}
 
-	public boolean isSameWithDownStation(long stationId) {
-		return this.downStation.getId() == stationId;
+	public boolean isSameWithDownStation(Station station) {
+		return this.downStation.equals(station);
+	}
+
+	public boolean isSameWithUpStation(Station station) {
+		return this.upStation.equals(station);
+	}
+
+	public boolean isSameSectionExists(Station addUpStation, Station addDownStation) {
+		if (this.upStation.equals(addUpStation) && this.downStation.equals(addDownStation)) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isExistAnyStations(Station addUpStation, Station addDownStation) {
+		if (this.upStation.equals(addUpStation) || this.upStation.equals(addDownStation)
+			|| this.downStation.equals(addUpStation) || this.downStation.equals(addDownStation)) {
+			return true;
+		}
+		return false;
+	}
+
+	public void nullValidationOfStations() {
+		if (this.upStation == null || this.downStation == null) {
+			throw new BusinessException(ENTITY_NOT_FOUND);
+		}
+	}
+
+	public void changeUpStation(Station station) {
+		this.upStation = station;
+	}
+
+	public void changeDownStation(Station station) {
+		this.downStation = station;
+	}
+
+	public void calculateIndex(int index) {
+		this.sectionIndex.calculateIndex(index);
+	}
+
+	public int getIndex() {
+		return sectionIndex.getIndex();
 	}
 
 	@Override

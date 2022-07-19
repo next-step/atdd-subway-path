@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import static nextstep.subway.common.exception.errorcode.StatusErrorCode.*;
+
 import java.util.List;
 
 import javax.persistence.Embedded;
@@ -7,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
+import nextstep.subway.common.exception.BusinessException;
 
 @Entity
 public class Line {
@@ -70,6 +74,9 @@ public class Line {
 	}
 
 	public void addSection(Station upStation, Station downStation, int distance) {
+		nullValidationOfSection(upStation, downStation);
+		stationValidationOfSection(upStation, downStation);
+
 		this.sections.add(new Section(this, upStation, downStation, distance));
 	}
 
@@ -90,6 +97,18 @@ public class Line {
 	public void changeColor(String lineColor) {
 		if (lineColor != null) {
 			this.color = lineColor;
+		}
+	}
+
+	private void nullValidationOfSection(Station upStation, Station downStation) {
+		if (upStation == null || downStation == null) {
+			throw new BusinessException(INVALID_STATUS);
+		}
+	}
+
+	private void stationValidationOfSection(Station upStation, Station downStation) {
+		if (upStation.equals(downStation)) {
+			throw new BusinessException(INVALID_STATUS);
 		}
 	}
 
