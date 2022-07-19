@@ -46,7 +46,7 @@ public class Sections {
     public Station getLastDownStation() {
         return this.sections.stream()
                 .filter(section -> this.sections.stream()
-                        .noneMatch(other -> other.isSameUpStationForDown(section)))
+                        .noneMatch(other -> other.matchUpStationForDown(section)))
                 .findFirst()
                 .map(Section::getDownStation)
                 .orElseThrow(NotFountSectionException::new);
@@ -70,7 +70,7 @@ public class Sections {
 
     private Section findNextSection(Section currentSection) {
         return this.sections.stream()
-                .filter(section -> section.isSameUpStationForDown(currentSection))
+                .filter(section -> section.matchUpStationForDown(currentSection))
                 .findFirst()
                 .orElse(null);
     }
@@ -78,7 +78,7 @@ public class Sections {
     private Section getFirstSection() {
         return this.sections.stream()
                 .filter(section -> this.sections.stream()
-                        .noneMatch(other -> section.isSameUpStationForDown(other)))
+                        .noneMatch(other -> section.matchUpStationForDown(other)))
                 .findFirst()
                 .orElseThrow(NotFountSectionException::new);
     }
@@ -102,7 +102,7 @@ public class Sections {
 
     private boolean isDuplicateSection(Section newSection) {
         return sections.stream()
-                .anyMatch(section -> section.isSameStations(newSection));
+                .anyMatch(section -> section.matchStations(newSection));
     }
 
     private Optional<Section> getSectionForFilter(Predicate<Section> filterAction) {
@@ -117,7 +117,7 @@ public class Sections {
         }
 
         this.sections.add(newSection);
-        if (section.isSameUpStationIn(newSection)) {
+        if (section.matchUpStation(newSection)) {
             section.changeUpSection(newSection);
             return;
         }
