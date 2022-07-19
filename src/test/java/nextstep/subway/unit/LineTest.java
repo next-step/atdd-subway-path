@@ -13,24 +13,20 @@ class LineTest {
     @Test
     void addSection() {
         // given
+        long upStationId = 1L;
+        long downStationId = 2L;
+
         Line line = new Line("신분당선", "red");
 
         // when
-        line.addSection(1L, 2L, 6);
+        line.addSection(upStationId, downStationId, 6);
 
         // then
         List<Section> sections = line.getSections();
-        Section section = sections.get(0);
         assertThat(sections).hasSize(1);
-        assertThat(section.getUpStationId()).isEqualTo(1L);
-        assertThat(section.getDownStationId()).isEqualTo(2L);
-    }
 
-    @Test
-    void getStations() {
-    }
-
-    @Test
-    void removeSection() {
+        Section addedSection = sections.get(0);
+        assertThat(addedSection.getUpStationId()).isEqualTo(upStationId);
+        assertThat(addedSection.getDownStationId()).isEqualTo(downStationId);
     }
 }

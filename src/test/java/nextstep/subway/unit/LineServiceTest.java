@@ -30,16 +30,17 @@ class LineServiceTest {
         Station downStation = stationRepository.save(new Station("교대역"));
         Line line = lineRepository.save(new Line("신분당선", "red"));
 
-        // when
         SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(), 6);
+
+        // when
         lineService.addSection(line.getId(), sectionRequest);
 
         // then
         List<Section> sections = line.getSections();
-        Section section = sections.get(0);
-
         assertThat(sections).hasSize(1);
-        assertThat(section.getUpStationId()).isEqualTo(1L);
-        assertThat(section.getDownStationId()).isEqualTo(2L);
+
+        Section addedSection = sections.get(0);
+        assertThat(addedSection.getUpStationId()).isEqualTo(upStation.getId());
+        assertThat(addedSection.getDownStationId()).isEqualTo(downStation.getId());
     }
 }

@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,18 +29,58 @@ class LineServiceMockTest {
     private LineService lineService;
 
     @Test
-    void addSection() {
+    void 구간_추가() {
         // given
+        long lineId = 1L;
+        long upStationId = 1L;
+        long downStationId = 2L;
+
         Line line = new Line("신분당선", "red");
 
-        when(stationService.findById(1L)).thenReturn(new Station("강남"));
-        when(stationService.findById(2L)).thenReturn(new Station("양재"));
-        when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+        when(stationService.findById(upStationId)).thenReturn(new Station("강남"));
+        when(stationService.findById(downStationId)).thenReturn(new Station("양재"));
+        when(lineRepository.findById(lineId)).thenReturn(Optional.of(line));
 
         // when
-        lineService.addSection(1L, new SectionRequest(1L, 2L, 6));
+        lineService.addSection(lineId, new SectionRequest(upStationId, downStationId, 6));
 
         // then
         assertThat(line.getSections()).hasSize(1);
+    }
+
+    @Test
+    void 구간_삭제() {
+        // given
+        long lineId = 1L;
+        long upStationId = 1L;
+        long downStationId = 2L;
+
+        Line line = new Line("신분당선", "red");
+        line.addSection(upStationId, downStationId, 6);
+
+        when(lineRepository.findById(lineId)).thenReturn(Optional.of(line));
+
+        // when
+        lineService.deleteSection(lineId, downStationId);
+
+        // then
+        assertThat(line.getSections()).isEmpty();
+    }
+
+    @Test
+    void 구간_삭제_종점이_아니면_예외() {
+        // given
+        long lineId = 1L;
+        long upStationId = 1L;
+        long downStationId = 2L;
+
+        Line line = new Line("신분당선", "red");
+        line.addSection(upStationId, downStationId, 6);
+
+        when(lineRepository.findById(lineId)).thenReturn(Optional.of(line));
+
+        // when + then
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> lineService.deleteSection(lineId, upStationId));
     }
 }
