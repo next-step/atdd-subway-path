@@ -104,6 +104,22 @@ public class LineServiceTest {
         assertThat(신분당선_응답.getName()).isEqualTo("신분당선");
     }
 
+    @Test
+    void updateLine() {
+        //given
+        Line 신분당선 = 신분당선_생성();
+
+        //when
+        lineService.updateLine(신분당선.getId(), new LineRequest("강남역", "green"));
+
+        //then
+        LineResponse 신분당선_응답 = lineService.findById(신분당선.getId());
+        assertAll(
+                () -> assertThat(신분당선_응답.getName()).isEqualTo("강남역"),
+                () -> assertThat(신분당선_응답.getColor()).isEqualTo("green")
+        );
+    }
+
     private Station 광교역_생성() {
         return 역을_등록한다("광교역");
     }

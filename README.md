@@ -19,7 +19,7 @@
     - [x] saveLine
     - [x] showLines
     - [x] findById
-    - [] updateLine
+    - [x] updateLine
     - [] deleteLine
 - [] 단위 테스트를 기반으로 비즈니스 로직을 리팩터링
   - [] 비즈니스 로직을 도메인 클래스(Line)으로 옮기기
