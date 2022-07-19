@@ -19,7 +19,6 @@ import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
-import nextstep.subway.unit.utils.TestLineBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -107,11 +106,7 @@ class LineServiceMockTest {
     @Test
     void showLines() {
         // given
-        var line = TestLineBuilder.aLine()
-                        .id(1L)
-                        .name("신분당선")
-                        .color("red")
-                        .build();
+        var line = createLine(1L, "신분당선", "red");
         line.addSection(광교역, 광교중앙역, 10);
         when(lineRepository.findAll()).thenReturn(List.of(line));
         when(stationService.createStationResponse(any(Station.class))).thenCallRealMethod();
@@ -138,11 +133,7 @@ class LineServiceMockTest {
     @Test
     void findLineById() {
         // given
-        var line = TestLineBuilder.aLine()
-                .id(1L)
-                .name("신분당선")
-                .color("red")
-                .build();
+        var line = createLine(1L, "신분당선", "red");
         line.addSection(광교역, 광교중앙역, 10);
         when(lineRepository.findById(line.getId()))
                 .thenReturn(Optional.of(line));
@@ -168,11 +159,7 @@ class LineServiceMockTest {
     @Test
     void updateLine() {
         // given
-        var line = TestLineBuilder.aLine()
-                .id(1L)
-                .name("신분당선")
-                .color("red")
-                .build();
+        var line = createLine(1L, "신분당선", "red");
         line.addSection(광교역, 광교중앙역, 10);
         when(lineRepository.findById(line.getId()))
                 .thenReturn(Optional.of(line));
@@ -203,11 +190,7 @@ class LineServiceMockTest {
     @Test
     void addSection() {
         // given
-        var line = TestLineBuilder.aLine()
-                .id(1L)
-                .name("신분당선")
-                .color("red")
-                .build();
+        var line = createLine(1L, "신분당선", "red");
         var 상현역 = createTestStation(3L, "상현역");
         var distance = 10;
         line.addSection(광교역, 광교중앙역, distance);
@@ -228,11 +211,7 @@ class LineServiceMockTest {
     void deleteLineById() {
         // given
         var 상현역 = createTestStation(3L, "상현역");
-        var line = TestLineBuilder.aLine()
-                .id(1L)
-                .name("신분당선")
-                .color("red")
-                .build();
+        var line = createLine(1L, "신분당선", "red");
         line.addSection(광교역, 광교중앙역, 10);
         line.addSection(광교중앙역, 상현역, 5);
         when(stationService.findById(상현역.getId())).thenReturn(상현역);
@@ -243,6 +222,12 @@ class LineServiceMockTest {
 
         // then
         assertThat(line.getStations()).containsExactly(광교역, 광교중앙역);
+    }
+
+    private Line createLine(Long id, String name, String color) {
+        var line = new Line(name, color);
+        line.setId(id);
+        return line;
     }
 
     private Station createTestStation(Long id, String name) {
