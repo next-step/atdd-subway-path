@@ -16,8 +16,7 @@ public class Line {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new LinkedList<>();
 
-    public Line() {
-    }
+    protected Line() {/*no-op*/}
 
     public Line(Long id, String name, String color, Section section) {
 

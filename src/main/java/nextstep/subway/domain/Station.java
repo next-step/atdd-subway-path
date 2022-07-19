@@ -13,8 +13,7 @@ public class Station {
     private Long id;
     private String name;
 
-    public Station() {
-    }
+    protected Station() {/*no-op*/}
 
     public Station(Long id, String name) {
         this.id = id;

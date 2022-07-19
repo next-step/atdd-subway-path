@@ -23,9 +23,7 @@ public class Section {
 
     private int distance;
 
-    public Section() {
-
-    }
+    protected Section() {/*no-op*/}
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
