@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import lombok.Getter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -15,16 +14,16 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    @JoinColumn(name = "line_id")
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections;
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+        this.sections = new Sections();
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
@@ -34,7 +33,12 @@ public class Line {
     public void setName(String name) {
         this.name = name;
     }
+
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public List<Section> getSections() {
+        return sections.getSections();
     }
 }
