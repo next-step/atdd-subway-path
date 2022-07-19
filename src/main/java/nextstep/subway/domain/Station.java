@@ -26,4 +26,8 @@ public class Station {
     public String getName() {
         return name;
     }
+
+    public boolean isMatched(Station upStation) {
+        return this.name.equals(upStation.name);
+    }
 }
