@@ -35,19 +35,25 @@ class LineServiceTest {
     @Autowired
     private LineService sut;
 
+    private Station 광교역;
+    private Station 광교중앙역;
+    private Station 상현역;
+
     @BeforeEach
     void setUp() {
         sut = new LineService(lineRepository, new StationService(stationRepository));
+
+        광교역 = createStationStep("광교역");
+        광교중앙역 = createStationStep("광교중앙역");
+        상현역 = createStationStep("상현역");
     }
 
     @DisplayName("노선 추가")
     @Test
     void createLine() {
         // given
-        var upStation = createStationStep("광교역");
-        var downStation = createStationStep("광교중앙역");
         var distance = 10;
-        var lineRequest = new LineRequest("신분당선", "red", upStation.getId(), downStation.getId(), distance);
+        var lineRequest = new LineRequest("신분당선", "red", 광교역.getId(), 광교중앙역.getId(), distance);
 
         // when
         var lineResponse = sut.saveLine(lineRequest);
@@ -58,8 +64,8 @@ class LineServiceTest {
                 lineRequest.getName(),
                 lineRequest.getColor(),
                 List.of(
-                        new StationResponse(upStation.getId(), upStation.getName()),
-                        new StationResponse(downStation.getId(), downStation.getName())
+                        new StationResponse(광교역.getId(), 광교역.getName()),
+                        new StationResponse(광교중앙역.getId(), 광교중앙역.getName())
                 )
         );
         var line = lineRepository.findById(lineResponse.getId());
@@ -68,7 +74,7 @@ class LineServiceTest {
                 () -> assertThat(line).isNotEmpty(),
                 () -> assertThat(line.get().getName()).isEqualTo(lineRequest.getName()),
                 () -> assertThat(line.get().getColor()).isEqualTo(lineRequest.getColor()),
-                () -> assertThat(line.get().getStations()).containsExactly(upStation, downStation)
+                () -> assertThat(line.get().getStations()).containsExactly(광교역, 광교중앙역)
         );
     }
 
@@ -77,10 +83,8 @@ class LineServiceTest {
     @Test
     void showLines() {
         // given
-        var upStation = createStationStep("광교역");
-        var downStation = createStationStep("광교중앙역");
         var distance = 10;
-        var line = createLineStep("신분당선", "red", upStation, downStation, distance);
+        var line = createLineStep("신분당선", "red", 광교역, 광교중앙역, distance);
 
         // when
         var lineResponses = sut.showLines();
@@ -92,8 +96,8 @@ class LineServiceTest {
                         line.getName(),
                         line.getColor(),
                         List.of(
-                                new StationResponse(upStation.getId(), upStation.getName()),
-                                new StationResponse(downStation.getId(), downStation.getName())
+                                new StationResponse(광교역.getId(), 광교역.getName()),
+                                new StationResponse(광교중앙역.getId(), 광교중앙역.getName())
                         )
                     )
         );
@@ -104,10 +108,8 @@ class LineServiceTest {
     @Test
     void findLineById() {
         // given
-        var upStation = createStationStep("광교역");
-        var downStation = createStationStep("광교중앙역");
         var distance = 10;
-        var line = createLineStep("신분당선", "red", upStation, downStation, distance);
+        var line = createLineStep("신분당선", "red", 광교역, 광교중앙역, distance);
 
         // when
         var lineResponse = sut.findById(line.getId());
@@ -118,8 +120,8 @@ class LineServiceTest {
                 line.getName(),
                 line.getColor(),
                 List.of(
-                        new StationResponse(upStation.getId(), upStation.getName()),
-                        new StationResponse(downStation.getId(), downStation.getName())
+                        new StationResponse(광교역.getId(), 광교역.getName()),
+                        new StationResponse(광교중앙역.getId(), 광교중앙역.getName())
                 )
         );
         assertThat(lineResponse).isEqualTo(expectedResponse);
@@ -129,13 +131,11 @@ class LineServiceTest {
     @Test
     void updateLine() {
         // given
-        var upStation = createStationStep("광교역");
-        var downStation = createStationStep("광교중앙역");
         var distance = 10;
-        var line = createLineStep("신분당선", "red", upStation, downStation, distance);
+        var line = createLineStep("신분당선", "red", 광교역, 광교중앙역, distance);
 
         // when
-        var updateRequest = new LineRequest("구분당선", "black", upStation.getId(), downStation.getId(), distance);
+        var updateRequest = new LineRequest("구분당선", "black", 광교역.getId(), 광교중앙역.getId(), distance);
         sut.updateLine(line.getId(), updateRequest);
 
         // then
@@ -149,10 +149,7 @@ class LineServiceTest {
     @Test
     void deleteLine() {
         // given
-        var upStation = createStationStep("광교역");
-        var downStation = createStationStep("광교중앙역");
-        var distance = 10;
-        var line = createLineStep("신분당선", "red", upStation, downStation, distance);
+        var line = createLineStep("신분당선", "red", 광교역, 광교중앙역, 10);
 
         // when
         sut.deleteLine(line.getId());
@@ -165,34 +162,28 @@ class LineServiceTest {
     @Test
     void addSection() {
         // given
-        var upStation = createStationStep("광교역");
-        var downStation = createStationStep("광교중앙역");
-        var newStation = createStationStep("상현역");
         var distance = 10;
-        var line = createLineStep("신분당선", "red", upStation, downStation, distance);
+        var line = createLineStep("신분당선", "red", 광교역, 광교중앙역, distance);
 
         // when
-        sut.addSection(line.getId(), new SectionRequest(downStation.getId(), newStation.getId(), distance));
+        sut.addSection(line.getId(), new SectionRequest(광교중앙역.getId(), 상현역.getId(), distance));
 
         // then
-        assertThat(line.getStations()).containsExactly(upStation, downStation, newStation);
+        assertThat(line.getStations()).containsExactly(광교역, 광교중앙역, 상현역);
     }
 
     @DisplayName("역 ID 로 구간 삭제")
     @Test
     void deleteLineById() {
         // given
-        var upStation = createStationStep("광교역");
-        var downStation = createStationStep("광교중앙역");
-        var newStation = createStationStep("상현역");
-        var line = createLineStep("신분당선", "red", upStation, downStation, 10);
-        line.addSection(downStation, newStation, 10);
+        var line = createLineStep("신분당선", "red", 광교역, 광교중앙역, 10);
+        line.addSection(광교중앙역, 상현역, 10);
 
         // when
-        sut.deleteSection(line.getId(), newStation.getId());
+        sut.deleteSection(line.getId(), 상현역.getId());
 
         // then
-        assertThat(line.getStations()).containsExactly(upStation, downStation);
+        assertThat(line.getStations()).containsExactly(광교역, 광교중앙역);
     }
 
     private Station createStationStep(String name) {
