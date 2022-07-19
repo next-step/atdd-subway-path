@@ -7,6 +7,7 @@ import nextstep.subway.domain.exception.StationAlreadyExistsException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static nextstep.subway.domain.factory.SectionFactory.createSection;
 import static nextstep.subway.domain.fixture.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -17,8 +18,8 @@ class SectionsTest {
     @DisplayName("모든 구간의 지하철 역들을 반환한다.")
     void getStations() {
         //given
-        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, 10);
-        Section section2 = new Section(YEOKSAM_STATION, SEOLLEUNG_STATION, 10);
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section section2 = createSection(YEOKSAM_STATION, SEOLLEUNG_STATION, 10);
 
         Sections sections = new Sections();
         sections.add(section);
@@ -37,7 +38,7 @@ class SectionsTest {
         Sections sections = new Sections();
 
         // when
-        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
         sections.add(section);
 
         // then
@@ -50,11 +51,11 @@ class SectionsTest {
     void invalid_new_section_wrong_upStation() {
         // given
         Sections sections = new Sections();
-        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
         sections.add(section);
 
         // when
-        Section newSection = new Section(GANGNAM_STATION, SEOLLEUNG_STATION, 5);
+        Section newSection = createSection(GANGNAM_STATION, SEOLLEUNG_STATION, 5);
 
         // then
         assertThatThrownBy(() -> sections.add(newSection))
@@ -66,11 +67,11 @@ class SectionsTest {
     void invalid_new_section_wrong_downStation() {
         // given
         Sections sections = new Sections();
-        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
         sections.add(section);
 
         // when
-        Section newSection = new Section(YEOKSAM_STATION, GANGNAM_STATION, 5);
+        Section newSection = createSection(YEOKSAM_STATION, GANGNAM_STATION, 5);
 
         // then
         assertThatThrownBy(() -> sections.add(newSection))
@@ -82,8 +83,8 @@ class SectionsTest {
     void delete_section() {
         // given
         Sections sections = new Sections();
-        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, 10);
-        Section newSection = new Section(YEOKSAM_STATION, SEOLLEUNG_STATION, 5);
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section newSection = createSection(YEOKSAM_STATION, SEOLLEUNG_STATION, 5);
 
         sections.add(section);
         sections.add(newSection);
@@ -100,8 +101,8 @@ class SectionsTest {
     void invalid_delete_not_last_section() {
         // given
         Sections sections = new Sections();
-        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, 10);
-        Section newSection = new Section(YEOKSAM_STATION, SEOLLEUNG_STATION, 5);
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section newSection = createSection(YEOKSAM_STATION, SEOLLEUNG_STATION, 5);
 
         sections.add(section);
         sections.add(newSection);

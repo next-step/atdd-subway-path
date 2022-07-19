@@ -30,14 +30,11 @@ public class Section {
     @Embedded
     private Distance distance;
 
-    public Section(Station upStation, Station downStation, int distance) {
+    public Section(Line line, Station upStation, Station downStation, int distance) {
+        this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = new Distance(distance);
-    }
-
-    protected void makeRelation(Line line) {
-        this.line = line;
     }
 
     public boolean isMissMatchDownStation(Station station) {
