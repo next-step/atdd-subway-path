@@ -1,10 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -67,7 +64,7 @@ public class Line {
             sections.add(section);
             return;
         }
-        if (sections.validateUpStationAndDownStations(section)) {
+        if (sections.containsStationOf(section)) {
             throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
         }
 

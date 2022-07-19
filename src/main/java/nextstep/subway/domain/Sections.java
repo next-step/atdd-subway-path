@@ -6,6 +6,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -121,25 +122,18 @@ public class Sections {
         return distance;
     }
 
-    public boolean validateUpStationAndDownStations(Section section) {
-        return sections.stream().anyMatch(e -> {
-            final Station upStation = section.getUpStation();
-            final Station downStation = section.getDownStation();
+    public boolean containsStationOf(Section section) {
+        final List<Station> stations = sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+        stations.add(getLastSection().getDownStation());
 
-            if (e.getUpStation().equals(upStation)) {
-                return false;
-            }
-            if (e.getUpStation().equals(downStation)) {
-                return false;
-            }
-            if (e.getDownStation().equals(upStation)) {
-                return false;
-            }
-            if (e.getDownStation().equals(downStation)) {
-                return false;
-            }
-            return true;
-        });
+        final int sizeBeforeRemove = stations.size();
+        stations.remove(section.getUpStation());
+        stations.remove(section.getDownStation());
+        final int sizeAfterRemove = stations.size();
+
+        return sizeBeforeRemove == sizeAfterRemove;
     }
 
     public boolean hasSameSection(Section section) {
@@ -147,7 +141,7 @@ public class Sections {
     }
 
     public List<Section> getOrderedSections() {
-        if (sections.isEmpty()) {
+        if (sections.isEmpty() || sections.size() == 1) {
             return sections;
         }
 
@@ -171,11 +165,12 @@ public class Sections {
         }
     }
 
-    private Section findFirstSection(Section firstSection) {
-        for (Section section : sections) {
-            if (section.equalsDownStation(firstSection.getUpStation())) {
-                firstSection = findFirstSection(section);
-            }
+    private Section findFirstSection(final Section firstSection) {
+        final Optional<Section> optionalSection = sections.stream()
+                .filter(section -> section.equalsDownStation(firstSection.getUpStation()))
+                .findAny();
+        if (optionalSection.isPresent()) {
+            return findFirstSection(optionalSection.get());
         }
         return firstSection;
     }
