@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.applicaion.dto.AddSectionRequest;
+import nextstep.subway.domain.sectioncondition.SectionAddCondition;
+
 import javax.persistence.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -78,6 +81,10 @@ public class Line {
     public void addSection(final Section target, final Section section) {
         sections.add(getSections().indexOf(target) + 1, section);
         section.setLine(this);
+    }
+
+    public void addSection(final SectionAddCondition sectionAddCondition, final AddSectionRequest addSectionRequest) {
+        sectionAddCondition.addSection(this, addSectionRequest);
     }
 
     public boolean isLastDownStation(final Station station) {
