@@ -36,7 +36,11 @@ public class Line {
     }
 
     public void removeSection(Station downStation) {
+        if (!sections.get(sections.size() - 1).getDownStation().equals(downStation)) {
+            throw new IllegalArgumentException();
+        }
 
+        sections.remove(sections.size() - 1);
     }
 
     public List<Station> getStations() {
