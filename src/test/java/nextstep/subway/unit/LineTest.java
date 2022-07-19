@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
@@ -64,5 +65,20 @@ class LineTest {
                 () -> assertThat(line.getStations()).containsExactly(upStation, downStation),
                 () -> assertThat(line.getStations()).doesNotContain(newStation)
         );
+    }
+
+    @DisplayName("신규 구간을 추가하는 경우 상행역이 이전 하행종점역과 일치하지 않으면 오류가 발생한다")
+    @Test
+    void addSectionNotMatchedEndStationException() {
+        // given
+        Station upStation = new Station("신논현역");
+        Station downStation = new Station("언주역");
+        Station newStation = new Station("선정릉역");
+        Line line = new Line("9호선", "bg-brown-600");
+        line.addSection(new Section(line, upStation, downStation, 5));
+
+        // when & then
+        assertThatThrownBy(() -> line.addSection(new Section(line, upStation, newStation, 6)))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
