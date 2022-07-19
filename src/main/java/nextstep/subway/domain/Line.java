@@ -55,8 +55,8 @@ public class Line {
         return sections.getStations();
     }
 
-    public void removeSection(Section section) {
-        this.sections.removeSection(section);
+    public void removeSection(Long stationId) {
+        this.sections.removeSection(stationId);
     }
 
     public Section getSectionById(Long sectionId){

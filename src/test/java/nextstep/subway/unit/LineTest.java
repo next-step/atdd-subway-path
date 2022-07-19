@@ -7,8 +7,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -70,7 +68,7 @@ class LineTest {
 
         Section 삭제대상구간 = 일호선.getSectionById(2L);
         //when
-        일호선.removeSection(삭제대상구간);
+        일호선.removeSection(구로역.getId());
 
         //then
         assertThat(일호선.getSections()).hasSize(1);
