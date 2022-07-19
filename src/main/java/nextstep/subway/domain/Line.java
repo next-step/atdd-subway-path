@@ -50,4 +50,9 @@ public class Line {
     public List<Section> getSections() {
         return sections;
     }
+
+    public Line addSection(Section section) {
+        sections.add(section);
+        return this;
+    }
 }
