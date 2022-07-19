@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
+import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
 import org.junit.jupiter.api.DisplayName;
@@ -39,5 +40,21 @@ public class LineServiceTest {
                 () -> assertThat(신분당선.getSections()).hasSize(1),
                 () -> assertThat(신분당선.getSections()).containsExactly(new Section(신분당선, 광교역, 광교중앙역, 10))
         );
+    }
+
+    @Test
+    void deleteSection() {
+        //given
+        Station 광교역 = stationRepository.save(new Station("광교역"));
+        Station 광교중앙역 = stationRepository.save(new Station("광교중앙역"));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
+
+        //when
+        lineService.addSection(신분당선.getId(), new SectionRequest(광교역.getId(), 광교중앙역.getId(), 10));
+        lineService.deleteSection(신분당선.getId(), 광교중앙역.getId());
+
+        //then
+        LineResponse 신분당선_응답 = lineService.findById(신분당선.getId());
+        assertThat(신분당선_응답.getStations()).isEmpty();
     }
 }
