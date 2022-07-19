@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,9 +19,10 @@ class LineTest {
         Line line = new Line("9호선", "bg-brown-600");
 
         // when
-        line.addSection(upStation, downStation, 5);
+        line.addSection(new Section(line, upStation, downStation, 5));
 
         // then
+        assertThat(line.getStations()).containsExactly(upStation, downStation);
     }
 
     @Test

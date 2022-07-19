@@ -13,7 +13,7 @@ public class Line {
     private String color;
 
     @Embedded
-    private Sections sections;
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -53,5 +53,13 @@ public class Line {
 
     public void addSection(Section section) {
         sections.addSection(section);
+    }
+
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
+    public void deleteSection(Long stationId) {
+        sections.deleteSection(stationId);
     }
 }

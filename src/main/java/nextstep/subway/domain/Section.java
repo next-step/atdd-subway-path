@@ -60,4 +60,10 @@ public class Section {
     public boolean contains(Station station) {
         return upStation.isMatched(station) || downStation.isMatched(station);
     }
+
+    public boolean isMatchedStationId(Long stationId) {
+        return this.downStation
+                .getId()
+                .equals(stationId);
+    }
 }
