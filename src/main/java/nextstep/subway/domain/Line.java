@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import lombok.Getter;
 
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -30,8 +31,8 @@ public class Line {
         sections.add(new Section(upStationId, downStationId, distance));
     }
 
-    public boolean isLastStation(Long stationId) {
-        return sections.isLastStation(stationId);
+    public void removeSection(long stationId) {
+        sections.removeSection(stationId);
     }
 
     public void updateName(String name) {
@@ -43,6 +44,6 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections.getSections();
+        return Collections.unmodifiableList(sections.getSections());
     }
 }

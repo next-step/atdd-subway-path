@@ -6,6 +6,7 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.exception.CannotDeleteSectionException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,8 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -80,7 +80,7 @@ class LineServiceMockTest {
         when(lineRepository.findById(lineId)).thenReturn(Optional.of(line));
 
         // when + then
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> lineService.deleteSection(lineId, upStationId));
+        assertThatThrownBy(() -> lineService.deleteSection(lineId, upStationId))
+                .isInstanceOf(CannotDeleteSectionException.class);
     }
 }

@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
+import nextstep.subway.domain.exception.CannotDeleteSectionException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,8 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -71,7 +71,7 @@ class LineServiceTest {
         line.addSection(upStation.getId(), downStation.getId(), 6);
 
         // when + then
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> lineService.deleteSection(line.getId(), upStation.getId()));
+        assertThatThrownBy(() -> lineService.deleteSection(line.getId(), upStation.getId()))
+                .isInstanceOf(CannotDeleteSectionException.class);
     }
 }

@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import lombok.Getter;
+import nextstep.subway.domain.exception.CannotDeleteSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -21,8 +22,15 @@ public class Sections {
         sections.add(section);
     }
 
-    public boolean isLastStation(Long stationId) {
+    public void removeSection(long stationId) {
+        if (sections.isEmpty()) {
+            throw new CannotDeleteSectionException("현재 존재하는 구간이 없습니다.");
+        }
+
         Section lastSection = sections.get(sections.size() - 1);
-        return lastSection.isDownStation(stationId);
+        if (!lastSection.isDownStation(stationId)) {
+            throw new CannotDeleteSectionException("노선의 종점만 삭제할 수 있습니다.");
+        }
+        sections.remove(lastSection);
     }
 }
