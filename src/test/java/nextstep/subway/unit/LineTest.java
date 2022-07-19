@@ -10,21 +10,23 @@ import org.junit.jupiter.api.Test;
 
 class LineTest {
 
+    private Station 광교역 = new Station("광교역");
+    private Station 광교중앙역 = new Station("광교중앙역");
+    private Station 상현역 = new Station("상현역");
+
     @DisplayName("노선 추가")
     @Test
     void addSection() {
         var sut = new Line();
-        var upStation = new Station("광교역");
-        var downStation = new Station("광교중앙역");
         var distance = 10;
 
-        sut.addSection(upStation, downStation, distance);
+        sut.addSection(광교역, 광교중앙역, distance);
 
         assertAll(
                 () -> assertThat(sut.getSections()).hasSize(1),
                 () -> assertThat(sut.getSections().get(0).getLine()).isEqualTo(sut),
-                () -> assertThat(sut.getSections().get(0).getUpStation()).isEqualTo(upStation),
-                () -> assertThat(sut.getSections().get(0).getDownStation()).isEqualTo(downStation),
+                () -> assertThat(sut.getSections().get(0).getUpStation()).isEqualTo(광교역),
+                () -> assertThat(sut.getSections().get(0).getDownStation()).isEqualTo(광교중앙역),
                 () -> assertThat(sut.getSections().get(0).getDistance()).isEqualTo(distance)
         );
     }
@@ -32,9 +34,6 @@ class LineTest {
     @DisplayName("노선 내 역 조회")
     @Test
     void getStations() {
-        var 광교역 = new Station("광교역");
-        var 광교중앙역 = new Station("광교중앙역");
-        var 상현역 = new Station("상현역");
         var sut = new Line();
         sut.addSection(광교역, 광교중앙역, 10);
         sut.addSection(광교중앙역, 상현역, 10);
@@ -44,7 +43,18 @@ class LineTest {
         assertThat(stations).containsExactly(광교역, 광교중앙역, 상현역);
     }
 
+    @DisplayName("노선 내 구간 삭제")
     @Test
     void removeSection() {
+        var sut = new Line();
+        sut.addSection(광교역, 광교중앙역, 10);
+        sut.addSection(광교중앙역, 상현역, 10);
+
+        sut.removeSection(상현역);
+
+        assertAll(
+                () -> assertThat(sut.getSections()).hasSize(1),
+                () -> assertThat(sut.getStations()).containsExactly(광교역, 광교중앙역)
+        );
     }
 }

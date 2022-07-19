@@ -35,6 +35,10 @@ public class Line {
         sections.add(section);
     }
 
+    public void removeSection(Station downStation) {
+
+    }
+
     public List<Station> getStations() {
         if (sections.isEmpty()) {
             return Collections.emptyList();
@@ -76,5 +80,4 @@ public class Line {
     public List<Section> getSections() {
         return sections;
     }
-
 }
