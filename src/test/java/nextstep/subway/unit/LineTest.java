@@ -81,4 +81,49 @@ class LineTest {
         assertThatThrownBy(() -> line.addSection(new Section(line, upStation, newStation, 6)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("신규 구간을 추가하는 경우 신규역이 이전에 등록된 역 목록에 있다면 오류가 발생한다")
+    @Test
+    void addSectionMatchedPreviouslyStationException() {
+        // given
+        Station upStation = new Station("신논현역");
+        Station downStation = new Station("언주역");
+        Station newStation = new Station("신논현역");
+        Line line = new Line("9호선", "bg-brown-600");
+        line.addSection(new Section(line, upStation, downStation, 5));
+
+        // when & then
+        assertThatThrownBy(() -> line.addSection(new Section(line, downStation, newStation, 6)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("구간이 한개만 존재하는 경우 구간 삭제를 하면 오류가 발생한다")
+    @Test
+    void removeSectionIsOneSectionException() {
+        // given
+        Station upStation = new Station("신논현역");
+        Station downStation = new Station("언주역");
+        Line line = new Line("9호선", "bg-brown-600");
+        line.addSection(new Section(line, upStation, downStation, 5));
+
+        // when & then
+        assertThatThrownBy(() -> line.deleteSection(downStation))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+    
+    @DisplayName("노선에서 삭제를 하는 역이 하행 종점역이 아닌경우 오류가 발생한다")
+    @Test
+    void removeSectionNotMatchedEndStationException() {
+        // given
+        Station upStation = new Station("신논현역");
+        Station downStation = new Station("언주역");
+        Station newStation = new Station("선정릉역");
+        Line line = new Line("9호선", "bg-brown-600");
+        line.addSection(new Section(line, upStation, downStation, 5));
+        line.addSection(new Section(line, downStation, newStation, 6));
+        
+        // when & then
+        assertThatThrownBy(() -> line.deleteSection(upStation))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }
