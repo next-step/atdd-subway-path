@@ -39,8 +39,8 @@ public class LineService {
 
     public List<LineResponse> showLines() {
         return lineRepository.findAll().stream()
-                .map(this::createLineResponse)
-                .collect(Collectors.toList());
+            .map(this::createLineResponse)
+            .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
@@ -75,10 +75,10 @@ public class LineService {
 
     private LineResponse createLineResponse(Line line) {
         return new LineResponse(
-                line.getId(),
-                line.getName(),
-                line.getColor(),
-                createStationResponses(line)
+            line.getId(),
+            line.getName(),
+            line.getColor(),
+            createStationResponses(line)
         );
     }
 
@@ -88,14 +88,14 @@ public class LineService {
         }
 
         List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
+            .map(Section::getDownStation)
+            .collect(Collectors.toList());
 
         stations.add(0, line.getSections().get(0).getUpStation());
 
         return stations.stream()
-                .map(it -> stationService.createStationResponse(it))
-                .collect(Collectors.toList());
+            .map(it -> stationService.createStationResponse(it))
+            .collect(Collectors.toList());
     }
 
     @Transactional
