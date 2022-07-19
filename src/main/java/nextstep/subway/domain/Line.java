@@ -106,10 +106,10 @@ public class Line {
     }
 
     public void removeSection(final Station station) {
-        if (!isSingleSection() && containsStation(station)) {
-            sections.remove(station);
+        if (isSingleSection() || !containsStation(station)) {
+            throw new IllegalArgumentException("Last section or Station not exists");
         }
 
-        throw new IllegalArgumentException("Last section or Station not exists");
+        sections.remove(station);
     }
 }

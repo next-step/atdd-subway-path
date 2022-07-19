@@ -89,12 +89,7 @@ public class LineService {
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Line line = findLine(lineId);
-
-        if (!line.isLastDownStation(stationService.findById(stationId))) {
-            throw new IllegalArgumentException();
-        }
-
-        line.removeLastSection();
+        line.removeSection(stationService.findById(stationId));
     }
 
     private Line findLine(final Long lineId) {

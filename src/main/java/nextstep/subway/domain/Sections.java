@@ -3,9 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -72,5 +70,20 @@ public class Sections {
     }
 
     public void remove(final Station station) {
+        final List<Station> stations = findAllStationsInOrder();
+        final Section section = sections.stream()
+                .filter(v -> v.getUpStation().equals(station) || v.getDownStation().equals(station))
+                .findAny()
+                .orElseThrow(NoSuchElementException::new);
+
+        // 1, 2 -> 2, 3 -> 3, 4 -> 4, 5
+        if (stations.get(0).equals(station) || stations.get(stations.size() - 1).equals(station)) {
+            sections.remove(section);
+        } else {
+            final Section afterSection = sections.get(sections.indexOf(section) + 1);
+            section.updateDownStationAndDistance(afterSection.getDownStation(), section.getDistance() + afterSection.getDistance());
+            sections.remove(afterSection);
+        }
+
     }
 }
