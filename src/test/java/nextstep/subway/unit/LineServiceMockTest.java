@@ -15,11 +15,9 @@ import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.unit.utils.TestLineBuilder;
 import org.junit.jupiter.api.AfterEach;
@@ -95,16 +93,13 @@ class LineServiceMockTest {
                 )
         );
         var line = lineRepository.findById(lineResponse.getId());
+
         assertAll(
                 () -> assertThat(lineResponse).isEqualTo(expectedResponse),
                 () -> assertThat(line).isNotEmpty(),
                 () -> assertThat(line.get().getName()).isEqualTo(lineRequest.getName()),
                 () -> assertThat(line.get().getColor()).isEqualTo(lineRequest.getColor()),
-                () -> assertThat(line.get().getSections()).hasSize(1),
-                () -> assertThat(line.get().getSections().get(0).getUpStation()).isEqualTo(광교역),
-                () -> assertThat(line.get().getSections().get(0).getDownStation()).isEqualTo(광교중앙역),
-                () -> assertThat(line.get().getSections().get(0).getDistance()).isEqualTo(distance),
-                () -> assertThat(line.get().getSections().get(0).getLine()).isEqualTo(line.get())
+                () -> assertThat(line.get().getStations()).containsExactly(광교역, 광교중앙역)
         );
     }
 
@@ -117,7 +112,7 @@ class LineServiceMockTest {
                         .name("신분당선")
                         .color("red")
                         .build();
-        line.getSections().add(new Section(line, 광교역, 광교중앙역, 10));
+        line.addSection(광교역, 광교중앙역, 10);
         when(lineRepository.findAll()).thenReturn(List.of(line));
         when(stationService.createStationResponse(any(Station.class))).thenCallRealMethod();
 
@@ -148,7 +143,7 @@ class LineServiceMockTest {
                 .name("신분당선")
                 .color("red")
                 .build();
-        line.getSections().add(new Section(line, 광교역, 광교중앙역, 10));
+        line.addSection(광교역, 광교중앙역, 10);
         when(lineRepository.findById(line.getId()))
                 .thenReturn(Optional.of(line));
         when(stationService.createStationResponse(any(Station.class))).thenCallRealMethod();
@@ -178,7 +173,7 @@ class LineServiceMockTest {
                 .name("신분당선")
                 .color("red")
                 .build();
-        line.getSections().add(new Section(line, 광교역, 광교중앙역, 10));
+        line.addSection(광교역, 광교중앙역, 10);
         when(lineRepository.findById(line.getId()))
                 .thenReturn(Optional.of(line));
 
@@ -215,7 +210,7 @@ class LineServiceMockTest {
                 .build();
         var 상현역 = createTestStation(3L, "상현역");
         var distance = 10;
-        line.getSections().add(new Section(line, 광교역, 광교중앙역, distance));
+        line.addSection(광교역, 광교중앙역, distance);
         when(lineRepository.findById(line.getId()))
                 .thenReturn(Optional.of(line));
         when(stationService.findById(상현역.getId())).thenReturn(상현역);
@@ -225,14 +220,7 @@ class LineServiceMockTest {
         sut.addSection(line.getId(), new SectionRequest(광교중앙역.getId(), 상현역.getId(), distance));
 
         // then
-        var sections = line.getSections();
-        assertAll(
-                () -> assertThat(sections).hasSize(2),
-                () -> assertThat(sections.get(1).getLine()).isEqualTo(line),
-                () -> assertThat(sections.get(1).getUpStation()).isEqualTo(광교중앙역),
-                () -> assertThat(sections.get(1).getDownStation()).isEqualTo(상현역),
-                () -> assertThat(sections.get(1).getDistance()).isEqualTo(distance)
-        );
+        assertThat(line.getStations()).containsExactly(광교역, 광교중앙역, 상현역);
     }
 
     @DisplayName("역 ID 로 구간 삭제")
@@ -245,8 +233,8 @@ class LineServiceMockTest {
                 .name("신분당선")
                 .color("red")
                 .build();
-        line.getSections().add(new Section(line, 광교역, 광교중앙역, 10));
-        line.getSections().add(new Section(line, 광교중앙역, 상현역, 5));
+        line.addSection(광교역, 광교중앙역, 10);
+        line.addSection(광교중앙역, 상현역, 5);
         when(stationService.findById(상현역.getId())).thenReturn(상현역);
         when(lineRepository.findById(line.getId()))
                 .thenReturn(Optional.of(line));
@@ -254,10 +242,7 @@ class LineServiceMockTest {
         sut.deleteSection(line.getId(), 상현역.getId());
 
         // then
-        assertAll(
-                () -> assertThat(line.getSections()).hasSize(1),
-                () -> assertThat(line.getSections().get(0).getDownStation()).isNotEqualTo(상현역)
-        );
+        assertThat(line.getStations()).containsExactly(광교역, 광교중앙역);
     }
 
     private Station createTestStation(Long id, String name) {
