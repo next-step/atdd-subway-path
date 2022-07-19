@@ -32,10 +32,10 @@ public class Line {
             throw new IllegalArgumentException();
         }
 
-        section.updateSection(this);
         this.id = id;
         this.name = name;
         this.color = color;
+        section.updateLine(this);
         sections.add(section);
     }
 
@@ -86,7 +86,7 @@ public class Line {
             throw new IllegalArgumentException();
         }
 
-        section.updateSection(this);
+        section.updateLine(this);
         return sections.add(section);
     }
 

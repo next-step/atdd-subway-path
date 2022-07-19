@@ -56,7 +56,7 @@ public class Section {
         return distance;
     }
 
-    public void updateSection(Line line) {
+    public void updateLine(Line line) {
         this.line = line;
     }
 
