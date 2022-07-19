@@ -37,15 +37,27 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return this.sections.getSections();
+        return sections.getSections();
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        this.sections.add(new Section(this, upStation, downStation, distance));
+        sections.add(new Section(this, upStation, downStation, distance));
     }
 
-    /*public void removeSection(Station station) {
-        this.sections.remove(station);
-    }*/
+    public void addSection(Long id, Station upStation, Station downStation, int distance) {
+        sections.add(new Section(id, this, upStation, downStation, distance));
+    }
+
+    public List<Station> getStations(){
+        return sections.getStations();
+    }
+
+    public void removeSection(Section section) {
+        this.sections.removeSection(section);
+    }
+
+    public Section getSectionById(Long sectionId){
+        return sections.getSectionById(sectionId);
+    }
 
 }

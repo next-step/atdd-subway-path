@@ -8,6 +8,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author a1101466 on 2022/07/13
@@ -29,8 +32,22 @@ public class Sections {
         this.sections.add(addSection);
     }
 
-    /*public void remove(Station station) {
-        sections.removeIf(section -> section.isRemovable(station.getId()));
-    }*/
+    public List<Station> getStations(){
+        return sections.stream()
+                .map(Section::getStations)
+                .flatMap(List::stream)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+    public void removeSection(Section section) {
+        sections.remove(section);
+    }
+
+    public Section getSectionById(Long sectionId){
+        return sections.stream()
+                .filter(section -> sectionId.equals(section.getId()))
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
+    }
 
 }
