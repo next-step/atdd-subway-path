@@ -43,6 +43,37 @@ public class LineServiceTest {
                 .contains(new Section(line, 강남역, 역삼역, sectionRequest.getDistance()));
     }
 
+    @Test
+    void addSectionOfNewUpStation() {
+        // given
+        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
+        final Station 강남역 = createStation("강남역");
+        final Station 역삼역 = createStation("역삼역");
+        final Line line = createLine("2호선", "bg-green");
+
+        // when
+        // lineService.addSection 호출
+        final SectionRequest sectionRequest = new SectionRequest();
+        sectionRequest.setUpStationId(강남역.getId());
+        sectionRequest.setDownStationId(역삼역.getId());
+        sectionRequest.setDistance(3);
+        lineService.addSection(line.getId(), sectionRequest);
+
+        final Station 서초역 = createStation("서초역");
+        final SectionRequest sectionRequest2 = new SectionRequest();
+        sectionRequest2.setUpStationId(서초역.getId());
+        sectionRequest2.setDownStationId(강남역.getId());
+        sectionRequest2.setDistance(2);
+        lineService.addSection(line.getId(), sectionRequest2);
+
+        // then
+        // line.getSections 메서드를 통해 검증
+        assertThat(line.getSections())
+                .containsSequence(
+                        new Section(line, 서초역, 강남역, sectionRequest2.getDistance()),
+                        new Section(line, 강남역, 역삼역, sectionRequest.getDistance()));
+    }
+
     private Line createLine(String name, String color) {
         return lineRepository.save(new Line(name, color));
     }

@@ -53,6 +53,22 @@ public class Section {
         return distance;
     }
 
+    public boolean equalsDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    public boolean equalsUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean notEqualsUpStation(Station station) {
+        return !upStation.equals(station);
+    }
+
+    public int minusDistance(Section section) {
+        return distance - section.getDistance();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -76,5 +92,16 @@ public class Section {
         result = 31 * result + (getDownStation() != null ? getDownStation().hashCode() : 0);
         result = 31 * result + getDistance();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", line=" + line +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
     }
 }
