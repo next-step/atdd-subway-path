@@ -64,12 +64,12 @@ public class Line {
         sections.deleteSection(station);
     }
 
-    public void updateLine(LineRequest lineRequest) {
-        if (lineRequest.getName() != null) {
-            this.setName(lineRequest.getName());
+    public void updateLine(String name, String color) {
+        if (name != null) {
+            this.name = name;
         }
-        if (lineRequest.getColor() != null) {
-            this.setColor(lineRequest.getColor());
+        if (color != null) {
+            this.color = color;
         }
     }
 }
