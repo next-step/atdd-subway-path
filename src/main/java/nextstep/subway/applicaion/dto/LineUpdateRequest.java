@@ -2,10 +2,8 @@ package nextstep.subway.applicaion.dto;
 
 import lombok.Getter;
 
-import javax.validation.constraints.NotBlank;
-
 @Getter
-public class StationRequest {
-    @NotBlank
+public class LineUpdateRequest {
     private String name;
+    private String color;
 }

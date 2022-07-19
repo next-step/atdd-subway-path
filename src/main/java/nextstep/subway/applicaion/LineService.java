@@ -1,30 +1,25 @@
 package nextstep.subway.applicaion;
 
-import nextstep.subway.applicaion.dto.LineRequest;
-import nextstep.subway.applicaion.dto.LineResponse;
-import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
+import lombok.RequiredArgsConstructor;
+import nextstep.subway.applicaion.dto.*;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class LineService {
-    private LineRepository lineRepository;
-    private StationService stationService;
-
-    public LineService(LineRepository lineRepository, StationService stationService) {
-        this.lineRepository = lineRepository;
-        this.stationService = stationService;
-    }
+    private final LineRepository lineRepository;
+    private final StationService stationService;
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
@@ -32,7 +27,7 @@ public class LineService {
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.addSection(request.getUpStationId(), request.getDownStationId(), request.getDistance());
+            line.addSection(upStation.getId(), downStation.getId(), request.getDistance());
         }
         return createLineResponse(line);
     }
@@ -48,14 +43,14 @@ public class LineService {
     }
 
     @Transactional
-    public void updateLine(Long id, LineRequest lineRequest) {
+    public void updateLine(Long id, LineUpdateRequest request) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
 
-        if (lineRequest.getName() != null) {
-            line.setName(lineRequest.getName());
+        if (StringUtils.hasText(request.getName())) {
+            line.updateName(request.getName());
         }
-        if (lineRequest.getColor() != null) {
-            line.setColor(lineRequest.getColor());
+        if (StringUtils.hasText(request.getColor())) {
+            line.updateColor(request.getColor());
         }
     }
 

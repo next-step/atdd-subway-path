@@ -30,19 +30,19 @@ public class Line {
         sections.add(new Section(upStationId, downStationId, distance));
     }
 
-    public void setName(String name) {
+    public boolean isLastStation(Long stationId) {
+        return sections.isLastStation(stationId);
+    }
+
+    public void updateName(String name) {
         this.name = name;
     }
 
-    public void setColor(String color) {
+    public void updateColor(String color) {
         this.color = color;
     }
 
     public List<Section> getSections() {
         return sections.getSections();
-    }
-
-    public boolean isLastStation(Long stationId) {
-        return sections.isLastStation(stationId);
     }
 }
