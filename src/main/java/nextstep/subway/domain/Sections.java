@@ -60,6 +60,10 @@ public class Sections {
 
     }
 
+    public Station getLastStation(){
+        return getLastSection().getDownStation();
+    }
+
     public Section getSectionById(Long sectionId){
         return sections.stream()
                 .filter(section -> sectionId.equals(section.getId()))
