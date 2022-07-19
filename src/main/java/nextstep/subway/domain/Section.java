@@ -60,12 +60,12 @@ public class Section {
         return this.upStation.equals(section.downStation) || this.downStation.equals(section.upStation);
     }
 
-    public void changeUpSection(Section newSection) {
+    public void changeDownSection(Section newSection) {
         this.downStation = newSection.upStation;
         this.distance = minusDistance(newSection.distance);
     }
 
-    public void changeDownSection(Section newSection) {
+    public void changeUpSection(Section newSection) {
         this.upStation = newSection.downStation;
         this.distance = minusDistance(newSection.distance);
     }
@@ -79,10 +79,11 @@ public class Section {
     }
 
     public boolean isSameStations(Section section) {
-        return this.upStation.equals(section.upStation) && this.downStation.equals(section.downStation);
+        return isSameUpStationIn(section) && this.downStation.equals(section.downStation);
     }
 
     public boolean isSameUpStationIn(Section section) {
         return this.upStation.equals(section.upStation);
     }
+
 }
