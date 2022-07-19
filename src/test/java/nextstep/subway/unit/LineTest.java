@@ -17,15 +17,15 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @SpringBootTest
 @Transactional
 class LineTest {
-    private Station 강남역;
-    private Station 역삼역;
-    private Station 삼성역;
+    private Station 영등포역;
+    private Station 신도림역;
+    private Station 구로역;
 
     @BeforeEach
     public void setUp() {
-        강남역 = new Station("강남역");
-        역삼역 = new Station("역삼역");
-        삼성역 = new Station("삼성역");
+        영등포역 = new Station("영등포역");
+        신도림역 = new Station("신도림역");
+        구로역 = new Station("구로역");
     }
 
     @Test
@@ -34,13 +34,13 @@ class LineTest {
         Line 이호선 = new Line("2호선", "green");
 
         // when
-        이호선.addSection(강남역, 역삼역, 10);
-        이호선.addSection(역삼역, 삼성역, 5);
+        이호선.addSection(영등포역, 신도림역, 10);
+        이호선.addSection(신도림역, 구로역, 5);
 
         // then
         assertAll(
                 () -> assertThat(이호선.getStations()).hasSize(3),
-                () -> assertThat(이호선.getStations()).containsExactly(강남역, 역삼역, 삼성역)
+                () -> assertThat(이호선.getStations()).containsExactly(영등포역, 신도림역, 구로역)
         );
     }
 
@@ -48,8 +48,8 @@ class LineTest {
     void getStations() {
         // given
         Line 이호선 = new Line("2호선", "green");
-        이호선.addSection(강남역, 역삼역, 10);
-        이호선.addSection(역삼역, 삼성역, 5);
+        이호선.addSection(영등포역, 신도림역, 10);
+        이호선.addSection(신도림역, 구로역, 5);
 
         // when
         List<Station> stations = 이호선.getStations();
@@ -57,11 +57,24 @@ class LineTest {
         // then
         assertAll(
                 () -> assertThat(stations).hasSize(3),
-                () -> assertThat(stations).containsExactly(강남역, 역삼역, 삼성역)
+                () -> assertThat(stations).containsExactly(영등포역, 신도림역, 구로역)
         );
     }
 
     @Test
     void removeSection() {
+        // given
+        Line 이호선 = new Line("2호선", "green");
+        이호선.addSection(영등포역, 신도림역, 10);
+        이호선.addSection(신도림역, 구로역, 5);
+
+        // when
+        이호선.deleteSection(구로역);
+
+        // then
+        assertAll(
+                () -> assertThat(이호선.getStations()).hasSize(2),
+                () -> assertThat(이호선.getStations()).containsExactly(영등포역, 신도림역)
+        );
     }
 }
