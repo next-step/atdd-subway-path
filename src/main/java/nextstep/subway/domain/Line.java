@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @Setter
 @Getter
-@ToString
+@ToString(exclude = "sections")
 public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
