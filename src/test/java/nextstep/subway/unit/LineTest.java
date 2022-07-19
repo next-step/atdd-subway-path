@@ -1,7 +1,6 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
@@ -22,13 +21,7 @@ class LineTest {
 
         sut.addSection(광교역, 광교중앙역, distance);
 
-        assertAll(
-                () -> assertThat(sut.getSections()).hasSize(1),
-                () -> assertThat(sut.getSections().get(0).getLine()).isEqualTo(sut),
-                () -> assertThat(sut.getSections().get(0).getUpStation()).isEqualTo(광교역),
-                () -> assertThat(sut.getSections().get(0).getDownStation()).isEqualTo(광교중앙역),
-                () -> assertThat(sut.getSections().get(0).getDistance()).isEqualTo(distance)
-        );
+        assertThat(sut.getStations()).containsExactly(광교역, 광교중앙역);
     }
 
     @DisplayName("노선 내 역 조회")
@@ -52,9 +45,6 @@ class LineTest {
 
         sut.removeSection(상현역);
 
-        assertAll(
-                () -> assertThat(sut.getSections()).hasSize(1),
-                () -> assertThat(sut.getStations()).containsExactly(광교역, 광교중앙역)
-        );
+        assertThat(sut.getStations()).containsExactly(광교역, 광교중앙역);
     }
 }
