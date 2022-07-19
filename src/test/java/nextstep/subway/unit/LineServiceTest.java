@@ -68,11 +68,7 @@ class LineServiceTest {
                 () -> assertThat(line).isNotEmpty(),
                 () -> assertThat(line.get().getName()).isEqualTo(lineRequest.getName()),
                 () -> assertThat(line.get().getColor()).isEqualTo(lineRequest.getColor()),
-                () -> assertThat(line.get().getSections()).hasSize(1),
-                () -> assertThat(line.get().getSections().get(0).getUpStation()).isEqualTo(upStation),
-                () -> assertThat(line.get().getSections().get(0).getDownStation()).isEqualTo(downStation),
-                () -> assertThat(line.get().getSections().get(0).getDistance()).isEqualTo(distance),
-                () -> assertThat(line.get().getSections().get(0).getLine()).isEqualTo(line.get())
+                () -> assertThat(line.get().getStations()).containsExactly(upStation, downStation)
         );
     }
 
@@ -179,14 +175,7 @@ class LineServiceTest {
         sut.addSection(line.getId(), new SectionRequest(downStation.getId(), newStation.getId(), distance));
 
         // then
-        var sections = line.getSections();
-        assertAll(
-                () -> assertThat(sections).hasSize(2),
-                () -> assertThat(sections.get(1).getLine()).isEqualTo(line),
-                () -> assertThat(sections.get(1).getUpStation()).isEqualTo(downStation),
-                () -> assertThat(sections.get(1).getDownStation()).isEqualTo(newStation),
-                () -> assertThat(sections.get(1).getDistance()).isEqualTo(distance)
-        );
+        assertThat(line.getStations()).containsExactly(upStation, downStation, newStation);
     }
 
     @DisplayName("역 ID 로 구간 삭제")
@@ -197,16 +186,13 @@ class LineServiceTest {
         var downStation = createStationStep("광교중앙역");
         var newStation = createStationStep("상현역");
         var line = createLineStep("신분당선", "red", upStation, downStation, 10);
-        line.getSections().add(new Section(line, downStation, newStation, 5));
+        line.addSection(downStation, newStation, 10);
 
         // when
         sut.deleteSection(line.getId(), newStation.getId());
 
         // then
-        assertAll(
-                () -> assertThat(line.getSections()).hasSize(1),
-                () -> assertThat(line.getSections().get(0).getDownStation()).isNotEqualTo(newStation)
-        );
+        assertThat(line.getStations()).containsExactly(upStation, downStation);
     }
 
     private Station createStationStep(String name) {
@@ -215,7 +201,7 @@ class LineServiceTest {
 
     private Line createLineStep(String name, String color, Station upStation, Station downStation, Integer distance) {
         var line = lineRepository.save(new Line(name, color));
-        line.getSections().add(new Section(line, upStation, downStation, distance));
+        line.addSection(upStation, downStation, distance);
         return line;
     }
 }
