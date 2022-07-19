@@ -1,11 +1,10 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.dto.AddSectionRequest;
-import nextstep.subway.domain.sectioncondition.SectionAddCondition;
+import nextstep.subway.domain.sectioncondition.add.SectionAddCondition;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line {

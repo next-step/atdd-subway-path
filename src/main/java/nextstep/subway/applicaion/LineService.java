@@ -4,7 +4,7 @@ import nextstep.subway.applicaion.dto.*;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.sectioncondition.SectionAddCondition;
+import nextstep.subway.domain.sectioncondition.add.SectionAddCondition;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

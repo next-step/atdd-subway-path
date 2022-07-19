@@ -1,4 +1,4 @@
-package nextstep.subway.domain.sectioncondition;
+package nextstep.subway.domain.sectioncondition.add;
 
 import nextstep.subway.applicaion.dto.AddSectionRequest;
 import nextstep.subway.domain.Line;

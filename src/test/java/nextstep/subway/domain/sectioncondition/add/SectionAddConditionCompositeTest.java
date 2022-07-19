@@ -1,9 +1,10 @@
-package nextstep.subway.domain.sectioncondition;
+package nextstep.subway.domain.sectioncondition.add;
 
 import nextstep.subway.applicaion.dto.AddSectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.sectioncondition.add.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
