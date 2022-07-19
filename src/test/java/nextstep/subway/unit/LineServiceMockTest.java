@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -131,5 +132,20 @@ public class LineServiceMockTest {
 				() -> assertThat(line.getName()).isEqualTo("2호선"),
 				() -> assertThat(line.getColor()).isEqualTo("green")
 		);
+	}
+
+	@Test
+	void deleteLine() {
+		//given
+		when(lineRepository.save(any(Line.class))).thenReturn(new Line("신분당선", "red"));
+		when(lineRepository.findById(신분당선)).thenReturn(Optional.empty());
+
+		//when
+		lineService.saveLine(new LineRequest("신분당선", "red"));
+		lineService.deleteLine(신분당선);
+
+		//then
+		assertThatThrownBy(() -> lineService.findById(신분당선).getId())
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 }

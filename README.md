@@ -5,14 +5,14 @@
 ## 기능 요구사항
 - [] 지하철 구간 관련 단위 테스트를 완성
   - [] 구간 단위 테스트 (LineTest)
-  - [] 구간 서비스 단위 테스트 with Mock (LineServiceMockTest)
+  - [x] 구간 서비스 단위 테스트 with Mock (LineServiceMockTest)
     - [x] addSection
     - [x] deleteSection
     - [x] saveLine
     - [x] showLines
     - [x] findById
     - [x] updateLine
-    - [] deleteLine
+    - [x] deleteLine
   - [] 구간 서비스 단위 테스트 without Mock (LineServiceTest)
     - [x] addSection
     - [X] deleteSection
