@@ -29,8 +29,19 @@ class LineTest {
         );
     }
 
+    @DisplayName("노선 내 역 조회")
     @Test
     void getStations() {
+        var 광교역 = new Station("광교역");
+        var 광교중앙역 = new Station("광교중앙역");
+        var 상현역 = new Station("상현역");
+        var sut = new Line();
+        sut.addSection(광교역, 광교중앙역, 10);
+        sut.addSection(광교중앙역, 상현역, 10);
+
+        var stations = sut.getStations();
+
+        assertThat(stations).containsExactly(광교역, 광교중앙역, 상현역);
     }
 
     @Test
