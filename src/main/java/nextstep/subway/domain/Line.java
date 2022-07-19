@@ -23,6 +23,10 @@ public class Line {
         this.color = color;
     }
 
+    public void addSection(Station upStation, Station downStation, int distance) {
+
+    }
+
     public Long getId() {
         return id;
     }
@@ -50,4 +54,5 @@ public class Line {
     public List<Section> getSections() {
         return sections;
     }
+
 }
