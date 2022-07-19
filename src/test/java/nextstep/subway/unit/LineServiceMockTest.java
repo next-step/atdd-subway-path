@@ -38,6 +38,22 @@ public class LineServiceMockTest {
     }
 
     @Test
+    @DisplayName("노선을 생성한다.")
+    void saveLine() {
+        // given
+        LineRequest lineRequest = new LineRequest("신분당선", "red", 역삼역_ID, 잠실역_ID, 10);
+
+        // when
+        when(stationService.findById(역삼역_ID)).thenReturn(역삼역);
+        when(stationService.findById(잠실역_ID)).thenReturn(잠실역);
+        when(lineRepository.save(any())).thenReturn(신분당선);
+        lineService.saveLine(lineRequest);
+
+        // then
+        verify(lineRepository, atLeast(1)).save(any());
+    }
+
+    @Test
     @DisplayName("역 목록을 보여준다.")
     void showLines() {
         // when
