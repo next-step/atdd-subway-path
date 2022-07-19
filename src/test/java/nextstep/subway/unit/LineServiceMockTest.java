@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.*;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,6 +18,7 @@ import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,6 +41,7 @@ public class LineServiceMockTest {
 		line = new Line("분당선", "yellow");
 	}
 
+	@DisplayName("구간 추가 mock 테스트")
 	@Test
 	void addSection() {
 		// given
@@ -56,5 +59,21 @@ public class LineServiceMockTest {
 		// line.findLineById 메서드를 통해 검증
 		verify(lineRepository).findById(1L);
 		assertThat(line.getSections()).hasSize(1);
+	}
+
+
+	@DisplayName("구간 삭제 mock 테스트")
+	@Test
+	void deleteSectionTest(){
+		//given
+		line.addSection(new Section(line, upStation, downStation, 10));
+		given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
+		given(stationService.findById(anyLong())).willReturn(downStation);
+
+		//when
+		lineService.deleteSection(1L, 2L);
+
+		//then
+		assertThat(line.getSections()).isEmpty();
 	}
 }
