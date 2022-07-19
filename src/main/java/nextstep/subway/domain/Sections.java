@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @Embeddable
@@ -91,24 +90,14 @@ public class Sections {
             throw new DuplicateSectionException();
         }
 
-        if (addSectionAction(section -> section.isBetweenSection(newSection),
-                section -> addBetweenSection(newSection, section))) {
+        Optional<Section> between = getSectionForFilter(section -> section.isBetweenSection(newSection));
+        if (between.isPresent()) {
+            addBetweenSection(newSection, between.get());
             return;
         }
 
-        if (addSectionAction(section -> section.isLeafSection(newSection),
-                section -> this.sections.add(newSection))) {
-            return;
-        }
-    }
-
-    private boolean addSectionAction(Predicate<Section> filterAction, Consumer<Section> addAction) {
-        Optional<Section> section = getSectionForFilter(filterAction);
-        if (section.isPresent()) {
-            addAction.accept(section.get());
-            return true;
-        }
-        return false;
+        getSectionForFilter(section -> section.isLeafSection(newSection))
+                .ifPresent(leaf -> this.sections.add(newSection));
     }
 
     private boolean isDuplicateSection(Section newSection) {
@@ -127,14 +116,12 @@ public class Sections {
             throw new InvalidDistanceException(section.getDistance());
         }
 
+        this.sections.add(newSection);
         if (section.isSameUpStationIn(newSection)) {
-            this.sections.add(newSection);
-            section.changeDownSection(newSection);
+            section.changeUpSection(newSection);
             return;
         }
-
-        this.sections.add(newSection);
-        section.changeUpSection(newSection);
+        section.changeDownSection(newSection);
     }
 
     private void validateNotFountStations(Section newSection) {
