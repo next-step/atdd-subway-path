@@ -22,12 +22,11 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section newSection) {
-        if (!isEmpty()) {
-            addSection(newSection);
+        if (isEmpty()) {
+            this.sections.add(newSection);
             return;
         }
-
-        this.sections.add(newSection);
+        addSection(newSection);
     }
 
     public void remove() {
@@ -58,14 +57,10 @@ public class Sections {
         return this.sections.size();
     }
 
-    public boolean isEmpty() {
-        return size() == 0;
-    }
-
     private List<Station> mapStations(Section section, List<Station> stations) {
         stations.add(section.getUpStation());
 
-        Section nextSection = findSection(section);
+        Section nextSection = findNextSection(section);
         if (nextSection == null) {
             stations.add(section.getDownStation());
             return stations;
@@ -74,7 +69,7 @@ public class Sections {
         return mapStations(nextSection, stations);
     }
 
-    private Section findSection(Section currentSection) {
+    private Section findNextSection(Section currentSection) {
         return this.sections.stream()
                 .filter(section -> section.isSameUpStationForDown(currentSection))
                 .findFirst()
@@ -155,6 +150,10 @@ public class Sections {
 
     private boolean containStation(Station newSection) {
         return this.getStations().contains(newSection);
+    }
+
+    private boolean isEmpty() {
+        return size() == 0;
     }
 
 }
