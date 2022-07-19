@@ -2,6 +2,7 @@ package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
+import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @DisplayName("Mock을 활용한 LineServiceTest")
@@ -75,6 +77,21 @@ public class LineServiceMockTest {
 		//then
 		LineResponse 신분당선_응답 = lineService.findById(신분당선);
 		assertThat(신분당선_응답.getStations()).isEmpty();
+	}
+
+	@Test
+	void saveLine() {
+		//given
+		when(lineRepository.save(any(Line.class))).thenReturn(new Line("신분당선", "red"));
+
+		//when
+		LineResponse 신분당선_응답 = lineService.saveLine(new LineRequest("신분당선", "red", 광교역, 광교중앙역, 10));
+
+		//then
+		assertAll(
+				() -> assertThat(신분당선_응답.getName()).isEqualTo("신분당선"),
+				() -> assertThat(신분당선_응답.getStations()).hasSize(2)
+		);
 	}
 
 	private void 신분당선_객체를_반환한다() {

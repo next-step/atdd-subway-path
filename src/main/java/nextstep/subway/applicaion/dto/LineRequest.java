@@ -1,5 +1,8 @@
 package nextstep.subway.applicaion.dto;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class LineRequest {
     private String name;
     private String color;
