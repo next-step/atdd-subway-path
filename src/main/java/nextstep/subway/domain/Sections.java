@@ -3,7 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.exception.DuplicateSectionException;
 import nextstep.subway.exception.InvalidDistanceException;
 import nextstep.subway.exception.NotFoundStationException;
-import nextstep.subway.exception.NotFountSectionException;
+import nextstep.subway.exception.NotFoundSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -49,7 +49,7 @@ public class Sections {
                         .noneMatch(other -> other.matchUpStationForDown(section)))
                 .findFirst()
                 .map(Section::getDownStation)
-                .orElseThrow(NotFountSectionException::new);
+                .orElseThrow(NotFoundSectionException::new);
     }
 
     public int size() {
@@ -80,7 +80,7 @@ public class Sections {
                 .filter(section -> this.sections.stream()
                         .noneMatch(other -> section.matchUpStationForDown(other)))
                 .findFirst()
-                .orElseThrow(NotFountSectionException::new);
+                .orElseThrow(NotFoundSectionException::new);
     }
 
     private void addSection(Section newSection) {
