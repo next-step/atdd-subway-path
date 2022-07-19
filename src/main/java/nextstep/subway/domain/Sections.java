@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -46,12 +45,12 @@ public class Sections {
 
     private void changeMatchStation(Section addedSection, Section matchedSection) {
         if (matchedSection.getUpStation().equals(addedSection.getUpStation())) {
-            matchedSection.changeUpStation(addedSection.getDownStation());
             matchedSection.changeDistance(addedSection.getDistance());
+            matchedSection.changeUpStation(addedSection.getDownStation());
         }
         if (matchedSection.getDownStation().equals(addedSection.getDownStation())) {
-            matchedSection.changeDownStation(addedSection.getUpStation());
             matchedSection.changeDistance(addedSection.getDistance());
+            matchedSection.changeDownStation(addedSection.getUpStation());
         }
     }
 
@@ -64,8 +63,10 @@ public class Sections {
         if (aroundMatchedSection.isPresent()) {
             Section aroundSection = aroundMatchedSection.get();
             if (aroundSection.getDownStation().equals(matchedSection.getUpStation())) {
+                aroundSection.changeDistance(addedSection.getDistance());
                 aroundSection.changeDownStation(addedSection.getUpStation());
             } else {
+                aroundSection.changeDistance(addedSection.getDistance());
                 aroundSection.changeUpStation(addedSection.getDownStation());
             }
         }

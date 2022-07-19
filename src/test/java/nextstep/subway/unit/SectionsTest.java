@@ -43,7 +43,7 @@ public class SectionsTest {
         Station station4 = new Station("송파역");
         Section section1 = new Section(line, station1, station2, 10);
         Section section2 = new Section(line, station2, station3, 4);
-        Section section3 = new Section(line, station2, station4, 4);
+        Section section3 = new Section(line, station2, station4, 2);
         Sections sections = new Sections();
 
         // when
