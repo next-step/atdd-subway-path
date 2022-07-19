@@ -1,15 +1,11 @@
 package nextstep.subway.domain;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 @Entity
 public class Line {
@@ -18,9 +14,8 @@ public class Line {
     private Long id;
     private String name;
     private String color;
-
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = new Sections();
 
     public Line() {
     }
@@ -31,30 +26,15 @@ public class Line {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        var section = new Section(this, upStation, downStation, distance);
-        sections.add(section);
+        sections.add(this, upStation, downStation, distance);
     }
 
     public void removeSection(Station downStation) {
-        if (!sections.get(sections.size() - 1).getDownStation().equals(downStation)) {
-            throw new IllegalArgumentException();
-        }
-
-        sections.remove(sections.size() - 1);
+        sections.removeByStation(downStation);
     }
 
     public List<Station> getStations() {
-        if (sections.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        var stations = sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, sections.get(0).getUpStation());
-
-        return stations;
+        return sections.getStations();
     }
 
     public Long getId() {
@@ -82,6 +62,6 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getRawSections();
     }
 }
