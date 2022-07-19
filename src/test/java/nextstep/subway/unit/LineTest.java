@@ -126,4 +126,23 @@ class LineTest {
         assertThatThrownBy(() -> line.deleteSection(upStation))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("노선의 정보를 정상적으로 수정했습니다")
+    @Test
+    void updateLine() {
+        // given
+        Station upStation = new Station("신논현역");
+        Station downStation = new Station("언주역");
+        Line line = new Line("9호선", "bg-brown-600");
+        line.addSection(new Section(line, upStation, downStation, 5));
+
+        // when
+        line.updateLine("3호선", "bg-yellow-600");
+
+        // then
+        assertAll(
+                () -> assertThat(line.getName()).isEqualTo("3호선"),
+                () -> assertThat(line.getColor()).isEqualTo("bg-yellow-600")
+        );
+    }
 }
