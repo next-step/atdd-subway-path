@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import nextstep.subway.applicaion.dto.LineRequest;
 
 @Entity
 public class Line {
@@ -61,5 +62,14 @@ public class Line {
 
     public void deleteSection(Station station) {
         sections.deleteSection(station);
+    }
+
+    public void updateLine(LineRequest lineRequest) {
+        if (lineRequest.getName() != null) {
+            this.setName(lineRequest.getName());
+        }
+        if (lineRequest.getColor() != null) {
+            this.setColor(lineRequest.getColor());
+        }
     }
 }
