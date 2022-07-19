@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static nextstep.subway.unit.LineUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -22,11 +23,11 @@ class LineTest {
 	@Test
 	void addSection() {
 		//given
-		Line 신분당선 = new Line("신분당선", "red");
+		Line 신분당선 = 신분당선_생성();
 
 		//when
-		Station 광교역 = new Station("광교역");
-		Station 광교중앙역 = new Station("광교중앙역");
+		Station 광교역 = 광교역_생성();
+		Station 광교중앙역 = 광교중앙역_생성();
 		신분당선.addSection(광교역, 광교중앙역, 10);
 
 		//then
@@ -45,9 +46,9 @@ class LineTest {
 	@Test
 	void getStations() {
 		//given
-		Line 신분당선 = new Line("신분당선", "red");
-		Station 광교역 = new Station("광교역");
-		Station 광교중앙역 = new Station("광교중앙역");
+		Line 신분당선 = 신분당선_생성();
+		Station 광교역 = 광교역_생성();
+		Station 광교중앙역 = 광교중앙역_생성();
 		신분당선.addSection(광교역, 광교중앙역, 10);
 
 		//when
@@ -69,9 +70,9 @@ class LineTest {
 	@Test
 	void removeSection() {
 		//given
-		Line 신분당선 = new Line("신분당선", "red");
-		Station 광교역 = new Station("광교역");
-		Station 광교중앙역 = new Station("광교중앙역");
+		Line 신분당선 = 신분당선_생성();
+		Station 광교역 = 광교역_생성();
+		Station 광교중앙역 = 광교중앙역_생성();
 		신분당선.addSection(광교역, 광교중앙역, 10);
 
 		//when
