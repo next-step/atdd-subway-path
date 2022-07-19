@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -74,6 +76,21 @@ public class LineServiceTest {
         assertAll(
                 () -> assertThat(신분당선_응답.getName()).isEqualTo("신분당선"),
                 () -> assertThat(신분당선_응답.getStations()).hasSize(2)
+        );
+    }
+
+    @Test
+    void showLines() {
+        //given
+        노선을_등록한다("신분당선", "red");
+
+        //when
+        List<LineResponse> 노선_응답 = lineService.showLines();
+
+        //then
+        assertAll(
+                () -> assertThat(노선_응답).hasSize(1),
+                () -> assertThat(노선_응답.get(0).getName()).isEqualTo("신분당선")
         );
     }
 
