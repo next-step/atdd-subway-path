@@ -74,15 +74,15 @@ public class Section {
         return this.distance - distance;
     }
 
-    public boolean isSameUpStationForDown(Section section) {
+    public boolean matchUpStationForDown(Section section) {
         return this.upStation.equals(section.downStation);
     }
 
-    public boolean isSameStations(Section section) {
-        return isSameUpStationIn(section) && this.downStation.equals(section.downStation);
+    public boolean matchStations(Section section) {
+        return matchUpStation(section) && this.downStation.equals(section.downStation);
     }
 
-    public boolean isSameUpStationIn(Section section) {
+    public boolean matchUpStation(Section section) {
         return this.upStation.equals(section.upStation);
     }
 

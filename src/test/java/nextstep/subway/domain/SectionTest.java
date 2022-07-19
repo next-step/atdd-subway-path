@@ -97,7 +97,7 @@ class SectionTest {
 
     @DisplayName("기존 구간의 상행 지하철역과 비교 구간의 하행역이 같은 구간인지 확인한다.")
     @Test
-    void sameUpStationForDown() {
+    void matchUpStationForDown() {
         // given
         Section section = Stub.기본_구간_생성.get();
 
@@ -105,12 +105,12 @@ class SectionTest {
         Section newSection = new Section(Stub.대림역, Stub.구로디지털단지역, 3);
 
         // then
-        assertThat(section.isSameUpStationForDown(newSection)).isTrue();
+        assertThat(section.matchUpStationForDown(newSection)).isTrue();
     }
 
     @DisplayName("기존 구간과 비교 구간의 상행과 하행 지하철역이 같은 역인지 확인한다.")
     @Test
-    void sameStations() {
+    void matchStations() {
         // given
         Section section = Stub.기본_구간_생성.get();
 
@@ -118,12 +118,12 @@ class SectionTest {
         Section newSection = new Section(Stub.구로디지털단지역, Stub.신림역, 10);
 
         // then
-        assertThat(section.isSameStations(newSection)).isTrue();
+        assertThat(section.matchStations(newSection)).isTrue();
     }
 
     @DisplayName("기존 구간과 비교 구간의 상행 지하철역이 같은 역인지 확인한다.")
     @Test
-    void sameUpStationIn() {
+    void matchUpStation() {
         // given
         Section section = Stub.기본_구간_생성.get();
 
@@ -131,7 +131,7 @@ class SectionTest {
         Section newSection = new Section(Stub.구로디지털단지역, Stub.신대방역, 4);
 
         // then
-        assertThat(section.isSameUpStationIn(newSection)).isTrue();
+        assertThat(section.matchUpStation(newSection)).isTrue();
     }
 
     private static class Stub {
