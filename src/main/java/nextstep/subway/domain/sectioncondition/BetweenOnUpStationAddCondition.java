@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 @Component
 class BetweenOnUpStationAddCondition implements SectionAddCondition {
@@ -27,8 +26,8 @@ class BetweenOnUpStationAddCondition implements SectionAddCondition {
                 .isPresent();
     }
 
-    private Predicate<Section> isUpStationMatches(final Station upStation) {
-        return v -> v.getUpStation().equals(upStation);
+    private boolean isUpStationMatches(final Station upStation, final Section section) {
+        return section.getUpStation().equals(upStation);
     }
 
     @Override
@@ -43,7 +42,7 @@ class BetweenOnUpStationAddCondition implements SectionAddCondition {
 
     private Optional<Section> findUpStationMatchedSection(final List<Section> sections, final Station upStation) {
         return sections.stream()
-                .filter(isUpStationMatches(upStation))
+                .filter(v -> isUpStationMatches(upStation, v))
                 .findFirst();
     }
 
