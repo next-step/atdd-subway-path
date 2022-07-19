@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
+import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
@@ -56,6 +57,24 @@ public class LineServiceTest {
         //then
         LineResponse 신분당선_응답 = lineService.findById(신분당선.getId());
         assertThat(신분당선_응답.getStations()).isEmpty();
+    }
+
+    @Test
+    void saveLine() {
+        //given
+        Station 광교역 = 역을_등록한다("광교역");
+        Station 광교중앙역 = 역을_등록한다("광교중앙역");
+        Line 신분당선 = 노선을_등록한다("신분당선", "red");
+
+        //when
+        LineResponse 신분당선_응답 = lineService.saveLine(new LineRequest(신분당선.getName(), 신분당선.getColor(), 광교역.getId(), 광교중앙역.getId(), 10));
+
+        //then
+        LineResponse response = lineService.findById(신분당선.getId());
+        assertAll(
+                () -> assertThat(신분당선_응답.getName()).isEqualTo("신분당선"),
+                () -> assertThat(신분당선_응답.getStations()).hasSize(2)
+        );
     }
 
     private Line 노선을_등록한다(String lineName, String color) {

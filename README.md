@@ -16,7 +16,7 @@
   - [] 구간 서비스 단위 테스트 without Mock (LineServiceTest)
     - [x] addSection
     - [X] deleteSection
-    - [] saveLine
+    - [x] saveLine
     - [] showLines
     - [] findById
     - [] updateLine
