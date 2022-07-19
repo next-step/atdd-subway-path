@@ -1,16 +1,20 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.domain.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 @SpringBootTest
 @Transactional
-public class LineServiceTest {
+class LineServiceTest {
     @Autowired
     private StationRepository stationRepository;
     @Autowired
@@ -22,12 +26,18 @@ public class LineServiceTest {
     @Test
     void addSection() {
         // given
-        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
+        Station upStation = stationRepository.save(new Station("양재역"));
+        Station downStation = stationRepository.save(new Station("교대역"));
+        Line line = lineRepository.save(new Line("신분당선", "red"));
 
         // when
-        // lineService.addSection 호출
+        SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(), 6);
+        lineService.addSection(line.getId(), sectionRequest);
 
         // then
-        // line.getSections 메서드를 통해 검증
+        List<Section> sections = line.getSections();
+        assertThat(sections).hasSize(1);
+        assertThat(sections.get(0).getUpStation()).isEqualTo(upStation);
+        assertThat(sections.get(0).getDownStation()).isEqualTo(downStation);
     }
 }
