@@ -2,7 +2,6 @@ package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -13,16 +12,18 @@ class LineTest {
 
     @Test
     void addSection() {
-        Station 강남 = new Station("강남");
-        Station 양재 = new Station("양재");
+        // given
         Line line = new Line("신분당선", "red");
 
-         line.addSection(강남, 양재, 6);
+        // when
+        line.addSection(1L, 2L, 6);
 
+        // then
         List<Section> sections = line.getSections();
+        Section section = sections.get(0);
         assertThat(sections).hasSize(1);
-        assertThat(sections.get(0).getUpStation()).isEqualTo(강남);
-        assertThat(sections.get(0).getDownStation()).isEqualTo(양재);
+        assertThat(section.getUpStationId()).isEqualTo(1L);
+        assertThat(section.getDownStationId()).isEqualTo(2L);
     }
 
     @Test

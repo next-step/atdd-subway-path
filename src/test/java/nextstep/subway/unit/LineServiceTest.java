@@ -36,8 +36,10 @@ class LineServiceTest {
 
         // then
         List<Section> sections = line.getSections();
+        Section section = sections.get(0);
+
         assertThat(sections).hasSize(1);
-        assertThat(sections.get(0).getUpStation()).isEqualTo(upStation);
-        assertThat(sections.get(0).getDownStation()).isEqualTo(downStation);
+        assertThat(section.getUpStationId()).isEqualTo(1L);
+        assertThat(section.getDownStationId()).isEqualTo(2L);
     }
 }
