@@ -1,53 +1,71 @@
 package nextstep.subway.domain;
 
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
+
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode
 public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String color;
-
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
-
-    public Line() {
-    }
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public Long getId() {
-        return id;
+    public void changeName(String name) {
+        if (isNullOrBlank(name)) {
+            return;
+        }
+        this.name = name;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void changeColor(String color) {
+        if (isNullOrBlank(color)) {
+            return;
+        }
+        this.color = color;
+    }
+
+    private boolean isNullOrBlank(String value) {
+        return value == null || value.isBlank();
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        Section section = new Section(upStation, downStation, distance);
+        sections.add(section);
+        section.makeRelation(this);
+    }
+
+    public void deleteSection(Station station) {
+        sections.delete(station);
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
     }
 
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public List<Section> getSections() {
-        return sections;
+    public List<Station> getStations() {
+        return sections.getStations();
     }
 }

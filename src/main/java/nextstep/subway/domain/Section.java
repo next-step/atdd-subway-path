@@ -1,8 +1,15 @@
 package nextstep.subway.domain;
 
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,25 +27,29 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
-    public Section() {
-
-    }
-
-    public Section(Line line, Station upStation, Station downStation, int distance) {
-        this.line = line;
+    public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
-    public Long getId() {
-        return id;
+    protected void makeRelation(Line line) {
+        this.line = line;
     }
 
-    public Line getLine() {
-        return line;
+    public boolean isMissMatchDownStation(Station station) {
+        return !downStation.equals(station);
+    }
+
+    public boolean hasStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
+    public List<Station> getStations() {
+        return List.of(upStation, downStation);
     }
 
     public Station getUpStation() {
@@ -47,9 +58,5 @@ public class Section {
 
     public Station getDownStation() {
         return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 }
