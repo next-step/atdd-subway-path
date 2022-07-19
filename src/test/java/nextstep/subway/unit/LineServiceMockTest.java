@@ -1,7 +1,6 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
-import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -40,13 +39,13 @@ public class LineServiceMockTest {
 
         // then
         // line.findLineById 메서드를 통해 검증
-        LineResponse lineResponse = lineService.findById(1L);
+        Line findLine = lineService.findLineById(1L);
 
         assertAll(
-                () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
-                () -> assertThat(lineResponse.getColor()).isEqualTo("bg-red-600"),
-                () -> assertThat(lineResponse.getStations()).hasSize(2),
-                () -> assertThat(lineResponse.getStations()).extracting("name").containsExactly("강남역", "신논현역")
+                () -> assertThat(findLine.getName()).isEqualTo("신분당선"),
+                () -> assertThat(findLine.getColor()).isEqualTo("bg-red-600"),
+                () -> assertThat(findLine.getSections()).hasSize(1),
+                () -> assertThat(findLine.allStations()).extracting("name").containsExactly("강남역", "신논현역")
         );
     }
 }
