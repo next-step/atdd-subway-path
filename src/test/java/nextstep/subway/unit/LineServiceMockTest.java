@@ -40,7 +40,6 @@ class LineServiceMockTest {
 
     private Station 광교역;
     private Station 광교중앙역;
-    private Map<Long, Line> lineStorage = new HashMap<>();
 
     @BeforeEach
     void setUp() {
@@ -50,15 +49,11 @@ class LineServiceMockTest {
         광교중앙역 = createTestStation(2L, "광교중앙역");
     }
 
-    @AfterEach
-    void cleanUp() {
-        lineStorage.clear();
-    }
-
     @DisplayName("노선 추가")
     @Test
     void createLine() {
         // given
+        Map<Long, Line> lineStorage = new HashMap<>();
         prepareStations(광교역, 광교중앙역);
         when(lineRepository.findById(any(Long.class)))
                 .thenAnswer(args -> {
