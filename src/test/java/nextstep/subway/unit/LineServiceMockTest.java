@@ -12,14 +12,14 @@ import java.util.List;
 import java.util.Optional;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
-import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.applicaion.dto.LineSaveRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
+import nextstep.subway.applicaion.dto.LineUpdateRequest;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,7 +53,7 @@ class LineServiceMockTest {
         역_추가(new Station(1L, "강남역"), new Station(2L, "역삼역"));
 
         //when
-        final LineResponse lineResponse = lineService.saveLine(new LineRequest("2호선", "green", 1L, 2L, 10));
+        final LineResponse lineResponse = lineService.saveLine(new LineSaveRequest("2호선", "green", 1L, 2L, 10));
 
         //then
         assertAll(
@@ -143,7 +143,7 @@ class LineServiceMockTest {
         노선_조회();
 
         //when
-        lineService.updateLine(1L, new LineRequest("신분당선", "red", 1L, 2L, 10));
+        lineService.updateLine(1L, new LineUpdateRequest("신분당선", "red"));
         final LineResponse lineResponse = lineService.findById(1L);
 
         //then

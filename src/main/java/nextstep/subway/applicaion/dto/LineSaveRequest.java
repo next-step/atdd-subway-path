@@ -1,16 +1,16 @@
 package nextstep.subway.applicaion.dto;
 
-public class LineRequest {
+public class LineSaveRequest {
     private String name;
     private String color;
     private Long upStationId;
     private Long downStationId;
     private int distance;
 
-    public LineRequest() {
+    public LineSaveRequest() {
     }
 
-    public LineRequest(final String name, final String color, final Long upStationId, final Long downStationId, final int distance) {
+    public LineSaveRequest(final String name, final String color, final Long upStationId, final Long downStationId, final int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
