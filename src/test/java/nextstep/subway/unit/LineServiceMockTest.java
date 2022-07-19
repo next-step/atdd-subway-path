@@ -32,14 +32,13 @@ public class LineServiceMockTest {
     @InjectMocks
     private LineService lineService;
 
-    final long lineId = 1L;
-    final long upStationId = 1L;
-    final long downStationId = 2L;
-
     private final int DEFAULT_DISTANCE = 10;
     @Test
     void addSection() {
 
+        long lineId = 1L;
+        long upStationId = 1L;
+        long downStationId = 2L;
 
         Line line = new Line("1호선", "blue");
         doReturn(Optional.of(line)).when(lineRepository).findById(lineId);
