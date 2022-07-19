@@ -66,7 +66,7 @@ public class Sections {
                 aroundSection.changeDistance(addedSection.getDistance());
                 aroundSection.changeDownStation(addedSection.getUpStation());
             } else {
-                aroundSection.changeDistance(addedSection.getDistance());
+                matchedSection.changeDistance(addedSection.getDistance());
                 aroundSection.changeUpStation(addedSection.getDownStation());
             }
         }
@@ -125,8 +125,35 @@ public class Sections {
     }
 
     public List<Section> getSections() {
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Section> ordered = new ArrayList<>();
+
+        Section section = findFirstSection();
+        ordered.add(section);
+
+        while (sections.size() != ordered.size()) {
+            section = findNextSection(section);
+            ordered.add(section);
+        }
+
+        return ordered;
+    }
+
+    private Section findFirstSection() {
         return sections.stream()
-                .sorted((s1, s2) -> s1.getUpStation().getName().compareTo(s2.getDownStation().getName()))
-                .collect(Collectors.toList());
+                .filter(section -> isStartStation(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Section findNextSection(Section section) {
+        Station downStation = section.getDownStation();
+        return sections.stream()
+                .filter(findSection -> findSection.getUpStation().equals(downStation))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
     }
 }

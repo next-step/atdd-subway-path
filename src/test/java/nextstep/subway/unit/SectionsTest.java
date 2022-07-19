@@ -232,4 +232,17 @@ public class SectionsTest {
                 sections.deleteSection(upStation)
         );
     }
+
+    @Test
+    void 정렬_테스트() {
+        Sections sections = new Sections();
+        sections.addSection(new Section(null, new Station("a"), new Station("b"), 6)); // a -6- b
+        sections.addSection(new Section(null, new Station("a"), new Station("c"), 2)); // a -2- c -4- b
+        sections.addSection(new Section(null, new Station("b"), new Station("d"), 3)); // a -2- c -4- b -3- d
+
+        assertThat(sections.getSections().get(0).getUpStation().getName()).isEqualTo("a");
+        assertThat(sections.getSections().get(1).getUpStation().getName()).isEqualTo("c");
+        assertThat(sections.getSections().get(2).getUpStation().getName()).isEqualTo("b");
+        assertThat(sections.getSections().get(2).getDownStation().getName()).isEqualTo("d");
+    }
 }
