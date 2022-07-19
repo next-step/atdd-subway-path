@@ -24,7 +24,8 @@ public class Line {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-
+        var section = new Section(this, upStation, downStation, distance);
+        sections.add(section);
     }
 
     public Long getId() {
