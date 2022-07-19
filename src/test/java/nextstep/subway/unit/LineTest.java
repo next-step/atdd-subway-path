@@ -29,6 +29,7 @@ class LineTest {
         구로역 = new Station("구로역");
     }
 
+    @DisplayName("구간 추가")
     @Test
     void addSection() {
         // given
@@ -45,6 +46,7 @@ class LineTest {
         );
     }
 
+    @DisplayName("노선의 모든 지하철역 가져오기")
     @Test
     void getStations() {
         // given
@@ -62,6 +64,7 @@ class LineTest {
         );
     }
 
+    @DisplayName("구간 삭제")
     @Test
     void removeSection() {
         // given
@@ -79,6 +82,7 @@ class LineTest {
         );
     }
 
+    @DisplayName("하나의 구간을 가진 노선 삭제시 예외 발생")
     @Test
     void removeSectionHasOneSection() {
         // given
