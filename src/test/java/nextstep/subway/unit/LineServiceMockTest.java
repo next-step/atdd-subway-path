@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -86,6 +87,21 @@ public class LineServiceMockTest {
 		assertAll(
 				() -> assertThat(신분당선_응답.getName()).isEqualTo("신분당선"),
 				() -> assertThat(신분당선_응답.getStations()).hasSize(2)
+		);
+	}
+
+	@Test
+	void showLines() {
+		//given
+		when(lineRepository.findAll()).thenReturn(List.of(new Line("신분당선", "red")));
+
+		//when
+		List<LineResponse> 노선_응답 = lineService.showLines();
+
+		//then
+		assertAll(
+				() -> assertThat(노선_응답).hasSize(1),
+				() -> assertThat(노선_응답.get(0).getName()).isEqualTo("신분당선")
 		);
 	}
 }

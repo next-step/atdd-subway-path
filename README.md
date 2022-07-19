@@ -9,7 +9,7 @@
     - [x] addSection
     - [x] deleteSection
     - [x] saveLine
-    - [] showLines
+    - [x] showLines
     - [] findById
     - [] updateLine
     - [] deleteLine
