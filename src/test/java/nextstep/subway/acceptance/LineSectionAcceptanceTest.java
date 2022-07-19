@@ -27,11 +27,11 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
-        강남역 = ResponseUtils.getId(지하철역_생성_요청("강남역"));
-        양재역 = ResponseUtils.getId(지하철역_생성_요청("양재역"));
+        강남역 = ResponseUtils.getLong(지하철역_생성_요청("강남역"), "id");
+        양재역 = ResponseUtils.getLong(지하철역_생성_요청("양재역"), "id");
 
         Map<String, String> lineCreateParams = createLineCreateParams(강남역, 양재역);
-        신분당선 = ResponseUtils.getId(지하철_노선_생성_요청(lineCreateParams));
+        신분당선 = ResponseUtils.getLong(지하철_노선_생성_요청(lineCreateParams), "id");
     }
 
     /**
@@ -43,7 +43,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeLineSection() {
         // given
-        Long 정자역 = ResponseUtils.getId(지하철역_생성_요청("정자역"));
+        Long 정자역 = ResponseUtils.getLong(지하철역_생성_요청("정자역"), "id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
 
         // when

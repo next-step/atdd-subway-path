@@ -29,11 +29,11 @@ class SectionAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
-        강남역 = ResponseUtils.getId(지하철역_생성_요청("강남역"));
-        양재역 = ResponseUtils.getId(지하철역_생성_요청("양재역"));
+        강남역 = ResponseUtils.getLong(지하철역_생성_요청("강남역"), "id");
+        양재역 = ResponseUtils.getLong(지하철역_생성_요청("양재역"), "id");
 
         Map<String, String> lineCreateParams = createLineParams(강남역, 양재역, 10);
-        신분당선 = ResponseUtils.getId(지하철_노선_생성_요청(lineCreateParams));
+        신분당선 = ResponseUtils.getLong(지하철_노선_생성_요청(lineCreateParams), "id");
     }
 
     /**
@@ -45,7 +45,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSection() {
         // given
-        Long 정자역 = ResponseUtils.getId(지하철역_생성_요청("정자역"));
+        Long 정자역 = ResponseUtils.getLong(지하철역_생성_요청("정자역"), "id");
 
         // when
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionParams(양재역, 정자역, 7));
@@ -64,11 +64,11 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addBetweenSection() {
         // given
-        Long 정자역 = ResponseUtils.getId(지하철역_생성_요청("정자역"));
+        Long 정자역 = ResponseUtils.getLong(지하철역_생성_요청("정자역"), "id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionParams(양재역, 정자역, 7));
 
         // when
-        Long 양재시민의숲역 = ResponseUtils.getId(지하철역_생성_요청("양재시민의숲역"));
+        Long 양재시민의숲역 = ResponseUtils.getLong(지하철역_생성_요청("양재시민의숲역"), "id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionParams(양재역, 양재시민의숲역, 4));
 
         // then
@@ -84,7 +84,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addNewUpStationAtSection() {
         // when
-        Long 신논현역 = ResponseUtils.getId(지하철역_생성_요청("신논현역"));
+        Long 신논현역 = ResponseUtils.getLong(지하철역_생성_요청("신논현역"), "id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionParams(신논현역, 강남역, 2));
 
         // then
@@ -100,7 +100,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void given_newSection_when_sameDistance_then_exception() {
         // given
-        Long 신논현역 = ResponseUtils.getId(지하철역_생성_요청("신논현역"));
+        Long 신논현역 = ResponseUtils.getLong(지하철역_생성_요청("신논현역"), "id");
 
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionParams(강남역, 신논현역, 10));
@@ -146,7 +146,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeLineSection() {
         // given
-        Long 정자역 = ResponseUtils.getId(지하철역_생성_요청("정자역"));
+        Long 정자역 = ResponseUtils.getLong(지하철역_생성_요청("정자역"), "id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionParams(양재역, 정자역, 7));
 
         // when
