@@ -6,11 +6,13 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
 @Entity
 public class Line {
+    public static final int FIRST = 0;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,5 +33,15 @@ public class Line {
 
     public void addSection(Station upStation, Station downStation, int distance) {
         this.sections.add(new Section(this, upStation, downStation, distance));
+    }
+
+    public List<Station> getStations() {
+        List<Station> stations = sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+
+        stations.add(FIRST, sections.get(FIRST).getUpStation());
+
+        return stations;
     }
 }

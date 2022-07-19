@@ -6,8 +6,10 @@ import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class LineTest {
 
@@ -34,8 +36,28 @@ class LineTest {
 		);
 	}
 
+	/**
+	 * Given 노선 하나를 만들고, 섹션을 추가한다.
+	 * When 노선에서 getStation을 하면
+	 * Then 노선의 모든 정보가 반환된다.
+	 */
+	@DisplayName("지하철 노선의 역 리스트를 반환한다")
 	@Test
 	void getStations() {
+		//given
+		Line 신분당선 = new Line("신분당선", "red");
+		Station 광교역 = new Station("광교역");
+		Station 광교중앙역 = new Station("광교중앙역");
+		신분당선.addSection(광교역, 광교중앙역, 10);
+
+		//when
+		List<Station> 신분당선_응답 = 신분당선.getStations();
+
+		//then
+		assertAll(
+				() -> assertThat(신분당선_응답).hasSize(2),
+				() -> assertThat(신분당선_응답).containsExactly(new Station("광교역"), new Station("광교중앙역"))
+		);
 	}
 
 	@Test
