@@ -3,14 +3,17 @@ package nextstep.subway.domain;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.exception.BadRequestException;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Setter
 @Getter
+@Setter
 @ToString(exclude = "sections")
 public class Line {
     @Id
@@ -59,5 +62,19 @@ public class Line {
     public Section getSectionById(Long sectionId){
         return sections.getSectionById(sectionId);
     }
+
+    public void modifyNameOrColor(LineRequest lineRequest){
+        if(!StringUtils.hasText(lineRequest.getName()) && !StringUtils.hasText(lineRequest.getColor()))
+            throw new BadRequestException("name 혹은 color를 입력하여 주십시오.");
+
+        if (StringUtils.hasText(lineRequest.getColor())) {
+            this.color = lineRequest.getColor();
+        }
+        if (StringUtils.hasText(lineRequest.getName())) {
+            this.name = lineRequest.getName();
+        }
+
+    }
+
 
 }
