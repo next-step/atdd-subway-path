@@ -8,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.transaction.Transactional;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -44,6 +46,19 @@ class LineTest {
 
     @Test
     void getStations() {
+        // given
+        Line 이호선 = new Line("2호선", "green");
+        이호선.addSection(강남역, 역삼역, 10);
+        이호선.addSection(역삼역, 삼성역, 5);
+
+        // when
+        List<Station> stations = 이호선.getStations();
+
+        // then
+        assertAll(
+                () -> assertThat(stations).hasSize(3),
+                () -> assertThat(stations).containsExactly(강남역, 역삼역, 삼성역)
+        );
     }
 
     @Test
