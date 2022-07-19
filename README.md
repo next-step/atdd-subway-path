@@ -10,7 +10,7 @@
     - [x] deleteSection
     - [x] saveLine
     - [x] showLines
-    - [] findById
+    - [x] findById
     - [] updateLine
     - [] deleteLine
   - [] 구간 서비스 단위 테스트 without Mock (LineServiceTest)

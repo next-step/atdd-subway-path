@@ -104,4 +104,16 @@ public class LineServiceMockTest {
 				() -> assertThat(노선_응답.get(0).getName()).isEqualTo("신분당선")
 		);
 	}
+
+	@Test
+	void findById() {
+		//given
+		when(lineRepository.findById(신분당선)).thenReturn(Optional.of(new Line("신분당선", "red")));
+
+		//when
+		LineResponse 신분당선_응답 = lineService.findById(신분당선);
+
+		//then
+		assertThat(신분당선_응답.getName()).isEqualTo("신분당선");
+	}
 }
