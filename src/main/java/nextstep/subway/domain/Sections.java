@@ -70,20 +70,47 @@ public class Sections {
     }
 
     public void remove(final Station station) {
-        final List<Station> stations = findAllStationsInOrder();
-        final Section section = sections.stream()
-                .filter(v -> v.getUpStation().equals(station) || v.getDownStation().equals(station))
-                .findAny()
-                .orElseThrow(NoSuchElementException::new);
+        final Section section = findSection(station);
 
         // 1, 2 -> 2, 3 -> 3, 4 -> 4, 5
-        if (stations.get(0).equals(station) || stations.get(stations.size() - 1).equals(station)) {
-            sections.remove(section);
-        } else {
-            final Section afterSection = sections.get(sections.indexOf(section) + 1);
-            section.updateDownStationAndDistance(afterSection.getDownStation(), section.getDistance() + afterSection.getDistance());
-            sections.remove(afterSection);
+        if (!isFirstOrLastStation(station)) {
+            updateMiddleSection(section);
         }
 
+        sections.remove(section);
+
+    }
+
+    private Section findSection(final Station station) {
+        return sections.stream()
+                .filter(v -> matchesUpStation(station, v))
+                .findAny()
+                .orElseGet(() -> sections.get(sections.size() - 1));
+    }
+
+    private boolean matchesUpStation(final Station station, final Section section) {
+        return section.getUpStation().equals(station);
+    }
+
+    private boolean isFirstOrLastStation(final Station station) {
+        final List<Station> stations = findAllStationsInOrder();
+        return isFirstStation(station, stations) || isLastStation(station, stations);
+    }
+
+    public boolean isFirstStation(final Station station, final List<Station> stations) {
+        return stations.get(0).equals(station);
+    }
+
+    private boolean isLastStation(final Station station, final List<Station> stations) {
+        return getLastStation(stations).equals(station);
+    }
+
+    private Station getLastStation(final List<Station> stations) {
+        return stations.get(stations.size() - 1);
+    }
+
+    private void updateMiddleSection(final Section section) {
+        final Section beforeSection = sections.get(sections.indexOf(section) - 1);
+        beforeSection.updateDownStationAndDistance(section.getDownStation(), section.getDistance() + beforeSection.getDistance());
     }
 }

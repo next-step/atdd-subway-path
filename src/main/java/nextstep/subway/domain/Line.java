@@ -93,8 +93,7 @@ public class Line {
     }
 
     public boolean isFirstStation(final Station station) {
-        final List<Station> stations = getStations();
-        return stations.get(0).equals(station);
+        return sections.isFirstStation(station, getStations());
     }
 
     public boolean containsStation(final Station station) {
