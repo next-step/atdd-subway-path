@@ -13,13 +13,13 @@
     - [x] findById
     - [x] updateLine
     - [x] deleteLine
-  - [] 구간 서비스 단위 테스트 without Mock (LineServiceTest)
+  - [x] 구간 서비스 단위 테스트 without Mock (LineServiceTest)
     - [x] addSection
     - [X] deleteSection
     - [x] saveLine
     - [x] showLines
     - [x] findById
     - [x] updateLine
-    - [] deleteLine
+    - [x] deleteLine
 - [] 단위 테스트를 기반으로 비즈니스 로직을 리팩터링
   - [] 비즈니스 로직을 도메인 클래스(Line)으로 옮기기

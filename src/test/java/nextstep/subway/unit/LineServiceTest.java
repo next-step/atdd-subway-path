@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("실제 객체를 활용한 LineServiceTest")
@@ -118,6 +119,19 @@ public class LineServiceTest {
                 () -> assertThat(신분당선_응답.getName()).isEqualTo("강남역"),
                 () -> assertThat(신분당선_응답.getColor()).isEqualTo("green")
         );
+    }
+
+    @Test
+    void deleteLine() {
+        //given
+        Line 신분당선 = 신분당선_생성();
+
+        //when
+        lineService.deleteLine(신분당선.getId());
+
+        //then
+        assertThatThrownBy(() -> lineService.findById(신분당선.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     private Station 광교역_생성() {
