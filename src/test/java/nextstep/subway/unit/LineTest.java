@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import nextstep.subway.domain.Line;
@@ -44,7 +45,24 @@ class LineTest {
         assertThat(line.getStations()).containsExactly(upStation, downStation);
     }
 
+    @DisplayName("구간에서 하행 종점역이 정상적으로 삭제되었습니다.")
     @Test
     void removeSection() {
+        // given
+        Station upStation = new Station("신논현역");
+        Station downStation = new Station("언주역");
+        Station newStation = new Station("선정릉역");
+        Line line = new Line("9호선", "bg-brown-600");
+        line.addSection(new Section(line, upStation, downStation, 5));
+        line.addSection(new Section(line, downStation, newStation, 6));
+
+        // when
+        line.deleteSection(newStation);
+
+        // then
+        assertAll(
+                () -> assertThat(line.getStations()).containsExactly(upStation, downStation),
+                () -> assertThat(line.getStations()).doesNotContain(newStation)
+        );
     }
 }
