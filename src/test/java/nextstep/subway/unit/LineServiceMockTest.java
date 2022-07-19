@@ -55,7 +55,7 @@ public class LineServiceMockTest {
     }
 
     @Test
-    void deleteSectionFail_NotLastDownStation() {
+    void deleteSectionFail_LastStation() {
         // given
         final Line line = line();
         doReturn(Optional.of(line))
@@ -92,12 +92,13 @@ public class LineServiceMockTest {
                 .findById(downStation.getId());
 
         line.addSection(section(upStation(), downStation));
+        line.addSection(section(downStation(), station(3L)));
 
         // when
         target.deleteSection(lineId, downStation.getId());
 
         // then
-        assertThat(line.getSections()).isEmpty();
+        assertThat(line.getSections()).hasSize(1);
     }
 
     @Test

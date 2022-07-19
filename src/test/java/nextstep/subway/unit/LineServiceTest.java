@@ -63,13 +63,31 @@ public class LineServiceTest {
         // given
         final Station savedUpStation = stationRepository.save(upStation());
         final Station savedDownStation = stationRepository.save(downStation());
+        final Station savedNewDownStation = stationRepository.save(downStation());
+        final LineResponse lineResponse = target.saveLine(lineRequest(savedUpStation.getId(), savedDownStation.getId()));
+        target.addSection(lineResponse.getId(), new SectionRequest(savedDownStation.getId(), savedNewDownStation.getId(), 10));
+
+        // when
+        target.deleteSection(lineResponse.getId(), savedNewDownStation.getId());
+
+        // then
+        assertThat(target.findById(lineResponse.getId()).getStations()).hasSize(2);
+    }
+
+    @Test
+    void deleteSectionFail_LastSection() {
+        // given
+        final Station savedUpStation = stationRepository.save(upStation());
+        final Station savedDownStation = stationRepository.save(downStation());
         final LineResponse lineResponse = target.saveLine(lineRequest(savedUpStation.getId(), savedDownStation.getId()));
 
         // when
-        target.deleteSection(lineResponse.getId(), savedDownStation.getId());
+        final IllegalArgumentException result = assertThrows(
+                IllegalArgumentException.class,
+                () -> target.deleteSection(lineResponse.getId(), savedDownStation.getId()));
 
         // then
-        assertThat(target.findById(lineResponse.getId()).getStations()).isEmpty();
+        assertThat(result).hasMessageContaining("Last section or Station not exists");
     }
 
     @Test
