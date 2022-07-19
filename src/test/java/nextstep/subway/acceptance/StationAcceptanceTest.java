@@ -31,7 +31,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames = ResponseUtils.getStationNames(지하철역_목록_조회());
+        List<String> stationNames = ResponseUtils.getNames(지하철역_목록_조회());
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -72,7 +72,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
 
         // then
-        List<String> stationNames = ResponseUtils.getStationNames(지하철역_목록_조회());
+        List<String> stationNames = ResponseUtils.getNames(지하철역_목록_조회());
         assertThat(deleteStatusCode).isEqualTo(HttpStatus.NO_CONTENT.value());
         assertThat(stationNames).doesNotContain("강남역");
     }

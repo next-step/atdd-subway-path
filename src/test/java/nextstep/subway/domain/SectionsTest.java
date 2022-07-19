@@ -19,7 +19,7 @@ class SectionsTest {
         sections.add(new Section(Stub.구로디지털단지역, Stub.신대방역, 3));
 
         // then
-        assertThat(sections.getStations()).contains(Stub.구로디지털단지역, Stub.신대방역, Stub.신림역);
+        assertStations(sections, Stub.구로디지털단지역, Stub.신대방역, Stub.신림역);
     }
 
     @DisplayName("지하철 구간 중간에 새로운 역을 추가 - 하행행 종점 기준")
@@ -33,7 +33,7 @@ class SectionsTest {
         sections.add(new Section(Stub.신대방역, Stub.신림역, 6));
 
         // then
-        assertThat(sections.getStations()).contains(Stub.구로디지털단지역, Stub.신대방역, Stub.신림역);
+        assertStations(sections, Stub.구로디지털단지역, Stub.신대방역, Stub.신림역);
     }
 
     @DisplayName("새로운 상행 종점역 추가")
@@ -47,7 +47,7 @@ class SectionsTest {
         sections.add(new Section(Stub.대림역, Stub.구로디지털단지역, 4));
 
         // then
-        assertThat(sections.getStations()).contains(Stub.대림역, Stub.구로디지털단지역, Stub.신대방역);
+        assertStations(sections, Stub.대림역, Stub.구로디지털단지역, Stub.신대방역);
     }
 
     @DisplayName("새로운 하행 종점역 추가")
@@ -61,7 +61,7 @@ class SectionsTest {
         sections.add(new Section(Stub.신대방역, Stub.신림역, 6));
 
         // then
-        assertThat(sections.getStations()).contains(Stub.구로디지털단지역, Stub.신대방역, Stub.신림역);
+        assertStations(sections, Stub.구로디지털단지역, Stub.신대방역, Stub.신림역);
     }
 
     @DisplayName("지하철 구간 중간에 새로운 역을 추가할 때 거리가 같은 경우 예외")
@@ -98,6 +98,10 @@ class SectionsTest {
         // then
         assertThatThrownBy(() -> sections.add(new Section(Stub.대림역, Stub.신대방역, 6)))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    private void assertStations(Sections sections, Station... actualStations) {
+        assertThat(sections.getStations()).containsExactly(actualStations);
     }
 
     private static class Stub {

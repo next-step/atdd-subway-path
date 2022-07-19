@@ -3,7 +3,7 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.utils.ResponseUtils;
+import nextstep.subway.utils.AssertUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -31,7 +31,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         ExtractableResponse<Response> listResponse = 지하철_노선_목록_조회_요청();
 
-        assertLines(listResponse, new String[]{"2호선"}, new String[]{"green"});
+        AssertUtils.lines(listResponse, new String[]{"2호선"}, new String[]{"green"});
     }
 
     /**
@@ -50,7 +50,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
-        assertLines(response, new String[]{"2호선", "3호선"}, new String[]{"green", "orange"});
+        AssertUtils.lines(response, new String[]{"2호선", "3호선"}, new String[]{"green", "orange"});
     }
 
     /**
@@ -68,7 +68,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
 
         // then
-        assertLine(response, "2호선", "green");
+        AssertUtils.line(response, "2호선", "green");
     }
 
     /**
@@ -92,7 +92,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
-        assertLine(response, "2호선", "red");
+        AssertUtils.line(response, "2호선", "red");
     }
 
     /**
@@ -116,15 +116,5 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private void assertLine(ExtractableResponse<Response> response, String name, String color) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(ResponseUtils.getString(response, "name")).isEqualTo(name);
-        assertThat(ResponseUtils.getString(response, "color")).isEqualTo(color);
-    }
 
-    private void assertLines(ExtractableResponse<Response> response, String[] names, String[] colors) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(ResponseUtils.getStringList(response, "name")).containsExactly(names);
-        assertThat(ResponseUtils.getStringList(response, "color")).containsExactly(colors);
-    }
 }

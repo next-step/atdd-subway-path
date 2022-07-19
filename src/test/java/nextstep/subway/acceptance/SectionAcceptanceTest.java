@@ -2,6 +2,7 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.utils.AssertUtils;
 import nextstep.subway.utils.ResponseUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,20 +37,22 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * Given 새로운 지하철 추가를 요청하고
      * When 지하철 노선에 새로운 구간 추가를 요청 하면
      * Then 노선에 새로운 구간이 추가된다
      */
     @DisplayName("지하철 노선에 구간을 등록")
     @Test
     void addLineSection() {
-        // when
+        // given
         Long 정자역 = ResponseUtils.getId(지하철역_생성_요청("정자역"));
+
+        // when
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionParams(양재역, 정자역, 7));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(ResponseUtils.getStationIds(response)).containsExactly(강남역, 양재역, 정자역);
+        AssertUtils.lineSection(response, 강남역, 양재역, 정자역);
     }
 
     /**
@@ -70,8 +73,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(ResponseUtils.getStationIds(response)).containsExactly(강남역, 양재역, 양재시민의숲역, 정자역);
+        AssertUtils.lineSection(response, 강남역, 양재역, 양재시민의숲역, 정자역);
     }
 
     /**
@@ -87,8 +89,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(ResponseUtils.getStationIds(response)).containsExactly(신논현역, 강남역, 양재역);
+        AssertUtils.lineSection(response, 신논현역, 강남역, 양재역);
     }
 
     /**
@@ -153,8 +154,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(ResponseUtils.getStationIds(response)).containsExactly(강남역, 양재역);
+        AssertUtils.lineSection(response, 강남역, 양재역);
     }
 
     private Map<String, String> createLineParams(Long upStationId, Long downStationId, int distance) {
