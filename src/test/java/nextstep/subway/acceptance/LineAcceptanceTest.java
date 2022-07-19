@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
@@ -32,7 +31,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         ExtractableResponse<Response> listResponse = 지하철_노선_목록_조회_요청();
 
-        assertThat(ResponseUtils.getStationNames(listResponse)).contains("2호선");
+        assertLines(listResponse, new String[]{"2호선"}, new String[]{"green"});
     }
 
     /**
@@ -51,8 +50,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(ResponseUtils.getStationNames(response)).contains("2호선", "3호선");
+        assertLines(response, new String[]{"2호선", "3호선"}, new String[]{"green", "orange"});
     }
 
     /**
@@ -70,8 +68,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(ResponseUtils.getLineName(response)).isEqualTo("2호선");
+        assertLine(response, "2호선", "green");
     }
 
     /**
@@ -86,19 +83,16 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
 
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "red");
         RestAssured
                 .given().log().all()
-                .body(params)
+                .body(Map.of("color", "red"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put(createResponse.header("location"))
                 .then().log().all().extract();
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getString("color")).isEqualTo("red");
+        assertLine(response, "2호선", "red");
     }
 
     /**
@@ -120,5 +114,17 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private void assertLine(ExtractableResponse<Response> response, String name, String color) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(ResponseUtils.getString(response, "name")).isEqualTo(name);
+        assertThat(ResponseUtils.getString(response, "color")).isEqualTo(color);
+    }
+
+    private void assertLines(ExtractableResponse<Response> response, String[] names, String[] colors) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(ResponseUtils.getStringList(response, "name")).containsExactly(names);
+        assertThat(ResponseUtils.getStringList(response, "color")).containsExactly(colors);
     }
 }
