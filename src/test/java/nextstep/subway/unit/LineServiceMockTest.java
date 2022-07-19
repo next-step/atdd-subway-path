@@ -105,8 +105,7 @@ class LineServiceMockTest {
     @Test
     void showLines() {
         // given
-        var line = createLine(1L, "신분당선", "red");
-        line.addSection(광교역, 광교중앙역, 10);
+        var line = createLine(1L, "신분당선", "red", 광교역, 광교중앙역, 10);
         when(lineRepository.findAll()).thenReturn(List.of(line));
         when(stationService.createStationResponse(any(Station.class))).thenCallRealMethod();
 
@@ -132,8 +131,7 @@ class LineServiceMockTest {
     @Test
     void findLineById() {
         // given
-        var line = createLine(1L, "신분당선", "red");
-        line.addSection(광교역, 광교중앙역, 10);
+        var line = createLine(1L, "신분당선", "red", 광교역, 광교중앙역, 10);
         when(lineRepository.findById(line.getId()))
                 .thenReturn(Optional.of(line));
         when(stationService.createStationResponse(any(Station.class))).thenCallRealMethod();
@@ -158,8 +156,7 @@ class LineServiceMockTest {
     @Test
     void updateLine() {
         // given
-        var line = createLine(1L, "신분당선", "red");
-        line.addSection(광교역, 광교중앙역, 10);
+        var line = createLine(1L, "신분당선", "red", 광교역, 광교중앙역, 10);
         when(lineRepository.findById(line.getId()))
                 .thenReturn(Optional.of(line));
 
@@ -189,11 +186,10 @@ class LineServiceMockTest {
     @Test
     void addSection() {
         // given
-        var line = createLine(1L, "신분당선", "red");
         var distance = 10;
+        var line = createLine(1L, "신분당선", "red", 광교역, 광교중앙역, distance);
         var 상현역 = createTestStation(3L, "상현역");
         prepareStations(광교중앙역, 상현역);
-        line.addSection(광교역, 광교중앙역, distance);
         when(lineRepository.findById(line.getId()))
                 .thenReturn(Optional.of(line));
 
@@ -208,10 +204,10 @@ class LineServiceMockTest {
     @Test
     void deleteLineById() {
         // given
+        var line = createLine(1L, "신분당선", "red", 광교역, 광교중앙역, 10);
         var 상현역 = createTestStation(3L, "상현역");
         prepareStations(상현역);
-        var line = createLine(1L, "신분당선", "red");
-        line.addSection(광교역, 광교중앙역, 10);
+
         line.addSection(광교중앙역, 상현역, 5);
         when(lineRepository.findById(line.getId()))
                 .thenReturn(Optional.of(line));
@@ -222,9 +218,10 @@ class LineServiceMockTest {
         assertThat(line.getStations()).containsExactly(광교역, 광교중앙역);
     }
 
-    private Line createLine(Long id, String name, String color) {
+    private Line createLine(Long id, String name, String color, Station upStation, Station downStation, Integer distance) {
         var line = new Line(name, color);
         line.setId(id);
+        line.addSection(upStation, downStation, distance);
         return line;
     }
 
