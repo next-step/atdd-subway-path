@@ -28,9 +28,9 @@ public class LineServiceTest {
     @Test
     void addSection() {
         // given
-        Station 광교역 = stationRepository.save(new Station("광교역"));
-        Station 광교중앙역 = stationRepository.save(new Station("광교중앙역"));
-        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
+        Station 광교역 = 역을_등록한다("광교역");
+        Station 광교중앙역 = 역을_등록한다("광교중앙역");
+        Line 신분당선 = 노선을_등록한다("신분당선", "red");
 
         // when
         lineService.addSection(신분당선.getId(), new SectionRequest(광교역.getId(), 광교중앙역.getId(), 10));
@@ -45,9 +45,9 @@ public class LineServiceTest {
     @Test
     void deleteSection() {
         //given
-        Station 광교역 = stationRepository.save(new Station("광교역"));
-        Station 광교중앙역 = stationRepository.save(new Station("광교중앙역"));
-        Line 신분당선 = lineRepository.save(new Line("신분당선", "red"));
+        Station 광교역 = 역을_등록한다("광교역");
+        Station 광교중앙역 = 역을_등록한다("광교중앙역");
+        Line 신분당선 = 노선을_등록한다("신분당선", "red");
 
         //when
         lineService.addSection(신분당선.getId(), new SectionRequest(광교역.getId(), 광교중앙역.getId(), 10));
@@ -56,5 +56,13 @@ public class LineServiceTest {
         //then
         LineResponse 신분당선_응답 = lineService.findById(신분당선.getId());
         assertThat(신분당선_응답.getStations()).isEmpty();
+    }
+
+    private Line 노선을_등록한다(String lineName, String color) {
+        return lineRepository.save(new Line(lineName, color));
+    }
+
+    private Station 역을_등록한다(String stationName) {
+        return stationRepository.save(new Station(stationName));
     }
 }
