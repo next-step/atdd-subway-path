@@ -106,6 +106,21 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("추가하는 상행선과 하행선이 같으면 예외가 발생한다.")
+    void addSectionValidationTest3() {
+        // given
+        Section 역삼역_잠실역_구간 = new Section(역삼역, 잠실역, 10);
+        Section 잠실역_잠실역_구간 = new Section(잠실역, 잠실역, 10);
+        분당선.addSection(역삼역_잠실역_구간);
+
+        // when & then
+        assertThatThrownBy(
+            () -> 분당선.addSection(잠실역_잠실역_구간)
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
+
+
+    @Test
     @DisplayName("구간(Sections)을 조회한다.(getSections)")
     void getStations() {
         // when & then

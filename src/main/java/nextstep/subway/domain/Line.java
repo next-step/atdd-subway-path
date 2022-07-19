@@ -71,6 +71,10 @@ public class Line {
     }
 
     public boolean addSection(Section section) {
+        if (section.getUpStation().equals(section.getDownStation())) {
+            throw new IllegalArgumentException("상행역과 하행역이 동일해서는 안됩니다.");
+        }
+
         if (!sections.get(sections.size() - 1).getDownStation().equals(section.getUpStation())) {
             throw new IllegalArgumentException("현재 하행역과 등록하는 상행역이 같지 않습니다.");
         }
