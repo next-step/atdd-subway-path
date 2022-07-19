@@ -58,13 +58,13 @@ public class Sections {
         return stations;
     }
 
-    public void deleteSection(Long stationId) {
+    public void deleteSection(Station station) {
         Section downEndStation = getDownEndStation();
         if(sections.size() <= 1) {
             throw new IllegalArgumentException("지하철 노선이 상행 종점역과 하행 종점역만 있는 하나의 구간인 경우, 역을 삭제할 수 없습니다.");
         }
 
-        if (!downEndStation.isMatchedStationId(stationId)) {
+        if (!downEndStation.isMatchedStationId(station)) {
             throw new IllegalArgumentException("지하철 노선의 하행 종점역만 삭제 할 수 있습니다.");
         }
         removeDownEndSection();

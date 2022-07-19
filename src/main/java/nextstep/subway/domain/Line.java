@@ -59,7 +59,7 @@ public class Line {
         return sections.getStations();
     }
 
-    public void deleteSection(Long stationId) {
-        sections.deleteSection(stationId);
+    public void deleteSection(Station station) {
+        sections.deleteSection(station);
     }
 }

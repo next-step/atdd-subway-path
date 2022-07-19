@@ -61,9 +61,7 @@ public class Section {
         return upStation.isMatched(station) || downStation.isMatched(station);
     }
 
-    public boolean isMatchedStationId(Long stationId) {
-        return this.downStation
-                .getId()
-                .equals(stationId);
+    public boolean isMatchedStationId(Station station) {
+        return this.downStation.equals(station);
     }
 }
