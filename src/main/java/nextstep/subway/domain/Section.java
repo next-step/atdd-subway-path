@@ -9,10 +9,6 @@ public class Section {
     private Long id;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "line_id")
-    private Line line;
-
-    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
@@ -33,10 +29,6 @@ public class Section {
 
     public Long getId() {
         return id;
-    }
-
-    public Line getLine() {
-        return line;
     }
 
     public Station getUpStation() {
