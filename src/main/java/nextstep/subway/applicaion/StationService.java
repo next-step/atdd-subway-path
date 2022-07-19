@@ -31,9 +31,10 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    public void deleteStationById(Long id) {
-        stationRepository.deleteById(id);
+    public List<StationResponse> findByIds(List<Long> ids) {
+        return stationRepository.findByIdIn(ids).stream()
+                .map(this::createStationResponse)
+                .collect(Collectors.toList());
     }
 
     public StationResponse createStationResponse(Station station) {
@@ -41,6 +42,11 @@ public class StationService {
                 station.getId(),
                 station.getName()
         );
+    }
+
+    @Transactional
+    public void deleteStationById(Long id) {
+        stationRepository.deleteById(id);
     }
 
     public Station findById(Long id) {

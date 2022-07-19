@@ -32,7 +32,7 @@ public class LineService {
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.addSection(upStation, downStation, request.getDistance());
+            line.addSection(request.getUpStationId(), request.getDownStationId(), request.getDistance());
         }
         return createLineResponse(line);
     }
@@ -70,7 +70,7 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
-        line.addSection(upStation, downStation, sectionRequest.getDistance());
+        line.addSection(upStation.getId(), downStation.getId(), sectionRequest.getDistance());
     }
 
     private LineResponse createLineResponse(Line line) {
@@ -87,23 +87,19 @@ public class LineService {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
+        List<Long> stationIds = line.getSections().stream()
+                .map(Section::getDownStationId)
                 .collect(Collectors.toList());
 
-        stations.add(0, line.getSections().get(0).getUpStation());
-
-        return stations.stream()
-                .map(it -> stationService.createStationResponse(it))
-                .collect(Collectors.toList());
+        stationIds.add(0, line.getSections().get(0).getUpStationId());
+        return stationService.findByIds(stationIds);
     }
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
-        Station station = stationService.findById(stationId);
 
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
+        if (!line.isLastStation(stationId)) {
             throw new IllegalArgumentException();
         }
 

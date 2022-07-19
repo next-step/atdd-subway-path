@@ -26,8 +26,8 @@ public class Line {
         this.sections = new Sections();
     }
 
-    public void addSection(Station upStation, Station downStation, int distance) {
-        sections.add(new Section(upStation, downStation, distance));
+    public void addSection(Long upStationId, Long downStationId, int distance) {
+        sections.add(new Section(upStationId, downStationId, distance));
     }
 
     public void setName(String name) {

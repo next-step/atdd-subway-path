@@ -11,22 +11,22 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
+    private Long upStationId;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
+    private Long downStationId;
 
     private int distance;
 
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
-        this.upStation = upStation;
-        this.downStation = downStation;
+    public Section(Long upStationId, Long downStationId, int distance) {
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public boolean isDownStation(Long stationId) {
+        return this.downStationId.equals(stationId);
     }
 }
