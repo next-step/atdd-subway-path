@@ -19,7 +19,6 @@ public class Line {
     protected Line() {/*no-op*/}
 
     public Line(Long id, String name, String color, Section section) {
-
         if (name == null || name.isBlank() || name.length() < 2) {
             throw new IllegalArgumentException();
         }
@@ -37,10 +36,6 @@ public class Line {
         this.color = color;
         section.updateLine(this);
         sections.add(section);
-    }
-
-    public Line(String name, String color) {
-        this(null, name, color, null);
     }
 
     public Line(String name, String color, Section section) {

@@ -95,8 +95,8 @@ class LineTest {
     @DisplayName("추가하는 하행선이 노선에 포함된 역이 아니어야 한다.")
     void addSectionValidationTest2() {
         // given
-        Section 역삼역_잠실역_구간 = new Section(분당선, 역삼역, 잠실역, 10);
-        Section 잠실역_강남역_구간 = new Section(분당선, 잠실역, 강남역, 10);
+        Section 역삼역_잠실역_구간 = new Section(역삼역, 잠실역, 10);
+        Section 잠실역_강남역_구간 = new Section(잠실역, 강남역, 10);
         분당선.addSection(역삼역_잠실역_구간);
 
         // when & then

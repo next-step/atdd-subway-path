@@ -25,7 +25,8 @@ public class Section {
 
     protected Section() {/*no-op*/}
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
+        this.id = id;
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -33,7 +34,7 @@ public class Section {
     }
 
     public Section(Station upStation, Station downStation, int distance) {
-        this(null, upStation, downStation, distance);
+        this(null, null, upStation, downStation, distance);
     }
 
     public Long getId() {
