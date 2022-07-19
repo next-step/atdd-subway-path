@@ -14,11 +14,6 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sectionList = new ArrayList<>();
 
-    // 테스트 통과를 위한 임시 메서드, 제거 예정
-    public List<Section> getRawSections() {
-        return sectionList;
-    }
-
     public void add(Line line, Station upStation, Station downStation, int distance) {
         var section = new Section(line, upStation, downStation, distance);
         sectionList.add(section);

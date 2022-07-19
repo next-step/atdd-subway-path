@@ -60,8 +60,4 @@ public class Line {
     public void setColor(String color) {
         this.color = color;
     }
-
-    public List<Section> getSections() {
-        return sections.getRawSections();
-    }
 }
