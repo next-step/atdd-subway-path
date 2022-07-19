@@ -96,12 +96,12 @@ public class LineServiceMockTest {
 		when(lineRepository.findAll()).thenReturn(List.of(new Line("신분당선", "red")));
 
 		//when
-		List<LineResponse> 노선_응답 = lineService.showLines();
+		List<LineResponse> 신분당선_응답 = lineService.showLines();
 
 		//then
 		assertAll(
-				() -> assertThat(노선_응답).hasSize(1),
-				() -> assertThat(노선_응답.get(0).getName()).isEqualTo("신분당선")
+				() -> assertThat(신분당선_응답).hasSize(1),
+				() -> assertThat(신분당선_응답.get(0).getName()).isEqualTo("신분당선")
 		);
 	}
 
