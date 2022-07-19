@@ -28,10 +28,6 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
-        if (request.getUpStationId() == null || request.getDownStationId() == null || request.getDistance() == 0) {
-            throw new IllegalArgumentException();
-        }
-
         Station upStation = stationService.findById(request.getUpStationId());
         Station downStation = stationService.findById(request.getDownStationId());
         return createLineResponse(
