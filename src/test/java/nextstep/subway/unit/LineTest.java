@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Line 도메인 객체 테스트")
@@ -76,5 +77,17 @@ class LineTest {
                 () -> assertThat(이호선.getStations()).hasSize(2),
                 () -> assertThat(이호선.getStations()).containsExactly(영등포역, 신도림역)
         );
+    }
+
+    @Test
+    void removeSectionHasOneSection() {
+        // given
+        Line 이호선 = new Line("2호선", "green");
+        이호선.addSection(영등포역, 신도림역, 10);
+
+        // when
+        // then
+        assertThatThrownBy(() -> 이호선.deleteSection(신도림역))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

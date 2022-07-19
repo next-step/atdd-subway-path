@@ -17,6 +17,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Sections {
+    private static final int MIN_SECTION_SIZE = 1;
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -74,6 +76,10 @@ public class Sections {
     }
 
     public void delete(Station station) {
+        if (this.sections.size() <= MIN_SECTION_SIZE) {
+            throw new IllegalArgumentException("지하철 구간은 최소 1개 이상 있어야합니다.");
+        }
+
         Section section = findSectionByDownStation(station);
         sections.remove(section);
     }
