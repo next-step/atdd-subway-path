@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -35,7 +36,17 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        return Collections.emptyList();
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        var stations = sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+
+        stations.add(0, sections.get(0).getUpStation());
+
+        return stations;
     }
 
     public Long getId() {
