@@ -17,7 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static nextstep.subway.utils.LineFixture.*;
+import static nextstep.subway.fixture.LineFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -79,6 +79,8 @@ public class LineServiceMockTest {
         // when
         when(lineRepository.findById(1L)).thenReturn(Optional.of(신분당선));
         lineService.updateLine(1L, lineRequest);
+
+        // then
         assertThat(신분당선.getName()).isEqualTo("분당선");
         assertThat(신분당선.getColor()).isEqualTo("green");
     }

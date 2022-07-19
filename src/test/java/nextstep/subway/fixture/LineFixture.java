@@ -1,4 +1,4 @@
-package nextstep.subway.utils;
+package nextstep.subway.fixture;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
