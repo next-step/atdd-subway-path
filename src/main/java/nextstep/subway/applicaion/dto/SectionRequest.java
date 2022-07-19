@@ -16,4 +16,13 @@ public class SectionRequest {
     public int getDistance() {
         return distance;
     }
+
+    private SectionRequest() {
+    }
+
+    public SectionRequest(Long upStationId, Long downStationId, int distance) {
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
+    }
 }
