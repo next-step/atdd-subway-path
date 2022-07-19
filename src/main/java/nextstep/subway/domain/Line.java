@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Data
@@ -43,5 +44,14 @@ public class Line {
         stations.add(FIRST, sections.get(FIRST).getUpStation());
 
         return stations;
+    }
+
+    public void removeSection(Station downStationName) {
+        Section section = sections.stream()
+                .filter(s -> s.getDownStation() == downStationName)
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
+
+        sections.remove(section);
     }
 }

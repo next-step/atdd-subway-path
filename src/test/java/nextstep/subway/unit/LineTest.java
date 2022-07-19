@@ -60,7 +60,25 @@ class LineTest {
 		);
 	}
 
+	/**
+	 * Given 노선에 섹션 1개가 추가 된다.
+	 * When 노선의 downStation을 삭제하면
+	 * Then 노선에서 해당 섹션이 삭제된다.
+	 */
+	@DisplayName("지하철 노선의 섹션을 삭제한다")
 	@Test
 	void removeSection() {
+		//given
+		Line 신분당선 = new Line("신분당선", "red");
+		Station 광교역 = new Station("광교역");
+		Station 광교중앙역 = new Station("광교중앙역");
+		신분당선.addSection(광교역, 광교중앙역, 10);
+
+		//when
+		신분당선.removeSection(광교중앙역);
+
+		//then
+		List<Section> 신분당선_응답 = 신분당선.getSections();
+		assertThat(신분당선_응답).isEmpty();
 	}
 }

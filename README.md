@@ -3,8 +3,8 @@
 
 # 1단계 - 단위 테스트 작성
 ## 기능 요구사항
-- [] 지하철 구간 관련 단위 테스트를 완성
-  - [] 구간 단위 테스트 (LineTest)
+- [x] 지하철 구간 관련 단위 테스트를 완성
+  - [x] 구간 단위 테스트 (LineTest)
   - [x] 구간 서비스 단위 테스트 with Mock (LineServiceMockTest)
     - [x] addSection
     - [x] deleteSection
