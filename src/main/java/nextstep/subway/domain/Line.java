@@ -100,4 +100,16 @@ public class Line {
     public boolean containsStation(final Station station) {
         return getStations().contains(station);
     }
+
+    public boolean isSingleSection() {
+        return sections.getSections().size() == 1;
+    }
+
+    public void removeSection(final Station station) {
+        if (!isSingleSection() && containsStation(station)) {
+            sections.remove(station);
+        }
+
+        throw new IllegalArgumentException("Last section or Station not exists");
+    }
 }

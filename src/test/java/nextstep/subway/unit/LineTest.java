@@ -6,9 +6,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static nextstep.subway.utils.LineTestSources.line;
 import static nextstep.subway.utils.LineTestSources.section;
 import static nextstep.subway.utils.StationTestSources.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LineTest {
 
@@ -185,6 +187,41 @@ class LineTest {
 
         // then
         assertThat(result).containsExactly(station4, station3, station1, station2);
+    }
+
+    @Test
+    void 마지막구간은삭제불가() {
+        final Line line = line();
+
+        final IllegalArgumentException result = assertThrows(
+                IllegalArgumentException.class,
+                () -> line.removeSection(station(1L)));
+
+        assertThat(result).hasMessageContaining("Last section or Station not exists");
+    }
+
+    @Test
+    void 마지막구간이아니지만존재하지않는역이면삭제불가능() {
+        final Line line = line();
+        line.addSection(section(station(1L), station(2L)));
+
+
+        final IllegalArgumentException result = assertThrows(
+                IllegalArgumentException.class,
+                () -> line.removeSection(station(3L)));
+
+        assertThat(result).hasMessageContaining("Last section or Station not exists");
+    }
+
+    @Test
+    void 마지막구간이아니며존재하는역은삭제가능() {
+        final Line line = line();
+        final Station downStation = station(2L);
+        line.addSection(section(station(1L), downStation));
+        final Station lastStation = station(3L);
+        line.addSection(section(downStation, lastStation));
+
+        line.removeSection(lastStation);
     }
 
 }

@@ -71,4 +71,6 @@ public class Sections {
                 .orElse(null);
     }
 
+    public void remove(final Station station) {
+    }
 }
