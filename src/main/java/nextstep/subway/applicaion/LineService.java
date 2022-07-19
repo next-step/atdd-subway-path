@@ -77,7 +77,7 @@ public class LineService {
     }
 
     private Line getLine(Long lineId) {
-        return lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        return lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
     }
 
     private LineResponse createLineResponse(Line line) {
