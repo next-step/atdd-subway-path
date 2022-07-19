@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 @SpringBootTest
 @Transactional
@@ -24,7 +25,7 @@ class LineServiceTest {
     private LineService lineService;
 
     @Test
-    void addSection() {
+    void 구간_추가() {
         // given
         Station upStation = stationRepository.save(new Station("양재역"));
         Station downStation = stationRepository.save(new Station("교대역"));
@@ -42,5 +43,35 @@ class LineServiceTest {
         Section addedSection = sections.get(0);
         assertThat(addedSection.getUpStationId()).isEqualTo(upStation.getId());
         assertThat(addedSection.getDownStationId()).isEqualTo(downStation.getId());
+    }
+
+    @Test
+    void 구간_삭제() {
+        // given
+        Station upStation = stationRepository.save(new Station("양재역"));
+        Station downStation = stationRepository.save(new Station("교대역"));
+        Line line = lineRepository.save(new Line("신분당선", "red"));
+
+        line.addSection(upStation.getId(), downStation.getId(), 6);
+
+        // when
+        lineService.deleteSection(line.getId(), downStation.getId());
+
+        // then
+        assertThat(line.getSections()).isEmpty();
+    }
+
+    @Test
+    void 구간_삭제_종점이_아니면_예외() {
+        // given
+        Station upStation = stationRepository.save(new Station("양재역"));
+        Station downStation = stationRepository.save(new Station("교대역"));
+        Line line = lineRepository.save(new Line("신분당선", "red"));
+
+        line.addSection(upStation.getId(), downStation.getId(), 6);
+
+        // when + then
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> lineService.deleteSection(line.getId(), upStation.getId()));
     }
 }
