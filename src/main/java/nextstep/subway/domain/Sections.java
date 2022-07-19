@@ -4,10 +4,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
@@ -153,9 +151,32 @@ public class Sections {
             return sections;
         }
 
-        return sections.stream()
-                .filter(section -> Objects.nonNull(section.getUpStation()))
-                .sorted(Comparator.comparingLong(e -> e.getUpStation().getId()))
-                .collect(Collectors.toList());
+        final List<Section> orderedSections = new ArrayList<>();
+        Section firstSection = findFirstSection(sections.get(0));
+        orderedSections.add(firstSection);
+        addNextSection(orderedSections, firstSection);
+        return orderedSections;
+    }
+
+    private void addNextSection(List<Section> orderedSections, Section beforeSection) {
+        Station nextUpStation = beforeSection.getDownStation();
+        final Optional<Section> optionalNextSection = sections.stream()
+                .filter(section -> section.getUpStation().equals(nextUpStation))
+                .findAny();
+        if (optionalNextSection.isPresent()) {
+            final Section nextSection = optionalNextSection.get();
+            orderedSections.add(nextSection);
+            addNextSection(orderedSections, nextSection);
+            return;
+        }
+    }
+
+    private Section findFirstSection(Section firstSection) {
+        for (Section section : sections) {
+            if (section.equalsDownStation(firstSection.getUpStation())) {
+                firstSection = findFirstSection(section);
+            }
+        }
+        return firstSection;
     }
 }

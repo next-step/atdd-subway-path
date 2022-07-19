@@ -61,8 +61,8 @@ public class Section {
         return upStation.equals(station);
     }
 
-    public boolean containsStation(Station station) {
-        return equalsUpStation(station) || equalsDownStation(station);
+    public boolean notEqualsUpStation(Station station) {
+        return !upStation.equals(station);
     }
 
     public int minusDistance(Section section) {
