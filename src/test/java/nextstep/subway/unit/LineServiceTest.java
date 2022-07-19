@@ -93,6 +93,17 @@ public class LineServiceTest {
         );
     }
 
+    @Test
+    void findById() {
+        //given
+        Line 신분당선 = 신분당선_생성();
+        //when
+        LineResponse 신분당선_응답 = lineService.findById(신분당선.getId());
+
+        //then
+        assertThat(신분당선_응답.getName()).isEqualTo("신분당선");
+    }
+
     private Station 광교역_생성() {
         return 역을_등록한다("광교역");
     }

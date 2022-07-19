@@ -18,7 +18,7 @@
     - [X] deleteSection
     - [x] saveLine
     - [x] showLines
-    - [] findById
+    - [x] findById
     - [] updateLine
     - [] deleteLine
 - [] 단위 테스트를 기반으로 비즈니스 로직을 리팩터링
