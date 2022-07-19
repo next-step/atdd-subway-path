@@ -116,4 +116,20 @@ public class LineServiceMockTest {
 		//then
 		assertThat(신분당선_응답.getName()).isEqualTo("신분당선");
 	}
+
+	@Test
+	void updateLine() {
+		//given
+		Line line = new Line("신분당선", "red");
+		when(lineRepository.findById(신분당선)).thenReturn(Optional.of(line));
+
+		//when
+		lineService.updateLine(신분당선, new LineRequest("2호선", "green"));
+
+		//then
+		assertAll(
+				() -> assertThat(line.getName()).isEqualTo("2호선"),
+				() -> assertThat(line.getColor()).isEqualTo("green")
+		);
+	}
 }
