@@ -34,8 +34,7 @@ public class Line {
         this.id = id;
         this.name = name;
         this.color = color;
-        section.updateLine(this);
-        sections.add(section);
+        sections.add(new Section(null, this, section.getUpStation(), section.getDownStation(), section.getDistance()));
     }
 
     public Line(String name, String color, Section section) {
@@ -85,7 +84,6 @@ public class Line {
             throw new IllegalArgumentException("이미 존재하는 역입니다.");
         }
 
-        section.updateLine(this);
         return sections.add(section);
     }
 
