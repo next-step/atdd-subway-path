@@ -13,7 +13,7 @@
 - [ ] 인수 조건의 상세 주석이 필요한가?
 - [ ] Sections.add() 메서드의 List 를 외부에서 생성하여 addStationByOrder 의 인자로 넘기는 부분 수정하기
 - [ ] create_section_with_invalid_distance에 @DisplayName 추가하기
-- [ ] Sections.divideSectionByMiddle() 단위 테스트 추가하기
+- [x] Sections.divideSectionByMiddle() 단위 테스트 추가하기
 
 ## Step2 TODO List
 
