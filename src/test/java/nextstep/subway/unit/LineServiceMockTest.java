@@ -147,21 +147,4 @@ public class LineServiceMockTest {
         // then
         assertThat(lineService.getLine(1L).getStations()).hasSize(2);
     }
-
-    @Test
-    void 마지막_구간이_아닌_다른_구간을_삭제하면_예외를_반환한다() {
-        // given
-        Line line = new Line("8호선", "bg-pink-500");
-        Station upStation = new Station("암사역");
-        Station downStation = new Station("모란역");
-        line.addSection(new Section(line, upStation, downStation, 20));
-
-        given(lineRepository.findById(1L)).willReturn(Optional.of(line));
-        given(stationService.findById(1L)).willReturn(upStation);
-
-        // then
-        assertThatIllegalArgumentException().isThrownBy(() ->
-                lineService.deleteSection(1L, 1L)
-        );
-    }
 }
