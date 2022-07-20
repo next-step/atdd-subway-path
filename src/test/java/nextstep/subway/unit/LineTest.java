@@ -162,4 +162,18 @@ class LineTest {
         assertThat(line.getSections()).doesNotContain(역삼_선릉_구간);
     }
 
+    @DisplayName("구간이 하나뿐인 노선에서 구건을 제거할 수 없다")
+    @Test
+    void removeSectionFail() {
+        final Line line = new Line(1L, "신분당선", "bg-red");
+        final Station 강남역 = new Station(1L, "강남역");
+        final Station 양재역 = new Station(2L, "양재역");
+        final Section 강남_양재_구간 = new Section(line, 강남역, 양재역, 3);
+        line.addSection(강남_양재_구간);
+
+        assertThatThrownBy(() -> line.deleteSection(양재역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("구간이 하나뿐인 노선에서 구간을 제거할 수 없습니다.");
+    }
+
 }

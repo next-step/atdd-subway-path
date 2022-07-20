@@ -55,9 +55,16 @@ public class Sections {
                 .anyMatch(upStation -> upStation.equals(station));
     }
 
-    public void deleteSection(Section section) {
+    public void deleteSection(Station station) {
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException("구간이 하나뿐인 노선에서 구간을 제거할 수 없습니다.");
+        }
+        final Section lastSection = getLastSection();
+        if (lastSection.notEqualsDownStation(station)) {
+            throw new IllegalArgumentException();
+        }
         sections.stream()
-                .filter(e -> e.equals(section))
+                .filter(e -> e.equals(lastSection))
                 .findFirst()
                 .ifPresent(sections::remove);
     }

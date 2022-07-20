@@ -64,12 +64,7 @@ public class Line {
     }
 
     public void deleteSection(Station station) {
-        final Section lastSection = getLastSection();
-        if (lastSection.notEqualsDownStation(station)) {
-            throw new IllegalArgumentException();
-        }
-
-        sections.deleteSection(lastSection);
+        sections.deleteSection(station);
     }
 
     public Section getLastSection() {

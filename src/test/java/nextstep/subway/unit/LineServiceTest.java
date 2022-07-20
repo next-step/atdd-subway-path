@@ -3,12 +3,14 @@ package nextstep.subway.unit;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -100,4 +102,22 @@ public class LineServiceTest {
         // then
         assertThat(line.getSections()).doesNotContain(역삼_선릉_구간);
     }
+
+    @DisplayName("구간이 하나뿐인 노선에서 구건을 제거할 수 없다")
+    @Test
+    void failDeleteSection() {
+        // given
+        final Station 강남역 = createStation("강남역");
+        final Station 역삼역 = createStation("역삼역");
+        final Line line = createLine("2호선", "bg-green");
+        final Section 강남_역삼_구간 = new Section(line, 강남역, 역삼역, 3);
+        line.addSection(강남_역삼_구간);
+
+        // when && then
+        assertThatThrownBy(() -> lineService.deleteSection(line.getId(), 역삼역.getId()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("구간이 하나뿐인 노선에서 구간을 제거할 수 없습니다.");
+
+    }
+
 }
