@@ -47,7 +47,9 @@ class LineTest {
 
         신분당선.addSection(강남_신논현);
 
-        assertThatThrownBy(() -> 신분당선.addSection(정자_판교역)).isInstanceOf(AddSectionException.class);
+        assertThatThrownBy(() -> 신분당선.addSection(정자_판교역))
+                .isInstanceOf(AddSectionException.class)
+                .hasMessage("기존 노선의 종점역과 신규 노선의 상행역이 일치하지 않습니다.");
     }
 
     @DisplayName("지하철 구간 추가시 기존 노선에 존재하는 역일 경우 예외")
@@ -60,7 +62,9 @@ class LineTest {
 
         신분당선.addSection(강남_신논현);
 
-        assertThatThrownBy(() -> 신분당선.addSection(신논현_강남)).isInstanceOf(AddSectionException.class);
+        assertThatThrownBy(() -> 신분당선.addSection(신논현_강남))
+                .isInstanceOf(AddSectionException.class)
+                .hasMessage("신규 구간의 하행역이 기존 노션의 역에 이미 등록되어 있습니다.");
     }
 
     @DisplayName("지하철 노선에 존재하는 모든 역 조회")
