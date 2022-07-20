@@ -5,6 +5,8 @@ import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
+import nextstep.subway.fake.FakeLineFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,13 +26,20 @@ public class LineServiceTest {
     @Autowired
     private LineService lineService;
 
+    private Line 분당선;
+
+    @BeforeEach
+    void setUp() {
+        분당선 = FakeLineFactory.분당선();
+    }
+
     @Test
     void addSection() {
         // given
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
-        Station 강남역 = stationRepository.save(new Station("강남역"));
-        Station 교대역 = stationRepository.save(new Station("교대역"));
-        Line 분당선 = lineRepository.save(new Line("분당선", "green"));
+        Station 강남역 = 지하철역_생성("강남역");
+        Station 교대역 = 지하철역_생성("교대역");
+        Line 분당선 = 구간_생성(new Line("분당선", "green"));
         Section 강남역_교대역_구간 = new Section(분당선, 강남역, 교대역, 10);
 
         // when
@@ -61,7 +70,7 @@ public class LineServiceTest {
     @Test
     void 라인_수정_검증() {
         //given
-        LineRequest saveRequest = new LineRequest("분당선", "yellow");
+        LineRequest saveRequest = new LineRequest(분당선.getName(), 분당선.getColor());
         LineResponse lineResponse = lineService.saveLine(saveRequest);
 
         //when
@@ -77,7 +86,7 @@ public class LineServiceTest {
     @Test
     void 라인_삭제_검증() {
         //given
-        LineRequest saveRequest = new LineRequest("2호선", "green");
+        LineRequest saveRequest = new LineRequest(분당선.getName(), 분당선.getColor());
         LineResponse saveResponse = lineService.saveLine(saveRequest);
 
         //when
@@ -88,5 +97,12 @@ public class LineServiceTest {
         assertThat(lineResponses).hasSize(0);
     }
 
+    private Station 지하철역_생성(String name) {
+        return stationRepository.save(new Station(name));
+    }
+
+    private Line 구간_생성(Line line) {
+        return lineRepository.save(line);
+    }
 
 }
