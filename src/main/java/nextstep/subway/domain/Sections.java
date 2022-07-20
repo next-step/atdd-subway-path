@@ -34,11 +34,19 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    // TODO: 변경된 요구사항 적용 후 삭제
     public void add(Section section) {
         if (this.hasSections()) {
             validateSection(section);
         }
-        this.values.add(section);
+        values.add(section);
+    }
+
+    public void add2(Section section) {
+        if (this.hasSections()) {
+            validateSection2(section);
+        }
+        values.add(section);
     }
 
     private boolean hasSections() {
@@ -53,6 +61,26 @@ public class Sections {
         if(this.hasStation(additionalSection.getDownStation())) {
             throw new StationAlreadyExistsException(additionalSection.getDownStation().getId());
         }
+    }
+
+    private void validateSection2(Section additionalSection) {
+        if (hasNotOnlyOneStation(additionalSection)) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private boolean hasNotOnlyOneStation(Section section) {
+        return !hasOnlyOneStation(section);
+    }
+
+    private boolean hasOnlyOneStation(Section section) {
+        boolean hasUpStation = this.hasStation(section.getUpStation());
+        boolean hasDownStation = this.hasStation(section.getDownStation());
+
+        if (hasUpStation && hasDownStation) {
+            return false;
+        }
+        return hasUpStation || hasDownStation;
     }
 
     private boolean hasStation(Station station) {
