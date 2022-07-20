@@ -58,10 +58,11 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * Then 노선에 상행선이 변경된다.
      */
     @Test
+    @DisplayName("지하철 노선의 상행선 구간이 추가된다.")
     void addLineUpSection() {
         // when
         Long 사당역 = 지하철역_생성_요청("사당역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(사당역, 양재역));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(사당역, 강남역));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
@@ -74,7 +75,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * Then 노선에 새로운 구간이 추가되고, 기존 구간의 길이는 변경된다.
      */
     @Test
-    void addLineMiddleSection() {
+    @DisplayName("지하철 노선의 중간 구간이 추가된다.")
+    void addLineBetweenSection() {
         // when
         Long 역삼역 = 지하철역_생성_요청("역삼역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 역삼역));
