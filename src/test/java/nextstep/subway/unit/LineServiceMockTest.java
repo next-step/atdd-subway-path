@@ -99,6 +99,27 @@ public class LineServiceMockTest {
         );
     }
 
+    @Test
+    void deleteSection() {
+        // given
+        when(lineRepository.findById(일호선.getId())).thenReturn(Optional.of(일호선));
+        when(stationService.findById(영등포역.getId())).thenReturn(영등포역);
+        when(stationService.findById(신도림역.getId())).thenReturn(신도림역);
+        when(stationService.findById(구로역.getId())).thenReturn(구로역);
+        lineService.addSection(일호선.getId(), new SectionRequest(영등포역.getId(), 신도림역.getId(), 20));
+        lineService.addSection(일호선.getId(), new SectionRequest(신도림역.getId(), 구로역.getId(), 20));
+
+        // when
+        lineService.deleteSection(일호선.getId(), 구로역.getId());
+
+        // then
+        Line line = lineService.findLineById(일호선.getId());
+        assertAll(
+                () -> assertThat(line.getStations()).hasSize(2),
+                () -> assertThat(line.getStations()).containsExactly(영등포역, 신도림역)
+        );
+    }
+
     private void stub() {
 
         영등포역 = new Station("영등포역");

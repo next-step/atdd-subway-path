@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import nextstep.subway.applicaion.LineService;
@@ -11,6 +12,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,6 +103,23 @@ public class LineServiceTest {
         assertAll(
                 () -> assertThat(newResponse.getColor()).isEqualTo(newLineColor),
                 () -> assertThat(newResponse.getName()).isEqualTo(newLineName)
+        );
+    }
+
+    @Test
+    void deleteSection() {
+        // given
+        Line 일호선 = lineRepository.save(createLine("1호선", "blue", 영등포역, 신도림역));
+        lineService.addSection(일호선.getId(), new SectionRequest(신도림역.getId(), 구로역.getId(), 20));
+
+        // when
+        lineService.deleteSection(일호선.getId(), 구로역.getId());
+
+        // then
+        Line line = lineService.findLineById(일호선.getId());
+        assertAll(
+                () -> assertThat(line.getStations()).hasSize(2),
+                () -> assertThat(line.getStations()).containsExactly(영등포역, 신도림역)
         );
     }
 
