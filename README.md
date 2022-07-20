@@ -2,6 +2,19 @@
 
 [ATDD 강의](https://edu.nextstep.camp/c/R89PYi5H) 실습을 위한 지하철 노선도 애플리케이션
 
+## Step2 PR 수정 TODO list
+
+- [ ] sections의 isSectionsUpStation, isSectionsDownStation 두 if문 합치기
+- [ ] sections의 마지막 예외를 던지던 부분의 위치 고민하기
+- [ ] add_section_front_at_line 테스트 코드 보강하기
+- [ ] Sections 내부의 isGreaterThanDistance 를 Section 내부로 옮기기
+- [ ] section 의 distance 가 나누어졌는지 다시 생각해보기
+- [ ] 예외를 정의하여 어떤 장점/단점이 있는 지 고민해보기
+- [ ] 인수 조건의 상세 주석이 필요한가?
+- [ ] Sections.add() 메서드의 List 를 외부에서 생성하여 addStationByOrder 의 인자로 넘기는 부분 수정하기
+- [ ] create_section_with_invalid_distance에 @DisplayName 추가하기
+- [ ] Sections.divideSectionByMiddle() 단위 테스트 추가하기
+
 ## Step2 TODO List
 
 - [x] 인수 조건 도출
