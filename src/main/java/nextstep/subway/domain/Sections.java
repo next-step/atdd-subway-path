@@ -55,11 +55,7 @@ public class Sections {
             return Collections.emptyList();
         }
 
-        final List<Station> stations = new ArrayList<>();
-        Station firstUpStation = getFirstUpStation();
-        addStationByOrder(stations, firstUpStation);
-
-        return Collections.unmodifiableList(stations);
+        return getOrderedStations();
     }
 
     public void deleteLastSection(Station station) {
@@ -90,14 +86,18 @@ public class Sections {
                 .orElseThrow(() -> new SectionsException(ErrorCode.NOT_FOUND_SECTION_EXCEPTION));
     }
 
-    private void addStationByOrder(List<Station> stations, Station upStation) {
-        stations.add(upStation);
+    private List<Station> getOrderedStations() {
+        final List<Station> stations = new ArrayList<>();
+        Station upStation = getFirstUpStation();
 
+        stations.add(upStation);
         for (int i = 0; i < sections.size(); i++) {
             Station nextStation = findNextStation(upStation);
             stations.add(nextStation);
             upStation = nextStation;
         }
+
+        return Collections.unmodifiableList(stations);
     }
 
     private Station findNextStation(Station station) {

@@ -8,10 +8,10 @@
 - [x] sections의 마지막 예외를 던지던 부분의 위치 고민하기
 - [x] add_section_front_at_line 테스트 코드 보강하기
 - [x] Sections 내부의 isGreaterThanDistance 를 Section 내부로 옮기기
-- [ ] section 의 distance 가 나누어졌는지 다시 생각해보기
-- [ ] 예외를 정의하여 어떤 장점/단점이 있는 지 고민해보기
-- [ ] 인수 조건의 상세 주석이 필요한가?
-- [ ] Sections.add() 메서드의 List 를 외부에서 생성하여 addStationByOrder 의 인자로 넘기는 부분 수정하기
+- [x] section 의 distance 가 나누어졌는지 다시 생각해보기
+- [x] 예외를 정의하여 어떤 장점/단점이 있는 지 고민해보기
+- [x] 인수 조건의 상세 주석이 필요한가?
+- [x] Sections.add() 메서드의 List 를 외부에서 생성하여 addStationByOrder 의 인자로 넘기는 부분 수정하기
 - [x] create_section_with_invalid_distance에 @DisplayName 추가하기
 - [x] Sections.divideSectionByMiddle() 단위 테스트 추가하기
 
