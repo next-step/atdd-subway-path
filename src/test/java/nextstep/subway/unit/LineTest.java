@@ -19,8 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 class LineTest {
     private static final long 잠실역_ID = 3L;
     public static final long 강남역_ID = 1L;
-    private static final Station 강남역 = new Station(강남역_ID, "강남역");
     public static final long 역삼역_ID = 2L;
+    private static final Station 강남역 = new Station(강남역_ID, "강남역");
     private static final Station 역삼역 = new Station(역삼역_ID, "역삼역");
     private static final Station 잠실역 = new Station(잠실역_ID, "잠실역");
     public static final Section 역삼역_잠실역_구간 = new Section(역삼역, 잠실역, 10);
