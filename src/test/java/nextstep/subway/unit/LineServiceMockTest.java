@@ -142,7 +142,7 @@ public class LineServiceMockTest {
         lineService.addSection(신분당선_ID, 역삼역_잠실역);
 
         // then
-        assertThat(신분당선.getSections()).hasSize(2);
+        assertThat(신분당선.getSections().getSections()).hasSize(2);
     }
 
 
@@ -151,7 +151,7 @@ public class LineServiceMockTest {
     void deleteSection() {
         // given
         Line 신분당선 = new Line(신분당선_ID, "신분당선", "red", 강남역_역삼역);
-        신분당선.addSection(역삼역_잠실역);
+        신분당선.getSections().addSection(역삼역_잠실역);
 
         // when
         when(lineRepository.findById(신분당선_ID)).thenReturn(Optional.of(신분당선));

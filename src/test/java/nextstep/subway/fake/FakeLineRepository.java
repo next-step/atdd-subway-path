@@ -16,7 +16,7 @@ public class FakeLineRepository implements LineRepository {
     @Override
     public Line save(Line entity) {
         long id = ++sequence;
-        Line line = new Line(id, entity.getName(), entity.getColor(), entity.getSections().get(0));
+        Line line = new Line(id, entity.getName(), entity.getColor(), entity.getSections().getSections().get(0));
         lineMap.put(id, line);
         return line;
     }
