@@ -70,6 +70,10 @@ public class Sections {
     }
 
     public void remove(final Station station) {
+        if (isSingleSection()) {
+            throw new IllegalArgumentException("Last section cannot be removed");
+        }
+
         final Section section = findSection(station);
 
         // 1, 2 -> 2, 3 -> 3, 4 -> 4, 5
@@ -81,6 +85,9 @@ public class Sections {
 
     }
 
+    private boolean isSingleSection() {
+        return sections.size() == 1;
+    }
     private Section findSection(final Station station) {
         return sections.stream()
                 .filter(v -> matchesUpStation(station, v))

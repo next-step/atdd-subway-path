@@ -87,7 +87,7 @@ public class LineServiceTest {
                 () -> target.deleteSection(lineResponse.getId(), savedDownStation.getId()));
 
         // then
-        assertThat(result).hasMessageContaining("Last section or Station not exists");
+        assertThat(result).hasMessageContaining("Last section cannot be removed");
     }
 
     @Test

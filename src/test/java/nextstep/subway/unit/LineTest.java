@@ -197,7 +197,7 @@ class LineTest {
                 IllegalArgumentException.class,
                 () -> line.removeSection(station(1L)));
 
-        assertThat(result).hasMessageContaining("Last section or Station not exists");
+        assertThat(result).hasMessageContaining("Station not exists");
     }
 
     @Test
@@ -210,7 +210,7 @@ class LineTest {
                 IllegalArgumentException.class,
                 () -> line.removeSection(station(3L)));
 
-        assertThat(result).hasMessageContaining("Last section or Station not exists");
+        assertThat(result).hasMessageContaining("Station not exists");
     }
 
     @Test
