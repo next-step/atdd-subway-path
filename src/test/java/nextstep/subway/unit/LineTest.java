@@ -23,9 +23,11 @@ class LineTest {
     private Station 영등포역;
     private Station 신도림역;
     private Station 구로역;
+    private Station 신갈역;
 
     @BeforeEach
     public void setUp() {
+        신갈역 = new Station("신갈역");
         영등포역 = new Station("영등포역");
         신도림역 = new Station("신도림역");
         구로역 = new Station("구로역");
@@ -65,6 +67,42 @@ class LineTest {
             assertAll(
                     () -> assertThat(이호선.getStations()).hasSize(3),
                     () -> assertThat(이호선.getStations()).contains(영등포역, 신도림역, 구로역)
+            );
+        }
+
+        @DisplayName("상행역이 같은 중앙 구간 추가")
+        @Test
+        void addSectionInMiddle() {
+            // given
+            Line 이호선 = new Line("2호선", "green");
+            이호선.addSection(신갈역, 신도림역, 5);
+            이호선.addSection(신도림역, 구로역, 10);
+
+            // when
+            이호선.addSection(신갈역, 영등포역, 5);
+
+            // then
+            assertAll(
+                    () -> assertThat(이호선.getStations()).hasSize(4),
+                    () -> assertThat(이호선.getStations()).contains(신갈역, 영등포역, 신도림역, 구로역)
+            );
+        }
+
+        @DisplayName("하행역이 같은 중앙 구간 추가")
+        @Test
+        void addSectionInMiddle2() {
+            // given
+            Line 이호선 = new Line("2호선", "green");
+            이호선.addSection(신갈역, 신도림역, 5);
+            이호선.addSection(신도림역, 구로역, 10);
+
+            // when
+            이호선.addSection(영등포역, 신도림역, 5);
+
+            // then
+            assertAll(
+                    () -> assertThat(이호선.getStations()).hasSize(4),
+                    () -> assertThat(이호선.getStations()).contains(신갈역, 영등포역, 신도림역, 구로역)
             );
         }
 
