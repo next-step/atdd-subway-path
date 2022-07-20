@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -72,17 +71,6 @@ public class Sections {
         }
     }
 
-
-    public void deleteSection(Station station) {
-        Section lastSection = sections.get(getLastIndex());
-
-        if (!lastSection.matchDownStation(station)) {
-            throw new IllegalArgumentException("하행 종점역만 삭제 가능합니다.");
-        }
-
-        sections.remove(getLastIndex());
-    }
-
     public List<Station> getStations() {
         if (sections.isEmpty()) {
             return Collections.emptyList();
@@ -120,10 +108,6 @@ public class Sections {
                 .noneMatch(currentStation -> station.equals(currentStation.getDownStation()));
     }
 
-    private int getLastIndex() {
-        return sections.size() - 1;
-    }
-
     public List<Section> getSections() {
         if (sections.isEmpty()) {
             return Collections.emptyList();
@@ -156,4 +140,28 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }
+
+
+    public void deleteSection(Station station) {
+        matchStation(station);
+
+        Section lastSection = sections.get(getLastIndex());
+
+        if (!lastSection.matchDownStation(station)) {
+            throw new IllegalArgumentException("하행 종점역만 삭제 가능합니다.");
+        }
+
+        sections.remove(getLastIndex());
+    }
+
+    private void matchStation(Station station) {
+        if (!getStations().contains(station)) {
+            throw new IllegalArgumentException("노선에 등록되어있지 않은 역입니다");
+        }
+    }
+
+    private int getLastIndex() {
+        return sections.size() - 1;
+    }
+
 }
