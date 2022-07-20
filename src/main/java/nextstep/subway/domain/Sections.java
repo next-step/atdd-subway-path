@@ -70,11 +70,11 @@ public class Sections {
         }
 
         if (!allStations().contains(station)) {
-            throw new IllegalArgumentException("삭제하려는 역이 노선에 등록되지 않은 역입니다.");
+            throw new DeleteSectionException("삭제하려는 역이 노선에 등록되지 않은 역입니다.");
         }
 
         if (!lastSection().getDownStation().equals(station)) {
-            throw new IllegalArgumentException("삭제하려는 역이 마지막 구간의 역이 아닙니다.");
+            throw new DeleteSectionException("삭제하려는 역이 마지막 구간의 역이 아닙니다.");
         }
 
         value.remove(lastSection());

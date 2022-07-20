@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.AddSectionException;
+import nextstep.subway.exception.DeleteSectionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -100,5 +101,51 @@ class LineTest {
                 () -> assertThat(stations).hasSize(2),
                 () -> assertThat(stations).containsExactly(강남역, 신논현역)
         );
+    }
+
+    @DisplayName("구간이 1개인 노선에서 구간을 삭제할 경우 예외")
+    @Test
+    void removeOnlyOneSectionException() {
+        Line 신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
+
+        Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
+
+        신분당선.addSection(강남_신논현);
+
+        assertThatThrownBy(() -> 신분당선.removeSection(신논현역))
+                .isInstanceOf(DeleteSectionException.class)
+                .hasMessage("구간이 1개인 노선은 구간 삭제를 진행할 수 없습니다.");
+    }
+
+    @DisplayName("삭제하려는 역이 노선에 등록되어 있지 않을 경우 예외")
+    @Test
+    void removeNotExistsStationException() {
+        Line 신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
+
+        Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
+        Section 신논현_정자 = Section.of(신논현역, 정자역, 5);
+
+        신분당선.addSection(강남_신논현);
+        신분당선.addSection(신논현_정자);
+
+        assertThatThrownBy(() -> 신분당선.removeSection(판교역))
+                .isInstanceOf(DeleteSectionException.class)
+                .hasMessage("삭제하려는 역이 노선에 등록되지 않은 역입니다.");
+    }
+
+    @DisplayName("삭제하려는 역이 마지막 구간의 역이 아닐 경우 예외")
+    @Test
+    void removeNotLastStationException() {
+        Line 신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
+
+        Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
+        Section 신논현_정자 = Section.of(신논현역, 정자역, 5);
+
+        신분당선.addSection(강남_신논현);
+        신분당선.addSection(신논현_정자);
+
+        assertThatThrownBy(() -> 신분당선.removeSection(신논현역))
+                .isInstanceOf(DeleteSectionException.class)
+                .hasMessage("삭제하려는 역이 마지막 구간의 역이 아닙니다.");
     }
 }
