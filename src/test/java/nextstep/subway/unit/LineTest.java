@@ -29,9 +29,9 @@ class LineTest {
 		assertThat(line.getSections()).hasSize(1);
 	}
 
-	@DisplayName("마지막 구간 앞에 새로운 구간 추가")
+	@DisplayName("기존구간 사이에 새로운 구간추가")
 	@Test
-	void addSectionTo() {
+	void addSectionBetweenSection() {
 		//Given
 		line.addSection(강남역, 양재역, DISTANCE);
 		line.addSection(양재역, 정자역, DISTANCE);
@@ -40,8 +40,60 @@ class LineTest {
 		line.addSection(양재역, 양재시민의숲역, DISTANCE);
 
 		//then
-		//		assertThat(line.getStations()).hasSize(4)
-		//			.containsExactly(강남역, 양재역, 양재시민의숲역, 정자역);
+		assertThat(line.getStations()).hasSize(4)
+			.containsExactly(강남역, 양재역, 양재시민의숲역, 정자역);
+	}
+
+	@DisplayName("상행 종점에 새로운 구간추가")
+	@Test
+	void addSectionToTopStation() {
+		//Given
+		line.addSection(강남역, 양재역, DISTANCE);
+		line.addSection(양재역, 정자역, DISTANCE);
+
+		//when
+		line.addSection(신논현역, 강남역, DISTANCE);
+
+		//then
+		assertThat(line.getStations()).hasSize(4)
+			.containsExactly(신논현역, 강남역, 양재역, 정자역);
+	}
+
+	@DisplayName("하행 종점에 새로운 구간추가")
+	@Test
+	void addSectionToBottomStation() {
+		//Given
+		line.addSection(강남역, 양재역, DISTANCE);
+		line.addSection(양재역, 정자역, DISTANCE);
+
+		//when
+		line.addSection(정자역, 미금역, DISTANCE);
+
+		//then
+		assertThat(line.getStations()).hasSize(4)
+			.containsExactly(강남역, 양재역, 정자역, 미금역);
+	}
+
+	@DisplayName("기존구간과 동일한 구간 추가")
+	@Test
+	void addSameSectionInSections() {
+		//when
+		line.addSection(강남역, 양재역, DISTANCE);
+
+		//then
+		assertThatThrownBy(() -> line.addSection(강남역, 양재역, DISTANCE))
+			.isInstanceOf(BusinessException.class);
+	}
+
+	@DisplayName("기존구간과 동일한 역이 없는 구간 추가")
+	@Test
+	void addNewStationNotInSections() {
+		//when
+		line.addSection(강남역, 양재역, DISTANCE);
+
+		//then
+		assertThatThrownBy(() -> line.addSection(신논현역, 미금역, DISTANCE))
+			.isInstanceOf(BusinessException.class);
 	}
 
 	@DisplayName("지하철 구간 조회_2개")
