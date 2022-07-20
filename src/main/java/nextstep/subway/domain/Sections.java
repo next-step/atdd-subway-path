@@ -30,12 +30,7 @@ public class Sections {
             throw new SectionsException(ErrorCode.ALREADY_BOTH_STATION_REGISTER_EXCEPTION);
         }
 
-        if (isSectionsUpStation(section.getDownStation())) {
-            sections.add(section);
-            return;
-        }
-
-        if (isSectionsDownStation(section.getUpStation())) {
+        if (isPossibleAddFrontOrBack(section)) {
             sections.add(section);
             return;
         }
@@ -81,6 +76,10 @@ public class Sections {
 
     public boolean isEmptySections() {
         return sections.isEmpty();
+    }
+
+    private boolean isPossibleAddFrontOrBack(Section section) {
+        return isSectionsUpStation(section.getDownStation()) || isSectionsDownStation(section.getUpStation());
     }
 
     private Section findTargetSection(Section section) {
