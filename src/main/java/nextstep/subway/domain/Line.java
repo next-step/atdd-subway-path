@@ -5,8 +5,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Data
@@ -37,6 +37,11 @@ public class Line {
     }
 
     public List<Station> getStations() {
+
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         List<Station> stations = sections.stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
@@ -46,12 +51,21 @@ public class Line {
         return stations;
     }
 
-    public void removeSection(Station downStationName) {
-        Section section = sections.stream()
-                .filter(s -> s.getDownStation() == downStationName)
-                .findFirst()
-                .orElseThrow(NoSuchElementException::new);
+    public void removeSection(Station station) {
+        if (!this.getSections().get(this.getSections().size() - 1).getDownStation().equals(station)) {
+            throw new IllegalArgumentException();
+        }
 
-        sections.remove(section);
+        this.getSections().remove(this.getSections().size() - 1);
+    }
+
+    public void updateLine(String name, String color) {
+        if (name != null) {
+            this.name = name;
+        }
+
+        if (color != null) {
+            this.color = color;
+        }
     }
 }
