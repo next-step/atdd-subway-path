@@ -66,7 +66,7 @@ class LineTest {
             // then
             assertAll(
                     () -> assertThat(이호선.getStations()).hasSize(3),
-                    () -> assertThat(이호선.getStations()).contains(영등포역, 신도림역, 구로역)
+                    () -> assertThat(이호선.getStations()).containsExactly(영등포역, 신도림역, 구로역)
             );
         }
 
@@ -84,7 +84,7 @@ class LineTest {
             // then
             assertAll(
                     () -> assertThat(이호선.getStations()).hasSize(4),
-                    () -> assertThat(이호선.getStations()).contains(신갈역, 영등포역, 신도림역, 구로역)
+                    () -> assertThat(이호선.getStations()).containsExactly(신갈역, 영등포역, 신도림역, 구로역)
             );
         }
 
@@ -102,7 +102,7 @@ class LineTest {
             // then
             assertAll(
                     () -> assertThat(이호선.getStations()).hasSize(4),
-                    () -> assertThat(이호선.getStations()).contains(신갈역, 영등포역, 신도림역, 구로역)
+                    () -> assertThat(이호선.getStations()).containsExactly(신갈역, 영등포역, 신도림역, 구로역)
             );
         }
 

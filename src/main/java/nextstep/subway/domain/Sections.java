@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,10 +44,21 @@ public class Sections {
             return Collections.emptyList();
         }
 
-        List<Station> stations = this.sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-        stations.add(0, this.getUpStationTerminal());
+        Station upStationTerminal = getUpStationTerminal();
+        Station downStationTerminal = getDownStationTerminal();
+
+        List<Station> stations = new ArrayList<>();
+
+        Station upStation = upStationTerminal;
+        while (true) {
+            Section section = findSectionByUpStation(upStation);
+            stations.add(section.getUpStation());
+            if (downStationTerminal.equals(section.getDownStation())) {
+                stations.add(section.getDownStation());
+                break;
+            }
+            upStation = section.getDownStation();
+        }
 
         return stations;
     }
@@ -85,6 +95,10 @@ public class Sections {
         return getUpSectionTerminal().getUpStation();
     }
 
+    private Station getDownStationTerminal() {
+        return getDownSectionTerminal().getDownStation();
+    }
+
     private Section getUpSectionTerminal() {
         List<Station> upStations = getUpStations();
         List<Station> downStations = getDownStations();
@@ -96,6 +110,19 @@ public class Sections {
                 .collect(Collectors.toList())
                 .get(0);
     }
+
+    private Section getDownSectionTerminal() {
+        List<Station> upStations = getUpStations();
+        List<Station> downStations = getDownStations();
+
+        downStations.removeAll(upStations);
+        Station downStation = downStations.get(0);
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(downStation))
+                .collect(Collectors.toList())
+                .get(0);
+    }
+
 
     private List<Station> getUpStations() {
         return sections.stream()
@@ -130,6 +157,13 @@ public class Sections {
     private Section findSectionByDownStation(Station downStation) {
         return this.sections.stream()
                 .filter(e -> e.getDownStation().equals(downStation))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("해당되는 구간을 찾을 수 없습니다."));
+    }
+
+    private Section findSectionByUpStation(Station upStation) {
+        return this.sections.stream()
+                .filter(e -> e.getUpStation().equals(upStation))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("해당되는 구간을 찾을 수 없습니다."));
     }
