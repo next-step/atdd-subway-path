@@ -63,6 +63,10 @@ public class Section {
         return this.downStation.equals(station);
     }
 
+    public boolean hasStationIn(Section section) {
+        return containsStation(section.getUpStation()) || containsStation(section.getDownStation());
+    }
+
     public Long getId() {
         return id;
     }
@@ -87,12 +91,8 @@ public class Section {
         return distance <= 0;
     }
 
-    @Override
-    public String toString() {
-        return "Section{" +
-                "upStation=" + upStation +
-                ", downStation=" + downStation +
-                '}';
+    private boolean containsStation(Station station) {
+        return this.upStation.equals(station) || this.downStation.equals(station);
     }
 
     @Override

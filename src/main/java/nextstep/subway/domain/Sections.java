@@ -34,6 +34,10 @@ public class Sections {
             throw new SectionsException(ErrorCode.ALREADY_BOTH_STATION_REGISTER_EXCEPTION);
         }
 
+        if (hasNotSameStationIn(section)) {
+            throw new SectionsException(ErrorCode.NOT_FOUND_BOTH_STATION_EXCEPTION);
+        }
+
         if (isPossibleAddFrontOrBack(section)) {
             sections.add(section);
             return;
@@ -47,10 +51,6 @@ public class Sections {
         sections.remove(findSection);
         sections.add(halfSection);
         sections.add(section);
-
-        if (!hasUpStation && !hasDownStation) {
-            throw new SectionsException(ErrorCode.NOT_FOUND_BOTH_STATION_EXCEPTION);
-        }
     }
 
     public List<Station> getStations() {
@@ -109,6 +109,10 @@ public class Sections {
                 .findFirst()
                 .map(Section::getDownStation)
                 .orElse(station);
+    }
+
+    private boolean hasNotSameStationIn(Section section) {
+        return sections.stream().noneMatch(s -> s.hasStationIn(section));
     }
 
     private boolean hasSameUpStation(Station station) {
