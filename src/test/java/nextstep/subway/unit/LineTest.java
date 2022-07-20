@@ -14,10 +14,13 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 class LineTest {
 
+    private static final String NEW_BUN_DANG = "신분당선";
+    private static final String BG_RED_600 = "bg-red-600";
+
     @DisplayName("지하철 구간 추가")
     @Test
     void addSection() {
-        Line 신분당선 = Line.of("신분당선", "bg-red-600");
+        Line 신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
 
         Section section = Section.of(강남역, 신논현역, 10);
 
@@ -35,7 +38,7 @@ class LineTest {
     @DisplayName("지하철 노선에 존재하는 모든 역 조회")
     @Test
     void getStations() {
-        Line 신분당선 = Line.of("신분당선", "bg-red-600");
+        Line 신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
 
         Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
         Section 신논현_정자 = Section.of(신논현역, 정자역, 5);
@@ -54,7 +57,7 @@ class LineTest {
     @DisplayName("지하철 노선에 특정 구간 제거")
     @Test
     void removeSection() {
-        Line 신분당선 = Line.of("신분당선", "bg-red-600");
+        Line 신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
 
         Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
         Section 신논현_정자 = Section.of(신논현역, 정자역, 5);
