@@ -22,14 +22,28 @@ class SectionTest {
         assertThat(enoughDistance).isTrue();
     }
 
-    @DisplayName("새로 추가되는 구간이 기존 구간 사이에 추가할 수 있는 구간인지 확인한다.")
+    @DisplayName("새로 추가되는 구간이 기존 구간 사이에 추가할 수 있는 구간인지 확인한다. - 상행 지하철역 기준")
     @Test
-    void betweenSection() {
+    void betweenSectionAtUpStation() {
         // given
         Section section = Stub.기본_구간_생성.get();
 
         // when
         Section newSection = new Section(Stub.구로디지털단지역, Stub.신대방역, 4);
+        boolean betweenSection = section.isBetweenSection(newSection);
+
+        // then
+        assertThat(betweenSection).isTrue();
+    }
+
+    @DisplayName("새로 추가되는 구간이 기존 구간 사이에 추가할 수 있는 구간인지 확인한다. - 하행 지하철역 기준")
+    @Test
+    void betweenSectionAtDownStation() {
+        // given
+        Section section = Stub.기본_구간_생성.get();
+
+        // when
+        Section newSection = new Section(Stub.신대방역, Stub.신림역, 6);
         boolean betweenSection = section.isBetweenSection(newSection);
 
         // then
