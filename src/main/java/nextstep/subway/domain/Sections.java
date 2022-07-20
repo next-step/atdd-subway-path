@@ -68,7 +68,7 @@ public class Sections {
                 .filter(section -> section.isSameDownStation(newSection.getDownStation()))
                 .findFirst()
                 .ifPresent(section -> {
-                    if (section.getDistance() - newSection.getDistance() < 0) {
+                    if (newSection.isLongerThan(section)) {
                         throw new IllegalArgumentException("새로운 추가되는 구간은 기존 구간보다 길 수 없습니다.");
                     }
                     sections.add(new Section(section.getLine(), section.getUpStation(), newSection.getUpStation(),
@@ -82,7 +82,7 @@ public class Sections {
                 .filter(section -> section.isSameUpStation(newSection.getUpStation()))
                 .findFirst()
                 .ifPresent(section -> {
-                    if (section.getDistance() - newSection.getDistance() < 0) {
+                    if (newSection.isLongerThan(section)) {
                         throw new IllegalArgumentException("새로운 추가되는 구간은 기존 구간보다 길 수 없습니다.");
                     }
                     sections.add(new Section(section.getLine(), newSection.getDownStation(), section.getDownStation(),

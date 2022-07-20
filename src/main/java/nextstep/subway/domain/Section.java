@@ -49,4 +49,8 @@ public class Section {
     public boolean isSameUpStation(Station upStation) {
         return this.getUpStation() == upStation;
     }
+
+    public boolean isLongerThan(Section newSection) {
+        return this.getDistance() - newSection.getDistance() <= 0;
+    }
 }

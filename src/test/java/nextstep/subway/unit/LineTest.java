@@ -119,6 +119,34 @@ class LineTest {
             assertThatThrownBy(() -> 이호선.addSection(신도림역, 구로역, 10))
                     .isInstanceOf(IllegalArgumentException.class);
         }
+
+        @DisplayName("추가하려는 중앙 구간이 기존의 구간과 길이가 같으면 실패")
+        @Test
+        void addSectionSameDistance() {
+            // given
+            Line 이호선 = new Line("2호선", "green");
+            이호선.addSection(신갈역, 신도림역, 5);
+            이호선.addSection(신도림역, 구로역, 10);
+
+            // when
+            // then
+            assertThatThrownBy(() -> 이호선.addSection(신갈역, 영등포역, 5))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @DisplayName("추가하려는 중앙 구간이 기존의 구간 길이보다 길면 실패")
+        @Test
+        void addSectionLongDistance() {
+            // given
+            Line 이호선 = new Line("2호선", "green");
+            이호선.addSection(신갈역, 신도림역, 5);
+            이호선.addSection(신도림역, 구로역, 10);
+
+            // when
+            // then
+            assertThatThrownBy(() -> 이호선.addSection(신갈역, 영등포역, 7))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
     }
 
     @DisplayName("노선의 모든 지하철역 가져오기")
