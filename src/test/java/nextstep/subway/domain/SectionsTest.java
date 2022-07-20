@@ -11,6 +11,7 @@ import static nextstep.subway.domain.factory.SectionFactory.createSection;
 import static nextstep.subway.domain.fixture.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class SectionsTest {
 
@@ -79,7 +80,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("하나 이상의 구간을 가진 경우 신규 구간의 상행역과 하행역 둘중 하나도 포함되어 있지 않으면 예외를 반환한다.")
+    @DisplayName("하나 이상의 구간을 가진 경우 신규 구간의 상행역과 하행역 둘중 하나만 포함해야 한다.")
     void invalid_add_section_not_exist_stations() {
         // given
         Sections sections = new Sections();
@@ -87,27 +88,15 @@ class SectionsTest {
         sections.add(section);
 
         // when
-        Section newSection = createSection(SEOLLEUNG_STATION, SAMSUNG_STATION, 5);
+        Section notContainStationSection = createSection(SEOLLEUNG_STATION, SAMSUNG_STATION, 5);
+        Section containBothStationSection = createSection(GANGNAM_STATION, YEOKSAM_STATION, 5);
 
         // then
-        assertThatThrownBy(() -> sections.add2(newSection))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
+        assertAll(() -> {
+            assertThatThrownBy(() -> sections.add2(notContainStationSection)).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> sections.add2(containBothStationSection)).isInstanceOf(IllegalArgumentException.class);
+        });
 
-    @Test
-    @DisplayName("하나 이상의 구간을 가진 경우 신규 구간의 상행역과 하행역 모두 포함되어 있으면 예외를 반환한다.")
-    void invalid_add_section_already_registered_stations() {
-        // given
-        Sections sections = new Sections();
-        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
-        sections.add(section);
-
-        // when
-        Section newSection = createSection(GANGNAM_STATION, YEOKSAM_STATION, 5);
-
-        // then
-        assertThatThrownBy(() -> sections.add2(newSection))
-                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
