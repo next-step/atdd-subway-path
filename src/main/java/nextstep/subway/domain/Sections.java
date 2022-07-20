@@ -33,6 +33,8 @@ public class Sections {
             return;
         }
         checkDuplicationSection(section);
+        sectionContainUpStation(section);
+
         sections.add(section);
     }
 
@@ -47,6 +49,20 @@ public class Sections {
         stations.add(0, this.getUpStationTerminal());
 
         return stations;
+    }
+
+    private void sectionContainUpStation(Section newSection) {
+        sections.stream()
+                .filter(section -> section.isSameUpStation(newSection.getUpStation()))
+                .findFirst()
+                .ifPresent(section -> {
+                    if (section.getDistance() - newSection.getDistance() > 0) {
+                        throw new IllegalArgumentException("새로운 추가되는 구간은 기존 구간보다 길 수 없습니다.");
+                    }
+                    sections.add(new Section(section.getLine(), newSection.getUpStation(), section.getUpStation(),
+                            section.getDistance() - newSection.getDistance()));
+                    sections.remove(section);
+                });
     }
 
     private Station getUpStationTerminal() {
@@ -88,17 +104,11 @@ public class Sections {
 
     private void checkDuplicationSection(Section newSection) {
         this.sections.stream()
-                .filter(section -> section.isSameSection(newSection)
-                        || isNewSectionDownStationInLine(newSection, section))
+                .filter(section -> section.isSameSection(newSection))
                 .findFirst()
                 .ifPresent(section -> {
                     throw new IllegalArgumentException("구간이 중복되어 있으면 등록할 수 없습니다.");
                 });
-    }
-
-    private boolean isNewSectionDownStationInLine(Section newSection, Section section) {
-        return section.getUpStation() == newSection.getDownStation()
-                || section.getDownStation() == newSection.getDownStation();
     }
 
     private Section findSectionByDownStation(Station downStation) {

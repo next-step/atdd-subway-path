@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import javax.transaction.Transactional;
 
@@ -47,6 +48,23 @@ class LineTest {
             assertAll(
                     () -> assertThat(이호선.getStations()).hasSize(3),
                     () -> assertThat(이호선.getStations()).containsExactly(영등포역, 신도림역, 구로역)
+            );
+        }
+
+        @DisplayName("상행 종점역 구간추가")
+        @Test
+        void addSectionUpStationTerminal() {
+            // given
+            Line 이호선 = new Line("2호선", "green");
+
+            // when
+            이호선.addSection(신도림역, 구로역, 10);
+            이호선.addSection(영등포역, 신도림역, 5);
+
+            // then
+            assertAll(
+                    () -> assertThat(이호선.getStations()).hasSize(3),
+                    () -> assertThat(이호선.getStations()).contains(영등포역, 신도림역, 구로역)
             );
         }
 

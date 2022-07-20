@@ -41,4 +41,12 @@ public class Section {
         return this.getUpStation() == newSection.getUpStation()
                 && this.getDownStation() == newSection.getDownStation();
     }
+
+    public boolean isSameDownStation(Station downStation) {
+        return this.getDownStation() == downStation;
+    }
+
+    public boolean isSameUpStation(Station upStation) {
+        return this.getUpStation() == upStation;
+    }
 }
