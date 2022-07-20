@@ -8,6 +8,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.sections.SectionsException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +35,7 @@ public class LineServiceMockTest {
     @Mock
     private StationService stationService;
 
+    @DisplayName("노선에 구간이 비어있을때 구간을 추가하면 성공한다")
     @Test
     void addSection() {
         // given
@@ -52,7 +54,37 @@ public class LineServiceMockTest {
 
         // then
         Line findLine = lineRepository.findById(lineId).get();
-        then(findLine.getSectionsSize()).isEqualTo(1);
+        then(findLine.isEmptySections()).isFalse();
+    }
+
+    @DisplayName("노선의 상행역과 신규 추가할 구간의 하행역이 동일할 경우 노선의 앞부분에 신규 구간을 추가할 수 있다.")
+    @Test
+    public void add_section_front_at_line() {
+        // given
+        Long lineId = 1L;
+        Long upStationId = 2L;
+        Long downStationId = 3L;
+        Long newStationId = 4L;
+
+        Station 신규역 = new Station(newStationId, "신규역");
+        Station 강남역 = new Station(upStationId, "강남역");
+        Station 건대입구역 = new Station(downStationId, "건대입구역");
+
+        Line 이호선 = new Line(lineId, "2호선", "green");
+        이호선.addSection(new Section(이호선, 강남역, 건대입구역, 20));
+
+        given(stationService.findById(newStationId)).willReturn(신규역);
+        given(stationService.findById(upStationId)).willReturn(강남역);
+        given(lineRepository.findById(anyLong())).willReturn(Optional.of(이호선));
+
+        SectionRequest request = new SectionRequest(newStationId, upStationId, 10);
+
+        // when
+        lineService.addSection(lineId, request);
+
+        // then
+        Line findLine = lineRepository.findById(lineId).get();
+        then(findLine.getStations()).extracting("id").containsExactly(newStationId, upStationId, downStationId);
     }
 
     @DisplayName("구간이 하나 있는 line에 구간삭제 요청시 성공한다")
@@ -72,7 +104,7 @@ public class LineServiceMockTest {
 
         // then
         Line findLine = lineRepository.findById(line.getId()).get();
-        then(findLine.getSectionsSize()).isEqualTo(0);
+        then(findLine.isEmptySections()).isTrue();
     }
 
     @DisplayName("구간이 없는 line에 구간삭제 요청시 예외가 발생한다")
@@ -86,10 +118,10 @@ public class LineServiceMockTest {
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
         // when
-        Exception exception = assertThrows(IllegalStateException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
+        Exception exception = assertThrows(SectionsException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
 
         // then
-        then(exception).isInstanceOf(IllegalStateException.class);
+        then(exception).isInstanceOf(SectionsException.class);
     }
 
     @DisplayName("존재하지 않는 line에 구간삭제 요청시 예외가 발생한다")
@@ -121,10 +153,10 @@ public class LineServiceMockTest {
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
         // when
-        Exception exception = assertThrows(IllegalStateException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
+        Exception exception = assertThrows(SectionsException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
 
         // then
-        then(exception).isInstanceOf(IllegalStateException.class);
+        then(exception).isInstanceOf(SectionsException.class);
     }
 
     @DisplayName("존재하는 라인의 색과 이름을 변경할 수 있다")

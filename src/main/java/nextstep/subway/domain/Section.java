@@ -1,10 +1,16 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.ErrorCode;
+import nextstep.subway.exception.sections.SectionsException;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 public class Section {
+
+    private static final String SECTION_MINIMUM_DISTANCE_EXCEPTION = "구간의 최소거리는 1이상 입니다";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,14 +30,44 @@ public class Section {
     private int distance;
 
     public Section() {
-
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
+        if (isInValidDistance(distance)) {
+            throw new IllegalArgumentException(SECTION_MINIMUM_DISTANCE_EXCEPTION);
+        }
+
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public Section divideSectionByMiddle(Section section) {
+        if (isLessThanDistance(section.getDistance())) {
+            throw new SectionsException(ErrorCode.SECTION_DISTANCE_EXCEPTION);
+        }
+
+        if (section.hasSameUpStation(this.upStation)) {
+            return new Section(this.line, section.getDownStation(), this.downStation, this.distance - section.getDistance());
+        }
+        return new Section(this.line, this.upStation, section.getUpStation(), this.distance - section.getDistance());
+    }
+
+    public boolean hasNotDownStation(Station station) {
+        return !this.downStation.equals(station);
+    }
+
+    public boolean hasSameUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean hasSameDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public boolean hasStationIn(Section section) {
+        return containsStation(section.getUpStation()) || containsStation(section.getDownStation());
     }
 
     public Long getId() {
@@ -54,8 +90,16 @@ public class Section {
         return distance;
     }
 
-    public boolean dontHasDownStation(Station station) {
-        return !this.downStation.equals(station);
+    private boolean isInValidDistance(int distance) {
+        return distance <= 0;
+    }
+
+    private boolean containsStation(Station station) {
+        return this.upStation.equals(station) || this.downStation.equals(station);
+    }
+
+    private boolean isLessThanDistance(int distance) {
+        return this.distance <= distance;
     }
 
     @Override
