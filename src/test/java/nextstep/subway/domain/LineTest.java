@@ -21,14 +21,14 @@ class LineTest {
     void addSectionTest() {
         assertThat(line.getSections().size()).isEqualTo(0);
 
-        Station addUpStation = new Station("중앙역");
-        Station addDownStation = new Station("한대앞역");
-        line.addSection(new Section(line, addUpStation, addDownStation, 10));
+        Station 중앙역 = new Station("중앙역");
+        Station 한대앞역 = new Station("한대앞역");
+        line.addSection(new Section(line, 중앙역, 한대앞역, 10));
         assertThat(line.getSections().size()).isEqualTo(1);
 
         Section addSection = line.getSections().get(0);
-        assertThat(addSection.getUpStation().getName()).isEqualTo(addUpStation.getName());
-        assertThat(addSection.getDownStation().getName()).isEqualTo(addDownStation.getName());
+        assertThat(addSection.getUpStation().getName()).isEqualTo(중앙역.getName());
+        assertThat(addSection.getDownStation().getName()).isEqualTo(한대앞역.getName());
     }
 
     @Test
@@ -54,41 +54,41 @@ class LineTest {
     void getStationsTest() {
         assertThat(line.getStations()).isEmpty();
 
-        Station station1 = new Station("중앙역");
-        Station station2 = new Station("한대앞역");
+        Station 중앙역 = new Station("중앙역");
+        Station 한대앞역 = new Station("한대앞역");
 
-        line.addSection(new Section(line, station1, station2, 10));
+        line.addSection(new Section(line, 중앙역, 한대앞역, 10));
         assertThat(line.getStations()).hasSize(2);
-        assertThat(line.getStations()).containsAnyOf(station1, station2);
+        assertThat(line.getStations()).containsAnyOf(중앙역, 한대앞역);
 
     }
 
     @Test
     @DisplayName("제거할 역이 Line의 마지막 역인 경우 제거된다.")
     void deleteStationTest() {
-        Station station1 = new Station("중앙역");
-        Station station2 = new Station("한대앞역");
-        Station station3 = new Station("상록수역");
+        Station 중앙역 = new Station("중앙역");
+        Station 한대앞역 = new Station("한대앞역");
+        Station 상록수역 = new Station("상록수역");
 
-        line.addSection(new Section(line, station1, station2, 10));
-        line.addSection(new Section(line, station2, station3, 10));
+        line.addSection(new Section(line, 중앙역, 한대앞역, 10));
+        line.addSection(new Section(line, 한대앞역, 상록수역, 10));
         assertThat(line.getStations()).hasSize(3);
 
-        line.deleteStation(station3);
+        line.deleteStation(상록수역);
         assertThat(line.getStations()).hasSize(2);
-        assertThat(line.getStations()).doesNotContain(station3);
+        assertThat(line.getStations()).doesNotContain(상록수역);
     }
 
     @Test
     @DisplayName("제거할 역이 Line의 마지막 역이 아닌경우 에러가 발생한다.")
     void deleteStationFailTest() {
 
-        Station station1 = new Station("중앙역");
-        Station station2 = new Station("한대앞역");
+        Station 중앙역 = new Station("중앙역");
+        Station 한대앞역 = new Station("한대앞역");
 
-        line.addSection(new Section(line, station1, station2, 10));
+        line.addSection(new Section(line, 중앙역, 한대앞역, 10));
 
-        assertThatIllegalArgumentException().isThrownBy(() -> line.deleteStation(station1));
+        assertThatIllegalArgumentException().isThrownBy(() -> line.deleteStation(중앙역));
         assertThatIllegalArgumentException().isThrownBy(() -> line.deleteStation(new Station("없는역")));
     }
 }

@@ -13,8 +13,8 @@ class SectionsTest {
     private Sections sections;
 
     private Line line;
-    private Station station1;
-    private Station station2;
+    private Station 중앙역;
+    private Station 한대앞역;
 
 
     @BeforeEach
@@ -22,10 +22,10 @@ class SectionsTest {
         sections = new Sections();
 
         line = new Line("4호선", "blue");
-        station1 = new Station("중앙역");
-        station2 = new Station("한대앞역");
+        중앙역 = new Station("중앙역");
+        한대앞역 = new Station("한대앞역");
 
-        sections.add(new Section(line, station1, station2, 10));
+        sections.add(new Section(line, 중앙역, 한대앞역, 10));
     }
 
     @Test
@@ -37,16 +37,16 @@ class SectionsTest {
     @Test
     @DisplayName("이미 등록된 구간은 추가가 실패한다.")
     void addAlreadyConnectionFailTest() {
-        assertThatIllegalArgumentException().isThrownBy(() -> sections.add(new Section(line, station1, station2, 10)))
+        assertThatIllegalArgumentException().isThrownBy(() -> sections.add(new Section(line, 중앙역, 한대앞역, 10)))
                 .withMessage("이미 등록된 역은 등록할 수 없어요.");
     }
 
     @Test
     @DisplayName("연결할 수 있는 역이 없으면 구간 추가가 실패한다.")
     void addNonExistConnectStationFailTest() {
-        Station station3 = new Station("상록수역");
-        Station station4 = new Station("반월역");
-        assertThatIllegalArgumentException().isThrownBy(() -> sections.add(new Section(line, station3, station4, 10)))
+        Station 상록수역 = new Station("상록수역");
+        Station 반월역 = new Station("반월역");
+        assertThatIllegalArgumentException().isThrownBy(() -> sections.add(new Section(line, 상록수역, 반월역, 10)))
                 .withMessage("연결할 수 있는 역이 없어요.");
     }
 
@@ -76,26 +76,26 @@ class SectionsTest {
     @Test
     @DisplayName("구간이 정상적으로 조회된다.")
     void getStationsTest() {
-        assertThat(sections.getStations()).containsExactly(station1, station2);
+        assertThat(sections.getStations()).containsExactly(중앙역, 한대앞역);
     }
 
     @Test
     @DisplayName("제거할 역이 마지막 역인 경우 제거된다.")
     void deleteStationTest() {
-        Station station3 = new Station("상록수역");
-        sections.add(new Section(line, station2, station3, 10));
+        Station 상록수역 = new Station("상록수역");
+        sections.add(new Section(line, 한대앞역, 상록수역, 10));
 
         assertThat(sections.size()).isEqualTo(2);
 
-        sections.deleteStation(station3);
+        sections.deleteStation(상록수역);
         assertThat(sections.getStations()).hasSize(2);
-        assertThat(sections.getStations()).doesNotContain(station3);
+        assertThat(sections.getStations()).doesNotContain(상록수역);
     }
 
     @Test
     @DisplayName("제거할 역이 마지막 역이 아닌경우 에러가 발생한다.")
     void deleteStationFailTest() {
-        assertThatIllegalArgumentException().isThrownBy(() -> sections.deleteStation(station1));
+        assertThatIllegalArgumentException().isThrownBy(() -> sections.deleteStation(중앙역));
         assertThatIllegalArgumentException().isThrownBy(() -> sections.deleteStation(new Station("없는역")));
     }
 }

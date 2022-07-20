@@ -14,43 +14,43 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class SectionTest {
 
     private Line line;
-    private Station upStation;
-    private Station downStation;
+    private Station 중앙역;
+    private Station 한대앞역;
     private Section section;
 
     @BeforeEach
     void setUp() {
         line = new Line("4호선", "blue");
-        upStation = new Station("중앙역");
-        downStation = new Station("한대앞역");
+        중앙역 = new Station("중앙역");
+        한대앞역 = new Station("한대앞역");
 
-        section = new Section(line, upStation, downStation, 10);
+        section = new Section(line, 중앙역, 한대앞역, 10);
     }
 
     @Test
     @DisplayName("상행선과 같으면 true를 다르면 false를 반환한다.")
     void equalsUpStationTest() {
-        assertThat(section.equalsUpStation(upStation)).isTrue();
-        assertThat(section.equalsUpStation(downStation)).isFalse();
+        assertThat(section.equalsUpStation(중앙역)).isTrue();
+        assertThat(section.equalsUpStation(한대앞역)).isFalse();
     }
 
     @Test
     @DisplayName("하행선과 같으면 true를 다르면 false를 반환한다.")
     void equalsDownStationTest() {
-        assertThat(section.equalsDownStation(upStation)).isFalse();
-        assertThat(section.equalsDownStation(downStation)).isTrue();
+        assertThat(section.equalsDownStation(중앙역)).isFalse();
+        assertThat(section.equalsDownStation(한대앞역)).isTrue();
     }
 
     @Test
     @DisplayName("신규 구간의 거리가 더 짧으면, 기존 구간의 거리 변경(기존 구간 거리 - 신규 구간 거리)과 기존 구간의 하행선을 신규 구간의 상행선으로 변경한다.")
     void updateDownStationToSectionUpStationTest() {
-        Station newUpStation = new Station("상행선");
-        section.updateDownStationToSectionUpStation(new Section(line, newUpStation, new Station("하행선"), 6));
+        Station 상행선 = new Station("상행선");
+        section.updateDownStationToSectionUpStation(new Section(line, 상행선, new Station("하행선"), 6));
 
         assertAll(
-                () -> assertEquals(upStation, section.getUpStation()),
+                () -> assertEquals(중앙역, section.getUpStation()),
                 () -> assertEquals(4, section.getDistance()),
-                () -> assertEquals(newUpStation, section.getDownStation())
+                () -> assertEquals(상행선, section.getDownStation())
         );
     }
 
@@ -65,13 +65,13 @@ class SectionTest {
     @Test
     @DisplayName("신규 구간의 거리가 더 짧으면, 기존 구간의 거리 변경(기존 구간 거리 - 신규 구간 거리)과 기존 구간의 상행선을 신규 구간의 하행선으로 변경한다.")
     void updateUpStationToSectionDownStationTest() {
-        Station newDownStation = new Station("하행선");
-        section.updateUpStationToSectionDownStation(new Section(line, new Station("상행선"), newDownStation, 6));
+        Station 하행선 = new Station("하행선");
+        section.updateUpStationToSectionDownStation(new Section(line, new Station("상행선"), 하행선, 6));
 
         assertAll(
-                () -> assertEquals(newDownStation, section.getUpStation()),
+                () -> assertEquals(하행선, section.getUpStation()),
                 () -> assertEquals(4, section.getDistance()),
-                () -> assertEquals(downStation, section.getDownStation())
+                () -> assertEquals(한대앞역, section.getDownStation())
         );
     }
 
