@@ -8,6 +8,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SectionTest {
 
@@ -40,13 +42,16 @@ class SectionTest {
     }
 
     @Test
-    @DisplayName("신규 구간의 거리가 더 짧으면, 기존 구간의 하행선을 신규 구간의 상행선으로 변경한다.")
+    @DisplayName("신규 구간의 거리가 더 짧으면, 기존 구간의 거리 변경(기존 구간 거리 - 신규 구간 거리)과 기존 구간의 하행선을 신규 구간의 상행선으로 변경한다.")
     void updateDownStationToSectionUpStationTest() {
         Station newUpStation = new Station("상행선");
-        section.updateDownStationToSectionUpStation(new Section(line, newUpStation, new Station("하행선"), 5));
+        section.updateDownStationToSectionUpStation(new Section(line, newUpStation, new Station("하행선"), 6));
 
-        assertThat(section.getUpStation()).isEqualTo(upStation);
-        assertThat(section.getDownStation()).isEqualTo(newUpStation);
+        assertAll(
+                () -> assertEquals(upStation, section.getUpStation()),
+                () -> assertEquals(4, section.getDistance()),
+                () -> assertEquals(newUpStation, section.getDownStation())
+        );
     }
 
 
@@ -58,13 +63,16 @@ class SectionTest {
     }
 
     @Test
-    @DisplayName("신규 구간의 거리가 더 짧으면, 기존 구간의 상행선을 신규 구간의 하행선으로 변경한다.")
+    @DisplayName("신규 구간의 거리가 더 짧으면, 기존 구간의 거리 변경(기존 구간 거리 - 신규 구간 거리)과 기존 구간의 상행선을 신규 구간의 하행선으로 변경한다.")
     void updateUpStationToSectionDownStationTest() {
         Station newDownStation = new Station("하행선");
-        section.updateUpStationToSectionDownStation(new Section(line, new Station("상행선"), newDownStation, 5));
+        section.updateUpStationToSectionDownStation(new Section(line, new Station("상행선"), newDownStation, 6));
 
-        assertThat(section.getUpStation()).isEqualTo(newDownStation);
-        assertThat(section.getDownStation()).isEqualTo(downStation);
+        assertAll(
+                () -> assertEquals(newDownStation, section.getUpStation()),
+                () -> assertEquals(4, section.getDistance()),
+                () -> assertEquals(downStation, section.getDownStation())
+        );
     }
 
     @ValueSource(ints = {10, 11})
