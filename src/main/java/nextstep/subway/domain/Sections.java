@@ -45,6 +45,38 @@ public class Sections {
 		return Collections.unmodifiableList(stations);
 	}
 
+	public void add(Section addSection) throws BusinessException {
+
+		validationOfSameSection(addSection);
+		validationOfAnySameStations(addSection);
+
+		KindOfAddition kindOfAddition = getKindOfAddition(addSection);
+
+		if (kindOfAddition.isSimpleIndex()) {
+			this.values.add(getSectionIndexForAdd(kindOfAddition), addSection);
+		}
+
+		if (kindOfAddition == ADD_TO_IN_EXISTS_SECTION) {
+			Section baseSection = this.values
+				.stream()
+				.filter(section -> section.isSameWithUpStation(addSection.getUpStation()))
+				.findFirst()
+				.orElseThrow(() -> new BusinessException(INVALID_STATUS));
+			this.values.add(this.values.indexOf(baseSection), addSection);
+			baseSection.changeUpStation(addSection.getDownStation());
+		}
+		calculateSectionIndex();
+
+	}
+
+	private int getSectionIndexForAdd(KindOfAddition kindOfAddition) {
+
+		if (kindOfAddition == ADD_TO_END_OF_DOWN_STATION) {
+			return this.values.size();
+		}
+		return 0;
+	}
+
 	private KindOfAddition getKindOfAddition(Section addSection) {
 		Section firstSection = CollectionUtils.firstElement(this.values);
 		Section lastSection = CollectionUtils.lastElement(this.values);
@@ -89,34 +121,6 @@ public class Sections {
 		for (Section section : this.values) {
 			section.calculateIndex(sectionIndex++);
 		}
-	}
-
-	public void add(Section addSection) throws BusinessException {
-
-		validationOfSameSection(addSection);
-		validationOfAnySameStations(addSection);
-
-		KindOfAddition kindOfAddition = getKindOfAddition(addSection);
-
-		if (kindOfAddition == ADD_TO_TOP_OF_UP_STATION) {
-			this.values.add(0, addSection);
-		}
-
-		if (kindOfAddition == ADD_TO_END_OF_DOWN_STATION) {
-			this.values.add(addSection);
-		}
-
-		if (kindOfAddition == ADD_TO_IN_EXISTS_SECTION) {
-			Section baseSection = this.values
-				.stream()
-				.filter(section -> section.isSameWithUpStation(addSection.getUpStation()))
-				.findFirst()
-				.orElseThrow(() -> new BusinessException(INVALID_STATUS));
-			this.values.add(this.values.indexOf(baseSection), addSection);
-			baseSection.changeUpStation(addSection.getDownStation());
-		}
-		calculateSectionIndex();
-
 	}
 
 	public void remove(Station station) {

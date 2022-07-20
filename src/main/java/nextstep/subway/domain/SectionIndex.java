@@ -15,11 +15,4 @@ public class SectionIndex {
 		this.index = index;
 	}
 
-	public void addIndex() {
-		this.index += 1;
-	}
-
-	public void minusIndex() {
-		this.index -= 1;
-	}
 }
