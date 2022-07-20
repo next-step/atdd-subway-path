@@ -23,7 +23,7 @@ class LineTest {
         line.addSection(Stub.구로디지털단지역, Stub.신대방역, 10);
 
         // then
-        assertThat(line.getSections().size()).isEqualTo(1);
+        assertThat(line.getStations()).containsExactly(Stub.구로디지털단지역, Stub.신대방역);
     }
 
     @DisplayName("지하철 노선에 등록된 지하철역 조회")
@@ -49,7 +49,6 @@ class LineTest {
         line.removeSection(Stub.신림역);
 
         // then
-        assertThat(line.getSections().size()).isEqualTo(1);
         assertThat(line.getStations()).contains(Stub.구로디지털단지역, Stub.신대방역);
     }
 

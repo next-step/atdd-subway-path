@@ -52,7 +52,7 @@ public class Sections {
                 .orElseThrow(NotFoundSectionException::new);
     }
 
-    public int size() {
+    private int size() {
         return this.sections.size();
     }
 
