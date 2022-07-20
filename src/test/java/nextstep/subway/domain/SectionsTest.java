@@ -81,7 +81,7 @@ class SectionsTest {
 
     @Test
     @DisplayName("하나 이상의 구간을 가진 경우 신규 구간의 상행역과 하행역 둘중 하나만 포함해야 한다.")
-    void invalid_add_section_not_exist_stations() {
+    void invalid_add_section_match_only_one_station() {
         // given
         Sections sections = new Sections();
         Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
