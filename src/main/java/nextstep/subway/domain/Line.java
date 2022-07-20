@@ -1,10 +1,20 @@
 package nextstep.subway.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.exception.BadRequestException;
+import org.springframework.util.StringUtils;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
+@ToString(exclude = "sections")
 public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,8 +22,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -23,31 +33,48 @@ public class Line {
         this.color = color;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
+    public Line(Long id, String name, String color) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
         this.name = name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
         this.color = color;
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        sections.add(new Section(this, upStation, downStation, distance));
+    }
+
+    public void addSection(Long id, Station upStation, Station downStation, int distance) {
+        sections.add(new Section(id, this, upStation, downStation, distance));
+    }
+
+    public List<Station> getStations(){
+        return sections.getStations();
+    }
+
+    public void removeSection(Long stationId) {
+        this.sections.removeSection(stationId);
+    }
+
+    public Section getSectionById(Long sectionId){
+        return sections.getSectionById(sectionId);
+    }
+
+    public void modifyNameOrColor(LineRequest lineRequest){
+        if(!StringUtils.hasText(lineRequest.getName()) && !StringUtils.hasText(lineRequest.getColor()))
+            throw new BadRequestException("name 혹은 color를 입력하여 주십시오.");
+
+        if (StringUtils.hasText(lineRequest.getColor())) {
+            this.color = lineRequest.getColor();
+        }
+        if (StringUtils.hasText(lineRequest.getName())) {
+            this.name = lineRequest.getName();
+        }
+
+    }
+
+
 }

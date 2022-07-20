@@ -1,5 +1,8 @@
 package nextstep.subway.applicaion.dto;
 
+import lombok.ToString;
+
+@ToString
 public class LineRequest {
     private String name;
     private String color;
@@ -25,5 +28,9 @@ public class LineRequest {
 
     public int getDistance() {
         return distance;
+    }
+
+    public Boolean requestValidCheck(){
+        return this.upStationId != null && this.downStationId != null && this.getDistance() > 0;
     }
 }
