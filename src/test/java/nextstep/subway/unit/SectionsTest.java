@@ -249,6 +249,60 @@ public class SectionsTest {
     }
 
     @Test
+    void 처음_구간을_삭제한다() {
+        // given
+        Line line = new Line("2호선", "green");
+        Station station1 = new Station("숭실대역");
+        Station station2 = new Station("모란역");
+        Station station3 = new Station("암사역");
+
+        Section section1 = new Section(line, station1, station2, 10);
+        Section section2 = new Section(line, station2, station3, 4);
+
+        Sections sections = new Sections();
+        sections.addSection(section1);
+        sections.addSection(section2);
+
+        // when
+        sections.deleteSection(station1);
+
+        // when
+        assertAll(() -> {
+            assertThat(sections.getSections()).hasSize(1);
+            assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(new Station("모란역"));
+            assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(new Station("암사역"));
+            assertThat(sections.getSections().get(0).getDistance().getDistance()).isEqualTo(4);
+        });
+    }
+
+    @Test
+    void 마지막_구간을_삭제한다() {
+        // given
+        Line line = new Line("2호선", "green");
+        Station station1 = new Station("숭실대역");
+        Station station2 = new Station("모란역");
+        Station station3 = new Station("암사역");
+
+        Section section1 = new Section(line, station1, station2, 10);
+        Section section2 = new Section(line, station2, station3, 4);
+
+        Sections sections = new Sections();
+        sections.addSection(section1);
+        sections.addSection(section2);
+
+        // when
+        sections.deleteSection(station3);
+
+        // when
+        assertAll(() -> {
+            assertThat(sections.getSections()).hasSize(1);
+            assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(new Station("숭실대역"));
+            assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(new Station("모란역"));
+            assertThat(sections.getSections().get(0).getDistance().getDistance()).isEqualTo(10);
+        });
+    }
+
+    @Test
     void 노선에_등록되어있지_않은_역을_삭제하면_예외를_일으킨다() {
         // given
         Line line = new Line("2호선", "green");
