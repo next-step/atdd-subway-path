@@ -20,10 +20,9 @@ public class Sections {
     }
 
     public void removeByStation(Station downStation) {
-        if (!sectionList.get(sectionList.size() - 1).getDownStation().equals(downStation)) {
+        if (isNotLastStation(downStation)) {
             throw new IllegalArgumentException();
         }
-
         sectionList.remove(sectionList.size() - 1);
     }
 
@@ -39,6 +38,10 @@ public class Sections {
         stations.add(0, sectionList.get(0).getUpStation());
 
         return stations;
+    }
+
+    private boolean isNotLastStation(Station downStation) {
+        return !sectionList.get(sectionList.size() - 1).getDownStation().equals(downStation);
     }
 
 }
