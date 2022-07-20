@@ -66,7 +66,7 @@ public class Sections {
         if (sections.isEmpty()) {
             throw new IllegalArgumentException();
         }
-        return sections.get(sections.size() - 1);
+        return getOrderedSections().get(sections.size() - 1);
     }
 
     public int getDistance() {
@@ -153,9 +153,8 @@ public class Sections {
         if (sections.isEmpty() || sections.size() == 1) {
             return sections;
         }
-
         final List<Section> orderedSections = new ArrayList<>();
-        Section firstSection = findFirstSection(sections.get(0));
+        Section firstSection = findFirstSection();
         orderedSections.add(firstSection);
         addNextSection(orderedSections, firstSection);
         return orderedSections;
@@ -164,7 +163,7 @@ public class Sections {
     private void addNextSection(List<Section> orderedSections, Section beforeSection) {
         Station nextUpStation = beforeSection.getDownStation();
         final Optional<Section> optionalNextSection = sections.stream()
-                .filter(section -> section.getUpStation().equals(nextUpStation))
+                .filter(section -> section.equalsUpStation(nextUpStation))
                 .findAny();
         if (optionalNextSection.isPresent()) {
             final Section nextSection = optionalNextSection.get();
@@ -174,13 +173,15 @@ public class Sections {
         }
     }
 
-    private Section findFirstSection(final Section firstSection) {
-        final Optional<Section> optionalSection = sections.stream()
-                .filter(section -> section.equalsDownStation(firstSection.getUpStation()))
-                .findAny();
-        if (optionalSection.isPresent()) {
-            return findFirstSection(optionalSection.get());
-        }
-        return firstSection;
+    private Section findFirstSection() {
+        return sections.stream()
+                .filter(section -> isUpStation(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private boolean isUpStation(Station station) {
+        return sections.stream()
+                .noneMatch(section -> section.equalsDownStation(station));
     }
 }
