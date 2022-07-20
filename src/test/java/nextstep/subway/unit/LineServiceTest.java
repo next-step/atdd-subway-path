@@ -1,7 +1,6 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
-import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
@@ -128,7 +127,7 @@ public class LineServiceTest {
         target.addSection(savedLine.getId(), sectionRequest(savedUpStation.getId(), savedDownStation.getId()));
 
         // then
-        assertThat(savedLine.getSections()).isNotEmpty();
+        assertThat(savedLine.getStations()).isNotEmpty();
     }
 
     @Test

@@ -49,6 +49,11 @@ public class Section {
         this.distance = distance;
     }
 
+    public void updateUpStationAndDistance(final Station upStation, final int distance) {
+        this.upStation = upStation;
+        this.distance = distance;
+    }
+
     public void setLine(final Line line) {
         this.line = line;
     }

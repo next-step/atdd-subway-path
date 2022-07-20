@@ -8,7 +8,7 @@ import java.util.List;
 
 import static nextstep.subway.utils.LineTestSources.line;
 import static nextstep.subway.utils.LineTestSources.section;
-import static nextstep.subway.utils.StationTestSources.*;
+import static nextstep.subway.utils.StationTestSources.station;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -42,103 +42,6 @@ class LineTest {
         // then
         assertThat(line.getName()).isEqualTo(name);
         assertThat(line.getColor()).isEqualTo(color);
-    }
-
-    @Test
-    void isLastDownStationTrue() {
-        // given
-        final Line line = new Line();
-        final Station downStation = downStation();
-        line.addSection(section(upStation(), downStation));
-
-        // when
-        final boolean result = line.isLastDownStation(downStation);
-
-        // then
-        assertThat(result).isTrue();
-    }
-
-    @Test
-    void isLastDownStationFalse() {
-        // given
-        final Line line = new Line();
-        final Station upStation = upStation();
-        line.addSection(section(upStation, downStation()));
-
-        // when
-        final boolean result = line.isLastDownStation(upStation);
-
-        // then
-        assertThat(result).isFalse();
-    }
-
-    @Test
-    void isFirstStationFalse() {
-        // given
-        final Line line = new Line();
-        final Station downStation = downStation();
-        line.addSection(section(upStation(), downStation));
-
-        // when
-        final boolean result = line.isFirstStation(downStation);
-
-        // then
-        assertThat(result).isFalse();
-    }
-
-    @Test
-    void isFirstStationTrue() {
-        // given
-        final Line line = new Line();
-        final Station upStation = upStation();
-        line.addSection(section(upStation, downStation()));
-
-        // when
-        final boolean result = line.isLastDownStation(upStation);
-
-        // then
-        assertThat(result).isFalse();
-    }
-
-    @Test
-    void hasStationFalse() {
-        // given
-        final Line line = new Line();
-        final Station downStation = downStation();
-        line.addSection(section(upStation(), downStation));
-
-        // when
-        final boolean result = line.containsStation(downStation);
-
-        // then
-        assertThat(result).isTrue();
-    }
-
-    @Test
-    void hasStationTrue() {
-        // given
-        final Line line = new Line();
-        line.addSection(section(upStation(), downStation()));
-
-        // when
-        final boolean result = line.containsStation(station(10));
-
-        // then
-        assertThat(result).isFalse();
-    }
-
-    @Test
-    void removeLastSection() {
-        // given
-        final Line line = new Line();
-        final Station downStation = downStation();
-        line.addSection(section(upStation(), downStation));
-
-        // when
-        line.removeLastSection();
-
-        // then
-        assertThat(line.getSections()).isEmpty();
     }
 
     @Test
@@ -192,12 +95,14 @@ class LineTest {
     @Test
     void 마지막구간은삭제불가() {
         final Line line = line();
+        line.addSection(section(station(1L), station(2L)));
+
 
         final IllegalArgumentException result = assertThrows(
                 IllegalArgumentException.class,
-                () -> line.removeSection(station(1L)));
+                () -> line.removeSection(station(2L)));
 
-        assertThat(result).hasMessageContaining("Station not exists");
+        assertThat(result).hasMessageContaining("Last section cannot be removed");
     }
 
     @Test
