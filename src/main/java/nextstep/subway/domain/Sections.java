@@ -122,7 +122,7 @@ public class Sections {
         return distance;
     }
 
-    public boolean containsStationOf(Section section) {
+    public boolean doesNotContainStationOf(Section section) {
         final List<Station> stations = sections.stream()
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
