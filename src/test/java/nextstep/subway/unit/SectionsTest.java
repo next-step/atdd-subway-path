@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.SubwayException;
 import nextstep.subway.fake.FakeLineFactory;
 import nextstep.subway.fake.FakeStationFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -116,6 +117,18 @@ public class SectionsTest {
         for (Section section : sectionParams) {
             sectionList.add(section);
         }
+    }
+
+    @Test
+    @DisplayName("구간 추가 실패 테스트 - 구간 목록이 비어있을 때 삭제를 시도할 경우")
+    void 비어있는_구간_목록을_삭제() {
+        //when
+        Sections sections = 분당선.getSections();
+
+        //then
+        assertThatThrownBy(() -> sections.remove(FakeStationFactory.강남역()))
+                .isInstanceOf(SubwayException.class)
+                .hasMessage("등록된 구간이 없습니다.");
     }
 
 }
