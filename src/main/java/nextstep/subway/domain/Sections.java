@@ -11,6 +11,7 @@ import java.util.Optional;
 @Embeddable
 public class Sections {
     private final int MINIMUM_SECTIONS_SIZE = 0;
+    private final int MINIMUM_REMOVE_SECTIONS_SIZE = 2;
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -144,6 +145,7 @@ public class Sections {
 
     public void deleteSection(Station station) {
         matchStation(station);
+        checkSectionSize();
 
         Section lastSection = sections.get(getLastIndex());
 
@@ -152,6 +154,12 @@ public class Sections {
         }
 
         sections.remove(getLastIndex());
+    }
+
+    private void checkSectionSize() {
+        if (getSections().size() < MINIMUM_REMOVE_SECTIONS_SIZE) {
+            throw new IllegalArgumentException("구간은 두개 이상부터 삭제할 수 있습니다.");
+        }
     }
 
     private void matchStation(Station station) {

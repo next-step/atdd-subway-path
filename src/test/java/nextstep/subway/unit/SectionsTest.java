@@ -234,6 +234,21 @@ public class SectionsTest {
     }
 
     @Test
+    void 구간이_하나인_노선의_역을_삭제하면_예외를_일으킨다() {
+        // given
+        Line line = new Line("2호선", "green");
+        Station upStation = new Station("암사역");
+        Station downStation = new Station("모란역");
+        Section section = new Section(line, upStation, downStation, 10);
+        Sections sections = new Sections();
+        sections.addSection(section);
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(() ->
+                sections.deleteSection(upStation));
+    }
+
+    @Test
     void 구간_삭제_시_하행_종점역_외_다른역을_삭제하면_예외를_일으킨다() {
         // given
         Line line = new Line("2호선", "green");
