@@ -180,7 +180,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * Then 노선에 구간이 제거된다
      */
     @Test
-    void 지하철_노선에_구간을_제거한다() {
+    void 지하철_노선에_마지막_구간을_제거한다() {
         // given
         var 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 6));
