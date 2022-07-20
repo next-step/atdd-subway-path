@@ -109,16 +109,20 @@ class LineTest {
     void 노선_정보를_삭제한다() {
         // given
         Line line = new Line("2호선", "green");
-        Station upStation = new Station("암사역");
-        Station downStation = new Station("모란역");
-        Section section = new Section(line, upStation, downStation, 10);
-        line.addSection(section);
+        Station station1 = new Station("숭실대역");
+        Station station2 = new Station("모란역");
+        Station station3 = new Station("암사역");
+
+        Section section1 = new Section(line, station1, station2, 10);
+        Section section2 = new Section(line, station1, station3, 4);
+        line.addSection(section1);
+        line.addSection(section2);
 
         // when
-        line.deleteSection(downStation);
+        line.deleteSection(station1);
 
         // then
-        assertThat(line.getSections()).isEmpty();
+        assertThat(line.getSections()).hasSize(1);
     }
 
     @Test

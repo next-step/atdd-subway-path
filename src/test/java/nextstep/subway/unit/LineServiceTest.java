@@ -115,15 +115,17 @@ public class LineServiceTest {
     @Test
     void 노선을_삭제한다() {
         // given
-        Station upStation = stationRepository.save(new Station("암사역"));
-        Station downStation = stationRepository.save(new Station("모란역"));
-        LineResponse response = lineService.saveLine(new LineRequest("8호선", "bg-pink-500", upStation.getId(), downStation.getId(), 20));
+        Station station1 = stationRepository.save(new Station("암사역"));
+        Station station2 = stationRepository.save(new Station("모란역"));
+        Station station3 = stationRepository.save(new Station("송파역"));
+        LineResponse response = lineService.saveLine(new LineRequest("8호선", "bg-pink-500", station1.getId(), station2.getId(), 20));
+        lineService.addSection(response.getId(), new SectionRequest(station1.getId(), station3.getId(), 4));
 
         // when
-        lineService.deleteSection(response.getId(), downStation.getId());
+        lineService.deleteSection(response.getId(), station2.getId());
 
         // then
-        assertThat(lineService.getLine(response.getId()).getStations()).isEmpty();
+        assertThat(lineService.getLine(response.getId()).getStations()).hasSize(2);
     }
 
     @Test

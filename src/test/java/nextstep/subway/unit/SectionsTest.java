@@ -204,17 +204,48 @@ public class SectionsTest {
     void 구간을_삭제한다() {
         // given
         Line line = new Line("2호선", "green");
-        Station upStation = new Station("암사역");
-        Station downStation = new Station("모란역");
-        Section section = new Section(line, upStation, downStation, 10);
+        Station station1 = new Station("숭실대역");
+        Station station2 = new Station("모란역");
+        Station station3 = new Station("암사역");
+
+        Section section1 = new Section(line, station1, station2, 10);
+        Section section2 = new Section(line, station2, station3, 4);
         Sections sections = new Sections();
-        sections.addSection(section);
+        sections.addSection(section1);
+        sections.addSection(section2);
 
         // when
-        sections.deleteSection(downStation);
+        sections.deleteSection(station2);
 
-        // then
-        assertThat(sections.getSections()).isEmpty();
+        // when
+        assertThat(sections.getSections()).hasSize(1);
+    }
+
+    @Test
+    void 중간_구간을_삭제하면_주변_구간이_재배치_되어진다() {
+        // given
+        Line line = new Line("2호선", "green");
+        Station station1 = new Station("숭실대역");
+        Station station2 = new Station("모란역");
+        Station station3 = new Station("암사역");
+
+        Section section1 = new Section(line, station1, station2, 10);
+        Section section2 = new Section(line, station2, station3, 4);
+
+        Sections sections = new Sections();
+        sections.addSection(section1);
+        sections.addSection(section2);
+
+        // when
+        sections.deleteSection(station2);
+
+        // when
+        assertAll(() -> {
+            assertThat(sections.getSections()).hasSize(1);
+            assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(new Station("숭실대역"));
+            assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(new Station("암사역"));
+            assertThat(sections.getSections().get(0).getDistance().getDistance()).isEqualTo(14);
+        });
     }
 
     @Test

@@ -53,8 +53,16 @@ public class Section {
                 .anyMatch(otherSection.getStations()::contains);
     }
 
-    public void changeDistance(Distance distance) {
+    public Boolean anyMatchStation(Station otherStation) {
+        return getStations().stream().anyMatch(station -> station.equals(otherStation));
+    }
+
+    public void minusDistance(Distance distance) {
         this.distance = this.distance.minus(distance);
+    }
+
+    public void plusDistance(Distance distance) {
+        this.distance = this.distance.plus(distance);
     }
 
     public List<Station> getStations() {
