@@ -8,6 +8,7 @@ import java.util.*;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
+import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
@@ -73,6 +74,28 @@ public class LineServiceMockTest {
                         .extracting("name").containsExactly(일호선.getName(), 이호선.getName()),
                 () -> assertThat(allLines)
                         .extracting("color").containsExactly(일호선.getColor(), 이호선.getColor())
+        );
+    }
+
+    @Test
+    void updateLine() {
+        // given
+        String newLineName = "1호선";
+        String newLineColor = "blue";
+        when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
+        LineRequest lineRequest = new LineRequest();
+        lineRequest.setName(newLineName);
+        lineRequest.setColor(newLineColor);
+
+
+        // when
+        lineService.updateLine(이호선.getId(), lineRequest);
+
+        // then
+        LineResponse newResponse = lineService.findById(이호선.getId());
+        assertAll(
+                () -> assertThat(newResponse.getColor()).isEqualTo(newLineColor),
+                () -> assertThat(newResponse.getName()).isEqualTo(newLineName)
         );
     }
 

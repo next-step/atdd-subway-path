@@ -82,6 +82,28 @@ public class LineServiceTest {
         );
     }
 
+    @Test
+    void updateLine() {
+        // given
+        String newLineName = "1호선";
+        String newLineColor = "blue";
+        Line 이호선 = lineRepository.save(createLine("2호선", "green", 역삼역, 선릉역));
+
+        LineRequest lineRequest = new LineRequest();
+        lineRequest.setName(newLineName);
+        lineRequest.setColor(newLineColor);
+
+        // when
+        lineService.updateLine(이호선.getId(), lineRequest);
+
+        // then
+        LineResponse newResponse = lineService.findById(이호선.getId());
+        assertAll(
+                () -> assertThat(newResponse.getColor()).isEqualTo(newLineColor),
+                () -> assertThat(newResponse.getName()).isEqualTo(newLineName)
+        );
+    }
+
     private Line createLine(String name, String color, Station upStation, Station downStation) {
         Line line = new Line(name, color);
         line.addSection(upStation, downStation, 10);
