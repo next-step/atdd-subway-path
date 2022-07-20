@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.ErrorCode;
+import nextstep.subway.exception.sections.SectionsException;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -40,11 +43,11 @@ public class Section {
         this.distance = distance;
     }
 
-    public boolean isGreaterThanDistance(int distance) {
-        return this.distance >= distance;
-    }
-
     public Section divideSectionByMiddle(Section section) {
+        if (isLessThanDistance(section.getDistance())) {
+            throw new SectionsException(ErrorCode.SECTION_DISTANCE_EXCEPTION);
+        }
+
         if (section.hasSameUpStation(this.upStation)) {
             return new Section(this.line, section.getDownStation(), this.downStation, this.distance - section.getDistance());
         }
@@ -93,6 +96,10 @@ public class Section {
 
     private boolean containsStation(Station station) {
         return this.upStation.equals(station) || this.downStation.equals(station);
+    }
+
+    private boolean isLessThanDistance(int distance) {
+        return this.distance <= distance;
     }
 
     @Override

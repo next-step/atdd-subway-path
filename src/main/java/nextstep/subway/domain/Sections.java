@@ -44,9 +44,6 @@ public class Sections {
         }
 
         Section findSection = findTargetSection(section);
-        if (section.isGreaterThanDistance(findSection.getDistance())) {
-            throw new SectionsException(ErrorCode.SECTION_DISTANCE_EXCEPTION);
-        }
         Section halfSection = findSection.divideSectionByMiddle(section);
         sections.remove(findSection);
         sections.add(halfSection);
