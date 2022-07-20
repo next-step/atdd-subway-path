@@ -2,6 +2,15 @@
 
 [ATDD 강의](https://edu.nextstep.camp/c/R89PYi5H) 실습을 위한 지하철 노선도 애플리케이션
 
+## Step2 PR 추가 수정 TODO List
+
+- [ ] SectionsTest 경계값 관련된 테스트를 추가하기
+- [ ] Custom Exception 세분화 하기
+- [ ] 인수조건 주석 다시 생각해보기
+- [ ] Sections의 add의 hasUpStation && hasDownStation 부분 메서드로 추출하기
+- [ ] 신규역을 추가할때 StackOverFlow 가 발생하는 재귀호출 부분 해결하기
+- [ ] 구간 거리테스트 재확인 하기
+
 ## Step2 PR 수정 TODO list
 
 - [x] sections의 isSectionsUpStation, isSectionsDownStation 두 if문 합치기
