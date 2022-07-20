@@ -134,7 +134,7 @@ public class LineServiceMockTest {
         Line line = new Line("8호선", "bg-pink-500");
         Station upStation = new Station("암사역");
         Station downStation = new Station("모란역");
-        line.getSections().add(new Section(line, upStation, downStation, 20));
+        line.addSection(new Section(line, upStation, downStation, 20));
 
         given(lineRepository.findById(1L)).willReturn(Optional.of(line));
         given(stationService.findById(2L)).willReturn(downStation);
@@ -152,7 +152,7 @@ public class LineServiceMockTest {
         Line line = new Line("8호선", "bg-pink-500");
         Station upStation = new Station("암사역");
         Station downStation = new Station("모란역");
-        line.getSections().add(new Section(line, upStation, downStation, 20));
+        line.addSection(new Section(line, upStation, downStation, 20));
 
         given(lineRepository.findById(1L)).willReturn(Optional.of(line));
         given(stationService.findById(1L)).willReturn(upStation);

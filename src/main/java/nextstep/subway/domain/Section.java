@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -35,8 +36,25 @@ public class Section {
         this.distance = new Distance(distance);
     }
 
+    public void changeUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void changeDownStation(Station station) {
+        this.downStation = station;
+    }
+
     public boolean matchDownStation(Station station) {
         return downStation.equals(station);
+    }
+
+    public Boolean anyMatch(Section otherSection) {
+        return getStations().stream()
+                .anyMatch(otherSection.getStations()::contains);
+    }
+
+    public void changeDistance(Distance distance) {
+        this.distance = this.distance.minus(distance);
     }
 
     public List<Station> getStations() {
@@ -55,4 +73,20 @@ public class Section {
         return downStation;
     }
 
+    public Distance getDistance() {
+        return distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(upStation, downStation);
+    }
 }

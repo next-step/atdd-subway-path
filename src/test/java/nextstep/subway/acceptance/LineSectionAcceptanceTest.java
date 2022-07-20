@@ -43,12 +43,135 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     void addLineSection() {
         // when
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 6));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+    }
+
+    /**
+     * When 지하철 노선 구간 사이에 새로운 구간을 추가를 요청 하면
+     * Then 노선에 새로운 구간이 추가된다
+     */
+    @Test
+    void 지하철_노선_구간_사이에_구간을_등록() {
+        // when
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 3));
+
+        // then
+        var 지하철_노선_목록_조회_응답 = 지하철_노선_목록을_조회한다();
+        지하철_노선이_포함되어있다(지하철_노선_목록_조회_응답, 강남역, 정자역, 양재역);
+    }
+
+    /**
+     * When 지하철 노선 구간 사이에 새로운 구간을 2개 추가 요청 하면
+     * Then 노선에 새로운 구간이 추가된다
+     */
+    @Test
+    void 지하철_노선_구간_사이에_2개의_구간을_등록() {
+        // when
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        Long 송파나루역 = 지하철역_생성_요청("송파나루역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 3));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 송파나루역, 2));
+
+        // then
+        var 지하철_노선_목록_조회_응답 = 지하철_노선_목록을_조회한다();
+        지하철_노선이_포함되어있다(지하철_노선_목록_조회_응답, 강남역, 송파나루역, 정자역, 양재역);
+    }
+
+
+    /**
+     * When 지하철 노선 상행 종점역에 새로운 구간을 추가를 요청 하면
+     * Then 노선에 새로운 구간이 추가된다
+     */
+    @Test
+    void 지하철_노선_구간_상행_종점역에_새로운_구간을_추가() {
+        // when
+        var 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 강남역, 5));
+
+        // then
+        var 지하철_노선_목록_조회_응답 = 지하철_노선_목록을_조회한다();
+        지하철_노선이_포함되어있다(지하철_노선_목록_조회_응답, 정자역, 강남역, 양재역);
+    }
+
+    /**
+     * When 지하철 노선 하행 종점역에 새로운 구간을 추가를 요청 하면
+     * Then 노선에 새로운 구간이 추가된다
+     */
+    @Test
+    void 지하철_노선_구간_하행_종점역에_새로운_구간을_추가() {
+        // when
+        var 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 5));
+
+        // then
+        var 지하철_노선_목록_조회_응답 = 지하철_노선_목록을_조회한다();
+        지하철_노선이_포함되어있다(지하철_노선_목록_조회_응답, 강남역, 양재역, 정자역);
+    }
+
+    /**
+     * When 지하철 노선 구간 사이에 거리가 비슷한 새로운 구간을 추가를 요청 하면
+     * Then 노선에 새로운 구간이 추가되지 않는다
+     */
+    @Test
+    void 지하철_노선_구간_사이에_같은_거리를_가진_구간을_등록() {
+        // when
+        var 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        var 구간_생성_요청_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 10));
+
+        // then
+        구간_추가를_실패한다(구간_생성_요청_응답);
+    }
+
+    /**
+     * When 지하철 노선 구간 사이에 거리가 현재 노선보다 큰 새로운 구간을 추가를 요청 하면
+     * Then 노선에 새로운 구간이 추가되지 않는다
+     */
+    @Test
+    void 지하철_노선_구간_사이에_거리가_현재_노선보다_큰_구간을_등록() {
+        // when
+        var 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        var 구간_생성_요청_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 11));
+
+        // then
+        구간_추가를_실패한다(구간_생성_요청_응답);
+    }
+
+    /**
+     * When 지하철 노선 구간 사이에 똑같은 구간을 추가를 요청 하면
+     * Then 노선에 새로운 구간이 추가되지 않는다
+     */
+    @Test
+    void 지하철_노선_구간_사이에_같은_구간을_등록() {
+        // when
+        var 구간_생성_요청_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 3));
+
+        // then
+        구간_추가를_실패한다(구간_생성_요청_응답);
+    }
+
+    private void 구간_추가를_실패한다(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 지하철 노선 구간 사이에 상행역, 하행역 포함되지 않는 구간을 추가를 요청 하면
+     * Then 노선에 새로운 구간이 추가되지 않는다
+     */
+    @Test
+    void 지하철_노선_구간_사이에_서로_다른_구간을_등록() {
+        // when
+        var 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        var 송파역 = 지하철역_생성_요청("송파역").jsonPath().getLong("id");
+        var 구간_생성_요청_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 송파역, 3));
+
+        // then
+        구간_추가를_실패한다(구간_생성_요청_응답);
     }
 
     /**
@@ -61,7 +184,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     void removeLineSection() {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 6));
 
         // when
         지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
@@ -83,11 +206,22 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         return lineCreateParams;
     }
 
-    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId) {
+    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, Integer distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");
-        params.put("distance", 6 + "");
+        params.put("distance", distance + "");
         return params;
+    }
+
+    private void 지하철_노선이_포함되어있다(ExtractableResponse<Response> 지하철_노선_목록_조회_응답, Long... elements) {
+        assertThat(지하철_노선_목록_조회_응답.jsonPath().getList("stations.id", Long.class)).containsExactly(elements);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_목록을_조회한다() {
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        return response;
     }
 }
