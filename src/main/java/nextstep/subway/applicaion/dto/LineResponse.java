@@ -1,9 +1,11 @@
 package nextstep.subway.applicaion.dto;
 
 import java.util.List;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
-@Data
+@Getter
+@EqualsAndHashCode
 public class LineResponse {
     private Long id;
     private String name;
