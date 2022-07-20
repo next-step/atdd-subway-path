@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,6 +32,7 @@ public class Sections {
             this.sections.add(section);
             return;
         }
+        checkDuplicationSection(section);
         sections.add(section);
     }
 
@@ -82,6 +84,21 @@ public class Sections {
 
         Section section = findSectionByDownStation(station);
         sections.remove(section);
+    }
+
+    private void checkDuplicationSection(Section newSection) {
+        this.sections.stream()
+                .filter(section -> section.isSameSection(newSection)
+                        || isNewSectionDownStationInLine(newSection, section))
+                .findFirst()
+                .ifPresent(section -> {
+                    throw new IllegalArgumentException("구간이 중복되어 있으면 등록할 수 없습니다.");
+                });
+    }
+
+    private boolean isNewSectionDownStationInLine(Section newSection, Section section) {
+        return section.getUpStation() == newSection.getDownStation()
+                || section.getDownStation() == newSection.getDownStation();
     }
 
     private Section findSectionByDownStation(Station downStation) {

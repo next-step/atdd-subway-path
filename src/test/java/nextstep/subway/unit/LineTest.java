@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -29,21 +30,39 @@ class LineTest {
         구로역 = new Station("구로역");
     }
 
+    @Nested
     @DisplayName("구간 추가")
-    @Test
-    void addSection() {
-        // given
-        Line 이호선 = new Line("2호선", "green");
+    class addSection {
+        @DisplayName("하행 종점역 구간추가")
+        @Test
+        void addSectionDownStationTerminal() {
+            // given
+            Line 이호선 = new Line("2호선", "green");
 
-        // when
-        이호선.addSection(영등포역, 신도림역, 10);
-        이호선.addSection(신도림역, 구로역, 5);
+            // when
+            이호선.addSection(영등포역, 신도림역, 10);
+            이호선.addSection(신도림역, 구로역, 5);
 
-        // then
-        assertAll(
-                () -> assertThat(이호선.getStations()).hasSize(3),
-                () -> assertThat(이호선.getStations()).containsExactly(영등포역, 신도림역, 구로역)
-        );
+            // then
+            assertAll(
+                    () -> assertThat(이호선.getStations()).hasSize(3),
+                    () -> assertThat(이호선.getStations()).containsExactly(영등포역, 신도림역, 구로역)
+            );
+        }
+
+        @DisplayName("기존 구간이 존재할 경우 구간추가 실패")
+        @Test
+        void addSectionDuplication() {
+            // given
+            Line 이호선 = new Line("2호선", "green");
+
+            // when
+            이호선.addSection(신도림역, 구로역, 5);
+
+            // then
+            assertThatThrownBy(() -> 이호선.addSection(신도림역, 구로역, 10))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
     }
 
     @DisplayName("노선의 모든 지하철역 가져오기")

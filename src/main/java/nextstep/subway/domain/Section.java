@@ -36,4 +36,9 @@ public class Section {
         this.downStation = downStation;
         this.distance = distance;
     }
+
+    public boolean isSameSection(Section newSection) {
+        return this.getUpStation() == newSection.getUpStation()
+                && this.getDownStation() == newSection.getDownStation();
+    }
 }
