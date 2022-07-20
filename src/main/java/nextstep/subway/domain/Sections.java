@@ -19,11 +19,24 @@ public class Sections {
     }
 
     public void add(Section section) {
+        validateBeforeAdd(section);
         if (isBetweenUpStationAndDownStation(section)) {
-            addInterSection(section);
+            addSectionBetweenUpStationAndDownStation(section);
             return;
         }
         sections.add(section);
+    }
+
+    private void validateBeforeAdd(Section section) {
+        if (sections.isEmpty()) {
+            return;
+        }
+        if (doesNotContainStationOf(section)) {
+            throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
+        }
+        if (hasSameSection(section)) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
+        }
     }
 
     private boolean isBetweenUpStationAndDownStation(Section section) {
@@ -62,11 +75,7 @@ public class Sections {
                 .sum();
     }
 
-    public boolean isEmpty() {
-        return sections.isEmpty();
-    }
-
-    private void addInterSection(Section section) {
+    private void addSectionBetweenUpStationAndDownStation(Section section) {
         if (matchInUpStations(section.getUpStation())) {
             addSectionByUpStation(section);
             return;
@@ -122,7 +131,7 @@ public class Sections {
         return distance;
     }
 
-    public boolean doesNotContainStationOf(Section section) {
+    private boolean doesNotContainStationOf(Section section) {
         final List<Station> stations = sections.stream()
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
@@ -136,7 +145,7 @@ public class Sections {
         return sizeBeforeRemove == sizeAfterRemove;
     }
 
-    public boolean hasSameSection(Section section) {
+    private boolean hasSameSection(Section section) {
         return sections.stream().anyMatch(e -> e.equals(section));
     }
 
