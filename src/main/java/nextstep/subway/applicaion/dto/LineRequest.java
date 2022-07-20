@@ -2,11 +2,17 @@ package nextstep.subway.applicaion.dto;
 
 import nextstep.subway.domain.Line;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+
 public class LineRequest {
     private String name;
     private String color;
+    @NotNull
     private Long upStationId;
+    @NotNull
     private Long downStationId;
+    @Positive
     private int distance;
 
     public String getName() {
@@ -31,9 +37,5 @@ public class LineRequest {
 
     public Line toLine() {
         return Line.of(name, color);
-    }
-
-    public boolean valid() {
-        return upStationId != null && downStationId != null && distance != 0;
     }
 }

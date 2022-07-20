@@ -27,11 +27,10 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(request.toLine());
 
-        if (request.valid()) {
-            Station upStation = findStationById(request.getUpStationId());
-            Station downStation = findStationById(request.getDownStationId());
-            line.addSection(Section.of(upStation, downStation, request.getDistance()));
-        }
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
+        line.addSection(Section.of(upStation, downStation, request.getDistance()));
+
         return createLineResponse(line);
     }
 
