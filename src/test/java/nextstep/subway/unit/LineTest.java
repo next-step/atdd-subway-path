@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static nextstep.subway.unit.LineTest.Stub.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련")
@@ -21,7 +20,7 @@ class LineTest {
         Line line = new Line("2호선", "green");
 
         // when
-        line.addSection(구로디지털단지역, 신대방역, 10);
+        line.addSection(Stub.구로디지털단지역, Stub.신대방역, 10);
 
         // then
         assertThat(line.getSections().size()).isEqualTo(1);
@@ -31,34 +30,34 @@ class LineTest {
     @Test
     void getStations() {
         // given
-        Line line = 이호선_생성.get();
+        Line line = Stub.이호선_생성.get();
 
         // when
         List<Station> stations = line.getStations();
 
         // then
-        assertThat(stations).contains(구로디지털단지역, 신대방역, 신림역);
+        assertThat(stations).contains(Stub.구로디지털단지역, Stub.신대방역, Stub.신림역);
     }
 
     @DisplayName("지하철 구간 삭제")
     @Test
     void removeSection() {
         // given
-        Line line = 이호선_생성.get();
+        Line line = Stub.이호선_생성.get();
 
         // when
-        line.removeSection(신림역);
+        line.removeSection(Stub.신림역);
 
         // then
         assertThat(line.getSections().size()).isEqualTo(1);
-        assertThat(line.getStations()).contains(구로디지털단지역, 신대방역);
+        assertThat(line.getStations()).contains(Stub.구로디지털단지역, Stub.신대방역);
     }
 
     @DisplayName("지하철 노선 수정")
     @Test
     void updateLine() {
         // given
-        Line line = 이호선_생성.get();
+        Line line = Stub.이호선_생성.get();
 
         // when
         line.update("신분당선", "red");
@@ -68,12 +67,11 @@ class LineTest {
         assertThat(line.getColor()).isEqualTo("red");
     }
 
-    static class Stub {
-        static final Station 구로디지털단지역 = new Station("구로디지털단지역");
-        static final Station 신대방역 = new Station("신대방역");
-        static final Station 신림역 = new Station("신림역");
-
-        static final Supplier<Line> 이호선_생성 = () -> {
+    private static class Stub {
+        public static final Station 구로디지털단지역 = new Station("구로디지털단지역");
+        public static final Station 신대방역 = new Station("신대방역");
+        public static final Station 신림역 = new Station("신림역");
+        public static final Supplier<Line> 이호선_생성 = () -> {
             Line line = new Line("2호선", "green");
             line.addSection(구로디지털단지역, 신대방역, 10);
             line.addSection(신대방역, 신림역, 8);

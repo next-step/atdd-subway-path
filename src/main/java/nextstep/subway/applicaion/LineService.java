@@ -3,14 +3,12 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,20 +25,23 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = stationService.findById(request.getUpStationId());
-        Station downStation = stationService.findById(request.getDownStationId());
-        Line line = lineRepository.save(new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
-        return createLineResponse(line);
+        Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
+        if (request.hasSection()) {
+            Station upStation = stationService.findById(request.getUpStationId());
+            Station downStation = stationService.findById(request.getDownStationId());
+            line.addSection(upStation, downStation, request.getDistance());
+        }
+        return new LineResponse(line);
     }
 
     public List<LineResponse> showLines() {
         return lineRepository.findAll().stream()
-                .map(this::createLineResponse)
+                .map(LineResponse::new)
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
-        return createLineResponse(findLineById(id));
+        return new LineResponse(findLineById(id));
     }
 
     public Line findLineById(Long id) {
@@ -63,25 +64,6 @@ public class LineService {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         findLineById(lineId).addSection(upStation, downStation, sectionRequest.getDistance());
-    }
-
-    private LineResponse createLineResponse(Line line) {
-        return new LineResponse(
-                line.getId(),
-                line.getName(),
-                line.getColor(),
-                createStationResponses(line)
-        );
-    }
-
-    private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return line.getStations().stream()
-                .map(stationService::createStationResponse)
-                .collect(Collectors.toList());
     }
 
     @Transactional

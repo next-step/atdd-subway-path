@@ -25,6 +25,10 @@ public class Section {
     public Section() {
     }
 
+    public Section(Station upStation, Station downStation, int distance) {
+        this(null, upStation, downStation, distance);
+    }
+
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
@@ -38,6 +42,48 @@ public class Section {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public boolean isEnoughDistance(int distance) {
+        return this.distance > distance;
+    }
+
+    public boolean isBetweenSection(Section section) {
+        return this.upStation.equals(section.upStation) || this.downStation.equals(section.downStation);
+    }
+
+    public boolean isLeafSection(Section section) {
+        return this.upStation.equals(section.downStation) || this.downStation.equals(section.upStation);
+    }
+
+    public void changeDownSection(Section newSection) {
+        this.downStation = newSection.upStation;
+        this.distance = minusDistance(newSection.distance);
+    }
+
+    public void changeUpSection(Section newSection) {
+        this.upStation = newSection.downStation;
+        this.distance = minusDistance(newSection.distance);
+    }
+
+    public int minusDistance(int distance) {
+        return this.distance - distance;
+    }
+
+    public boolean matchUpStationForDown(Section section) {
+        return this.upStation.equals(section.downStation);
+    }
+
+    public boolean matchStations(Section section) {
+        return matchUpStation(section) && this.downStation.equals(section.downStation);
+    }
+
+    public boolean matchUpStation(Section section) {
+        return this.upStation.equals(section.upStation);
     }
 
 }
