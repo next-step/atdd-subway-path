@@ -33,12 +33,12 @@ public class Sections {
             return;
         }
 
-        if (anyMatchSection(s -> s.equalsUpStation(section.getUpStation()))) {
+        if (hasEqualsUpStation(section)) {
             Section originalSection = getSectionByCondition(s -> s.equalsUpStation(section.getUpStation()));
             originalSection.updateUpStationToSectionDownStation(section);
         }
 
-        if (anyMatchSection(s -> s.equalsDownStation(section.getDownStation()))) {
+        if (hasEqualsDownStation(section)) {
             Section originalSection = getSectionByCondition(s -> s.equalsDownStation(section.getDownStation()));
             originalSection.updateDownStationToSectionUpStation(section);
         }
@@ -115,6 +115,14 @@ public class Sections {
 
     private boolean isAddFirstOrLastSection(Section section) {
         return anyMatchSection(s -> s.equalsDownStation(section.getUpStation()) || s.equalsUpStation(section.getDownStation()));
+    }
+
+    private boolean hasEqualsDownStation(Section section) {
+        return anyMatchSection(s -> s.equalsDownStation(section.getDownStation()));
+    }
+
+    private boolean hasEqualsUpStation(Section section) {
+        return anyMatchSection(s -> s.equalsUpStation(section.getUpStation()));
     }
 
     private Section getSectionByCondition(Predicate<Section> condition) {
