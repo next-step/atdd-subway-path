@@ -14,3 +14,11 @@
    3. 리팩터링 과정에서 Line 이외 추가적인 클래스가 생겨도 좋음
       1. 구간 관리에 대한 책임을 Line 외 별도의 도메인 객체가 가지게 할 수 있음
          1. Line 이 List 형태로 가지고 있던 Section 을 Sections 라는 일급 콜렉션을 이용하여 분리함
+4. step 1 피드백 리스트
+   1. StationService -> StationRepository 로 했을 때의 side effect
+   2. request 객체에 valid 함수를 생성! -> 이 경우 Service 레이어에서 검증하는데 이렇게 하기 보다는 요청을 받는 순간 검증을 하도록! -> spring validation 사용
+   3. 구간을 등록할 때 (구간 등록시) 요구 사항 준수!
+   4. Sections 에서 예외 사항을 자세하게 분리하는 방식!
+   5. Sections 에서 지하철 노선에 상행 종점역과 하행 종점역만 있는 경우에 대한 예외 처리가 없다.
+   6. LineTest 에서 하드 코딩보다는 전역 상수로 선언해보자!
+   7. LineTest 에서 예외 케이스에 대한 검증 테스트도 같이 해보자!
