@@ -56,6 +56,7 @@ class SectionsTest {
     void addFirstOrLastSectionTest(String upStationName, String downStationName) {
         sections.add(new Section(line, new Station(upStationName), new Station(downStationName), 10));
         assertThat(sections.size()).isEqualTo(2);
+        assertThat(sections.getStations()).containsAnyOf(new Station(upStationName), new Station(downStationName));
     }
 
     @ParameterizedTest( name = "[{argumentsWithNames}] 역의 중간에 추가하면 할때 기존 구간보다 거리가 짧으면 정상적으로 추가가 된다.")
