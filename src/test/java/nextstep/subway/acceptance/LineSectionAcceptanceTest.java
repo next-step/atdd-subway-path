@@ -50,8 +50,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역, 양재역);
+        요청이_정상수행되었는지검증(response);
+        해당역이존재하는지검증(response, 강남역, 정자역, 양재역);
     }
 
     /**
@@ -68,8 +68,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역, 양재역);
+        요청이_정상수행되었는지검증(response);
+        해당역이존재하는지검증(response, 강남역, 정자역, 양재역);
     }
 
     /**
@@ -86,8 +86,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+        요청이_정상수행되었는지검증(response);
+        해당역이존재하는지검증(response, 강남역, 양재역, 정자역);
     }
 
     /**
@@ -104,8 +104,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(정자역, 강남역, 양재역);
+        요청이_정상수행되었는지검증(response);
+        해당역이존재하는지검증(response, 정자역, 강남역, 양재역);
     }
 
 
@@ -123,8 +123,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+        요청이_정상수행되었는지검증(response);
+        해당역이존재하는지검증(response, 강남역, 양재역);
     }
 
     /**
@@ -141,8 +141,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+        요청이_정상수행되었는지검증(response);
+        해당역이존재하는지검증(response, 강남역, 양재역);
     }
 
     /**
@@ -158,8 +158,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+        요청이_정상수행되었는지검증(response);
+        해당역이존재하는지검증(response, 강남역, 양재역);
     }
 
     /**
@@ -178,8 +178,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+        요청이_정상수행되었는지검증(response);
+        해당역이존재하는지검증(response, 강남역, 양재역);
     }
 
     /**
@@ -199,8 +199,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+        요청이_정상수행되었는지검증(response);
+        해당역이존재하는지검증(response, 강남역, 양재역);
     }
 
     /**
@@ -220,8 +220,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(양재역, 정자역);
+        요청이_정상수행되었는지검증(response);
+        해당역이존재하는지검증(response, 양재역, 정자역);
     }
 
     /**
@@ -241,8 +241,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
+        요청이_정상수행되었는지검증(response);
+        해당역이존재하는지검증(response, 강남역, 정자역);
     }
 
     /**
@@ -260,8 +260,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+        요청이_정상수행되었는지검증(response);
+        해당역이존재하는지검증(response, 강남역, 양재역);
     }
 
     /**
@@ -280,8 +280,16 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        요청이_정상수행되었는지검증(response);
+        해당역이존재하는지검증(response, 강남역, 양재역);
+    }
+
+    private void 요청이_정상수행되었는지검증(final ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+    }
+
+    private void 해당역이존재하는지검증(final ExtractableResponse<Response> response, final Long... linesId) {
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(linesId);
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
