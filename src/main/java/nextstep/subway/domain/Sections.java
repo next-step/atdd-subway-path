@@ -106,7 +106,7 @@ public class Sections {
     }
 
     private boolean alreadyConnectStation(Section section) {
-        return anyMatchSection(s -> s.equalsUpStation(section.getUpStation())) && anyMatchSection(s -> s.equalsDownStation(section.getDownStation()));
+        return anyMatchSection(s -> s.anyEqualsStation(section.getUpStation())) && anyMatchSection(s -> s.anyEqualsStation(section.getDownStation()));
     }
 
     private boolean nonExistConnectStation(Section section) {

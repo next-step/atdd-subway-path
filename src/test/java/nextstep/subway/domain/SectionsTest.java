@@ -35,10 +35,10 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("이미 등록된 구간은 추가가 실패한다.")
+    @DisplayName("이미 등록된 두 역을 추가하면 추가가 실패한다.")
     void addAlreadyConnectionFailTest() {
-        assertThatIllegalArgumentException().isThrownBy(() -> sections.add(new Section(line, 중앙역, 한대앞역, 10)))
-                .withMessage("이미 등록된 역은 등록할 수 없어요.");
+        assertThatIllegalArgumentException().isThrownBy(() -> sections.add(new Section(line, 중앙역, 한대앞역, 10))).withMessage("이미 등록된 역은 등록할 수 없어요.");
+        assertThatIllegalArgumentException().isThrownBy(() -> sections.add(new Section(line, 한대앞역, 중앙역, 10))).withMessage("이미 등록된 역은 등록할 수 없어요.");
     }
 
     @Test
