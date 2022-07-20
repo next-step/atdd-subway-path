@@ -64,7 +64,7 @@ public class Sections {
     }
 
     private void validateSection2(Section additionalSection) {
-        if (hasNotOnlyOneStation(additionalSection)) {
+        if (this.hasNotOnlyOneStation(additionalSection)) {
             throw new IllegalArgumentException();
         }
     }
