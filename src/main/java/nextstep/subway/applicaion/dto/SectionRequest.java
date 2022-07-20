@@ -1,5 +1,11 @@
 package nextstep.subway.applicaion.dto;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SectionRequest {
     private Long upStationId;
     private Long downStationId;
