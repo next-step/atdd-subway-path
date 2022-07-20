@@ -50,7 +50,7 @@ public class Section {
         return this.getUpStation() == upStation;
     }
 
-    public boolean isLongerThan(Section newSection) {
-        return this.getDistance() - newSection.getDistance() <= 0;
+    public boolean isLongerThan(Section section) {
+        return section.getDistance() - this.getDistance() <= 0;
     }
 }

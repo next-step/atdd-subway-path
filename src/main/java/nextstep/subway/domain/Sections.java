@@ -32,6 +32,7 @@ public class Sections {
             return;
         }
         checkDuplicationSection(section);
+        checkAlreadyRestedStation(section);
 
         sectionContainDownStation(section);
         sectionContainUpStation(section);
@@ -152,6 +153,13 @@ public class Sections {
                 .ifPresent(section -> {
                     throw new IllegalArgumentException("구간이 중복되어 있으면 등록할 수 없습니다.");
                 });
+    }
+
+    private void checkAlreadyRestedStation(Section newSection) {
+        if (this.getStations().contains(newSection.getUpStation())
+                && this.getStations().contains(newSection.getDownStation())) {
+            throw new IllegalArgumentException("상행역과 하행역이 둘 다 포함되어 있습니다.");
+        }
     }
 
     private Section findSectionByDownStation(Station downStation) {

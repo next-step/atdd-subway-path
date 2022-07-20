@@ -1,20 +1,18 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.domain.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.util.List;
+import javax.transaction.Transactional;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-
-import javax.transaction.Transactional;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Line 도메인 객체 테스트")
 @SpringBootTest
@@ -79,7 +77,7 @@ class LineTest {
             이호선.addSection(신도림역, 구로역, 10);
 
             // when
-            이호선.addSection(신갈역, 영등포역, 5);
+            이호선.addSection(신갈역, 영등포역, 3);
 
             // then
             assertAll(
@@ -97,7 +95,7 @@ class LineTest {
             이호선.addSection(신도림역, 구로역, 10);
 
             // when
-            이호선.addSection(영등포역, 신도림역, 5);
+            이호선.addSection(영등포역, 신도림역, 3);
 
             // then
             assertAll(
@@ -117,6 +115,22 @@ class LineTest {
 
             // then
             assertThatThrownBy(() -> 이호선.addSection(신도림역, 구로역, 10))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @DisplayName("기존 노선에 상행역, 하행역이 둘다 존재할 경우 실패")
+        @Test
+        void addSectionDuplicationUpStationAndDownStation() {
+            // given
+            Line 이호선 = new Line("2호선", "green");
+            이호선.addSection(영등포역, 신도림역, 5);
+            이호선.addSection(신도림역, 구로역, 10);
+
+            // when
+            // then
+            assertThatThrownBy(() -> 이호선.addSection(구로역, 영등포역, 10))
+                    .isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> 이호선.addSection(영등포역, 구로역, 10))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
