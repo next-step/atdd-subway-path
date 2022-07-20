@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.AddSectionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -33,6 +34,32 @@ class LineTest {
                 () -> assertThat(sections.get(0).getUpStation()).isEqualTo(강남역),
                 () -> assertThat(sections.get(0).getDownStation()).isEqualTo(신논현역)
         );
+    }
+
+    @DisplayName("지하철 구간 추가시 종점역과 신규 상행역이 일치 하지 않을 경우 예외")
+    @Test
+    void unmatchedLastStationAndNewUpStationException() {
+        Line 신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
+
+        Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
+        Section 정자_판교역 = Section.of(정자역, 판교역, 5);
+
+        신분당선.addSection(강남_신논현);
+
+        assertThatThrownBy(() -> 신분당선.addSection(정자_판교역)).isInstanceOf(AddSectionException.class);
+    }
+
+    @DisplayName("지하철 구간 추가시 기존 노선에 존재하는 역일 경우 예외")
+    @Test
+    void alreadyExistsStationException() {
+        Line 신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
+
+        Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
+        Section 신논현_강남 = Section.of(신논현역, 강남역, 5);
+
+        신분당선.addSection(강남_신논현);
+
+        assertThatThrownBy(() -> 신분당선.addSection(신논현_강남)).isInstanceOf(AddSectionException.class);
     }
 
     @DisplayName("지하철 노선에 존재하는 모든 역 조회")
