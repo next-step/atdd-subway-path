@@ -88,6 +88,14 @@ public class Section {
     }
 
     @Override
+    public String toString() {
+        return "Section{" +
+                "upStation=" + upStation +
+                ", downStation=" + downStation +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

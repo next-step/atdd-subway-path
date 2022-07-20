@@ -6,7 +6,7 @@
 
 - [x] sections의 isSectionsUpStation, isSectionsDownStation 두 if문 합치기
 - [ ] sections의 마지막 예외를 던지던 부분의 위치 고민하기
-- [ ] add_section_front_at_line 테스트 코드 보강하기
+- [x] add_section_front_at_line 테스트 코드 보강하기
 - [ ] Sections 내부의 isGreaterThanDistance 를 Section 내부로 옮기기
 - [ ] section 의 distance 가 나누어졌는지 다시 생각해보기
 - [ ] 예외를 정의하여 어떤 장점/단점이 있는 지 고민해보기

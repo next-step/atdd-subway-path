@@ -18,6 +18,10 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
+    public List<Section> getSections() {
+        return sections;
+    }
+
     public void add(Section section) {
         if (sections.isEmpty()) {
             sections.add(section);
@@ -118,15 +122,11 @@ public class Sections {
     }
 
     private boolean isSectionsUpStation(Station station) {
-        return getFirstSection().hasSameUpStation(station);
+        return getFirstUpStation().equals(station);
     }
 
     private boolean isSectionsDownStation(Station station) {
-        return getLastSection().hasSameDownStation(station);
-    }
-
-    private Section getFirstSection() {
-        return sections.get(FIRST_SECTION_INDEX);
+        return getLastDownStation().equals(station);
     }
 
     private Section getLastSection() {
@@ -138,7 +138,7 @@ public class Sections {
     }
 
     private Station getFirstUpStation() {
-        Station startStation = getFirstSection().getUpStation();
+        Station startStation = sections.get(FIRST_SECTION_INDEX).getUpStation();
         return getFirstUpStation(startStation);
     }
 
@@ -149,5 +149,19 @@ public class Sections {
                 .map(Section::getUpStation)
                 .map(this::getFirstUpStation)
                 .orElse(startStation);
+    }
+
+    private Station getLastDownStation() {
+        Station station = sections.get(FIRST_SECTION_INDEX).getDownStation();
+        return getLastDownStation(station);
+    }
+
+    private Station getLastDownStation(Station downStation) {
+        return sections.stream()
+                .filter(section -> section.hasSameUpStation(downStation))
+                .findFirst()
+                .map(Section::getDownStation)
+                .map(this::getLastDownStation)
+                .orElse(downStation);
     }
 }
