@@ -157,7 +157,7 @@ class LineTest {
         line.addSection(강남_역삼_구간);
         line.addSection(역삼_선릉_구간);
 
-        line.deleteSection(역삼_선릉_구간);
+        line.deleteSection(선릉역);
 
         assertThat(line.getSections()).doesNotContain(역삼_선릉_구간);
     }

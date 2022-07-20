@@ -74,8 +74,13 @@ public class Line {
         sections.add(section);
     }
 
-    public void deleteSection(Section section) {
-        sections.deleteSection(section);
+    public void deleteSection(Station station) {
+        final Section lastSection = getLastSection();
+        if (lastSection.notEqualsDownStation(station)) {
+            throw new IllegalArgumentException();
+        }
+
+        sections.deleteSection(lastSection);
     }
 
     public Section getLastSection() {

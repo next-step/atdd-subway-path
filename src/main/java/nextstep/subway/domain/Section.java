@@ -57,12 +57,12 @@ public class Section {
         return downStation.equals(station);
     }
 
-    public boolean equalsUpStation(Station station) {
-        return upStation.equals(station);
+    public boolean notEqualsDownStation(Station station) {
+        return !equalsDownStation(station);
     }
 
-    public boolean notEqualsUpStation(Station station) {
-        return !upStation.equals(station);
+    public boolean equalsUpStation(Station station) {
+        return upStation.equals(station);
     }
 
     public int minusDistance(Section section) {
