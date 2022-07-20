@@ -1,35 +1,33 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
+import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
-import org.junit.jupiter.api.Assertions;
+import nextstep.subway.fake.FakeLineRepository;
+import nextstep.subway.fake.FakeStationRepository;
+import nextstep.subway.fixture.LineFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static nextstep.subway.fixture.LineFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@SpringBootTest
 @Transactional
-public class LineServiceTest {
-    @Autowired
-    private StationRepository stationRepository;
+public class LineServiceFakeTest {
+    private StationRepository stationRepository = new FakeStationRepository();
+    private LineRepository lineRepository = new FakeLineRepository();
+    private StationService stationService = new StationService(stationRepository);
+    private LineService lineService = new LineService(lineRepository, stationService);
 
-    @Autowired
-    private LineRepository lineRepository;
-
-    @Autowired
-    private LineService lineService;
 
     private Station 강남역;
     private Station 역삼역;
@@ -46,24 +44,26 @@ public class LineServiceTest {
         분당선 = lineRepository.save(new Line("분당선", "red", new Section(역삼역, 강남역, 10)));
     }
 
+
     @Test
     @DisplayName("노선을 생성한다.")
     void saveLine() {
         // given
-        String name = "신분당선";
-        String color = "red";
-        LineRequest request = new LineRequest(name, color, 강남역.getId(), 역삼역.getId(), 10);
+        Station 강남역 = stationRepository.save(LineFixture.강남역);
+        Station 역삼역 = stationRepository.save(LineFixture.역삼역);
+        String 신분당선 = "신분당선";
+        String 색 = "red";
 
-        // when
-        LineResponse response = lineService.saveLine(request);
+        LineRequest request = new LineRequest(신분당선, 색, 강남역.getId(), 역삼역.getId(), 10);
+        LineResponse line = lineService.saveLine(request);
 
-        // then
         assertAll(
-            () -> assertThat(response.getName()).isEqualTo(name),
-            () -> assertThat(response.getColor()).isEqualTo(color),
-            () -> assertThat(response.getStations()).hasSize(2)
+            () -> assertThat(line.getName()).isEqualTo(신분당선),
+            () -> assertThat(line.getColor()).isEqualTo(색),
+            () -> assertThat(line.getStations()).hasSize(2)
         );
     }
+
 
     @Test
     @DisplayName("역 목록을 보여준다.")
@@ -178,4 +178,6 @@ public class LineServiceTest {
             () -> assertThat(line.getSections()).hasSize(신분당선_구간_개수 - 1)
         );
     }
+
+
 }

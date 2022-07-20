@@ -32,10 +32,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+            RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -53,9 +53,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> stationResponse = RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract();
+            .when().get("/stations")
+            .then().log().all()
+            .extract();
 
         // then
         List<StationResponse> stations = stationResponse.jsonPath().getList(".", StationResponse.class);
@@ -76,17 +76,17 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // when
         String location = createResponse.header("location");
         RestAssured.given().log().all()
-                .when()
-                .delete(location)
-                .then().log().all()
-                .extract();
+            .when()
+            .delete(location)
+            .then().log().all()
+            .extract();
 
         // then
         List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+            RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
         assertThat(stationNames).doesNotContain("강남역");
     }
 }
