@@ -1,16 +1,21 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.domain.*;
+import nextstep.subway.domain.exception.CannotDeleteSectionException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.*;
+
 @SpringBootTest
 @Transactional
-public class LineServiceTest {
+class LineServiceTest {
     @Autowired
     private StationRepository stationRepository;
     @Autowired
@@ -20,14 +25,53 @@ public class LineServiceTest {
     private LineService lineService;
 
     @Test
-    void addSection() {
+    void 구간_추가() {
         // given
-        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
+        Station upStation = stationRepository.save(new Station("양재역"));
+        Station downStation = stationRepository.save(new Station("교대역"));
+        Line line = lineRepository.save(new Line("신분당선", "red"));
+
+        SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(), 6);
 
         // when
-        // lineService.addSection 호출
+        lineService.addSection(line.getId(), sectionRequest);
 
         // then
-        // line.getSections 메서드를 통해 검증
+        List<Section> sections = line.getSections();
+        assertThat(sections).hasSize(1);
+
+        Section addedSection = sections.get(0);
+        assertThat(addedSection.getUpStationId()).isEqualTo(upStation.getId());
+        assertThat(addedSection.getDownStationId()).isEqualTo(downStation.getId());
+    }
+
+    @Test
+    void 구간_삭제() {
+        // given
+        Station upStation = stationRepository.save(new Station("양재역"));
+        Station downStation = stationRepository.save(new Station("교대역"));
+        Line line = lineRepository.save(new Line("신분당선", "red"));
+
+        line.addSection(upStation.getId(), downStation.getId(), 6);
+
+        // when
+        lineService.deleteSection(line.getId(), downStation.getId());
+
+        // then
+        assertThat(line.getSections()).isEmpty();
+    }
+
+    @Test
+    void 구간_삭제_종점이_아니면_예외() {
+        // given
+        Station upStation = stationRepository.save(new Station("양재역"));
+        Station downStation = stationRepository.save(new Station("교대역"));
+        Line line = lineRepository.save(new Line("신분당선", "red"));
+
+        line.addSection(upStation.getId(), downStation.getId(), 6);
+
+        // when + then
+        assertThatThrownBy(() -> lineService.deleteSection(line.getId(), upStation.getId()))
+                .isInstanceOf(CannotDeleteSectionException.class);
     }
 }

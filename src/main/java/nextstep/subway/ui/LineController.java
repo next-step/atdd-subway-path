@@ -1,26 +1,26 @@
 package nextstep.subway.ui;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
+import nextstep.subway.applicaion.dto.LineUpdateRequest;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/lines")
 public class LineController {
-    private LineService lineService;
-
-    public LineController(LineService lineService) {
-        this.lineService = lineService;
-    }
+    private final LineService lineService;
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
@@ -38,8 +38,8 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.updateLine(id, lineRequest);
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineUpdateRequest request) {
+        lineService.updateLine(id, request);
         return ResponseEntity.ok().build();
     }
 
@@ -50,7 +50,7 @@ public class LineController {
     }
 
     @PostMapping("/{lineId}/sections")
-    public ResponseEntity<Void> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+    public ResponseEntity<Void> addSection(@PathVariable Long lineId, @RequestBody @Valid SectionRequest sectionRequest) {
         lineService.addSection(lineId, sectionRequest);
         return ResponseEntity.ok().build();
     }
