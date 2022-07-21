@@ -22,15 +22,22 @@ public class Section {
 
     private int distance;
 
-    public Section() {
+    protected Section() {
 
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
-        this.line = line;
+    public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public static Section of(Station upStation, Station downStation, int distance) {
+        return new Section(upStation, downStation, distance);
+    }
+
+    public void line(Line line) {
+        this.line = line;
     }
 
     public Long getId() {
