@@ -175,7 +175,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         AssertUtils.lineSection(response, 양재역, 정자역);
-        // TODO 거리 검증
     }
 
     /**
@@ -195,7 +194,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        AssertUtils.lineSection(response, 강남역, 양재역);
+        AssertUtils.lineSection(response, 강남역, 정자역);
     }
 
     /**
