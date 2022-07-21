@@ -53,6 +53,38 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * When 새로운 역을 기존 노선의 사이로 구간 추가를 요청 하면 (기존 구간의 상행역과 신규 노선의 하행역이 일치하는 경우)
+     * Then 새로운 구간의 상행역이 상행 종점으로 구간이 추가된다
+     * Then 기존 노선의 역 길이가 신규 노선의 길이 만큼 줄어든다.
+     * 신분당선 : 강남역 - 양재역
+     */
+    @DisplayName("새로운 역을 기존 노선 사이로 구간을 등록")
+    @Test
+    void addNewSectionBetweenLineSection() {
+
+    }
+
+    /**
+     * When 새로운 역을 상행 종점으로 구간 추가를 요청 하면 (기존 구간의 상행역과 신규 노선의 하행역이 일치하는 경우)
+     * Then 새로운 구간의 상행역이 상행 종점으로 구간이 추가된다
+     */
+    @DisplayName("새로운 역을 상행 종점으로 구간을 등록")
+    @Test
+    void addNewUpStationLineSection() {
+
+    }
+
+    /**
+     * When 기존 노선에 존재하지 않는 역으로 구성된 구간을 신규로 등록 요청 하면
+     * Then 구간이 정상적으로 추가되지 않고 기존 노선의 구간은 그대로 유지된다.
+     */
+    @DisplayName("노선에 존재하지 않는 역으로 구성된 구간을 신규로 등록하면 예외")
+    @Test
+    void addSectionExceptionWhenAddNotExistsStation() {
+
+    }
+
+    /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
      * Then 노선에 구간이 제거된다
