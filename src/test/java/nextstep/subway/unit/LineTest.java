@@ -77,6 +77,27 @@ class LineTest {
         assertThat(findLastSection).isEqualTo(fourthSection);
     }
 
+    @DisplayName("새로운 구간을 맨 앞에 추가")
+    @Test
+    void addSectionInFront() {
+        Line 신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
+
+        Section firstSection = Section.of(강남역, 신논현역, 10);
+        Section secondSection = Section.of(신논현역, 정자역, 7);
+        Section newFirstSection = Section.of(판교역, 강남역, 5);
+
+        신분당선.addSection(firstSection);
+        신분당선.addSection(secondSection);
+        신분당선.addSection(newFirstSection);
+
+        List<Section> sections = 신분당선.getSections();
+
+        assertAll(
+                () -> assertThat(신분당선.firstSection()).isEqualTo(newFirstSection),
+                () -> assertThat(sections).hasSize(3)
+        );
+    }
+
     @DisplayName("지하철 구간 추가시 종점역과 신규 상행역이 일치 하지 않을 경우 예외")
     @Test
     void unmatchedLastStationAndNewUpStationException() {
