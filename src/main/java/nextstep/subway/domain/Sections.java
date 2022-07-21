@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Collections.*;
-import static java.util.stream.Collectors.*;
 
 @Embeddable
 public class Sections {
@@ -83,13 +82,27 @@ public class Sections {
             return emptyList();
         }
 
-        List<Station> stations = sections.stream()
-                .map(Section::getDownStation)
-                .collect(toList());
+        List<Station> orderedStations = new ArrayList<>();
+        Section startSection = firstSection();
+        Section lastSection = lastSection();
 
-        stations.add(0, sections.get(0).getUpStation());
+        orderedStations.add(startSection.getUpStation());
 
-        return unmodifiableList(stations);
+        while (!startSection.equals(lastSection)) {
+            orderedStations.add(startSection.getDownStation());
+            startSection = nextSection(startSection);
+        }
+
+        orderedStations.add(lastSection.getDownStation());
+
+        return unmodifiableList(orderedStations);
+    }
+
+    private Section nextSection(Section firstSection) {
+        return sections.stream()
+                .filter(section -> firstSection.getDownStation().equals(section.getUpStation()))
+                .findAny()
+                .orElse(lastSection());
     }
 
     public void removeSection(Station station) {
