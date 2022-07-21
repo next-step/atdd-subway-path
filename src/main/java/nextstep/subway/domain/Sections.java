@@ -36,17 +36,18 @@ public class Sections {
         return getOrderedStations();
     }
 
-    public void deleteLastSection(Station station) {
+    public void deleteSection(Station station) {
         if (isEmptySections()) {
             throw SectionsDeleteException.NOT_FOUND_LAST_SECTION_EXCEPTION();
         }
 
-        Section lastSection = getLastSection();
-        if (lastSection.hasNotDownStation(station)) {
-            throw SectionsDeleteException.NOT_SAME_DOWN_STATION_EXCEPTION();
-        }
+        Station firstUpStation = getFirstUpStation();
+        Section findSection = sections.stream()
+                .filter(s -> s.hasSameUpStation(firstUpStation))
+                .findFirst()
+                .orElseThrow(() -> SectionsDeleteException.NOT_FOUND_STATION_EXCEPTION());
 
-        sections.remove(lastSection);
+        sections.remove(findSection);
     }
 
     public boolean isEmptySections() {

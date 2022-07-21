@@ -34,7 +34,7 @@ public class Line {
     }
 
     public void deleteLastSection(Station station) {
-        sections.deleteLastSection(station);
+        sections.deleteSection(station);
     }
 
     public void update(String name, String color) {

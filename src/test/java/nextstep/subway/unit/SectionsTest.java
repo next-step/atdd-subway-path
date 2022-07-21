@@ -5,7 +5,6 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.sections.SectionsAddException;
-import nextstep.subway.exception.sections.SectionsDeleteException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -305,29 +304,20 @@ public class SectionsTest {
         assertThat(stations).containsExactly(upStation, downStation);
     }
 
-    @DisplayName("Sections의 마지막 section을 삭제할 수 있다")
+    @DisplayName("Sections의 첫 section을 삭제할 수 있다")
     @Test
-    public void delete_last_section() {
+    public void delete_first_section() {
         // given
         sections.add(originSection);
 
-        // when
-        sections.deleteLastSection(downStation);
-
-        // then
-        assertThat(sections.isEmptySections()).isTrue();
-    }
-
-    @DisplayName("하행종점역이 일치하지 않을때 Sections의 마지막 section을 삭제하려 하면 예외가 발생한다")
-    @Test
-    public void delete_last_section_when_not_same_down_station() {
-        // given
-        sections.add(originSection);
+        Station newStation = new Station(3L, "신규역");
+        Section newSection = new Section(2L, line, downStation, newStation, 5);
+        sections.add(newSection);
 
         // when
-        Exception exception = assertThrows(SectionsDeleteException.class, () -> sections.deleteLastSection(upStation));
+        sections.deleteSection(upStation);
 
         // then
-        assertThat(exception).isInstanceOf(SectionsDeleteException.class);
+        assertThat(sections.getStations()).containsExactly(downStation, newStation);
     }
 }
