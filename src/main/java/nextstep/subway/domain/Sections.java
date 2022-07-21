@@ -27,10 +27,6 @@ public class Sections {
     }
 
     public void add(Section section) {
-        if (this.sections.isEmpty()) {
-            this.sections.add(section);
-            return;
-        }
         sections.add(section);
     }
 
