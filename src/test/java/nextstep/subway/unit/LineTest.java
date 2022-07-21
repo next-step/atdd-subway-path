@@ -98,6 +98,27 @@ class LineTest {
         );
     }
 
+    @DisplayName("새로운 구간을 노선 중간에 추가(신규 노선의 상행역과 기존 노선의 상행역 일치)")
+    @Test
+    void addSectionInBetween() {
+        Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
+        Section 신논현_정자 = Section.of(신논현역, 정자역, 10);
+        Section 신논현_판교 = Section.of(신논현역, 판교역, 4);
+
+        신분당선.addSection(강남_신논현);
+        신분당선.addSection(신논현_정자);
+        신분당선.addSection(신논현_판교);
+
+        List<Section> sections = 신분당선.getSections();
+
+        assertAll(
+                () -> assertThat(sections).hasSize(3),
+                () -> assertThat(sections).extracting("upStation").containsExactly(강남역, 판교역, 신논현역),
+                () -> assertThat(sections).extracting("downStation").containsExactly(신논현역, 정자역, 판교역),
+                () -> assertThat(sections).extracting("distance").containsExactly(10, 6, 4)
+        );
+    }
+
     @DisplayName("지하철 노선에 존재하는 모든 역 조회")
     @Test
     void getStations() {
