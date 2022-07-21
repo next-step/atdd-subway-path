@@ -144,6 +144,19 @@ class LineTest {
         );
     }
 
+    @DisplayName("역 사이에 등록할 때 기존 구간의 길이가 신규 구간의 길이보다 짧을 때 예외")
+    @Test
+    void addSectionShorterDistanceException() {
+        Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
+        Section 강남_정자 = Section.of(강남역, 정자역, 15);
+
+        신분당선.addSection(강남_신논현);
+
+        assertThatThrownBy(() -> 신분당선.addSection(강남_정자))
+                .isInstanceOf(AddSectionException.class)
+                .hasMessage("신규 구간의 길이는 기존 구간의 길이보다 짧아야 합니다.");
+    }
+
     @DisplayName("지하철 노선에 존재하는 모든 역 조회")
     @Test
     void getStations() {
