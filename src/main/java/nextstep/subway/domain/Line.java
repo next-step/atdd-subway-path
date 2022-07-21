@@ -39,6 +39,10 @@ public class Line {
         return sections.allStations();
     }
 
+    public Section firstSection() {
+        return sections.firstSection();
+    }
+
     public Long getId() {
         return id;
     }
@@ -64,6 +68,6 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections.getValue();
+        return sections.getSections();
     }
 }

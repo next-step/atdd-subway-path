@@ -17,18 +17,18 @@ import static java.util.stream.Collectors.*;
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> value = new ArrayList<>();
+    private List<Section> sections = new ArrayList<>();
 
     public void addSection(Section section) {
-        if (value.isEmpty()) {
-            this.value.add(section);
+        if (sections.isEmpty()) {
+            this.sections.add(section);
             return;
         }
 
         matchLastStationAndNewUpStation(section.getUpStation());
         duplicateStation(section.getDownStation());
 
-        this.value.add(section);
+        this.sections.add(section);
     }
 
     private void matchLastStationAndNewUpStation(Station upStation) {
@@ -40,7 +40,7 @@ public class Sections {
     }
 
     private void duplicateStation(Station downStation) {
-        Optional<Station> findStation = value.stream()
+        Optional<Station> findStation = sections.stream()
                 .map(Section::getUpStation)
                 .filter(upStation -> upStation.equals(downStation))
                 .findAny();
@@ -51,21 +51,21 @@ public class Sections {
     }
 
     public List<Station> allStations() {
-        if (value.isEmpty()) {
+        if (sections.isEmpty()) {
             return emptyList();
         }
 
-        List<Station> stations = value.stream()
+        List<Station> stations = sections.stream()
                 .map(Section::getDownStation)
                 .collect(toList());
 
-        stations.add(0, value.get(0).getUpStation());
+        stations.add(0, sections.get(0).getUpStation());
 
         return unmodifiableList(stations);
     }
 
     public void removeSection(Station station) {
-        if (value.size() == 1) {
+        if (sections.size() == 1) {
             throw new DeleteSectionException("구간이 1개인 노선은 구간 삭제를 진행할 수 없습니다.");
         }
 
@@ -77,14 +77,26 @@ public class Sections {
             throw new DeleteSectionException("삭제하려는 역이 마지막 구간의 역이 아닙니다.");
         }
 
-        value.remove(lastSection());
+        sections.remove(lastSection());
+    }
+
+    public Section firstSection() {
+        return sections.stream()
+                .filter(section -> matchSectionsDownStation(section.getUpStation()))
+                .findAny()
+                .orElseThrow();
+    }
+
+    private boolean matchSectionsDownStation(Station upStation) {
+        return sections.stream()
+                .anyMatch(section -> !section.getDownStation().equals(upStation));
     }
 
     private Section lastSection() {
-        return value.get(value.size() - 1);
+        return sections.get(sections.size() - 1);
     }
 
-    public List<Section> getValue() {
-        return unmodifiableList(value);
+    public List<Section> getSections() {
+        return unmodifiableList(sections);
     }
 }
