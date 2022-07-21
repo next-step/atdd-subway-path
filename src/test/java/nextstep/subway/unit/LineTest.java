@@ -5,6 +5,7 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.AddSectionException;
 import nextstep.subway.exception.DeleteSectionException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -19,11 +20,16 @@ class LineTest {
     private static final String NEW_BUN_DANG = "신분당선";
     private static final String BG_RED_600 = "bg-red-600";
 
+    private Line 신분당선;
+
+    @BeforeEach
+    void setUp() {
+        신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
+    }
+
     @DisplayName("지하철 구간 추가")
     @Test
     void addSection() {
-        Line 신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
-
         Section section = Section.of(강남역, 신논현역, 10);
 
         신분당선.addSection(section);
@@ -40,8 +46,6 @@ class LineTest {
     @DisplayName("상행 종점역 찾기")
     @Test
     void findFirstSection() {
-        Line 신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
-
         Section firstSection = Section.of(강남역, 신논현역, 10);
         Section secondSection = Section.of(신논현역, 정자역, 9);
         Section thirdSection = Section.of(정자역, 판교역, 8);
@@ -60,8 +64,6 @@ class LineTest {
     @DisplayName("하행 종점역 찾기")
     @Test
     void findLastSection() {
-        Line 신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
-
         Section firstSection = Section.of(강남역, 신논현역, 10);
         Section secondSection = Section.of(신논현역, 정자역, 9);
         Section thirdSection = Section.of(정자역, 판교역, 8);
@@ -80,8 +82,6 @@ class LineTest {
     @DisplayName("새로운 구간을 맨 앞에 추가")
     @Test
     void addSectionInFront() {
-        Line 신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
-
         Section firstSection = Section.of(강남역, 신논현역, 10);
         Section secondSection = Section.of(신논현역, 정자역, 7);
         Section newFirstSection = Section.of(판교역, 강남역, 5);
@@ -101,8 +101,6 @@ class LineTest {
     @DisplayName("지하철 노선에 존재하는 모든 역 조회")
     @Test
     void getStations() {
-        Line 신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
-
         Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
         Section 신논현_정자 = Section.of(신논현역, 정자역, 5);
 
@@ -120,8 +118,6 @@ class LineTest {
     @DisplayName("지하철 노선에 특정 구간 제거")
     @Test
     void removeSection() {
-        Line 신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
-
         Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
         Section 신논현_정자 = Section.of(신논현역, 정자역, 5);
 
@@ -141,8 +137,6 @@ class LineTest {
     @DisplayName("구간이 1개인 노선에서 구간을 삭제할 경우 예외")
     @Test
     void removeOnlyOneSectionException() {
-        Line 신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
-
         Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
 
         신분당선.addSection(강남_신논현);
@@ -155,8 +149,6 @@ class LineTest {
     @DisplayName("삭제하려는 역이 노선에 등록되어 있지 않을 경우 예외")
     @Test
     void removeNotExistsStationException() {
-        Line 신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
-
         Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
         Section 신논현_정자 = Section.of(신논현역, 정자역, 5);
 
@@ -171,8 +163,6 @@ class LineTest {
     @DisplayName("삭제하려는 역이 마지막 구간의 역이 아닐 경우 예외")
     @Test
     void removeNotLastStationException() {
-        Line 신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
-
         Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
         Section 신논현_정자 = Section.of(신논현역, 정자역, 5);
 
