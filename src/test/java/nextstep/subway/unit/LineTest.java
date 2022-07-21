@@ -224,6 +224,27 @@ class LineTest {
         );
     }
 
+    @DisplayName("변경된 구간 추가 적용 이후 지하철 노선에 존재하는 모든 역 조회")
+    @Test
+    void getStationsAfterChangedRequirement() {
+        Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
+        Section 강남_정자 = Section.of(강남역, 정자역, 4);
+        Section 판교_강남 = Section.of(판교역, 강남역, 5);
+        Section 신논현_이매 = Section.of(신논현역, 이매역, 7);
+
+        신분당선.addSection(강남_신논현);
+        신분당선.addSection(강남_정자);
+        신분당선.addSection(판교_강남);
+        신분당선.addSection(신논현_이매);
+
+        List<Station> stations = 신분당선.allStations();
+
+        assertAll(
+                () -> assertThat(stations).hasSize(5),
+                () -> assertThat(stations).containsExactly(판교역, 강남역, 정자역, 신논현역, 이매역)
+        );
+    }
+
     @DisplayName("지하철 노선에 특정 구간 제거")
     @Test
     void removeSection() {
