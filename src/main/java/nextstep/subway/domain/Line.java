@@ -84,4 +84,13 @@ public class Line {
 	public List<Section> getSections() {
 		return sections;
 	}
+
+	public void update(String name, String color) {
+		if (name != null) {
+			this.name = name;
+		}
+		if (color != null) {
+			this.color = color;
+		}
+	}
 }
