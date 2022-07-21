@@ -89,11 +89,19 @@ public class Sections {
 
     private boolean matchSectionsDownStation(Station upStation) {
         return sections.stream()
-                .anyMatch(section -> !section.getDownStation().equals(upStation));
+                .noneMatch(section -> section.getDownStation().equals(upStation));
     }
 
-    private Section lastSection() {
-        return sections.get(sections.size() - 1);
+    public Section lastSection() {
+        return sections.stream()
+                .filter(section -> matchSectionsUpStation(section.getDownStation()))
+                .findAny()
+                .orElseThrow();
+    }
+
+    private boolean matchSectionsUpStation(Station downStation) {
+        return sections.stream()
+                .noneMatch(section -> section.getUpStation().equals(downStation));
     }
 
     public List<Section> getSections() {

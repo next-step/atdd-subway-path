@@ -43,6 +43,10 @@ public class Line {
         return sections.firstSection();
     }
 
+    public Section lastSection() {
+        return sections.lastSection();
+    }
+
     public Long getId() {
         return id;
     }
