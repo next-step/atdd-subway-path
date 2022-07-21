@@ -1,14 +1,24 @@
 package nextstep.subway.domain;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "line_id")
     private Line line;
 
@@ -22,34 +32,24 @@ public class Section {
 
     private int distance;
 
-    public Section() {
-
-    }
-
     public Section(Line line, Station upStation, Station downStation, int distance) {
-        this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+        this(null, line, upStation, downStation, distance);
     }
 
-    public Long getId() {
-        return id;
+    public List<Station> getStations() {
+        return List.of(upStation, downStation);
     }
 
-    public Line getLine() {
-        return line;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation);
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
+    @Override
+    public int hashCode() {
+        return Objects.hash(line, upStation, downStation);
     }
 }
