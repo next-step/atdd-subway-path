@@ -52,7 +52,23 @@ public class LineService {
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-        line.updateLine(lineRequest.getName(), lineRequest.getColor());
+
+        String name = lineRequest.getName();
+        String color = lineRequest.getColor();
+
+        validateNullOrEmpty(name, color);
+
+        line.updateLine(name, color);
+    }
+
+    private void validateNullOrEmpty(String name, String color) {
+        if(name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("입력된 노선명이 null 또는 비어있습니다.");
+        }
+
+        if(color == null || color.isEmpty()) {
+            throw new IllegalArgumentException("입력된 노선 색상이 null 또는 비어있습니다.");
+        }
     }
 
     @Transactional
