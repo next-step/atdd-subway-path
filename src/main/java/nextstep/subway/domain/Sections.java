@@ -74,14 +74,6 @@ public class Sections {
         existingSection.changeExistingDownStationToNewUpStation(newSection);
     }
 
-    private void matchLastStationAndNewUpStation(Station upStation) {
-        Station lastStation = lastSection().getDownStation();
-
-        if (!lastStation.equals(upStation)) {
-            throw new AddSectionException("기존 노선의 종점역과 신규 노선의 상행역이 일치하지 않습니다.");
-        }
-    }
-
     public List<Station> allStations() {
         if (sections.isEmpty()) {
             return emptyList();
