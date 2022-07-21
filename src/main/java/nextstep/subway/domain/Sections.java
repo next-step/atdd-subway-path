@@ -41,17 +41,17 @@ public class Sections {
             throw SectionsDeleteException.NOT_FOUND_LAST_SECTION_EXCEPTION();
         }
 
-        Section findSection = getFirstSection();
-        sections.remove(findSection);
-    }
+        Section firstSection = getFirstSection();
+        if (firstSection.hasSameUpStation(station)) {
+            sections.remove(firstSection);
+            return;
+        }
 
-    private Section getFirstSection() {
-        Station firstUpStation = getFirstUpStation();
-        Section findSection = sections.stream()
-                .filter(s -> s.hasSameUpStation(firstUpStation))
-                .findFirst()
-                .orElseThrow(() -> SectionsDeleteException.NOT_FOUND_STATION_EXCEPTION());
-        return findSection;
+        Section lastSection = getLastSection();
+        if (lastSection.hasSameDownStation(station)) {
+            sections.remove(lastSection);
+            return;
+        }
     }
 
     public boolean isEmptySections() {
@@ -140,12 +140,20 @@ public class Sections {
         return getLastDownStation().equals(station);
     }
 
-    private Section getLastSection() {
-        return sections.get(getLastIndex());
+    private Section getFirstSection() {
+        Station firstUpStation = getFirstUpStation();
+        return sections.stream()
+                .filter(s -> s.hasSameUpStation(firstUpStation))
+                .findFirst()
+                .orElseThrow(() -> SectionsDeleteException.NOT_FOUND_STATION_EXCEPTION());
     }
 
-    private int getLastIndex() {
-        return sections.size() - 1;
+    private Section getLastSection() {
+        Station lastDownStation = getLastDownStation();
+        return sections.stream()
+                .filter(s -> s.hasSameDownStation(lastDownStation))
+                .findFirst()
+                .orElseThrow(() -> SectionsDeleteException.NOT_FOUND_STATION_EXCEPTION());
     }
 
     private Station getFirstUpStation() {

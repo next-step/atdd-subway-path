@@ -320,4 +320,21 @@ public class SectionsTest {
         // then
         assertThat(sections.getStations()).containsExactly(downStation, newStation);
     }
+
+    @DisplayName("Sections의 마지막 section을 삭제할 수 있다")
+    @Test
+    public void delete_last_section() {
+        // given
+        sections.add(originSection);
+
+        Station newStation = new Station(3L, "신규역");
+        Section newSection = new Section(2L, line, downStation, newStation, 5);
+        sections.add(newSection);
+
+        // when
+        sections.deleteSection(newStation);
+
+        // then
+        assertThat(sections.getStations()).containsExactly(upStation, downStation);
+    }
 }
