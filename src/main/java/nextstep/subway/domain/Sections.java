@@ -3,10 +3,10 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.*;
+import java.util.function.Predicate;
+
+import static java.util.Arrays.*;
 
 @Embeddable
 public class Sections {
@@ -15,6 +15,34 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
+        if (sections.isEmpty()) {
+            sections.add(section);
+            return;
+        }
+
+        if (alreadyConnectStation(section)) {
+            throw new IllegalArgumentException("이미 등록된 역은 등록할 수 없어요.");
+        }
+
+        if (nonExistConnectStation(section)) {
+            throw new IllegalArgumentException("연결할 수 있는 역이 없어요.");
+        }
+
+        if (isAddFirstOrLastSection(section)) {
+            this.sections.add(section);
+            return;
+        }
+
+        if (hasEqualsUpStation(section)) {
+            Section originalSection = getSectionByCondition(s -> s.equalsUpStation(section.getUpStation()));
+            originalSection.updateUpStationToSectionDownStation(section);
+        }
+
+        if (hasEqualsDownStation(section)) {
+            Section originalSection = getSectionByCondition(s -> s.equalsDownStation(section.getDownStation()));
+            originalSection.updateDownStationToSectionUpStation(section);
+        }
+
         this.sections.add(section);
     }
 
@@ -23,10 +51,19 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        return this.sections.stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                .distinct()
-                .collect(Collectors.toUnmodifiableList());
+        if (this.sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Set<Station> sortedStations = new LinkedHashSet<>();
+        Section section = getFirstSection();
+
+        while (section != null) {
+            sortedStations.addAll(asList(section.getUpStation(), section.getDownStation()));
+            section = getNextSection(section.getDownStation());
+        }
+
+        return List.copyOf(sortedStations);
     }
 
     public int size() {
@@ -42,6 +79,20 @@ public class Sections {
         deleteLastStation();
     }
 
+    private Section getFirstSection() {
+        return this.sections.stream()
+                .filter(section -> anyNonMatchSection(s -> s.equalsDownStation(section.getUpStation())))
+                .findAny()
+                .orElseThrow(AssertionError::new);
+    }
+
+    private Section getNextSection(Station downStation) {
+        return this.sections.stream()
+                .filter(section -> section.equalsUpStation(downStation))
+                .findAny()
+                .orElse(null);
+    }
+
     private Station lastStation() {
         return this.sections.get(sectionsLastIndex()).getDownStation();
     }
@@ -53,4 +104,42 @@ public class Sections {
     private int sectionsLastIndex() {
         return this.sections.size() - 1;
     }
+
+    private boolean alreadyConnectStation(Section section) {
+        return anyMatchSection(s -> s.anyEqualsStation(section.getUpStation())) && anyMatchSection(s -> s.anyEqualsStation(section.getDownStation()));
+    }
+
+    private boolean nonExistConnectStation(Section section) {
+        return anyNonMatchSection(s -> s.anyEqualsStation(section.getUpStation()) || s.anyEqualsStation(section.getDownStation()));
+    }
+
+    private boolean isAddFirstOrLastSection(Section section) {
+        return anyMatchSection(s -> s.equalsDownStation(section.getUpStation()) || s.equalsUpStation(section.getDownStation()));
+    }
+
+    private boolean hasEqualsDownStation(Section section) {
+        return anyMatchSection(s -> s.equalsDownStation(section.getDownStation()));
+    }
+
+    private boolean hasEqualsUpStation(Section section) {
+        return anyMatchSection(s -> s.equalsUpStation(section.getUpStation()));
+    }
+
+    private Section getSectionByCondition(Predicate<Section> condition) {
+        return sections.stream()
+                .filter(condition)
+                .findAny()
+                .orElseThrow(AssertionError::new);
+    }
+
+
+    private boolean anyNonMatchSection(Predicate<Section> condition) {
+        return !anyMatchSection(condition);
+    }
+
+    private boolean anyMatchSection(Predicate<Section> condition) {
+        return sections.stream()
+                .anyMatch(condition);
+    }
+
 }

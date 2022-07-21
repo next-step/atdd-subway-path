@@ -1,8 +1,16 @@
 package nextstep.subway.domain;
 
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
+@Getter
 @Entity
+@EqualsAndHashCode
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,10 +30,6 @@ public class Section {
 
     private int distance;
 
-    public Section() {
-
-    }
-
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
@@ -33,23 +37,39 @@ public class Section {
         this.distance = distance;
     }
 
-    public Long getId() {
-        return id;
+
+    public void updateUpStationToSectionDownStation(Section newSection) {
+        if (isUnavailableUpdateDistance(newSection)) {
+            throw new IllegalArgumentException("기존 구간의 길이보다 작아야해요");
+        }
+
+        this.distance = this.distance - newSection.distance;
+        this.upStation = newSection.downStation;
     }
 
-    public Line getLine() {
-        return line;
+    public void updateDownStationToSectionUpStation(Section newSection) {
+        if (isUnavailableUpdateDistance(newSection)) {
+            throw new IllegalArgumentException("기존 구간의 길이보다 작아야해요");
+        }
+
+        this.distance = this.distance - newSection.distance;
+        this.downStation = newSection.upStation;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public boolean equalsUpStation(Station station) {
+        return this.upStation.equals(station);
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public boolean equalsDownStation(Station station) {
+        return this.downStation.equals(station);
     }
 
-    public int getDistance() {
-        return distance;
+    public boolean anyEqualsStation(Station station) {
+        return this.upStation.equals(station) || this.downStation.equals(station);
     }
+
+    private boolean isUnavailableUpdateDistance(Section newSection) {
+        return this.distance <= newSection.distance;
+    }
+
 }
