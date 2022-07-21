@@ -96,32 +96,6 @@ class SectionTest {
         assertThat(section.getDistance()).isEqualTo(7);
     }
 
-    @DisplayName("거리 빼기 기능 수행")
-    @Test
-    void minusDistance() {
-        // given
-        Section section = Stub.기본_구간_생성.get();
-
-        // when
-        int minusDistance = section.minusDistance(3);
-
-        // then
-        assertThat(minusDistance).isEqualTo(7);
-    }
-
-    @DisplayName("기존 구간의 상행 지하철역과 비교 구간의 하행역이 같은 구간인지 확인한다.")
-    @Test
-    void matchUpStationForDown() {
-        // given
-        Section section = Stub.기본_구간_생성.get();
-
-        // when
-        Section newSection = new Section(Stub.대림역, Stub.구로디지털단지역, 3);
-
-        // then
-        assertThat(section.matchUpStation(newSection.getDownStation())).isTrue();
-    }
-
     @DisplayName("기존 구간과 비교 구간의 상행과 하행 지하철역이 같은 역인지 확인한다.")
     @Test
     void matchStations() {
@@ -146,6 +120,34 @@ class SectionTest {
 
         // then
         assertThat(section.matchUpStation(newSection.getUpStation())).isTrue();
+    }
+
+    @DisplayName("기존 구간과 비교 구간의 하행 지하철역이 같은 역인지 확인한다.")
+    @Test
+    void matchDownStation() {
+        // given
+        Section section = Stub.기본_구간_생성.get();
+
+        // when
+        Section newSection = new Section(Stub.대림역, Stub.신림역, 3);
+
+        // then
+        assertThat(section.matchDownStation(newSection.getDownStation())).isTrue();
+    }
+
+    @DisplayName("기존 지하철 구간에 새로운 지하철 구간과 중복되는 지하철역을 제거하고 합친다.")
+    @Test
+    void combineStation() {
+        // given
+        Section section = Stub.기본_구간_생성.get();
+        Section newSection = new Section(Stub.구로디지털단지역, Stub.신대방역, 4);
+
+        // when
+        section.combine(newSection);
+
+        // then
+        assertThat(section.getDownStation()).isEqualTo(Stub.신대방역);
+        assertThat(section.getDistance()).isEqualTo(14);
     }
 
     private static class Stub {

@@ -78,14 +78,6 @@ public class Section {
         this.distance = minusDistance(newSection.distance);
     }
 
-    public int minusDistance(int distance) {
-        return this.distance - distance;
-    }
-
-    public int plusDistance(int distance) {
-        return this.distance + distance;
-    }
-
     public boolean matchStations(Section section) {
         return matchUpStation(section.upStation) && matchDownStation(section.downStation);
     }
@@ -93,5 +85,13 @@ public class Section {
     public void combine(Section nextSection) {
         this.downStation = nextSection.downStation;
         this.distance = plusDistance(nextSection.distance);
+    }
+
+    private int minusDistance(int distance) {
+        return this.distance - distance;
+    }
+
+    private int plusDistance(int distance) {
+        return this.distance + distance;
     }
 }
