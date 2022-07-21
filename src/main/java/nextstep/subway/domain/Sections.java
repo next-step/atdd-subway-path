@@ -82,7 +82,7 @@ public class Sections {
 
     private Section findTargetSection(Section section) {
         return sections.stream()
-                .filter(s -> s.hasSameUpStation(s.getUpStation()) || s.hasSameDownStation(s.getDownStation()))
+                .filter(s -> s.hasSameUpStation(section.getUpStation()) || s.hasSameDownStation(section.getDownStation()))
                 .findFirst()
                 .orElseThrow(() -> new SectionsException(ErrorCode.NOT_FOUND_SECTION_EXCEPTION));
     }

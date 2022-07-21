@@ -32,6 +32,11 @@ public class Section {
     public Section() {
     }
 
+    public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
+        this(line, upStation, downStation, distance);
+        this.id = id;
+    }
+
     public Section(Line line, Station upStation, Station downStation, int distance) {
         if (isInValidDistance(distance)) {
             throw new IllegalArgumentException(SECTION_MINIMUM_DISTANCE_EXCEPTION);

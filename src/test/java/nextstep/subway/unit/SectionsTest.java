@@ -21,24 +21,23 @@ public class SectionsTest {
     Line line;
     Station upStation;
     Station downStation;
-    Section section;
+    Section originSection;
+    Sections sections;
 
     @BeforeEach
     void setUp() {
         line = new Line("2호선", "green");
         upStation = new Station(1L, "강남역");
         downStation = new Station(2L, "건대입구역");
-        section = new Section(line, upStation, downStation, 10);
+        originSection = new Section(1L, line, upStation, downStation, 10);
+        sections = new Sections();
     }
 
     @DisplayName("구간을 성공적으로 추가한다")
     @Test
     public void add_section_test() {
-        // given
-        Sections sections = new Sections();
-
         // when
-        sections.add(section);
+        sections.add(originSection);
 
         // then
         assertThat(sections.getStations()).containsExactly(upStation, downStation);
@@ -48,51 +47,115 @@ public class SectionsTest {
     @Test
     public void add_section_front_at_line() {
         // given
-        Sections sections = new Sections();
-        sections.add(section);
+        sections.add(originSection);
 
         Station newStation = new Station(3L, "신규역");
 
         // when
-        Section newSection = new Section(line, newStation, upStation, 5);
+        Section newSection = new Section(2L, line, newStation, upStation, 5);
         sections.add(newSection);
 
         // then
         assertThat(sections.getStations()).containsExactly(newStation, upStation, downStation);
     }
 
-    @DisplayName("구간을 맨 앞에 추가한 후, 중간에 추가할 수 있다")
+    @DisplayName("구간을 맨 앞에 추가한 후, 동일한 상행역을 통해 중간에 추가할 수 있다")
     @Test
     public void add_section_front_and_middle() {
         // given
-        Sections sections = new Sections();
-        sections.add(section);
+        sections.add(originSection);
 
         Station newStation = new Station(3L, "신규역");
 
-        // when
-        Section newSection = new Section(line, newStation, upStation, 5);
+        Section newSection = new Section(2L, line, newStation, upStation, 5);
         sections.add(newSection);
 
         Station newStation2 = new Station(4L, "신규역2");
-        Section newSection2 = new Section(line, upStation, newStation2, 1);
+        Section newSection2 = new Section(3L, line, upStation, newStation2, 1);
+
+        // when
         sections.add(newSection2);
 
         // then
         assertThat(sections.getStations()).containsExactly(newStation, upStation, newStation2, downStation);
     }
 
+    @DisplayName("구간을 맨 앞에 추가한 후, 동일한 하행역을 통해 중간에 추가할 수 있다")
+    @Test
+    public void add_section_front_and_middle_2() {
+        // given
+        sections.add(originSection);
+
+        Station newStation = new Station(3L, "신규역");
+        Section newSection = new Section(2L, line, newStation, upStation, 5);
+        sections.add(newSection);
+
+        Station newStation2 = new Station(4L, "신규역2");
+        Section newSection2 = new Section(3L, line, newStation2, downStation, 1);
+
+        // when
+        sections.add(newSection2);
+
+        // then
+        assertThat(sections.getStations()).containsExactly(newStation, upStation, newStation2, downStation);
+    }
+
+    @Test
+    public void add_section_middle_3() {
+        // given
+        sections.add(originSection);
+
+        Station newStation = new Station(3L, "신규역");
+        Section newSection = new Section(2L, line, newStation, upStation, 5);
+        sections.add(newSection);
+
+        Station newStation2 = new Station(4L, "신규역2");
+        Section newSection2 = new Section(3L, line, upStation, newStation2, 6);
+        sections.add(newSection2);
+
+        Station newStation3 = new Station(5L, "신규역3");
+        Section newSection3 = new Section(4L, line, upStation, newStation3, 2);
+
+        // when
+        sections.add(newSection3);
+
+        // then
+        assertThat(sections.getStations()).containsExactly(newStation, upStation, newStation3, newStation2, downStation);
+    }
+
+    @Test
+    public void add_section_middle_4() {
+        // given
+        sections.add(originSection);
+
+        Station newStation = new Station(3L, "신규역");
+        Section newSection = new Section(2L, line, newStation, upStation, 5);
+        sections.add(newSection);
+
+        Station newStation2 = new Station(4L, "신규역2");
+        Section newSection2 = new Section(3L, line, upStation, newStation2, 6);
+        sections.add(newSection2);
+
+        Station newStation3 = new Station(5L, "신규역3");
+        Section newSection3 = new Section(4L, line, newStation3, downStation, 2);
+
+        // when
+        sections.add(newSection3);
+
+        // then
+        assertThat(sections.getStations()).containsExactly(newStation, upStation, newStation2, newStation3, downStation);
+    }
+
     @DisplayName("노선의 하행역과 신규 추가할 구간의 상행역이 동일할 경우 노선의 뒷부분에 신규 구간을 추가할 수 있다.")
     @Test
     public void add_section_back_at_line() {
         // given
-        Sections sections = new Sections();
-        sections.add(section);
+        sections.add(originSection);
 
         Station newStation = new Station(3L, "신규역");
 
         // when
-        Section newSection = new Section(line, downStation, newStation, 5);
+        Section newSection = new Section(2L, line, downStation, newStation, 5);
         sections.add(newSection);
 
         // then
@@ -103,13 +166,12 @@ public class SectionsTest {
     @Test
     public void add_section_at_middle_of_line_when_same_up_station() {
         // given
-        Sections sections = new Sections();
-        sections.add(section);
+        sections.add(originSection);
 
         Station newStation = new Station(3L, "신규역");
 
         // when
-        Section newSection = new Section(line, upStation, newStation, 3);
+        Section newSection = new Section(2L, line, upStation, newStation, 3);
         sections.add(newSection);
 
         // then
@@ -120,13 +182,12 @@ public class SectionsTest {
     @Test
     public void add_section_at_middle_of_line_when_same_down_station() {
         // given
-        Sections sections = new Sections();
-        sections.add(section);
+        sections.add(originSection);
 
         Station newStation = new Station(3L, "신규역");
 
         // when
-        Section newSection = new Section(line, newStation, downStation, 3);
+        Section newSection = new Section(2L, line, newStation, downStation, 3);
         sections.add(newSection);
 
         // then
@@ -138,13 +199,12 @@ public class SectionsTest {
     @ParameterizedTest
     public void add_section_middle_at_line_fail(int overDistance) {
         // given
-        Sections sections = new Sections();
-        sections.add(section);
+        sections.add(originSection);
 
         Station newStation = new Station(3L, "신규역");
 
         // when
-        Section newSection = new Section(line, upStation, newStation, overDistance);
+        Section newSection = new Section(2L, line, upStation, newStation, overDistance);
         SectionsException exception = assertThrows(SectionsException.class, () -> sections.add(newSection));
 
         // then
@@ -155,11 +215,10 @@ public class SectionsTest {
     @Test
     public void add_section_fail_by_already_register_up_down_stations() {
         // given
-        Sections sections = new Sections();
-        sections.add(section);
+        sections.add(originSection);
 
         // when
-        Section newSection = new Section(line, upStation, downStation, 3);
+        Section newSection = new Section(2L, line, upStation, downStation, 3);
         SectionsException exception = assertThrows(SectionsException.class, () -> sections.add(newSection));
 
         // then
@@ -170,13 +229,12 @@ public class SectionsTest {
     @Test
     public void add_section_fail_by_not_exist_up_down_stations() {
         // given
-        Sections sections = new Sections();
-        sections.add(section);
+        sections.add(originSection);
         Station 없는역1 = new Station(3L, "없는역1");
         Station 없는역2 = new Station(4L, "없는역2");
 
         // when
-        Section newSection = new Section(line, 없는역1, 없는역2, 3);
+        Section newSection = new Section(2L, line, 없는역1, 없는역2, 3);
         SectionsException exception = assertThrows(SectionsException.class, () -> sections.add(newSection));
 
         // then
@@ -187,8 +245,7 @@ public class SectionsTest {
     @Test
     public void get_all_station_in_section() {
         // given
-        Sections sections = new Sections();
-        sections.add(section);
+        sections.add(originSection);
 
         // when
         List<Station> stations = sections.getStations();
@@ -201,8 +258,7 @@ public class SectionsTest {
     @Test
     public void delete_last_section() {
         // given
-        Sections sections = new Sections();
-        sections.add(section);
+        sections.add(originSection);
 
         // when
         sections.deleteLastSection(downStation);
@@ -215,8 +271,7 @@ public class SectionsTest {
     @Test
     public void delete_last_section_when_not_same_down_station() {
         // given
-        Sections sections = new Sections();
-        sections.add(section);
+        sections.add(originSection);
 
         // when
         Exception exception = assertThrows(SectionsException.class, () -> sections.deleteLastSection(upStation));
