@@ -146,14 +146,16 @@ public class LineServiceMockTest {
         Station upStation = new Station(1L, "강남역");
         Station downStation = new Station(2L, "건대입구역");
         Station anotherStation = new Station(4L, "성수역");
+        Station 다른노선역 = new Station(5L, "다른노선역");
         Line line = new Line(3L, "2호선", "green");
         line.addSection(new Section(line, upStation, downStation, 10));
+        line.addSection(new Section(line, downStation, anotherStation, 5));
 
-        given(stationService.findById(anyLong())).willReturn(anotherStation);
+        given(stationService.findById(anyLong())).willReturn(다른노선역);
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
         // when
-        Exception exception = assertThrows(SectionsDeleteException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
+        Exception exception = assertThrows(SectionsDeleteException.class, () -> lineService.deleteSection(line.getId(), 다른노선역.getId()));
 
         // then
         then(exception).isInstanceOf(SectionsDeleteException.class);

@@ -41,17 +41,31 @@ public class Sections {
             throw SectionsDeleteException.NOT_FOUND_LAST_SECTION_EXCEPTION();
         }
 
+        if (deleteFirstOrLastStation(station)) return;
+
+        throw SectionsDeleteException.NOT_FOUND_LAST_SECTION_EXCEPTION();
+    }
+
+    private boolean deleteFirstOrLastStation(Station station) {
+        return deleteFirstStation(station) || deleteLastStation(station);
+    }
+
+    private boolean deleteFirstStation(Station station) {
         Section firstSection = getFirstSection();
         if (firstSection.hasSameUpStation(station)) {
             sections.remove(firstSection);
-            return;
+            return true;
         }
+        return false;
+    }
 
+    private boolean deleteLastStation(Station station) {
         Section lastSection = getLastSection();
         if (lastSection.hasSameDownStation(station)) {
             sections.remove(lastSection);
-            return;
+            return true;
         }
+        return false;
     }
 
     public boolean isEmptySections() {
