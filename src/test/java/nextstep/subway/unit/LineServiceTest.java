@@ -29,6 +29,7 @@ public class LineServiceTest {
     @Autowired
     private LineService lineService;
 
+    @DisplayName("addSection을 검증한다")
     @Test
     void addSection() {
         // given
@@ -46,6 +47,7 @@ public class LineServiceTest {
         );
     }
 
+    @DisplayName("deleteSection을 검증한다")
     @Test
     void deleteSection() {
         //given
@@ -62,6 +64,7 @@ public class LineServiceTest {
         assertThat(신분당선_응답.getStations()).isEmpty();
     }
 
+    @DisplayName("saveLine을 검증한다")
     @Test
     void saveLine() {
         //given
@@ -79,6 +82,7 @@ public class LineServiceTest {
         );
     }
 
+    @DisplayName("showLines을 검증한다")
     @Test
     void showLines() {
         //given
@@ -94,6 +98,7 @@ public class LineServiceTest {
         );
     }
 
+    @DisplayName("findById를 검증한다")
     @Test
     void findById() {
         //given
@@ -105,6 +110,7 @@ public class LineServiceTest {
         assertThat(신분당선_응답.getName()).isEqualTo("신분당선");
     }
 
+    @DisplayName("updateLine을 검증한다")
     @Test
     void updateLine() {
         //given
@@ -121,6 +127,7 @@ public class LineServiceTest {
         );
     }
 
+    @DisplayName("deleteLine을 검증한다")
     @Test
     void deleteLine() {
         //given
