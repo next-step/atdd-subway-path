@@ -39,10 +39,6 @@ public class Line {
         return color;
     }
 
-    public Sections getSections() {
-        return sections;
-    }
-
     public void addSection(Station upStation, Station downStation, int distance) {
         this.sections.add(new Section(this, upStation, downStation, distance));
     }
@@ -56,9 +52,6 @@ public class Line {
     }
 
     public void removeSection(Station station) {
-        if (!this.sections.isLastDownStation(station)) {
-            throw new IllegalArgumentException();
-        }
         this.sections.remove(station);
     }
 

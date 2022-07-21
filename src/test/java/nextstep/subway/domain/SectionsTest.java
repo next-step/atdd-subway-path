@@ -145,6 +145,41 @@ class SectionsTest {
         assertStations(sections, Stub.구로디지털단지역, Stub.신림역);
     }
 
+    @DisplayName("지하철 구간이 하나인 경우 지하철역을 삭제하면 예외 발생")
+    @Test
+    void deleteStationAtOneSection() {
+        // given
+        Sections sections = new Sections();
+        sections.add(new Section(Stub.구로디지털단지역, Stub.신대방역, 4));
+
+        // then
+        assertThatThrownBy(() -> sections.remove(Stub.신대방역))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("지하철 구간이 비어있는데 지하철역을 삭제하면 예외 발생")
+    @Test
+    void deleteStationAtEmptySections() {
+        // given
+        Sections sections = new Sections();
+
+        // then
+        assertThatThrownBy(() -> sections.remove(Stub.신대방역))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("지하철 구간에 없는 지하철역을 삭제하면 예외 발생")
+    @Test
+    void deleteUnknownStationInSections() {
+        // given
+        Sections sections = new Sections();
+        sections.add(new Section(Stub.구로디지털단지역, Stub.신대방역, 4));
+
+        // then
+        assertThatThrownBy(() -> sections.remove(Stub.대림역))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
     private void assertStations(Sections sections, Station... actualStations) {
         assertThat(sections.getStations()).containsExactly(actualStations);
     }

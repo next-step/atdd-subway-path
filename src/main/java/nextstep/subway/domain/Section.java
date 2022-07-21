@@ -52,12 +52,20 @@ public class Section {
         return this.distance > distance;
     }
 
+    public boolean matchUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean matchDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
     public boolean isBetweenSection(Section section) {
-        return this.upStation.equals(section.upStation) || this.downStation.equals(section.downStation);
+        return matchUpStation(section.upStation) || matchDownStation(section.downStation);
     }
 
     public boolean isLeafSection(Section section) {
-        return this.upStation.equals(section.downStation) || this.downStation.equals(section.upStation);
+        return matchUpStation(section.downStation) || matchDownStation(section.upStation);
     }
 
     public void changeDownSection(Section newSection) {
@@ -74,16 +82,16 @@ public class Section {
         return this.distance - distance;
     }
 
-    public boolean matchUpStationForDown(Section section) {
-        return this.upStation.equals(section.downStation);
+    public int plusDistance(int distance) {
+        return this.distance + distance;
     }
 
     public boolean matchStations(Section section) {
-        return matchUpStation(section) && this.downStation.equals(section.downStation);
+        return matchUpStation(section.upStation) && matchDownStation(section.downStation);
     }
 
-    public boolean matchUpStation(Section section) {
-        return this.upStation.equals(section.upStation);
+    public void combine(Section nextSection) {
+        this.downStation = nextSection.downStation;
+        this.distance = plusDistance(nextSection.distance);
     }
-
 }

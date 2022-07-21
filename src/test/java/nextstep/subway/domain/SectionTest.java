@@ -119,7 +119,7 @@ class SectionTest {
         Section newSection = new Section(Stub.대림역, Stub.구로디지털단지역, 3);
 
         // then
-        assertThat(section.matchUpStationForDown(newSection)).isTrue();
+        assertThat(section.matchUpStation(newSection.getDownStation())).isTrue();
     }
 
     @DisplayName("기존 구간과 비교 구간의 상행과 하행 지하철역이 같은 역인지 확인한다.")
@@ -145,7 +145,7 @@ class SectionTest {
         Section newSection = new Section(Stub.구로디지털단지역, Stub.신대방역, 4);
 
         // then
-        assertThat(section.matchUpStation(newSection)).isTrue();
+        assertThat(section.matchUpStation(newSection.getUpStation())).isTrue();
     }
 
     private static class Stub {
