@@ -3,9 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -19,20 +17,8 @@ public class Sections {
         return Collections.unmodifiableList(sections);
     }
 
-    public void removeLast() {
-        sections.remove(sections.size() - 1);
-    }
-
     public boolean isEmpty() {
         return sections.isEmpty();
-    }
-
-    public void add(final Section section) {
-        sections.add(section);
-    }
-
-    public void add(final int index, final Section section) {
-        sections.add(index, section);
     }
 
     public List<Station> findAllStationsInOrder() {
@@ -69,6 +55,112 @@ public class Sections {
                 .map(Section::getDownStation)
                 .findAny()
                 .orElse(null);
+    }
+
+    public void remove(final Station station) {
+        if (!containsStation(station)) {
+            throw new IllegalArgumentException("Station not exists");
+        }
+
+
+        if (isSingleSection()) {
+            throw new IllegalArgumentException("Last section cannot be removed");
+        }
+
+        final Section section = findSection(station);
+
+        // 1, 2 -> 2, 3 -> 3, 4 -> 4, 5
+        if (!isFirstOrLastStation(station)) {
+            updateMiddleSection(section);
+        }
+
+        sections.remove(section);
+    }
+
+    private boolean containsStation(final Station station) {
+        return findAllStationsInOrder().contains(station);
+    }
+
+    private boolean isSingleSection() {
+        return sections.size() == 1;
+    }
+
+    private Section findSection(final Station station) {
+        return sections.stream()
+                .filter(v -> matchesUpStation(station, v))
+                .findAny()
+                .orElseGet(() -> sections.get(sections.size() - 1));
+    }
+
+    private boolean matchesUpStation(final Station station, final Section section) {
+        return section.getUpStation().equals(station);
+    }
+
+    private boolean isFirstOrLastStation(final Station station) {
+        final List<Station> stations = findAllStationsInOrder();
+        return isFirstStation(station, stations) || isLastStation(station, stations);
+    }
+
+    public boolean isFirstStation(final Station station, final List<Station> stations) {
+        return stations.get(0).equals(station);
+    }
+
+    private boolean isLastStation(final Station station, final List<Station> stations) {
+        return stations.get(stations.size() - 1).equals(station);
+    }
+
+    private void updateMiddleSection(final Section section) {
+        final Section beforeSection = sections.get(sections.indexOf(section) - 1);
+        beforeSection.updateDownStationAndDistance(section.getDownStation(), section.getDistance() + beforeSection.getDistance());
+    }
+
+    public int getDistance() {
+        return sections.stream()
+                .mapToInt(Section::getDistance)
+                .sum();
+    }
+
+    public void add(final Section section) {
+        if (isEmpty()) {
+            sections.add(section);
+            return;
+        }
+
+        final Set<Station> stations = new HashSet<>(findAllStationsInOrder());
+        if (isDuplicated(section, stations) || isDisconnectedSection(section, stations)) {
+            throw new IllegalArgumentException("Invalid Section");
+        }
+
+        sections.stream()
+                .filter(v -> v.getUpStation().equals(section.getUpStation()) || v.getDownStation().equals(section.getDownStation()))
+                .findAny()
+                .ifPresentOrElse(v -> addBetween(section, v), () -> sections.add(section));
+    }
+
+    private boolean isDisconnectedSection(final Section section, final Set<Station> stations) {
+        return !stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation());
+    }
+
+    private boolean isDuplicated(final Section section, final Set<Station> stations) {
+        return stations.contains(section.getUpStation()) && stations.contains(section.getDownStation());
+    }
+
+    private void addBetween(final Section section, final Section targetSection) {
+        if (matchesUpStation(targetSection.getUpStation(), section)) {
+            targetSection.updateUpStationAndDistance(section.getDownStation(), calculateDistance(section, targetSection));
+            sections.add(sections.indexOf(targetSection), section);
+        } else {
+            targetSection.updateDownStationAndDistance(section.getUpStation(), calculateDistance(section, targetSection));
+            sections.add(sections.indexOf(targetSection), section);
+        }
+    }
+
+    private int calculateDistance(final Section section, final Section targetSection) {
+        final int distance = targetSection.getDistance() - section.getDistance();
+        if (distance <= 0) {
+            throw new IllegalArgumentException("Invalid Section");
+        }
+        return distance;
     }
 
 }
