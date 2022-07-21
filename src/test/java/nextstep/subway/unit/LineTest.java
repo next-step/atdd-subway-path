@@ -57,6 +57,26 @@ class LineTest {
         assertThat(findFirstSection).isEqualTo(firstSection);
     }
 
+    @DisplayName("하행 종점역 찾기")
+    @Test
+    void findLastSection() {
+        Line 신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
+
+        Section firstSection = Section.of(강남역, 신논현역, 10);
+        Section secondSection = Section.of(신논현역, 정자역, 9);
+        Section thirdSection = Section.of(정자역, 판교역, 8);
+        Section fourthSection = Section.of(판교역, 이매역, 7);
+
+        신분당선.addSection(firstSection);
+        신분당선.addSection(secondSection);
+        신분당선.addSection(thirdSection);
+        신분당선.addSection(fourthSection);
+
+        Section findLastSection = 신분당선.lastSection();
+
+        assertThat(findLastSection).isEqualTo(fourthSection);
+    }
+
     @DisplayName("지하철 구간 추가시 종점역과 신규 상행역이 일치 하지 않을 경우 예외")
     @Test
     void unmatchedLastStationAndNewUpStationException() {
