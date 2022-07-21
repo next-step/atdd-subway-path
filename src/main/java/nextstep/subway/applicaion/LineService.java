@@ -62,12 +62,8 @@ public class LineService {
     }
 
     private void validateNullOrEmpty(String name, String color) {
-        if(name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("입력된 노선명이 null 또는 비어있습니다.");
-        }
-
-        if(color == null || color.isEmpty()) {
-            throw new IllegalArgumentException("입력된 노선 색상이 null 또는 비어있습니다.");
+        if(name == null && color == null) {
+            throw new IllegalArgumentException("입력된 노선명과 색상이이 null입니다.(변경할 노선명 또는 색상이 입력되어야 합니다.)");
         }
     }
 
