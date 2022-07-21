@@ -25,9 +25,6 @@ public class Sections {
             return;
         }
 
-        matchLastStationAndNewUpStation(section.getUpStation());
-        duplicateStation(section.getDownStation());
-
         this.sections.add(section);
     }
 
