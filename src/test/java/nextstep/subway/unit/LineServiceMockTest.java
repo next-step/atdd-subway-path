@@ -36,17 +36,14 @@ public class LineServiceMockTest {
     @Test
     void addSection() {
         // given
-        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         when(lineRepository.findById(1L)).thenReturn(Optional.of(new Line("신분당선", "red")));
         when(stationService.findById(1L)).thenReturn(new Station("강남역"));
         when(stationService.findById(2L)).thenReturn(new Station("양재역"));
 
         // when
-        // lineService.addSection 호출
         lineService.addSection(1L, new SectionRequest(1L, 2L, 10));
 
         // then
-        // line.findLineById 메서드를 통해 검증
         LineResponse lineResponse = lineService.findById(1L);
         assertThat(lineResponse.getName()).isEqualTo("신분당선");
     }
