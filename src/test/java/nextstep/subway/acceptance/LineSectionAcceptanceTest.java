@@ -136,6 +136,25 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_역_순서_확인(response, 양재역, 신규역);
     }
 
+    /**
+     * When 하행 종점역을 하행역으로 하는 구간에 삭제 요청시
+     * Then 구간 삭제가 성공하고
+     * Then 역 목록을 응답 받는다
+     */
+    @DisplayName("하행 종점역을 삭제할 수 있다.")
+    @Test
+    public void remove_down_station() {
+        // given
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 신규역, 3));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 신규역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_역_순서_확인(response, 강남역, 양재역);
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
