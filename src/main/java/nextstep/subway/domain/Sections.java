@@ -41,13 +41,17 @@ public class Sections {
             throw SectionsDeleteException.NOT_FOUND_LAST_SECTION_EXCEPTION();
         }
 
+        Section findSection = getFirstSection();
+        sections.remove(findSection);
+    }
+
+    private Section getFirstSection() {
         Station firstUpStation = getFirstUpStation();
         Section findSection = sections.stream()
                 .filter(s -> s.hasSameUpStation(firstUpStation))
                 .findFirst()
                 .orElseThrow(() -> SectionsDeleteException.NOT_FOUND_STATION_EXCEPTION());
-
-        sections.remove(findSection);
+        return findSection;
     }
 
     public boolean isEmptySections() {
