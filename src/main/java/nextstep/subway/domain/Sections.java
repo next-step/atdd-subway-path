@@ -18,36 +18,14 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public List<Section> getSections() {
-        return sections;
-    }
-
     public void add(Section section) {
         if (sections.isEmpty()) {
             sections.add(section);
             return;
         }
 
-        boolean hasUpStation = hasSameUpStation(section.getUpStation());
-        boolean hasDownStation = hasSameDownStation(section.getDownStation());
-        if (hasUpStation && hasDownStation) {
-            throw new SectionsException(ErrorCode.ALREADY_BOTH_STATION_REGISTER_EXCEPTION);
-        }
-
-        if (hasNotSameStationIn(section)) {
-            throw new SectionsException(ErrorCode.NOT_FOUND_BOTH_STATION_EXCEPTION);
-        }
-
-        if (isPossibleAddFrontOrBack(section)) {
-            sections.add(section);
-            return;
-        }
-
-        Section findSection = findTargetSection(section);
-        Section halfSection = findSection.divideSectionByMiddle(section);
-        sections.remove(findSection);
-        sections.add(halfSection);
-        sections.add(section);
+        validateSection(section);
+        addSection(section);
     }
 
     public List<Station> getStations() {
@@ -73,6 +51,29 @@ public class Sections {
 
     public boolean isEmptySections() {
         return sections.isEmpty();
+    }
+
+    private void addSection(Section section) {
+        if (isPossibleAddFrontOrBack(section)) {
+            sections.add(section);
+            return;
+        }
+
+        Section findSection = findTargetSection(section);
+        Section halfSection = findSection.divideSectionByMiddle(section);
+        sections.remove(findSection);
+        sections.add(halfSection);
+        sections.add(section);
+    }
+
+    private void validateSection(Section section) {
+        if (hasBothUpAndDownStations(section)) {
+            throw new SectionsException(ErrorCode.ALREADY_BOTH_STATION_REGISTER_EXCEPTION);
+        }
+
+        if (hasNotSameStationIn(section)) {
+            throw new SectionsException(ErrorCode.NOT_FOUND_BOTH_STATION_EXCEPTION);
+        }
     }
 
     private boolean isPossibleAddFrontOrBack(Section section) {
@@ -110,6 +111,10 @@ public class Sections {
 
     private boolean hasNotSameStationIn(Section section) {
         return sections.stream().noneMatch(s -> s.hasStationIn(section));
+    }
+
+    private boolean hasBothUpAndDownStations(Section section) {
+        return hasSameUpStation(section.getUpStation()) && hasSameDownStation(section.getDownStation());
     }
 
     private boolean hasSameUpStation(Station station) {
