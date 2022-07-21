@@ -44,7 +44,7 @@ public class LineServiceTest {
         신분당선 = lineRepository.save(신분당선);
 
         // when
-         lineService.addSection(신분당선.getId(), new SectionRequest(정자역.getId(), 미금역.getId(), 10));
+        lineService.addSection(신분당선.getId(), new SectionRequest(정자역.getId(), 미금역.getId(), 10));
 
         // then
         List<Section> sections = 신분당선.getSections();

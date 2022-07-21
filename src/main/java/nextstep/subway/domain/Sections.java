@@ -29,7 +29,15 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public void removeSection(Section section) {
-        this.sections.remove(section);
+    public void deleteSection(Station station) {
+        if (!isFinalDownStation(station)) {
+            throw new IllegalArgumentException();
+        }
+
+        this.getSections().remove(this.sections.size() - 1);
+    }
+
+    private boolean isFinalDownStation(Station station) {
+        return this.sections.get(this.sections.size() - 1).getDownStation().equals(station);
     }
 }

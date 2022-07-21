@@ -1,9 +1,8 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Entity
 public class Line {
@@ -36,16 +35,13 @@ public class Line {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public void modifyNameAndColor(String name, String color) {
+        this.name = Optional.ofNullable(name).orElse(this.name);
+        this.color = Optional.ofNullable(color).orElse(this.color);
     }
 
     public List<Section> getSections() {
@@ -60,7 +56,7 @@ public class Line {
         return this.sections.getStations();
     }
 
-    public void removeSection(Section section) {
-        this.sections.removeSection(section);
+    public void deleteSection(Station station) {
+        this.sections.deleteSection(station);
     }
 }

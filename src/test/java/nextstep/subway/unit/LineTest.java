@@ -58,7 +58,7 @@ class LineTest {
         신분당선.addSection(정자_미금);
 
         // when
-        신분당선.removeSection(정자_미금);
+        신분당선.deleteSection(미금역);
 
         // then
         assertThat(신분당선.getSections()).hasSize(1).doesNotContain(정자_미금);
