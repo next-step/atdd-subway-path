@@ -4,7 +4,8 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
-import nextstep.subway.exception.sections.SectionsException;
+import nextstep.subway.exception.sections.SectionsAddException;
+import nextstep.subway.exception.sections.SectionsDeleteException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -228,10 +229,10 @@ public class SectionsTest {
 
         // when
         Section newSection = new Section(2L, line, upStation, newStation, overDistance);
-        SectionsException exception = assertThrows(SectionsException.class, () -> sections.add(newSection));
+        Exception exception = assertThrows(SectionsAddException.class, () -> sections.add(newSection));
 
         // then
-        assertThat(exception).isInstanceOf(SectionsException.class);
+        assertThat(exception).isInstanceOf(SectionsAddException.class);
     }
 
     @Test
@@ -255,10 +256,10 @@ public class SectionsTest {
         Section newSection3 = new Section(4L, line, newStation2, newStation3, 3);
 
         //when
-        Exception exception = assertThrows(SectionsException.class, () -> sections.add(newSection3));
+        Exception exception = assertThrows(SectionsAddException.class, () -> sections.add(newSection3));
 
         // then
-        assertThat(exception).isInstanceOf(SectionsException.class);
+        assertThat(exception).isInstanceOf(SectionsAddException.class);
     }
 
     @DisplayName("역 사이에 새로운 역 추가할때, 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다")
@@ -269,10 +270,10 @@ public class SectionsTest {
 
         // when
         Section newSection = new Section(2L, line, upStation, downStation, 3);
-        SectionsException exception = assertThrows(SectionsException.class, () -> sections.add(newSection));
+        Exception exception = assertThrows(SectionsAddException.class, () -> sections.add(newSection));
 
         // then
-        assertThat(exception).isInstanceOf(SectionsException.class);
+        assertThat(exception).isInstanceOf(SectionsAddException.class);
     }
 
     @DisplayName("역 사이에 새로운 역 추가할때, 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다")
@@ -285,10 +286,10 @@ public class SectionsTest {
 
         // when
         Section newSection = new Section(2L, line, 없는역1, 없는역2, 3);
-        SectionsException exception = assertThrows(SectionsException.class, () -> sections.add(newSection));
+        Exception exception = assertThrows(SectionsAddException.class, () -> sections.add(newSection));
 
         // then
-        assertThat(exception).isInstanceOf(SectionsException.class);
+        assertThat(exception).isInstanceOf(SectionsAddException.class);
     }
 
     @DisplayName("Sections에 등록된 모든 역을 조회한다")
@@ -324,9 +325,9 @@ public class SectionsTest {
         sections.add(originSection);
 
         // when
-        Exception exception = assertThrows(SectionsException.class, () -> sections.deleteLastSection(upStation));
+        Exception exception = assertThrows(SectionsDeleteException.class, () -> sections.deleteLastSection(upStation));
 
         // then
-        assertThat(exception).isInstanceOf(SectionsException.class);
+        assertThat(exception).isInstanceOf(SectionsDeleteException.class);
     }
 }

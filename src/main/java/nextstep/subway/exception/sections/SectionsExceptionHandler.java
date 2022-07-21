@@ -9,8 +9,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class SectionsExceptionHandler {
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handleIllegalArgsException(SectionsException e) {
+    public ResponseEntity<ErrorResponse> SectionsDeleteExceptionHandler(SectionsDeleteException e) {
         ErrorResponse response = ErrorResponse.of(e);
-        return new ResponseEntity<>(response, e.getErrorCode().getStatus());
+        return new ResponseEntity<>(response, e.getStatus());
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> SectionsAddExceptionHandler(SectionsAddException e) {
+        ErrorResponse response = ErrorResponse.of(e);
+        return new ResponseEntity<>(response, e.getStatus());
     }
 }

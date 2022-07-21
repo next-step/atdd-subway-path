@@ -1,7 +1,7 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.ErrorCode;
-import nextstep.subway.exception.sections.SectionsException;
+import nextstep.subway.exception.sections.SectionsAddException;
+import nextstep.subway.exception.sections.SectionsDeleteException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -38,12 +38,12 @@ public class Sections {
 
     public void deleteLastSection(Station station) {
         if (isEmptySections()) {
-            throw new SectionsException(ErrorCode.NOT_FOUND_SECTION_EXCEPTION);
+            throw SectionsDeleteException.NOT_FOUND_LAST_SECTION_EXCEPTION();
         }
 
         Section lastSection = getLastSection();
         if (lastSection.hasNotDownStation(station)) {
-            throw new SectionsException(ErrorCode.NOT_SAME_DOWN_STATION_EXCEPTION);
+            throw SectionsDeleteException.NOT_SAME_DOWN_STATION_EXCEPTION();
         }
 
         sections.remove(lastSection);
@@ -68,11 +68,11 @@ public class Sections {
 
     private void validateSection(Section section) {
         if (hasBothUpAndDownStations(section)) {
-            throw new SectionsException(ErrorCode.ALREADY_BOTH_STATION_REGISTER_EXCEPTION);
+            throw SectionsAddException.ALREADY_BOTH_STATION_REGISTER_EXCEPTION();
         }
 
         if (hasNotSameStationIn(section)) {
-            throw new SectionsException(ErrorCode.NOT_FOUND_BOTH_STATION_EXCEPTION);
+            throw SectionsAddException.NOT_FOUND_BOTH_STATION_EXCEPTION();
         }
     }
 
@@ -84,7 +84,7 @@ public class Sections {
         return sections.stream()
                 .filter(s -> s.hasSameUpStation(section.getUpStation()) || s.hasSameDownStation(section.getDownStation()))
                 .findFirst()
-                .orElseThrow(() -> new SectionsException(ErrorCode.NOT_FOUND_SECTION_EXCEPTION));
+                .orElseThrow(() -> SectionsDeleteException.NOT_FOUND_LAST_SECTION_EXCEPTION());
     }
 
     private List<Station> getOrderedStations() {

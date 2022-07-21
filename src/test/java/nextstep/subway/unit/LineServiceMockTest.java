@@ -8,7 +8,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.exception.sections.SectionsException;
+import nextstep.subway.exception.sections.SectionsDeleteException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -118,10 +118,10 @@ public class LineServiceMockTest {
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
         // when
-        Exception exception = assertThrows(SectionsException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
+        Exception exception = assertThrows(SectionsDeleteException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
 
         // then
-        then(exception).isInstanceOf(SectionsException.class);
+        then(exception).isInstanceOf(SectionsDeleteException.class);
     }
 
     @DisplayName("존재하지 않는 line에 구간삭제 요청시 예외가 발생한다")
@@ -153,10 +153,10 @@ public class LineServiceMockTest {
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
         // when
-        Exception exception = assertThrows(SectionsException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
+        Exception exception = assertThrows(SectionsDeleteException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
 
         // then
-        then(exception).isInstanceOf(SectionsException.class);
+        then(exception).isInstanceOf(SectionsDeleteException.class);
     }
 
     @DisplayName("존재하는 라인의 색과 이름을 변경할 수 있다")

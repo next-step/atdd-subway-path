@@ -3,7 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.exception.sections.SectionsException;
+import nextstep.subway.exception.sections.SectionsDeleteException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -85,9 +85,9 @@ class LineTest {
         // given
 
         // when
-        Exception exception = assertThrows(SectionsException.class, () -> line.deleteLastSection(downStation));
+        Exception exception = assertThrows(SectionsDeleteException.class, () -> line.deleteLastSection(downStation));
 
         // then
-        assertThat(exception).isInstanceOf(SectionsException.class);
+        assertThat(exception).isInstanceOf(SectionsDeleteException.class);
     }
 }
