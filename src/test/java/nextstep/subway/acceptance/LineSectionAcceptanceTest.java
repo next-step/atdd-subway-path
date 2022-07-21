@@ -53,6 +53,24 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * Given 지하철 노선에 구간을 등록한다.
+     * When  기존 A - C 의 구간을 가진 노선에 A , B를 추가하면
+     * Then  A -> B, B -> C 노선에 총 두개의 구간이 생긴다.
+     */
+
+    /**
+     * Given 지하철 노선에 구간을 등록한다.
+     * When 새로운 역(B)을 상행 좀점으로 구간을 등록한다.
+     * Then A - C 구간에서 B -> A, A -> C 의 구간이 된다.
+     */
+
+    /**
+     * Given 지하철 노선에 구간을 등록한다.
+     * When 새로운 역(B)을 하행 종점으로 구간을 등록한다. (기존과 동일? )
+     * Then A - C 구간에서 A -> C -> B 의 구간이 된다.
+     */
+
+    /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
      * Then 노선에 구간이 제거된다
