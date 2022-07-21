@@ -36,6 +36,18 @@ public class Section {
         return new Section(upStation, downStation, distance);
     }
 
+    public void changeExistingUpStationToNewDownStation(Section newSection) {
+        // 길이 예외 처리
+        this.upStation = newSection.downStation;
+        this.distance -= newSection.distance;
+    }
+
+    public void changeExistingDownStationToNewUpStation(Section newSection) {
+        // 길이 예외 처리
+        this.downStation = newSection.upStation;
+        this.distance -= newSection.distance;
+    }
+
     public void line(Line line) {
         this.line = line;
     }

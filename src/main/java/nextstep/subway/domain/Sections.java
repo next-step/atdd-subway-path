@@ -25,7 +25,40 @@ public class Sections {
             return;
         }
 
+        addBetweenSection(section);
+
         this.sections.add(section);
+    }
+
+    private void addBetweenSection(Section newSection) {
+        sameNewAndExistingUpStation(newSection);
+        sameNewAndExistingDownStation(newSection);
+    }
+
+    private void sameNewAndExistingUpStation(Section newSection) {
+        Optional<Section> optionalExistingSection = sections.stream()
+                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+                .findFirst();
+
+        if (optionalExistingSection.isEmpty()) {
+            return;
+        }
+
+        Section existingSection = optionalExistingSection.get();
+        existingSection.changeExistingUpStationToNewDownStation(newSection);
+    }
+
+    private void sameNewAndExistingDownStation(Section newSection) {
+        Optional<Section> optionalExistingSection = sections.stream()
+                .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
+                .findFirst();
+
+        if (optionalExistingSection.isEmpty()) {
+            return;
+        }
+
+        Section existingSection = optionalExistingSection.get();
+        existingSection.changeExistingDownStationToNewUpStation(newSection);
     }
 
     private void matchLastStationAndNewUpStation(Station upStation) {
