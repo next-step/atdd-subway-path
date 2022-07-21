@@ -157,6 +157,21 @@ class LineTest {
                 .hasMessage("신규 구간의 길이는 기존 구간의 길이보다 짧아야 합니다.");
     }
 
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void addSectionWhenSameUpStationAndDownStationException() {
+        Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
+        Section 신논현_정자 = Section.of(신논현역, 정자역, 5);
+        Section 강남_정자 = Section.of(강남역, 정자역, 4);
+
+        신분당선.addSection(강남_신논현);
+        신분당선.addSection(신논현_정자);
+
+        assertThatThrownBy(() -> 신분당선.addSection(강남_정자))
+                .isInstanceOf(AddSectionException.class)
+                .hasMessage("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
+    }
+
     @DisplayName("지하철 노선에 존재하는 모든 역 조회")
     @Test
     void getStations() {
