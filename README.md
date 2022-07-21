@@ -6,7 +6,7 @@
 
 - [x] SectionsTest 경계값 관련된 테스트를 추가하기
 - [x] Custom Exception 세분화 하기
-- [ ] 인수조건 주석 다시 생각해보기
+- [x] 인수조건 주석 다시 생각해보기
 - [x] Sections의 add의 hasUpStation && hasDownStation 부분 메서드로 추출하기
 - [x] 신규역을 추가할때 StackOverFlow 가 발생하는 재귀호출 부분 해결하기
 - [x] 구간 거리테스트 재확인 하기
