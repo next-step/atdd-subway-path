@@ -172,6 +172,21 @@ class LineTest {
                 .hasMessage("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
     }
 
+    @DisplayName("상행역과 하행역 둘 중 하나라도 포함되어 있지 않다면 추가할 수 없음")
+    @Test
+    void addSectionWhenNotExistsUpStationAndDownStationException() {
+        Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
+        Section 신논현_정자 = Section.of(신논현역, 정자역, 5);
+        Section 판교_이매 = Section.of(판교역, 이매역, 6);
+
+        신분당선.addSection(강남_신논현);
+        신분당선.addSection(신논현_정자);
+
+        assertThatThrownBy(() -> 신분당선.addSection(판교_이매))
+                .isInstanceOf(AddSectionException.class)
+                .hasMessage("상행역과 하행역 둘 중 하나라도 노선에 존재해야 합니다.");
+    }
+
     @DisplayName("지하철 노선에 존재하는 모든 역 조회")
     @Test
     void getStations() {
