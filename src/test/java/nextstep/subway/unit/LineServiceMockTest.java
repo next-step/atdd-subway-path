@@ -55,7 +55,10 @@ public class LineServiceMockTest {
 
         // then
         Line line = lineService.findLineById(일호선.getId());
-        assertAll(() -> assertThat(line.getSections().size()).isEqualTo(1), () -> assertThat(line.getStations()).contains(영등포역, 신도림역));
+        assertAll(
+                () -> assertThat(line.getSections().size()).isEqualTo(1),
+                () -> assertThat(line.getStations()).contains(영등포역, 신도림역)
+        );
     }
 
     @Test
@@ -68,13 +71,9 @@ public class LineServiceMockTest {
 
         // then
         assertAll(
-                () -> assertThat(allLines)
-                        .hasSize(2),
-                () -> assertThat(allLines)
-                        .extracting("name").containsExactly(일호선.getName(), 이호선.getName()),
-                () -> assertThat(allLines)
-                        .extracting("color").containsExactly(일호선.getColor(), 이호선.getColor())
-        );
+                () -> assertThat(allLines).hasSize(2),
+                () -> assertThat(allLines).extracting("name").containsExactly(일호선.getName(), 이호선.getName()),
+                () -> assertThat(allLines).extracting("color").containsExactly(일호선.getColor(), 이호선.getColor()));
     }
 
     @Test
