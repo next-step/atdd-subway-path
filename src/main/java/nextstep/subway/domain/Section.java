@@ -69,6 +69,10 @@ public class Section {
         return distance - section.getDistance();
     }
 
+    public int plusDistance(Section section) {
+        return distance + section.getDistance();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -87,7 +91,7 @@ public class Section {
     @Override
     public int hashCode() {
         int result = getId() != null ? getId().hashCode() : 0;
-        result = 31 * result + (getLine() != null ? getLine().hashCode() : 0);
+        result = 31 * result + (getLine() != null ? getLine().getId().hashCode() : 0);
         result = 31 * result + (getUpStation() != null ? getUpStation().hashCode() : 0);
         result = 31 * result + (getDownStation() != null ? getDownStation().hashCode() : 0);
         result = 31 * result + getDistance();

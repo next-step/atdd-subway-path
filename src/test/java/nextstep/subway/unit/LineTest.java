@@ -23,7 +23,7 @@ class LineTest {
     @DisplayName("새로운 역을 상행 종점으로 등록할 수 있다")
     @Test
     void addSectionByUpStation() {
-        final Line line = new Line("2호선", "bg-green");
+        final Line line = new Line(1L, "2호선", "bg-green");
         final Station 강남역 = new Station(1L, "강남역");
         final Station 역삼역 = new Station(2L, "역삼역");
         final Station 선릉역 = new Station(3L, "선릉역");
@@ -41,7 +41,7 @@ class LineTest {
     @DisplayName("새로운 역을 하행 좀정으로 등록 할 수 있다")
     @Test
     void addSectionByDownStation() {
-        final Line line = new Line("2호선", "bg-green");
+        final Line line = new Line(1L, "2호선", "bg-green");
         final Station 강남역 = new Station(1L, "강남역");
         final Station 역삼역 = new Station(2L, "역삼역");
         final Station 선릉역 = new Station(3L, "선릉역");
@@ -59,7 +59,7 @@ class LineTest {
     @DisplayName("역 사이에 새로운 역을 등록 할 수 있다")
     @Test
     void addSectionBetweenStations() {
-        final Line line = new Line("2호선", "bg-green");
+        final Line line = new Line(1L, "2호선", "bg-green");
         final Station 강남역 = new Station(1L, "강남역");
         final Station 역삼역 = new Station(2L, "역삼역");
         final Station 선릉역 = new Station(3L, "선릉역");
@@ -80,7 +80,7 @@ class LineTest {
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록할 수 없다")
     @Test
     void addSectionBetweenStationsFail() {
-        final Line line = new Line("2호선", "bg-green");
+        final Line line = new Line(1L, "2호선", "bg-green");
         final Station 강남역 = new Station(1L, "강남역");
         final Station 역삼역 = new Station(2L, "역삼역");
         final Station 선릉역 = new Station(3L, "선릉역");
@@ -98,7 +98,7 @@ class LineTest {
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다")
     @Test
     void addSectionBetweenStationsFail2() {
-        final Line line = new Line("2호선", "bg-green");
+        final Line line = new Line(1L, "2호선", "bg-green");
         final Station 강남역 = new Station(1L, "강남역");
         final Station 역삼역 = new Station(2L, "역삼역");
 
@@ -113,7 +113,7 @@ class LineTest {
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다")
     @Test
     void addSectionBetweenStationsFail3() {
-        final Line line = new Line("2호선", "bg-green");
+        final Line line = new Line(1L, "2호선", "bg-green");
         final Station 강남역 = new Station(1L, "강남역");
         final Station 역삼역 = new Station(2L, "역삼역");
         final Station 선릉역 = new Station(3L, "선릉역");
@@ -131,7 +131,7 @@ class LineTest {
 
     @Test
     void getStations() {
-        final Line line = new Line("2호선", "bg-green");
+        final Line line = new Line(1L, "2호선", "bg-green");
         final Station 강남역 = new Station(1L, "강남역");
         final Station 역삼역 = new Station(2L, "역삼역");
         final Station 선릉역 = new Station(3L, "선릉역");
@@ -143,23 +143,6 @@ class LineTest {
         line.addSection(역삼_선릉_구간);
 
         assertThat(line.getSections()).contains(강남_역삼_구간, 역삼_선릉_구간);
-    }
-
-    @Test
-    void removeSection() {
-        final Line line = new Line("2호선", "bg-green");
-        final Station 강남역 = new Station(1L, "강남역");
-        final Station 역삼역 = new Station(2L, "역삼역");
-        final Station 선릉역 = new Station(3L, "선릉역");
-
-        final Section 강남_역삼_구간 = new Section(line, 강남역, 역삼역, 2);
-        final Section 역삼_선릉_구간 = new Section(line, 역삼역, 선릉역, 3);
-        line.addSection(강남_역삼_구간);
-        line.addSection(역삼_선릉_구간);
-
-        line.deleteSection(선릉역);
-
-        assertThat(line.getSections()).doesNotContain(역삼_선릉_구간);
     }
 
     @DisplayName("구간이 하나뿐인 노선에서 구건을 제거할 수 없다")
@@ -174,6 +157,79 @@ class LineTest {
         assertThatThrownBy(() -> line.deleteSection(양재역))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("구간이 하나뿐인 노선에서 구간을 제거할 수 없습니다.");
+    }
+
+    @DisplayName("노선에 존재하지 않는 역은 삭제할 수 없다")
+    @Test
+    void failDeleteUnKnownSection() {
+        final Line line = new Line(1L, "신분당선", "bg-red");
+        final Station 논현역 = new Station(1L, "논현역");
+        final Station 강남역 = new Station(2L, "강남역");
+        final Station 양재역 = new Station(3L, "양재역");
+        final Section 논현_강남_구간 = new Section(line, 논현역, 강남역, 2);
+        final Section 강남_양재_구간 = new Section(line, 강남역, 양재역, 3);
+        line.addSection(논현_강남_구간);
+        line.addSection(강남_양재_구간);
+
+        final Station 판교역 = new Station(4L, "판교역");
+        assertThatThrownBy(() -> line.deleteSection(판교역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("노선에 등록되어있지 않은 역은 제거 할 수 없습니다.");
+    }
+
+    @DisplayName("지하철 구간에 마지막 역으로 구간 제거 요청")
+    @Test
+    void removeSection() {
+        final Line line = new Line(1L, "2호선", "bg-green");
+        final Station 강남역 = new Station(1L, "강남역");
+        final Station 역삼역 = new Station(2L, "역삼역");
+        final Station 선릉역 = new Station(3L, "선릉역");
+
+        final Section 강남_역삼_구간 = new Section(line, 강남역, 역삼역, 2);
+        final Section 역삼_선릉_구간 = new Section(line, 역삼역, 선릉역, 3);
+        line.addSection(강남_역삼_구간);
+        line.addSection(역삼_선릉_구간);
+
+        line.deleteSection(선릉역);
+
+        assertThat(line.getSections()).doesNotContain(역삼_선릉_구간);
+    }
+
+    @DisplayName("지하철 노선에 첫번째 역으로 구간 제거 요청")
+    @Test
+    void removeFirstSection() {
+        final Line line = new Line(1L, "2호선", "bg-green");
+        final Station 강남역 = new Station(1L, "강남역");
+        final Station 역삼역 = new Station(2L, "역삼역");
+        final Station 선릉역 = new Station(3L, "선릉역");
+
+        final Section 강남_역삼_구간 = new Section(line, 강남역, 역삼역, 2);
+        final Section 역삼_선릉_구간 = new Section(line, 역삼역, 선릉역, 3);
+        line.addSection(강남_역삼_구간);
+        line.addSection(역삼_선릉_구간);
+
+        line.deleteSection(강남역);
+
+        assertThat(line.getSections()).contains(역삼_선릉_구간);
+    }
+
+    @DisplayName("지하철 노선에 중간 구간을 제거")
+    @Test
+    void removeMiddleSection() {
+        final Line line = new Line(1L, "2호선", "bg-green");
+        final Station 강남역 = new Station(1L, "강남역");
+        final Station 역삼역 = new Station(2L, "역삼역");
+        final Station 선릉역 = new Station(3L, "선릉역");
+
+        final Section 강남_역삼_구간 = new Section(line, 강남역, 역삼역, 2);
+        final Section 역삼_선릉_구간 = new Section(line, 역삼역, 선릉역, 3);
+        line.addSection(강남_역삼_구간);
+        line.addSection(역삼_선릉_구간);
+
+        line.deleteSection(역삼역);
+
+        final Section 강남_선릉_구간 = new Section(line, 강남역, 선릉역, 강남_역삼_구간.getDistance() + 역삼_선릉_구간.getDistance());
+        assertThat(line.getSections()).contains(강남_선릉_구간);
     }
 
 }

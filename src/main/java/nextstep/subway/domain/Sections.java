@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,7 +32,7 @@ public class Sections {
         if (sections.isEmpty()) {
             return;
         }
-        if (doesNotContainStationOf(section)) {
+        if (doesNotContainStation(section.getUpStation(), section.getDownStation())) {
             throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
         }
         if (hasSameSection(section)) {
@@ -59,14 +60,48 @@ public class Sections {
         if (sections.size() == 1) {
             throw new IllegalArgumentException("구간이 하나뿐인 노선에서 구간을 제거할 수 없습니다.");
         }
-        final Section lastSection = getLastSection();
-        if (lastSection.notEqualsDownStation(station)) {
-            throw new IllegalArgumentException();
+        if (doesNotContainStation(station)) {
+            throw new IllegalArgumentException("노선에 등록되어있지 않은 역은 제거 할 수 없습니다.");
         }
-        sections.stream()
-                .filter(e -> e.equals(lastSection))
+        if (isDeleteLastSection(station)) {
+            deleteLastSection();
+            return;
+        }
+        if (isDeleteFirstSection(station)) {
+            deleteFirstSection();
+            return;
+        }
+        deleteMiddleSection(station);
+    }
+
+    private boolean isDeleteLastSection(Station station) {
+        return getLastSection().equalsDownStation(station);
+    }
+
+    private void deleteMiddleSection(Station station) {
+        final Section target = sections.stream()
+                .filter(section -> section.equalsDownStation(station))
                 .findFirst()
-                .ifPresent(sections::remove);
+                .orElseThrow(IllegalArgumentException::new);
+
+        final int index = sections.indexOf(target);
+        final Section nextSection = sections.get(index + 1);
+
+        sections.removeAll(Arrays.asList(target, nextSection));
+        sections.add(index, new Section(target.getLine(), target.getUpStation(), nextSection.getDownStation(), target.plusDistance(nextSection)));
+    }
+
+    private void deleteFirstSection() {
+        sections.remove(findFirstSection());
+    }
+
+    private boolean isDeleteFirstSection(Station station) {
+        final Section firstSection = findFirstSection();
+        return firstSection.equalsUpStation(station);
+    }
+
+    private void deleteLastSection() {
+        sections.remove(getLastSection());
     }
 
     public Section getLastSection() {
@@ -138,16 +173,15 @@ public class Sections {
         return distance;
     }
 
-    private boolean doesNotContainStationOf(Section section) {
-        final List<Station> stations = sections.stream()
+    private boolean doesNotContainStation(Station... stations) {
+        final List<Station> allStations = sections.stream()
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
-        stations.add(getLastSection().getDownStation());
+        allStations.add(getLastSection().getDownStation());
 
-        final int sizeBeforeRemove = stations.size();
-        stations.remove(section.getUpStation());
-        stations.remove(section.getDownStation());
-        final int sizeAfterRemove = stations.size();
+        final int sizeBeforeRemove = allStations.size();
+        allStations.removeAll(Arrays.asList(stations));
+        final int sizeAfterRemove = allStations.size();
 
         return sizeBeforeRemove == sizeAfterRemove;
     }
