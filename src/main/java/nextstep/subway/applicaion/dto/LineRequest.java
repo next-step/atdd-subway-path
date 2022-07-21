@@ -30,7 +30,7 @@ public class LineRequest {
         return distance;
     }
 
-    public Boolean requestValidCheck(){
+    public Boolean isValidCheck(){
         return this.upStationId != null && this.downStationId != null && this.getDistance() > 0;
     }
 }

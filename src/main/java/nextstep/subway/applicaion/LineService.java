@@ -29,7 +29,7 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-        if(!request.requestValidCheck()){
+        if(!request.isValidCheck()){
             return createLineResponse(line);
         }
         Station upStation = stationService.findById(request.getUpStationId());
