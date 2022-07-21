@@ -53,7 +53,7 @@ public class Section {
             throw new SectionsException(ErrorCode.SECTION_DISTANCE_EXCEPTION);
         }
 
-        if (section.hasSameUpStation(this.upStation)) {
+        if (hasSameUpStation(section.getUpStation())) {
             return new Section(this.line, section.getDownStation(), this.downStation, this.distance - section.getDistance());
         }
         return new Section(this.line, this.upStation, section.getUpStation(), this.distance - section.getDistance());
