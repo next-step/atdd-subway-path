@@ -54,7 +54,7 @@ public class LineServiceMockTest {
         lineService.addSection(일호선.getId(), new SectionRequest(영등포역.getId(), 신도림역.getId(), 20));
 
         // then
-        Line line = lineService.findLineById(일호선.getId());
+        Line line = lineRepository.findById(일호선.getId()).get();
         assertAll(
                 () -> assertThat(line.getSections().size()).isEqualTo(1),
                 () -> assertThat(line.getStations()).contains(영등포역, 신도림역)
@@ -112,7 +112,7 @@ public class LineServiceMockTest {
         lineService.deleteSection(일호선.getId(), 구로역.getId());
 
         // then
-        Line line = lineService.findLineById(일호선.getId());
+        Line line = lineRepository.findById(일호선.getId()).get();
         assertAll(
                 () -> assertThat(line.getStations()).hasSize(2),
                 () -> assertThat(line.getStations()).containsExactly(영등포역, 신도림역)

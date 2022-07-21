@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
@@ -53,5 +52,14 @@ public class Line {
 
     public void deleteSection(Station station) {
         sections.delete(station);
+    }
+
+    public void updateLine(String color, String name) {
+        if (name != null) {
+            this.setName(name);
+        }
+        if (color != null) {
+            this.setColor(color);
+        }
     }
 }
