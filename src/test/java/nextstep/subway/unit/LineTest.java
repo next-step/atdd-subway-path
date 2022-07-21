@@ -30,9 +30,9 @@ class LineTest {
     @DisplayName("지하철 구간 추가")
     @Test
     void addSection() {
-        Section section = Section.of(강남역, 신논현역, 10);
+        Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
 
-        신분당선.addSection(section);
+        신분당선.addSection(강남_신논현);
 
         List<Section> sections = 신분당선.getSections();
 
@@ -46,54 +46,54 @@ class LineTest {
     @DisplayName("상행 종점역 찾기")
     @Test
     void findFirstSection() {
-        Section firstSection = Section.of(강남역, 신논현역, 10);
-        Section secondSection = Section.of(신논현역, 정자역, 9);
-        Section thirdSection = Section.of(정자역, 판교역, 8);
-        Section fourthSection = Section.of(판교역, 이매역, 7);
+        Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
+        Section 신논현_정자 = Section.of(신논현역, 정자역, 9);
+        Section 정자_판교 = Section.of(정자역, 판교역, 8);
+        Section 판교_이매 = Section.of(판교역, 이매역, 7);
 
-        신분당선.addSection(firstSection);
-        신분당선.addSection(secondSection);
-        신분당선.addSection(thirdSection);
-        신분당선.addSection(fourthSection);
+        신분당선.addSection(강남_신논현);
+        신분당선.addSection(신논현_정자);
+        신분당선.addSection(정자_판교);
+        신분당선.addSection(판교_이매);
 
         Section findFirstSection = 신분당선.firstSection();
 
-        assertThat(findFirstSection).isEqualTo(firstSection);
+        assertThat(findFirstSection).isEqualTo(강남_신논현);
     }
 
     @DisplayName("하행 종점역 찾기")
     @Test
     void findLastSection() {
-        Section firstSection = Section.of(강남역, 신논현역, 10);
-        Section secondSection = Section.of(신논현역, 정자역, 9);
-        Section thirdSection = Section.of(정자역, 판교역, 8);
-        Section fourthSection = Section.of(판교역, 이매역, 7);
+        Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
+        Section 신논현_정자 = Section.of(신논현역, 정자역, 9);
+        Section 정자_판교 = Section.of(정자역, 판교역, 8);
+        Section 판교_이매 = Section.of(판교역, 이매역, 7);
 
-        신분당선.addSection(firstSection);
-        신분당선.addSection(secondSection);
-        신분당선.addSection(thirdSection);
-        신분당선.addSection(fourthSection);
+        신분당선.addSection(강남_신논현);
+        신분당선.addSection(신논현_정자);
+        신분당선.addSection(정자_판교);
+        신분당선.addSection(판교_이매);
 
         Section findLastSection = 신분당선.lastSection();
 
-        assertThat(findLastSection).isEqualTo(fourthSection);
+        assertThat(findLastSection).isEqualTo(판교_이매);
     }
 
     @DisplayName("새로운 구간을 맨 앞에 추가")
     @Test
     void addSectionInFront() {
-        Section firstSection = Section.of(강남역, 신논현역, 10);
-        Section secondSection = Section.of(신논현역, 정자역, 7);
-        Section newFirstSection = Section.of(판교역, 강남역, 5);
+        Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
+        Section 신논현_정자 = Section.of(신논현역, 정자역, 7);
+        Section 판교_강남 = Section.of(판교역, 강남역, 5);
 
-        신분당선.addSection(firstSection);
-        신분당선.addSection(secondSection);
-        신분당선.addSection(newFirstSection);
+        신분당선.addSection(강남_신논현);
+        신분당선.addSection(신논현_정자);
+        신분당선.addSection(판교_강남);
 
         List<Section> sections = 신분당선.getSections();
 
         assertAll(
-                () -> assertThat(신분당선.firstSection()).isEqualTo(newFirstSection),
+                () -> assertThat(신분당선.firstSection()).isEqualTo(판교_강남),
                 () -> assertThat(sections).hasSize(3)
         );
     }
