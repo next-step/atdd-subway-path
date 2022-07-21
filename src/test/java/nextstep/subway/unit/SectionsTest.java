@@ -146,6 +146,29 @@ public class SectionsTest {
         assertThat(sections.getStations()).containsExactly(newStation, upStation, newStation2, newStation3, downStation);
     }
 
+    @DisplayName("신규역을 상행 구간 앞으로 3번 추가할 수 있다")
+    @Test
+    public void add_section_front_3_times() {
+        // given
+        sections.add(originSection);
+        Station newStation = new Station(3L, "신규역");
+
+        // when
+        Section newSection = new Section(2L, line, newStation, upStation, 8);
+        sections.add(newSection);
+
+        Station newStation2 = new Station(4L, "신규역2");
+        Section newSection2 = new Section(3L, line, newStation, newStation2, 4);
+        sections.add(newSection2);
+
+        Station newStation3 = new Station(5L, "신규역3");
+        Section newSection3 = new Section(4L, line, newStation2, newStation3, 2);
+        sections.add(newSection3);
+
+        //then
+        assertThat(sections.getStations()).containsExactly(newStation, newStation2, newStation3, upStation, downStation);
+    }
+
     @DisplayName("노선의 하행역과 신규 추가할 구간의 상행역이 동일할 경우 노선의 뒷부분에 신규 구간을 추가할 수 있다.")
     @Test
     public void add_section_back_at_line() {
