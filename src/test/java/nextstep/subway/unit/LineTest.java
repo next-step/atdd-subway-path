@@ -47,18 +47,20 @@ class LineTest {
     @Test
     void findFirstSection() {
         Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
-        Section 신논현_정자 = Section.of(신논현역, 정자역, 9);
-        Section 정자_판교 = Section.of(정자역, 판교역, 8);
-        Section 판교_이매 = Section.of(판교역, 이매역, 7);
+        Section 정자_신논현 = Section.of(정자역, 신논현역, 4);
+        Section 강남_판교 = Section.of(강남역, 판교역, 5);
 
         신분당선.addSection(강남_신논현);
-        신분당선.addSection(신논현_정자);
-        신분당선.addSection(정자_판교);
-        신분당선.addSection(판교_이매);
+        신분당선.addSection(정자_신논현);
+        신분당선.addSection(강남_판교);
 
         Section findFirstSection = 신분당선.firstSection();
 
-        assertThat(findFirstSection).isEqualTo(강남_신논현);
+        assertAll(
+                () -> assertThat(findFirstSection.getUpStation()).isEqualTo(강남역),
+                () -> assertThat(findFirstSection.getDownStation()).isEqualTo(판교역),
+                () -> assertThat(findFirstSection.getDistance()).isEqualTo(5)
+        );
     }
 
     @DisplayName("하행 종점역 찾기")
@@ -66,17 +68,19 @@ class LineTest {
     void findLastSection() {
         Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
         Section 신논현_정자 = Section.of(신논현역, 정자역, 9);
-        Section 정자_판교 = Section.of(정자역, 판교역, 8);
-        Section 판교_이매 = Section.of(판교역, 이매역, 7);
+        Section 신논현_판교 = Section.of(신논현역, 판교역, 5);
 
         신분당선.addSection(강남_신논현);
         신분당선.addSection(신논현_정자);
-        신분당선.addSection(정자_판교);
-        신분당선.addSection(판교_이매);
+        신분당선.addSection(신논현_판교);
 
         Section findLastSection = 신분당선.lastSection();
 
-        assertThat(findLastSection).isEqualTo(판교_이매);
+        assertAll(
+                () -> assertThat(findLastSection.getUpStation()).isEqualTo(판교역),
+                () -> assertThat(findLastSection.getDownStation()).isEqualTo(정자역),
+                () -> assertThat(findLastSection.getDistance()).isEqualTo(4)
+        );
     }
 
     @DisplayName("새로운 구간을 맨 앞에 추가")
