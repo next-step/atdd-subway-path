@@ -26,7 +26,8 @@ public class Sections {
         }
 
         duplicateUpAndDownStation(section);
-        addBetweenSection(section);
+        notExistsStation(section);
+        betweenSection(section);
 
         this.sections.add(section);
     }
@@ -43,7 +44,19 @@ public class Sections {
         }
     }
 
-    private void addBetweenSection(Section newSection) {
+    private void notExistsStation(Section section) {
+        boolean findUpStation = allStations().stream()
+                .anyMatch(station -> station.equals(section.getUpStation()));
+
+        boolean findDownStation = allStations().stream()
+                .anyMatch(station -> station.equals(section.getDownStation()));
+
+        if (!findUpStation && !findDownStation) {
+            throw new AddSectionException("상행역과 하행역 둘 중 하나라도 노선에 존재해야 합니다.");
+        }
+    }
+
+    private void betweenSection(Section newSection) {
         sameNewAndExistingUpStation(newSection);
         sameNewAndExistingDownStation(newSection);
     }
