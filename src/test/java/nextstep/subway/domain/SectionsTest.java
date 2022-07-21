@@ -100,6 +100,51 @@ class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+    @DisplayName("지하철 구간에서 하행 종점역 삭제")
+    @Test
+    void deleteLastStation() {
+        // given
+        Sections sections = new Sections();
+        sections.add(new Section(Stub.구로디지털단지역, Stub.신대방역, 4));
+        sections.add(new Section(Stub.신대방역, Stub.신림역, 7));
+
+        // when
+        sections.remove(Stub.신림역);
+
+        // then
+        assertStations(sections, Stub.구로디지털단지역, Stub.신대방역);
+    }
+
+    @DisplayName("지하철 구간에서 상행 종점역 삭제")
+    @Test
+    void deleteFirstStation() {
+        // given
+        Sections sections = new Sections();
+        sections.add(new Section(Stub.구로디지털단지역, Stub.신대방역, 4));
+        sections.add(new Section(Stub.신대방역, Stub.신림역, 7));
+
+        // when
+        sections.remove(Stub.구로디지털단지역);
+
+        // then
+        assertStations(sections, Stub.신대방역, Stub.신림역);
+    }
+
+    @DisplayName("지하철 구간에서 중간 지하철역 삭제")
+    @Test
+    void deleteBetweenStation() {
+        // given
+        Sections sections = new Sections();
+        sections.add(new Section(Stub.구로디지털단지역, Stub.신대방역, 4));
+        sections.add(new Section(Stub.신대방역, Stub.신림역, 7));
+
+        // when
+        sections.remove(Stub.신대방역);
+
+        // then
+        assertStations(sections, Stub.구로디지털단지역, Stub.신림역);
+    }
+
     private void assertStations(Sections sections, Station... actualStations) {
         assertThat(sections.getStations()).containsExactly(actualStations);
     }

@@ -59,7 +59,7 @@ public class Line {
         if (!this.sections.isLastDownStation(station)) {
             throw new IllegalArgumentException();
         }
-        this.sections.remove();
+        this.sections.remove(station);
     }
 
     public void update(String name, String color) {

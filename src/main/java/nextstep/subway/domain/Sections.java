@@ -28,7 +28,7 @@ public class Sections {
         addSection(newSection);
     }
 
-    public void remove() {
+    public void remove(Station station) {
         this.sections.remove(size() - 1);
     }
 
