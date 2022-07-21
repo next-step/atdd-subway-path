@@ -1,12 +1,14 @@
 package nextstep.subway.domain;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 @Entity
 public class Line {
@@ -41,11 +43,11 @@ public class Line {
     }
 
     public void updateLine(String name, String color) {
-        if (name != null) {
+        if (StringUtils.hasText(name)) {
             this.name = name;
         }
 
-        if (color != null) {
+        if (StringUtils.hasText(color)) {
             this.color = color;
         }
     }
