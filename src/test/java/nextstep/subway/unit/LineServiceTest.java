@@ -59,8 +59,7 @@ public class LineServiceTest {
         LineResponse lineResponse = lineService.findById(일호선.getId());
         assertAll(
                 () -> assertThat(일호선.getSections().size()).isEqualTo(2),
-                () -> assertThat(lineResponse.getStations()).extracting("name")
-                        .containsExactly(영등포역.getName(), 신도림역.getName(), 구로역.getName())
+                () -> assertThat(lineResponse.getStations()).extracting("name").containsExactly(영등포역.getName(), 신도림역.getName(), 구로역.getName())
         );
     }
 
@@ -75,12 +74,9 @@ public class LineServiceTest {
 
         // then
         assertAll(
-                () -> assertThat(allLines)
-                        .hasSize(2),
-                () -> assertThat(allLines)
-                        .extracting("name").containsOnlyOnce(일호선.getName(), 이호선.getName()),
-                () -> assertThat(allLines)
-                        .extracting("color").containsOnlyOnce(일호선.getColor(), 이호선.getColor())
+                () -> assertThat(allLines).hasSize(2),
+                () -> assertThat(allLines).extracting("name").containsOnlyOnce(일호선.getName(), 이호선.getName()),
+                () -> assertThat(allLines).extracting("color").containsOnlyOnce(일호선.getColor(), 이호선.getColor())
         );
     }
 
@@ -116,7 +112,7 @@ public class LineServiceTest {
         lineService.deleteSection(일호선.getId(), 구로역.getId());
 
         // then
-        Line line = lineService.findLineById(일호선.getId());
+        Line line = lineRepository.findById(일호선.getId()).get();
         assertAll(
                 () -> assertThat(line.getStations()).hasSize(2),
                 () -> assertThat(line.getStations()).containsExactly(영등포역, 신도림역)

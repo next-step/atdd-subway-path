@@ -60,7 +60,6 @@ public class Sections {
             }
             upStation = section.getDownStation();
         }
-
         return stations;
     }
 
@@ -124,7 +123,6 @@ public class Sections {
                 .get(0);
     }
 
-
     private List<Station> getUpStations() {
         return sections.stream()
                 .map(Section::getUpStation)
@@ -164,14 +162,14 @@ public class Sections {
 
     private Section findSectionByDownStation(Station downStation) {
         return this.sections.stream()
-                .filter(e -> e.getDownStation().equals(downStation))
+                .filter(section -> section.isSameDownStation(downStation))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("해당되는 구간을 찾을 수 없습니다."));
     }
 
     private Section findSectionByUpStation(Station upStation) {
         return this.sections.stream()
-                .filter(e -> e.getUpStation().equals(upStation))
+                .filter(section -> section.isSameUpStation(upStation))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("해당되는 구간을 찾을 수 없습니다."));
     }

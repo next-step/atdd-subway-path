@@ -163,6 +163,23 @@ class LineTest {
         }
     }
 
+    @DisplayName("구간 추가")
+    @Test
+    void addSection() {
+        // given
+        Line 이호선 = new Line("2호선", "green");
+
+        // when
+        이호선.addSection(영등포역, 신도림역, 10);
+        이호선.addSection(신도림역, 구로역, 5);
+
+        // then
+        assertAll(
+                () -> assertThat(이호선.getStations()).hasSize(3),
+                () -> assertThat(이호선.getStations()).containsExactly(영등포역, 신도림역, 구로역)
+        );
+    }
+
     @DisplayName("노선의 모든 지하철역 가져오기")
     @Test
     void getStations() {

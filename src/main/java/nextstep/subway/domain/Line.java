@@ -3,14 +3,11 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Line {
     @Id
@@ -25,7 +22,6 @@ public class Line {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
-
     }
 
     public List<Section> getSections() {
@@ -42,5 +38,14 @@ public class Line {
 
     public void deleteSection(Station station) {
         sections.delete(station);
+    }
+
+    public void updateLine(String color, String name) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (color != null) {
+            this.color = color;
+        }
     }
 }
