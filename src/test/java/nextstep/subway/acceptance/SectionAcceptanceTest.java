@@ -13,6 +13,7 @@ import java.util.Map;
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관리 기능")
 class SectionAcceptanceTest extends AcceptanceTest {
@@ -54,14 +55,20 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 새로운 역을 기존 노선의 사이로 구간 추가를 요청 하면 (기존 구간의 상행역과 신규 노선의 하행역이 일치하는 경우)
-     * Then 새로운 구간의 상행역이 상행 종점으로 구간이 추가된다
-     * Then 기존 노선의 역 길이가 신규 노선의 길이 만큼 줄어든다.
+     * Then 노선 중간에 새로운 구간이 추가된다.
      * 신분당선 : 강남역 - 양재역
      */
     @DisplayName("새로운 역을 기존 노선 사이로 구간을 등록")
     @Test
     void addNewSectionBetweenLineSection() {
+        // when
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역));
 
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역, 양재역);
     }
 
     /**
