@@ -25,9 +25,22 @@ public class Sections {
             return;
         }
 
+        duplicateUpAndDownStation(section);
         addBetweenSection(section);
 
         this.sections.add(section);
+    }
+
+    private void duplicateUpAndDownStation(Section section) {
+        boolean findUpStation = allStations().stream()
+                .anyMatch(station -> station.equals(section.getUpStation()));
+
+        boolean findDownStation = allStations().stream()
+                .anyMatch(station -> station.equals(section.getDownStation()));
+
+        if (findUpStation && findDownStation) {
+            throw new AddSectionException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
+        }
     }
 
     private void addBetweenSection(Section newSection) {
@@ -66,17 +79,6 @@ public class Sections {
 
         if (!lastStation.equals(upStation)) {
             throw new AddSectionException("기존 노선의 종점역과 신규 노선의 상행역이 일치하지 않습니다.");
-        }
-    }
-
-    private void duplicateStation(Station downStation) {
-        Optional<Station> findStation = sections.stream()
-                .map(Section::getUpStation)
-                .filter(upStation -> upStation.equals(downStation))
-                .findAny();
-
-        if (findStation.isPresent()) {
-            throw new AddSectionException("신규 구간의 하행역이 기존 노션의 역에 이미 등록되어 있습니다.");
         }
     }
 
