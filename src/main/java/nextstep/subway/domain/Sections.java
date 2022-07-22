@@ -37,8 +37,8 @@ public class Sections {
     }
 
     public void deleteSection(Station station) {
-        if (isEmptySections()) {
-            throw SectionsDeleteException.NOT_FOUND_LAST_SECTION_EXCEPTION();
+        if (isSizeOne()) {
+            throw SectionsDeleteException.CANT_DELETE_LAST_ONE_SECTION_EXCEPTION();
         }
 
         if (deleteFirstOrLastStation(station)) return;
@@ -49,6 +49,10 @@ public class Sections {
 
     public boolean isEmptySections() {
         return sections.isEmpty();
+    }
+
+    private boolean isSizeOne() {
+        return sections.size() == 1;
     }
 
     private boolean deleteMiddleStation(Station station) {

@@ -5,6 +5,7 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.sections.SectionsAddException;
+import nextstep.subway.exception.sections.SectionsDeleteException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -376,5 +377,18 @@ public class SectionsTest {
 
         // then
         assertThat(sections.getStations()).containsExactly(upStation, downStation, newStation2);
+    }
+
+    @DisplayName("구간이 하나 남았을때 삭제할 경우 예외가 발생한다.")
+    @Test
+    public void cant_delete_section_when_only_one_section() {
+        // given
+        sections.add(originSection);
+
+        // when
+        Exception exception = assertThrows(SectionsDeleteException.class, () -> sections.deleteSection(upStation));
+
+        // then
+        assertThat(exception).isInstanceOf(SectionsDeleteException.class);
     }
 }
