@@ -142,6 +142,25 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(result.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
+    /**
+     * Given 기존 구간에 등록되지 않은 새로운 역 2개를 생성하고
+     * When 지하철 구간을 추가하면
+     * Then 기존 구간과 연결할 역이 없으므로 예외처리가 된다
+     */
+    @DisplayName("신규 등록하는 구간의 역들이 기존 구간 중 하나의 역 이상 일치하지 않는 경우 예외처리 된다.")
+    @Test
+    void exceptionNotMatchedExistingSection() {
+        // given
+        Long 신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
+        Long 언재역 = 지하철역_생성_요청("언재역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> result = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 언재역, 3));
+
+        // then
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
