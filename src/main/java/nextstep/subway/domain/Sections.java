@@ -56,7 +56,7 @@ public class Sections {
     }
 
     public void conditionCheckAndModify(Section newSection){
-
+        isValidationAddSection(newSection);
         if (!Objects.isNull(getBetweenSection(newSection))){
             addBetweenSection(newSection, getBetweenSection(newSection));
             return;
@@ -79,6 +79,30 @@ public class Sections {
         matchedSection.modifyStation(newSection);
     }
 
+    public void isValidationAddSection(Section newSection){
+        if(checkExistSection(newSection)){
+            throw new BadRequestException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음");
+        }
+        if( checkNotExistStation(newSection.getUpStation()) && checkNotExistStation(newSection.getDownStation())){
+            throw new BadRequestException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음");
+        }
+    }
+
+    public Boolean checkNotExistStation(Station station){
+        return getStations()
+                .stream()
+                .noneMatch(currentStation -> currentStation.equals(station));
+    }
+
+    public Boolean checkExistSection(Section section){
+        return getSections()
+                .stream()
+                .anyMatch(currentSection -> currentSection.getUpStation().equals(section.getUpStation())
+                            && currentSection.getDownStation().equals(section.getDownStation())
+                );
+    }
+
+
     public List<Station> getStations(){
         return getSections().stream()
                 .map(Section::getStations)
@@ -86,6 +110,7 @@ public class Sections {
                 .distinct()
                 .collect(Collectors.toList());
     }
+
     public void removeSection(Long stationId) {
         Section lastSection = getLastSection();
 
@@ -139,12 +164,12 @@ public class Sections {
     }
     public Boolean isFirstSection(Section section){
         return sections.stream()
-                .noneMatch(thisSection -> section.getUpStation().getId().equals(thisSection.getDownStation().getId()));
+                .noneMatch(currentSection -> section.getUpStation().getId().equals(currentSection.getDownStation().getId()));
     }
 
     public Boolean isLastSection(Section section){
         return sections.stream()
-                .noneMatch(thisSection -> section.getDownStation().getId().equals(thisSection.getUpStation().getId()));
+                .noneMatch(currentSection -> section.getDownStation().getId().equals(currentSection.getUpStation().getId()));
     }
 
 
