@@ -18,14 +18,14 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class LineServiceMockTest {
+class SectionServiceMockTest {
     @Mock
     private LineRepository lineRepository;
     @Mock
     private StationService stationService;
 
     @InjectMocks
-    private LineService lineService;
+    private SectionService sectionService;
 
     @Test
     void 구간_추가() {
@@ -41,7 +41,7 @@ class LineServiceMockTest {
         when(lineRepository.findById(lineId)).thenReturn(Optional.of(line));
 
         // when
-        lineService.addSection(lineId, new SectionRequest(upStationId, downStationId, 6));
+        sectionService.addSection(lineId, new SectionRequest(upStationId, downStationId, 6));
 
         // then
         assertThat(line.getSections()).hasSize(1);
@@ -60,7 +60,7 @@ class LineServiceMockTest {
         when(lineRepository.findById(lineId)).thenReturn(Optional.of(line));
 
         // when
-        lineService.deleteSection(lineId, downStationId);
+        sectionService.deleteSection(lineId, downStationId);
 
         // then
         assertThat(line.getSections()).isEmpty();
@@ -79,7 +79,7 @@ class LineServiceMockTest {
         when(lineRepository.findById(lineId)).thenReturn(Optional.of(line));
 
         // when + then
-        assertThatThrownBy(() -> lineService.deleteSection(lineId, upStationId))
+        assertThatThrownBy(() -> sectionService.deleteSection(lineId, upStationId))
                 .isInstanceOf(CannotDeleteSectionException.class);
     }
 }

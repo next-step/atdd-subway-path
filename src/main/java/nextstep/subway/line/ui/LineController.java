@@ -3,9 +3,8 @@ package nextstep.subway.line.ui;
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.application.dto.request.LineRequest;
-import nextstep.subway.line.application.dto.response.LineResponse;
 import nextstep.subway.line.application.dto.request.LineUpdateRequest;
-import nextstep.subway.line.application.dto.request.SectionRequest;
+import nextstep.subway.line.application.dto.response.LineResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,17 +46,5 @@ public class LineController {
     public ResponseEntity<Void> updateLine(@PathVariable Long id) {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/{lineId}/sections")
-    public ResponseEntity<Void> addSection(@PathVariable Long lineId, @RequestBody @Valid SectionRequest sectionRequest) {
-        lineService.addSection(lineId, sectionRequest);
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/{lineId}/sections")
-    public ResponseEntity<Void> deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
-        lineService.deleteSection(lineId, stationId);
-        return ResponseEntity.ok().build();
     }
 }

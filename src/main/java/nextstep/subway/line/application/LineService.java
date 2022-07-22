@@ -2,9 +2,8 @@ package nextstep.subway.line.application;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.application.dto.request.LineRequest;
-import nextstep.subway.line.application.dto.response.LineResponse;
 import nextstep.subway.line.application.dto.request.LineUpdateRequest;
-import nextstep.subway.line.application.dto.request.SectionRequest;
+import nextstep.subway.line.application.dto.response.LineResponse;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.station.applicaion.StationService;
@@ -58,15 +57,6 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    @Transactional
-    public void addSection(Long lineId, SectionRequest sectionRequest) {
-        Station upStation = stationService.findById(sectionRequest.getUpStationId());
-        Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
-
-        line.addSection(upStation.getId(), downStation.getId(), sectionRequest.getDistance());
-    }
-
     private LineResponse createLineResponse(Line line) {
         return new LineResponse(
                 line.getId(),
@@ -83,12 +73,5 @@ public class LineService {
 
         List<Long> stationIds = line.stationIds();
         return stationService.findByIds(stationIds);
-    }
-
-    @Transactional
-    public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
-
-        line.removeSection(stationId);
     }
 }

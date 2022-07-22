@@ -19,14 +19,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
-class LineServiceTest {
+class SectionServiceTest {
     @Autowired
     private StationRepository stationRepository;
     @Autowired
     private LineRepository lineRepository;
 
     @Autowired
-    private LineService lineService;
+    private SectionService sectionService;
 
     @Test
     void 구간_추가() {
@@ -38,7 +38,7 @@ class LineServiceTest {
         SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(), 6);
 
         // when
-        lineService.addSection(line.getId(), sectionRequest);
+        sectionService.addSection(line.getId(), sectionRequest);
 
         // then
         List<Section> sections = line.getSections();
@@ -59,7 +59,7 @@ class LineServiceTest {
         line.addSection(upStation.getId(), downStation.getId(), 6);
 
         // when
-        lineService.deleteSection(line.getId(), downStation.getId());
+        sectionService.deleteSection(line.getId(), downStation.getId());
 
         // then
         assertThat(line.getSections()).isEmpty();
@@ -75,7 +75,7 @@ class LineServiceTest {
         line.addSection(upStation.getId(), downStation.getId(), 6);
 
         // when + then
-        assertThatThrownBy(() -> lineService.deleteSection(line.getId(), upStation.getId()))
+        assertThatThrownBy(() -> sectionService.deleteSection(line.getId(), upStation.getId()))
                 .isInstanceOf(CannotDeleteSectionException.class);
     }
 }
