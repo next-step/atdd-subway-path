@@ -337,4 +337,44 @@ public class SectionsTest {
         // then
         assertThat(sections.getStations()).containsExactly(upStation, downStation);
     }
+
+    @DisplayName("연속된 두 구간의 중간역을 삭제할 수 있다")
+    @Test
+    public void delete_middle_station() {
+        // given
+        sections.add(originSection);
+
+        Station newStation = new Station(3L, "신규역");
+        Section newSection = new Section(2L, line, downStation, newStation, 5);
+        sections.add(newSection);
+
+        // when
+        sections.deleteSection(downStation);
+
+        // then
+        assertThat(sections.getStations()).containsExactly(upStation, newStation);
+    }
+
+    @DisplayName("연속된 3 구간의 중간역을 삭제할 수 있다")
+    @Test
+    public void delete_middle_station_2() {
+        // given
+        sections.add(originSection);
+
+        // upStation -(10)- downStation -(5)- newStation
+        Station newStation = new Station(3L, "신규역");
+        Section newSection = new Section(2L, line, downStation, newStation, 5);
+        sections.add(newSection);
+
+        // upStation -(10)- downStation -(5)- newStation -(9)- newSection2
+        Station newStation2 = new Station(4L, "신규역2");
+        Section newSection2 = new Section(3L, line, newStation, newStation2, 9);
+        sections.add(newSection2);
+
+        // when
+        sections.deleteSection(newStation);
+
+        // then
+        assertThat(sections.getStations()).containsExactly(upStation, downStation, newStation2);
+    }
 }

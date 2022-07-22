@@ -43,6 +43,24 @@ public class Sections {
 
         if (deleteFirstOrLastStation(station)) return;
 
+        Section sameDownStationSection = sections.stream()
+                .filter(s -> s.hasSameDownStation(station))
+                .findFirst()
+                .orElseThrow(() -> SectionsDeleteException.NOT_FOUND_STATION_EXCEPTION());
+
+        Section sameUpStationSection = sections.stream()
+                .filter(s -> s.hasSameUpStation(station))
+                .findFirst()
+                .orElseThrow(() -> SectionsDeleteException.NOT_FOUND_STATION_EXCEPTION());
+
+        if (sameUpStationSection != null && sameDownStationSection != null) {
+            Section newSection = new Section(sameDownStationSection.getLine(), sameDownStationSection.getUpStation(), sameUpStationSection.getDownStation(), sameUpStationSection.getDistance() + sameDownStationSection.getDistance());
+            sections.remove(sameDownStationSection);
+            sections.remove(sameUpStationSection);
+            sections.add(newSection);
+            return;
+        }
+
         throw SectionsDeleteException.NOT_FOUND_LAST_SECTION_EXCEPTION();
     }
 
