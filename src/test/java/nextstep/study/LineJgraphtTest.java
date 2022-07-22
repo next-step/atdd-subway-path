@@ -11,8 +11,25 @@ import java.util.List;
 import static nextstep.subway.utils.LineTestSources.section;
 import static nextstep.subway.utils.StationTestSources.station;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LineJgraphtTest {
+
+    @Test
+    void 같은역으로최단거리조회시에러발생() {
+        final Line line = new Line();
+        final Station station1 = station(1);
+        final Station station2 = station(2);
+
+        line.addSection(section(station1, station2));
+
+        final LineGraph lineGraph = new LineGraph(List.of(line));
+        final IllegalArgumentException result = assertThrows(
+                IllegalArgumentException.class,
+                () -> lineGraph.findShortestPath(station1, station1));
+
+        assertThat(result).hasMessageContaining("From station and to station is same");
+    }
 
     @Test
     void 최단거리조회_1구간() {

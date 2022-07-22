@@ -9,12 +9,10 @@ import java.util.List;
 
 public class LineGraph {
 
-    private final Line line;
     private final List<Line> lines;
     private final WeightedMultigraph<Station, DefaultWeightedEdge> graph;
 
     public LineGraph(final List<Line> lines) {
-        this.line = null;
         this.lines = lines;
         this.graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         init();
@@ -46,6 +44,10 @@ public class LineGraph {
     }
 
     public StationPath findShortestPath(final Station from, final Station to) {
+        if (from.equals(to)) {
+            throw new IllegalArgumentException("From station and to station is same");
+        }
+
         final DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
         final GraphPath<Station, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(from, to);
         return new StationPath(path.getVertexList(), (long) path.getWeight());
