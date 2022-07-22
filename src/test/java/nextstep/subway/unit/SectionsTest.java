@@ -404,7 +404,6 @@ public class SectionsTest {
 
         Station 노선에없는역 = new Station(4L, "노선에없는역");
 
-
         // when
         Exception exception = assertThrows(SectionsDeleteException.class, () -> sections.deleteSection(노선에없는역));
 

@@ -87,7 +87,7 @@ public class LineServiceMockTest {
         then(findLine.getStations()).extracting("id").containsExactly(newStationId, upStationId, downStationId);
     }
 
-    @DisplayName("구간이 하나 있는 line에 구간삭제 요청시 성공한다")
+    @DisplayName("구간이 하나 있는 line에 구간삭제 요청시 예외가 발생한다")
     @Test
     public void delete_section_test() {
         // given
@@ -100,11 +100,10 @@ public class LineServiceMockTest {
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
         // when
-        lineService.deleteSection(line.getId(), downStation.getId());
+        Exception exception = assertThrows(SectionsDeleteException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
 
         // then
-        Line findLine = lineRepository.findById(line.getId()).get();
-        then(findLine.isEmptySections()).isTrue();
+        then(exception).isInstanceOf(SectionsDeleteException.class);
     }
 
     @DisplayName("구간이 없는 line에 구간삭제 요청시 예외가 발생한다")
