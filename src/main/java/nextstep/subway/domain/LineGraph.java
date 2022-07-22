@@ -1,4 +1,4 @@
-package nextstep.study;
+package nextstep.subway.domain;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
@@ -8,7 +8,7 @@ import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.List;
 
-class LineGraph {
+public class LineGraph {
 
     private final Line line;
     private final WeightedMultigraph<Station, DefaultWeightedEdge> graph;

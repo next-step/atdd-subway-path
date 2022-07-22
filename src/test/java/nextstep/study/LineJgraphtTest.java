@@ -1,6 +1,7 @@
 package nextstep.study;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineGraph;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.Test;
 
