@@ -105,7 +105,22 @@ class LineTest {
 		line.addSection(강남역, 역삼역, DISTANCE);
 		line.addSection(역삼역, 선릉역, DISTANCE);
 		//then
-		assertThat(line.getStations()).hasSize(3);
+		assertThat(line.getStations()).hasSize(3)
+			.containsExactly(강남역, 역삼역, 선릉역);
+	}
+
+	@DisplayName("지하철 구간 조회_3개")
+	@Test
+	void getStationsOf4() {
+		//given
+		//when
+
+		line.addSection(강남역, 정자역, DISTANCE);
+		line.addSection(강남역, 양재역, DISTANCE);
+		line.addSection(양재역, 양재시민의숲역, DISTANCE);
+		//then
+		assertThat(line.getStations()).hasSize(4)
+			.containsExactly(강남역, 양재역, 양재시민의숲역, 정자역);
 	}
 
 	@DisplayName("지하철 구간 조회_0개")
