@@ -1,14 +1,14 @@
 package nextstep.subway.line.application;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.subway.line.application.dto.LineRequest;
-import nextstep.subway.line.application.dto.LineResponse;
-import nextstep.subway.line.application.dto.LineUpdateRequest;
-import nextstep.subway.line.application.dto.SectionRequest;
+import nextstep.subway.line.application.dto.request.LineRequest;
+import nextstep.subway.line.application.dto.response.LineResponse;
+import nextstep.subway.line.application.dto.request.LineUpdateRequest;
+import nextstep.subway.line.application.dto.request.SectionRequest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.station.applicaion.StationService;
-import nextstep.subway.station.applicaion.dto.StationResponse;
+import nextstep.subway.station.applicaion.dto.response.StationResponse;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

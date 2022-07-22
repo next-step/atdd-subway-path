@@ -1,9 +1,11 @@
-package nextstep.subway.line.application.dto;
+package nextstep.subway.line.application.dto.response;
 
-import nextstep.subway.station.applicaion.dto.StationResponse;
+import lombok.Getter;
+import nextstep.subway.station.applicaion.dto.response.StationResponse;
 
 import java.util.List;
 
+@Getter
 public class LineResponse {
     private Long id;
     private String name;
@@ -15,22 +17,6 @@ public class LineResponse {
         this.name = name;
         this.color = color;
         this.stations = stations;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public List<StationResponse> getStations() {
-        return stations;
     }
 }
 

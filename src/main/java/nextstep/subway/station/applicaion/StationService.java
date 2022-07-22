@@ -1,8 +1,8 @@
 package nextstep.subway.station.applicaion;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.subway.station.applicaion.dto.StationRequest;
-import nextstep.subway.station.applicaion.dto.StationResponse;
+import nextstep.subway.station.applicaion.dto.request.StationRequest;
+import nextstep.subway.station.applicaion.dto.response.StationResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;

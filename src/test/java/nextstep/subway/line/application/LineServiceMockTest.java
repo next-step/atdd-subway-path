@@ -1,7 +1,7 @@
 package nextstep.subway.line.application;
 
 import nextstep.subway.station.applicaion.StationService;
-import nextstep.subway.line.application.dto.SectionRequest;
+import nextstep.subway.line.application.dto.request.SectionRequest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.station.domain.Station;

@@ -4,7 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.station.applicaion.dto.StationResponse;
+import nextstep.subway.station.applicaion.dto.response.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -59,7 +59,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<StationResponse> stations = stationResponse.jsonPath().getList(".", StationResponse.class);
+        List<StationResponse> stations = stationResponse.jsonPath().getList("id");
         assertThat(stations).hasSize(2);
     }
 

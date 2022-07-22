@@ -2,10 +2,10 @@ package nextstep.subway.line.ui;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.application.LineService;
-import nextstep.subway.line.application.dto.LineRequest;
-import nextstep.subway.line.application.dto.LineResponse;
-import nextstep.subway.line.application.dto.LineUpdateRequest;
-import nextstep.subway.line.application.dto.SectionRequest;
+import nextstep.subway.line.application.dto.request.LineRequest;
+import nextstep.subway.line.application.dto.response.LineResponse;
+import nextstep.subway.line.application.dto.request.LineUpdateRequest;
+import nextstep.subway.line.application.dto.request.SectionRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
