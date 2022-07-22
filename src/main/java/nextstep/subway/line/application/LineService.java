@@ -1,14 +1,17 @@
-package nextstep.subway.applicaion;
+package nextstep.subway.line.application;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.subway.applicaion.dto.*;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.line.application.dto.LineRequest;
+import nextstep.subway.line.application.dto.LineResponse;
+import nextstep.subway.line.application.dto.LineUpdateRequest;
+import nextstep.subway.line.application.dto.SectionRequest;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.station.applicaion.StationService;
+import nextstep.subway.station.applicaion.dto.StationResponse;
+import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -46,12 +49,8 @@ public class LineService {
     public void updateLine(Long id, LineUpdateRequest request) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
 
-        if (StringUtils.hasText(request.getName())) {
-            line.updateName(request.getName());
-        }
-        if (StringUtils.hasText(request.getColor())) {
-            line.updateColor(request.getColor());
-        }
+        line.updateName(request.getName());
+        line.updateColor(request.getColor());
     }
 
     @Transactional
@@ -82,11 +81,7 @@ public class LineService {
             return Collections.emptyList();
         }
 
-        List<Long> stationIds = line.getSections().stream()
-                .map(Section::getDownStationId)
-                .collect(Collectors.toList());
-
-        stationIds.add(0, line.getSections().get(0).getUpStationId());
+        List<Long> stationIds = line.stationIds();
         return stationService.findByIds(stationIds);
     }
 
