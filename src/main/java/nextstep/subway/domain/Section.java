@@ -50,10 +50,10 @@ public class Section {
     }
 
     public boolean isMoreLongerThan(Section section) {
-        return this.distance.isMoreLongerThan(section.getDistance());
+        return this.distance.isMoreLongerThan(section.distance);
     }
 
-    public int getBetweenDistance(Distance distance) {
-        return this.distance.getBetweenDistanceAbsolute(distance);
+    public int minusDistance(Section target) {
+        return this.distance.minus(target.distance);
     }
 }

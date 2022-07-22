@@ -72,7 +72,7 @@ public class Sections {
                         throw new IllegalArgumentException("새로운 추가되는 구간은 기존 구간보다 길 수 없습니다.");
                     }
                     sections.add(new Section(section.getLine(), section.getUpStation(), newSection.getUpStation(),
-                            section.getBetweenDistance(newSection.getDistance())));
+                            section.minusDistance(newSection)));
                     sections.remove(section);
                 });
     }
@@ -86,7 +86,7 @@ public class Sections {
                         throw new IllegalArgumentException("새로운 추가되는 구간은 기존 구간보다 길 수 없습니다.");
                     }
                     sections.add(new Section(section.getLine(), newSection.getDownStation(), section.getDownStation(),
-                            section.getBetweenDistance(newSection.getDistance())));
+                            section.minusDistance(newSection)));
                     sections.remove(section);
                 });
     }
