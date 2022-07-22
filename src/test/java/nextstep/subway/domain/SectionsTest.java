@@ -149,12 +149,4 @@ class SectionsTest {
         assertThatIllegalArgumentException().isThrownBy(() -> sections.deleteStation(new Station("없는역")))
                 .withMessage("삭제할 역이 없어요");
     }
-
-
-    // TODO: 구간이 합쳐지는 테스트  2022/07/22 (koi) 및
-
-
-    /**
-     * deleteStation
-     */
 }
