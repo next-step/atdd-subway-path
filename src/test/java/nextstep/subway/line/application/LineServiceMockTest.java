@@ -1,6 +1,5 @@
-package nextstep.subway.line.unit;
+package nextstep.subway.line.application;
 
-import nextstep.subway.line.application.LineService;
 import nextstep.subway.station.applicaion.StationService;
 import nextstep.subway.line.application.dto.SectionRequest;
 import nextstep.subway.line.domain.Line;
