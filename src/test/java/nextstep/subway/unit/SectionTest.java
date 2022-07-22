@@ -43,6 +43,24 @@ public class SectionTest {
         );
     }
 
+    @DisplayName("두개의 구간을 합친다")
+    @Test
+    public void combine_two_station() {
+        // given
+        Station 신규역 = new Station(3L, "신규역");
+        Section section2 = new Section(line, downStation, 신규역, 3);
+
+        // when
+        Section combineSection = Section.combineOf(section, section2);
+
+        // then
+        assertAll(
+                () -> assertThat(combineSection.getDistance()).isEqualTo(13),
+                () -> assertThat(combineSection.getUpStation()).isEqualTo(upStation),
+                () -> assertThat(combineSection.getDownStation()).isEqualTo(신규역)
+        );
+    }
+
     @ParameterizedTest
     @ValueSource(ints = {0, -1})
     public void create_section_with_invalid_distance(int distance) {

@@ -47,6 +47,10 @@ public class Section {
         this.distance = distance;
     }
 
+    public static Section combineOf(Section front, Section back) {
+        return new Section(front.getLine(), front.getUpStation(), back.getDownStation(), back.getDistance() + front.getDistance());
+    }
+
     public Section divideSectionByMiddle(Section section) {
         if (isLessThanDistance(section.getDistance())) {
             throw SectionsAddException.SECTION_DISTANCE_EXCEPTION();
