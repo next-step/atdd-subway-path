@@ -23,7 +23,6 @@ public class Line {
     private String name;
     private String color;
 
-    @JsonIgnore
     @Embedded
     private Sections sections = new Sections();
 
@@ -43,6 +42,10 @@ public class Line {
 
     public List<Section> getSections() {
         return sections.getSections();
+    }
+
+    public Section getFirstSection(){
+        return sections.getFirstSection();
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
@@ -75,7 +78,6 @@ public class Line {
         if (StringUtils.hasText(lineRequest.getName())) {
             this.name = lineRequest.getName();
         }
-
     }
 
 

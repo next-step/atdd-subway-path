@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -49,6 +50,22 @@ public class Section {
 
     public List<Station> getStations(){
         return List.of(upStation, downStation);
+    }
+
+    public void minusDistance(int distance){
+        this.distance = this.distance - distance;
+    }
+    public void plusDistance(int distance){
+        this.distance = this.distance + distance;
+    }
+
+    public void modifyStation(Section section){
+        if(this.upStation.equals(section.getUpStation())){
+            this.upStation = section.getDownStation();
+        }
+        if(this.downStation.equals(section.getDownStation())){
+            this.downStation = section.getUpStation();
+        }
     }
 
 }
