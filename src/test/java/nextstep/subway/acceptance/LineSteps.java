@@ -9,6 +9,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LineSteps {
+
+    public static Map<String, String> 노선생성파라미터(Long upStationId, Long downStationId) {
+        Map<String, String> lineCreateParams;
+        lineCreateParams = new HashMap<>();
+        lineCreateParams.put("name", "신분당선");
+        lineCreateParams.put("color", "bg-red-600");
+        lineCreateParams.put("upStationId", upStationId + "");
+        lineCreateParams.put("downStationId", downStationId + "");
+        lineCreateParams.put("distance", 10 + "");
+        return lineCreateParams;
+    }
+
+    public static Map<String, String> 구간생성파라미터(Long upStationId, Long downStationId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", upStationId + "");
+        params.put("downStationId", downStationId + "");
+        params.put("distance", 6 + "");
+        return params;
+    }
+
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
