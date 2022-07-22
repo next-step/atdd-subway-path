@@ -90,12 +90,28 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 기존 노선에 존재하지 않는 역으로 구성된 구간을 신규로 등록 요청 하면
-     * Then 구간이 정상적으로 추가되지 않고 기존 노선의 구간은 그대로 유지된다.
+     * Then 지하철 구간 요청 시 예외를 발생하고
+     * Then 기존 노선을 조회 시 구간은 이전 상태 그대로 유지된다.
      */
     @DisplayName("노선에 존재하지 않는 역으로 구성된 구간을 신규로 등록하면 예외")
     @Test
     void addSectionExceptionWhenAddNotExistsStation() {
+        // when
+        long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        long 판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
+        ExtractableResponse<Response> addSectionResponse = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 판교역));
 
+        ExtractableResponse<Response> findLineResponse = 지하철_노선_조회_요청(신분당선);
+        String exceptionMessage = addSectionResponse.jsonPath().getString("message");
+
+        assertAll(
+                // then
+                () -> assertThat(addSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(exceptionMessage).isEqualTo("상행역과 하행역 둘 중 하나라도 노선에 존재해야 합니다."),
+                // then
+                () -> assertThat(findLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(findLineResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역)
+        );
     }
 
     /**
