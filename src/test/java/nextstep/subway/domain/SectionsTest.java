@@ -81,4 +81,16 @@ class SectionsTest {
         assertThatThrownBy(() -> sections.addSection(new Section(line, upStation, newStation, distance)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("새로운 구간을 등록할 때, 기존 구간중 상/하행역 둘 중 하나라도 일치하지 않는 경우, 예외처리 된다.")
+    @Test
+    void exceptionNotMatchedExistingSection() {
+        // given
+        Station gangnamStation = new Station("강남역");
+        Station seolleungStation = new Station("선릉역");
+
+        // when & then
+        assertThatThrownBy(() -> sections.addSection(new Section(line, gangnamStation, seolleungStation, 3)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }
