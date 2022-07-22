@@ -57,16 +57,20 @@ public class Section {
         return downStation.equals(station);
     }
 
+    public boolean notEqualsDownStation(Station station) {
+        return !equalsDownStation(station);
+    }
+
     public boolean equalsUpStation(Station station) {
         return upStation.equals(station);
     }
 
-    public boolean notEqualsUpStation(Station station) {
-        return !upStation.equals(station);
-    }
-
     public int minusDistance(Section section) {
         return distance - section.getDistance();
+    }
+
+    public int plusDistance(Section section) {
+        return distance + section.getDistance();
     }
 
     @Override
@@ -87,7 +91,7 @@ public class Section {
     @Override
     public int hashCode() {
         int result = getId() != null ? getId().hashCode() : 0;
-        result = 31 * result + (getLine() != null ? getLine().hashCode() : 0);
+        result = 31 * result + (getLine() != null ? getLine().getId().hashCode() : 0);
         result = 31 * result + (getUpStation() != null ? getUpStation().hashCode() : 0);
         result = 31 * result + (getDownStation() != null ? getDownStation().hashCode() : 0);
         result = 31 * result + getDistance();

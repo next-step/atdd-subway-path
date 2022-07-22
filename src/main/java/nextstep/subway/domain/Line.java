@@ -18,12 +18,6 @@ public class Line {
         this.sections = new Sections();
     }
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
-        this.sections = new Sections();
-    }
-
     public Line(Long id, String name, String color) {
         this.id = id;
         this.name = name;
@@ -60,22 +54,11 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        if (sections.isEmpty()) {
-            sections.add(section);
-            return;
-        }
-        if (sections.containsStationOf(section)) {
-            throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
-        }
-
-        if (sections.hasSameSection(section)) {
-            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
-        }
         sections.add(section);
     }
 
-    public void deleteSection(Section section) {
-        sections.deleteSection(section);
+    public void deleteSection(Station station) {
+        sections.deleteSection(station);
     }
 
     public Section getLastSection() {
