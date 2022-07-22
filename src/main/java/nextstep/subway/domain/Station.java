@@ -5,7 +5,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import lombok.ToString;
+
 @Entity
+@ToString
 public class Station {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
