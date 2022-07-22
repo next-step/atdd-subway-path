@@ -179,21 +179,73 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
      * Then 노선에 구간이 제거된다
      */
-    @DisplayName("지하철 노선에 구간을 제거")
     @Test
-    void removeLineSection() {
+    void 지하철_노선에_마지막_구간을_제거한다() {
         // given
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        var 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 6));
 
         // when
         지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+        var 지하철_노선_목록_조회_응답 = 지하철_노선_목록을_조회한다();
+        지하철_노선이_포함되어있다(지하철_노선_목록_조회_응답, 강남역, 양재역);
     }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 중간 구간 제거를 요청 하면
+     * Then 노선에 구간이 제거된다
+     */
+    @Test
+    void 지하철_노선에_중간_구간을_제거한다() {
+        // given
+        var 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 6));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        var 지하철_노선_목록_조회_응답 = 지하철_노선_목록을_조회한다();
+        지하철_노선이_포함되어있다(지하철_노선_목록_조회_응답, 강남역, 정자역);
+    }
+
+    /**
+     * When 구간이 하나인 지하철 노선의 마지막 구간 제거를 요청 하면
+     * Then 노선에 구간 삭제에 실패한다
+     */
+    @Test
+    void 구간이_하나인_지하철_노선에_구간을_제거한다() {
+        // when
+        var 지하철_노선에_지하철_구간_제거_요청 = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        구간_삭제에_실패한다(지하철_노선에_지하철_구간_제거_요청);
+    }
+
+    /**
+     * Given 노선에 등록되어지지 않은 역을 생성하여
+     * When 노선에 등록되어지지 않은 구간을 삭제하도록 요청 하면
+     * Then 구간 삭제에 실패한다
+     */
+    @Test
+    void 지하철_노선에_등록되어지지_않은_구간을_제거한다() {
+        // given
+        var 송파역 = 지하철역_생성_요청("송파역").jsonPath().getLong("id");
+
+        // when
+        var 지하철_노선에_지하철_구간_제거_요청 = 지하철_노선에_지하철_구간_제거_요청(신분당선, 송파역);
+
+        // then
+        구간_삭제에_실패한다(지하철_노선에_지하철_구간_제거_요청);
+    }
+
+    private void 구간_삭제에_실패한다(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
 
     public static Map<String, String> createLineCreateParams(String name, String color, Long upStationId, Long downStationId, int distance) {
         Map<String, String> lineCreateParams;

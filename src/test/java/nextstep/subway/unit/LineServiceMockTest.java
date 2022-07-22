@@ -132,34 +132,19 @@ public class LineServiceMockTest {
     void 구간을_삭제한다() {
         // given
         Line line = new Line("8호선", "bg-pink-500");
-        Station upStation = new Station("암사역");
-        Station downStation = new Station("모란역");
-        line.addSection(new Section(line, upStation, downStation, 20));
+        Station station1 = new Station("암사역");
+        Station station2 = new Station("모란역");
+        Station station3 = new Station("송파역");
+        line.addSection(new Section(line, station1, station2, 20));
+        line.addSection(new Section(line, station1, station3, 4));
 
         given(lineRepository.findById(1L)).willReturn(Optional.of(line));
-        given(stationService.findById(2L)).willReturn(downStation);
+        given(stationService.findById(2L)).willReturn(station2);
 
         // when
         lineService.deleteSection(1L, 2L);
 
         // then
-        assertThat(lineService.getLine(1L).getStations()).isEmpty();
-    }
-
-    @Test
-    void 마지막_구간이_아닌_다른_구간을_삭제하면_예외를_반환한다() {
-        // given
-        Line line = new Line("8호선", "bg-pink-500");
-        Station upStation = new Station("암사역");
-        Station downStation = new Station("모란역");
-        line.addSection(new Section(line, upStation, downStation, 20));
-
-        given(lineRepository.findById(1L)).willReturn(Optional.of(line));
-        given(stationService.findById(1L)).willReturn(upStation);
-
-        // then
-        assertThatIllegalArgumentException().isThrownBy(() ->
-                lineService.deleteSection(1L, 1L)
-        );
+        assertThat(lineService.getLine(1L).getStations()).hasSize(2);
     }
 }

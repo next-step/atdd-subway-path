@@ -41,6 +41,19 @@ public class DistanceTest {
     }
 
     @Test
+    void 거리를_더한다() {
+        // given
+        Distance distance1 = new Distance(2);
+        Distance distance2 = new Distance(1);
+
+        // when
+        Distance newDistance = distance1.plus(distance2);
+
+        // then
+        assertThat(newDistance).isEqualTo(new Distance(3));
+    }
+
+    @Test
     void 거리가_같은_경우_예외를_일으킨다() {
         // given
         Distance distance1 = new Distance(1);

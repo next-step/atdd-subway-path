@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
     private final int MINIMUM_SECTIONS_SIZE = 0;
+    private final int MINIMUM_REMOVE_SECTIONS_SIZE = 2;
+    private final int MAX_AROUND_SECTION_SIZE = 2;
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -45,11 +47,11 @@ public class Sections {
 
     private void changeMatchStation(Section addedSection, Section matchedSection) {
         if (matchedSection.getUpStation().equals(addedSection.getUpStation())) {
-            matchedSection.changeDistance(addedSection.getDistance());
+            matchedSection.minusDistance(addedSection.getDistance());
             matchedSection.changeUpStation(addedSection.getDownStation());
         }
         if (matchedSection.getDownStation().equals(addedSection.getDownStation())) {
-            matchedSection.changeDistance(addedSection.getDistance());
+            matchedSection.minusDistance(addedSection.getDistance());
             matchedSection.changeDownStation(addedSection.getUpStation());
         }
     }
@@ -63,24 +65,13 @@ public class Sections {
         if (aroundMatchedSection.isPresent()) {
             Section aroundSection = aroundMatchedSection.get();
             if (aroundSection.getDownStation().equals(matchedSection.getUpStation())) {
-                aroundSection.changeDistance(addedSection.getDistance());
+                aroundSection.minusDistance(addedSection.getDistance());
                 aroundSection.changeDownStation(addedSection.getUpStation());
             } else {
-                matchedSection.changeDistance(addedSection.getDistance());
+                matchedSection.minusDistance(addedSection.getDistance());
                 aroundSection.changeUpStation(addedSection.getDownStation());
             }
         }
-    }
-
-
-    public void deleteSection(Station station) {
-        Section lastSection = sections.get(getLastIndex());
-
-        if (!lastSection.matchDownStation(station)) {
-            throw new IllegalArgumentException("하행 종점역만 삭제 가능합니다.");
-        }
-
-        sections.remove(getLastIndex());
     }
 
     public List<Station> getStations() {
@@ -115,15 +106,6 @@ public class Sections {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    private boolean isStartStation(Station station) {
-        return sections.stream()
-                .noneMatch(currentStation -> station.equals(currentStation.getDownStation()));
-    }
-
-    private int getLastIndex() {
-        return sections.size() - 1;
-    }
-
     public List<Section> getSections() {
         if (sections.isEmpty()) {
             return Collections.emptyList();
@@ -149,6 +131,11 @@ public class Sections {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
+    private boolean isStartStation(Station station) {
+        return sections.stream()
+                .noneMatch(currentStation -> station.equals(currentStation.getDownStation()));
+    }
+
     private Section findNextSection(Section section) {
         Station downStation = section.getDownStation();
         return sections.stream()
@@ -156,4 +143,66 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }
+
+
+    public void deleteSection(Station removedStation) {
+        matchStation(removedStation);
+        checkSectionSize();
+
+        Section section = findSection(removedStation);
+
+        List<Section> matchSections = matchSectionList(removedStation);
+
+        if (matchSections.size() == MAX_AROUND_SECTION_SIZE) {
+            Section aroundSection = findAroundSection(section, matchSections);
+            updateAroundSection(section, aroundSection);
+        }
+
+        removeSection(section);
+    }
+
+    private void removeSection(Section section) {
+        sections.remove(section);
+    }
+
+    private Section findAroundSection(Section section, List<Section> matchSections) {
+        return matchSections.stream().filter(otherSection -> !otherSection.equals(section))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private List<Section> matchSectionList(Station removedStation) {
+        return sections.stream()
+                .filter(section -> section.anyMatchStation(removedStation))
+                .collect(Collectors.toList());
+    }
+
+    private void updateAroundSection(Section removedSection, Section aroundSection) {
+        aroundSection.changeUpStation(removedSection.getUpStation());
+        aroundSection.plusDistance(removedSection.getDistance());
+    }
+
+    private Section findSection(Station removedStation) {
+        return getSections().stream()
+                .filter(section -> section.anyMatchStation(removedStation))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private void checkSectionSize() {
+        if (sections.size() < MINIMUM_REMOVE_SECTIONS_SIZE) {
+            throw new IllegalArgumentException("구간은 두개 이상부터 삭제할 수 있습니다.");
+        }
+    }
+
+    private void matchStation(Station station) {
+        if (!getStations().contains(station)) {
+            throw new IllegalArgumentException("노선에 등록되어있지 않은 역입니다");
+        }
+    }
+
+    private int getLastIndex() {
+        return sections.size() - 1;
+    }
+
 }
