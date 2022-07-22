@@ -36,8 +36,6 @@ public class Sections {
         }
         List<Section> sectionsSortList = new ArrayList<>();
         Section firstSection = getFirstSection();
-        System.out.println("first" );
-        System.out.println(firstSection.toString());
         sectionsSortList.add(firstSection);
         for(int i = 0; i < sections.size(); i++ ){
             Section nextSection = getNextSection(sectionsSortList.get(i));
@@ -63,11 +61,9 @@ public class Sections {
             addBetweenSection(newSection, getBetweenSection(newSection));
             return;
         }
-        System.out.println("not Between Section Add");
     }
 
     public Section getBetweenSection(Section newSection){
-        System.out.println(newSection.toString());
         return sections.stream().filter(
                 section -> newSection.getUpStation().equals(section.getUpStation())
                         || newSection.getDownStation().equals(section.getDownStation())
@@ -76,14 +72,11 @@ public class Sections {
 
     public void addBetweenSection(Section newSection, Section matchedSection){
 //        역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
-        System.out.println("between Section Add");
         if( newSection.getDistance() >= matchedSection.getDistance()){
             throw new BadRequestException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
         }
         matchedSection.minusDistance(newSection.getDistance());
         matchedSection.modifyStation(newSection);
-        System.out.println("종료");
-
     }
 
     public List<Station> getStations(){

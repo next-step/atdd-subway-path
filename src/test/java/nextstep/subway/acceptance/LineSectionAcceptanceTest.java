@@ -14,6 +14,7 @@ import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.SectionSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
@@ -68,12 +69,13 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 새로운역_정자역));
 
         // then
-//        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
 
-        지하철_노선의_구간목록_조회_요청(신분당선);
+        ExtractableResponse<Response> response = 지하철_노선의_구간목록_조회_요청(신분당선);
 
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-//        assertThat(response.jsonPath().getList("stations.id", Long.class)).contains(강남역, 양재역, 새로운역_정자역);
+        assertAll(
+                () -> assertThat(response.jsonPath().getList("distance", Integer.class)).containsExactly(4, 3),
+                () -> assertThat(response.jsonPath().getList("upStation.name")).containsExactly("A", "B")
+        );
     }
 
     /**
