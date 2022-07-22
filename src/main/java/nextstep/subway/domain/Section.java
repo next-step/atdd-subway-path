@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import java.util.List;
+import java.util.Objects;
 import javax.persistence.*;
 
 @Entity
@@ -52,4 +54,58 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public boolean isSameUpStation(final Station newStation) {
+        return this.upStation.equals(newStation);
+    }
+
+    public boolean isSameDownStation(final Station newStation) {
+        return this.downStation.equals(newStation);
+    }
+
+    public List<Station> getStations() {
+        return List.of(upStation, downStation);
+    }
+
+    public void addMiddleSection(final Section newSection) {
+        distanceValidation(newSection);
+        updateDistance(newSection);
+
+        if(this.upStation.equals(newSection.getUpStation())){
+            this.upStation = newSection.getDownStation();
+        }
+        if(this.downStation.equals(newSection.getDownStation())){
+            this.downStation = newSection.getUpStation();
+        }
+    }
+
+    private void distanceValidation(final Section newSection) {
+        if (this.distance <= newSection.distance) {
+            throw new IllegalStateException("기존의 거리가 새로운 거리보다 작습니다.");
+        }
+    }
+
+    private void updateDistance(final Section newSection) {
+        this.distance -= newSection.distance;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Section section = (Section) o;
+        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation,
+            section.downStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, line, upStation, downStation, distance);
+    }
+
+
 }

@@ -21,7 +21,7 @@ class LineTest {
     @DisplayName("비어있는 상태에서 구간 추가")
     void emptyStateAddSection() {
         //when
-        노선_구간_추가("잠실역", "강남역");
+        노선_구간_추가(new Station(1L, "잠실역"), new Station(2L, "강남역"), 10);
 
         //then
         assertThat(line.getSections().sections()).hasSize(1);
@@ -31,10 +31,10 @@ class LineTest {
     @DisplayName("존재하는 상태에서 구간 추가")
     void existStateAddSection() {
         //given
-        노선_구간_추가("잠실역", "강남역");
+        노선_구간_추가(new Station(1L, "잠실역"), new Station(2L, "강남역"), 10);
 
         //when
-        노선_구간_추가("강남역", "역삼역");
+        노선_구간_추가(new Station(2L, "강남역"), new Station(3L, "역삼역"), 10);
 
         //then
         assertThat(line.getSections().sections()).hasSize(2);
@@ -44,20 +44,20 @@ class LineTest {
     @DisplayName("해당 노선의 모든 구간 역 정보를 조회")
     void getStations() {
         //given, when
-        노선_구간_추가("잠실역", "강남역");
+        노선_구간_추가(new Station(1L, "잠실역"), new Station(2L, "강남역"), 10);
 
         //then
-        assertThat(line.getStations()).containsExactly(new Station("잠실역"), new Station("강남역"));
+        assertThat(line.getStations()).containsExactly(new Station(1L, "잠실역"), new Station(2L, "강남역"));
     }
 
     @Test
     @DisplayName("노선 구간 삭제")
     void removeSection() {
         //given
-        노선_구간_추가("잠실역", "강남역");
+        노선_구간_추가(new Station(1L, "잠실역"), new Station(2L, "강남역"), 10);
 
         //when
-        line.removeStations(new Station("강남역"));
+        line.removeStations(new Station(2L, "강남역"));
 
         //then
         assertThat(line.getSections().sections()).isEmpty();
@@ -75,7 +75,7 @@ class LineTest {
     @DisplayName("하행 종점역 정보가 맞지 않는 경우 예외")
     void downStationNotEqualRemoveException() {
         //when
-        노선_구간_추가("잠실역", "강남역");
+        노선_구간_추가(new Station(1L, "잠실역"), new Station(2L, "강남역"), 10);
 
         //then
         assertThatThrownBy(() -> line.removeStations(new Station("역삼역")))
@@ -83,7 +83,8 @@ class LineTest {
             .hasMessage("하행 종점역 정보가 다릅니다.");
     }
 
-    private void 노선_구간_추가(final String upStation, final String downStation) {
-        line.addSections(new Station(upStation), new Station(downStation), 10);
+    private void 노선_구간_추가(final Station upStation, final Station downStation, final int distance) {
+        line.addSections(upStation, downStation, distance);
     }
+
 }
