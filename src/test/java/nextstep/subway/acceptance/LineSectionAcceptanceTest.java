@@ -38,12 +38,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         신분당선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
     }
 
-    /**
-     * When 기존 구간의 상행 종점역과 동일한 하행역을 가지고
-     * When 구간 생성 요청 하면
-     * Then 구간 생성이 성공하고
-     * Then 역 목록을 응답 받는다
-     */
     @DisplayName("신규 구간의 하행역이 기존 구간의 상행 종점역과 동일할 경우 상행종점역 으로 구간 추가하기 ")
     @Test
     public void add_up_station_at_line_front() {
@@ -55,12 +49,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_역_순서_확인(response, 신규역, 강남역, 양재역);
     }
 
-    /**
-     * When 기존 구간의 하행 종점역과 동일한 상행역을 가지고
-     * When 구간 생성 요청 하면
-     * Then 구간 생성이 성공하고
-     * Then 역 목록을 응답 받는다
-     */
     @DisplayName("신규 구간의 상행역이 기존 구간의 하행역과 동일할 경우 하행종점역 으로 구간 추가하기")
     @Test
     public void add_down_station_at_line_back() {
@@ -72,14 +60,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_역_순서_확인(response, 강남역, 양재역, 신규역);
     }
 
-    /**
-     * When 기존 구간의 상행 종점역과 동일한 상행역을 가지고
-     * When 구간 생성 요청 하면
-     * Then 구간 생성이 성공하고
-     * Then (신규역 - 하행역)의 길이는 기존 구간의 길이에서 (상행역 - 신규역)의 길이를 뺸 길이로 할당하고
-     * Then (상행역 - 신규역 - 하행역)의 순서로 배치되고
-     * Then 역 목록을 응답 받는다
-     */
     @DisplayName("신규 구간의 상행역이 기존 구간의 상행역과 동일할 경우 중간에 구간을 추가할 수 있다")
     @Test
     public void add_section_at_line_middle() {
@@ -91,12 +71,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_역_순서_확인(response, 강남역, 신규역, 양재역);
     }
 
-    /**
-     * When 기존 구간의 상행 종점역과 동일한 상행역을 가지고
-     * When 새로운 하행역 기존의 구간 거리보다 같거나 클떄
-     * When 구간 생성을 요청하면
-     * Then 구간 생성이 실패한다
-     */
     @DisplayName("역 사이에 새로운 역 추가할때, 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다")
     @Test
     public void add_section_fail_by_over_distance() {
@@ -108,12 +82,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         생성_실패_확인(response, HttpStatus.BAD_REQUEST, "기존의 구간 길이보다 긴 신규구간을 중간에 추가할 수 없습니다");
     }
 
-    /**
-     * When 기존 구간의 상행 종점역과 동일한 상행역을 가지고
-     * When 기존 구간의 하행 종점역과 동일한 하행역을 가지고
-     * When 구간 생성을 요청하면
-     * Then 구간 생성이 실패한다
-     */
     @DisplayName("역 사이에 새로운 역 추가할때, 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다")
     @Test
     public void add_section_fail_by_already_register_up_down_stations() {
@@ -123,12 +91,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         생성_실패_확인(response, HttpStatus.BAD_REQUEST, "상행역과 하행역이 이미 노선에 모두 등록되어 있습니다");
     }
 
-    /**
-     * When 기존 구간의 상행 종점역과 다른 상행역을 가지고
-     * When 기존 구간의 하행 종점역과 다른 하행역을 가지고
-     * When 구간 생성을 요청하면
-     * Then 구간 생성이 실패한다
-     */
     @DisplayName("역 사이에 새로운 역 추가할때, 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다")
     @Test
     public void add_section_fail_by_not_exist_up_down_stations() {
@@ -143,10 +105,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         생성_실패_확인(response, HttpStatus.NOT_FOUND, "상행역과 하행역 모두 찾을 수 없습니다");
     }
 
-    /**
-     * When 지하철 노선에 새로운 구간 추가를 요청 하면
-     * Then 노선에 새로운 구간이 추가된다
-     */
     @DisplayName("지하철 노선에 구간을 등록")
     @Test
     void addLineSection() {
@@ -160,23 +118,94 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
-     * When 지하철 노선의 마지막 구간 제거를 요청 하면
-     * Then 노선에 구간이 제거된다
+     * When 상행 종점역을 상행역으로 하는 구간에 삭제 요청시
+     * Then 구간 삭제가 성공하고
+     * Then 역 목록을 응답 받는다
      */
-    @DisplayName("지하철 노선에 구간을 제거")
+    @DisplayName("상행 종점역을 삭제할 수 있다.")
     @Test
-    void removeLineSection() {
+    public void remove_up_station() {
         // given
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 신규역, 3));
 
         // when
-        지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_역_순서_확인(response, 양재역, 신규역);
+    }
+
+    /**
+     * When 하행 종점역을 하행역으로 하는 구간에 삭제 요청시
+     * Then 구간 삭제가 성공하고
+     * Then 역 목록을 응답 받는다
+     */
+    @DisplayName("하행 종점역을 삭제할 수 있다.")
+    @Test
+    public void remove_down_station() {
+        // given
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 신규역, 3));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 신규역);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         지하철_역_순서_확인(response, 강남역, 양재역);
+    }
+
+    /**
+     * When 두 구간의 중간역을 삭제 요청시
+     * Then 구간 삭제가 성공하고
+     * Then 역 목록을 응답 받는다
+     */
+    @DisplayName("중간역을 삭제할 수 있다")
+    @Test
+    public void remove_middle_station() {
+        // given
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 신규역, 3));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        지하철_역_순서_확인(response, 강남역, 신규역);
+    }
+
+    /**
+     * When 상행종점역과 하행종점역을 제외한 모든 역을 삭제요청하
+     * When 상행종점역을 삭제 요청시
+     * Then 구간 삭제가 실패한
+     */
+    @DisplayName("구간이 하나인 경우, 해당 마지막 구간은 제거할 수 없다")
+    @Test
+    public void remove_last_section_fail() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        생성_실패_확인(response, HttpStatus.BAD_REQUEST, "노선의 마지막 하나 남은 구간은 삭제할 수 없습니다");
+
+    }
+
+    /**
+     * When 등록되지 않은 역에 삭제 요청시
+     * Then 구간 삭제가 실패한다
+     */
+    @DisplayName("등록되지 않은 역은 삭제할 수 없다")
+    @Test
+    public void remove_not_exists_section_fail() {
+        // given
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 신규역, 3));
+        Long 노선에등록되지않은역 = 지하철역_생성_요청("노선에등록되지않은역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 노선에등록되지않은역);
+
+        // then
+        생성_실패_확인(response, HttpStatus.NOT_FOUND, "해당 역을 찾을 수 없어 구간을 삭제할 수 없습니다");
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {

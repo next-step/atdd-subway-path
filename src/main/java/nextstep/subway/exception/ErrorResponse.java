@@ -1,7 +1,5 @@
 package nextstep.subway.exception;
 
-import nextstep.subway.exception.sections.SectionsException;
-
 public class ErrorResponse {
 
     private int status;
@@ -15,8 +13,8 @@ public class ErrorResponse {
         this.message = message;
     }
 
-    public static ErrorResponse of(SectionsException e) {
-        return new ErrorResponse(e.getErrorCode().getStatus().value(), e.getMessage());
+    public static ErrorResponse of(BusinessException e) {
+        return new ErrorResponse(e.getStatus().value(), e.getMessage());
     }
 
     public String getMessage() {

@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.ErrorCode;
-import nextstep.subway.exception.sections.SectionsException;
+import nextstep.subway.exception.sections.SectionsAddException;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -32,6 +31,11 @@ public class Section {
     public Section() {
     }
 
+    public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
+        this(line, upStation, downStation, distance);
+        this.id = id;
+    }
+
     public Section(Line line, Station upStation, Station downStation, int distance) {
         if (isInValidDistance(distance)) {
             throw new IllegalArgumentException(SECTION_MINIMUM_DISTANCE_EXCEPTION);
@@ -43,12 +47,16 @@ public class Section {
         this.distance = distance;
     }
 
+    public static Section combineOf(Section front, Section back) {
+        return new Section(front.getLine(), front.getUpStation(), back.getDownStation(), back.getDistance() + front.getDistance());
+    }
+
     public Section divideSectionByMiddle(Section section) {
         if (isLessThanDistance(section.getDistance())) {
-            throw new SectionsException(ErrorCode.SECTION_DISTANCE_EXCEPTION);
+            throw SectionsAddException.SECTION_DISTANCE_EXCEPTION();
         }
 
-        if (section.hasSameUpStation(this.upStation)) {
+        if (hasSameUpStation(section.getUpStation())) {
             return new Section(this.line, section.getDownStation(), this.downStation, this.distance - section.getDistance());
         }
         return new Section(this.line, this.upStation, section.getUpStation(), this.distance - section.getDistance());

@@ -1,15 +1,17 @@
 package nextstep.subway.exception;
 
+import org.springframework.http.HttpStatus;
+
 public class BusinessException extends RuntimeException {
 
-    private final ErrorCode errorCode;
+    private final HttpStatus httpStatus;
 
-    public BusinessException(ErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
+    public BusinessException(String message, HttpStatus httpStatus) {
+        super(message);
+        this.httpStatus = httpStatus;
     }
 
-    public ErrorCode getErrorCode() {
-        return errorCode;
+    public HttpStatus getStatus() {
+        return httpStatus;
     }
 }

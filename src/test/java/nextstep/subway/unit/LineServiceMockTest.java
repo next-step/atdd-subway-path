@@ -8,7 +8,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.exception.sections.SectionsException;
+import nextstep.subway.exception.sections.SectionsDeleteException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -87,7 +87,7 @@ public class LineServiceMockTest {
         then(findLine.getStations()).extracting("id").containsExactly(newStationId, upStationId, downStationId);
     }
 
-    @DisplayName("구간이 하나 있는 line에 구간삭제 요청시 성공한다")
+    @DisplayName("구간이 하나 있는 line에 구간삭제 요청시 예외가 발생한다")
     @Test
     public void delete_section_test() {
         // given
@@ -100,11 +100,10 @@ public class LineServiceMockTest {
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
         // when
-        lineService.deleteSection(line.getId(), downStation.getId());
+        Exception exception = assertThrows(SectionsDeleteException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
 
         // then
-        Line findLine = lineRepository.findById(line.getId()).get();
-        then(findLine.isEmptySections()).isTrue();
+        then(exception).isInstanceOf(SectionsDeleteException.class);
     }
 
     @DisplayName("구간이 없는 line에 구간삭제 요청시 예외가 발생한다")
@@ -118,10 +117,10 @@ public class LineServiceMockTest {
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
         // when
-        Exception exception = assertThrows(SectionsException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
+        Exception exception = assertThrows(SectionsDeleteException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
 
         // then
-        then(exception).isInstanceOf(SectionsException.class);
+        then(exception).isInstanceOf(SectionsDeleteException.class);
     }
 
     @DisplayName("존재하지 않는 line에 구간삭제 요청시 예외가 발생한다")
@@ -146,17 +145,19 @@ public class LineServiceMockTest {
         Station upStation = new Station(1L, "강남역");
         Station downStation = new Station(2L, "건대입구역");
         Station anotherStation = new Station(4L, "성수역");
+        Station 다른노선역 = new Station(5L, "다른노선역");
         Line line = new Line(3L, "2호선", "green");
         line.addSection(new Section(line, upStation, downStation, 10));
+        line.addSection(new Section(line, downStation, anotherStation, 5));
 
-        given(stationService.findById(anyLong())).willReturn(anotherStation);
+        given(stationService.findById(anyLong())).willReturn(다른노선역);
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
         // when
-        Exception exception = assertThrows(SectionsException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
+        Exception exception = assertThrows(SectionsDeleteException.class, () -> lineService.deleteSection(line.getId(), 다른노선역.getId()));
 
         // then
-        then(exception).isInstanceOf(SectionsException.class);
+        then(exception).isInstanceOf(SectionsDeleteException.class);
     }
 
     @DisplayName("존재하는 라인의 색과 이름을 변경할 수 있다")
