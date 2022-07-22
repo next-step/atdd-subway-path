@@ -174,6 +174,22 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_역_순서_확인(response, 강남역, 신규역);
     }
 
+    /**
+     * When 상행종점역과 하행종점역을 제외한 모든 역을 삭제요청하
+     * When 상행종점역을 삭제 요청시
+     * Then 구간 삭제가 실패한
+     */
+    @DisplayName("구간이 하나인 경우, 해당 마지막 구간은 제거할 수 없다")
+    @Test
+    public void remove_last_section_fail() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        생성_실패_확인(response, HttpStatus.BAD_REQUEST, "노선의 마지막 하나 남은 구간은 삭제할 수 없습니다");
+
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
