@@ -1,9 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.DuplicateSectionException;
-import nextstep.subway.exception.InvalidDistanceException;
-import nextstep.subway.exception.NotFoundStationException;
-import nextstep.subway.exception.NotFoundSectionException;
+import nextstep.subway.exception.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -28,57 +25,95 @@ public class Sections {
         addSection(newSection);
     }
 
-    public void remove() {
-        this.sections.remove(size() - 1);
-    }
+    public void remove(Station station) {
+        if (isEmpty() || size() == 1) {
+            throw new InvalidRemoveSectionException();
+        }
 
-    public boolean isLastDownStation(Station station) {
-        return getLastDownStation().equals(station);
+        if (!containStation(station)) {
+            throw new NotFoundStationException();
+        }
+
+        removeSection(station);
     }
 
     public List<Station> getStations() {
         if (isEmpty()) {
             return Collections.emptyList();
         }
-        return mapStations(getFirstSection(), new ArrayList<>());
+        Section firstSection = getFirstSection();
+        return mapStations(firstSection, new ArrayList<>());
     }
 
     public Station getLastDownStation() {
-        return this.sections.stream()
-                .filter(section -> this.sections.stream()
-                        .noneMatch(other -> other.matchUpStationForDown(section)))
-                .findFirst()
-                .map(Section::getDownStation)
-                .orElseThrow(NotFoundSectionException::new);
+        return getLastSection().getDownStation();
     }
 
-    public int size() {
+    private int size() {
         return this.sections.size();
     }
 
     private List<Station> mapStations(Section section, List<Station> stations) {
         stations.add(section.getUpStation());
 
-        Section nextSection = findNextSection(section);
-        if (nextSection == null) {
+        try {
+            Section nextSection = findNextSection(section.getDownStation());
+            return mapStations(nextSection, stations);
+        } catch (NotFoundSectionException e) {
             stations.add(section.getDownStation());
             return stations;
         }
-
-        return mapStations(nextSection, stations);
     }
 
-    private Section findNextSection(Section currentSection) {
+    private void removeSection(Station station) {
+        Section firstSection = getFirstSection();
+        if (firstSection.matchUpStation(station)) {
+            this.sections.remove(firstSection);
+            return;
+        }
+
+        Section lastSection = getLastSection();
+        if (lastSection.matchDownStation(station)) {
+            this.sections.remove(lastSection);
+            return;
+        }
+
+        removeBetweenSection(station);
+    }
+
+    private void removeBetweenSection(Station station) {
+        Section beforeSection = findBeforeSection(station);
+        Section nextSection = findNextSection(station);
+        beforeSection.combine(nextSection);
+        this.sections.remove(nextSection);
+    }
+
+    private Section findNextSection(Station downStation) {
         return this.sections.stream()
-                .filter(section -> section.matchUpStationForDown(currentSection))
+                .filter(section -> section.matchUpStation(downStation))
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(NotFoundSectionException::new);
+    }
+
+    private Section findBeforeSection(Station upStation) {
+        return this.sections.stream()
+                .filter(section -> section.matchDownStation(upStation))
+                .findFirst()
+                .orElseThrow(NotFoundSectionException::new);
     }
 
     private Section getFirstSection() {
         return this.sections.stream()
                 .filter(section -> this.sections.stream()
-                        .noneMatch(other -> section.matchUpStationForDown(other)))
+                        .noneMatch(other -> section.matchUpStation(other.getDownStation())))
+                .findFirst()
+                .orElseThrow(NotFoundSectionException::new);
+    }
+
+    private Section getLastSection() {
+        return this.sections.stream()
+                .filter(section -> this.sections.stream()
+                        .noneMatch(other -> section.matchDownStation(other.getUpStation())))
                 .findFirst()
                 .orElseThrow(NotFoundSectionException::new);
     }
@@ -117,7 +152,7 @@ public class Sections {
         }
 
         this.sections.add(newSection);
-        if (section.matchUpStation(newSection)) {
+        if (section.matchUpStation(newSection.getUpStation())) {
             section.changeUpSection(newSection);
             return;
         }
