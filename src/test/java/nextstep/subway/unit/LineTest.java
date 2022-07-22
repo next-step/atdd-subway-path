@@ -66,24 +66,9 @@ class LineTest {
         assertThat(stationList).containsExactly(upStation, downStation);
     }
 
-    @DisplayName("Line의 마지막 section을 제거한다")
-    @Test
-    void removeSection() {
-        // given
-        line.addSection(new Section(line, upStation, downStation, 10));
-
-        // when
-        line.deleteLastSection(downStation);
-
-        // then
-        assertThat(line.isEmptySections()).isTrue();
-    }
-
     @DisplayName("Line에 section이 없는데 section을 제거하려 한 경우 예외를 발생한다")
     @Test
     void remove_section_when_no_section() {
-        // given
-
         // when
         Exception exception = assertThrows(SectionsDeleteException.class, () -> line.deleteLastSection(downStation));
 

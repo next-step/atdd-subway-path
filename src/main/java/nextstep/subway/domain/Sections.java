@@ -52,7 +52,7 @@ public class Sections {
     }
 
     private boolean isSizeOne() {
-        return sections.size() == 1;
+        return sections.size() <= 1;
     }
 
     private boolean deleteMiddleStation(Station station) {

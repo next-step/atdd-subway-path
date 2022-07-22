@@ -391,4 +391,24 @@ public class SectionsTest {
         // then
         assertThat(exception).isInstanceOf(SectionsDeleteException.class);
     }
+
+    @DisplayName("노선에 등록되지 않은 역을 삭제할 경우 예외가 발생한다.")
+    @Test
+    public void cant_delete_not_exists_section() {
+        // given
+        sections.add(originSection);
+
+        Station newStation = new Station(3L, "신규역");
+        Section newSection = new Section(2L, line, downStation, newStation, 5);
+        sections.add(newSection);
+
+        Station 노선에없는역 = new Station(4L, "노선에없는역");
+
+
+        // when
+        Exception exception = assertThrows(SectionsDeleteException.class, () -> sections.deleteSection(노선에없는역));
+
+        // then
+        assertThat(exception).isInstanceOf(SectionsDeleteException.class);
+    }
 }
