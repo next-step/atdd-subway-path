@@ -46,18 +46,21 @@ public class LineServiceMockTest {
 	void addSection() {
 		// given
 		// lineRepository, stationService stub 설정을 통해 초기값 셋팅
-		given(stationService.findById(1L)).willReturn(upStation);
-		given(stationService.findById(2L)).willReturn(downStation);
+		Long upStationId = 1L;
+		Long downStationId = 2L;
+		Long lineId = 1L;
+		given(stationService.findById(upStationId)).willReturn(upStation);
+		given(stationService.findById(downStationId)).willReturn(downStation);
 		given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
-		SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10);
+		SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, 10);
 
 		// when
 		// lineService.addSection 호출
-		lineService.addSection(1L, sectionRequest);
+		lineService.addSection(lineId, sectionRequest);
 
 		// then
 		// line.findLineById 메서드를 통해 검증
-		verify(lineRepository).findById(1L);
+		verify(lineRepository).findById(lineId);
 		assertThat(line.getSections()).hasSize(1);
 	}
 
