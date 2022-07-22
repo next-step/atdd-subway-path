@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -44,8 +45,9 @@ public class LineGraph {
         graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
     }
 
-    public List<Station> findShortestPath(final Station from, final Station to) {
+    public StationPath findShortestPath(final Station from, final Station to) {
         final DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
-        return dijkstraShortestPath.getPath(from, to).getVertexList();
+        final GraphPath<Station, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(from, to);
+        return new StationPath(path.getVertexList(), (long) path.getWeight());
     }
 }

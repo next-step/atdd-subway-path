@@ -3,9 +3,9 @@ package nextstep.study;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineGraph;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationPath;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static nextstep.subway.utils.LineTestSources.section;
@@ -23,9 +23,10 @@ class LineJgraphtTest {
         line.addSection(section(station1, station2));
 
         final LineGraph lineGraph = new LineGraph(List.of(line));
+        final StationPath result = lineGraph.findShortestPath(station1, station2);
 
-        List<Station> result = lineGraph.findShortestPath(station1, station2);
-        assertThat(result).hasSize(2);
+        assertThat(result.numOfStations()).isEqualTo(2);
+        assertThat(result.distance()).isEqualTo(10);
     }
 
     @Test
@@ -39,9 +40,10 @@ class LineJgraphtTest {
         line.addSection(section(station1, station2));
 
         final LineGraph lineGraph = new LineGraph(List.of(line));
+        final StationPath result = lineGraph.findShortestPath(station1, station3);
 
-        List<Station> result = lineGraph.findShortestPath(station1, station3);
-        assertThat(result).hasSize(3);
+        assertThat(result.numOfStations()).isEqualTo(3);
+        assertThat(result.distance()).isEqualTo(20);
     }
 
     @Test
@@ -52,15 +54,16 @@ class LineJgraphtTest {
         final Station station3 = station(3);
         final Station station4 = station(4);
 
-        // when (4, 3), (3, 1), (1, 2) -> (1, 2), (3, 1), (4, 3)
-        line.addSection(section(station1, station2));
-        line.addSection(section(station3, station1));
-        line.addSection(section(station4, station3));
+        // when (4, 3), (3, 1), (1, 2) ->  (4, 3) (3, 1), (1, 2)
+        line.addSection(section(station1, station2, 3));
+        line.addSection(section(station3, station1, 6));
+        line.addSection(section(station4, station3, 9));
 
         final LineGraph lineGraph = new LineGraph(List.of(line));
-        List<Station> result = lineGraph.findShortestPath(station2, station4);
+        final StationPath result = lineGraph.findShortestPath(station2, station4);
 
-        assertThat(result).hasSize(4);
+        assertThat(result.numOfStations()).isEqualTo(4);
+        assertThat(result.distance()).isEqualTo(18);
     }
 
     @Test
@@ -83,9 +86,10 @@ class LineJgraphtTest {
         line2.addSection(section(station5, station4));
 
         final LineGraph lineGraph = new LineGraph(List.of(line1, line2));
-        List<Station> result = lineGraph.findShortestPath(station1, station4);
+        final StationPath result = lineGraph.findShortestPath(station1, station4);
 
-        assertThat(result).hasSize(3);
+        assertThat(result.numOfStations()).isEqualTo(3);
+        assertThat(result.distance()).isEqualTo(20);
     }
 
 }
