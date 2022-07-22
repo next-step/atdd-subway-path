@@ -2,10 +2,15 @@ package nextstep.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class SectionsTest {
     private Sections sections;
@@ -45,6 +50,35 @@ class SectionsTest {
 
         // when & then
         assertThatThrownBy(() -> sections.addSection(new Section(line, duplicateUpStation, duplicateDownStation, 3)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("구간의 중간에 신규 역을 정상 등록한다.")
+    @Test
+    void addSectionInMiddleOfLine() {
+        // given
+        Station newStation = new Station("신규역");
+
+        // when
+        sections.addSection(new Section(line, upStation, newStation, 3));
+
+        // then
+        List<Integer> findSectionsDistance = sections.getSections().stream().map(Section::getDistance)
+                .collect(Collectors.toList());
+        assertAll(
+                () -> assertThat(sections.getStations()).containsExactly(upStation, newStation, downStation),
+                () -> assertThat(findSectionsDistance).containsExactly(3, 7)
+        );
+    }
+
+    @ParameterizedTest(name = "구간의 중간에 등록할 신규역의 길이가 {0}로 기존 구간의 길이보다 같거나 크면 예외처리 된다.")
+    @ValueSource(ints = {10, 15})
+    void exceptionDistanceOfNewSectionOverExistingSectionDistance(int distance) {
+        // given
+        Station newStation = new Station("신규역");
+
+        // when & then
+        assertThatThrownBy(() -> sections.addSection(new Section(line, upStation, newStation, distance)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
