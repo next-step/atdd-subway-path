@@ -103,7 +103,7 @@ class LineServiceTest {
         createLineAndAddSection("상록수역");
     }
 
-    @ValueSource(ints = {1, 2, 3})
+    @ValueSource(ints = {0, 1, 2})
     @ParameterizedTest(name = "[{argumentsWithNames}] 구간이 제거된다.")
     void deleteSectionTest(int deleteStationIndex) {
         // given

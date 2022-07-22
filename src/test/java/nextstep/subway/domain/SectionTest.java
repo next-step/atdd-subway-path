@@ -75,6 +75,20 @@ class SectionTest {
         );
     }
 
+    @Test
+    @DisplayName("구간의 하행선을 변경하고 합쳐진 거리로 변경된다.")
+    void updateDownStationToSectionDownStationAndAddDistanceTest() {
+        Station 하행선 = new Station("하행선");
+        section.updateDownStationToSectionDownStationAndAddDistance(new Section(line, new Station("상행선"), 하행선, 6));
+
+        assertAll(
+                () -> assertEquals(중앙역, section.getUpStation()),
+                () -> assertEquals(하행선, section.getDownStation()),
+                () -> assertEquals(16, section.getDistance())
+        );
+
+    }
+
     @ValueSource(ints = {10, 11})
     @ParameterizedTest(name = "[{argumentsWithNames}] 신규 구간의 거리가 같거나 크면, 기존 구간의 상행선 변경에 실패한다.")
     void updateUpStationToSectionDownStationFailTest(int overDistance) {
