@@ -1,8 +1,9 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -22,11 +23,14 @@ public class Sections {
 	}
 
 	public List<Station> getStations() {
-		return this.sectionList.stream()
-			.map(Section::getStationList)
-			.flatMap(List::stream)
-			.distinct()
-			.collect(Collectors.toList());
+		Set<Station> stationSet = new LinkedHashSet<>();
+		for(Section section : sectionList){
+			stationSet.add(section.getUpStation());
+			stationSet.add(section.getDownStation());
+		}
+		List<Station> stationList = new ArrayList<>();
+		stationList.addAll(stationSet);
+		return stationList;
 	}
 
 	public void remove(Section section) {

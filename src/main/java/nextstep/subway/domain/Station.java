@@ -38,11 +38,7 @@ public class Station {
             return false;
         }
         Station that = (Station)o;
-        try{
-            return Objects.equals(id, that.id);
-        }catch (Exception e){
-            return Objects.equals(name, that.name);
-        }
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name);
     }
 
     @Override
