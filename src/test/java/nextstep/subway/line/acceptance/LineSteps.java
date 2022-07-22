@@ -28,17 +28,10 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> createResponse) {
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long lineId) {
         return RestAssured
                 .given().log().all()
-                .when().get(createResponse.header("location"))
-                .then().log().all().extract();
-    }
-
-    public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
-        return RestAssured
-                .given().log().all()
-                .when().get("/lines/{id}", id)
+                .when().get("/lines/{lineId}", lineId)
                 .then().log().all().extract();
     }
 
@@ -48,6 +41,22 @@ public class LineSteps {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
+                .then().log().all().extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_수정_요청(Long lineId, Map<String, String> params) {
+        return RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/{lineId}", lineId)
+                .then().log().all().extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_제거_요청(Long lineId) {
+        return RestAssured
+                .given().log().all()
+                .when().delete("/lines/{lineId}", lineId)
                 .then().log().all().extract();
     }
 
