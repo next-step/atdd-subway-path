@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 public class Line {
@@ -65,4 +66,9 @@ public class Line {
     public int getDistance() {
         return sections.getDistance();
     }
+
+    public List<Section> getSections() {
+        return sections.getSections();
+    }
+
 }
