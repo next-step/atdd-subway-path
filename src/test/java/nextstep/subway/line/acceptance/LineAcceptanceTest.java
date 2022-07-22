@@ -116,7 +116,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("name")).contains(names);
+        assertThat(response.jsonPath().getList("name", String.class)).contains(names);
     }
 
     private void 노선이_존재하지_않는다(Long lineId) {
