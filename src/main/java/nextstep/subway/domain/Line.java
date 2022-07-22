@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -22,6 +23,7 @@ public class Line {
     private String name;
     private String color;
 
+    @JsonIgnore
     @Embedded
     private Sections sections = new Sections();
 

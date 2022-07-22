@@ -57,18 +57,57 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When  기존 A - C 의 구간을 가진 노선에 A , B를 추가하면
      * Then  A -> B, B -> C 노선에 총 두개의 구간이 생긴다.
      */
+    @DisplayName("기존 구간의 역을 기준으로 그 사이에 구간 추가.")
+    @Test
+    void addLineSection2() {
+        // 강남역 - 양재역    ->  강남역 - 정자역 - 양재역
+        // when
+        Long 새로운역_정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 새로운역_정자역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).contains(강남역, 양재역, 새로운역_정자역);
+    }
 
     /**
      * Given 지하철 노선에 구간을 등록한다.
      * When 새로운 역(B)을 상행 좀점으로 구간을 등록한다.
      * Then A - C 구간에서 B -> A, A -> C 의 구간이 된다.
      */
+    @DisplayName("새로운 역을 상행 종점으로 등록한다.")
+    @Test
+    void addLineSection3() {
+        // 강남역 - 양재역    ->  정자역 - 강남역 - 양재역
+        // when
+        Long 새로운역_정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(새로운역_정자역, 강남역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).contains(강남역, 양재역, 새로운역_정자역);
+    }
 
     /**
      * Given 지하철 노선에 구간을 등록한다.
      * When 새로운 역(B)을 하행 종점으로 구간을 등록한다. (기존과 동일? )
      * Then A - C 구간에서 A -> C -> B 의 구간이 된다.
      */
+    @DisplayName("새로운 역을 하행 종점으로 등록한다.")
+    @Test
+    void addLineSection4() {
+        // 강남역 - 양재역    ->  강남역 - 양재역 - 정자
+        // when
+        Long 새로운역_정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 새로운역_정자역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).contains(강남역, 양재역, 새로운역_정자역);
+    }
 
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
@@ -90,6 +129,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
+
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
