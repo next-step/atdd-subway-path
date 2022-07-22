@@ -9,6 +9,9 @@ import nextstep.subway.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,20 +103,21 @@ class LineServiceTest {
         createLineAndAddSection("상록수역");
     }
 
-    @Test
-    @DisplayName("구간이 제거된다.")
-    void deleteSectionTest() {
+    @ValueSource(ints = {1, 2, 3})
+    @ParameterizedTest(name = "[{argumentsWithNames}] 구간이 제거된다.")
+    void deleteSectionTest(int deleteStationIndex) {
         // given
         LineResponse lineResponse = createLineAndAddSection("상록수역");
 
         // when
-        lineService.deleteSection(lineResponse.getId(), getLastStationId(lineResponse.getStations()));
+        StationResponse 삭제대상역 = lineResponse.getStations().get(deleteStationIndex);
+        lineService.deleteSection(lineResponse.getId(), 삭제대상역.getId());
 
         // then
         LineResponse deleteSectionLineResponse = lineService.findById(lineResponse.getId());
 
         assertThat(deleteSectionLineResponse.getStations()).hasSize(2);
-        assertThat(deleteSectionLineResponse.getStations()).doesNotContain(new StationResponse(3L, "상록수역"));
+        assertThat(deleteSectionLineResponse.getStations()).doesNotContain(삭제대상역);
     }
 
     private LineResponse createLine(String lineName, String lineColor, String upStationName, String downStationName) {
