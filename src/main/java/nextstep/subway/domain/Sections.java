@@ -23,6 +23,7 @@ public class Sections {
         }
 
         validateDuplicationSection(section);
+        validateNotMatchedExistingSections(section);
 
         if (isMatchedUpStation(section)) {
             Section existingUpStation = getExistingUpStation(section);
@@ -31,6 +32,15 @@ public class Sections {
         }
 
         sections.add(section);
+    }
+
+    private void validateNotMatchedExistingSections(Section section) {
+        List<Station> stations = getStations();
+        stations.stream()
+                .filter(station -> station.isMatched(section.getUpStation()) || station.isMatched(section.getDownStation()))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("기존 구간과 등록할 역이 하나 이상 일치하지 않습니다.(상행역:[%s] 하행역:[%s])", section.getUpStation().getName(),
+                        section.getDownStation().getName())));
     }
 
     private void validateDuplicationSection(Section section) {
@@ -65,11 +75,6 @@ public class Sections {
         return sections.stream()
                 .anyMatch(s -> s.getUpStation().isMatched(section.getUpStation()) && s.getDownStation()
                         .isMatched(section.getDownStation()));
-    }
-
-    private boolean stationsContain(Station station) {
-        return sections.stream()
-                .anyMatch(section -> section.contains(station));
     }
 
     private Section getDownEndStation() {
