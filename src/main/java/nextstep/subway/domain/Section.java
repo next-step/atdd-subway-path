@@ -35,7 +35,8 @@ public class Section {
 	@JoinColumn(name = "down_station_id")
 	private Station downStation;
 
-	private int distance;
+	@Embedded
+	private SectionDistance distance;
 
 	@Embedded
 	private SectionIndex sectionIndex = new SectionIndex();
@@ -48,7 +49,7 @@ public class Section {
 		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
-		this.distance = distance;
+		this.distance = new SectionDistance(distance);
 	}
 
 	public List<Station> getStation(long index) {
@@ -58,12 +59,24 @@ public class Section {
 		return Arrays.asList(this.downStation);
 	}
 
+	public List<Station> getStationAll() {
+		return Arrays.asList(this.upStation, this.downStation);
+	}
+
 	public boolean isSameWithDownStation(Station station) {
 		return this.downStation.equals(station);
 	}
 
+	public boolean isSameWithDownStation(long stationId) {
+		return this.downStation.getId() == stationId;
+	}
+
 	public boolean isSameWithUpStation(Station station) {
 		return this.upStation.equals(station);
+	}
+
+	public boolean isSameWithUpStation(long stationId) {
+		return this.upStation.getId() == stationId;
 	}
 
 	public boolean isSameSectionExists(Station addUpStation, Station addDownStation) {
@@ -137,7 +150,7 @@ public class Section {
 	}
 
 	public int getDistance() {
-		return distance;
+		return this.distance.getDistance();
 	}
 
 }

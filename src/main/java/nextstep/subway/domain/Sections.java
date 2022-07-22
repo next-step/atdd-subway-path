@@ -1,12 +1,14 @@
 package nextstep.subway.domain;
 
-import static nextstep.subway.common.exception.errorcode.EntityErrorCode.*;
+import static java.util.stream.Collectors.*;
 import static nextstep.subway.common.exception.errorcode.StatusErrorCode.*;
 import static nextstep.subway.domain.KindOfAddition.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
@@ -33,16 +35,89 @@ public class Sections {
 	public List<Station> getStations() {
 
 		if (values.isEmpty()) {
-			Collections.emptyList();
+			return Collections.emptyList();
 		}
 
+		Section topSection = findTopSection(findFirstTopUpStationId(findAllStations()));
+		List<Section> newSections = new ArrayList<>();
+
+		for (Section section : this.values) {
+			newSections.add(topSection);
+			topSection = findNextSection(topSection);
+		}
+
+		return getStationByOrder(newSections);
+	}
+
+	private List<Station> findAllStations() {
+		List<Station> stations = new ArrayList<>();
+		this.values
+			.forEach(section -> stations.addAll(section.getStationAll()));
+		return stations;
+	}
+
+	private long findFirstTopUpStationId(List<Station> stations) {
+		return getCountPerStation(stations)
+			.stream()
+			.filter(key -> key.getValue() == 1)
+			.filter(entry -> this.values
+				.stream()
+				.anyMatch(section -> section.isSameWithUpStation(entry.getKey())))
+			.findFirst()
+			.orElseThrow(() -> new BusinessException(INVALID_STATUS))
+			.getKey();
+	}
+
+	private long findFirstBottomDownStationId(List<Station> stations) {
+		return getCountPerStation(stations)
+			.stream()
+			.filter(key -> key.getValue() == 1)
+			.filter(entry -> this.values
+				.stream()
+				.anyMatch(section -> section.isSameWithDownStation(entry.getKey())))
+			.findFirst()
+			.orElseThrow(() -> new BusinessException(INVALID_STATUS))
+			.getKey();
+	}
+
+	private Set<Map.Entry<Long, Long>> getCountPerStation(List<Station> stations) {
+		return stations.stream()
+			.collect(groupingBy(Station::getId, counting()))
+			.entrySet();
+	}
+
+	private Section findBottomSection(long bottomStationId) {
+		return this.values
+			.stream()
+			.filter(section -> section.isSameWithDownStation(bottomStationId))
+			.findFirst()
+			.orElseThrow(() -> new BusinessException(INVALID_STATUS));
+	}
+
+	private Section findTopSection(long topStationId) {
+		return this.values
+			.stream()
+			.filter(section -> section.isSameWithUpStation(topStationId))
+			.findFirst()
+			.orElseThrow(() -> new BusinessException(INVALID_STATUS));
+	}
+
+	private List<Station> getStationByOrder(List<Section> sectionsByOrder) {
 		List<Station> stations = new ArrayList<>();
 		int indexOfSections = 1;
-		for (Section section : values) {
+		for (Section section : sectionsByOrder) {
 			stations.addAll(section.getStation(indexOfSections++));
 		}
-
 		return Collections.unmodifiableList(stations);
+
+	}
+
+	private Section findNextSection(Section previousSection) {
+		return this.values
+			.stream()
+			.filter(section -> section.isSameWithUpStation(previousSection.getDownStation()))
+			.findFirst()
+			.orElse(previousSection);
 	}
 
 	public void add(Section addSection) throws BusinessException {
@@ -125,7 +200,7 @@ public class Sections {
 
 	public void remove(Station station) {
 
-		Section lastSection = getLastSection();
+		Section lastSection = findBottomSection(findFirstBottomDownStationId(findAllStations()));
 		if (!lastSection.isSameWithDownStation(station)) {
 			throw new BusinessException(INVALID_STATUS);
 		}
@@ -133,11 +208,5 @@ public class Sections {
 		values.removeIf(section -> section.equals(lastSection));
 	}
 
-	private Section getLastSection() {
-		return values.stream()
-			.skip(values.size() - 1L)
-			.findFirst()
-			.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
-
-	}
 }
+
