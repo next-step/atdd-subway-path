@@ -32,4 +32,8 @@ public class Sections {
 	public void remove(Section section) {
 		this.sectionList.remove(section);
 	}
+
+	public Section getLastSection(){
+		return sectionList.get(sectionList.size() - 1);
+	}
 }

@@ -68,10 +68,12 @@ public class Section {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
+		if (this == o){
 			return true;
-		if (o == null || getClass() != o.getClass())
+		}
+		if (o == null || getClass() != o.getClass()){
 			return false;
+		}
 		Section that = (Section)o;
 		return Objects.equals(id, that.id);
 	}
@@ -79,5 +81,9 @@ public class Section {
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
+	}
+
+	public boolean isSameDownStation(Station downStation) {
+		return this.downStation.equals(downStation);
 	}
 }

@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import nextstep.subway.applicaion.dto.LineRequest;
+
 @Entity
 public class Line {
 	@Id
@@ -65,5 +67,18 @@ public class Line {
 
 	public void removeSection(Section section) {
 		this.sections.remove(section);
+	}
+
+	public Section getLastSection() {
+		return this.sections.getLastSection();
+	}
+
+	public void update(LineRequest updateReqDto) {
+		if (updateReqDto.getName() != null) {
+			this.name = updateReqDto.getName();
+		}
+		if (updateReqDto.getColor() != null) {
+			this.color = updateReqDto.getColor();
+		}
 	}
 }
