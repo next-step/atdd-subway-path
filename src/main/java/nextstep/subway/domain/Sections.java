@@ -42,26 +42,40 @@ public class Sections {
         }
 
         if (deleteFirstOrLastStation(station)) return;
+        if (deleteMiddleStation(station)) return;
 
-        Section sameDownStationSection = sections.stream()
+        throw SectionsDeleteException.NOT_FOUND_LAST_SECTION_EXCEPTION();
+    }
+
+    public boolean isEmptySections() {
+        return sections.isEmpty();
+    }
+
+    private boolean deleteMiddleStation(Station station) {
+        Section sameUpStationSection = findSameUpStationSection(station);
+        Section sameDownStationSection = findSameDownStationSection(station);
+        if (sameUpStationSection != null && sameDownStationSection != null) {
+            Section newSection = new Section(sameDownStationSection.getLine(), sameDownStationSection.getUpStation(), sameUpStationSection.getDownStation(), sameUpStationSection.getDistance() + sameDownStationSection.getDistance());
+            sections.remove(sameUpStationSection);
+            sections.remove(sameDownStationSection);
+            sections.add(newSection);
+            return true;
+        }
+        return false;
+    }
+
+    private Section findSameDownStationSection(Station station) {
+        return sections.stream()
                 .filter(s -> s.hasSameDownStation(station))
                 .findFirst()
                 .orElseThrow(() -> SectionsDeleteException.NOT_FOUND_STATION_EXCEPTION());
+    }
 
-        Section sameUpStationSection = sections.stream()
+    private Section findSameUpStationSection(Station station) {
+        return sections.stream()
                 .filter(s -> s.hasSameUpStation(station))
                 .findFirst()
                 .orElseThrow(() -> SectionsDeleteException.NOT_FOUND_STATION_EXCEPTION());
-
-        if (sameUpStationSection != null && sameDownStationSection != null) {
-            Section newSection = new Section(sameDownStationSection.getLine(), sameDownStationSection.getUpStation(), sameUpStationSection.getDownStation(), sameUpStationSection.getDistance() + sameDownStationSection.getDistance());
-            sections.remove(sameDownStationSection);
-            sections.remove(sameUpStationSection);
-            sections.add(newSection);
-            return;
-        }
-
-        throw SectionsDeleteException.NOT_FOUND_LAST_SECTION_EXCEPTION();
     }
 
     private boolean deleteFirstOrLastStation(Station station) {
@@ -84,10 +98,6 @@ public class Sections {
             return true;
         }
         return false;
-    }
-
-    public boolean isEmptySections() {
-        return sections.isEmpty();
     }
 
     private void addSection(Section section) {
@@ -174,18 +184,12 @@ public class Sections {
 
     private Section getFirstSection() {
         Station firstUpStation = getFirstUpStation();
-        return sections.stream()
-                .filter(s -> s.hasSameUpStation(firstUpStation))
-                .findFirst()
-                .orElseThrow(() -> SectionsDeleteException.NOT_FOUND_STATION_EXCEPTION());
+        return findSameUpStationSection(firstUpStation);
     }
 
     private Section getLastSection() {
         Station lastDownStation = getLastDownStation();
-        return sections.stream()
-                .filter(s -> s.hasSameDownStation(lastDownStation))
-                .findFirst()
-                .orElseThrow(() -> SectionsDeleteException.NOT_FOUND_STATION_EXCEPTION());
+        return findSameDownStationSection(lastDownStation);
     }
 
     private Station getFirstUpStation() {
