@@ -34,13 +34,13 @@ public class LineServiceTest {
     void addSection() {
         // given
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
-        Station 강남역 = stationRepository.save(ConstStation.강남역);
-        Station 신논현역 = stationRepository.save(ConstStation.신논현역);
+        Long 강남역 = stationRepository.save(ConstStation.강남역).getId();
+        Long 신논현역 = stationRepository.save(ConstStation.신논현역).getId();
         Line 신분당선 = lineRepository.save(Line.of(NEW_BUN_DANG, BG_RED_600));
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(신분당선.getId(), SectionRequest.of(강남역.getId(), 신논현역.getId(), 10));
+        lineService.addSection(신분당선.getId(), SectionRequest.of(강남역, 신논현역, 10));
 
         // then
         // line.getSections 메서드를 통해 검증
