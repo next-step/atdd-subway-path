@@ -43,10 +43,24 @@ public class Sections {
     }
 
     public void add2(Section section) {
-        if (this.hasSections()) {
-            validateSection2(section);
+        if (values.isEmpty()) {
+            values.add(section);
+            return;
         }
-        values.add(section);
+        if (this.hasNotOnlyOneStation(section)) {
+            throw new IllegalArgumentException();
+        }
+        Section connectableSection = findConnectableSection(section);
+        if (connectableSection.isConnectInSide(section)) {
+            connectableSection.connectInside(section);
+        }
+    }
+
+    private Section findConnectableSection(Section section) {
+        return values.stream()
+                .filter(section::isConnectable)
+                .findAny()
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     private boolean hasSections() {
@@ -60,12 +74,6 @@ public class Sections {
         }
         if(this.hasStation(additionalSection.getDownStation())) {
             throw new StationAlreadyExistsException(additionalSection.getDownStation().getId());
-        }
-    }
-
-    private void validateSection2(Section additionalSection) {
-        if (this.hasNotOnlyOneStation(additionalSection)) {
-            throw new IllegalArgumentException();
         }
     }
 

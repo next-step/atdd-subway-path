@@ -20,4 +20,15 @@ public class Distance {
         }
         this.value = value;
     }
+
+    public void reduce(Distance distance) {
+        if (value <= distance.value()) {
+            throw new IllegalArgumentException();
+        }
+        value = value - distance.value();
+    }
+
+    public int value() {
+        return value;
+    }
 }

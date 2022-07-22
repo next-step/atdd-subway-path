@@ -96,7 +96,22 @@ class SectionsTest {
             assertThatThrownBy(() -> sections.add2(notContainStationSection)).isInstanceOf(IllegalArgumentException.class);
             assertThatThrownBy(() -> sections.add2(containBothStationSection)).isInstanceOf(IllegalArgumentException.class);
         });
+    }
 
+    @Test
+    @DisplayName("구간 사이에 등록 시 신규 구간의 길이가 구간 사이의 길이보다 작아야한다.")
+    void invalid_add_section_wrong_distance() {
+        // given
+        Sections sections = new Sections();
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        sections.add(section);
+
+        // when
+        Section betweenSection = createSection(GANGNAM_STATION, SAMSUNG_STATION, 15);
+
+        // then
+        assertThatThrownBy(() -> sections.add(betweenSection))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

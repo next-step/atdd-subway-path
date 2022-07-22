@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import static nextstep.subway.domain.factory.SectionFactory.createSection;
 import static nextstep.subway.domain.fixture.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 class SectionTest {
@@ -35,6 +36,56 @@ class SectionTest {
             assertThat(section.hasStation(new Station(1L, "강남역"))).isTrue();
             assertThat(section.hasStation(new Station(2L, "역삼역"))).isTrue();
             assertThat(section.hasStation(new Station(3L, "선릉역"))).isFalse();
+        });
+    }
+
+    @Test
+    @DisplayName("구간 간에 같은 역이 있으면 연결 가능한 구간이다.")
+    void isConnectable() {
+        // given
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+
+        // when
+        Section connectableSection = createSection(SEOLLEUNG_STATION, YEOKSAM_STATION, 10);
+        Section notConnectableSection = createSection(SAMSUNG_STATION, SEOLLEUNG_STATION, 10);
+
+        // then
+        assertAll(() -> {
+            assertThat(section.isConnectable(connectableSection)).isTrue();
+            assertThat(section.isConnectable(notConnectableSection)).isFalse();
+        });
+    }
+
+    @Test
+    @DisplayName("구간 사이에 구간을 추가하려면 상행역끼리 같거나 하행역끼리 같아야한다. ")
+    void invalid_connectInside() {
+        // given
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section additionalSection = createSection(YEOKSAM_STATION, SEOLLEUNG_STATION, 3);
+
+        // when
+        assertThatThrownBy(() -> section.connectInside(additionalSection))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("상행역끼리 같거나 하행역끼리 같으면 내부 결합을 할 수 있다.")
+    void isConnectInside() {
+        // given
+        Section sameUpStationSection_1 = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section sameUpStationSection_2 = createSection(GANGNAM_STATION, SEOLLEUNG_STATION, 3);
+
+        Section sameDownStationSection_1 = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section sameDownStationSection_2 = createSection(SEOLLEUNG_STATION, YEOKSAM_STATION, 3);
+
+        Section differentStationSection_1 = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section differentStationSection_2 = createSection(SEOLLEUNG_STATION, SAMSUNG_STATION, 3);
+
+        // then
+        assertAll(() -> {
+            assertThat(sameUpStationSection_1.isConnectInSide(sameUpStationSection_2)).isTrue();
+            assertThat(sameDownStationSection_1.isConnectInSide(sameDownStationSection_2)).isTrue();
+            assertThat(differentStationSection_1.isConnectInSide(differentStationSection_2)).isFalse();
         });
     }
 }
