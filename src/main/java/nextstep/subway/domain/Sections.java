@@ -19,6 +19,10 @@ public class Sections {
     }
 
     public void add(Section section) {
+        if (!sections.isEmpty() && !isFinalDownStation(section.getUpStation())) {
+            throw new IllegalArgumentException();
+        }
+
         this.sections.add(section);
     }
 

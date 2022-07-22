@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import static nextstep.subway.utils.EntityCreator.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,14 +33,14 @@ public class LineServiceMockTest {
     private LineService lineService;
 
     @Test
-    void addSection() {
+    void 구간_추가_성공() {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         final long lineId = 12345L;
         final long upStationId = 123L;
         final long downStationId = 234L;
 
-        Line 신분당선 = createLine();
+        Line 신분당선 = createLine("신분당선", "bg-red-600");
         Station 판교역 = createStation("판교역");
         Station 정자역 = createStation("정자역");
         Station 미금역 = createStation("미금역");
@@ -64,6 +65,37 @@ public class LineServiceMockTest {
                 .containsExactlyInAnyOrderElementsOf(List.of(정자역, 판교역, 미금역));
         assertThat(line.getSections()).hasSize(2);
         assertThat(line.getSections().stream().anyMatch(s -> sectionEquals(s, 정자_미금))).isTrue();
+    }
+
+    @Test
+    void 구간_추가_실패() {
+        // given
+        final long lineId = 12345L;
+        final long upStationId = 123L;
+        final long downStationId = 234L;
+
+        Line 신분당선 = createLine("신분당선", "bg-red-600");
+        Station 판교역 = createStation("판교역");
+        Station 정자역 = createStation("정자역");
+        Station 미금역 = createStation("미금역");
+        Section 판교_정자 = createSection(신분당선, 판교역, 정자역);
+        신분당선.addSection(판교_정자);
+
+        given(lineRepository.findById(lineId)).willReturn(Optional.of(신분당선));
+        given(stationService.findById(upStationId)).willReturn(미금역);
+        given(stationService.findById(downStationId)).willReturn(정자역);
+
+        // when
+        assertThatThrownBy(() -> lineService.addSection(lineId, getSectionRequest(upStationId, downStationId)))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        // then
+        Line line = lineRepository.findById(lineId).get();
+
+        assertThat(line).isNotNull();
+        assertThat(line.getStations()).hasSize(2)
+                .containsExactlyInAnyOrderElementsOf(List.of(정자역, 판교역));
+        assertThat(line.getSections()).hasSize(1).containsExactly(판교_정자);
     }
 
     private SectionRequest getSectionRequest(long upStationId, long downStationId) {

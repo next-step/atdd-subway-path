@@ -6,8 +6,8 @@ import nextstep.subway.domain.Station;
 
 public class EntityCreator {
 
-    public static Line createLine() {
-        return new Line("신분당선", "bg-red-600");
+    public static Line createLine(String name, String color) {
+        return new Line(name, color);
     }
 
     public static Section createSection(Line line, Station upStation, Station downStation) {
