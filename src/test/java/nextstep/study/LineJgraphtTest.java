@@ -5,6 +5,7 @@ import nextstep.subway.domain.LineGraph;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static nextstep.subway.utils.LineTestSources.section;
@@ -21,7 +22,7 @@ class LineJgraphtTest {
 
         line.addSection(section(station1, station2));
 
-        final LineGraph lineGraph = new LineGraph(line);
+        final LineGraph lineGraph = new LineGraph(List.of(line));
 
         List<Station> result = lineGraph.findShortestPath(station1, station2);
         assertThat(result).hasSize(2);
@@ -37,7 +38,7 @@ class LineJgraphtTest {
         line.addSection(section(station2, station3));
         line.addSection(section(station1, station2));
 
-        final LineGraph lineGraph = new LineGraph(line);
+        final LineGraph lineGraph = new LineGraph(List.of(line));
 
         List<Station> result = lineGraph.findShortestPath(station1, station3);
         assertThat(result).hasSize(3);
@@ -56,10 +57,35 @@ class LineJgraphtTest {
         line.addSection(section(station3, station1));
         line.addSection(section(station4, station3));
 
-        final LineGraph lineGraph = new LineGraph(line);
+        final LineGraph lineGraph = new LineGraph(List.of(line));
         List<Station> result = lineGraph.findShortestPath(station2, station4);
 
         assertThat(result).hasSize(4);
+    }
+
+    @Test
+    void 최단거리조회_2노선_3구간() {
+        final Line line1 = new Line();
+        final Station station1 = station(1);
+        final Station station2 = station(2);
+        final Station station3 = station(3);
+        final Station station4 = station(4);
+
+        // when (4, 3), (3, 1), (1, 2) -> (1, 2), (3, 1), (4, 3)
+        line1.addSection(section(station1, station2));
+        line1.addSection(section(station2, station3));
+        line1.addSection(section(station3, station4));
+
+        final Line line2 = new Line();
+        final Station station5 = station(5);
+
+        line2.addSection(section(station1, station5));
+        line2.addSection(section(station5, station4));
+
+        final LineGraph lineGraph = new LineGraph(List.of(line1, line2));
+        List<Station> result = lineGraph.findShortestPath(station1, station4);
+
+        assertThat(result).hasSize(3);
     }
 
 }
