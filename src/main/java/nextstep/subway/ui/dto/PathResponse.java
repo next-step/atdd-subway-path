@@ -6,11 +6,24 @@ import java.util.List;
 
 public class PathResponse {
 
-    private final List<Station> stationList;
-    private final long distance;
+    private final List<Station> stations;
+    private final Long distance;
 
-    public PathResponse(final List<Station> stationList, final long distance) {
-        this.stationList = stationList;
+    public PathResponse() {
+        this.stations = null;
+        this.distance = null;
+    }
+
+    public PathResponse(final List<Station> stations, final long distance) {
+        this.stations = stations;
         this.distance = distance;
+    }
+
+    public List<Station> getStations() {
+        return stations;
+    }
+
+    public Long getDistance() {
+        return distance;
     }
 }

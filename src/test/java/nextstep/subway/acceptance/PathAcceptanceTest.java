@@ -111,10 +111,9 @@ class PathAcceptanceTest extends AcceptanceTest {
         params.put("target", 도착역);
 
         return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/paths")
+                .params(params)
+                .get("/paths")
                 .then().log().all()
                 .extract();
     }
