@@ -19,4 +19,12 @@ public class StationPath {
     public long distance() {
         return distance;
     }
+
+    public List<Station> getStationList() {
+        return stationList;
+    }
+
+    public long getDistance() {
+        return distance;
+    }
 }
