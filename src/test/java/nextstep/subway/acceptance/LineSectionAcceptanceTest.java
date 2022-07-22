@@ -190,6 +190,24 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     }
 
+    /**
+     * When 등록되지 않은 역에 삭제 요청시
+     * Then 구간 삭제가 실패한다
+     */
+    @DisplayName("등록되지 않은 역은 삭제할 수 없다")
+    @Test
+    public void remove_not_exists_section_fail() {
+        // given
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 신규역, 3));
+        Long 노선에등록되지않은역 = 지하철역_생성_요청("노선에등록되지않은역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 노선에등록되지않은역);
+
+        // then
+        생성_실패_확인(response, HttpStatus.NOT_FOUND, "해당 역을 찾을 수 없어 구간을 삭제할 수 없습니다");
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
