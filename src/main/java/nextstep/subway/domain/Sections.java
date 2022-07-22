@@ -22,11 +22,7 @@ public class Sections {
             return;
         }
 
-        if (isDuplicateSection(section)) {
-            throw new IllegalArgumentException(
-                    String.format("이미 등록된 구간의 역입니다.(상행역:[%s] 하행역:[%s]", section.getUpStation().getName(),
-                            section.getDownStation().getName()));
-        }
+        validateDuplicationSection(section);
 
         if (isMatchedUpStation(section)) {
             Section existingUpStation = getExistingUpStation(section);
@@ -35,6 +31,14 @@ public class Sections {
         }
 
         sections.add(section);
+    }
+
+    private void validateDuplicationSection(Section section) {
+        if (isDuplicateSection(section)) {
+            throw new IllegalArgumentException(
+                    String.format("이미 등록된 구간의 역입니다.(상행역:[%s] 하행역:[%s]", section.getUpStation().getName(),
+                            section.getDownStation().getName()));
+        }
     }
 
     private void validateDistanceOfSection(int existingDistance, int newDistance) {
@@ -84,11 +88,11 @@ public class Sections {
             return orderedSections;
         }
 
-        Section firstSection = getFirstSection();
+        Section findingSection = getFirstSection();
 
-        while (firstSection != null) {
-            orderedSections.add(firstSection);
-            firstSection = getNextSection(firstSection.getDownStation());
+        while (findingSection != null) {
+            orderedSections.add(findingSection);
+            findingSection = getNextSection(findingSection.getDownStation());
         }
 
         return orderedSections;
@@ -101,12 +105,12 @@ public class Sections {
             return stations;
         }
 
-        Section firstSection = getFirstSection();
-        stations.add(firstSection.getUpStation());
+        Section findingSection = getFirstSection();
+        stations.add(findingSection.getUpStation());
 
-        while (firstSection != null) {
-            stations.add(firstSection.getDownStation());
-            firstSection = getNextSection(firstSection.getDownStation());
+        while (findingSection != null) {
+            stations.add(findingSection.getDownStation());
+            findingSection = getNextSection(findingSection.getDownStation());
         }
 
         return stations;
