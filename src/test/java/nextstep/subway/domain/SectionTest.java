@@ -38,13 +38,13 @@ class SectionTest {
     }
 
     @Test
-    @DisplayName("상행역 기준 - 기존 구간의 거리보다 새로 들어온 구간의 거리가 크다면 예외")
+    @DisplayName("기존 구간의 거리보다 새로 들어온 구간의 거리가 크다면 예외")
     void addMiddleSectionFrontException() {
         //when
         final Section newSection = new Section(line, new Station(1L, "강남역"), new Station("역삼역"), 15);
 
         //then
-        assertThatIllegalStateException().isThrownBy(() -> section.addMiddleSectionFront(newSection))
+        assertThatIllegalStateException().isThrownBy(() -> section.addMiddleSection(newSection))
             .withMessage("기존의 거리가 새로운 거리보다 작습니다.");
     }
 
@@ -53,7 +53,7 @@ class SectionTest {
     void addMiddleSectionFront() {
         //when
         final Section newSection = new Section(line, new Station(1L, "강남역"), new Station(3L, "역삼역"), 7);
-        section.addMiddleSectionFront(newSection);
+        section.addMiddleSection(newSection);
 
         //then
         assertThat(section.getUpStation()).isEqualTo(new Station(3L, "역삼역"));
@@ -67,7 +67,7 @@ class SectionTest {
         final Section newSection = new Section(line, new Station(3L, "역삼역"), new Station(2L, "잠실역"), 11);
 
         //then
-        assertThatIllegalStateException().isThrownBy(() -> section.addMiddleSectionBack(newSection))
+        assertThatIllegalStateException().isThrownBy(() -> section.addMiddleSection(newSection))
             .withMessage("기존의 거리가 새로운 거리보다 작습니다.");
     }
 
@@ -76,10 +76,11 @@ class SectionTest {
     void addMiddleSectionBack() {
         //when
         final Section newSection = new Section(line, new Station(3L, "역삼역"), new Station(2L, "잠실역"), 7);
-        section.addMiddleSectionBack(newSection);
+        section.addMiddleSection(newSection);
 
         //then
         assertThat(section.getDownStation()).isEqualTo(new Station(3L, "역삼역"));
         assertThat(section.getDistance()).isEqualTo(3);
     }
+
 }
