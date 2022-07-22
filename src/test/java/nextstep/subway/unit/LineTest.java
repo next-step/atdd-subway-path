@@ -23,36 +23,49 @@ class LineTest {
 	@Test
 	void addSection() {
 		//when
-		line.addSection(강남역, 역삼역, DISTANCE);
+		line.addSection(강남역, 역삼역, DISTANCE_VALUE_9);
 
 		//then
 		assertThat(line.getSections()).hasSize(1);
 	}
 
-	@DisplayName("기존구간 사이에 새로운 구간추가")
+	@DisplayName("기존구간 사이에 새로운 구간추가_정상")
 	@Test
 	void addSectionBetweenSection() {
 		//Given
-		line.addSection(강남역, 양재역, DISTANCE);
-		line.addSection(양재역, 정자역, DISTANCE);
+		line.addSection(강남역, 양재역, DISTANCE_VALUE_9);
+		line.addSection(양재역, 정자역, DISTANCE_VALUE_5);
 
 		//when
-		line.addSection(양재역, 양재시민의숲역, DISTANCE);
+		line.addSection(양재역, 양재시민의숲역, DISTANCE_VALUE_1);
 
 		//then
 		assertThat(line.getStations()).hasSize(4)
 			.containsExactly(강남역, 양재역, 양재시민의숲역, 정자역);
 	}
 
+	@DisplayName("기존구간 사이에 새로운 구간추가_길이가 기존구간보다 큰경우")
+	@Test
+	void addSectionBetweenSectionFailAboutDistance() {
+
+		//when
+		line.addSection(강남역, 양재역, DISTANCE_VALUE_9);
+		line.addSection(양재역, 정자역, DISTANCE_VALUE_5);
+
+		//then
+		assertThatThrownBy(() -> line.addSection(양재역, 양재시민의숲역, DISTANCE_VALUE_9))
+			.isInstanceOf(BusinessException.class);
+	}
+
 	@DisplayName("상행 종점에 새로운 구간추가")
 	@Test
 	void addSectionToTopStation() {
 		//Given
-		line.addSection(강남역, 양재역, DISTANCE);
-		line.addSection(양재역, 정자역, DISTANCE);
+		line.addSection(강남역, 양재역, DISTANCE_VALUE_9);
+		line.addSection(양재역, 정자역, DISTANCE_VALUE_5);
 
 		//when
-		line.addSection(신논현역, 강남역, DISTANCE);
+		line.addSection(신논현역, 강남역, DISTANCE_VALUE_5);
 
 		//then
 		assertThat(line.getStations()).hasSize(4)
@@ -63,11 +76,11 @@ class LineTest {
 	@Test
 	void addSectionToBottomStation() {
 		//Given
-		line.addSection(강남역, 양재역, DISTANCE);
-		line.addSection(양재역, 정자역, DISTANCE);
+		line.addSection(강남역, 양재역, DISTANCE_VALUE_3);
+		line.addSection(양재역, 정자역, DISTANCE_VALUE_5);
 
 		//when
-		line.addSection(정자역, 미금역, DISTANCE);
+		line.addSection(정자역, 미금역, DISTANCE_VALUE_1);
 
 		//then
 		assertThat(line.getStations()).hasSize(4)
@@ -78,10 +91,10 @@ class LineTest {
 	@Test
 	void addSameSectionInSections() {
 		//when
-		line.addSection(강남역, 양재역, DISTANCE);
+		line.addSection(강남역, 양재역, DISTANCE_VALUE_9);
 
 		//then
-		assertThatThrownBy(() -> line.addSection(강남역, 양재역, DISTANCE))
+		assertThatThrownBy(() -> line.addSection(강남역, 양재역, DISTANCE_VALUE_9))
 			.isInstanceOf(BusinessException.class);
 	}
 
@@ -89,10 +102,10 @@ class LineTest {
 	@Test
 	void addNewStationNotInSections() {
 		//when
-		line.addSection(강남역, 양재역, DISTANCE);
+		line.addSection(강남역, 양재역, DISTANCE_VALUE_9);
 
 		//then
-		assertThatThrownBy(() -> line.addSection(신논현역, 미금역, DISTANCE))
+		assertThatThrownBy(() -> line.addSection(신논현역, 미금역, DISTANCE_VALUE_9))
 			.isInstanceOf(BusinessException.class);
 	}
 
@@ -102,8 +115,8 @@ class LineTest {
 		//given
 		//when
 
-		line.addSection(강남역, 역삼역, DISTANCE);
-		line.addSection(역삼역, 선릉역, DISTANCE);
+		line.addSection(강남역, 역삼역, DISTANCE_VALUE_9);
+		line.addSection(역삼역, 선릉역, DISTANCE_VALUE_1);
 		//then
 		assertThat(line.getStations()).hasSize(3)
 			.containsExactly(강남역, 역삼역, 선릉역);
@@ -115,9 +128,9 @@ class LineTest {
 		//given
 		//when
 
-		line.addSection(강남역, 정자역, DISTANCE);
-		line.addSection(강남역, 양재역, DISTANCE);
-		line.addSection(양재역, 양재시민의숲역, DISTANCE);
+		line.addSection(강남역, 정자역, DISTANCE_VALUE_9);
+		line.addSection(강남역, 양재역, DISTANCE_VALUE_5);
+		line.addSection(양재역, 양재시민의숲역, DISTANCE_VALUE_1);
 		//then
 		assertThat(line.getStations()).hasSize(4)
 			.containsExactly(강남역, 양재역, 양재시민의숲역, 정자역);
@@ -135,8 +148,8 @@ class LineTest {
 	@Test
 	void removeSection() {
 		//given
-		line.addSection(강남역, 역삼역, DISTANCE);
-		line.addSection(역삼역, 선릉역, DISTANCE);
+		line.addSection(강남역, 역삼역, DISTANCE_VALUE_1);
+		line.addSection(역삼역, 선릉역, DISTANCE_VALUE_3);
 		//when
 		line.removeSection(선릉역);
 		//then
@@ -147,8 +160,8 @@ class LineTest {
 	@Test
 	void removeSectionFail1() {
 		//when
-		line.addSection(강남역, 역삼역, DISTANCE);
-		line.addSection(역삼역, 선릉역, DISTANCE);
+		line.addSection(강남역, 역삼역, DISTANCE_VALUE_1);
+		line.addSection(역삼역, 선릉역, DISTANCE_VALUE_3);
 
 		//then
 		assertThatThrownBy(() -> line.removeSection(역삼역))

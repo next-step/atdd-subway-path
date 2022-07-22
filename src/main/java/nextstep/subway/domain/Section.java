@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import static nextstep.subway.common.exception.errorcode.EntityErrorCode.*;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -14,8 +12,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
-import nextstep.subway.common.exception.BusinessException;
 
 @Entity
 public class Section {
@@ -37,9 +33,6 @@ public class Section {
 
 	@Embedded
 	private SectionDistance distance;
-
-	@Embedded
-	private SectionIndex sectionIndex = new SectionIndex();
 
 	public Section() {
 
@@ -94,26 +87,12 @@ public class Section {
 		return false;
 	}
 
-	public void nullValidationOfStations() {
-		if (this.upStation == null || this.downStation == null) {
-			throw new BusinessException(ENTITY_NOT_FOUND);
-		}
-	}
-
 	public void changeUpStation(Station station) {
 		this.upStation = station;
 	}
 
-	public void changeDownStation(Station station) {
-		this.downStation = station;
-	}
-
-	public void calculateIndex(int index) {
-		this.sectionIndex.calculateIndex(index);
-	}
-
-	public int getIndex() {
-		return sectionIndex.getIndex();
+	public void validateOfDistance(SectionDistance distance) {
+		this.distance.validationOfDistance(distance);
 	}
 
 	@Override
@@ -149,8 +128,8 @@ public class Section {
 		return this.downStation;
 	}
 
-	public int getDistance() {
-		return this.distance.getDistance();
+	public SectionDistance getDistance() {
+		return this.distance;
 	}
 
 }

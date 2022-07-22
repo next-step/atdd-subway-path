@@ -12,7 +12,6 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 
 import org.springframework.util.CollectionUtils;
 
@@ -22,7 +21,6 @@ public class Sections {
 	@OneToMany(mappedBy = "line",
 		cascade = {CascadeType.PERSIST, CascadeType.MERGE},
 		orphanRemoval = true)
-	@OrderBy("sectionIndex asc")
 	private List<Section> values = new ArrayList<>();
 
 	public Sections() {
@@ -132,16 +130,21 @@ public class Sections {
 		}
 
 		if (kindOfAddition == ADD_TO_IN_EXISTS_SECTION) {
-			Section baseSection = this.values
-				.stream()
-				.filter(section -> section.isSameWithUpStation(addSection.getUpStation()))
-				.findFirst()
-				.orElseThrow(() -> new BusinessException(INVALID_STATUS));
-			this.values.add(this.values.indexOf(baseSection), addSection);
-			baseSection.changeUpStation(addSection.getDownStation());
+			AddingSectionInExistingStations(addSection);
 		}
-		calculateSectionIndex();
 
+	}
+
+	private void AddingSectionInExistingStations(Section addSection) {
+		Section baseSection = this.values
+			.stream()
+			.filter(section -> section.isSameWithUpStation(addSection.getUpStation()))
+			.findFirst()
+			.orElseThrow(() -> new BusinessException(INVALID_STATUS));
+
+		baseSection.validateOfDistance(addSection.getDistance());
+		this.values.add(this.values.indexOf(baseSection), addSection);
+		baseSection.changeUpStation(addSection.getDownStation());
 	}
 
 	private int getSectionIndexForAdd(KindOfAddition kindOfAddition) {
@@ -188,13 +191,6 @@ public class Sections {
 			.anyMatch(section -> section.isExistAnyStations(addSection.getUpStation(), addSection.getDownStation()))
 		) {
 			throw new BusinessException(INVALID_STATUS);
-		}
-	}
-
-	private void calculateSectionIndex() {
-		int sectionIndex = 1;
-		for (Section section : this.values) {
-			section.calculateIndex(sectionIndex++);
 		}
 	}
 

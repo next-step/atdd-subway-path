@@ -22,5 +22,8 @@ public class LineStaticValues {
 	static Station 신논현역 = new Station(신논현역Id, "신논현역");
 	static Station 미금역 = new Station(미금역Id, "미금역");
 
-	static int DISTANCE = 9;
+	static int DISTANCE_VALUE_9 = 9;
+	static int DISTANCE_VALUE_5 = 5;
+	static int DISTANCE_VALUE_3 = 3;
+	static int DISTANCE_VALUE_1 = 1;
 }
