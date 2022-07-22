@@ -22,6 +22,12 @@ public class Sections {
             return;
         }
 
+        if (isDuplicateSection(section)) {
+            throw new IllegalArgumentException(
+                    String.format("이미 등록된 구간의 역입니다.(상행역:[%s] 하행역:[%s]", section.getUpStation().getName(),
+                            section.getDownStation().getName()));
+        }
+
         Section downEndStation = getDownEndStation();
         if (!downEndStation.isMatched(section)) {
             throw new IllegalArgumentException("새로운 구간 등록시 새로운 구간의 상행역은 기등록된 하행 종점역과 같아야 합니다.");
@@ -31,6 +37,12 @@ public class Sections {
             throw new IllegalArgumentException("신규 구간의 하행역은 현재 등록되어있는 역일 수 없습니다.");
         }
         sections.add(section);
+    }
+
+    private boolean isDuplicateSection(Section section) {
+        return sections.stream()
+                .anyMatch(s -> s.getUpStation().isMatched(section.getUpStation()) && s.getDownStation()
+                        .isMatched(section.getDownStation()));
     }
 
     private boolean stationsContain(Station station) {
