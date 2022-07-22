@@ -26,13 +26,14 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public boolean isSameSection(Section newSection) {
@@ -48,7 +49,11 @@ public class Section {
         return this.getUpStation() == upStation;
     }
 
-    public boolean isLongerThan(Section section) {
-        return section.getDistance() - this.getDistance() <= 0;
+    public boolean isMoreLongerThan(Section section) {
+        return this.distance.isMoreLongerThan(section.getDistance());
+    }
+
+    public int getBetweenDistance(Distance distance) {
+        return this.distance.getBetweenDistanceAbsolute(distance);
     }
 }
