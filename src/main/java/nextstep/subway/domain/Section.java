@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import java.util.List;
 import java.util.Objects;
 import javax.persistence.*;
 
@@ -62,16 +63,20 @@ public class Section {
         return this.downStation.equals(newStation);
     }
 
-    public void addMiddleSectionFront(final Section newSection) {
-        distanceValidation(newSection);
-        updateDistance(newSection);
-        this.upStation = newSection.downStation;
+    public List<Station> getStations() {
+        return List.of(upStation, downStation);
     }
 
-    public void addMiddleSectionBack(final Section newSection) {
+    public void addMiddleSection(final Section newSection) {
         distanceValidation(newSection);
         updateDistance(newSection);
-        this.downStation = newSection.upStation;
+
+        if(this.upStation.equals(newSection.getUpStation())){
+            this.upStation = newSection.getDownStation();
+        }
+        if(this.downStation.equals(newSection.getDownStation())){
+            this.downStation = newSection.getUpStation();
+        }
     }
 
     private void distanceValidation(final Section newSection) {
@@ -101,5 +106,6 @@ public class Section {
     public int hashCode() {
         return Objects.hash(id, line, upStation, downStation, distance);
     }
+
 
 }
