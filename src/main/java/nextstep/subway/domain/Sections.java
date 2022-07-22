@@ -36,7 +36,7 @@ public class Sections {
     private void validateDuplicationSection(Section section) {
         if (isDuplicateSection(section)) {
             throw new IllegalArgumentException(
-                    String.format("이미 등록된 구간의 역입니다.(상행역:[%s] 하행역:[%s]", section.getUpStation().getName(),
+                    String.format("이미 등록된 구간의 역입니다.(상행역:[%s] 하행역:[%s])", section.getUpStation().getName(),
                             section.getDownStation().getName()));
         }
     }
@@ -44,7 +44,7 @@ public class Sections {
     private void validateDistanceOfSection(int existingDistance, int newDistance) {
         if (existingDistance <= newDistance) {
             throw new IllegalArgumentException(
-                    String.format("기존 구간의 길이는 [%d]로 새로 등록할 구간의 길이는 기존 구간의 길이보다 작아야합니다.(신규 구간 길이:[%d]", existingDistance,
+                    String.format("기존 구간의 길이는 [%d]로 새로 등록할 구간의 길이는 기존 구간의 길이보다 작아야합니다.(신규 구간 길이:[%d])", existingDistance,
                             newDistance));
         }
     }
