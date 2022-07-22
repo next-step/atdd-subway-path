@@ -28,15 +28,33 @@ public class Sections {
                             section.getDownStation().getName()));
         }
 
-        Section downEndStation = getDownEndStation();
-        if (!downEndStation.isMatched(section)) {
-            throw new IllegalArgumentException("새로운 구간 등록시 새로운 구간의 상행역은 기등록된 하행 종점역과 같아야 합니다.");
+        if (isMatchedUpStation(section)) {
+            Section existingUpStation = getExistingUpStation(section);
+            validateDistanceOfSection(existingUpStation.getDistance(), section.getDistance());
+            existingUpStation.updateExistingUpStationAndDowStationSection(section);
         }
 
-        if (stationsContain(section.getDownStation())) {
-            throw new IllegalArgumentException("신규 구간의 하행역은 현재 등록되어있는 역일 수 없습니다.");
-        }
         sections.add(section);
+    }
+
+    private void validateDistanceOfSection(int existingDistance, int newDistance) {
+        if (existingDistance <= newDistance) {
+            throw new IllegalArgumentException(
+                    String.format("기존 구간의 길이는 [%d]로 새로 등록할 구간의 길이는 기존 구간의 길이보다 작아야합니다.(신규 구간 길이:[%d]", existingDistance,
+                            newDistance));
+        }
+    }
+
+    private Section getExistingUpStation(Section section) {
+        return sections.stream()
+                .filter(s -> s.getUpStation().isMatched(section.getUpStation()))
+                .findAny()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private boolean isMatchedUpStation(Section section) {
+        return sections.stream()
+                .anyMatch(s -> s.getUpStation().isMatched(section.getUpStation()));
     }
 
     private boolean isDuplicateSection(Section section) {
@@ -59,6 +77,23 @@ public class Sections {
         return sections.size() - 1;
     }
 
+    public List<Section> getSections() {
+        List<Section> orderedSections = new ArrayList<>();
+
+        if (sections.isEmpty()) {
+            return orderedSections;
+        }
+
+        Section firstSection = getFirstSection();
+
+        while (firstSection != null) {
+            orderedSections.add(firstSection);
+            firstSection = getNextSection(firstSection.getDownStation());
+        }
+
+        return orderedSections;
+    }
+
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
 
@@ -66,13 +101,34 @@ public class Sections {
             return stations;
         }
 
-        stations.add(sections.get(0).getUpStation());
+        Section firstSection = getFirstSection();
+        stations.add(firstSection.getUpStation());
 
-        for (Section section : sections) {
-            stations.add(section.getDownStation());
+        while (firstSection != null) {
+            stations.add(firstSection.getDownStation());
+            firstSection = getNextSection(firstSection.getDownStation());
         }
 
         return stations;
+    }
+
+    private Section getNextSection(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.getUpStation().isMatched(station))
+                .findAny()
+                .orElse(null);
+    }
+
+    private Section getFirstSection() {
+        return sections.stream()
+                .filter(section -> isUpStation(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private boolean isUpStation(Station station) {
+        return sections.stream()
+                .noneMatch(section -> section.getDownStation().isMatched(station));
     }
 
     public void deleteSection(Station station) {
