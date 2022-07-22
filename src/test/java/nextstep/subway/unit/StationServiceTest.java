@@ -35,7 +35,7 @@ public class StationServiceTest {
     }
 
     @Test
-    @DisplayName("지하철 목록을 조회힌다.")
+    @DisplayName("지하철 목록을 조회한다.")
     void findAllStation() {
         stationRepository.save(new Station("강남역"));
         stationRepository.save(new Station("역삼역"));

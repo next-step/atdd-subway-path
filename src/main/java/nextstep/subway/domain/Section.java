@@ -4,12 +4,14 @@ import java.util.List;
 import javax.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@EqualsAndHashCode
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
