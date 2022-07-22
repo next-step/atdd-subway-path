@@ -21,8 +21,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
 
-    private static String NEW_BUN_DANG = "신분당선";
-    private static String BG_RED_600 = "bg-red-600";
+    private static final String NEW_BUN_DANG = "신분당선";
+    private static final String BG_RED_600 = "bg-red-600";
 
     @Mock
     private LineRepository lineRepository;
