@@ -40,43 +40,11 @@ class SectionsTest {
 
         // when
         Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
-        sections.add(section);
+        sections.add2(section);
 
         // then
         assertThat(sections.getStations()).containsOnly(new Station(1L, "강남역"),
                 new Station(2L, "역삼역"));
-    }
-
-    @Test
-    @DisplayName("추가하려는 구간의 상행역이 해당 노선의 하행 종점역과 같지 않으면 예외를 반환한다.")
-    void invalid_new_section_wrong_upStation() {
-        // given
-        Sections sections = new Sections();
-        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
-        sections.add(section);
-
-        // when
-        Section newSection = createSection(GANGNAM_STATION, SEOLLEUNG_STATION, 5);
-
-        // then
-        assertThatThrownBy(() -> sections.add(newSection))
-                .isInstanceOf(InvalidMatchEndStationException.class);
-    }
-
-    @Test
-    @DisplayName("추가하려는 구간의 하행역이 해당 노선의 지하철역 일 경우 예외를 반환한다.")
-    void invalid_new_section_wrong_downStation() {
-        // given
-        Sections sections = new Sections();
-        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
-        sections.add(section);
-
-        // when
-        Section newSection = createSection(YEOKSAM_STATION, GANGNAM_STATION, 5);
-
-        // then
-        assertThatThrownBy(() -> sections.add(newSection))
-                .isInstanceOf(StationAlreadyExistsException.class);
     }
 
     @Test
@@ -85,7 +53,7 @@ class SectionsTest {
         // given
         Sections sections = new Sections();
         Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
-        sections.add(section);
+        sections.add2(section);
 
         // when
         Section notContainStationSection = createSection(SEOLLEUNG_STATION, SAMSUNG_STATION, 5);
@@ -104,7 +72,7 @@ class SectionsTest {
         // given
         Sections sections = new Sections();
         Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
-        sections.add(section);
+        sections.add2(section);
 
         // when
         Section betweenSection = createSection(GANGNAM_STATION, SAMSUNG_STATION, 15);
@@ -138,8 +106,8 @@ class SectionsTest {
         Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
         Section newSection = createSection(YEOKSAM_STATION, SEOLLEUNG_STATION, 5);
 
-        sections.add(section);
-        sections.add(newSection);
+        sections.add2(section);
+        sections.add2(newSection);
 
         // when
         sections.delete(SEOLLEUNG_STATION);
@@ -156,8 +124,8 @@ class SectionsTest {
         Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
         Section newSection = createSection(YEOKSAM_STATION, SEOLLEUNG_STATION, 5);
 
-        sections.add(section);
-        sections.add(newSection);
+        sections.add2(section);
+        sections.add2(newSection);
 
         // then
         assertThatThrownBy(() -> sections.delete(YEOKSAM_STATION))

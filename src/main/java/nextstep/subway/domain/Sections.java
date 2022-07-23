@@ -3,10 +3,8 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import nextstep.subway.domain.exception.InvalidMatchEndStationException;
 import nextstep.subway.domain.exception.NotExistSectionException;
 import nextstep.subway.domain.exception.SectionDeleteException;
-import nextstep.subway.domain.exception.StationAlreadyExistsException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -59,14 +57,6 @@ public class Sections {
                 .allMatch(section -> section.isMissMatchDownStation(station));
     }
 
-    // TODO: 변경된 요구사항 적용 후 삭제
-    public void add(Section section) {
-        if (this.hasSections()) {
-            validateSection(section);
-        }
-        values.add(section);
-    }
-
     public void add2(Section section) {
         if (values.isEmpty()) {
             values.add(section);
@@ -89,20 +79,6 @@ public class Sections {
                 .filter(section::isConnectable)
                 .findAny()
                 .orElseThrow(IllegalArgumentException::new);
-    }
-
-    private boolean hasSections() {
-        return values.size() > EMPTY_VALUE;
-    }
-
-    private void validateSection(Section additionalSection) {
-        Section lastSection = findLastSection();
-        if (lastSection.isMissMatchDownStation(additionalSection.getUpStation())) {
-            throw new InvalidMatchEndStationException(additionalSection.getUpStation().getId());
-        }
-        if(this.hasStation(additionalSection.getDownStation())) {
-            throw new StationAlreadyExistsException(additionalSection.getDownStation().getId());
-        }
     }
 
     private boolean hasNotOnlyOneStation(Section section) {
