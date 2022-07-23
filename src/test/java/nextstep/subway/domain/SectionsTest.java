@@ -194,7 +194,7 @@ class SectionsTest {
 
 	@DisplayName("이미 등록되어있는 상행역과 하행역 구간 등록시 에러 발생")
 	@Test
-	void exceptionAlreadyExistingStation() throws Exception {
+	void exceptionAlreadyExistingStation() {
 
 	    //given
 		line.addSection(section);
@@ -205,5 +205,20 @@ class SectionsTest {
 		assertThatThrownBy(() -> sections.addSection(newSection)).isInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("상행역과 하행역이 모두 등록되어있습니다.");
 
+    }
+
+	@DisplayName("상행역과 하행역 둘중 하나라도 포함되어있지 않다면 구간 추가 불가")
+	@Test
+	void exceptionNoStation() throws Exception {
+
+	    //given
+		line.addSection(section);
+		Sections sections = Sections.from(line.getSections());
+		Section newSection = new Section(new Station("서울력"), new Station("광화문역"), 5);
+
+	    //when  //then
+		assertThatThrownBy(() -> sections.addSection(newSection)).isInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("구간추가가 불가합니다.");
 	 }
+
 }

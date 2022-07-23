@@ -185,18 +185,34 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
      }
 
-     @DisplayName("상행역과 하행역이 모두 노선에 추가되어있다면 구간 추가 불가")
-     @Test
-     void exceptionAlreadyExistStation() throws Exception {
+    @DisplayName("상행역과 하행역이 모두 노선에 추가되어있다면 구간 추가 불가")
+    @Test
+    void exceptionAlreadyExistStation() throws Exception {
 
-         //given //when
-         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역));
+        //given //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역));
 
-         //then
-         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-         assertThat(response.body().asString()).contains("상행역과 하행역이 모두 등록되어있습니다.");
-      }
-      
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).contains("상행역과 하행역이 모두 등록되어있습니다.");
+    }
+
+    @DisplayName("상행역과 하행역 둘중 하나라도 포함되어있지 않다면 구간 추가 불가")
+    @Test
+    void exceptionNoStation() throws Exception {
+
+        //given
+        Long 양재시민의숲역 = 지하철역_생성_요청("양재시민의숲역").jsonPath().getLong("id");
+        Long 판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
+
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재시민의숲역, 판교역));
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).contains("구간추가가 불가합니다.");
+     }
+
 
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
