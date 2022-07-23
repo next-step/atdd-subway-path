@@ -45,8 +45,6 @@ class SectionsTest {
     @DisplayName("구간 제거")
     @Test
     void removeSection() {
-        sut.add(분당선, 청량리역, 왕십리역, 10);
-
         sut.removeByStation(왕십리역);
 
         assertThat(sut.getStations()).isEmpty();
@@ -55,8 +53,6 @@ class SectionsTest {
     @DisplayName("마지막 역이 아닌 역으로 구간 제거시 예외 발생")
     @Test
     void cantRemoveSectionByStationInMiddle() {
-        sut.add(분당선, 청량리역, 왕십리역, 10);
-
         assertThrows(IllegalArgumentException.class, () -> sut.removeByStation(청량리역));
     }
 
