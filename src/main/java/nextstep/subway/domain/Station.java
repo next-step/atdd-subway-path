@@ -26,4 +26,8 @@ public class Station {
     public String getName() {
         return name;
     }
+
+    public boolean compareValue(Station other) {
+        return other != null && this.name.equals(other.name);
+    }
 }

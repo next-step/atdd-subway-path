@@ -58,4 +58,27 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public void delete() {
+        this.line = null;
+    }
+
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public boolean compareValues(Section other) {
+        return other != null &&
+                this.upStation.compareValue(other.upStation) &&
+                this.downStation.compareValue(other.downStation) &&
+                this.distance == other.distance;
+    }
 }

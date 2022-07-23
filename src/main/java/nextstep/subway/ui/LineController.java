@@ -4,6 +4,9 @@ import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.exception.AllIncludedStationException;
+import nextstep.subway.exception.DistanceException;
+import nextstep.subway.exception.NonIncludedStationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,5 +62,10 @@ public class LineController {
     public ResponseEntity<Void> deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
         lineService.deleteSection(lineId, stationId);
         return ResponseEntity.ok().build();
+    }
+
+    @ExceptionHandler({DistanceException.class, AllIncludedStationException.class, NonIncludedStationException.class})
+    public ResponseEntity<Void> addSectionExceptionHandler() {
+        return ResponseEntity.badRequest().build();
     }
 }

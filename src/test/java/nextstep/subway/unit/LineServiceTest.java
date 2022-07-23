@@ -40,7 +40,7 @@ public class LineServiceTest {
 
         // line
         Line 신분당선 = createLine("신분당선", "bg-red-600");
-        Section 판교_정자 = createSection(신분당선, 판교역, 정자역);
+        Section 판교_정자 = createSection(신분당선, 판교역, 정자역, 10);
         신분당선.addSection(판교_정자);
         신분당선 = lineRepository.save(신분당선);
 
@@ -51,8 +51,8 @@ public class LineServiceTest {
         List<Section> sections = 신분당선.getSections();
         assertThat(sections).hasSize(2);
 
-        Section 정자_미금 = createSection(신분당선, 정자역, 미금역);
-        assertThat(sections.stream().anyMatch(s -> sectionEquals(s, 정자_미금))).isTrue();
+        Section 정자_미금 = createSection(신분당선, 정자역, 미금역, 10);
+        assertThat(sections.stream().anyMatch(s -> s.compareValues(정자_미금))).isTrue();
     }
 
     @Test
@@ -68,7 +68,7 @@ public class LineServiceTest {
 
         // line
         Line 신분당선 = createLine("신분당선", "bg-red-600");
-        Section 판교_정자 = createSection(신분당선, 판교역, 정자역);
+        Section 판교_정자 = createSection(신분당선, 판교역, 정자역, 10);
         신분당선.addSection(판교_정자);
         신분당선 = lineRepository.save(신분당선);
 
@@ -83,10 +83,5 @@ public class LineServiceTest {
         // then
         List<Section> sections = 신분당선.getSections();
         assertThat(sections).hasSize(1).containsExactly(판교_정자);
-    }
-
-    private boolean sectionEquals(Section one, Section two) {
-        return Objects.equals(one.getLine(), two.getLine()) &&
-                Objects.equals(one.getUpStation(), two.getUpStation()) && Objects.equals(one.getDownStation(), two.getDownStation());
     }
 }
