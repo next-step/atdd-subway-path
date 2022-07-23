@@ -73,12 +73,16 @@ public class Sections {
 		}
 	}
 
-	private void addSectionDownStationBased(Section newSection, Section section) {
-		sectionList.remove(section);
-		sectionList.add(new Section(section.getLine(), section.getUpStation(), newSection.getUpStation(),
-			section.getDistance() - newSection.getDistance()));
-		sectionList.add(new Section(section.getLine(), newSection.getUpStation(), newSection.getDownStation(),
-			newSection.getDistance()));
+	public Optional<Section> getSameUpStationSection(Section newSection){
+		return this.sectionList.stream()
+			.filter(section -> section.isSameUpStation(newSection))
+			.findFirst();
+	}
+
+	private void validateSectionDistance(Section newSection, Section section) {
+		if(newSection.isLongerDistance(section)){
+			throw new IllegalArgumentException("추가하려는 구간의 길이는 기존 구간의 길이와 같거나 길수 없습니다.");
+		}
 	}
 
 	private Optional<Section> getSameDownStationSection(Section newSection) {
@@ -87,10 +91,12 @@ public class Sections {
 			.findFirst();
 	}
 
-	private void validateSectionDistance(Section newSection, Section section) {
-		if(newSection.isLongerDistance(section)){
-			throw new IllegalArgumentException("추가하려는 구간의 길이는 기존 구간의 길이와 같거나 길수 없습니다.");
-		}
+	private void addSectionDownStationBased(Section newSection, Section section) {
+		sectionList.remove(section);
+		sectionList.add(new Section(section.getLine(), section.getUpStation(), newSection.getUpStation(),
+			section.getDistance() - newSection.getDistance()));
+		sectionList.add(new Section(section.getLine(), newSection.getUpStation(), newSection.getDownStation(),
+			newSection.getDistance()));
 	}
 
 	private void addSectionUpStationBased(Section newSection, Section section) {
@@ -101,10 +107,14 @@ public class Sections {
 			section.getDistance() - newSection.getDistance()));
 	}
 
-	public Optional<Section> getSameUpStationSection(Section newSection){
-		return this.sectionList.stream()
-			.filter(section -> section.isSameUpStation(newSection))
-			.findFirst();
+	public boolean isSameNewSectionDownStationAndUpStation(Section newSection) {
+		Section firstSection = getFirstSection();
+		return firstSection.getUpStation().equals(newSection.getDownStation());
+	}
+
+	public boolean isSameNewSectionUpStationAndDownStation(Section newSection) {
+		Section lastSection = getLastSection();
+		return lastSection.getDownStation().equals(newSection.getUpStation());
 	}
 
 	public List<Station> getStations() {
@@ -127,15 +137,16 @@ public class Sections {
 		return sortedStationList;
 	}
 
-	private Section nextSection(Section currentSection) {
+	public Section getFirstSection() {
 		return this.sectionList.stream()
-			.filter(section -> currentSection.getDownStation().equals(section.getUpStation()))
+			.filter(section -> findSameDownStationSection(section.getUpStation()))
 			.findAny()
 			.orElseThrow();
 	}
 
-	public void remove(Section section) {
-		this.sectionList.remove(section);
+	private boolean findSameDownStationSection(Station upStation){
+		return this.sectionList.stream()
+			.noneMatch(section -> section.getDownStation().equals(upStation));
 	}
 
 	public Section getLastSection(){
@@ -150,26 +161,15 @@ public class Sections {
 			.noneMatch(section -> section.getUpStation().equals(downStation));
 	}
 
-	public boolean isSameNewSectionDownStationAndUpStation(Section newSection) {
-		Section firstSection = getFirstSection();
-		return firstSection.getUpStation().equals(newSection.getDownStation());
-	}
-
-	public Section getFirstSection() {
+	private Section nextSection(Section currentSection) {
 		return this.sectionList.stream()
-			.filter(section -> findSameDownStationSection(section.getUpStation()))
+			.filter(section -> currentSection.getDownStation().equals(section.getUpStation()))
 			.findAny()
 			.orElseThrow();
 	}
 
-	private boolean findSameDownStationSection(Station upStation){
-		return this.sectionList.stream()
-			.noneMatch(section -> section.getDownStation().equals(upStation));
-	}
-
-	public boolean isSameNewSectionUpStationAndDownStation(Section newSection) {
-		Section lastSection = getLastSection();
-		return lastSection.getDownStation().equals(newSection.getUpStation());
+	public void remove(Section section) {
+		this.sectionList.remove(section);
 	}
 
 	private boolean findSameUpAndDownStation(Section newSection){
