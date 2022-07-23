@@ -21,14 +21,25 @@ class SectionsTest {
         청량리역 = new Station("청량리역");
         왕십리역 = new Station("왕십리역");
         sut = new Sections();
+        sut.add(분당선, 청량리역, 왕십리역, 10);
     }
 
-    @DisplayName("구간 추가")
+    @DisplayName("마지막 구간 추가")
     @Test
-    void addSection() {
-        sut.add(분당선, 청량리역, 왕십리역, 10);
+    void addLastSection() {
+        var 서울숲역 = new Station("서울숲역");
+        sut.add(분당선, 왕십리역, 서울숲역, 10);
 
-        assertThat(sut.getStations()).containsExactly(청량리역, 왕십리역);
+        assertThat(sut.getStations()).containsExactly(청량리역, 왕십리역, 서울숲역);
+    }
+
+    @DisplayName("첫 구간 추가")
+    @Test
+    void addFirstSection() {
+        var 새로운역 = new Station("새로운역");
+        sut.add(분당선, 새로운역, 청량리역, 10);
+
+        assertThat(sut.getStations()).containsExactly(새로운역, 청량리역, 왕십리역);
     }
 
     @DisplayName("구간 제거")
