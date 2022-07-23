@@ -34,4 +34,12 @@ public class Section {
     public boolean isDownStation(Long stationId) {
         return this.downStationId.equals(stationId);
     }
+
+    public boolean includes(Section section) {
+        return downStationId.equals(section.downStationId) || upStationId.equals(section.upStationId);
+    }
+
+    public boolean isLonger(Section section) {
+        return distance > section.distance;
+    }
 }

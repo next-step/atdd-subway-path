@@ -1,14 +1,17 @@
 package nextstep.subway.line.domain;
 
 import lombok.Getter;
+import nextstep.subway.line.domain.exception.CannotAddSectionException;
 import nextstep.subway.line.domain.exception.CannotDeleteSectionException;
 
-import javax.persistence.*;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static javax.persistence.CascadeType.*;
+import static javax.persistence.CascadeType.ALL;
 
 @Getter
 @Embeddable
@@ -18,6 +21,17 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
+        Optional<Section> includingSectionOpt = sections.stream()
+                .filter(s -> s.includes(section))
+                .findAny();
+
+        if (includingSectionOpt.isPresent()) {
+            Section includingSection = includingSectionOpt.get();
+            if (!includingSection.isLonger(section)) {
+                throw new CannotAddSectionException("기존 구간 사이에 추가할 구간의 길이가 기존 구간의 길이보다 크거나 같을 수 없습니다.");
+            }
+        }
+
         sections.add(section);
     }
 

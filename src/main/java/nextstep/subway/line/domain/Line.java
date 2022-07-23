@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import lombok.Getter;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.util.Collections;
@@ -37,16 +36,10 @@ public class Line {
     }
 
     public void updateName(String name) {
-        if (!StringUtils.hasText(name)) {
-            throw new IllegalArgumentException("노선의 이름은 필수값입니다.");
-        }
         this.name = name;
     }
 
     public void updateColor(String color) {
-        if (!StringUtils.hasText(color)) {
-            throw new IllegalArgumentException("노선의 색상은 필수값입니다.");
-        }
         this.color = color;
     }
 
