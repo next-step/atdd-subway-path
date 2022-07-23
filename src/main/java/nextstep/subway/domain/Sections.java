@@ -36,6 +36,8 @@ public class Sections {
 			return;
 		}
 
+		validateExisingStation(newSection);
+
 		Optional<Section> sameUpStationSection = getSameUpStationSection(newSection);
 
 		if(sameUpStationSection.isPresent()){
@@ -60,6 +62,12 @@ public class Sections {
 		if(isSameNewSectionUpStationAndDownStation(newSection)){
 			sectionList.add(newSection);
 			return;
+		}
+	}
+
+	private void validateExisingStation(Section newSection) {
+		if(findSameUpAndDownStation(newSection)){
+			throw new IllegalArgumentException("상행역과 하행역이 모두 등록되어있습니다.");
 		}
 	}
 
@@ -160,5 +168,10 @@ public class Sections {
 	public boolean isSameNewSectionUpStationAndDownStation(Section newSection) {
 		Section lastSection = getLastSection();
 		return lastSection.getDownStation().equals(newSection.getUpStation());
+	}
+
+	private boolean findSameUpAndDownStation(Section newSection){
+		return !this.sectionList.stream().noneMatch(section -> section.getUpStation().equals(newSection.getUpStation())) &&
+			!this.sectionList.stream().noneMatch(section -> section.getDownStation().equals(newSection.getDownStation()));
 	}
 }
