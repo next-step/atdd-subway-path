@@ -113,6 +113,22 @@ class SectionsTest {
     }
 
     @Test
+    @DisplayName("햐행 좀점역에 등록 하면 신규 구간의 지하철 역이 추가되고 하행종점역이 바뀐다.")
+    void add_section_down_section() {
+        // given
+        Sections sections = new Sections();
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        sections.add(section);
+
+        // when
+        Section betweenSection = createSection(YEOKSAM_STATION, SAMSUNG_STATION, 13);
+        sections.add(betweenSection);
+
+        // then
+        assertThat(sections.getStations()).containsExactly(GANGNAM_STATION, YEOKSAM_STATION, SAMSUNG_STATION);
+    }
+
+    @Test
     @DisplayName("구간을 삭제하면 하행종점역이 사라진다.")
     void delete_section() {
         // given
