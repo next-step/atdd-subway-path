@@ -10,6 +10,8 @@ import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -122,9 +124,9 @@ class LineServiceMockTest {
         assertThat(lineResopnse.getStations()).hasSize(2);
     }
 
-    @Test
-    @DisplayName("Line에 구간을 제거하면 정상 제거가 된다.")
-    void deleteSectionTest() {
+    @ValueSource(longs = {1, 2, 3})
+    @ParameterizedTest(name = "[{argumentsWithNames}] 구간이 제거된다.")
+    void deleteSectionTest(long deleteStationId) {
         // given
         Station station1 = new Station("중앙역");
         Station station2 = new Station("한대앞역");
@@ -136,6 +138,7 @@ class LineServiceMockTest {
 
         when(stationService.createStationResponse(station1)).thenReturn(new StationResponse(1L, station1.getName()));
         when(stationService.createStationResponse(station2)).thenReturn(new StationResponse(2L, station2.getName()));
+        when(stationService.createStationResponse(station3)).thenReturn(new StationResponse(3L, station3.getName()));
 
         when(lineRepository.findById(1L)).thenReturn(Optional.of(new Line(1L, "4호선", "blue")));
 
@@ -143,17 +146,16 @@ class LineServiceMockTest {
         lineService.addSection(1L, new SectionRequest(2L, 3L, 10));
 
         // when
-        lineService.deleteSection(1L, 3L);
+        StationResponse deleteStation = lineService.findById(1L).getStations().stream().filter(s -> s.getId().equals(deleteStationId)).findFirst().orElseThrow(IllegalArgumentException::new);
+        lineService.deleteSection(1L, deleteStationId);
 
 
         // then
         LineResponse lineResponse = lineService.findById(1L);
-
+        List<StationResponse> stations = lineResponse.getStations();
         assertAll(
-                () -> assertEquals(2, lineResponse.getStations().size()),
-                () -> assertEquals(station1.getName(), lineResponse.getStations().get(0).getName()),
-                () -> assertEquals(station2.getName(), lineResponse.getStations().get(1).getName()),
-                () -> assertFalse(lineResponse.getStations().contains(new StationResponse(3L, "상록수역")))
+                () -> assertEquals(2, stations.size()),
+                () -> assertFalse(stations.contains(deleteStation))
         );
     }
 

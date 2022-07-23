@@ -56,6 +56,11 @@ public class Section {
         this.downStation = newSection.upStation;
     }
 
+    public void updateDownStationToSectionDownStationAndAddDistance(Section section) {
+        this.distance = this.distance + section.distance;
+        this.downStation = section.downStation;
+    }
+
     public boolean equalsUpStation(Station station) {
         return this.upStation.equals(station);
     }
