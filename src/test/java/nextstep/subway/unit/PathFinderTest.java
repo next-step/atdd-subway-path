@@ -1,13 +1,9 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.PathFinder;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
 import org.jgrapht.GraphPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -54,7 +50,8 @@ public class PathFinderTest {
     @Test
     void 노선_정보를_받아_주어진_역_간_최단_경로를_계산한다() {
         // given
-        PathFinder pathFinder = new PathFinder(List.of(신분당선, 이호선, 삼호선, 구호선));
+        Lines lines = new Lines(List.of(신분당선, 이호선, 삼호선, 구호선));
+        PathFinder pathFinder = new PathFinder(lines);
 
         // when
         GraphPath<Station, DefaultWeightedEdge> shortestPath = pathFinder.getShortestPath(고속터미널역, 강남역);
@@ -69,7 +66,8 @@ public class PathFinderTest {
     @Test
     void 출발역과_도착역이_같은_경우_예외를_일으킨다() {
         // given
-        PathFinder pathFinder = new PathFinder(List.of(신분당선, 이호선, 삼호선, 구호선));
+        Lines lines = new Lines(List.of(신분당선, 이호선, 삼호선, 구호선));
+        PathFinder pathFinder = new PathFinder(lines);
 
         // when & then
         assertThatIllegalArgumentException().isThrownBy(() ->
@@ -80,7 +78,8 @@ public class PathFinderTest {
     @Test
     void 출발역과_도착역이_연결이_되어_있지_않은_경우_예외를_일으킨다() {
         // given
-        PathFinder pathFinder = new PathFinder(List.of(신분당선, 삼호선));
+        Lines lines = new Lines(List.of(신분당선, 삼호선));
+        PathFinder pathFinder = new PathFinder(lines);
 
         // when & then
         assertThatIllegalArgumentException().isThrownBy(() ->
@@ -91,7 +90,8 @@ public class PathFinderTest {
     @Test
     void 존재하지_않는_출발역이나_도착역을_조회할_경우_예외를_일으킨다() {
         // given
-        PathFinder pathFinder = new PathFinder(List.of(신분당선, 구호선));
+        Lines lines = new Lines(List.of(신분당선, 구호선));
+        PathFinder pathFinder = new PathFinder(lines);
 
         // when & then
         assertAll(
