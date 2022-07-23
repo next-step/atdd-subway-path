@@ -46,7 +46,8 @@ public class Sections {
             return;
         }
         checkDuplicationSection(section);
-        checkAlreadyRestedStation(section);
+        checkAlreadyRegisteredStation(section);
+        checkDoesNotExistStations(section);
 
         sectionContainDownStation(section);
         sectionContainUpStation(section);
@@ -160,6 +161,16 @@ public class Sections {
         sections.remove(section);
     }
 
+    private void checkDoesNotExistStations(Section newSection) {
+        if (this.getStations().contains(newSection.getUpStation())) {
+            return;
+        }
+        if (this.getStations().contains(newSection.getDownStation())) {
+            return;
+        }
+        throw new IllegalArgumentException("구간에 해당 되는 역을 찾을 수 없습니다.");
+    }
+
     private void checkDuplicationSection(Section newSection) {
         this.sections.stream()
                 .filter(section -> section.isSameSection(newSection))
@@ -169,7 +180,7 @@ public class Sections {
                 });
     }
 
-    private void checkAlreadyRestedStation(Section newSection) {
+    private void checkAlreadyRegisteredStation(Section newSection) {
         if (this.getStations().contains(newSection.getUpStation())
                 && this.getStations().contains(newSection.getDownStation())) {
             throw new IllegalArgumentException("상행역과 하행역이 둘 다 포함되어 있습니다.");
