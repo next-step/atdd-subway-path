@@ -30,15 +30,15 @@ public class Sections {
             return Collections.emptyList();
         }
         Section firstSection = findFirstSection();
-        List<Section> sections = new ArrayList<>();
-        sections.add(firstSection);
+        List<Section> connectedOrderSections = new ArrayList<>();
+        connectedOrderSections.add(firstSection);
 
-        while (sections.size() != values.size()) {
-            Section lastStation = sections.get(sections.size() - ONE);
+        while (connectedOrderSections.size() != values.size()) {
+            Section lastStation = connectedOrderSections.get(connectedOrderSections.size() - ONE);
             Section connectableSection = findConnectableSection(lastStation);
-            sections.add(connectableSection);
+            connectedOrderSections.add(connectableSection);
         }
-        return exportStations(sections);
+        return exportStations(connectedOrderSections);
     }
 
     private List<Station> exportStations(List<Section> sections) {
