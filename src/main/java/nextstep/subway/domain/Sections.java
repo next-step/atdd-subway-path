@@ -45,6 +45,11 @@ public class Sections {
 			return;
 		}
 
+		if(isSameNewSectionDownStationAndUpStation(newSection)){
+			sectionList.add(newSection);
+			return;
+		}
+
 	}
 
 	private void validateSameUpStationDistance(Section newSection, Section section) {
@@ -86,5 +91,20 @@ public class Sections {
 		return sectionList.get(sectionList.size() - 1);
 	}
 
+	public boolean isSameNewSectionDownStationAndUpStation(Section newSection) {
+		Section firstSection = getFirstSection();
+		return firstSection.getUpStation().equals(newSection.getDownStation());
+	}
 
+	public Section getFirstSection() {
+		return this.sectionList.stream()
+			.filter(section -> findSameDownStationSection(section.getUpStation()))
+			.findAny()
+			.orElseThrow();
+	}
+
+	private boolean findSameDownStationSection(Station upStation){
+		return this.sectionList.stream()
+			.noneMatch(section -> section.getDownStation().equals(upStation));
+	}
 }
