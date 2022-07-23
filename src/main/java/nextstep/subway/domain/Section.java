@@ -33,14 +33,6 @@ public class Section {
         this.distance = distance;
     }
 
-    public void setUpStation(Station upStation) {
-        this.upStation = upStation;
-    }
-
-    public void setDownStation(Station downStation) {
-        this.downStation = downStation;
-    }
-
     public void setDistance(int distance) {
         this.distance = distance;
     }
@@ -63,5 +55,23 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public void setNewUpStation(Station station, int distance) {
+        if (distance < 1) {
+            throw new IllegalArgumentException();
+        }
+
+        this.upStation = station;
+        this.distance = distance;
+    }
+
+    public void setNewDownStation(Station station, int distance) {
+        if (distance < 1) {
+            throw new IllegalArgumentException();
+        }
+
+        this.downStation = station;
+        this.distance = distance;
     }
 }

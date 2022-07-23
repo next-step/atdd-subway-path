@@ -21,26 +21,15 @@ public class Sections {
 
         if (isExistStation(upStation) && isNotLastStation(upStation)) {
             var section = getSectionByUpStation(upStation);
-            section.setUpStation(downStation);
-            var newDistance = section.getDistance() - distance;
-            if (newDistance < 1) {
-                throw new IllegalArgumentException();
-            }
-            section.setDistance(newDistance);
+            section.setNewUpStation(downStation, section.getDistance() - distance);
         }
 
         if (isExistStation(downStation) && isNotFirstStation(downStation)) {
             var section = getSectionByDownStation(downStation);
-            section.setDownStation(upStation);
-            var newDistance = section.getDistance() - distance;
-            if (newDistance < 1) {
-                throw new IllegalArgumentException();
-            }
-            section.setDistance(newDistance);
+            section.setNewDownStation(upStation, section.getDistance() - distance);
         }
 
-        var newSection = new Section(line, upStation, downStation, distance);
-        sectionList.add(newSection);
+        sectionList.add(new Section(line, upStation, downStation, distance));
     }
 
     public void removeByStation(Station downStation) {
