@@ -156,8 +156,8 @@ public class Sections {
             throw new IllegalArgumentException("지하철 구간은 최소 1개 이상 있어야합니다.");
         }
 
-        Section section = findSectionHasDownStation(station);
-        sections.remove(section);
+        List<Section> sections = findSectionHasStation(station);
+        this.sections.removeAll(sections);
     }
 
     private void checkDoesNotExistStations(Section newSection) {
@@ -183,11 +183,14 @@ public class Sections {
         }
     }
 
-    private Section findSectionHasDownStation(Station station) {
-        return this.sections.stream()
-                .filter(section -> section.isSameDownStation(station))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("해당되는 구간을 찾을 수 없습니다."));
+    private List<Section> findSectionHasStation(Station station) {
+        List<Section> sections = this.sections.stream()
+                .filter(it -> it.isSameDownStation(station) || it.isSameUpStation(station))
+                .collect(Collectors.toList());
+        if (sections.isEmpty()) {
+            throw new IllegalArgumentException("해당되는 구간을 찾을 수 없습니다.");
+        }
+        return sections;
     }
 
     private Section findSectionHasUpStation(Station station) {

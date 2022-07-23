@@ -196,18 +196,41 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         class success {
             /**
              * Given 지하철 노선에 새로운 구간 추가를 요청 하고
-             * When 지하철 노선의 마지막 구간 제거를 요청 하면
+             * When 지하철 노선의 하행 종점역 제거를 요청 하면
              * Then 노선에 구간이 제거된다
              */
-            @DisplayName("지하철 노선에 구간을 제거")
+            @DisplayName("지하철 노선에 하행 종점역 구간을 제거")
             @Test
-            void removeLineSection() {
+            void removeLastLineSection() {
                 // given
                 Long 정자역 = 신규_지하철역("정자역");
                 지하철_노선에_지하철_구간_생성_요청(신분당선, 신규_구간(양재역, 정자역, 6L));
 
                 // when
                 지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+
+                // then
+                ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+                assertAll(
+                        () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                        () -> assertThat(getStationsId(response)).containsExactly(강남역, 양재역)
+                );
+            }
+
+            /**
+             * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+             * When 지하철 노선의 상행 종점역 구간 제거를 요청 하면
+             * Then 노선에 구간이 제거된다
+             */
+            @DisplayName("지하철 노선에 상행 종점역 구간을 제거")
+            @Test
+            void removeFirstLineSection() {
+                // given
+                Long 신논현역 = 신규_지하철역("신논현역");
+                지하철_노선에_지하철_구간_생성_요청(신분당선, 신규_구간(신논현역, 강남역, 6L));
+
+                // when
+                지하철_노선에_지하철_구간_제거_요청(신분당선, 신논현역);
 
                 // then
                 ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
