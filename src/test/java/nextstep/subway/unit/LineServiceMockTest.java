@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -53,18 +54,12 @@ class LineServiceMockTest {
     @Test
     void createLine() {
         // given
-        Map<Long, Line> lineStorage = new HashMap<>();
+        var lineId = 1L;
         prepareStations(광교역, 광교중앙역);
-        when(lineRepository.findById(any(Long.class)))
-                .thenAnswer(args -> {
-                    var id = (Long) args.getArgument(0);
-                    return Optional.ofNullable(lineStorage.getOrDefault(id, null));
-                });
         when(lineRepository.save(any(Line.class)))
                 .thenAnswer(args -> {
                     var line = (Line) args.getArgument(0);
-                    line.setId((long) (lineStorage.size() + 1));
-                    lineStorage.put(line.getId(), line);
+                    line.setId(lineId);
                     return line;
                 });
         when(stationService.createStationResponse(any(Station.class))).thenCallRealMethod();
@@ -77,7 +72,7 @@ class LineServiceMockTest {
 
         // then
         var expectedResponse = new LineResponse(
-                lineResponse.getId(),
+                lineId,
                 lineRequest.getName(),
                 lineRequest.getColor(),
                 List.of(
@@ -85,14 +80,10 @@ class LineServiceMockTest {
                         new StationResponse(광교중앙역.getId(), 광교중앙역.getName())
                 )
         );
-        var line = lineRepository.findById(lineResponse.getId());
 
         assertAll(
-                () -> assertThat(lineResponse).isEqualTo(expectedResponse),
-                () -> assertThat(line).isNotEmpty(),
-                () -> assertThat(line.get().getName()).isEqualTo(lineRequest.getName()),
-                () -> assertThat(line.get().getColor()).isEqualTo(lineRequest.getColor()),
-                () -> assertThat(line.get().getStations()).containsExactly(광교역, 광교중앙역)
+                () -> verify(lineRepository, times(1)).save(any(Line.class)),
+                () -> assertThat(lineResponse).isEqualTo(expectedResponse)
         );
     }
 
