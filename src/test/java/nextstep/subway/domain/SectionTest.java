@@ -21,4 +21,35 @@ class SectionTest {
 	    //then
 		assertThat(isSameDownStation).isTrue();
 	 }
+
+	 @DisplayName("상행역 일치 테스트")
+	 @Test
+	 void isSameUpStation() {
+
+		 Station upStation = new Station("이매역");
+		 Section section = new Section(upStation, new Station("서현역"), 10);
+		 Section targetSection = new Section(upStation, new Station("정자역"), 10);
+
+		 //when
+		 boolean isSameUpStation = section.isSameUpStation(targetSection);
+
+		 //then
+		 assertThat(isSameUpStation).isTrue();
+
+	  }
+
+	  @DisplayName("구간 사이의 거리 비교 테스트")
+	  @Test
+	  void isLongerDistanceTest() {
+
+		  Section section = new Section(new Station("이매역"), new Station("서현역"), 10);
+		  Section targetSection = new Section(new Station("이매역"), new Station("정자역"), 15);
+
+		  //when
+		  boolean isSameUpStation = targetSection.isLongerDistance(section);
+
+		  //then
+		  assertThat(isSameUpStation).isTrue();
+
+	   }
 }

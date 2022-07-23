@@ -26,7 +26,7 @@ class SectionsTest {
 
 	@DisplayName("기존 구간의 역을 기준으로 새로운 구간을 추가")
 	@Test
-	void addSectionWithUpStation() throws Exception {
+	void addSectionWithUpStation(){
 	
 		//given
 		line.addSection(section);
@@ -45,7 +45,7 @@ class SectionsTest {
 	 
 	@DisplayName("추가하려는 구간의 상행역을 포함하고 있는지 확인하는 메소드 테스트")
 	@Test
-	void isContainsUpStation() throws Exception {
+	void isContainsUpStation(){
 
 		//given
 		line.addSection(section);
@@ -58,4 +58,19 @@ class SectionsTest {
 		//then
 		assertThat(result.isPresent()).isTrue();
 	}
+
+	@DisplayName("기존 구간을 기준으로 새로운 구간을 추가하는데 새로운 구간의 길이가 기존 구간보다 길경우 에러 발생")
+	@Test
+	void validateSameUpStationSectionException() {
+		//given
+		line.addSection(section);
+		Sections sections = Sections.from(line.getSections());
+		Station imaeStation = new Station("이매역");
+		Section newSection = new Section(upStation, imaeStation, 10);
+
+		//when //then
+		assertThatThrownBy(() -> sections.addSection(newSection)).isInstanceOf(IllegalArgumentException.class).hasMessageContaining(
+			"추가하려는 구간의 길이는 기존 구간의 길이와 같거나 길수 없습니다.");
+
+	 }
 }
