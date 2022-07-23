@@ -59,4 +59,12 @@ public class Line {
         return sections.stations();
     }
 
+    public void update(String name, String color) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (color != null) {
+            this.color = color;
+        }
+    }
 }
