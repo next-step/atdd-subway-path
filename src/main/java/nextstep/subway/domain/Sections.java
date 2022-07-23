@@ -29,11 +29,11 @@ public class Sections {
     public List<Section> getSections() {
         List<Section> sortedSections = new ArrayList<>();
 
-        Section section = findNextSection(getUpStationTerminal());
+        Section section = findSectionHasUpStation(getUpStationTerminal());
         sortedSections.add(section);
 
         while (findNextSectionCount(section.getDownStation()) > 0) {
-            section = findNextSection(section.getDownStation());
+            section = findSectionHasUpStation(section.getDownStation());
             sortedSections.add(section);
         }
 
@@ -59,35 +59,24 @@ public class Sections {
             return Collections.emptyList();
         }
 
-        Station upStationTerminal = getUpStationTerminal();
-        Station downStationTerminal = getDownStationTerminal();
+        List<Station> sortedStations = new ArrayList<>();
 
-        List<Station> stations = new ArrayList<>();
+        Station station = getUpStationTerminal();
+        sortedStations.add(station);
 
-        Station upStation = upStationTerminal;
-        while (true) {
-            Section section = findSectionByUpStation(upStation);
-            stations.add(section.getUpStation());
-            if (downStationTerminal.equals(section.getDownStation())) {
-                stations.add(section.getDownStation());
-                break;
-            }
-            upStation = section.getDownStation();
+        while (!station.equals(getDownStationTerminal())) {
+            Section section = findSectionHasUpStation(station);
+            station = section.getDownStation();
+            sortedStations.add(station);
         }
-        return stations;
+
+        return sortedStations;
     }
 
     private long findNextSectionCount(Station station) {
         return sections.stream()
                 .filter(it -> it.getUpStation().equals(station))
                 .count();
-    }
-
-    private Section findNextSection(Station station) {
-        return sections.stream()
-                .filter(it -> it.getUpStation().equals(station))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
     }
 
     private void sectionContainDownStation(Section newSection) {
@@ -167,7 +156,7 @@ public class Sections {
             throw new IllegalArgumentException("지하철 구간은 최소 1개 이상 있어야합니다.");
         }
 
-        Section section = findSectionByDownStation(station);
+        Section section = findSectionHasDownStation(station);
         sections.remove(section);
     }
 
@@ -187,16 +176,16 @@ public class Sections {
         }
     }
 
-    private Section findSectionByDownStation(Station downStation) {
+    private Section findSectionHasDownStation(Station station) {
         return this.sections.stream()
-                .filter(section -> section.isSameDownStation(downStation))
+                .filter(section -> section.isSameDownStation(station))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("해당되는 구간을 찾을 수 없습니다."));
     }
 
-    private Section findSectionByUpStation(Station upStation) {
+    private Section findSectionHasUpStation(Station station) {
         return this.sections.stream()
-                .filter(section -> section.isSameUpStation(upStation))
+                .filter(section -> section.isSameUpStation(station))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("해당되는 구간을 찾을 수 없습니다."));
     }
