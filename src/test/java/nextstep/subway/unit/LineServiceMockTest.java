@@ -62,4 +62,38 @@ public class LineServiceMockTest {
         assertThat(신분당선.stations()).contains(논현역);
         assertThat(신분당선.stations()).contains(신논현역);
     }
+
+    @DisplayName("구간 삭제")
+    @Test
+    void deleteSection() {
+        Long lineId = 1L;
+        Line 신분당선 = Line.of("신분당선", "bg-red-600");
+        Station 논현역 = Station.of("논현역");
+        Station 신논현역 = Station.of("신논현역");
+        Station 강남역 = Station.of("강남역");
+        // given
+        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
+        when(stationService.findById(1L)).thenReturn(논현역);
+        when(stationService.findById(2L)).thenReturn(신논현역);
+        when(stationService.findById(3L)).thenReturn(강남역);
+        when(lineRepository.findById(lineId)).thenReturn(Optional.of(신분당선));
+
+        // when
+        // lineService.addSection 호출
+        SectionRequest 논현_신논현_구간 = new SectionRequest(1L, 2L, 5);
+        lineService.addSection(lineId, 논현_신논현_구간);
+
+        SectionRequest 신논현_강남_구간 = new SectionRequest(2L, 3L, 5);
+        lineService.addSection(lineId, 신논현_강남_구간);
+
+        lineService.deleteSection(lineId, 3L);
+
+        // then
+        // line.findLineById 메서드를 통해 검증
+        신분당선 = lineRepository.findById(lineId).get();
+        assertThat(신분당선.sections().size()).isEqualTo(1);
+        assertThat(신분당선.stations()).contains(논현역);
+        assertThat(신분당선.stations()).contains(신논현역);
+    }
+
 }

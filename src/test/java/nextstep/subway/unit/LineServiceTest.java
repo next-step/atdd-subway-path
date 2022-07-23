@@ -44,4 +44,28 @@ public class LineServiceTest {
         assertThat(신분당선.sections().stream().findFirst().orElseThrow().getUpStation().getName()).isEqualTo("논현역");
         assertThat(신분당선.sections().stream().findFirst().orElseThrow().getDownStation().getName()).isEqualTo("신논현역");
     }
+
+    @DisplayName("구간 삭제")
+    @Test
+    void deleteSection() {
+        // given
+        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
+        Station 논현역 = stationRepository.save(Station.of("논현역"));
+        Station 신논현역 = stationRepository.save(Station.of("신논현역"));
+        Station 강남역 = stationRepository.save(Station.of("강남역"));
+        Line 신분당선 = lineRepository.save(Line.of("신분당선", "red"));
+
+        // when
+        // 구간 등록 및 삭제
+        lineService.addSection(신분당선.getId(), SectionRequest.of(논현역.getId(), 신논현역.getId(), 5));
+        lineService.addSection(신분당선.getId(), SectionRequest.of(신논현역.getId(), 강남역.getId(), 5));
+        lineService.deleteSection(신분당선.getId(), 강남역.getId());
+
+        // then
+        // line.getSections 메서드를 통해 검증
+        assertThat(신분당선.sections().size()).isEqualTo(1);
+        assertThat(신분당선.sections().stream().findFirst().orElseThrow().getUpStation().getName()).isEqualTo("논현역");
+        assertThat(신분당선.sections().stream().findFirst().orElseThrow().getDownStation().getName()).isEqualTo("신논현역");
+    }
+    
 }
