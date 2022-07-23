@@ -27,7 +27,7 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
 
-        if(isregisterableOfSection(request.getUpStationId(), request.getDownStationId(), request.getDistance())) {
+        if(isRegisterableOfSection(request.getUpStationId(), request.getDownStationId(), request.getDistance())) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
             line.addSection(new Section(line, upStation, downStation, request.getDistance()));
@@ -65,6 +65,7 @@ public class LineService {
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
+
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
@@ -73,7 +74,7 @@ public class LineService {
         line.removeStation(station);
     }
 
-    private boolean isregisterableOfSection(Long upStationId, Long downStationId, int distance) {
+    private boolean isRegisterableOfSection(Long upStationId, Long downStationId, int distance) {
         return upStationId != null && downStationId != null && distance > 0;
     }
 
