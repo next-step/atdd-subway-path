@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import static nextstep.subway.common.exception.errorcode.StatusErrorCode.*;
+import static nextstep.subway.common.exception.errorcode.BusinessErrorCode.*;
 
 import nextstep.subway.common.exception.BusinessException;
 

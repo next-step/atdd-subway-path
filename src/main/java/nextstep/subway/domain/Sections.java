@@ -1,7 +1,7 @@
 package nextstep.subway.domain;
 
 import static java.util.stream.Collectors.*;
-import static nextstep.subway.common.exception.errorcode.StatusErrorCode.*;
+import static nextstep.subway.common.exception.errorcode.BusinessErrorCode.*;
 import static nextstep.subway.domain.KindOfAddition.*;
 
 import java.util.ArrayList;

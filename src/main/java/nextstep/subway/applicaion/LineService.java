@@ -1,6 +1,6 @@
 package nextstep.subway.applicaion;
 
-import static nextstep.subway.common.exception.errorcode.EntityErrorCode.*;
+import static nextstep.subway.common.exception.errorcode.BusinessErrorCode.*;
 
 import java.util.Collections;
 import java.util.List;
