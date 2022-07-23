@@ -57,6 +57,27 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * When 새로운 역을 상행 종점으로 추가요청하면
+     * Then 노선 맨 처음에 새로운 구간이 추가된다
+     */
+    @DisplayName("지하철 노선에 첫 번째 구간을 등록")
+    @Test
+    void addFirstLineSection() {
+        // when
+        var 신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역));
+
+        // then
+        var response = 지하철_노선_조회_요청(신분당선);
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class))
+                        .containsExactly(신논현역, 강남역, 양재역)
+        );
+    }
+
+    /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
      * Then 노선에 구간이 제거된다
