@@ -88,4 +88,40 @@ class SectionTest {
             assertThat(differentStationSection_1.isConnectInSide(differentStationSection_2)).isFalse();
         });
     }
+
+    @Test
+    @DisplayName("상행역 기준으로 구간 사이에 구간을 추가하면 상행역과 거리가 변경된다.")
+    void connectInside_upStation() {
+        // given
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+
+        // when
+        Section additionalSection = createSection(GANGNAM_STATION, SEOLLEUNG_STATION, 3);
+        section.connectInside(additionalSection);
+
+        // then
+        assertAll(() -> {
+            assertThat(section.getUpStation()).isNotSameAs(GANGNAM_STATION);
+            assertThat(section.getUpStation()).isEqualTo(SEOLLEUNG_STATION);
+            assertThat(section.getDistance()).isEqualTo(new Distance(7));
+        });
+    }
+
+    @Test
+    @DisplayName("하행역 기준으로 구간 사이에 구간을 추가하면 하행역과 거리가 변경된다.")
+    void connectInside_downStation() {
+        // given
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+
+        // when
+        Section additionalSection = createSection(SEOLLEUNG_STATION, YEOKSAM_STATION, 3);
+        section.connectInside(additionalSection);
+
+        // then
+        assertAll(() -> {
+            assertThat(section.getDownStation()).isNotSameAs(YEOKSAM_STATION);
+            assertThat(section.getDownStation()).isEqualTo(SEOLLEUNG_STATION);
+            assertThat(section.getDistance()).isEqualTo(new Distance(7));
+        });
+    }
 }

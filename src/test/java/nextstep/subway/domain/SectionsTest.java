@@ -110,8 +110,24 @@ class SectionsTest {
         Section betweenSection = createSection(GANGNAM_STATION, SAMSUNG_STATION, 15);
 
         // then
-        assertThatThrownBy(() -> sections.add(betweenSection))
+        assertThatThrownBy(() -> sections.add2(betweenSection))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("구간 사이에 등록 하면 신규 구간의 지하철 역이 추가된다.")
+    void add_section_between_section() {
+        // given
+        Sections sections = new Sections();
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        sections.add2(section);
+
+        // when
+        Section betweenSection = createSection(GANGNAM_STATION, SAMSUNG_STATION, 3);
+        sections.add2(betweenSection);
+
+        // then
+        assertThat(sections.getStations()).containsOnly(GANGNAM_STATION, YEOKSAM_STATION, SAMSUNG_STATION);
     }
 
     @Test

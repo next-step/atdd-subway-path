@@ -53,6 +53,7 @@ public class Section {
             throw new IllegalArgumentException();
         }
         distance.reduce(section.getDistance());
+        changeEndPoint(section);
     }
 
     private boolean isConnectOutSide(Section section) {
@@ -61,6 +62,14 @@ public class Section {
 
     public boolean isConnectInSide(Section section) {
         return isMatchUpStation(section) || isMatchDownStation(section);
+    }
+
+    private void changeEndPoint(Section section) {
+        if (isMatchUpStation(section)) {
+            upStation = section.getDownStation();
+            return;
+        }
+        downStation = section.getUpStation();
     }
 
     private boolean isMatchUpStation(Section section) {
