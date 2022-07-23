@@ -1,9 +1,7 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.domain.exception.InvalidMatchEndStationException;
 import nextstep.subway.domain.exception.NotExistSectionException;
 import nextstep.subway.domain.exception.SectionDeleteException;
-import nextstep.subway.domain.exception.StationAlreadyExistsException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -21,10 +19,10 @@ class SectionsTest {
         // given
         Sections sections = new Sections();
         Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
-        sections.add2(section);
+        sections.add(section);
 
         Section betweenSection = createSection(GANGNAM_STATION, SAMSUNG_STATION, 3);
-        sections.add2(betweenSection);
+        sections.add(betweenSection);
 
         // then
         assertThat(sections.getStations()).containsExactly(new Station(1L, "강남역"),
@@ -40,7 +38,7 @@ class SectionsTest {
 
         // when
         Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
-        sections.add2(section);
+        sections.add(section);
 
         // then
         assertThat(sections.getStations()).containsOnly(new Station(1L, "강남역"),
@@ -53,7 +51,7 @@ class SectionsTest {
         // given
         Sections sections = new Sections();
         Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
-        sections.add2(section);
+        sections.add(section);
 
         // when
         Section notContainStationSection = createSection(SEOLLEUNG_STATION, SAMSUNG_STATION, 5);
@@ -61,8 +59,8 @@ class SectionsTest {
 
         // then
         assertAll(() -> {
-            assertThatThrownBy(() -> sections.add2(notContainStationSection)).isInstanceOf(IllegalArgumentException.class);
-            assertThatThrownBy(() -> sections.add2(containBothStationSection)).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> sections.add(notContainStationSection)).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> sections.add(containBothStationSection)).isInstanceOf(IllegalArgumentException.class);
         });
     }
 
@@ -72,13 +70,13 @@ class SectionsTest {
         // given
         Sections sections = new Sections();
         Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
-        sections.add2(section);
+        sections.add(section);
 
         // when
         Section betweenSection = createSection(GANGNAM_STATION, SAMSUNG_STATION, 15);
 
         // then
-        assertThatThrownBy(() -> sections.add2(betweenSection))
+        assertThatThrownBy(() -> sections.add(betweenSection))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -88,11 +86,11 @@ class SectionsTest {
         // given
         Sections sections = new Sections();
         Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
-        sections.add2(section);
+        sections.add(section);
 
         // when
         Section betweenSection = createSection(GANGNAM_STATION, SAMSUNG_STATION, 3);
-        sections.add2(betweenSection);
+        sections.add(betweenSection);
 
         // then
         assertThat(sections.getStations()).containsOnly(GANGNAM_STATION, YEOKSAM_STATION, SAMSUNG_STATION);
@@ -106,8 +104,8 @@ class SectionsTest {
         Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
         Section newSection = createSection(YEOKSAM_STATION, SEOLLEUNG_STATION, 5);
 
-        sections.add2(section);
-        sections.add2(newSection);
+        sections.add(section);
+        sections.add(newSection);
 
         // when
         sections.delete(SEOLLEUNG_STATION);
@@ -124,8 +122,8 @@ class SectionsTest {
         Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
         Section newSection = createSection(YEOKSAM_STATION, SEOLLEUNG_STATION, 5);
 
-        sections.add2(section);
-        sections.add2(newSection);
+        sections.add(section);
+        sections.add(newSection);
 
         // then
         assertThatThrownBy(() -> sections.delete(YEOKSAM_STATION))

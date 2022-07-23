@@ -61,7 +61,7 @@ public class Sections {
                 .allMatch(section -> section.isMissMatchDownStation(station));
     }
 
-    public void add2(Section section) {
+    public void add(Section section) {
         if (values.isEmpty()) {
             values.add(section);
             return;
