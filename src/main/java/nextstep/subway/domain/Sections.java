@@ -20,11 +20,23 @@ public class Sections {
         }
 
         if (isExistStation(upStation) && isNotLastStation(upStation)) {
-            getSectionByUpStation(upStation).setUpStation(downStation);
+            var section = getSectionByUpStation(upStation);
+            section.setUpStation(downStation);
+            var newDistance = section.getDistance() - distance;
+            if (newDistance < 1) {
+                throw new IllegalArgumentException();
+            }
+            section.setDistance(newDistance);
         }
 
         if (isExistStation(downStation) && isNotFirstStation(downStation)) {
-            getSectionByDownStation(downStation).setDownStation(upStation);
+            var section = getSectionByDownStation(downStation);
+            section.setDownStation(upStation);
+            var newDistance = section.getDistance() - distance;
+            if (newDistance < 1) {
+                throw new IllegalArgumentException();
+            }
+            section.setDistance(newDistance);
         }
 
         var newSection = new Section(line, upStation, downStation, distance);

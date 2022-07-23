@@ -41,6 +41,10 @@ public class Section {
         this.downStation = downStation;
     }
 
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
     public Long getId() {
         return id;
     }
