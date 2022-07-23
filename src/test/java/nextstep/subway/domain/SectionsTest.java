@@ -50,10 +50,10 @@ class SectionsTest {
 		//given
 		line.addSection(section);
 		Sections sections = Sections.from(line.getSections());
-		Section section = new Section(upStation, new Station("이매역"), 5);
+		Section newSection = new Section(upStation, new Station("이매역"), 5);
 
 		//when
-		Optional<Section> result = sections.getSameUpStationSection(section);
+		Optional<Section> result = sections.getSameUpStationSection(newSection);
 
 		//then
 		assertThat(result.isPresent()).isTrue();
@@ -72,5 +72,53 @@ class SectionsTest {
 		assertThatThrownBy(() -> sections.addSection(newSection)).isInstanceOf(IllegalArgumentException.class).hasMessageContaining(
 			"추가하려는 구간의 길이는 기존 구간의 길이와 같거나 길수 없습니다.");
 
+	 }
+
+	@DisplayName("새로운 역을 상행 종점으로 등록하는 테스트")
+	@Test
+	void addNewUpStationSectionTest(){
+
+		//given
+		line.addSection(section);
+		Sections sections = Sections.from(line.getSections());
+		Section newSection = new Section(new Station("이매역"), upStation, 5);
+
+		//when
+		sections.addSection(newSection);
+
+		//then
+		assertThat(sections.getSectionList()).contains(newSection);
+	}
+	
+	@DisplayName("새로운 구간의 하행종점이 기존 구간의 상행 종점과 일치하는지 확인하는 테스트")
+	@Test
+	void isSameNewSectionDownStationAndUpStation(){
+	
+	    //given
+		line.addSection(section);
+		Sections sections = Sections.from(line.getSections());
+		Section newSection = new Section(new Station("이매역"), upStation, 5);
+
+		//when
+	    boolean result = sections.isSameNewSectionDownStationAndUpStation(newSection);
+
+		//then
+		assertThat(result).isTrue();
+	}
+
+	@DisplayName("상행 종점을 찾는 테스트")
+	@Test
+	void getFirstUpStation(){
+
+	    //given
+		line.addSection(section);
+		Sections sections = Sections.from(line.getSections());
+		Section newSection = new Section(new Station("이매역"), upStation, 5);
+
+		//when
+		Section section = sections.getFirstSection();
+
+		//then
+		assertThat(section).isEqualTo(newSection);
 	 }
 }
