@@ -37,8 +37,8 @@ public class StationServiceTest {
     @Test
     @DisplayName("지하철 목록을 조회한다.")
     void findAllStation() {
-        stationRepository.save(new Station("강남역"));
-        stationRepository.save(new Station("역삼역"));
+        stationRepository.save(new Station(1L, "강남역"));
+        stationRepository.save(new Station(2L, "역삼역"));
 
         List<StationResponse> 노선목록 = stationService.findAllStations();
 
@@ -48,7 +48,7 @@ public class StationServiceTest {
     @Test
     @DisplayName("지하철 역을 조회한다.")
     void findByStation() {
-        Long id = stationRepository.save(new Station("강남역")).getId();
+        Long id = stationRepository.save(new Station(1L, "강남역")).getId();
 
         Station 강남역 = stationService.findById(id);
 
@@ -58,7 +58,7 @@ public class StationServiceTest {
     @Test
     @DisplayName("지하철역 삭제한다.")
     void deleteStationById() {
-        Long id = stationRepository.save(new Station("강남역")).getId();
+        Long id = stationRepository.save(new Station(1L, "강남역")).getId();
 
         stationService.deleteStationById(id);
 
