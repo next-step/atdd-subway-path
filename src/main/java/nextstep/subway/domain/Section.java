@@ -52,4 +52,9 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+
+    public boolean hasStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
 }
