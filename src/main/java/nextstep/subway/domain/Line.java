@@ -27,13 +27,6 @@ public class Line {
     public static Line of(String name, String color) {
         return new Line(name, color);
     }
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public void addSection(Station upStation, Station downStation, int distance) {
         sections.addSection(this, upStation, downStation, distance);
@@ -53,6 +46,12 @@ public class Line {
 
     public void deleteSection(Station station) {
         this.sections.deleteSection(station);
+    }
+    public Station upStation(Station station) {
+        return this.sections.upStation();
+    }
+    public Station downStation(Station station) {
+        return this.sections.downStation();
     }
 
     public List<Station> stations() {

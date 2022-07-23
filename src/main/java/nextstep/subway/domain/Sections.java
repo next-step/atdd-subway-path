@@ -13,14 +13,16 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public Station downStation() {
-        if (this.sections.size() > 0)
+        if (this.sections.size() > 0){
             return this.sections.get(this.sections.size() - 1).getDownStation();
+        }
         throw new IllegalArgumentException();
     }
 
     public Station upStation() {
-        if (this.sections.size() > 0)
-            return this.sections.stream().findFirst().get().getUpStation();
+        if (this.sections.size() > 0){
+            return this.sections.get(0).getUpStation();
+        }
         throw new IllegalArgumentException();
     }
 

@@ -41,8 +41,8 @@ public class LineServiceTest {
         // then
         // line.getSections 메서드를 통해 검증
         assertThat(신분당선.sections().size()).isEqualTo(1);
-        assertThat(신분당선.sections().stream().findFirst().orElseThrow().getUpStation().getName()).isEqualTo("논현역");
-        assertThat(신분당선.sections().stream().findFirst().orElseThrow().getDownStation().getName()).isEqualTo("신논현역");
+        assertThat(신분당선.upStation().getName()).isEqualTo("논현역");
+        assertThat(신분당선.downStation().getName()).isEqualTo("신논현역");
     }
 
     @DisplayName("구간 삭제")
@@ -64,8 +64,8 @@ public class LineServiceTest {
         // then
         // line.getSections 메서드를 통해 검증
         assertThat(신분당선.sections().size()).isEqualTo(1);
-        assertThat(신분당선.sections().stream().findFirst().orElseThrow().getUpStation().getName()).isEqualTo("논현역");
-        assertThat(신분당선.sections().stream().findFirst().orElseThrow().getDownStation().getName()).isEqualTo("신논현역");
+        assertThat(신분당선.upStation().getName()).isEqualTo("논현역");
+        assertThat(신분당선.downStation().getName()).isEqualTo("신논현역");
     }
     
 }
