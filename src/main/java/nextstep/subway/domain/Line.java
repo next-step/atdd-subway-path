@@ -2,7 +2,9 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -12,15 +14,19 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    private Sections sections;
 
     public Line() {
     }
 
-    public Line(String name, String color) {
+    protected Line(String name, String color) {
         this.name = name;
         this.color = color;
+        this.sections = new Sections();
+    }
+
+    public static Line makeLine(String name, String color) {
+        return new Line(name, color);
     }
 
     public Long getId() {
@@ -48,6 +54,28 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.list();
+    }
+
+    public boolean addSection(Station upStation, Station downStation, int distance) {
+        return this.sections.addSection(this, upStation, downStation, distance);
+    }
+
+    public boolean removeSection(Station station) {
+        return this.sections.removeSection(station);
+    }
+
+    public List<Station> stations() {
+
+        if (this.sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Station> stations = this.sections.list().stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+        stations.add(0, this.sections.list().get(0).getUpStation());
+
+        return stations;
     }
 }

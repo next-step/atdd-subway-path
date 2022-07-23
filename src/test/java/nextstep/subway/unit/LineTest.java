@@ -27,12 +27,12 @@ class LineTest {
 
         final String 신분당선_이름 = "신분당선_이름";
         final String red = "red";
-        final Line 신분당선 = new Line(신분당선_이름, red);
+        final Line 신분당선 = Line.makeLine(신분당선_이름, red);
 
         final int distance = 10;
 
         //when
-        신분당선.getSections().add(new Section(신분당선, 강남역, 시청역, distance));
+        신분당선.addSection(강남역, 시청역, distance);
 
         //then
         assertThat(신분당선.getSections().size()).isEqualTo(1);
@@ -54,16 +54,13 @@ class LineTest {
 
         final String 신분당선_이름 = "신분당선_이름";
         final String red = "red";
-        final Line 신분당선 = new Line(신분당선_이름, red);
+        final Line 신분당선 = Line.makeLine(신분당선_이름, red);
 
         final int 첫번째구간_거리 = 10;
         final int 두번째구간_거리 = 5;
 
-        Section 첫번째구간 = new Section(신분당선, 강남역, 시청역, 첫번째구간_거리);
-        Section 두번째구간 = new Section(신분당선, 시청역, 구로디지털단지역, 두번째구간_거리);
-
-        신분당선.getSections().add(첫번째구간);
-        신분당선.getSections().add(두번째구간);
+        신분당선.addSection(강남역, 시청역, 첫번째구간_거리);
+        신분당선.addSection(시청역, 구로디지털단지역, 두번째구간_거리);
 
         //when
         List<Station> 지하철역리스트 = 신분당선.getSections().stream()
@@ -91,16 +88,13 @@ class LineTest {
 
         final String 신분당선_이름 = "신분당선_이름";
         final String red = "red";
-        final Line 신분당선 = new Line(신분당선_이름, red);
+        final Line 신분당선 = Line.makeLine(신분당선_이름, red);
 
         final int 첫번째구간_거리 = 10;
         final int 두번째구간_거리 = 5;
 
-        Section 첫번째구간 = new Section(신분당선, 강남역, 시청역, 첫번째구간_거리);
-        Section 두번째구간 = new Section(신분당선, 시청역, 구로디지털단지역, 두번째구간_거리);
-
-        신분당선.getSections().add(첫번째구간);
-        신분당선.getSections().add(두번째구간);
+        신분당선.addSection(강남역, 시청역, 첫번째구간_거리);
+        신분당선.addSection(시청역, 구로디지털단지역, 두번째구간_거리);
 
         //when
         신분당선.getSections().remove(신분당선.getSections().size() - 1);

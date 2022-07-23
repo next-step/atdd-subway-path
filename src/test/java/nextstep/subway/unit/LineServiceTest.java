@@ -42,7 +42,7 @@ public class LineServiceTest {
 
         final String 신분당선_이름 = "신분당선";
         final String red = "red";
-        final Line 신분당선 = new Line(신분당선_이름, red);
+        final Line 신분당선 = Line.makeLine(신분당선_이름, red);
 
         Line 저장된_신분당선 = lineRepository.save(신분당선);
 
@@ -82,7 +82,7 @@ public class LineServiceTest {
 
         final String 신분당선_이름 = "신분당선";
         final String red = "red";
-        final Line 신분당선 = new Line(신분당선_이름, red);
+        final Line 신분당선 = Line.makeLine(신분당선_이름, red);
 
         Line 저장된_신분당선 = lineRepository.save(신분당선);
 
@@ -100,7 +100,7 @@ public class LineServiceTest {
         lineService.addSection(저장된_신분당선.getId(), 두번째_구간_요청);
 
         //when
-        lineService.deleteSection(저장된_신분당선.getId(), 저장된_구로디지털단지역.getId());
+        lineService.removeSection(저장된_신분당선.getId(), 저장된_구로디지털단지역.getId());
 
         //then
         assertThat(저장된_신분당선.getSections().size()).isEqualTo(1);

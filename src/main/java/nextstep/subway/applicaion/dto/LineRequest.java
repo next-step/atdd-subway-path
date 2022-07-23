@@ -1,8 +1,11 @@
 package nextstep.subway.applicaion.dto;
 
+import nextstep.subway.domain.Line;
+
 public class LineRequest {
     private String name;
     private String color;
+
     private Long upStationId;
     private Long downStationId;
     private int distance;
@@ -25,5 +28,9 @@ public class LineRequest {
 
     public int getDistance() {
         return distance;
+    }
+
+    public Line toEntity() {
+        return Line.makeLine(this.name, this.color);
     }
 }

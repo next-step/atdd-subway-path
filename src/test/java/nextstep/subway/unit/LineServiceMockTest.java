@@ -53,7 +53,7 @@ public class LineServiceMockTest {
 
         final String 신분당선_이름 = "신분당선";
         final String red = "red";
-        Line 신분당선 = new Line(신분당선_이름, red);
+        Line 신분당선 = Line.makeLine(신분당선_이름, red);
         ReflectionTestUtils.setField(신분당선, "id", 1L);
         when(lineRepository.findById(anyLong())).thenReturn(Optional.ofNullable(신분당선));
 
@@ -95,7 +95,7 @@ public class LineServiceMockTest {
 
         final String 신분당선_이름 = "신분당선";
         final String red = "red";
-        Line 신분당선 = new Line(신분당선_이름, red);
+        Line 신분당선 = Line.makeLine(신분당선_이름, red);
         ReflectionTestUtils.setField(신분당선, "id", 1L);
         when(lineRepository.findById(anyLong())).thenReturn(Optional.ofNullable(신분당선));
 
@@ -117,7 +117,7 @@ public class LineServiceMockTest {
         when(stationService.findById(anyLong())).thenReturn(구로디지털단지역);
 
         //when
-        lineService.deleteSection(신분당선.getId(), 구로디지털단지역.getId());
+        lineService.removeSection(신분당선.getId(), 구로디지털단지역.getId());
 
         //then
         assertThat(신분당선.getSections().size()).isEqualTo(1);
