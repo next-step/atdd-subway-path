@@ -24,4 +24,8 @@ public class AssertUtils {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(ResponseUtils.getLongList(response, "stations.id")).containsExactly(stationIds);
     }
+
+    public static void badRequest(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

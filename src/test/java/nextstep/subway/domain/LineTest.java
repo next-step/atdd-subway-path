@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
