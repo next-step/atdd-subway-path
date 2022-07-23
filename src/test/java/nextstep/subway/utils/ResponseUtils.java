@@ -7,6 +7,10 @@ import java.util.List;
 
 public class ResponseUtils {
 
+    public static int getInt(ExtractableResponse<Response> response, String path) {
+        return response.jsonPath().getInt(path);
+    }
+
     public static Long getLong(ExtractableResponse<Response> response, String path) {
         return response.jsonPath().getLong(path);
     }
