@@ -1,10 +1,9 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -77,14 +76,30 @@ public class Sections {
 	}
 
 	public List<Station> getStations() {
-		Set<Station> stationSet = new LinkedHashSet<>();
-		for(Section section : sectionList){
-			stationSet.add(section.getUpStation());
-			stationSet.add(section.getDownStation());
+		if(sectionList.isEmpty()){
+			return Collections.emptyList();
 		}
-		List<Station> stationList = new ArrayList<>();
-		stationList.addAll(stationSet);
-		return stationList;
+
+		List<Station> sortedStationList = new ArrayList<>();
+		Section section = getFirstSection();
+		Section lastSection = getLastSection();
+
+		sortedStationList.add(section.getUpStation());
+
+		while(!section.equals(lastSection)){
+			sortedStationList.add(section.getDownStation());
+			section = nextSection(section);
+		}
+
+		sortedStationList.add(lastSection.getDownStation());
+		return sortedStationList;
+	}
+
+	private Section nextSection(Section currentSection) {
+		return this.sectionList.stream()
+			.filter(section -> currentSection.getDownStation().equals(section.getUpStation()))
+			.findAny()
+			.orElseThrow();
 	}
 
 	public void remove(Section section) {
