@@ -42,14 +42,14 @@ public class LineServiceMockTest {
         final Long 강남역_id = 1L;
         final Long 양재역_id = 1L;
         when(lineRepository.findById(신분당선_id)).thenReturn(Optional.of(new Line("신분당선", "red")));
-        when(stationService.findById(강남역_id)).thenReturn(new Station("강남역"));
-        when(stationService.findById(양재역_id)).thenReturn(new Station("양재역"));
+        when(stationService.findStation(강남역_id)).thenReturn(new Station("강남역"));
+        when(stationService.findStation(양재역_id)).thenReturn(new Station("양재역"));
 
         // when
         lineService.addSection(신분당선_id, new SectionRequest(강남역_id, 양재역_id, 10));
 
         // then
-        LineResponse lineResponse = lineService.findById(신분당선_id);
+        LineResponse lineResponse = lineService.findLineResponse(신분당선_id);
         assertThat(lineResponse.getName()).isEqualTo("신분당선");
     }
 }

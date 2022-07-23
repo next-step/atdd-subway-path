@@ -100,7 +100,7 @@ public class LineServiceTest {
         lineService.deleteLine(신분당선.getId());
 
         // then
-        assertThatThrownBy(()->lineService.findById(신분당선.getId()))
+        assertThatThrownBy(()->lineService.findLineResponse(신분당선.getId()))
             .isInstanceOf(IllegalArgumentException.class);
     }
 }
