@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -14,6 +15,7 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.exception.SectionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,19 +37,20 @@ public class LineServiceTest {
     Station 강남역;
     Station 역삼역;
     Station 선릉역;
+    Station 서울역;
 
     Line 이호선;
     Line 일호선;
 
     @BeforeEach
     void setup() {
-        강남역 = stationRepository.save(new Station("강남역"));
-        역삼역 = stationRepository.save(new Station("역삼역"));
-        선릉역 = stationRepository.save(new Station("선릉역"));
+        강남역 = stationRepository.save(new Station(1L, "강남역"));
+        역삼역 = stationRepository.save(new Station(2L, "역삼역"));
+        선릉역 = stationRepository.save(new Station(3l, "선릉역"));
+        서울역 = stationRepository.save(new Station(4L, "서울역"));
 
         일호선 = lineRepository.save(new Line("1호선", "bg-blue-600"));
         이호선 = lineRepository.save(new Line("2호선", "bg-green-600"));
-
     }
 
     @Test
@@ -151,4 +154,86 @@ public class LineServiceTest {
             lineService.deleteSection(이호선.getId(), 강남역.getId());
         });
     }
+
+    @Test
+    @DisplayName("지하철 노선에 상행선 추가합니다.")
+    void insertUpSection() {
+        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 선릉역.getId(), 6));
+        lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 4));
+
+        assertAll(() -> {
+            assertThat(이호선.getStations()).hasSize(3);
+            assertThat(이호선.getStations()).containsExactly(new Station[] { 강남역, 역삼역, 선릉역 });
+        });
+    }
+
+    @Test
+    @DisplayName("지하철 상행선 기준으로 구간을 사이에 추가합니다.")
+    void insertBetweenUpSection() {
+        lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 선릉역.getId(), 10));
+        lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 6));
+
+        assertAll(() -> {
+            assertThat(이호선.getStations()).hasSize(3);
+            assertThat(이호선.getStations()).containsExactly(new Station[] { 강남역, 역삼역, 선릉역 });
+        });
+    }
+
+    @Test
+    @DisplayName("자허철 노선에 하행선 추가 합니다.")
+    void insertDownStation() {
+        lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 6));
+        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 선릉역.getId(), 6));
+
+        assertAll(() -> {
+            assertThat(이호선.getStations()).hasSize(3);
+            assertThat(이호선.getStations()).containsExactly(new Station[] { 강남역, 역삼역, 선릉역 });
+        });
+    }
+
+    @Test
+    @DisplayName("지하철 노선에 하행선 구간을 사이에 추가합니다.")
+    void insertBetweenDownStation() {
+        lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 선릉역.getId(), 10));
+        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 선릉역.getId(), 4));
+
+        assertAll(() -> {
+            assertThat(이호선.getStations()).hasSize(3);
+            assertThat(이호선.getStations()).containsExactly(new Station[] { 강남역, 역삼역, 선릉역 });
+        });
+    }
+
+    @Test
+    @DisplayName("지하철 노선에 중복되는 노선을 넣었을 경우 에러를 반환합니다.")
+    void existsSectionException() {
+        lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 선릉역.getId(), 10));
+
+        assertThatExceptionOfType(SectionException.class).isThrownBy(() -> {
+            lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 선릉역.getId(), 10));
+        })
+            .withMessage("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없을 때 에러를 반환합니다.")
+    void notContainsUpStationOrDownStation() {
+        lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 6));
+
+        assertThatExceptionOfType(SectionException.class).isThrownBy(() -> {
+                lineService.addSection(이호선.getId(), new SectionRequest(서울역.getId(), 선릉역.getId(), 200));
+            })
+            .withMessage("상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 추가할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("지하철 노선을 상행선과 하행선 사이에 추가하는데 길이가 초과하였을 경우 에러를 반환합니다.")
+    void addSectionLengthException() {
+        lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 선릉역.getId(), 6));
+
+        assertThatExceptionOfType(SectionException.class).isThrownBy(() -> {
+                lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 200));
+            })
+            .withMessage("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
+    }
+
 }
