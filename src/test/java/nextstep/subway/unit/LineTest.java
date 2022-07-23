@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
@@ -60,6 +61,15 @@ class LineTest {
         sut.addSection(광교중앙중앙역, 광교중앙역, 10);
 
         assertThat(sut.getStations()).containsExactly(광교역, 광교중앙중앙역, 광교중앙역);
+    }
+
+    @DisplayName("구간의 상하행역이 모두 노선에 존재하지 않으면 추가 실패")
+    @Test
+    void sectionAdditionFailsWhenNeitherUpAndDownStationNotExist() {
+        var 새로운역 = new Station("새로운역");
+        var 다른새로운역 = new Station("다른새로운역");
+
+        assertThrows(IllegalArgumentException.class, () -> sut.addSection(새로운역, 다른새로운역, 10));
     }
 
     @DisplayName("노선 내 역 조회")

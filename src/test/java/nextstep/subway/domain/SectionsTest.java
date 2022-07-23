@@ -60,6 +60,15 @@ class SectionsTest {
         assertThat(sut.getStations()).containsExactly(청량리역, 중간역, 왕십리역);
     }
 
+    @DisplayName("구간의 상하행역이 모두 노선에 존재하지 않으면 추가 실패")
+    @Test
+    void sectionAdditionFailsWhenNeitherUpAndDownStationNotExist() {
+        var 새로운역 = new Station("새로운역");
+        var 다른새로운역 = new Station("다른새로운역");
+
+        assertThrows(IllegalArgumentException.class, () -> sut.add(분당선, 새로운역, 다른새로운역, 10));
+    }
+
     @DisplayName("구간 제거")
     @Test
     void removeSection() {
