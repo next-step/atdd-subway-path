@@ -81,7 +81,7 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        if (line.sections().isEmpty()) {
+        if (line.sections().size() > 0) {
             return Collections.emptyList();
         }
 
@@ -100,9 +100,6 @@ public class LineService {
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
-        if (!line.downStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-        line.sections().remove(line.sections().size() - 1);
+        line.deleteSection(station);
     }
 }

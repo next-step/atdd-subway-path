@@ -48,9 +48,9 @@ class LineTest {
     @DisplayName("구간 삭제")
     @Test
     void removeSection() {
-        신분당선.addSection(신논현역, 논현역, 5);
-        신분당선.addSection(강남역, 양재역, 5);
-        신분당선.deleteSection(신분당선.sections().stream().findFirst().orElseThrow());
+        신분당선.addSection(논현역, 신논현역, 5);
+        신분당선.addSection(신논현역, 강남역, 5);
+        신분당선.deleteSection(강남역);
         assertThat(신분당선.sections().size()).isEqualTo(1);
     }
 }

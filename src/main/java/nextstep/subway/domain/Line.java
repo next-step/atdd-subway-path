@@ -1,12 +1,15 @@
 package nextstep.subway.domain;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Entity
+@NoArgsConstructor
 public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,11 +17,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private Set<Section> sections = new HashSet<>();
-
-    public Line() {
-    }
+    @Embedded
+    private Sections sections = new Sections();
 
     private Line(String name, String color) {
         this.name = name;
@@ -36,47 +36,28 @@ public class Line {
         this.name = name;
     }
 
-    public Station downStation() {
-        if (this.sections.size() > 0)
-            return this.sections.stream().reduce((first, second) -> second).orElseThrow(null).getDownStation();
-        return null;
+    public void addSection(Station upStation, Station downStation, int distance) {
+        sections.addSection(this, upStation, downStation, distance);
     }
 
     public Station upStation() {
-        if (this.sections.size() > 0)
-            return this.sections.stream().findFirst().get().getUpStation();
-        return null;
+        return this.sections.upStation();
+    }
+
+    public Station downStation() {
+        return this.sections.downStation();
+    }
+
+    public List<Section> sections() {
+        return this.sections.sections();
+    }
+
+    public void deleteSection(Station station) {
+        this.sections.deleteSection(station);
     }
 
     public Set<Station> stations() {
-        Set<Station> stations = new HashSet<>();
-        addUpStations(stations);
-        addDownStations(stations);
-        return stations;
+        return sections.stations();
     }
 
-    private void addDownStations(Set<Station> stations) {
-        for (Section section : this.sections) {
-            stations.add(section.getDownStation());
-        }
-    }
-
-    private void addUpStations(Set<Station> stations) {
-        for (Section section : this.sections) {
-            stations.add(section.getUpStation());
-        }
-    }
-
-    public Set<Section> sections() {
-        return this.sections;
-    }
-
-    public void addSection(Station upStation, Station downStation, int distance) {
-        Section section = new Section(this, upStation, downStation, distance);
-        this.sections.add(section);
-    }
-
-    public void deleteSection(Section section) {
-        this.sections.remove(section);
-    }
 }
