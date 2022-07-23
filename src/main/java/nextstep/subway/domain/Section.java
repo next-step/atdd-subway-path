@@ -1,6 +1,12 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Section {
@@ -53,15 +59,12 @@ public class Section {
         return distance;
     }
 
-    public boolean isMatched(Section section) {
-        return this.downStation.isMatched(section.upStation);
-    }
-
-    public boolean contains(Station station) {
-        return upStation.isMatched(station) || downStation.isMatched(station);
-    }
-
     public boolean isMatchedStationId(Station station) {
         return this.downStation.equals(station);
+    }
+
+    public void updateExistingUpStationAndDowStationSection(Section section) {
+        this.distance -= section.getDistance();
+        this.upStation = section.getDownStation();
     }
 }

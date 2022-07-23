@@ -22,20 +22,59 @@ public class Sections {
             return;
         }
 
-        Section downEndStation = getDownEndStation();
-        if (!downEndStation.isMatched(section)) {
-            throw new IllegalArgumentException("새로운 구간 등록시 새로운 구간의 상행역은 기등록된 하행 종점역과 같아야 합니다.");
+        validateDuplicationSection(section);
+        validateNotMatchedExistingSections(section);
+
+        if (isMatchedUpStation(section)) {
+            Section existingUpStation = getExistingUpStation(section);
+            validateDistanceOfSection(existingUpStation.getDistance(), section.getDistance());
+            existingUpStation.updateExistingUpStationAndDowStationSection(section);
         }
 
-        if(stationsContain(section.getDownStation())){
-            throw new IllegalArgumentException("신규 구간의 하행역은 현재 등록되어있는 역일 수 없습니다.");
-        }
         sections.add(section);
     }
 
-    private boolean stationsContain(Station station) {
+    private void validateNotMatchedExistingSections(Section section) {
+        List<Station> stations = getStations();
+        stations.stream()
+                .filter(station -> station.isMatched(section.getUpStation()) || station.isMatched(section.getDownStation()))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("기존 구간과 등록할 역이 하나 이상 일치하지 않습니다.(상행역:[%s] 하행역:[%s])", section.getUpStation().getName(),
+                        section.getDownStation().getName())));
+    }
+
+    private void validateDuplicationSection(Section section) {
+        if (isDuplicateSection(section)) {
+            throw new IllegalArgumentException(
+                    String.format("이미 등록된 구간의 역입니다.(상행역:[%s] 하행역:[%s])", section.getUpStation().getName(),
+                            section.getDownStation().getName()));
+        }
+    }
+
+    private void validateDistanceOfSection(int existingDistance, int newDistance) {
+        if (existingDistance <= newDistance) {
+            throw new IllegalArgumentException(
+                    String.format("기존 구간의 길이는 [%d]로 새로 등록할 구간의 길이는 기존 구간의 길이보다 작아야합니다.(신규 구간 길이:[%d])", existingDistance,
+                            newDistance));
+        }
+    }
+
+    private Section getExistingUpStation(Section section) {
         return sections.stream()
-                .anyMatch(section -> section.contains(station));
+                .filter(s -> s.getUpStation().isMatched(section.getUpStation()))
+                .findAny()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private boolean isMatchedUpStation(Section section) {
+        return sections.stream()
+                .anyMatch(s -> s.getUpStation().isMatched(section.getUpStation()));
+    }
+
+    private boolean isDuplicateSection(Section section) {
+        return sections.stream()
+                .anyMatch(s -> s.getUpStation().isMatched(section.getUpStation()) && s.getDownStation()
+                        .isMatched(section.getDownStation()));
     }
 
     private Section getDownEndStation() {
@@ -47,20 +86,63 @@ public class Sections {
         return sections.size() - 1;
     }
 
+    public List<Section> getSections() {
+        List<Section> orderedSections = new ArrayList<>();
+
+        if (sections.isEmpty()) {
+            return orderedSections;
+        }
+
+        Section findingSection = getFirstSection();
+
+        while (findingSection != null) {
+            orderedSections.add(findingSection);
+            findingSection = getNextSection(findingSection.getDownStation());
+        }
+
+        return orderedSections;
+    }
+
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
-        stations.add(sections.get(0).getUpStation());
 
-        for (Section section : sections) {
-            stations.add(section.getDownStation());
+        if (sections.isEmpty()) {
+            return stations;
+        }
+
+        Section findingSection = getFirstSection();
+        stations.add(findingSection.getUpStation());
+
+        while (findingSection != null) {
+            stations.add(findingSection.getDownStation());
+            findingSection = getNextSection(findingSection.getDownStation());
         }
 
         return stations;
     }
 
+    private Section getNextSection(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.getUpStation().isMatched(station))
+                .findAny()
+                .orElse(null);
+    }
+
+    private Section getFirstSection() {
+        return sections.stream()
+                .filter(section -> isUpStation(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private boolean isUpStation(Station station) {
+        return sections.stream()
+                .noneMatch(section -> section.getDownStation().isMatched(station));
+    }
+
     public void deleteSection(Station station) {
         Section downEndStation = getDownEndStation();
-        if(sections.size() <= 1) {
+        if (sections.size() <= 1) {
             throw new IllegalArgumentException("지하철 노선이 상행 종점역과 하행 종점역만 있는 하나의 구간인 경우, 역을 삭제할 수 없습니다.");
         }
 
