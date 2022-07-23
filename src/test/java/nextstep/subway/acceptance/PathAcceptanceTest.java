@@ -94,9 +94,22 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 존재하지 않은 출발역이나 도착역을 조회 할 경우
+     * Given 새로운 역을 만든다.
+     * When 새로운 역은 현재 노선에 존재하지 않은 역이기 때문에
      * Then 최단 경로 조회에 실패한다.
      */
+    @Test
+    void 존재하지_않은_출발역이나_도착역을_조회_할_경우_예외를_일으킨다() {
+        // given
+        var 신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
+        var 고속터미널역 = 지하철역_생성_요청("고속터미널역").jsonPath().getLong("id");
+
+        // when
+        var 최단_거리_응답 = 지하철_최단_거리_조회_요청(신논현역, 고속터미널역);
+
+        // then
+        최단_거리를_구하는데_실패한다(최단_거리_응답);
+    }
 
     private void 지하철_역이_포함되어_있다(ExtractableResponse<Response> 지하철_노선_목록_조회_응답, Long... elements) {
         assertThat(지하철_노선_목록_조회_응답.jsonPath().getList("stations.id", Long.class)).containsExactly(elements);
