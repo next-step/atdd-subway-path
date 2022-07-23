@@ -35,15 +35,6 @@ public class LineSectionSteps {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
-        return RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all().extract();
-    }
-
     public static ExtractableResponse<Response> 지하철_노선_수정_요청(Long lineId, Map<String, String> params) {
         return RestAssured
                 .given().log().all()
