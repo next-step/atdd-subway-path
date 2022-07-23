@@ -15,7 +15,7 @@ public class Sections {
     private List<Section> sectionList = new ArrayList<>();
 
     public void add(Line line, Station upStation, Station downStation, int distance) {
-        if (isExistStation(upStation) && isExistStation(downStation)) {
+        if (isNotValidStations(upStation, downStation)) {
             throw new IllegalArgumentException();
         }
 
@@ -106,6 +106,13 @@ public class Sections {
                 .filter(s -> downStation.equals(s.getDownStation()))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private boolean isNotValidStations(Station upStation, Station downStation) {
+        return !sectionList.isEmpty() && (
+                (isExistStation(upStation) && isExistStation(downStation)) ||
+                (!isExistStation(upStation) && !isExistStation(downStation))
+        );
     }
 
     private boolean isExistStation(Station station) {
