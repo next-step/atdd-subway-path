@@ -114,11 +114,45 @@ class SectionsTest {
 		line.addSection(section);
 		Sections sections = Sections.from(line.getSections());
 		Section newSection = new Section(new Station("이매역"), upStation, 5);
+		line.addSection(newSection);
 
 		//when
-		Section section = sections.getFirstSection();
+		Section result = sections.getFirstSection();
 
 		//then
-		assertThat(section).isEqualTo(newSection);
+		assertThat(result).isEqualTo(newSection);
+	}
+
+	@DisplayName("하행 종점을 찾는 테스트")
+	@Test
+	void getLastSection(){
+		line.addSection(section);
+		Sections sections = Sections.from(line.getSections());
+		Section newSection = new Section(new Station("이매역"), upStation, 5);
+		line.addSection(newSection);
+
+		//when
+		Section result = sections.getLastSection();
+
+		//then
+		assertThat(result).isEqualTo(section);
+
 	 }
+
+	 @DisplayName("새로운 구간의 상행역이 기존 노선의 하행 종점과 일치하는지 확인하늩 테스트")
+	 @Test
+	 void isSameNewSectionUpStationAndDownStation(){
+
+	     //given
+		 line.addSection(section);
+		 Sections sections = Sections.from(line.getSections());
+		 Section newSection = new Section(downStation, new Station("이매역"), 5);
+
+		 //when
+		 boolean result = sections.isSameNewSectionUpStationAndDownStation(newSection);
+
+		 //then
+		 assertThat(result).isTrue();
+
+	  }
 }
