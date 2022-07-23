@@ -53,6 +53,7 @@ class SectionTest {
         assertAll(() -> {
             assertThat(section.isConnectable(connectableSection)).isTrue();
             assertThat(section.isConnectable(notConnectableSection)).isFalse();
+            assertThat(section.isConnectable(section)).isFalse();
         });
     }
 

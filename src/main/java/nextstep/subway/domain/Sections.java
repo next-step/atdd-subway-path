@@ -27,11 +27,36 @@ public class Sections {
     private List<Section> values = new ArrayList<>();
 
     public List<Station> getStations() {
-        return values.stream()
+        Section firstSection = findFirstSection();
+        List<Section> sections = new ArrayList<>();
+        sections.add(firstSection);
+
+        while (sections.size() != values.size()) {
+            Section lastStation = sections.get(sections.size() - ONE);
+            Section connectableSection = findConnectableSection(lastStation);
+            sections.add(connectableSection);
+        }
+        return exportStations(sections);
+    }
+
+    private List<Station> exportStations(List<Section> sections) {
+        return sections.stream()
                 .map(Section::getStations)
                 .flatMap(List::stream)
                 .distinct()
-                .collect(Collectors.toList());
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    private Section findFirstSection() {
+        return values.stream()
+                .filter(section -> isMissMatchDownStation(section.getUpStation()))
+                .findAny()
+                .orElseThrow(IllegalStateException::new);
+    }
+
+    private boolean isMissMatchDownStation(Station station) {
+        return values.stream()
+                .allMatch(section -> section.isMissMatchDownStation(station));
     }
 
     // TODO: 변경된 요구사항 적용 후 삭제

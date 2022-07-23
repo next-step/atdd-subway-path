@@ -16,20 +16,20 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class SectionsTest {
 
     @Test
-    @DisplayName("모든 구간의 지하철 역들을 반환한다.")
+    @DisplayName("모든 구간의 지하철 역을 연결된 순서에 맞게 반환한다.")
     void getStations() {
-        //given
-        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
-        Section section2 = createSection(YEOKSAM_STATION, SEOLLEUNG_STATION, 10);
-
+        // given
         Sections sections = new Sections();
-        sections.add(section);
-        sections.add(section2);
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        sections.add2(section);
+
+        Section betweenSection = createSection(GANGNAM_STATION, SAMSUNG_STATION, 3);
+        sections.add2(betweenSection);
 
         // then
-        assertThat(sections.getStations()).containsOnly(new Station(1L, "강남역"),
-                                                            new Station(2L, "역삼역"),
-                                                            new Station(3L, "선릉역"));
+        assertThat(sections.getStations()).containsExactly(new Station(1L, "강남역"),
+                new Station(4L, "삼성역"),
+                new Station(2L, "역삼역"));
     }
 
     @Test
