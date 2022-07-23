@@ -2,6 +2,7 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
-import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
+import static nextstep.subway.acceptance.StationSteps.신규_지하철역;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리 기능")
@@ -28,11 +29,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
-        강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
-        양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+        강남역 = 신규_지하철역("강남역");
+        양재역 = 신규_지하철역("양재역");
 
-        Map<String, String> lineCreateParams = createLineCreateParams(강남역, 양재역);
-        신분당선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
+        신분당선 = 신규_지하철_노선(신규_구간(강남역, 양재역));
     }
 
     /**
@@ -43,13 +43,13 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSection() {
         // when
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+        Long 정자역 = 신규_지하철역("정자역");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, 신규_라인(양재역, 정자역));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+        assertThat(getStationsId(response)).containsExactly(강남역, 양재역, 정자역);
     }
 
     /**
@@ -61,8 +61,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeLineSection() {
         // given
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+        Long 정자역 = 신규_지하철역("정자역");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, 신규_라인(양재역, 정자역));
 
         // when
         지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
@@ -70,10 +70,18 @@ class SectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+        assertThat(getStationsId(response)).containsExactly(강남역, 양재역);
     }
 
-    private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
+    private List<Long> getStationsId(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList("stations.id", Long.class);
+    }
+
+    private long 신규_지하철_노선(Map<String, String> lineCreateParams) {
+        return 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
+    }
+
+    private Map<String, String> 신규_구간(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
         lineCreateParams.put("name", "신분당선");
@@ -84,7 +92,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         return lineCreateParams;
     }
 
-    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId) {
+    private Map<String, String> 신규_라인(Long upStationId, Long downStationId) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");
