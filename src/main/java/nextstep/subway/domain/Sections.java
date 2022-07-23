@@ -23,6 +23,10 @@ public class Sections {
             getSectionByUpStation(upStation).setUpStation(downStation);
         }
 
+        if (isExistStation(downStation) && isNotFirstStation(downStation)) {
+            getSectionByDownStation(downStation).setDownStation(upStation);
+        }
+
         var newSection = new Section(line, upStation, downStation, distance);
         sectionList.add(newSection);
     }
@@ -52,8 +56,14 @@ public class Sections {
         return stations;
     }
 
-    private boolean isNotLastStation(Station downStation) {
-        return !sectionList.get(sectionList.size() - 1).getDownStation().equals(downStation);
+    private boolean isNotLastStation(Station station) {
+        var stations = getStations();
+        return !stations.get(stations.size() - 1).equals(station);
+    }
+
+    private boolean isNotFirstStation(Station station) {
+        var stations = getStations();
+        return !stations.get(0).equals(station);
     }
 
     private Section getFirstSection() {
@@ -87,6 +97,13 @@ public class Sections {
     private Section getSectionByUpStation(Station upStation) {
         return sectionList.stream()
                 .filter(s -> upStation.equals(s.getUpStation()))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Section getSectionByDownStation(Station downStation) {
+        return sectionList.stream()
+                .filter(s -> downStation.equals(s.getDownStation()))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }

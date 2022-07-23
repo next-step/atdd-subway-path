@@ -37,6 +37,10 @@ public class Section {
         this.upStation = upStation;
     }
 
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
     public Long getId() {
         return id;
     }
