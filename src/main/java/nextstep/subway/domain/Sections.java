@@ -200,9 +200,4 @@ public class Sections {
             throw new IllegalArgumentException("노선에 등록되어있지 않은 역입니다");
         }
     }
-
-    private int getLastIndex() {
-        return sections.size() - 1;
-    }
-
 }
