@@ -1,10 +1,13 @@
 package nextstep.subway.domain;
 
+import lombok.Getter;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+@Getter
 @Entity
 public class Station {
     @Id
@@ -19,11 +22,8 @@ public class Station {
         this.name = name;
     }
 
-    public Long getId() {
-        return id;
+    public static Station of(String name) {
+        return new Station(name);
     }
 
-    public String getName() {
-        return name;
-    }
 }

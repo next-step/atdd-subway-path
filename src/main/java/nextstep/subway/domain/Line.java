@@ -20,9 +20,13 @@ public class Line {
     public Line() {
     }
 
-    public Line(String name, String color) {
+    private Line(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public static Line of(String name, String color) {
+        return new Line(name, color);
     }
     public void setColor(String color) {
         this.color = color;

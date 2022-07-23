@@ -28,7 +28,7 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
-        Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
+        Line line = lineRepository.save(Line.of(request.getName(), request.getColor()));
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
@@ -50,7 +50,6 @@ public class LineService {
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-
         if (lineRequest.getName() != null) {
             line.setName(lineRequest.getName());
         }
@@ -101,11 +100,9 @@ public class LineService {
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
-
         if (!line.downStation().equals(station)) {
             throw new IllegalArgumentException();
         }
-
         line.sections().remove(line.sections().size() - 1);
     }
 }

@@ -1,7 +1,6 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,20 +15,14 @@ class LineTest {
     Station 논현역;
     Station 강남역;
     Station 양재역;
-    Section 논현역_신논현역_구간;
-    Section 신논현역_강남역_구간;
-    Section 강남역_양재역_구간;
 
     @BeforeEach
     void setUp() {
-        신분당선 = new Line("신분당선", "RED");
+        신분당선 = Line.of("신분당선", "RED");
         신논현역 = new Station("신논현역");
         논현역 = new Station("논현역");
         강남역 = new Station("강남역");
         양재역 = new Station("양재역");
-        논현역_신논현역_구간 = new Section(신분당선, 신논현역, 논현역, 5);
-        신논현역_강남역_구간 = new Section(신분당선, 신논현역, 강남역, 5);
-        강남역_양재역_구간 = new Section(신분당선, 강남역, 양재역, 5);
     }
 
     @DisplayName("구간 등록 성공")
