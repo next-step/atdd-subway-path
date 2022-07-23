@@ -92,4 +92,12 @@ public class Section {
 	public boolean isSameDownStation(Station downStation) {
 		return this.downStation.equals(downStation);
 	}
+
+	public boolean isSameUpStation(Section section) {
+		return this.upStation.equals(section.getUpStation());
+	}
+
+	public boolean isLongerDistance(Section section){
+		return this.distance >= section.getDistance();
+	}
 }
