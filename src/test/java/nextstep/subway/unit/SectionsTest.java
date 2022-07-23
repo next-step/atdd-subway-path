@@ -4,7 +4,6 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
-import nextstep.subway.exception.SubwayException;
 import nextstep.subway.fake.FakeLineFactory;
 import nextstep.subway.fake.FakeStationFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +28,7 @@ public class SectionsTest {
         분당선 = FakeLineFactory.분당선();
         선릉_영통_구간 = new Section(분당선, FakeStationFactory.선릉역(), FakeStationFactory.영통역(), 10);
         영통_구의_구간 = new Section(분당선, FakeStationFactory.영통역(), FakeStationFactory.구의역(), 10);
-        강남_선릉_구간 = new Section(분당선, FakeStationFactory.구의역(), FakeStationFactory.선릉역(), 10);
+        강남_선릉_구간 = new Section(분당선, FakeStationFactory.강남역(), FakeStationFactory.선릉역(), 10);
     }
 
     @Test
@@ -45,19 +44,24 @@ public class SectionsTest {
                 .containsAnyOf(선릉_영통_구간);
     }
 
+
+    /* given 구간 목록에 구간을 추가한다.
+     * when, then
+     * 상행역과 하행역이 전부 포함되어있지 않은 역을 추가하고
+     * IllegalArgumentException 과 지정된 메세지를 리턴받는다.
+     */
     @Test
-    @DisplayName("구간 추가 실패 테스트 - 추가할 구간의 상행역이 하행 종점과 동일하지 않을 경우")
-    void 구간_등록_실패_테스트() {
+    @DisplayName("구간 등록 - 상행역과 하행역이 모두 포함되어 있지 않을 때")
+    void 구간_등록_실패_테스트_두번째() {
         //when
         Sections sections = 분당선.getSections();
-        sections.add(선릉_영통_구간);
+        sections.add(강남_선릉_구간);
 
         //then
-        assertThatThrownBy(() -> sections.add(강남_선릉_구간))
+        assertThatThrownBy(() -> sections.add(영통_구의_구간))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("상행역과 하행역 종점역이 동일한 경우에 등록할 수 있습니다.");
+                .hasMessage("상행역이나 하행역 중 하나는 등록된 구간에 포함되어야 합니다.");
     }
-
 
     @Test
     @DisplayName("지하철 구간에 등록된 지하철역 조회 테스트")
@@ -105,6 +109,7 @@ public class SectionsTest {
     void 하행종점이_아닌_역을_삭제() {
         //given 지하철 역과 노선을 생성하고 구간을 추가한다
         Sections sections = 분당선.getSections();
+        구간을_추가한다(sections, 선릉_영통_구간);
         구간을_추가한다(sections, 영통_구의_구간);
 
         //then 삭제가 실패했을 때 IllegalArgumentException 발생 여부를 확인한다.
