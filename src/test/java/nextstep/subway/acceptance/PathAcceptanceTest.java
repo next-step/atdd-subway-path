@@ -75,9 +75,23 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 출발역과 도착역이 연결되어 있지 않은 경우
+     * Given 새로운 노선을 만든다.
+     * When 새로운 노선역이 출발역과 도착역이 연결되어 있지 않은 경우
      * Then 최단 경로 조회에 실패한다.
      */
+    @Test
+    void 출발역과_도착역이_연결되지_않은_경우_예외를_일으킨다() {
+        // given
+        var 신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
+        var 고속터미널역 = 지하철역_생성_요청("고속터미널역").jsonPath().getLong("id");
+        var 구호선 = 지하철_노선_생성_요청("구호선", "gold", 신논현역, 고속터미널역, 10).jsonPath().getLong("id");
+
+        // when
+        var 최단_거리_응답 = 지하철_최단_거리_조회_요청(신논현역, 강남역);
+
+        // then
+        최단_거리를_구하는데_실패한다(최단_거리_응답);
+    }
 
     /**
      * When 존재하지 않은 출발역이나 도착역을 조회 할 경우
