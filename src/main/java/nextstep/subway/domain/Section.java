@@ -75,6 +75,10 @@ public class Section {
 		return this.downStation.equals(downStation);
 	}
 
+	public boolean isSameDownStation(Section section){
+		return this.downStation.equals(section.getDownStation());
+	}
+
 	public boolean isSameUpStation(Section section) {
 		return this.upStation.equals(section.getUpStation());
 	}

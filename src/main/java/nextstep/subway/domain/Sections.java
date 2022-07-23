@@ -39,8 +39,16 @@ public class Sections {
 		Optional<Section> sameUpStationSection = getSameUpStationSection(newSection);
 
 		if(sameUpStationSection.isPresent()){
-			validateSameUpStationDistance(newSection, sameUpStationSection.get());
+			validateSectionDistance(newSection, sameUpStationSection.get());
 			addSectionUpStationBased(newSection, sameUpStationSection.get());
+			return;
+		}
+
+		Optional<Section> sameDownStationSection = getSameDownStationSection(newSection);
+
+		if(sameDownStationSection.isPresent()){
+			validateSectionDistance(newSection, sameDownStationSection.get());
+			addSectionDownStationBased(newSection, sameDownStationSection.get());
 			return;
 		}
 
@@ -55,7 +63,21 @@ public class Sections {
 		}
 	}
 
-	private void validateSameUpStationDistance(Section newSection, Section section) {
+	private void addSectionDownStationBased(Section newSection, Section section) {
+		sectionList.remove(section);
+		sectionList.add(new Section(section.getLine(), section.getUpStation(), newSection.getUpStation(),
+			section.getDistance() - newSection.getDistance()));
+		sectionList.add(new Section(section.getLine(), newSection.getUpStation(), newSection.getDownStation(),
+			newSection.getDistance()));
+	}
+
+	private Optional<Section> getSameDownStationSection(Section newSection) {
+		return this.sectionList.stream()
+			.filter(section -> section.isSameDownStation(newSection))
+			.findFirst();
+	}
+
+	private void validateSectionDistance(Section newSection, Section section) {
 		if(newSection.isLongerDistance(section)){
 			throw new IllegalArgumentException("추가하려는 구간의 길이는 기존 구간의 길이와 같거나 길수 없습니다.");
 		}
