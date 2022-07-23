@@ -71,9 +71,7 @@ public class Sections {
         }
         Section connectableSection = findConnectableSection(section);
         if (connectableSection.isConnectInSide(section)) {
-            values.remove(connectableSection);
             connectableSection.connectInside(section);
-            values.add(connectableSection);
         }
         values.add(section);
     }
