@@ -80,7 +80,7 @@ public class Line {
         }
 
         if (sections.size() == 1) {
-            throw new IllegalArgumentException("구간에 상행 종착역과 하행 종착역만 있기 때문에 삭제할 수 없습니다.");
+            throw new IllegalStateException("구간에 상행 종착역과 하행 종착역만 있기 때문에 삭제할 수 없습니다.");
         }
 
         if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {

@@ -101,7 +101,7 @@ class LineTest {
 
         // when, then
         assertThatThrownBy(() -> line.removeSection(downStation))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(IllegalStateException.class)
                 .hasMessage("구간에 상행 종착역과 하행 종착역만 있기 때문에 삭제할 수 없습니다.");
 
     }
