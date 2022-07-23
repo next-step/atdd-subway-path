@@ -78,6 +78,27 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * When 상행역을 기존 역, 하행역을 새로운 역으로 구간 사이에 추가 요청하면
+     * Then 구간 사이에 새로운 구간이 추가된다
+     */
+    @DisplayName("구간 사이에 새로운 구간을 등록")
+    @Test
+    void addLineSectionInMiddle() {
+        // when
+        var 강재역 = 지하철역_생성_요청("강재역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 강재역));
+
+        // then
+        var response = 지하철_노선_조회_요청(신분당선);
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class))
+                        .containsExactly(강남역, 강재역, 양재역)
+        );
+    }
+
+    /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
      * Then 노선에 구간이 제거된다
