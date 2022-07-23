@@ -54,9 +54,6 @@ public class Sections {
     private void addStationBetweenExistsStations(Section section, boolean isUpStationExists) {
         final Section overlapSection = findOverlapSection(section, isUpStationExists);
 
-        System.out.println(section.getDistance());
-        System.out.println(overlapSection.getDistance());
-
         // 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
         if (section.getDistance() >= overlapSection.getDistance()) {
             throw new DistanceException();
@@ -125,7 +122,6 @@ public class Sections {
             sortedSections.add(section);
         }
 
-        sortedSections.forEach(s -> System.out.println(s.getUpStation() + "->" + s.getDownStation()));
         return sortedSections;
     }
 }
