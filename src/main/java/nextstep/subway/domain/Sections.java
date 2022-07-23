@@ -16,7 +16,7 @@ public class Sections {
 
     public Station downStation() {
         if (this.sections.size() > 0)
-            return this.sections.stream().reduce((first, second) -> second).orElseThrow(null).getDownStation();
+            return this.sections.get(this.sections.size() - 1).getDownStation();
         return null;
     }
 
