@@ -42,6 +42,16 @@ class LineTest {
         assertThat(sut.getStations()).containsExactly(호매실역, 광교역, 광교중앙역);
     }
 
+    @DisplayName("구간 사이에 새 구간 추가")
+    @Test
+    void addSectionInMiddle() {
+        var 광교중앙중앙역 = new Station("광교중앙중앙역");
+
+        sut.addSection(광교중앙중앙역, 광교역, 10);
+
+        assertThat(sut.getStations()).containsExactly(광교역, 광교중앙중앙역, 광교중앙역);
+    }
+
     @DisplayName("노선 내 역 조회")
     @Test
     void getStations() {

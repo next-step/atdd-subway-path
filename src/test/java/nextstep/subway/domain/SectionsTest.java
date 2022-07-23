@@ -42,6 +42,15 @@ class SectionsTest {
         assertThat(sut.getStations()).containsExactly(새로운역, 청량리역, 왕십리역);
     }
 
+    @DisplayName("구간 사이에 새 구간 추가")
+    @Test
+    void addSectionInMiddle() {
+        var 중간역 = new Station("중간역");
+        sut.add(분당선, 청량리역, 중간역, 10);
+
+        assertThat(sut.getStations()).containsExactly(청량리역, 중간역, 왕십리역);
+    }
+
     @DisplayName("구간 제거")
     @Test
     void removeSection() {
