@@ -28,10 +28,10 @@ class LineTest {
     @DisplayName("구간 등록 성공")
     @Test
     void addSection() {
-        신분당선.addSection(신논현역, 논현역, 5);
+        신분당선.addSection(논현역, 신논현역, 5);
         assertThat(신분당선.sections().size()).isEqualTo(1);
-        assertThat(신분당선.sections().stream().findFirst().orElseThrow().getUpStation().getName()).isEqualTo("신논현역");
-        assertThat(신분당선.sections().stream().findFirst().orElseThrow().getDownStation().getName()).isEqualTo("논현역");
+        assertThat(신분당선.sections().get(0).getUpStation().getName()).isEqualTo("논현역");
+        assertThat(신분당선.sections().get(신분당선.sections().size() - 1).getDownStation().getName()).isEqualTo("신논현역");
     }
 
     @DisplayName("역 목록 조회")
