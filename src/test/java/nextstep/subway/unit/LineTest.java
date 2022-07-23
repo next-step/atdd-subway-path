@@ -34,7 +34,7 @@ class LineTest {
 	@Test
 	void addSection() {
 		// add section -> setUp()
-		assertThat(신분당선.getSections()).contains(section);
+		assertThat(신분당선.getStations()).containsExactly(강남역, 양재역);
 	}
 
     @DisplayName("라인에 해당하는 지하철역 조회")

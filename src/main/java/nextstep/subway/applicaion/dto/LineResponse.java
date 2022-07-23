@@ -31,15 +31,11 @@ public class LineResponse {
     }
 
     public static List<StationResponse> stationsFrom(Line line) {
-        if (line.getSections().isEmpty()) {
+        if (line.isSectionEmpty()) {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getSections().stream()
-            .map(Section::getDownStation)
-            .collect(Collectors.toList());
-
-        stations.add(0, line.getSections().get(0).getUpStation());
+        List<Station> stations = line.getStations();
 
         return stations.stream()
             .map(StationResponse::from)

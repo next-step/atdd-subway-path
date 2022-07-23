@@ -53,10 +53,10 @@ public class LineServiceTest {
     void saveLine() {
         // given 신분당선 강남-양재 구간 setUp
 
-        // when
+        // when 분당선 생성
         LineResponse lineResponse = lineService.saveLine(new LineRequest("분당선", "yellow", 강남역.getId(), 양재역.getId(), 10));
 
-        // then
+        // then 분당선에 강남역, 양재역이 존재하는지 조회
         Line 분당선 = lineRepository.findById(lineResponse.getId()).orElseThrow(IllegalArgumentException::new);
         assertThat(분당선.getStations()).containsExactly(강남역, 양재역);
     }
@@ -69,10 +69,10 @@ public class LineServiceTest {
         Station 양재시민의숲역 = new Station("양재시민의숲역");
         stationRepository.save(양재시민의숲역);
 
-        // when
+        // when 신분당선에 양재-양재시민의숲 구간 추가
         lineService.addSection(신분당선.getId(), new SectionRequest(양재역.getId(), 양재시민의숲역.getId(), 20));
 
-        // then
+        // then 강남역, 양재역, 양재시민의숲역이 신분당선에 추가되었는지 조회
         assertThat(신분당선.getStations()).containsExactly(강남역, 양재역, 양재시민의숲역);
     }
 
@@ -81,12 +81,12 @@ public class LineServiceTest {
     void updateLine() {
         // given 신분당선 강남-양재 구간 setUp
 
-        // when
+        // when 신분당선의 이름과 색을 수정
         String newName = "2호선";
         String newColor = "green";
         lineService.updateLine(신분당선.getId(), new LineRequest(newName, newColor, 강남역.getId(), 양재역.getId(),10));
 
-        // then
+        // then 이름과 색이 변경되었는지 확인
         assertThat(신분당선.getName()).isEqualTo(newName);
         assertThat(신분당선.getColor()).isEqualTo(newColor);
     }
@@ -96,10 +96,10 @@ public class LineServiceTest {
     void deleteLine() {
         // given 신분당선 강남-양재 구간 setUp
 
-        // when
+        // when 신분당선 제거
         lineService.deleteLine(신분당선.getId());
 
-        // then
+        // then 신분당선이 제거되어 조회시 에러 발생
         assertThatThrownBy(()->lineService.findLineResponse(신분당선.getId()))
             .isInstanceOf(IllegalArgumentException.class);
     }
