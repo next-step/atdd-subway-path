@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.AddSectionException;
+
 import javax.persistence.*;
 
 @Entity
@@ -34,6 +36,24 @@ public class Section {
 
     public static Section of(Station upStation, Station downStation, int distance) {
         return new Section(upStation, downStation, distance);
+    }
+
+    public void changeExistingUpStationToNewDownStation(Section newSection) {
+        validateSectionDistance(newSection);
+        this.upStation = newSection.downStation;
+        this.distance -= newSection.distance;
+    }
+
+    public void changeExistingDownStationToNewUpStation(Section newSection) {
+        validateSectionDistance(newSection);
+        this.downStation = newSection.upStation;
+        this.distance -= newSection.distance;
+    }
+
+    private void validateSectionDistance(Section newSection) {
+        if (newSection.distance >= distance) {
+            throw new AddSectionException("신규 구간의 길이는 기존 구간의 길이보다 짧아야 합니다.");
+        }
     }
 
     public void line(Line line) {
