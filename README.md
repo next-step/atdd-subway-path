@@ -9,7 +9,7 @@
   - [X] 구간 단위 테스트 (LineTest)
   - [X] 구간 서비스 단위 테스트 with Mock (LineServiceMockTest)
   - [X] 구간 서비스 단위 테스트 without Mock (LineServiceTest)
-  - [ ] 구간 등록 
+  - [X] 구간 등록 
     - [X] 신규 구간의 상행역과 하행역이 둘중 하나만 노선에 등록되어 있어야한다.
     - [X] 구간 사이 등록 기능
       - [X] 구간 사이에 등록 시 신규 구간의 길이가 구간 사이의 길이보다 작아야한다.
