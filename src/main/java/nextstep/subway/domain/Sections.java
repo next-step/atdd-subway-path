@@ -19,9 +19,8 @@ public class Sections {
             throw new IllegalArgumentException();
         }
 
-        var section = getSectionByUpStation(upStation);
-        if (isExistStation(upStation) && section.isPresent()) {
-            section.get().setUpStation(downStation);
+        if (isExistStation(upStation) && isNotLastStation(upStation)) {
+            getSectionByUpStation(upStation).setUpStation(downStation);
         }
 
         var newSection = new Section(line, upStation, downStation, distance);
@@ -85,10 +84,11 @@ public class Sections {
                 .findFirst();
     }
 
-    private Optional<Section> getSectionByUpStation(Station upStation) {
+    private Section getSectionByUpStation(Station upStation) {
         return sectionList.stream()
                 .filter(s -> upStation.equals(s.getUpStation()))
-                .findFirst();
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     private boolean isExistStation(Station station) {
