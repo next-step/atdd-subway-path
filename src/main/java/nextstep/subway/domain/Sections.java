@@ -19,7 +19,7 @@ public class Sections {
 
     public void addSection(Section addedSection) {
         if (sections.size() > MINIMUM_SECTIONS_SIZE) {
-            isContains(addedSection);
+            isMatchedSection(addedSection);
             Section matchedSection = getMatchedSection(addedSection);
             changeMatchStation(addedSection, matchedSection);
             changeAroundStationByMatchStation(addedSection, matchedSection);
@@ -27,7 +27,7 @@ public class Sections {
         sections.add(addedSection);
     }
 
-    private void isContains(Section section) {
+    private void isMatchedSection(Section section) {
         if (sections.contains(section)) {
             throw new IllegalArgumentException("같은 구간이 있습니다.");
         }
@@ -146,32 +146,32 @@ public class Sections {
 
 
     public void deleteSection(Station removedStation) {
-        matchStation(removedStation);
         checkSectionSize();
 
-        Section section = findSection(removedStation);
+        List<Section> matchedSections = findMatchedSection(removedStation);
+        validateMatchedSections(matchedSections);
 
-        List<Section> matchSections = matchSectionList(removedStation);
+        Section firstMatchedSection = matchedSections.get(0);
 
-        if (matchSections.size() == MAX_AROUND_SECTION_SIZE) {
-            Section aroundSection = findAroundSection(section, matchSections);
-            updateAroundSection(section, aroundSection);
+        if (matchedSections.size() == MAX_AROUND_SECTION_SIZE) {
+            Section aroundMatchedSection = matchedSections.get(1);
+            updateAroundSection(firstMatchedSection, aroundMatchedSection);
         }
 
-        removeSection(section);
+        removeSection(firstMatchedSection);
+    }
+
+    private void validateMatchedSections(List<Section> matchedSections) {
+        if (matchedSections.isEmpty()) {
+            throw new IllegalArgumentException("노선에 등록되어있지 않은 역입니다");
+        }
     }
 
     private void removeSection(Section section) {
         sections.remove(section);
     }
 
-    private Section findAroundSection(Section section, List<Section> matchSections) {
-        return matchSections.stream().filter(otherSection -> !otherSection.equals(section))
-                .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
-    }
-
-    private List<Section> matchSectionList(Station removedStation) {
+    private List<Section> findMatchedSection(Station removedStation) {
         return sections.stream()
                 .filter(section -> section.anyMatchStation(removedStation))
                 .collect(Collectors.toList());
@@ -182,22 +182,9 @@ public class Sections {
         aroundSection.plusDistance(removedSection.getDistance());
     }
 
-    private Section findSection(Station removedStation) {
-        return getSections().stream()
-                .filter(section -> section.anyMatchStation(removedStation))
-                .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
-    }
-
     private void checkSectionSize() {
         if (sections.size() < MINIMUM_REMOVE_SECTIONS_SIZE) {
             throw new IllegalArgumentException("구간은 두개 이상부터 삭제할 수 있습니다.");
-        }
-    }
-
-    private void matchStation(Station station) {
-        if (!getStations().contains(station)) {
-            throw new IllegalArgumentException("노선에 등록되어있지 않은 역입니다");
         }
     }
 }
