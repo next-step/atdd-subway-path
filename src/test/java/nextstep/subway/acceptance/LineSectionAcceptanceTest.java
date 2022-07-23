@@ -96,6 +96,27 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 청계산입구역);
      }
 
+    /**
+     * given 노선이 생성되어 있음
+     * given 구간이 생성되어 있음 (강남역 - 양재역)
+     * when 판교역을 기준으로 (강남역 - 청계산입구역) 구간을 추가함 근데 강남역-청계산입구역 거리가 강남역 - 양재역 거리보다 김
+     * then 에러 발생
+     */
+    @DisplayName("기존 구간의 역을 기준으로 구간을 추가하는데 새로운 구간이 기존 구간거리보다 길경우 에러 발생")
+    @Test
+    void addNewSectionBasedExistingSectionException() {
+
+        //given
+        Long 청계산입구역 = 지하철역_생성_요청("청계산입구역").jsonPath().getLong("id");
+
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createIllegalSectionCreateParams(강남역, 청계산입구역, 19));
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).contains("추가하려는 구간의 길이는 기존 구간의 길이와 같거나 길수 없습니다");
+     }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
@@ -112,6 +133,14 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");
         params.put("distance", 6 + "");
+        return params;
+    }
+
+    private Map<String, String> createIllegalSectionCreateParams(Long upStationId, Long downStationId, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", upStationId + "");
+        params.put("downStationId", downStationId + "");
+        params.put("distance", distance + "");
         return params;
     }
 }
