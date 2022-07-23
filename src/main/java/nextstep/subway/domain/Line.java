@@ -70,7 +70,7 @@ public class Line {
 
     public void removeSection(Station station) {
         validateRemoveSection(station);
-        sections.removeIf(section -> section.getDownStation().equals(station));
+        sections.remove(sections.size() - 1);
     }
 
     private void validateRemoveSection(Station station) {

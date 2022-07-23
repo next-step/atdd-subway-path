@@ -6,6 +6,7 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,23 +31,38 @@ class LineServiceMockTest {
     @InjectMocks
     private LineService lineService;
 
+    private Station 선릉역;
+
+    private Station 삼성역;
+
+    private Station 종합운동장역;
+
+    private Line _2호선;
+
+    @BeforeEach
+    void setUp() {
+        선릉역 = new Station("선릉역");
+        삼성역 = new Station("삼성역");
+        종합운동장역 = new Station("삼성역");
+        _2호선 = new Line("2호선", "bg-green-600");
+
+        when(stationService.findById(1L)).thenReturn(선릉역);
+        when(stationService.findById(2L)).thenReturn(삼성역);
+
+        when(lineRepository.findById(1L)).thenReturn(Optional.of(_2호선));
+    }
+
     @DisplayName("구간을 추가할 수 있다.")
     @Test
     void addSection() {
         // given
-        final var upStation = new Station("선릉역");
-        final var downStation = new Station("삼성역");
-        final var line = new Line("2호선", "bg-green-600");
-
-        when(stationService.findById(1L)).thenReturn(upStation);
-        when(stationService.findById(2L)).thenReturn(downStation);
-        when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+        final var sectionRequest = new SectionRequest(1L, 2L, 10);
 
         // when
-        lineService.addSection(1L, new SectionRequest(1L, 2L, 10));
+        lineService.addSection(1L, sectionRequest);
 
         // then
-        assertThat(line.findAllStations()).containsExactly(upStation, downStation);
+        assertThat(_2호선.findAllStations()).containsExactly(선릉역, 삼성역);
     }
 
 
@@ -54,16 +70,8 @@ class LineServiceMockTest {
     @Test
     void deleteSection() {
         // given
-        final var firstStation = new Station("선릉역");
-        final var secondStation = new Station("삼성역");
-        final var thirdStation = new Station("종합운동장역");
-        final var line = new Line("2호선", "bg-green-600");
 
-        when(stationService.findById(1L)).thenReturn(firstStation);
-        when(stationService.findById(2L)).thenReturn(secondStation);
-        when(stationService.findById(3L)).thenReturn(thirdStation);
-
-        when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+        when(stationService.findById(3L)).thenReturn(종합운동장역);
 
         lineService.addSection(1L, new SectionRequest(1L, 2L, 10));
         lineService.addSection(1L, new SectionRequest(2L, 3L, 5));
@@ -72,21 +80,13 @@ class LineServiceMockTest {
         lineService.deleteSection(1L, 3L);
 
         // then
-        assertThat(line.findAllStations()).containsExactly(firstStation, secondStation);
+        assertThat(_2호선.findAllStations()).containsExactly(선릉역, 삼성역);
     }
 
     @DisplayName("삭제하고자 하는 구간이 상행 종착역과 하행 종착역만이 있다면 삭제 시 에러가 발생한다.")
     @Test
     void deleteExceptionWhenOnlyOneSectionExist() {
         // given
-        final var upStation = new Station("선릉역");
-        final var downStation = new Station("삼성역");
-        final var line = new Line("2호선", "bg-green-600");
-
-        when(stationService.findById(1L)).thenReturn(upStation);
-        when(stationService.findById(2L)).thenReturn(downStation);
-        when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
-
         lineService.addSection(1L, new SectionRequest(1L, 2L, 10));
 
         // when, then
@@ -99,16 +99,8 @@ class LineServiceMockTest {
     @Test
     void deleteExceptionWhenStationIsNotDownStation() {
         // given
-        final var firstStation = new Station("선릉역");
-        final var secondStation = new Station("삼성역");
-        final var thirdStation = new Station("종합운동장역");
-        final var line = new Line("2호선", "bg-green-600");
 
-        when(stationService.findById(1L)).thenReturn(firstStation);
-        when(stationService.findById(2L)).thenReturn(secondStation);
-        when(stationService.findById(3L)).thenReturn(thirdStation);
-
-        when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+        when(stationService.findById(3L)).thenReturn(종합운동장역);
 
         lineService.addSection(1L, new SectionRequest(1L, 2L, 10));
         lineService.addSection(1L, new SectionRequest(2L, 3L, 5));
