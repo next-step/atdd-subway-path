@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.*;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.WeightedMultigraph;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -47,6 +49,11 @@ public class Sections {
 
     public Station getLastDownStation() {
         return getLastSection().getDownStation();
+    }
+
+    public void addSectionsToGraph(WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
+        this.sections.forEach(section ->
+            graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance()));
     }
 
     private int size() {
