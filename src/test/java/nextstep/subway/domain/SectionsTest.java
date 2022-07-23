@@ -191,4 +191,19 @@ class SectionsTest {
 		assertThat(line.getSections()).hasSize(2);
 		assertThat(line.getStations()).contains(upStation, downStation, imaeStation);
 	}
+
+	@DisplayName("이미 등록되어있는 상행역과 하행역 구간 등록시 에러 발생")
+	@Test
+	void exceptionAlreadyExistingStation() throws Exception {
+
+	    //given
+		line.addSection(section);
+		Sections sections = Sections.from(line.getSections());
+		Section newSection = new Section(upStation, downStation, 5);
+
+	    //when //then
+		assertThatThrownBy(() -> sections.addSection(newSection)).isInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("상행역과 하행역이 모두 등록되어있습니다.");
+
+	 }
 }

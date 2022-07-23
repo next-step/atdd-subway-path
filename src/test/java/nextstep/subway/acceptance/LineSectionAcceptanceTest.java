@@ -185,6 +185,20 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
      }
 
+     @DisplayName("상행역과 하행역이 모두 노선에 추가되어있다면 구간 추가 불가")
+     @Test
+     void exceptionAlreadyExistStation() throws Exception {
+
+         //given //when
+         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역));
+
+         //then
+         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+         assertThat(response.body().asString()).contains("상행역과 하행역이 모두 등록되어있습니다.");
+      }
+      
+
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
