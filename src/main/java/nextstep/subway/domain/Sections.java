@@ -26,6 +26,20 @@ public class Sections {
         this.sections = sections;
     }
 
+    public List<Section> getSections() {
+        List<Section> sortedSections = new ArrayList<>();
+
+        Section section = findNextSection(getUpStationTerminal());
+        sortedSections.add(section);
+
+        while (findNextSectionCount(section.getDownStation()) > 0) {
+            section = findNextSection(section.getDownStation());
+            sortedSections.add(section);
+        }
+
+        return sortedSections;
+    }
+
     public void add(Section section) {
         if (this.sections.isEmpty()) {
             this.sections.add(section);
@@ -61,6 +75,19 @@ public class Sections {
             upStation = section.getDownStation();
         }
         return stations;
+    }
+
+    private long findNextSectionCount(Station station) {
+        return sections.stream()
+                .filter(it -> it.getUpStation().equals(station))
+                .count();
+    }
+
+    private Section findNextSection(Station station) {
+        return sections.stream()
+                .filter(it -> it.getUpStation().equals(station))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
     }
 
     private void sectionContainDownStation(Section newSection) {
