@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +41,6 @@ class SectionsTest {
 		//then
 		assertThat(line.getSections()).hasSize(2);
 		assertThat(line.getStations()).contains(upStation, downStation, imaeStation);
-		assertThat(line.getSections()).containsExactly(section, newSection);
 	}
 	 
 	@DisplayName("추가하려는 구간의 상행역을 포함하고 있는지 확인하는 메소드 테스트")
@@ -139,20 +139,38 @@ class SectionsTest {
 
 	 }
 
-	 @DisplayName("새로운 구간의 상행역이 기존 노선의 하행 종점과 일치하는지 확인하늩 테스트")
-	 @Test
-	 void isSameNewSectionUpStationAndDownStation(){
+	@DisplayName("새로운 구간의 상행역이 기존 노선의 하행 종점과 일치하는지 확인하늩 테스트")
+	@Test
+	void isSameNewSectionUpStationAndDownStation(){
 
-	     //given
-		 line.addSection(section);
-		 Sections sections = Sections.from(line.getSections());
-		 Section newSection = new Section(downStation, new Station("이매역"), 5);
+		//given
+		line.addSection(section);
+		Sections sections = Sections.from(line.getSections());
+		Section newSection = new Section(downStation, new Station("이매역"), 5);
 
-		 //when
-		 boolean result = sections.isSameNewSectionUpStationAndDownStation(newSection);
+		//when
+		boolean result = sections.isSameNewSectionUpStationAndDownStation(newSection);
 
-		 //then
-		 assertThat(result).isTrue();
+		//then
+		assertThat(result).isTrue();
 
-	  }
+	}
+
+	@DisplayName("모든 역을 순서대로 조회하는 테스트")
+	@Test
+	void getStationsTest() throws Exception {
+
+	    //given
+		line.addSection(section);
+		Sections sections = Sections.from(line.getSections());
+		Station imaeStation = new Station("이매역");
+		Section newSection = new Section(downStation, imaeStation, 5);
+		line.addSection(newSection);
+		
+	    //when
+		List<Station> stationList = sections.getStations();
+
+	    //then
+		assertThat(stationList).containsExactly(upStation, downStation, imaeStation);
+	 }
 }
