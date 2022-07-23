@@ -215,9 +215,55 @@ class LineTest {
             // then
             assertAll(
                     () -> assertThat(이호선.getStations()).hasSize(2),
-                    () -> assertThat(이호선.getStations()).containsExactly(영등포역, 신도림역)
+                    () -> assertThat(이호선.getStations()).containsExactly(영등포역, 신도림역),
+
+                    () -> assertThat(이호선.getSections()).hasSize(1),
+                    () -> assertThat(이호선.getSections().get(0).getDistance().getValue()).isEqualTo(10)
             );
         }
+
+        @DisplayName("첫번째 역 구간 삭제")
+        @Test
+        void removeSectionFirstDownStation() {
+            // given
+            Line 이호선 = new Line("2호선", "green");
+            이호선.addSection(영등포역, 신도림역, 10);
+            이호선.addSection(신도림역, 구로역, 5);
+
+            // when
+            이호선.deleteSection(영등포역);
+
+            // then
+            assertAll(
+                    () -> assertThat(이호선.getStations()).hasSize(2),
+                    () -> assertThat(이호선.getStations()).containsExactly(신도림역, 구로역),
+
+                    () -> assertThat(이호선.getSections()).hasSize(1),
+                    () -> assertThat(이호선.getSections().get(0).getDistance().getValue()).isEqualTo(5)
+            );
+        }
+
+        @DisplayName("중간 노선 구간 삭제")
+        @Test
+        void removeSectionInMiddle() {
+            // given
+            Line 이호선 = new Line("2호선", "green");
+            이호선.addSection(영등포역, 신도림역, 10);
+            이호선.addSection(신도림역, 구로역, 5);
+
+            // when
+            이호선.deleteSection(신도림역);
+
+            // then
+            assertAll(
+                    () -> assertThat(이호선.getStations()).hasSize(2),
+                    () -> assertThat(이호선.getStations()).containsExactly(영등포역, 구로역),
+
+                    () -> assertThat(이호선.getSections()).hasSize(1),
+                    () -> assertThat(이호선.getSections().get(0).getDistance().getValue()).isEqualTo(15)
+            );
+        }
+
 
         @DisplayName("하나의 구간을 가진 노선 삭제시 예외 발생")
         @Test

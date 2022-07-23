@@ -74,6 +74,35 @@ public class Sections {
         return sortedStations;
     }
 
+    public void delete(Line line, Station station) {
+        final int ONLY_ONE_SECTION = 1;
+
+        if (this.sections.size() <= MIN_SECTION_SIZE) {
+            throw new IllegalArgumentException("지하철 구간은 최소 1개 이상 있어야합니다.");
+        }
+
+        List<Section> deleteSections = findSectionssHavaStation(station);
+        if (deleteSections.size() > ONLY_ONE_SECTION) {
+            this.relocateSection(line, station);
+        }
+
+        this.sections.removeAll(deleteSections);
+    }
+
+    private void relocateSection(Line line, Station station) {
+        Section sectionHasUpSection = findSectionHasUpStation(station);
+        Section sectionHasDownSection = findSectionHasDownStation(station);
+
+        int newDistance = sectionHasDownSection.getDistance().plus(sectionHasUpSection.getDistance());
+        Station newUpStation = sectionHasDownSection.getUpStation();
+        Station newDownStation = sectionHasUpSection.getDownStation();
+
+        sections.remove(sectionHasUpSection);
+        sections.remove(sectionHasDownSection);
+
+        this.add(new Section(line, newUpStation, newDownStation, newDistance));
+    }
+
     private boolean isAnyMatchUpStation(Station station) {
         return sections.stream()
                 .anyMatch(it -> it.isSameUpStation(station));
@@ -151,15 +180,6 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public void delete(Station station) {
-        if (this.sections.size() <= MIN_SECTION_SIZE) {
-            throw new IllegalArgumentException("지하철 구간은 최소 1개 이상 있어야합니다.");
-        }
-
-        List<Section> sections = findSectionHasStation(station);
-        this.sections.removeAll(sections);
-    }
-
     private void checkDoesNotExistStations(Section newSection) {
         if (!this.getStations().contains(newSection.getUpStation())
                 && !this.getStations().contains(newSection.getDownStation())) {
@@ -183,7 +203,7 @@ public class Sections {
         }
     }
 
-    private List<Section> findSectionHasStation(Station station) {
+    private List<Section> findSectionssHavaStation(Station station) {
         List<Section> sections = this.sections.stream()
                 .filter(it -> it.isSameDownStation(station) || it.isSameUpStation(station))
                 .collect(Collectors.toList());
@@ -191,6 +211,13 @@ public class Sections {
             throw new IllegalArgumentException("해당되는 구간을 찾을 수 없습니다.");
         }
         return sections;
+    }
+
+    private Section findSectionHasDownStation(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.isSameDownStation(station))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("해당되는 구간을 찾을 수 없습니다."));
     }
 
     private Section findSectionHasUpStation(Station station) {
