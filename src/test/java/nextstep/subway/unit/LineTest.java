@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -12,38 +13,47 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 class LineTest {
 
+    private Station 선릉역;
+
+    private Station 삼성역;
+
+    private Station 종합운동장역;
+
+    private Line _2호선;
+
+    @BeforeEach
+    void setUp() {
+        선릉역 = new Station("선릉역");
+        삼성역 = new Station("삼성역");
+        종합운동장역 = new Station("종합운동장역");
+        _2호선 = new Line("2호선", "bg-green-600");
+    }
+
     @DisplayName("구간 등록을 할 수 있다.")
     @Test
     void addSection() {
         // given
-        final var upStation = new Station("선릉역");
-        final var downStation = new Station("삼성역");
-        final var line = new Line("2호선", "bg-green-600");
-        final var section = new Section(line, upStation, downStation, 10);
+        final var section = new Section(_2호선, 선릉역, 삼성역, 10);
 
         // when
-        line.addSection(section);
+        _2호선.addSection(section);
 
         // then
-        assertThat(line.getSections()).containsExactly(section);
+        assertThat(_2호선.getSections()).containsExactly(section);
     }
 
     @DisplayName("구간 등록 후 모든 역을 조회할 수 있다.")
     @Test
     void getStations() {
         // given
-        final var upStation = new Station("선릉역");
-        final var downStation = new Station("삼성역");
-        final var line = new Line("2호선", "bg-green-600");
-        final var section = new Section(line, upStation, downStation, 10);
-
-        line.addSection(section);
+        final var section = new Section(_2호선, 선릉역, 삼성역, 10);
+        _2호선.addSection(section);
 
         // when
-        final var stations = line.findAllStations();
+        final var stations = _2호선.findAllStations();
 
         // then
-        assertThat(stations).containsExactly(upStation, downStation);
+        assertThat(stations).containsExactly(선릉역, 삼성역);
 
     }
 
@@ -51,25 +61,19 @@ class LineTest {
     @Test
     void removeSection() {
         // given
-        final var firstStation = new Station("선릉역");
-        final var secondStation = new Station("삼성역");
-        final var thirdStation = new Station("종합운동장역");
+        final var firstSection = new Section(_2호선, 선릉역, 삼성역, 10);
+        final var secondSection = new Section(_2호선, 삼성역, 종합운동장역, 5);
 
-        final var line = new Line("2호선", "bg-green-600");
-
-        final var firstSection = new Section(line, firstStation, secondStation, 10);
-        final var secondSection = new Section(line, secondStation, thirdStation, 5);
-
-        line.addSection(firstSection);
-        line.addSection(secondSection);
+        _2호선.addSection(firstSection);
+        _2호선.addSection(secondSection);
 
         // when
-        line.removeSection(thirdStation);
+        _2호선.removeSection(종합운동장역);
 
         // then
         assertAll(
-                () -> assertThat(line.findAllStations()).containsExactly(firstStation, secondStation),
-                () -> assertThat(line.getSections()).hasSize(1)
+                () -> assertThat(_2호선.findAllStations()).containsExactly(선릉역, 삼성역),
+                () -> assertThat(_2호선.getSections()).hasSize(1)
         );
 
     }
@@ -77,30 +81,20 @@ class LineTest {
     @DisplayName("구간 등록이 되어있지 않음에도 삭제를 시도하면 에러가 발생한다.")
     @Test
     void removeSectionExceptionWhenNoSectionExist() {
-        // given
-        final var station = new Station("삼성역");
-        final var line = new Line("2호선", "bg-green-600");
-
-        // when, then
-        assertThatThrownBy(() -> line.removeSection(station))
+        assertThatThrownBy(() -> _2호선.removeSection(종합운동장역))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("노선에 등록된 구간이 존재하지 않아 삭제할 수 없습니다.");
-
     }
 
     @DisplayName("삭제하고자 하는 구간이 상행 종착역과 하행 종착역만이 있다면 삭제 시 에러가 발생한다.")
     @Test
     void removeExceptionWhenOnlyOneSectionExist() {
         // given
-        final var upStation = new Station("선릉역");
-        final var downStation = new Station("삼성역");
-        final var line = new Line("2호선", "bg-green-600");
-        final var section = new Section(line, upStation, downStation, 10);
-
-        line.addSection(section);
+        final var section = new Section(_2호선, 선릉역, 삼성역, 10);
+        _2호선.addSection(section);
 
         // when, then
-        assertThatThrownBy(() -> line.removeSection(downStation))
+        assertThatThrownBy(() -> _2호선.removeSection(삼성역))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("구간에 상행 종착역과 하행 종착역만 있기 때문에 삭제할 수 없습니다.");
 
@@ -110,20 +104,15 @@ class LineTest {
     @Test
     void removeExceptionWhenStationIsNotDownStation() {
         // given
-        final var firstStation = new Station("선릉역");
-        final var secondStation = new Station("삼성역");
-        final var thirdStation = new Station("종합운동장역");
+        final var firstSection = new Section(_2호선, 선릉역, 삼성역, 10);
+        final var secondSection = new Section(_2호선, 삼성역, 종합운동장역, 5);
 
-        final var line = new Line("2호선", "bg-green-600");
+        _2호선.addSection(firstSection);
+        _2호선.addSection(secondSection);
 
-        final var firstSection = new Section(line, firstStation, secondStation, 10);
-        final var secondSection = new Section(line, secondStation, thirdStation, 5);
-
-        line.addSection(firstSection);
-        line.addSection(secondSection);
 
         // when, then
-        assertThatThrownBy(() -> line.removeSection(secondStation))
+        assertThatThrownBy(() -> _2호선.removeSection(삼성역))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("하행 종착역만을 삭제할 수 있습니다.");
 
