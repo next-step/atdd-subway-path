@@ -47,7 +47,7 @@ class LineTest {
     void addSectionInMiddle() {
         var 광교중앙중앙역 = new Station("광교중앙중앙역");
 
-        sut.addSection(광교중앙중앙역, 광교역, 10);
+        sut.addSection(광교역, 광교중앙중앙역, 10);
 
         assertThat(sut.getStations()).containsExactly(광교역, 광교중앙중앙역, 광교중앙역);
     }
