@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class SectionsTest {
 
@@ -46,7 +48,7 @@ class SectionsTest {
     @Test
     void addSectionWithNewDownStationInMiddle() {
         var 중간역 = new Station("중간역");
-        sut.add(분당선, 청량리역, 중간역, 10);
+        sut.add(분당선, 청량리역, 중간역, 5);
 
         assertThat(sut.getStations()).containsExactly(청량리역, 중간역, 왕십리역);
     }
@@ -55,9 +57,17 @@ class SectionsTest {
     @Test
     void addSectionWithNewUpStationInMiddle() {
         var 중간역 = new Station("중간역");
-        sut.add(분당선, 중간역, 왕십리역, 10);
+        sut.add(분당선, 중간역, 왕십리역, 5);
 
         assertThat(sut.getStations()).containsExactly(청량리역, 중간역, 왕십리역);
+    }
+
+    @ParameterizedTest(name = "구간 사이의 새 구간의 거리가 기존 구간보다 크거나 같으면 추가 실패 / distance = {0}")
+    @ValueSource(ints = {10, 15})
+    void sectionAdditionFailsWhenDistanceOfNewSectionInMiddleIsGreater(int distance) {
+        var 중간역 = new Station("중간역");
+
+        assertThrows(IllegalArgumentException.class, () -> sut.add(분당선, 청량리역, 중간역, distance));
     }
 
     @DisplayName("구간의 상하행역이 모두 노선에 존재하지 않으면 추가 실패")
