@@ -73,7 +73,8 @@ public class LineServiceMockTest {
         assertAll(
                 () -> assertThat(allLines).hasSize(2),
                 () -> assertThat(allLines).extracting("name").containsExactly(일호선.getName(), 이호선.getName()),
-                () -> assertThat(allLines).extracting("color").containsExactly(일호선.getColor(), 이호선.getColor()));
+                () -> assertThat(allLines).extracting("color").containsExactly(일호선.getColor(), 이호선.getColor())
+        );
     }
 
     @Test

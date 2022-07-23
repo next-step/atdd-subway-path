@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -22,19 +21,6 @@ public class Line {
 
     public Line(String name, String color) {
         this.name = name;
-        this.color = color;
-
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setColor(String color) {
         this.color = color;
     }
 
@@ -56,10 +42,10 @@ public class Line {
 
     public void updateLine(String color, String name) {
         if (name != null) {
-            this.setName(name);
+            this.name = name;
         }
         if (color != null) {
-            this.setColor(color);
+            this.color = color;
         }
     }
 }
