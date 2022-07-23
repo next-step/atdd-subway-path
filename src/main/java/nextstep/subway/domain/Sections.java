@@ -25,42 +25,6 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> values = new ArrayList<>();
 
-    public List<Station> getStations() {
-        if(values.isEmpty()) {
-            return Collections.emptyList();
-        }
-        Section firstSection = findFirstSection();
-        List<Section> connectedOrderSections = new ArrayList<>();
-        connectedOrderSections.add(firstSection);
-
-        while (connectedOrderSections.size() != values.size()) {
-            Section lastStation = connectedOrderSections.get(connectedOrderSections.size() - ONE);
-            Section connectableSection = findConnectableSection(lastStation);
-            connectedOrderSections.add(connectableSection);
-        }
-        return exportStations(connectedOrderSections);
-    }
-
-    private List<Station> exportStations(List<Section> sections) {
-        return sections.stream()
-                .map(Section::getStations)
-                .flatMap(List::stream)
-                .distinct()
-                .collect(Collectors.toUnmodifiableList());
-    }
-
-    private Section findFirstSection() {
-        return values.stream()
-                .filter(section -> isMissMatchDownStation(section.getUpStation()))
-                .findAny()
-                .orElseThrow(IllegalStateException::new);
-    }
-
-    private boolean isMissMatchDownStation(Station station) {
-        return values.stream()
-                .allMatch(section -> section.isMissMatchDownStation(station));
-    }
-
     public void add(Section section) {
         if (values.isEmpty()) {
             values.add(section);
@@ -118,5 +82,41 @@ public class Sections {
 
     private int lastIndex() {
         return values.size() - ONE;
+    }
+
+    public List<Station> getStations() {
+        if(values.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Section firstSection = findFirstSection();
+        List<Section> connectedOrderSections = new ArrayList<>();
+        connectedOrderSections.add(firstSection);
+
+        while (connectedOrderSections.size() != values.size()) {
+            Section lastStation = connectedOrderSections.get(connectedOrderSections.size() - ONE);
+            Section connectableSection = findConnectableSection(lastStation);
+            connectedOrderSections.add(connectableSection);
+        }
+        return exportStations(connectedOrderSections);
+    }
+
+    private List<Station> exportStations(List<Section> sections) {
+        return sections.stream()
+                .map(Section::getStations)
+                .flatMap(List::stream)
+                .distinct()
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    private Section findFirstSection() {
+        return values.stream()
+                .filter(section -> isMissMatchDownStation(section.getUpStation()))
+                .findAny()
+                .orElseThrow(IllegalStateException::new);
+    }
+
+    private boolean isMissMatchDownStation(Station station) {
+        return values.stream()
+                .allMatch(section -> section.isMissMatchDownStation(station));
     }
 }
