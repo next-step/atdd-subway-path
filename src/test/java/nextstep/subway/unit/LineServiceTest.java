@@ -8,7 +8,6 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
-import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -61,7 +60,7 @@ class LineServiceTest {
         lineService.addSection(_2호선.getId(), sectionRequest);
 
         // then
-        assertThat(_2호선.getSections()).hasSize(1);
+        assertThat(_2호선.findAllStations()).containsExactly(선릉역, 삼성역);
     }
 
     @DisplayName("하행 종착역 구간을 삭제할 수 있다.")
@@ -94,8 +93,8 @@ class LineServiceTest {
 
         // when
         assertThatThrownBy(() -> lineService.deleteSection(_2호선.getId(), 삼성역.getId()))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("구간에 상행 종착역과 하행 종착역만 있기 때문에 삭제할 수 없습니다.");
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("상행역과 하행역만 존재하기 때문에 삭제할 수 없습니다.");
     }
 
     @DisplayName("삭제하고자 하는 역이 하행 종착역이 아니면 에러가 발생한다.")

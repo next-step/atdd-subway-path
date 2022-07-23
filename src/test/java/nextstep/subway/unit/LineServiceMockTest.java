@@ -91,8 +91,8 @@ class LineServiceMockTest {
 
         // when, then
         assertThatThrownBy(() -> lineService.deleteSection(1L, 2L))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("구간에 상행 종착역과 하행 종착역만 있기 때문에 삭제할 수 없습니다.");
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("상행역과 하행역만 존재하기 때문에 삭제할 수 없습니다.");
     }
 
     @DisplayName("삭제하고자 하는 역이 하행 종착역이 아니면 에러가 발생한다.")
@@ -108,7 +108,7 @@ class LineServiceMockTest {
         // when, then
         assertThatThrownBy(() -> lineService.deleteSection(1L, 4L))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("하행 종착역만을 삭제할 수 있습니다.");
+                .hasMessage("하행역만 삭제할 수 있습니다.");
 
     }
 }

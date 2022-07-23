@@ -1,10 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Entity
 public class Line {
@@ -14,8 +11,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -49,10 +46,6 @@ public class Line {
         this.color = color;
     }
 
-    public List<Section> getSections() {
-        return sections;
-    }
-
     public void addSection(Section section) {
         sections.add(section);
     }
@@ -61,30 +54,10 @@ public class Line {
         if (sections.isEmpty()) {
             return List.of();
         }
-        return Stream.concat(
-                        Stream.of(sections.get(0).getUpStation()),
-                        sections.stream().map(Section::getDownStation)
-                )
-                .collect(Collectors.toList());
+        return sections.allStations();
     }
 
     public void removeSection(Station station) {
-        validateRemoveSection(station);
-        sections.remove(sections.size() - 1);
-    }
-
-    private void validateRemoveSection(Station station) {
-
-        if (sections.isEmpty()) {
-            throw new IllegalStateException("노선에 등록된 구간이 존재하지 않아 삭제할 수 없습니다.");
-        }
-
-        if (sections.size() == 1) {
-            throw new IllegalStateException("구간에 상행 종착역과 하행 종착역만 있기 때문에 삭제할 수 없습니다.");
-        }
-
-        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException("하행 종착역만을 삭제할 수 있습니다.");
-        }
+        sections.delete(station);
     }
 }

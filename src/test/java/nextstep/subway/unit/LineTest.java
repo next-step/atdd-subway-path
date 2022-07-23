@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 class LineTest {
 
@@ -39,7 +38,7 @@ class LineTest {
         _2호선.addSection(section);
 
         // then
-        assertThat(_2호선.getSections()).containsExactly(section);
+        assertThat(_2호선.findAllStations()).containsExactly(선릉역, 삼성역);
     }
 
     @DisplayName("구간 등록 후 모든 역을 조회할 수 있다.")
@@ -71,19 +70,8 @@ class LineTest {
         _2호선.removeSection(종합운동장역);
 
         // then
-        assertAll(
-                () -> assertThat(_2호선.findAllStations()).containsExactly(선릉역, 삼성역),
-                () -> assertThat(_2호선.getSections()).hasSize(1)
-        );
+        assertThat(_2호선.findAllStations()).containsExactly(선릉역, 삼성역);
 
-    }
-
-    @DisplayName("구간 등록이 되어있지 않음에도 삭제를 시도하면 에러가 발생한다.")
-    @Test
-    void removeSectionExceptionWhenNoSectionExist() {
-        assertThatThrownBy(() -> _2호선.removeSection(종합운동장역))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("노선에 등록된 구간이 존재하지 않아 삭제할 수 없습니다.");
     }
 
     @DisplayName("삭제하고자 하는 구간이 상행 종착역과 하행 종착역만이 있다면 삭제 시 에러가 발생한다.")
@@ -95,8 +83,8 @@ class LineTest {
 
         // when, then
         assertThatThrownBy(() -> _2호선.removeSection(삼성역))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("구간에 상행 종착역과 하행 종착역만 있기 때문에 삭제할 수 없습니다.");
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("상행역과 하행역만 존재하기 때문에 삭제할 수 없습니다.");
 
     }
 
@@ -114,7 +102,7 @@ class LineTest {
         // when, then
         assertThatThrownBy(() -> _2호선.removeSection(삼성역))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("하행 종착역만을 삭제할 수 있습니다.");
+                .hasMessage("하행역만 삭제할 수 있습니다.");
 
     }
 }
