@@ -40,7 +40,7 @@ public class SectionsTest {
         구간을_추가한다(sections, 선릉_영통_구간);
 
         //then Section의 길이를 확인한다
-        assertThat(sections.getList())
+        assertThat(sections.getValues())
                 .hasSize(1)
                 .containsAnyOf(선릉_영통_구간);
     }
@@ -66,9 +66,9 @@ public class SectionsTest {
         구간을_추가한다(분당선.getSections(), 선릉_영통_구간);
 
         //then Section의 길이를 확인한다
-        List<Station> stations = 분당선.showAllStations();
+        List<Station> stations = 분당선.findAllStation();
         assertThat(stations).hasSize(2);
-        assertThat(분당선.showAllStations()).containsAnyOf(FakeStationFactory.선릉역(), FakeStationFactory.영통역());
+        assertThat(분당선.findAllStation()).containsAnyOf(FakeStationFactory.선릉역(), FakeStationFactory.영통역());
     }
 
     @Test
@@ -82,7 +82,7 @@ public class SectionsTest {
         sections.remove(영통_구의_구간.getDownStation());
 
         //then Section의 길이를 확인한다
-        assertThat(sections.getList())
+        assertThat(sections.getValues())
                 .hasSize(1)
                 .containsAnyOf(선릉_영통_구간);
     }
@@ -117,18 +117,6 @@ public class SectionsTest {
         for (Section section : sectionParams) {
             sectionList.add(section);
         }
-    }
-
-    @Test
-    @DisplayName("구간 추가 실패 테스트 - 구간 목록이 비어있을 때 삭제를 시도할 경우")
-    void 비어있는_구간_목록을_삭제() {
-        //when
-        Sections sections = 분당선.getSections();
-
-        //then
-        assertThatThrownBy(() -> sections.remove(FakeStationFactory.강남역()))
-                .isInstanceOf(SubwayException.class)
-                .hasMessage("등록된 구간이 없습니다.");
     }
 
 }

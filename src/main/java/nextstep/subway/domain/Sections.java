@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.exception.SubwayException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -19,50 +18,51 @@ import java.util.List;
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Section> list = new ArrayList<>();
+    List<Section> values = new ArrayList<>();
     private static int MIN_SIZE = 1;
 
     public void add(Section section) {
-        ensureCanAddition(section.getUpStation());
-        list.add(section);
+        ensureCanAddition(section);
+        values.add(section);
     }
 
-    private void ensureCanAddition(Station station) {
-        if (list.isEmpty()) {
+    private void ensureCanAddition(Section section) {
+        if (values.isEmpty()) {
             return;
         }
-        if (!downStationTerminus().equals(station)) {
-            throw new IllegalArgumentException("상행역과 하행역 종점역이 동일한 경우에 등록할 수 있습니다.");
+        if (hasSection(section)) {
+            throw new IllegalArgumentException("상행역과 하행역이 모두 등록 되어있는 구간은 등록할 수 없습니다.");
         }
     }
 
     public void remove(Station station) {
         ensureCanRemove(station);
-        list.remove(lastSectionIndex());
+        values.remove(lastSectionIndex());
+    }
+
+    public boolean isEmpty() {
+        return values.isEmpty();
+    }
+
+    private Station downStationTerminus() {
+        return values.get(lastSectionIndex()).getDownStation();
+    }
+
+    private int lastSectionIndex() {
+        return values.size() - 1;
     }
 
     private void ensureCanRemove(Station station) {
-        if (list.isEmpty()) {
-            throw new SubwayException("등록된 구간이 없습니다.");
+        if (values.size() < MIN_SIZE) {
+            throw new IllegalArgumentException("두개 이상의 구간이 등록되어야 제거가 가능합니다.");
         }
         if (!downStationTerminus().equals(station)) {
             throw new IllegalArgumentException("하행 종점역이 아니면 제거할 수 없습니다.");
         }
-        if (list.size() <= MIN_SIZE) {
-            throw new IllegalArgumentException("두개 이상의 구간이 등록되어야 제거가 가능합니다.");
-        }
     }
 
-    public boolean isEmptySections() {
-        return list.isEmpty();
-    }
-
-    private Station downStationTerminus() {
-        return list.get(lastSectionIndex()).getDownStation();
-    }
-
-    private int lastSectionIndex() {
-        return list.size() - 1;
+    private boolean hasSection(Section section) {
+        return values.stream().anyMatch(s -> s.equals(section));
     }
 
 }

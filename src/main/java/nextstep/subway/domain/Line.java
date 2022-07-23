@@ -38,17 +38,22 @@ public class Line {
         sections.add(section);
     }
 
-    public int includedStationCount() {
-        return sections.getList().size();
+    public void removeDownTerminus(Station station) {
+        sections.remove(station);
     }
 
-    public List<Station> showAllStations() {
-        return getSections().getList()
+    public boolean isEmptySection() {
+        return sections.isEmpty();
+    }
+
+    public List<Station> findAllStation() {
+        return getSections().getValues()
                             .stream()
                             .map(Section::getStations)
                             .flatMap(Collection::stream)
                             .distinct()
                             .collect(Collectors.toList());
     }
+
 
 }
