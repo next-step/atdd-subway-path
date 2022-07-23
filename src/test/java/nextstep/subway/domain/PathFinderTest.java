@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("경로 찾기 관련")
 public class PathFinderTest {
@@ -29,5 +30,16 @@ public class PathFinderTest {
         // then
         assertThat(path.getStations()).containsExactly(강남역, 역삼역, 선릉역, 삼성역);
         assertThat(path.getDistance()).isEqualTo(15);
+    }
+
+    @DisplayName("출발역과 도착역이 같은 경우 예외 발생")
+    @Test
+    void sameStations() {
+        // given
+        Station 강남역 = new Station("강남역");
+
+        // then
+        assertThatThrownBy(() -> new PathFinder(강남역, 강남역))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

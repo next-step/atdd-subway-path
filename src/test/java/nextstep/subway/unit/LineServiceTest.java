@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
@@ -115,6 +116,35 @@ public class LineServiceTest {
 
         // then
         assertThatThrownBy(() -> lineService.findLineById(이호선.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("지하철역에 해당하는 노선 조회")
+    @Test
+    void findByStations() {
+        // given
+        Station 구로디지털단지역 = stub.구로디지털단지역_생성.get();
+        Station 신대방역 = stub.신대방역_생성.get();
+        Line 이호선 = stub.이호선_생성.apply(구로디지털단지역, 신대방역);
+
+        // when
+        Line line = lineService.findByStations(List.of(구로디지털단지역, 신대방역));
+
+        // then
+        assertThat(line).isEqualTo(이호선);
+    }
+
+    @DisplayName("노선에 없는 지하철역으로 노선을 조회하는 경우 예외 발생")
+    @Test
+    void findByStationsUnknownStationInLines() {
+        // given
+        Station 구로디지털단지역 = stub.구로디지털단지역_생성.get();
+        Station 신대방역 = stub.신대방역_생성.get();
+        Station 신림역 = stub.신림역_생성.get();
+        stub.이호선_생성.apply(구로디지털단지역, 신대방역);
+
+        // then
+        assertThatThrownBy(() -> lineService.findByStations(List.of(구로디지털단지역, 신림역)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

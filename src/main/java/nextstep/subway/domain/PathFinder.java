@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.SameStationException;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -11,6 +12,8 @@ public class PathFinder {
     private Station target;
 
     public PathFinder(Station source, Station target) {
+        validateDuplicateStations(source, target);
+
         this.source = source;
         this.target = target;
     }
@@ -21,5 +24,11 @@ public class PathFinder {
         List<Station> pathInStations = dijkstraShortestPath.getPath(source, target).getVertexList();
         int distance = (int) dijkstraShortestPath.getPathWeight(source, target);
         return new Path(pathInStations, distance);
+    }
+
+    private void validateDuplicateStations(Station source, Station target) {
+        if (source.equals(target)) {
+            throw new SameStationException();
+        }
     }
 }
