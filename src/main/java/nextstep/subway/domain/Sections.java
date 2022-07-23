@@ -19,8 +19,13 @@ public class Sections {
             throw new IllegalArgumentException();
         }
 
-        var section = new Section(line, upStation, downStation, distance);
-        sectionList.add(section);
+        var section = getSectionByUpStation(upStation);
+        if (isExistStation(upStation) && section.isPresent()) {
+            section.get().setUpStation(downStation);
+        }
+
+        var newSection = new Section(line, upStation, downStation, distance);
+        sectionList.add(newSection);
     }
 
     public void removeByStation(Station downStation) {
@@ -77,6 +82,12 @@ public class Sections {
     private Optional<Section> getNextSection(Section section) {
         return sectionList.stream()
                 .filter(s -> section.getDownStation().equals(s.getUpStation()))
+                .findFirst();
+    }
+
+    private Optional<Section> getSectionByUpStation(Station upStation) {
+        return sectionList.stream()
+                .filter(s -> upStation.equals(s.getUpStation()))
                 .findFirst();
     }
 
