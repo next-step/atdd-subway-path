@@ -63,6 +63,8 @@ public class Sections {
 			sectionList.add(newSection);
 			return;
 		}
+
+		throw new IllegalArgumentException("구간추가가 불가합니다.");
 	}
 
 	private void validateExisingStation(Section newSection) {
