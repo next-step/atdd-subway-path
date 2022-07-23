@@ -97,7 +97,7 @@ public class Sections {
         Section deleteSection = getSectionByCondition(section -> section.equalsUpStation(station));
         Section updateSection = getSectionByCondition(section -> section.equalsDownStation(station));
 
-        updateSection.updateDownStationToSectionDownStationAndAddDistance(deleteSection);
+        updateSection.updateDownStationToSectionDownStation(deleteSection);
         this.sections.remove(deleteSection);
     }
 
