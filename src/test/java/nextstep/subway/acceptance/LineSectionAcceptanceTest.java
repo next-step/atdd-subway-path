@@ -13,6 +13,7 @@ import java.util.Map;
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
@@ -35,6 +36,43 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         신분당선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
     }
 
+
+    /**
+     * When 지하철 노선에서 기존 구간에서 중간에 새로운 구간을 등록을 요청 하면
+     * Then 노선에 새로운 구간이 추가된다
+     */
+    @DisplayName("지하철 노선에서 기존 구간의 역 사이에 구간을 등록")
+    @Test
+    void AddLineSectionInMid() {
+        //when
+        Long 강남양재사이역 = 지하철역_생성_요청("강남양재사이역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 강남양재사이역, 3));
+
+        //Then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 강남양재사이역, 양재역);
+    }
+
+    /**
+     * When 지하철 노선에서 기존 구간에서 새로운 상행종점 구간을 추가로 요청하면
+     * Then 노선에 새로운 상행종점 구간이 추가된다.
+     */
+    @DisplayName("지하철 노선에서 기존 구간의 상행을 기준으로 새로운 상행종점 구간 등록")
+    @Test
+    void addLineSectionBaseOnUpStation(){
+        // when
+        Long 강남이전역 = 지하철역_생성_요청("강남이전역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남이전역, 강남역, 3));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남이전역, 강남역, 양재역);
+
+
+    }
+
     /**
      * When 지하철 노선에서 기존 구간의 하행을 기준으로 새로운 구간 추가를 요청 하면
      * Then 노선에 새로운 구간이 추가된다
@@ -43,32 +81,73 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSectionBaseOnDownStation() {
         // when
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
-        Long 정자다음역 = 지하철역_생성_요청("정자다음역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 정자다음역));
+        Long 양재다음역 = 지하철역_생성_요청("양재다음역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 양재다음역, 7));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역, 정자다음역);
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 양재다음역);
+    }
+
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 지하철 구간을 추가할때, 기존 역 사이 길이보다 크거나 같으면
+     * Then 노선에 구간을 추가할 수 없다
+     */
+    @DisplayName("추가할 구간이 기존 역 사이 길이보다 크거나 같으면 구간을 추가할 수 없다")
+    @Test
+    void tooLongSectionDistance(){
+        //Given
+        Long 거리가_긴_역 = 지하철역_생성_요청("거리가 긴 역").jsonPath().getLong("id");
+
+        //When
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(거리가_긴_역, 양재역, 15));
+
+        //Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 지하철 구간을 추가할때 지하철역이 이미 다 추가되어 있다면
+     * Then 노선에 구간을 추가할 수 없다
+     */
+    @DisplayName("상행과 하행 이미 등록되어 있으면 구간을 추가할 수 없다.")
+    @Test
+    void alreadyhasBothStations(){
+        //Given
+        long 이미_있는_강남역 = 강남역;
+        long 이미_있는_양재역 = 양재역;
+
+        //When
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(이미_있는_강남역, 이미_있는_양재역, 10));
+
+        //Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     /**
-     * When 지하철 노선에서 기존 구간의 상행을 기준으로 새로운 구간 추가를 요청 하면
-     * Then 노선에 새로운 구간이 추가된다
+     * Given 지하철 노선을 생성하고
+     * When 지하철 구간을 추가할때 상행과 하행 둘다 포함되어 있지 않으면
+     * Then 노선에 구간을 추가할 수 없다.
      */
-    @DisplayName("지하철 노선에서 기존 구간의 상행을 기준으로 구간을 등록")
+    @DisplayName("상행과 하행 둘다 포함되어 있지 않으면 구간을 추가할 수 없다")
     @Test
-    void AddLineSectionBaseOnUpstation() {
-        //when
-        Long 강남양재사이역 = 지하철역_생성_요청("강남양재사이역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 강남양재사이역));
+    void noOneHasNotStations(){
+        //Given
+        Long 없는역 = 지하철역_생성_요청("없는역").jsonPath().getLong("id");
+        Long 없는역2 = 지하철역_생성_요청("없는역2").jsonPath().getLong("id");
+
+
+        //When
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(없는역, 없는역2, 5));
 
         //Then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 강남양재사이역, 양재역);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+
     }
 
 
@@ -82,7 +161,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     void removeLineSection() {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 6));
 
         // when
         지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
@@ -104,11 +183,11 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         return lineCreateParams;
     }
 
-    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId) {
+    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, long distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");
-        params.put("distance", 6 + "");
+        params.put("distance", distance + "");
         return params;
     }
 }
