@@ -1,10 +1,8 @@
 package nextstep.subway.acceptance;
 
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,10 +11,10 @@ import org.springframework.http.HttpStatus;
 import java.util.HashMap;
 import java.util.Map;
 
-import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
-import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
-import static nextstep.subway.acceptance.PathSteps.지하철_경로_최단_거리_조회_요청;
-import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
+import static nextstep.subway.acceptance.steps.LineSteps.지하철_노선_생성_요청;
+import static nextstep.subway.acceptance.steps.LineSteps.지하철_노선에_지하철_구간_생성_요청;
+import static nextstep.subway.acceptance.steps.PathSteps.지하철_경로_최단_거리_조회_요청;
+import static nextstep.subway.acceptance.steps.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
