@@ -78,7 +78,7 @@ public class Sections {
 	private List<Long> getCountingOneStation(List<Station> stations) {
 		return getCountPerStation(stations)
 			.stream()
-			.filter(key -> key.getValue() == 1)
+			.filter(stationCount -> stationCount.getValue() == 1)
 			.map(Map.Entry::getKey)
 			.collect(toList());
 	}

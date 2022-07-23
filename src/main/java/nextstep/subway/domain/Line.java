@@ -98,7 +98,7 @@ public class Line {
 
 	private void nullValidationOfSection(Station upStation, Station downStation) {
 		if (upStation == null || downStation == null) {
-			throw new BusinessException(INVALID_STATUS);
+			throw new BusinessException(NULL_STATUS);
 		}
 	}
 
