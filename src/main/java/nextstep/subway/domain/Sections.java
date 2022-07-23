@@ -10,6 +10,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +26,9 @@ public class Sections {
     private List<Section> values = new ArrayList<>();
 
     public List<Station> getStations() {
+        if(values.isEmpty()) {
+            return Collections.emptyList();
+        }
         Section firstSection = findFirstSection();
         List<Section> sections = new ArrayList<>();
         sections.add(firstSection);
