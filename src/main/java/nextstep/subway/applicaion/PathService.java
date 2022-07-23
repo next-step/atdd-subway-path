@@ -25,10 +25,17 @@ public class PathService {
         Lines lines = new Lines(lineRepository.findAll());
         Station sourceStation = stationService.findById(sourceStationId);
         Station targetStation = stationService.findById(targetStationId);
+        validInputCheck(sourceStation, targetStation);
 
         PathFinder pathFinder = new PathFinder(lines);
         GraphPath<Station, DefaultWeightedEdge> shortestPath = pathFinder.getShortestPath(sourceStation, targetStation);
         return new PathResponse(createStationResponses(shortestPath.getVertexList()), shortestPath.getWeight());
+    }
+
+    private void validInputCheck(Station sourceStation, Station targetStation) {
+        if (sourceStation.equals(targetStation)) {
+            throw new IllegalArgumentException("출발역과 도착역은 다른 역으로 지정되어야 합니다.");
+        }
     }
 
     private List<StationResponse> createStationResponses(List<Station> stations) {

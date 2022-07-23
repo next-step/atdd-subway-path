@@ -4,6 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import static nextstep.subway.acceptance.LineSectionAcceptanceTest.createSectionCreateParams;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
@@ -64,6 +65,14 @@ public class PathAcceptanceTest extends AcceptanceTest {
      * When 출발역과 도착역이 같은 경우
      * Then 최단 경로 조회에 실패한다.
      */
+    @Test
+    void 출발역과_도착역이_같은_경우_예외를_일으킨다() {
+        // when
+        var 최단_거리_응답 = 지하철_최단_거리_조회_요청(교대역, 교대역);
+
+        // then
+        최단_거리를_구하는데_실패한다(최단_거리_응답);
+    }
 
     /**
      * When 출발역과 도착역이 연결되어 있지 않은 경우
@@ -83,4 +92,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(지하철_노선_목록_조회_응답.jsonPath().getInt("distance")).isEqualTo(distance);
     }
 
+    private void 최단_거리를_구하는데_실패한다(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
