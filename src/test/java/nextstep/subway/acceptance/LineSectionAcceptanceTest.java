@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
@@ -88,46 +90,28 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         @DisplayName("실패")
         class fail {
             /**
-             * given 새로운 구간이 기존 역 사이 길이보다 크고,
-             * When 지하철 노선의 기존의 구간에 구간 추가를 요청 하면
-             * Then 구간 사이에 새로운 구간이 추가에 실패한다.
+             * given 구간이 2개인 지하철 노선을 생성하고, / 강남역-(10)-양재역-(5)-정자역
+             * when 지하철 노선의 기존의 구간에 구간 추가를 요청하면,
+             *     when - 추가하는 구간의 길이가 음수인 경우
+             *     when - 추가하는 구간의 길이가 0인 경우
+             *     when - 추가하는 구간의 길이가 연결 구간의 길이보다 같은 경우
+             *     when - 추가하는 구간의 길이가 연결 구간의 길이보다 큰 경우
+             *     when - 추가하는 구간의 길이가 전체 구간의 길이보다 같은 같은 경우
+             *     when - 추가하는 구간의 길이가 전체 구간의 길이보다 큰 경우
+             * then 구간 사이에 새로운 구간이 추가에 실패한다.
              */
-            @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거면 등록 실패")
-            @Test
-            void addLineSectionInMiddleFail() {
+            @ParameterizedTest
+            @ValueSource(longs = {-1L, 0L, 5L, 6L, 15L, 16L})
+            @DisplayName("구간의 길이가 유효하지 않은 경우 구간 등록 실패")
+            public void addInvalidSectionDistance(long 유효하지_않은_구간_길이) {
                 // given
                 Long 정자역 = 신규_지하철역("정자역");
-                지하철_노선에_지하철_구간_생성_요청(신분당선, 신규_구간(양재역, 정자역,6L));
+                지하철_노선에_지하철_구간_생성_요청(신분당선, 신규_구간(양재역, 정자역,5L));
 
                 Long 판교역 = 신규_지하철역("판교역");
 
                 // when
-                ExtractableResponse<Response> addResponse = 지하철_노선에_지하철_구간_생성_요청(신분당선, 신규_구간(판교역, 정자역, 7L));
-
-                // then
-                ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-                assertAll(
-                        () -> assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                        () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역)
-                );
-            }
-
-            /**
-             * given 새로운 구간이 기존 역 사이 길이보다 크거나 같고,
-             * When 지하철 노선의 기존의 구간에 구간 추가를 요청 하면
-             * Then 구간 사이에 새로운 구간이 추가에 실패한다.
-             */
-            @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 같으면 등록 실패")
-            @Test
-            void addLineSectionInMiddleFail2() {
-                // given
-                Long 정자역 = 신규_지하철역("정자역");
-                지하철_노선에_지하철_구간_생성_요청(신분당선, 신규_구간(양재역, 정자역,6L));
-
-                Long 판교역 = 신규_지하철역("판교역");
-
-                // when
-                ExtractableResponse<Response> addResponse = 지하철_노선에_지하철_구간_생성_요청(신분당선, 신규_구간(판교역, 정자역, 6L));
+                ExtractableResponse<Response> addResponse = 지하철_노선에_지하철_구간_생성_요청(신분당선, 신규_구간(판교역, 정자역, 유효하지_않은_구간_길이));
 
                 // then
                 ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
