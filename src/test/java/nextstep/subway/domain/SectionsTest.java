@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.when;
 
@@ -62,5 +63,25 @@ class SectionsTest {
 	    //then
 		List<Section> response = sections.getSections();
 		assertThat(response).isEmpty();
+	}
+
+	/**
+	 * Given sections에 section을 추가한다.
+	 * When section이 한 개가 있는 sections에서 upstaion으로 삭제를 시도하면
+	 * Then IllegalArgumentException이 발생한다.
+	 */
+	@DisplayName("UpStation으로 섹션을 삭제할 수 없다.")
+	@Test
+	void removeSectionsFail() {
+		//given
+		Sections sections = new Sections();
+		when(section.getUpStation()).thenReturn(new Station("광교역"));
+		when(section.getDownStation()).thenReturn(new Station("광교중앙역"));
+		sections.add(section);
+
+		//when
+		//then
+		assertThatThrownBy(() -> sections.removeSection(section.getUpStation()))
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 }
