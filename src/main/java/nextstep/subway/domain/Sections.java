@@ -4,9 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Embeddable
 public class Sections {
@@ -17,31 +15,29 @@ public class Sections {
     public Station downStation() {
         if (this.sections.size() > 0)
             return this.sections.get(this.sections.size() - 1).getDownStation();
-        return null;
+        throw new IllegalArgumentException();
     }
 
     public Station upStation() {
         if (this.sections.size() > 0)
             return this.sections.stream().findFirst().get().getUpStation();
-        return null;
+        throw new IllegalArgumentException();
     }
 
-    public Set<Station> stations() {
-        Set<Station> stations = new HashSet<>();
+    public List<Station> stations() {
+        List<Station> stations = new ArrayList<>();
         addUpStations(stations);
         addDownStations(stations);
         return stations;
     }
 
-    private void addDownStations(Set<Station> stations) {
-        for (Section section : this.sections) {
-            stations.add(section.getDownStation());
-        }
+    private void addUpStations(List<Station> stations) {
+        stations.add(this.sections.get(0).getUpStation());
     }
 
-    private void addUpStations(Set<Station> stations) {
+    private void addDownStations(List<Station> stations) {
         for (Section section : this.sections) {
-            stations.add(section.getUpStation());
+            stations.add(section.getDownStation());
         }
     }
 

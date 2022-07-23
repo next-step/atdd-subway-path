@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Entity
@@ -56,7 +55,7 @@ public class Line {
         this.sections.deleteSection(station);
     }
 
-    public Set<Station> stations() {
+    public List<Station> stations() {
         return sections.stations();
     }
 

@@ -38,11 +38,9 @@ class LineTest {
     @Test
     void getStations() {
         신분당선.addSection(논현역, 신논현역, 5);
+        신분당선.addSection(신논현역, 강남역, 5);
         신분당선.addSection(강남역, 양재역, 5);
-        assertThat(신분당선.stations()).contains(논현역);
-        assertThat(신분당선.stations()).contains(신논현역);
-        assertThat(신분당선.stations()).contains(강남역);
-        assertThat(신분당선.stations()).contains(양재역);
+        assertThat(신분당선.stations()).containsExactly(논현역, 신논현역, 강남역, 양재역);
     }
 
     @DisplayName("구간 삭제")
