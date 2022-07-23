@@ -32,7 +32,7 @@ public class Sections {
         Section section = findSectionHasUpStation(getUpStationTerminal());
         sortedSections.add(section);
 
-        while (findNextSectionCount(section.getDownStation()) > 0) {
+        while (isAnyMatchUpStation(section.getDownStation())) {
             section = findSectionHasUpStation(section.getDownStation());
             sortedSections.add(section);
         }
@@ -74,10 +74,9 @@ public class Sections {
         return sortedStations;
     }
 
-    private long findNextSectionCount(Station station) {
+    private boolean isAnyMatchUpStation(Station station) {
         return sections.stream()
-                .filter(it -> it.getUpStation().equals(station))
-                .count();
+                .anyMatch(it -> it.isSameUpStation(station));
     }
 
     private void sectionContainDownStation(Section newSection) {
@@ -162,13 +161,10 @@ public class Sections {
     }
 
     private void checkDoesNotExistStations(Section newSection) {
-        if (this.getStations().contains(newSection.getUpStation())) {
-            return;
+        if (!this.getStations().contains(newSection.getUpStation())
+                && !this.getStations().contains(newSection.getDownStation())) {
+            throw new IllegalArgumentException("구간에 해당 되는 역을 찾을 수 없습니다.");
         }
-        if (this.getStations().contains(newSection.getDownStation())) {
-            return;
-        }
-        throw new IllegalArgumentException("구간에 해당 되는 역을 찾을 수 없습니다.");
     }
 
     private void checkDuplicationSection(Section newSection) {
