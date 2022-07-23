@@ -42,7 +42,6 @@ public class LineServiceMockTest {
     void addSection() {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
-
         final String 강남역_이름 = "강남역";
         when(stationService.findById(anyLong())).thenReturn(new Station(강남역_이름));
 
@@ -71,5 +70,56 @@ public class LineServiceMockTest {
         // line.findLineById 메서드를 통해 검증
         Line 반환된_신분당선 = lineService.findLineById(신분당선.getId());
         assertThat(반환된_신분당선.getSections().size()).isEqualTo(1);
+    }
+
+    @DisplayName("구간 제거하기")
+    @Test
+    void removeSection() {
+
+        // given
+        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
+        final String 강남역_이름 = "강남역";
+        Station 강남역 = new Station(강남역_이름);
+        ReflectionTestUtils.setField(강남역, "id", 1L);
+        when(stationService.findById(anyLong())).thenReturn(강남역);
+
+        final String 시청역_이름 = "시청역";
+        Station 시청역 = new Station(시청역_이름);
+        ReflectionTestUtils.setField(시청역, "id", 2L);
+        when(stationService.findById(anyLong())).thenReturn(시청역);
+
+        final String 구로디지털단지역_이름 = "구로디지털단지역";
+        Station 구로디지털단지역 = new Station(구로디지털단지역_이름);
+        ReflectionTestUtils.setField(구로디지털단지역, "id", 3L);
+        when(stationService.findById(anyLong())).thenReturn(구로디지털단지역);
+
+        final String 신분당선_이름 = "신분당선";
+        final String red = "red";
+        Line 신분당선 = new Line(신분당선_이름, red);
+        ReflectionTestUtils.setField(신분당선, "id", 1L);
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.ofNullable(신분당선));
+
+        SectionRequest 첫번째_구간_요청 = new SectionRequest();
+        ReflectionTestUtils.setField(첫번째_구간_요청, "upStationId", 강남역.getId());
+        ReflectionTestUtils.setField(첫번째_구간_요청, "downStationId", 시청역.getId());
+        ReflectionTestUtils.setField(첫번째_구간_요청, "distance", 10);
+
+        lineService.addSection(신분당선.getId(), 첫번째_구간_요청);
+
+        SectionRequest 두번째_구간_요청 = new SectionRequest();
+        ReflectionTestUtils.setField(두번째_구간_요청, "upStationId", 시청역.getId());
+        ReflectionTestUtils.setField(두번째_구간_요청, "downStationId", 구로디지털단지역.getId());
+        ReflectionTestUtils.setField(두번째_구간_요청, "distance", 5);
+
+        lineService.addSection(신분당선.getId(), 두번째_구간_요청);
+
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.ofNullable(신분당선));
+        when(stationService.findById(anyLong())).thenReturn(구로디지털단지역);
+
+        //when
+        lineService.deleteSection(신분당선.getId(), 구로디지털단지역.getId());
+
+        //then
+        assertThat(신분당선.getSections().size()).isEqualTo(1);
     }
 }

@@ -59,4 +59,51 @@ public class LineServiceTest {
         // line.getSections 메서드를 통해 검증
         assertThat(저장된_신분당선.getSections().size()).isEqualTo(1);
     }
+
+    @DisplayName("구간 제거하기")
+    @Test
+    void removeSection() {
+
+        //given
+        // given
+        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
+        final String 강남역_이름 = "강남역";
+        final Station 강남역 = new Station(강남역_이름);
+
+        final String 시청역_이름 = "시청역";
+        final Station 시청역 = new Station(시청역_이름);
+
+        final String 구로디지털단지역_이름 = "구로디지털단지역";
+        final Station 구로디지털단지역 = new Station(구로디지털단지역_이름);
+
+        Station 저장된_강남역 = stationRepository.save(강남역);
+        Station 저장된_시청역 = stationRepository.save(시청역);
+        Station 저장된_구로디지털단지역 = stationRepository.save(구로디지털단지역);
+
+        final String 신분당선_이름 = "신분당선";
+        final String red = "red";
+        final Line 신분당선 = new Line(신분당선_이름, red);
+
+        Line 저장된_신분당선 = lineRepository.save(신분당선);
+
+        SectionRequest 첫번째_구간_요청 = new SectionRequest();
+        ReflectionTestUtils.setField(첫번째_구간_요청, "upStationId", 저장된_강남역.getId());
+        ReflectionTestUtils.setField(첫번째_구간_요청, "downStationId", 저장된_시청역.getId());
+        ReflectionTestUtils.setField(첫번째_구간_요청, "distance", 10);
+
+        SectionRequest 두번째_구간_요청 = new SectionRequest();
+        ReflectionTestUtils.setField(두번째_구간_요청, "upStationId", 저장된_시청역.getId());
+        ReflectionTestUtils.setField(두번째_구간_요청, "downStationId", 저장된_구로디지털단지역.getId());
+        ReflectionTestUtils.setField(두번째_구간_요청, "distance", 5);
+
+        lineService.addSection(저장된_신분당선.getId(), 첫번째_구간_요청);
+        lineService.addSection(저장된_신분당선.getId(), 두번째_구간_요청);
+
+        //when
+        lineService.deleteSection(저장된_신분당선.getId(), 저장된_구로디지털단지역.getId());
+
+        //then
+        assertThat(저장된_신분당선.getSections().size()).isEqualTo(1);
+
+    }
 }
