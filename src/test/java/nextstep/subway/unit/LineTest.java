@@ -22,10 +22,10 @@ class LineTest {
         final var section = new Section(line, upStation, downStation, 10);
 
         // when
-        final var sectionAddedLine = line.addSection(section);
+        line.addSection(section);
 
         // then
-        assertThat(sectionAddedLine.getSections()).containsExactly(section);
+        assertThat(line.getSections()).containsExactly(section);
     }
 
     @DisplayName("구간 등록 후 모든 역을 조회할 수 있다.")
@@ -37,10 +37,10 @@ class LineTest {
         final var line = new Line("2호선", "bg-green-600");
         final var section = new Section(line, upStation, downStation, 10);
 
-        final var sectionAddedLine = line.addSection(section);
+        line.addSection(section);
 
         // when
-        final var stations = sectionAddedLine.findAllStations();
+        final var stations = line.findAllStations();
 
         // then
         assertThat(stations).containsExactly(upStation, downStation);
@@ -60,15 +60,16 @@ class LineTest {
         final var firstSection = new Section(line, firstStation, secondStation, 10);
         final var secondSection = new Section(line, secondStation, thirdStation, 5);
 
-        final var sectionAddedLine = line.addSection(firstSection).addSection(secondSection);
+        line.addSection(firstSection);
+        line.addSection(secondSection);
 
         // when
-        final var sectionDeletedLine = sectionAddedLine.removeSection(thirdStation);
+        line.removeSection(thirdStation);
 
         // then
         assertAll(
-                () -> assertThat(sectionDeletedLine.findAllStations()).containsExactly(firstStation, secondStation),
-                () -> assertThat(sectionDeletedLine.getSections()).hasSize(1)
+                () -> assertThat(line.findAllStations()).containsExactly(firstStation, secondStation),
+                () -> assertThat(line.getSections()).hasSize(1)
         );
 
     }
@@ -96,10 +97,10 @@ class LineTest {
         final var line = new Line("2호선", "bg-green-600");
         final var section = new Section(line, upStation, downStation, 10);
 
-        final var sectionAddedLine = line.addSection(section);
+        line.addSection(section);
 
         // when, then
-        assertThatThrownBy(() -> sectionAddedLine.removeSection(downStation))
+        assertThatThrownBy(() -> line.removeSection(downStation))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("구간에 상행 종착역과 하행 종착역만 있기 때문에 삭제할 수 없습니다.");
 
@@ -118,10 +119,11 @@ class LineTest {
         final var firstSection = new Section(line, firstStation, secondStation, 10);
         final var secondSection = new Section(line, secondStation, thirdStation, 5);
 
-        final var sectionAddedLine = line.addSection(firstSection).addSection(secondSection);
+        line.addSection(firstSection);
+        line.addSection(secondSection);
 
         // when, then
-        assertThatThrownBy(() -> sectionAddedLine.removeSection(secondStation))
+        assertThatThrownBy(() -> line.removeSection(secondStation))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("하행 종착역만을 삭제할 수 있습니다.");
 

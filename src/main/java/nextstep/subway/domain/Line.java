@@ -53,9 +53,8 @@ public class Line {
         return sections;
     }
 
-    public Line addSection(Section section) {
+    public void addSection(Section section) {
         sections.add(section);
-        return this;
     }
 
     public List<Station> findAllStations() {
@@ -69,10 +68,9 @@ public class Line {
                 .collect(Collectors.toList());
     }
 
-    public Line removeSection(Station station) {
+    public void removeSection(Station station) {
         validateRemoveSection(station);
         sections.removeIf(section -> section.getDownStation().equals(station));
-        return this;
     }
 
     private void validateRemoveSection(Station station) {
