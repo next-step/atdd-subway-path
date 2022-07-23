@@ -32,7 +32,7 @@ public class Sections {
             throw new InvalidRemoveSectionException();
         }
 
-        if (!containStation(station)) {
+        if (notContainStation(station)) {
             throw new NotFoundStationException();
         }
 
@@ -173,12 +173,12 @@ public class Sections {
     }
 
     private boolean isNotFoundStations(Section newSection) {
-        return !containStation(newSection.getUpStation())
-                && !containStation(newSection.getDownStation());
+        return notContainStation(newSection.getUpStation())
+                && notContainStation(newSection.getDownStation());
     }
 
-    private boolean containStation(Station newSection) {
-        return this.getStations().contains(newSection);
+    private boolean notContainStation(Station newSection) {
+        return !this.getStations().contains(newSection);
     }
 
     private boolean isEmpty() {
