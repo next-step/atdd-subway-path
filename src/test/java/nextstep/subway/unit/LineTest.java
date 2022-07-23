@@ -198,21 +198,39 @@ class LineTest {
         }
     }
 
-    @DisplayName("구간 추가")
-    @Test
-    void addSection() {
-        // given
-        Line 이호선 = new Line("2호선", "green");
+    @Nested
+    @DisplayName("구간 삭제")
+    class removeSection {
+        @DisplayName("마지막 역 구간 삭제")
+        @Test
+        void removeSectionLastDownStation() {
+            // given
+            Line 이호선 = new Line("2호선", "green");
+            이호선.addSection(영등포역, 신도림역, 10);
+            이호선.addSection(신도림역, 구로역, 5);
 
-        // when
-        이호선.addSection(영등포역, 신도림역, 10);
-        이호선.addSection(신도림역, 구로역, 5);
+            // when
+            이호선.deleteSection(구로역);
 
-        // then
-        assertAll(
-                () -> assertThat(이호선.getStations()).hasSize(3),
-                () -> assertThat(이호선.getStations()).containsExactly(영등포역, 신도림역, 구로역)
-        );
+            // then
+            assertAll(
+                    () -> assertThat(이호선.getStations()).hasSize(2),
+                    () -> assertThat(이호선.getStations()).containsExactly(영등포역, 신도림역)
+            );
+        }
+
+        @DisplayName("하나의 구간을 가진 노선 삭제시 예외 발생")
+        @Test
+        void removeSectionHasOneSection() {
+            // given
+            Line 이호선 = new Line("2호선", "green");
+            이호선.addSection(영등포역, 신도림역, 10);
+
+            // when
+            // then
+            assertThatThrownBy(() -> 이호선.deleteSection(신도림역))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
     }
 
     @DisplayName("노선의 모든 지하철역 가져오기")
@@ -233,34 +251,4 @@ class LineTest {
         );
     }
 
-    @DisplayName("구간 삭제")
-    @Test
-    void removeSection() {
-        // given
-        Line 이호선 = new Line("2호선", "green");
-        이호선.addSection(영등포역, 신도림역, 10);
-        이호선.addSection(신도림역, 구로역, 5);
-
-        // when
-        이호선.deleteSection(구로역);
-
-        // then
-        assertAll(
-                () -> assertThat(이호선.getStations()).hasSize(2),
-                () -> assertThat(이호선.getStations()).containsExactly(영등포역, 신도림역)
-        );
-    }
-
-    @DisplayName("하나의 구간을 가진 노선 삭제시 예외 발생")
-    @Test
-    void removeSectionHasOneSection() {
-        // given
-        Line 이호선 = new Line("2호선", "green");
-        이호선.addSection(영등포역, 신도림역, 10);
-
-        // when
-        // then
-        assertThatThrownBy(() -> 이호선.deleteSection(신도림역))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
 }
