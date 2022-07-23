@@ -2,19 +2,20 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import nextstep.subway.fake.FakeLineFactory;
 import nextstep.subway.fake.FakeStationFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 추가 인수 테스트")
 public class SectionAdditionAcceptanceTest extends AcceptanceTest{
@@ -75,13 +76,25 @@ public class SectionAdditionAcceptanceTest extends AcceptanceTest{
 
     }
 
-    /* given
-     * when
-     * then
+    /* given 노선에 구간을 추가한다.
+     * when, then
+     * 이미 추가된 구간과 동일한 구간을 추가하면,
+     * 구간 추가가 실패하여 IllegalArgumentException 와 지정된 메세지를 응답 받는다.
      */
-    @DisplayName("구간 추가 실패 테스트 - 상행과 하행역이 모두 동일한 구간을 추가")
+    @Test
     void 상행과_하행역이_모두_동일할_경우() {
+        //given
+        Map<String, String> 강남_역삼_구간 = createAdditionalBody(강남역.getId(), 역삼역.getId(), 10);
+        구간_추가_요청(신분당선_ID, 강남_역삼_구간);
 
+        //then
+        ExtractableResponse<Response> 구간_추가_요청_응답 = 구간_추가_요청(신분당선_ID, 강남_역삼_구간);
+        assertAll(
+                () -> assertThat(구간_추가_요청_응답.statusCode())
+                        .isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(구간_추가_요청_응답.jsonPath().getString("message"))
+                        .isEqualTo("상행역과 하행역이 모두 등록 되어있는 구간은 등록할 수 없습니다.")
+        );
     }
 
 
@@ -93,8 +106,8 @@ public class SectionAdditionAcceptanceTest extends AcceptanceTest{
         return sectionBody;
     }
 
-    private void 구간_추가_요청(Long id, Map<String, String> body) {
-        LineSteps.지하철_노선에_지하철_구간_생성_요청(id, body);
+    private ExtractableResponse<Response> 구간_추가_요청(Long id, Map<String, String> body) {
+        return LineSteps.지하철_노선에_지하철_구간_생성_요청(id, body);
     }
 
 }
