@@ -64,12 +64,16 @@ public class Section {
 		return this.downStation.getId() == stationId;
 	}
 
+	public boolean hasSameDownStation(List<Long> stationId) {
+		return stationId.contains(this.downStation.getId());
+	}
+
 	public boolean isSameWithUpStation(Station station) {
 		return this.upStation.equals(station);
 	}
 
-	public boolean isSameWithUpStation(long stationId) {
-		return this.upStation.getId() == stationId;
+	public boolean hasSameUpStation(List<Long> stationId) {
+		return stationId.contains(this.upStation.getId());
 	}
 
 	public boolean isSameSectionExists(Station addUpStation, Station addDownStation) {

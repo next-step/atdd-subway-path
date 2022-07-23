@@ -36,7 +36,7 @@ public class Sections {
 			return Collections.emptyList();
 		}
 
-		Section topSection = findTopSection(findFirstTopUpStationId(findAllStations()));
+		Section topSection = findFirstTopUpStationId(findAllStations());
 		List<Section> newSections = new ArrayList<>();
 
 		for (Section section : this.values) {
@@ -54,50 +54,39 @@ public class Sections {
 		return stations;
 	}
 
-	private long findFirstTopUpStationId(List<Station> stations) {
-		return getCountPerStation(stations)
+	private Section findFirstTopUpStationId(List<Station> stations) {
+		List<Long> stationIdCountingOne = getCountingOneStation(stations);
+
+		return this.values
 			.stream()
-			.filter(key -> key.getValue() == 1)
-			.filter(entry -> this.values
-				.stream()
-				.anyMatch(section -> section.isSameWithUpStation(entry.getKey())))
+			.filter(section -> section.hasSameUpStation(stationIdCountingOne))
 			.findFirst()
-			.orElseThrow(() -> new BusinessException(INVALID_STATUS))
-			.getKey();
+			.orElseThrow(() -> new BusinessException(INVALID_STATUS));
 	}
 
-	private long findFirstBottomDownStationId(List<Station> stations) {
+	private Section findFirstBottomDownStationId(List<Station> stations) {
+		List<Long> stationIdCountingOne = getCountingOneStation(stations);
+
+		return this.values
+			.stream()
+			.filter(section -> section.hasSameDownStation(stationIdCountingOne))
+			.findFirst()
+			.orElseThrow(() -> new BusinessException(INVALID_STATUS));
+
+	}
+
+	private List<Long> getCountingOneStation(List<Station> stations) {
 		return getCountPerStation(stations)
 			.stream()
 			.filter(key -> key.getValue() == 1)
-			.filter(entry -> this.values
-				.stream()
-				.anyMatch(section -> section.isSameWithDownStation(entry.getKey())))
-			.findFirst()
-			.orElseThrow(() -> new BusinessException(INVALID_STATUS))
-			.getKey();
+			.map(Map.Entry::getKey)
+			.collect(toList());
 	}
 
 	private Set<Map.Entry<Long, Long>> getCountPerStation(List<Station> stations) {
 		return stations.stream()
 			.collect(groupingBy(Station::getId, counting()))
 			.entrySet();
-	}
-
-	private Section findBottomSection(long bottomStationId) {
-		return this.values
-			.stream()
-			.filter(section -> section.isSameWithDownStation(bottomStationId))
-			.findFirst()
-			.orElseThrow(() -> new BusinessException(INVALID_STATUS));
-	}
-
-	private Section findTopSection(long topStationId) {
-		return this.values
-			.stream()
-			.filter(section -> section.isSameWithUpStation(topStationId))
-			.findFirst()
-			.orElseThrow(() -> new BusinessException(INVALID_STATUS));
 	}
 
 	private List<Station> getStationByOrder(List<Section> sectionsByOrder) {
@@ -107,7 +96,6 @@ public class Sections {
 			stations.addAll(section.getStation(indexOfSections++));
 		}
 		return Collections.unmodifiableList(stations);
-
 	}
 
 	private Section findNextSection(Section previousSection) {
@@ -196,7 +184,7 @@ public class Sections {
 
 	public void remove(Station station) {
 
-		Section lastSection = findBottomSection(findFirstBottomDownStationId(findAllStations()));
+		Section lastSection = findFirstBottomDownStationId(findAllStations());
 		if (!lastSection.isSameWithDownStation(station)) {
 			throw new BusinessException(INVALID_STATUS);
 		}
