@@ -80,10 +80,6 @@ public class Line {
 		this.sections.add(new Section(this, upStation, downStation, distance));
 	}
 
-	public boolean isAbleAddSection(Long upStationId, Long downStationId, int distance) {
-		return upStationId != null && downStationId != null && distance > 0;
-	}
-
 	public void removeSection(Station station) {
 		this.sections.remove(station);
 	}
