@@ -81,7 +81,7 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        if (line.sections().size() > 0) {
+        if (line.sections().isEmpty()) {
             return Collections.emptyList();
         }
 
