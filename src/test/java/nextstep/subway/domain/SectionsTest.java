@@ -173,4 +173,22 @@ class SectionsTest {
 	    //then
 		assertThat(stationList).containsExactly(upStation, downStation, imaeStation);
 	 }
+
+	@DisplayName("기존 구간의 역을 기준으로 새로운 구간을 추가(하행역 기준)")
+	@Test
+	void addSectionWithDownStation(){
+
+		//given
+		line.addSection(section);
+		Sections sections = Sections.from(line.getSections());
+		Station imaeStation = new Station("이매역");
+		Section newSection = new Section(imaeStation, downStation, 5);
+
+		//when
+		sections.addSection(newSection);
+
+		//then
+		assertThat(line.getSections()).hasSize(2);
+		assertThat(line.getStations()).contains(upStation, downStation, imaeStation);
+	}
 }
