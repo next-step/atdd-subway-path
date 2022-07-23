@@ -9,6 +9,7 @@ import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -21,8 +22,12 @@ import static org.mockito.Mockito.when;
 class LineServiceMockTest {
     @Mock
     private LineRepository lineRepository;
+
     @Mock
     private StationService stationService;
+
+    @InjectMocks
+    private LineService lineService;
 
     @DisplayName("구간을 추가할 수 있다.")
     @Test
@@ -37,7 +42,6 @@ class LineServiceMockTest {
         when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
 
         // when
-        final var lineService = new LineService(lineRepository, stationService);
         lineService.addSection(1L, new SectionRequest(1L, 2L, 10));
 
         // then
