@@ -3,6 +3,8 @@ package nextstep.subway.unit;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
@@ -71,102 +73,100 @@ public class LineServiceTest {
 
     @Test
     void 라인_구간_안_만들고_저장() {
-        // given
-        // stationRepository 활용하여 초기값 세팅
-
         // when
-        // lineService.saveLine() 호출
-        LineRequest request = new LineRequest(FIRSTLINENAME, BLUE, null, null, 10);
-        LineResponse lineResponse = lineService.saveLine(request);
+        LineResponse lineResponse = saveLine(FIRSTLINENAME, BLUE, null, null, 10);
 
         // then
-        assertThat(lineResponse.getName()).isEqualTo(FIRSTLINENAME);
-        assertThat(lineResponse.getColor()).isEqualTo(BLUE);
-        assertThat(lineResponse.getStations()).isEmpty();
+        assertAll(
+            () -> assertEquals(FIRSTLINENAME, lineResponse.getName()),
+            () -> assertEquals(BLUE, lineResponse.getColor()),
+            () -> assertThat(lineResponse.getStations()).isEmpty()
+        );
     }
 
     @Test
     void 라인_구간_만들고_저장() {
-        // given
-        // stationRepository 활용하여 초기값 세팅
-
         // when
-        // lineService.saveLine() 호출
-        LineRequest request = new LineRequest(FIRSTLINENAME, BLUE, donongStation.getId(), gooriStation.getId(), 10);
-        LineResponse lineResponse = lineService.saveLine(request);
+        LineResponse lineResponse = saveLine(FIRSTLINENAME, BLUE, donongStation.getId(), gooriStation.getId(), 10);
 
         // then
-        assertThat(lineResponse.getName()).isEqualTo(FIRSTLINENAME);
-        assertThat(lineResponse.getColor()).isEqualTo(BLUE);
+        List<String> stationNames = getNames(lineResponse);
 
-        List<String> stationNames = lineResponse.getStations().stream()
-            .map(StationResponse::getName)
-            .collect(toList());
-        assertThat(stationNames).contains(DONONGSTATIONNAME, GOORISTATIONNAME);
+        assertAll(
+            () -> assertEquals(FIRSTLINENAME, lineResponse.getName()),
+            () -> assertEquals(BLUE, lineResponse.getColor()),
+            () -> assertThat(stationNames).contains(DONONGSTATIONNAME, GOORISTATIONNAME)
+        );
+    }
+
+    private LineResponse saveLine(String name, String color, Long upStationId, Long downStationId, int distance) {
+        LineRequest request = new LineRequest(name, color, upStationId, downStationId, distance);
+        return lineService.saveLine(request);
     }
 
     @Test
     void 전체_라인_조회() {
         // given
         line.addSection(firstSection);
-
         lineRepository.save(line);
 
         Line secondLine = new Line(SECONDLINENAME, GREEN);
         secondLine.addSection(secondSection);
-
         lineRepository.save(secondLine);
 
         // when
         List<LineResponse> lineResponses = lineService.showLines();
 
         // then
-        LineResponse firstLineResponse = lineResponses.stream().filter(lineResponse -> lineResponse.getName().equals(FIRSTLINENAME)).findFirst().get();
+        LineResponse firstLineResponse = getLineResponse(lineResponses, FIRSTLINENAME);
+        final List<String> stationNames = getNames(firstLineResponse);
 
-        assertThat(firstLineResponse.getName()).isEqualTo(FIRSTLINENAME);
-        assertThat(firstLineResponse.getColor()).isEqualTo(BLUE);
+        assertAll(
+            () -> assertEquals(FIRSTLINENAME, firstLineResponse.getName()),
+            () -> assertEquals(BLUE, firstLineResponse.getColor()),
+            () -> assertThat(stationNames).contains(DONONGSTATIONNAME, GOORISTATIONNAME)
+        );
 
-        List<String> stationNames = firstLineResponse.getStations().stream()
-            .map(StationResponse::getName)
-            .collect(toList());
-        assertThat(stationNames).contains(DONONGSTATIONNAME, GOORISTATIONNAME);
+        LineResponse secondLineResponse = getLineResponse(lineResponses, SECONDLINENAME);
+        final List<String> secondStationNames = getNames(secondLineResponse);
 
-        LineResponse secondLineResponse = lineResponses.stream().filter(lineResponse -> lineResponse.getName().equals(SECONDLINENAME)).findFirst().get();
+        assertAll(
+            () -> assertEquals(SECONDLINENAME, secondLineResponse.getName()),
+            () -> assertEquals(GREEN, secondLineResponse.getColor()),
+            () -> assertThat(secondStationNames).contains(GOORISTATIONNAME, DUCKSOSTATIONNAME)
+        );
+    }
 
-        assertThat(secondLineResponse.getName()).isEqualTo(SECONDLINENAME);
-        assertThat(secondLineResponse.getColor()).isEqualTo(GREEN);
-
-        stationNames = secondLineResponse.getStations().stream()
-            .map(StationResponse::getName)
-            .collect(toList());
-        assertThat(stationNames).contains(GOORISTATIONNAME, DUCKSOSTATIONNAME);
+    private LineResponse getLineResponse(List<LineResponse> lineResponses, String name) {
+        return lineResponses.stream()
+            .filter(lineResponse -> lineResponse.getName().equals(name))
+            .findFirst()
+            .get();
     }
 
     @Test
     void 라인_단건_조회() {
         // given
         line.addSection(firstSection);
-
         lineRepository.save(line);
 
         // when
         LineResponse result = lineService.findById(line.getId());
 
         // then
-        assertThat(result.getName()).isEqualTo(FIRSTLINENAME);
-        assertThat(result.getColor()).isEqualTo(BLUE);
+        List<String> stationNames = getNames(result);
 
-        List<String> stationNames = result.getStations().stream()
-            .map(StationResponse::getName)
-            .collect(toList());
-        assertThat(stationNames).contains(DONONGSTATIONNAME, GOORISTATIONNAME);
+        assertAll(
+            () -> assertEquals(FIRSTLINENAME, result.getName()),
+            () -> assertEquals(BLUE, result.getColor()),
+            () -> assertThat(stationNames).contains(DONONGSTATIONNAME, GOORISTATIONNAME)
+        );
     }
 
     @Test
     void 라인_이름_변경() {
         // given
         line.addSection(firstSection);
-
         lineRepository.save(line);
 
         //when
@@ -178,20 +178,19 @@ public class LineServiceTest {
         LineResponse result = lineService.findById(line.getId());
 
         // then
-        assertThat(result.getName()).isEqualTo(SECONDLINENAME);
-        assertThat(result.getColor()).isEqualTo(BLUE);
+        List<String> stationNames = getNames(result);
 
-        List<String> stationNames = result.getStations().stream()
-            .map(StationResponse::getName)
-            .collect(toList());
-        assertThat(stationNames).contains(DONONGSTATIONNAME, GOORISTATIONNAME);
+        assertAll(
+            () -> assertEquals(SECONDLINENAME, result.getName()),
+            () -> assertEquals(BLUE, result.getColor()),
+            () -> assertThat(stationNames).contains(DONONGSTATIONNAME, GOORISTATIONNAME)
+        );
     }
 
     @Test
     void 라인_컬러_변경() {
         // given
         line.addSection(firstSection);
-
         lineRepository.save(line);
 
         //when
@@ -203,13 +202,13 @@ public class LineServiceTest {
         LineResponse result = lineService.findById(line.getId());
 
         // then
-        assertThat(result.getName()).isEqualTo(FIRSTLINENAME);
-        assertThat(result.getColor()).isEqualTo(GREEN);
+        List<String> stationNames = getNames(result);
 
-        List<String> stationNames = result.getStations().stream()
-            .map(StationResponse::getName)
-            .collect(toList());
-        assertThat(stationNames).contains(DONONGSTATIONNAME, GOORISTATIONNAME);
+        assertAll(
+            () -> assertEquals(FIRSTLINENAME, result.getName()),
+            () -> assertEquals(GREEN, result.getColor()),
+            () -> assertThat(stationNames).contains(DONONGSTATIONNAME, GOORISTATIONNAME)
+        );
     }
 
     @Test
@@ -229,20 +228,25 @@ public class LineServiceTest {
         LineResponse result = lineService.findById(line.getId());
 
         // then
-        assertThat(result.getName()).isEqualTo(SECONDLINENAME);
-        assertThat(result.getColor()).isEqualTo(GREEN);
+        List<String> stationNames = getNames(result);
 
-        List<String> stationNames = result.getStations().stream()
+        assertAll(
+            () -> assertEquals(SECONDLINENAME, result.getName()),
+            () -> assertEquals(GREEN, result.getColor()),
+            () -> assertThat(stationNames).contains(DONONGSTATIONNAME, GOORISTATIONNAME)
+        );
+    }
+
+    private List<String> getNames(LineResponse lineResponse) {
+        return lineResponse.getStations().stream()
             .map(StationResponse::getName)
             .collect(toList());
-        assertThat(stationNames).contains(DONONGSTATIONNAME, GOORISTATIONNAME);
     }
 
     @Test
     void 라인_삭제() {
         // given
         line.addSection(firstSection);
-
         lineRepository.save(line);
 
         // when
@@ -267,9 +271,11 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        assertThat(line.getLastSection()).isEqualTo(firstSection);
-        assertThat(line.getSections()).contains(firstSection);
-        assertThat(line.getAllStation()).containsExactlyElementsOf(Arrays.asList(donongStation, gooriStation));
+        assertAll(
+            () -> assertEquals(firstSection, line.getLastSection()),
+            () -> assertThat(line.getSections()).contains(firstSection),
+            () -> assertThat(line.getAllStation()).containsExactlyElementsOf(Arrays.asList(donongStation, gooriStation))
+        );
     }
 
     @Test
