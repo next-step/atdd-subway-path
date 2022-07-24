@@ -36,7 +36,7 @@ public class Sections {
 			return Collections.emptyList();
 		}
 
-		Section topSection = findFirstTopUpStationId(findAllStations());
+		Section topSection = findFirstTopSection(findAllStations());
 		List<Section> newSections = new ArrayList<>();
 
 		for (Section section : this.values) {
@@ -54,7 +54,7 @@ public class Sections {
 		return stations;
 	}
 
-	private Section findFirstTopUpStationId(List<Station> stations) {
+	private Section findFirstTopSection(List<Station> stations) {
 		List<Long> stationIdCountingOne = getCountingOneStation(stations);
 
 		return this.values
@@ -64,7 +64,7 @@ public class Sections {
 			.orElseThrow(() -> new BusinessException(INVALID_STATUS));
 	}
 
-	private Section findFirstBottomDownStationId(List<Station> stations) {
+	private Section findFirstBottomSection(List<Station> stations) {
 		List<Long> stationIdCountingOne = getCountingOneStation(stations);
 
 		return this.values
@@ -184,7 +184,11 @@ public class Sections {
 
 	public void remove(Station station) {
 
-		Section lastSection = findFirstBottomDownStationId(findAllStations());
+		if (this.values.size() <= 1) {
+			throw new BusinessException(INVALID_STATUS);
+		}
+
+		Section lastSection = findFirstBottomSection(findAllStations());
 		if (!lastSection.isSameWithDownStation(station)) {
 			throw new BusinessException(INVALID_STATUS);
 		}
