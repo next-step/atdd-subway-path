@@ -42,10 +42,17 @@ class PathGraphTest {
     }
 
     @Test
-    @DisplayName("최단거리 역을 반환한다.")
+    @DisplayName("없는 역을 찾으면 에러가 발생한다.")
     void getShortestPathFailTest() {
         assertThatIllegalArgumentException().isThrownBy(() -> pathGraph.getShortestPath(교대역, new Station("없는역")))
                 .withMessage("경로를 찾을 수 없어요.");
+    }
+
+    @Test
+    @DisplayName("같은 역이 들어오면 에러가 발생한다.")
+    void getShortestSamePathFailTest() {
+        assertThatIllegalArgumentException().isThrownBy(() -> pathGraph.getShortestPath(교대역, 교대역))
+                .withMessage("같은역은 올 수 없어요.");
     }
 
 }

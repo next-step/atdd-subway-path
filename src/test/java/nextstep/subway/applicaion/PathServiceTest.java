@@ -129,6 +129,13 @@ class PathServiceTest {
                 .withMessage("도착역이 존재하지 않아요.");
     }
 
+    @Test
+    @DisplayName("도착역이 없는 역을 찾으면 에러가 발생한다.")
+    void getPathsSameStationFailTest() {
+        assertThatIllegalArgumentException().isThrownBy(() -> pathService.getPaths(이촌역, 이촌역))
+                .withMessage("같은역은 올 수 없어요.");
+    }
+
     private Long createStation(String stationName) {
         return stationRepository.save(new Station(stationName)).getId();
     }

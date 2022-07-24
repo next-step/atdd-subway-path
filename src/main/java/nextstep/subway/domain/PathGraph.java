@@ -28,6 +28,10 @@ public class PathGraph {
     }
 
     public StationPath getShortestPath(Station source, Station target) {
+        if (source.equals(target)) {
+            throw new IllegalArgumentException("같은역은 올 수 없어요.");
+        }
+
         if (notExistVertex(source, target)) {
             throw new IllegalArgumentException("경로를 찾을 수 없어요.");
         }

@@ -13,6 +13,10 @@ public class PathService {
     private final StationRepository stationRepository;
 
     public PathResponse getPaths(Long source, Long target) {
+        if (source.equals(target)) {
+            throw new IllegalArgumentException("같은역은 올 수 없어요.");
+        }
+
         Station sourceStation = stationRepository.findById(source)
                 .orElseThrow(() -> new IllegalArgumentException("출발역이 존재하지 않아요."));
 
