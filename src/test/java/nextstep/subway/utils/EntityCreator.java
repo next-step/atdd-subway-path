@@ -10,8 +10,8 @@ public class EntityCreator {
         return new Line(name, color);
     }
 
-    public static Section createSection(Line line, Station upStation, Station downStation) {
-        return new Section(line, upStation, downStation, 10);
+    public static Section createSection(Line line, Station upStation, Station downStation, int distance) {
+        return new Section(line, upStation, downStation, distance);
     }
 
     public static Station createStation(String name) {

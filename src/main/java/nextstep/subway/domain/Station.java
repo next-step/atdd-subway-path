@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.Objects;
 
 @Entity
 public class Station {
@@ -25,5 +26,16 @@ public class Station {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isEqualTo(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Station station = (Station) o;
+        return Objects.equals(id, station.id) && Objects.equals(name, station.name);
+    }
+
+    public boolean compareValue(Station other) {
+        return other != null && Objects.equals(this.name, other.name);
     }
 }

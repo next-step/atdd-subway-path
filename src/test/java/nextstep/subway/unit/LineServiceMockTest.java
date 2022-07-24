@@ -7,6 +7,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.DistanceException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -44,7 +45,7 @@ public class LineServiceMockTest {
         Station 판교역 = createStation("판교역");
         Station 정자역 = createStation("정자역");
         Station 미금역 = createStation("미금역");
-        Section 판교_정자 = createSection(신분당선, 판교역, 정자역);
+        Section 판교_정자 = createSection(신분당선, 판교역, 정자역, 10);
         신분당선.addSection(판교_정자);
 
         given(lineRepository.findById(lineId)).willReturn(Optional.of(신분당선));
@@ -58,7 +59,7 @@ public class LineServiceMockTest {
         // then
         // line.findLineById 메서드를 통해 검증
         Line line = lineRepository.findById(lineId).get();
-        Section 정자_미금 = createSection(신분당선, 정자역, 미금역);
+        Section 정자_미금 = createSection(신분당선, 정자역, 미금역, 10);
 
         assertThat(line).isNotNull();
         assertThat(line.getStations()).hasSize(3)
@@ -78,7 +79,7 @@ public class LineServiceMockTest {
         Station 판교역 = createStation("판교역");
         Station 정자역 = createStation("정자역");
         Station 미금역 = createStation("미금역");
-        Section 판교_정자 = createSection(신분당선, 판교역, 정자역);
+        Section 판교_정자 = createSection(신분당선, 판교역, 정자역, 10);
         신분당선.addSection(판교_정자);
 
         given(lineRepository.findById(lineId)).willReturn(Optional.of(신분당선));
@@ -87,7 +88,7 @@ public class LineServiceMockTest {
 
         // when
         assertThatThrownBy(() -> lineService.addSection(lineId, getSectionRequest(upStationId, downStationId)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(DistanceException.class);
 
         // then
         Line line = lineRepository.findById(lineId).get();
