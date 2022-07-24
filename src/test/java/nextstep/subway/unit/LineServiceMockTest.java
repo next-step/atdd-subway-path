@@ -101,9 +101,7 @@ public class LineServiceMockTest {
         LineRequest request = new LineRequest(FIRSTLINENAME, BLUE, 1L, 2L, 10);
         LineResponse result = lineService.saveLine(request);
 
-        List<String> names = result.getStations().stream()
-            .map(StationResponse::getName)
-            .collect(toList());
+        List<String> names = getNames(result);
 
         //then
         assertAll(
@@ -133,10 +131,8 @@ public class LineServiceMockTest {
         assertThat(result).hasSize(2);
 
         // then
-        LineResponse firstLineResponse = result.stream().filter(lineResponse -> lineResponse.getName().equals(FIRSTLINENAME)).findFirst().get();
-        final List<String> stationNames = firstLineResponse.getStations().stream()
-            .map(StationResponse::getName)
-            .collect(toList());
+        LineResponse firstLineResponse = getLineResponse(result, FIRSTLINENAME);
+        final List<String> stationNames = getNames(firstLineResponse);
 
         assertAll(
             () -> assertEquals(FIRSTLINENAME, firstLineResponse.getName()),
@@ -144,17 +140,21 @@ public class LineServiceMockTest {
             () -> assertThat(stationNames).contains(DONONGSTATIONNAME, GOORISTATIONNAME)
         );
 
-        LineResponse secondLineResponse = result.stream().filter(lineResponse -> lineResponse.getName().equals(SECONDLINENAME)).findFirst().get();
-
-        final List<String> secondStationNames = secondLineResponse.getStations().stream()
-            .map(StationResponse::getName)
-            .collect(toList());
+        LineResponse secondLineResponse = getLineResponse(result, SECONDLINENAME);
+        final List<String> secondStationNames = getNames(secondLineResponse);
 
         assertAll(
             () -> assertEquals(SECONDLINENAME, secondLineResponse.getName()),
             () -> assertEquals(GREEN, secondLineResponse.getColor()),
             () -> assertThat(secondStationNames).contains(GOORISTATIONNAME, DUCKSOSTATIONNAME)
         );
+    }
+
+    private LineResponse getLineResponse(List<LineResponse> lineResponses, String name) {
+        return lineResponses.stream()
+            .filter(lineResponse -> lineResponse.getName().equals(name))
+            .findFirst()
+            .get();
     }
 
     @Test
@@ -170,15 +170,19 @@ public class LineServiceMockTest {
         LineResponse result = lineService.findById(1L);
 
         // then
-        List<String> stationNames = result.getStations().stream()
-            .map(StationResponse::getName)
-            .collect(toList());
+        List<String> stationNames = getNames(result);
 
         assertAll(
             () -> assertEquals(FIRSTLINENAME, result.getName()),
             () -> assertEquals(BLUE, result.getColor()),
             () -> assertThat(stationNames).contains(DONONGSTATIONNAME, GOORISTATIONNAME)
         );
+    }
+
+    private List<String> getNames(LineResponse lineResponse) {
+        return lineResponse.getStations().stream()
+            .map(StationResponse::getName)
+            .collect(toList());
     }
 
     @Test
@@ -195,9 +199,7 @@ public class LineServiceMockTest {
         LineResponse result = lineService.findById(1L);
 
         // then
-        assertAll(
-            () -> assertEquals(SECONDLINENAME, result.getName())
-        );
+        assertEquals(SECONDLINENAME, result.getName());
     }
 
     @Test
@@ -214,9 +216,7 @@ public class LineServiceMockTest {
         LineResponse result = lineService.findById(1L);
 
         // then
-        assertAll(
-            () -> assertEquals(GREEN, result.getColor())
-        );
+        assertEquals(GREEN, result.getColor());
     }
 
     @Test
