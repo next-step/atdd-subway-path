@@ -104,7 +104,7 @@ class SectionTest {
         assertAll(() -> {
             assertThat(section.getUpStation()).isNotSameAs(GANGNAM_STATION);
             assertThat(section.getUpStation()).isEqualTo(SEOLLEUNG_STATION);
-            assertThat(section.getDistance()).isEqualTo(new Distance(7));
+            assertThat(section.getDistance()).isEqualTo(Distance.valueOf(7));
         });
     }
 
@@ -122,7 +122,7 @@ class SectionTest {
         assertAll(() -> {
             assertThat(section.getDownStation()).isNotSameAs(YEOKSAM_STATION);
             assertThat(section.getDownStation()).isEqualTo(SEOLLEUNG_STATION);
-            assertThat(section.getDistance()).isEqualTo(new Distance(7));
+            assertThat(section.getDistance()).isEqualTo(Distance.valueOf(7));
         });
     }
 }
