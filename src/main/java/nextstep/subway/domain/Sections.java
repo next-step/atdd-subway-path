@@ -69,13 +69,14 @@ public class Sections {
     }
 
     private boolean isNotLastStation(Station station) {
-        var stations = getStations();
-        return !stations.get(stations.size() - 1).equals(station);
+        var sections = getOrderedSections();
+        var lastStation = sections.get(sections.size() - 1).getDownStation();
+        return !lastStation.equals(station);
     }
 
     private boolean isNotFirstStation(Station station) {
-        var stations = getStations();
-        return !stations.get(0).equals(station);
+        var firstStation = getFirstSection().getUpStation();
+        return !firstStation.equals(station);
     }
 
     private Section getFirstSection() {
