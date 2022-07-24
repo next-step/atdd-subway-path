@@ -29,16 +29,16 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
 
+        Line line = request.toEntity();
+
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            Line line = request.toEntity();
             line.addSection(upStation, downStation, request.getDistance());
-            Line saveLine = lineRepository.save(line);
-            return createLineResponse(saveLine);
         }
 
-        throw new IllegalArgumentException();
+        Line saveLine = lineRepository.save(line);
+        return createLineResponse(saveLine);
     }
 
     public List<LineResponse> showLines() {

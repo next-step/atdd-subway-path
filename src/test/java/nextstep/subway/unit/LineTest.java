@@ -1,35 +1,26 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.utils.LineTestFixtures;
+import nextstep.subway.utils.StationTestFixtures;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LineTest {
-
-    private Station 지하철_생성(final String stationName) {
-        return new Station(stationName);
-    }
-
-    private Line 노선_생성(final String lineName, final String red) {
-        return Line.makeLine(lineName, red);
-    }
 
     @DisplayName("노선에 구간 등록하기")
     @Test
     void addSection() {
 
         //given
-        final Line 신분당선 = 노선_생성("신분당선", "red");
-        final Station 강남역 = 지하철_생성("강남역");
-        final Station 시청역 = 지하철_생성("시청역");
+        final Line 신분당선 = LineTestFixtures.노선_생성("신분당선", "red");
+        final Station 강남역 = StationTestFixtures.지하철역_생성("강남역");
+        final Station 시청역 = StationTestFixtures.지하철역_생성("시청역");
         final int distance = 10;
 
         //when
@@ -44,10 +35,10 @@ class LineTest {
     void getStations() {
 
         //given
-        final Line 신분당선 = 노선_생성("신분당선", "red");
-        final Station 강남역 = 지하철_생성("강남역");
-        final Station 시청역 = 지하철_생성("시청역");
-        final Station 구로디지털단지역 = 지하철_생성("구로디지털단지역");
+        final Line 신분당선 = LineTestFixtures.노선_생성("신분당선", "red");
+        final Station 강남역 = StationTestFixtures.지하철역_생성("강남역");
+        final Station 시청역 = StationTestFixtures.지하철역_생성("시청역");
+        final Station 구로디지털단지역 = StationTestFixtures.지하철역_생성("구로디지털단지역");
 
         final int 첫번째구간_거리 = 10;
         final int 두번째구간_거리 = 5;
@@ -67,11 +58,11 @@ class LineTest {
     void removeSection() {
 
         //given
-        final Station 강남역 = 지하철_생성("강남역");
-        final Station 시청역 = 지하철_생성("시청역");
-        final Station 구로디지털단지역 = 지하철_생성("구로디지털단지역");
+        final Station 강남역 = StationTestFixtures.지하철역_생성("강남역");
+        final Station 시청역 = StationTestFixtures.지하철역_생성("시청역");
+        final Station 구로디지털단지역 = StationTestFixtures.지하철역_생성("구로디지털단지역");
 
-        final Line 신분당선 = 노선_생성("신분당선", "red");
+        final Line 신분당선 = LineTestFixtures.노선_생성("신분당선", "red");
 
         final int 첫번째구간_거리 = 10;
         final int 두번째구간_거리 = 5;

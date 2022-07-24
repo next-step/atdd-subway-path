@@ -6,6 +6,8 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.utils.LineTestFixtures;
+import nextstep.subway.utils.StationTestFixtures;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,29 +29,13 @@ public class LineServiceTest {
     private LineService lineService;
 
 
-    public Station 지하철역_생성(final String stationName) {
-        return new Station(stationName);
-    }
-
     private Station 지하철역_저장(final String stationName) {
-        final Station 지하철역 = 지하철역_생성(stationName);
+        final Station 지하철역 = StationTestFixtures.지하철역_생성(stationName);
         return stationRepository.save(지하철역);
     }
 
-    private Line 노선_생성(final String lineName, final String color) {
-        return Line.makeLine(lineName, color);
-    }
-
     private Line 노선_저장(final String lineName, final String color) {
-        return lineRepository.save(노선_생성(lineName, color));
-    }
-
-    private SectionRequest 구간요청_생성(long upStationId, long downStationId, int distance) {
-        SectionRequest sectionRequest = new SectionRequest();
-        ReflectionTestUtils.setField(sectionRequest, "upStationId", upStationId);
-        ReflectionTestUtils.setField(sectionRequest, "downStationId", downStationId);
-        ReflectionTestUtils.setField(sectionRequest, "distance", distance);
-        return sectionRequest;
+        return lineRepository.save(LineTestFixtures.노선_생성(lineName, color));
     }
 
     @DisplayName("구간 등록하기")
@@ -60,7 +46,7 @@ public class LineServiceTest {
         final Station 강남역 = 지하철역_저장("강남역");
         final Station 시청역 = 지하철역_저장("시청역");
         final Line 신분당선 = 노선_저장("신분당선", "red");
-        SectionRequest sectionRequest = 구간요청_생성(강남역.getId(), 시청역.getId(), 10);
+        SectionRequest sectionRequest = LineTestFixtures.구간요청_생성(강남역.getId(), 시청역.getId(), 10);
 
         // when
         lineService.addSection(신분당선.getId(), sectionRequest);
@@ -80,8 +66,8 @@ public class LineServiceTest {
 
         final Line 신분당선 = 노선_저장("신분당선", "red");
 
-        SectionRequest 첫번째_구간_요청 = 구간요청_생성(강남역.getId(), 시청역.getId(), 10);
-        SectionRequest 두번째_구간_요청 = 구간요청_생성(시청역.getId(), 구로디지털단지역.getId(), 5);
+        SectionRequest 첫번째_구간_요청 = LineTestFixtures.구간요청_생성(강남역.getId(), 시청역.getId(), 10);
+        SectionRequest 두번째_구간_요청 = LineTestFixtures.구간요청_생성(시청역.getId(), 구로디지털단지역.getId(), 5);
 
         lineService.addSection(신분당선.getId(), 첫번째_구간_요청);
         lineService.addSection(신분당선.getId(), 두번째_구간_요청);
