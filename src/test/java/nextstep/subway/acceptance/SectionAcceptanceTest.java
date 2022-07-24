@@ -128,8 +128,12 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
     @Test
     void given_newSection_when_unknownInSection_then_exception() {
+        // given
+        Long 정자역 = ResponseUtils.getLong(지하철역_생성_요청("정자역"), "id");
+        Long 양재시민의숲역 = ResponseUtils.getLong(지하철역_생성_요청("양재시민의숲역"), "id");
+
         // when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionParams(강남역, 양재역, 5));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionParams(정자역, 양재시민의숲역, 5));
 
         // then
         AssertUtils.badRequest(response);
