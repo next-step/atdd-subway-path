@@ -4,7 +4,6 @@ import lombok.Getter;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 
-import java.util.List;
 
 @Getter
 public class SectionResponse {

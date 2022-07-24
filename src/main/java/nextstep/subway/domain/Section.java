@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.ToString;
 

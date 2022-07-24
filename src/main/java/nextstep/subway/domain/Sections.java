@@ -132,9 +132,6 @@ public class Sections {
                 .findFirst().orElseThrow(NoSuchElementException::new);
     }
 
-    public Station getLastStation(){
-        return getLastSection().getDownStation();
-    }
 
     public Section getSectionById(Long sectionId){
         return sections.stream()
