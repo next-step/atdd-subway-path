@@ -3,15 +3,14 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import nextstep.subway.domain.exception.InvalidMatchEndStationException;
 import nextstep.subway.domain.exception.NotExistSectionException;
 import nextstep.subway.domain.exception.SectionDeleteException;
-import nextstep.subway.domain.exception.StationAlreadyExistsException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,33 +25,40 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> values = new ArrayList<>();
 
-    public List<Station> getStations() {
-        return values.stream()
-                .map(Section::getStations)
-                .flatMap(List::stream)
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
     public void add(Section section) {
-        if (this.hasSections()) {
-            validateSection(section);
+        if (values.isEmpty()) {
+            values.add(section);
+            return;
         }
-        this.values.add(section);
+        if (this.hasNotOnlyOneStation(section)) {
+            throw new IllegalArgumentException();
+        }
+        Section connectableSection = findConnectableSection(section);
+        if (connectableSection.isConnectInSide(section)) {
+            connectableSection.connectInside(section);
+        }
+        values.add(section);
     }
 
-    private boolean hasSections() {
-        return values.size() > EMPTY_VALUE;
+    private Section findConnectableSection(Section section) {
+        return values.stream()
+                .filter(section::isConnectable)
+                .findAny()
+                .orElseThrow(IllegalArgumentException::new);
     }
 
-    private void validateSection(Section additionalSection) {
-        Section lastSection = findLastSection();
-        if (lastSection.isMissMatchDownStation(additionalSection.getUpStation())) {
-            throw new InvalidMatchEndStationException(additionalSection.getUpStation().getId());
+    private boolean hasNotOnlyOneStation(Section section) {
+        return !hasOnlyOneStation(section);
+    }
+
+    private boolean hasOnlyOneStation(Section section) {
+        boolean hasUpStation = this.hasStation(section.getUpStation());
+        boolean hasDownStation = this.hasStation(section.getDownStation());
+
+        if (hasUpStation && hasDownStation) {
+            return false;
         }
-        if(this.hasStation(additionalSection.getDownStation())) {
-            throw new StationAlreadyExistsException(additionalSection.getDownStation().getId());
-        }
+        return hasUpStation || hasDownStation;
     }
 
     private boolean hasStation(Station station) {
@@ -76,5 +82,41 @@ public class Sections {
 
     private int lastIndex() {
         return values.size() - ONE;
+    }
+
+    public List<Station> getStations() {
+        if(values.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Section firstSection = findFirstSection();
+        List<Section> connectedOrderSections = new ArrayList<>();
+        connectedOrderSections.add(firstSection);
+
+        while (connectedOrderSections.size() != values.size()) {
+            Section lastStation = connectedOrderSections.get(connectedOrderSections.size() - ONE);
+            Section connectableSection = findConnectableSection(lastStation);
+            connectedOrderSections.add(connectableSection);
+        }
+        return exportStations(connectedOrderSections);
+    }
+
+    private List<Station> exportStations(List<Section> sections) {
+        return sections.stream()
+                .map(Section::getStations)
+                .flatMap(List::stream)
+                .distinct()
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    private Section findFirstSection() {
+        return values.stream()
+                .filter(section -> isMissMatchDownStation(section.getUpStation()))
+                .findAny()
+                .orElseThrow(IllegalStateException::new);
+    }
+
+    private boolean isMissMatchDownStation(Station station) {
+        return values.stream()
+                .allMatch(section -> section.isMissMatchDownStation(station));
     }
 }

@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.util.List;
@@ -44,9 +43,8 @@ public class Line {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        Section section = new Section(upStation, downStation, distance);
+        Section section = new Section(this, upStation, downStation, distance);
         sections.add(section);
-        section.makeRelation(this);
     }
 
     public void deleteSection(Station station) {

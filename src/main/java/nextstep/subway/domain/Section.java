@@ -30,18 +30,57 @@ public class Section {
     @Embedded
     private Distance distance;
 
-    public Section(Station upStation, Station downStation, int distance) {
+    public Section(Line line, Station upStation, Station downStation, int distance) {
+        this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = new Distance(distance);
     }
 
-    protected void makeRelation(Line line) {
-        this.line = line;
-    }
-
     public boolean isMissMatchDownStation(Station station) {
         return !downStation.equals(station);
+    }
+
+    public boolean isConnectable(Section section) {
+        if (this.equals(section)) {
+            return false;
+        }
+        return upStation.equals(section.getUpStation())
+                || upStation.equals(section.getDownStation())
+                || downStation.equals(section.getUpStation())
+                || downStation.equals(section.getDownStation());
+    }
+
+    public void connectInside(Section section) {
+        if (isConnectOutSide(section)) {
+            throw new IllegalArgumentException();
+        }
+        distance.reduce(section.getDistance());
+        changeEndPoint(section);
+    }
+
+    private boolean isConnectOutSide(Section section) {
+        return !isConnectInSide(section);
+    }
+
+    public boolean isConnectInSide(Section section) {
+        return isMatchUpStation(section) || isMatchDownStation(section);
+    }
+
+    private void changeEndPoint(Section section) {
+        if (isMatchUpStation(section)) {
+            upStation = section.getDownStation();
+            return;
+        }
+        downStation = section.getUpStation();
+    }
+
+    private boolean isMatchUpStation(Section section) {
+        return upStation.equals(section.getUpStation());
+    }
+
+    private boolean isMatchDownStation(Section section) {
+        return downStation.equals(section.getDownStation());
     }
 
     public boolean hasStation(Station station) {
@@ -58,5 +97,9 @@ public class Section {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public Distance getDistance() {
+        return distance;
     }
 }

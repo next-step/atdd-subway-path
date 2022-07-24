@@ -1,33 +1,33 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.domain.exception.InvalidMatchEndStationException;
 import nextstep.subway.domain.exception.NotExistSectionException;
 import nextstep.subway.domain.exception.SectionDeleteException;
-import nextstep.subway.domain.exception.StationAlreadyExistsException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static nextstep.subway.domain.factory.SectionFactory.createSection;
 import static nextstep.subway.domain.fixture.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class SectionsTest {
 
     @Test
-    @DisplayName("모든 구간의 지하철 역들을 반환한다.")
+    @DisplayName("모든 구간의 지하철 역을 연결된 순서에 맞게 반환한다.")
     void getStations() {
-        //given
-        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, 10);
-        Section section2 = new Section(YEOKSAM_STATION, SEOLLEUNG_STATION, 10);
-
+        // given
         Sections sections = new Sections();
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
         sections.add(section);
-        sections.add(section2);
+
+        Section betweenSection = createSection(GANGNAM_STATION, SAMSUNG_STATION, 3);
+        sections.add(betweenSection);
 
         // then
-        assertThat(sections.getStations()).containsOnly(new Station(1L, "강남역"),
-                                                            new Station(2L, "역삼역"),
-                                                            new Station(3L, "선릉역"));
+        assertThat(sections.getStations()).containsExactly(new Station(1L, "강남역"),
+                new Station(4L, "삼성역"),
+                new Station(2L, "역삼역"));
     }
 
     @Test
@@ -37,7 +37,7 @@ class SectionsTest {
         Sections sections = new Sections();
 
         // when
-        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
         sections.add(section);
 
         // then
@@ -46,35 +46,86 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("추가하려는 구간의 상행역이 해당 노선의 하행 종점역과 같지 않으면 예외를 반환한다.")
-    void invalid_new_section_wrong_upStation() {
+    @DisplayName("하나 이상의 구간을 가진 경우 신규 구간의 상행역과 하행역 둘중 하나만 포함해야 한다.")
+    void invalid_add_section_match_only_one_station() {
         // given
         Sections sections = new Sections();
-        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
         sections.add(section);
 
         // when
-        Section newSection = new Section(GANGNAM_STATION, SEOLLEUNG_STATION, 5);
+        Section notContainStationSection = createSection(SEOLLEUNG_STATION, SAMSUNG_STATION, 5);
+        Section containBothStationSection = createSection(GANGNAM_STATION, YEOKSAM_STATION, 5);
 
         // then
-        assertThatThrownBy(() -> sections.add(newSection))
-                .isInstanceOf(InvalidMatchEndStationException.class);
+        assertAll(() -> {
+            assertThatThrownBy(() -> sections.add(notContainStationSection)).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> sections.add(containBothStationSection)).isInstanceOf(IllegalArgumentException.class);
+        });
     }
 
     @Test
-    @DisplayName("추가하려는 구간의 하행역이 해당 노선의 지하철역 일 경우 예외를 반환한다.")
-    void invalid_new_section_wrong_downStation() {
+    @DisplayName("구간 사이에 등록 시 신규 구간의 길이가 구간 사이의 길이보다 작아야한다.")
+    void invalid_add_section_wrong_distance() {
         // given
         Sections sections = new Sections();
-        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
         sections.add(section);
 
         // when
-        Section newSection = new Section(YEOKSAM_STATION, GANGNAM_STATION, 5);
+        Section betweenSection = createSection(GANGNAM_STATION, SAMSUNG_STATION, 15);
 
         // then
-        assertThatThrownBy(() -> sections.add(newSection))
-                .isInstanceOf(StationAlreadyExistsException.class);
+        assertThatThrownBy(() -> sections.add(betweenSection))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("구간 사이에 등록 하면 신규 구간의 지하철 역이 추가된다.")
+    void add_section_between_section() {
+        // given
+        Sections sections = new Sections();
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        sections.add(section);
+
+        // when
+        Section betweenSection = createSection(GANGNAM_STATION, SAMSUNG_STATION, 3);
+        sections.add(betweenSection);
+
+        // then
+        assertThat(sections.getStations()).containsOnly(GANGNAM_STATION, YEOKSAM_STATION, SAMSUNG_STATION);
+    }
+
+    @Test
+    @DisplayName("상행 좀점역에 등록 하면 신규 구간의 지하철 역이 추가되고 상행종점역이 바뀐다.")
+    void add_section_up_section() {
+        // given
+        Sections sections = new Sections();
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        sections.add(section);
+
+        // when
+        Section betweenSection = createSection(SAMSUNG_STATION, GANGNAM_STATION, 3);
+        sections.add(betweenSection);
+
+        // then
+        assertThat(sections.getStations()).containsExactly(SAMSUNG_STATION, GANGNAM_STATION, YEOKSAM_STATION);
+    }
+
+    @Test
+    @DisplayName("햐행 좀점역에 등록 하면 신규 구간의 지하철 역이 추가되고 하행종점역이 바뀐다.")
+    void add_section_down_section() {
+        // given
+        Sections sections = new Sections();
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        sections.add(section);
+
+        // when
+        Section betweenSection = createSection(YEOKSAM_STATION, SAMSUNG_STATION, 13);
+        sections.add(betweenSection);
+
+        // then
+        assertThat(sections.getStations()).containsExactly(GANGNAM_STATION, YEOKSAM_STATION, SAMSUNG_STATION);
     }
 
     @Test
@@ -82,8 +133,8 @@ class SectionsTest {
     void delete_section() {
         // given
         Sections sections = new Sections();
-        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, 10);
-        Section newSection = new Section(YEOKSAM_STATION, SEOLLEUNG_STATION, 5);
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section newSection = createSection(YEOKSAM_STATION, SEOLLEUNG_STATION, 5);
 
         sections.add(section);
         sections.add(newSection);
@@ -100,8 +151,8 @@ class SectionsTest {
     void invalid_delete_not_last_section() {
         // given
         Sections sections = new Sections();
-        Section section = new Section(GANGNAM_STATION, YEOKSAM_STATION, 10);
-        Section newSection = new Section(YEOKSAM_STATION, SEOLLEUNG_STATION, 5);
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section newSection = createSection(YEOKSAM_STATION, SEOLLEUNG_STATION, 5);
 
         sections.add(section);
         sections.add(newSection);
