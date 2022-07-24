@@ -60,15 +60,10 @@ public class Sections {
             return Collections.emptyList();
         }
 
+        var sections = getOrderedSections();
         var stations = new ArrayList<Station>();
-        var firstSection = getFirstSection();
-        stations.add(firstSection.getUpStation());
-
-        var currentSection = Optional.of(firstSection);
-        while (currentSection.isPresent()) {
-            stations.add(currentSection.get().getDownStation());
-            currentSection = getNextSection(currentSection.get());
-        }
+        stations.add(sections.get(0).getUpStation());
+        sections.forEach(section -> stations.add(section.getDownStation()));
 
         return stations;
     }
