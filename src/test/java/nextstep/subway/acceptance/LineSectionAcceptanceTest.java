@@ -1,19 +1,22 @@
 package nextstep.subway.acceptance;
 
+import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선_조회_요청;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_제거_요청;
+import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static nextstep.subway.acceptance.LineSteps.*;
-import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
@@ -48,12 +51,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 양재시민의숲역));
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 양재시민의숲역)
-        );
+        구간이_올바른_순서대로_존재하는지_검증(신분당선, List.of(강남역, 양재역, 양재시민의숲역));
     }
 
     /**
@@ -68,13 +66,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역));
 
         // then
-        var response = 지하철_노선_조회_요청(신분당선);
-
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(response.jsonPath().getList("stations.id", Long.class))
-                        .containsExactly(신논현역, 강남역, 양재역)
-        );
+        구간이_올바른_순서대로_존재하는지_검증(신분당선, List.of(신논현역, 강남역, 양재역));
     }
 
     /**
@@ -89,13 +81,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 강재역));
 
         // then
-        var response = 지하철_노선_조회_요청(신분당선);
-
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(response.jsonPath().getList("stations.id", Long.class))
-                        .containsExactly(강남역, 강재역, 양재역)
-        );
+        구간이_올바른_순서대로_존재하는지_검증(신분당선, List.of(강남역, 강재역, 양재역));
     }
 
     @DisplayName("구간 사이에 새로운 구간을 등록 (상행역이 신규역)")
@@ -106,13 +92,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강재역, 양재역));
 
         // then
-        var response = 지하철_노선_조회_요청(신분당선);
-
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(response.jsonPath().getList("stations.id", Long.class))
-                        .containsExactly(강남역, 강재역, 양재역)
-        );
+        구간이_올바른_순서대로_존재하는지_검증(신분당선, List.of(강남역, 강재역, 양재역));
     }
 
     /**
@@ -153,5 +133,14 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         params.put("downStationId", downStationId + "");
         params.put("distance", 6 + "");
         return params;
+    }
+
+    private void 구간이_올바른_순서대로_존재하는지_검증(Long lineId, List<Long> stationIds) {
+        var response = 지하철_노선_조회_요청(lineId);
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactlyElementsOf(stationIds)
+        );
     }
 }
