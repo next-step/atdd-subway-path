@@ -1,11 +1,10 @@
-package nextstep.subway.common.errors.handler;
+package nextstep.subway.line.ui.errors;
 
 import nextstep.subway.common.errors.dto.ErrorResponse;
 import nextstep.subway.common.errors.errorcode.ErrorCode;
 import nextstep.subway.common.errors.utils.ExceptionHandlerUtils;
 import nextstep.subway.line.domain.exception.CannotAddSectionException;
 import nextstep.subway.line.domain.exception.CannotDeleteSectionException;
-import nextstep.subway.line.ui.errors.LineErrorCode;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;

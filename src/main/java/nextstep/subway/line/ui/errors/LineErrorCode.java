@@ -9,7 +9,9 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum LineErrorCode implements ErrorCode {
 
-    CANT_DELETE_SECTION(HttpStatus.BAD_REQUEST, "Can't Delete Section");
+    CANT_DELETE_SECTION(HttpStatus.BAD_REQUEST, "Can't Delete Section"),
+    CANT_ADD_SECTION(HttpStatus.BAD_REQUEST, "Can't Add Section")
+    ;
 
     private final HttpStatus httpStatus;
     private final String message;
