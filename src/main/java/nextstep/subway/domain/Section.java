@@ -51,7 +51,7 @@ public class Section {
     }
 
     private void validateSectionDistance(Section newSection) {
-        if (newSection.distance >= distance) {
+        if (newSection.distance >= this.distance) {
             throw new AddSectionException("신규 구간의 길이는 기존 구간의 길이보다 짧아야 합니다.");
         }
     }
