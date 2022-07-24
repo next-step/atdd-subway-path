@@ -35,10 +35,7 @@ public class Sections {
 		validateStations(upStation, downStation);
 
 		if (isStartWithUpStation(upStation)) {
-			Section section = sections.stream()
-					.filter(s -> s.getUpStation().equals(upStation))
-					.findFirst()
-					.orElseThrow(IllegalArgumentException::new);
+			Section section = getSectionMatchingUpStation(upStation);
 
 			validateDistance(distance, section);
 
@@ -49,16 +46,33 @@ public class Sections {
 		}
 
 		if (sameAsOriginUpStationAndNewDownStation(downStation)) {
-			Section section = sections.stream()
-					.filter(s -> s.getUpStation().equals(downStation))
-					.findFirst()
-					.orElseThrow(IllegalArgumentException::new);
+			Section section = getSectionMatchingUpStation(downStation);
 
 			this.sections.add(sections.indexOf(section), new Section(line, upStation, downStation, distance));
 			return;
 		}
 
 		this.sections.add(new Section(line, upStation, downStation, distance));
+	}
+
+	public List<Station> getStations() {
+		if (isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		Section firstSection = getFirstSection();
+		List<Station> stations = addStations(firstSection);
+
+		addAllStations(firstSection, stations);
+		return stations;
+	}
+
+	public void removeSection(Station station) {
+		if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
+			throw new IllegalArgumentException();
+		}
+
+		sections.remove(this.getSections().size() - 1);
 	}
 
 	private void validateStations(Station upStation, Station downStation) {
@@ -82,6 +96,13 @@ public class Sections {
 		}
 	}
 
+	private Section getSectionMatchingUpStation(Station station) {
+		return sections.stream()
+				.filter(s -> s.getUpStation().equals(station))
+				.findFirst()
+				.orElseThrow(IllegalArgumentException::new);
+	}
+
 	private boolean sameAsOriginUpStationAndNewDownStation(Station downStation) {
 		return sections.stream()
 				.anyMatch(section -> section.getUpStation().equals(downStation));
@@ -93,26 +114,6 @@ public class Sections {
 
 	private Integer modifiedDistance(Integer origin, Integer insert) {
 		return origin - insert;
-	}
-
-	public List<Station> getStations() {
-
-		if (isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		Section firstSection = getFirstSection();
-		List<Station> stations = addStations(firstSection);
-		addAllStations(firstSection, stations);
-		return stations;
-	}
-
-	public void removeSection(Station station) {
-		if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
-			throw new IllegalArgumentException();
-		}
-
-		sections.remove(this.getSections().size() - 1);
 	}
 
 	private Section getFirstSection() {
