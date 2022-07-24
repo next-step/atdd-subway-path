@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.exception.AlreadyRegisteredException;
 import nextstep.subway.exception.CannotInsertLongerSectionException;
 import nextstep.subway.exception.CannotInsertSameDistanceSectionException;
+import nextstep.subway.exception.CannotRegisterWithoutRegisteredStation;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -121,6 +122,31 @@ class SectionsTest {
 		//then
 		assertThatThrownBy(() -> sections.add(오류발생구간))
 				.isInstanceOf(AlreadyRegisteredException.class);
+	}
+
+	/**
+	 * Given sections에 section을 1개 추가한다.
+	 * When 기존 구간에 등록되어 있지 않은 상행역과 하행역을 가지고 구간으로 등록하려하면
+	 * Then 실패한다.
+	 */
+	@DisplayName("새로운 구간 등록 시, 상행역과 하행역 모두 등록되어 있지 않으면 실패한다.")
+	@Test
+	void addLineSectionFailWithoutAlreadyRegisteredStation() {
+		//given
+		Sections sections = new Sections();
+		when(section.getUpStation()).thenReturn(new Station("광교역"));
+		when(section.getDownStation()).thenReturn(new Station("상현역"));
+		when(section.getDistance()).thenReturn(15);
+		sections.add(section);
+
+		when(insertSection.getUpStation()).thenReturn(new Station("판교역"));
+		when(insertSection.getDownStation()).thenReturn(new Station("정자역"));
+		when(insertSection.getDistance()).thenReturn(5);
+
+		//when
+		//then
+		assertThatThrownBy(() -> sections.add(insertSection))
+				.isInstanceOf(CannotRegisterWithoutRegisteredStation.class);
 	}
 
 	/**

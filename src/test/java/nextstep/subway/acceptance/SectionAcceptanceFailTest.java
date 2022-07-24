@@ -74,4 +74,26 @@ class SectionAcceptanceFailTest extends AcceptanceTest {
         // then
         assertThat(구간_생성_요청_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * Given 노선에 구간을 등록한다.
+     * When 새로운 구간을 추가 할 때, 기존 구간에 상행역과 하행역이 모두 등록되어있지 않으면
+     * Then 노선에 구간이 추가되지 않는다.
+     */
+    @DisplayName("새로운 구간 등록 시, 상행역과 하행역 모두 등록되어 있지 않으면 실패한다.")
+    @Test
+    void addLineSectionFailWithoutAlreadyRegisteredStation() {
+        // given
+        Long 양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 3));
+        Long 신사역 = 지하철역_생성_요청("신사역").jsonPath().getLong("id");
+        Long 논현역 = 지하철역_생성_요청("논현역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> 구간_생성_요청_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신사역, 논현역, 5));
+
+        // then
+        assertThat(구간_생성_요청_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
 }

@@ -4,6 +4,7 @@ import lombok.Getter;
 import nextstep.subway.exception.AlreadyRegisteredException;
 import nextstep.subway.exception.CannotInsertLongerSectionException;
 import nextstep.subway.exception.CannotInsertSameDistanceSectionException;
+import nextstep.subway.exception.CannotRegisterWithoutRegisteredStation;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -76,14 +77,34 @@ public class Sections {
 	}
 
 	private void validateStations(Station upStation, Station downStation) {
-		boolean hasSameUpStation = sections.stream()
-				.anyMatch(s -> s.getUpStation().equals(upStation));
-		boolean hasSameDownStation = sections.stream()
-				.anyMatch(s -> s.getDownStation().equals(downStation));
 
-		if (hasSameUpStation && hasSameDownStation) {
+		if (isAlreadyRegistered(upStation, downStation)) {
 			throw new AlreadyRegisteredException(CANNOT_REGISTER_ALREADY_REGISTERED_SECTION.getMessage());
 		}
+
+
+		if (!isEmpty() && !haveRegistered(upStation, downStation)) {
+			throw new CannotRegisterWithoutRegisteredStation(CANNOT_REGISTER_WITHOUT_REGISTERED_STATIONS.getMessage());
+		}
+	}
+
+	private boolean haveRegistered(Station upStation, Station downStation) {
+		return hasSameUpStation(upStation) || hasSameDownStation(downStation) ||
+				hasSameUpStation(downStation) || hasSameDownStation(upStation);
+	}
+
+	private boolean isAlreadyRegistered(Station upStation, Station downStation) {
+		return hasSameUpStation(upStation) && hasSameDownStation(downStation);
+	}
+
+	private boolean hasSameDownStation(Station station) {
+		return sections.stream()
+				.anyMatch(s -> s.getDownStation().equals(station));
+	}
+
+	private boolean hasSameUpStation(Station station) {
+		return sections.stream()
+				.anyMatch(s -> s.getUpStation().equals(station));
 	}
 
 	private void validateDistance(int distance, Section section) {
@@ -104,12 +125,11 @@ public class Sections {
 	}
 
 	private boolean sameAsOriginUpStationAndNewDownStation(Station downStation) {
-		return sections.stream()
-				.anyMatch(section -> section.getUpStation().equals(downStation));
+		return hasSameUpStation(downStation);
 	}
 
 	private boolean isStartWithUpStation(Station upStation) {
-		return sections.stream().anyMatch(section -> section.getUpStation().equals(upStation));
+		return hasSameUpStation(upStation);
 	}
 
 	private Integer modifiedDistance(Integer origin, Integer insert) {
