@@ -6,12 +6,12 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
-import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
+import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 
 public class PathAcceptanceTest extends AcceptanceTest {
@@ -54,7 +54,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("출발역이 존재하지 않는경우 예외발생")
     @Test
-    public void not_exist_arrival_station() {
+    public void not_exists_arrival_station() {
         // when
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
@@ -66,6 +66,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
+        생성_실패_확인(response, HttpStatus.NOT_FOUND, "해당 출발역을 찾을 수 없습니다");
     }
 
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, Integer distance) {
