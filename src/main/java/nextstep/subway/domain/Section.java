@@ -37,5 +37,4 @@ public class Section {
         this.downStation = downStation;
         this.distance = distance;
     }
-
 }

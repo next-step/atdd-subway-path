@@ -6,15 +6,13 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Embeddable
 @Getter
 public class Sections {
-
-	private static final int FIRST_IDX = 0;
 
 	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
 	List<Section> sections = new ArrayList<>();
@@ -55,11 +53,10 @@ public class Sections {
 		if (isEmpty()) {
 			return Collections.emptyList();
 		}
-		List<Station> stations = sections.stream()
-				.map(Section::getDownStation)
-				.collect(Collectors.toList());
-		stations.add(FIRST_IDX, sections.get(FIRST_IDX).getUpStation());
 
+		Section firstSection = getFirstSection();
+		List<Station> stations = addStations(firstSection);
+		addAllStations(firstSection, stations);
 		return stations;
 	}
 
@@ -69,5 +66,39 @@ public class Sections {
 		}
 
 		sections.remove(this.getSections().size() - 1);
+	}
+
+	private Section getFirstSection() {
+		return sections.stream()
+				.filter(s -> sections.stream()
+						.noneMatch(section -> section.getDownStation().equals(s.getUpStation())))
+				.findFirst()
+				.orElseThrow(AssertionError::new);
+	}
+
+	private boolean hasNext(Station station) {
+		return sections.stream()
+				.map(Section::getUpStation)
+				.anyMatch(s -> s.equals(station));
+	}
+
+	private Section findSection(Station station) {
+		return sections.stream()
+				.filter(s -> s.getUpStation().equals(station))
+				.findFirst()
+				.orElseThrow(AssertionError::new);
+	}
+
+	private List<Station> addStations(Section section) {
+		return new ArrayList<>(Arrays.asList(section.getUpStation(), section.getDownStation()));
+	}
+
+	private void addAllStations(Section firstSection, List<Station> stations) {
+		Section nextSection = firstSection;
+		while (hasNext(nextSection.getDownStation())) {
+			Section section = findSection(nextSection.getDownStation());
+			stations.add(section.getDownStation());
+			nextSection = section;
+		}
 	}
 }

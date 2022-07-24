@@ -11,6 +11,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @DisplayName("Sections클래스를 검증한다")
@@ -57,6 +58,8 @@ class SectionsTest {
 
 	/**
 	 * Given sections에 section을 추가한다.
+	 * Given sections에 insertSection1을 추가한다.
+	 * Given sections에 insertSection2을 추가한다.
 	 * When sections에서 getStation을 하면
 	 * Then sections가 가지고 있는 모든 Station이 반환된다.
 	 */
@@ -66,17 +69,34 @@ class SectionsTest {
 	    //given
 		Sections sections = new Sections();
 		when(section.getUpStation()).thenReturn(new Station("광교역"));
-		when(section.getDownStation()).thenReturn(new Station("광교중앙역"));
+		when(section.getDownStation()).thenReturn(new Station("판교역"));
 		sections.add(section);
+
+		//given
+		Section insertSection1 = mock(Section.class);
+		when(insertSection1.getUpStation()).thenReturn(new Station("광교역"));
+		when(insertSection1.getDownStation()).thenReturn(new Station("정자역"));
+		sections.add(insertSection1);
+
+		//given
+		Section insertSection2 = mock(Section.class);
+		when(insertSection2.getUpStation()).thenReturn(new Station("광교역"));
+		when(insertSection2.getDownStation()).thenReturn(new Station("광교중앙역"));
+		sections.add(insertSection2);
 
 	    //when
 		List<Station> stations = sections.getStations();
-
+		for (Station station : stations) {
+			System.out.println(station.getName());
+		}
 		//then
 		assertAll(
-				() -> assertThat(stations).hasSize(2),
-				() -> assertThat(stations).containsExactly(new Station("광교역"), new Station("광교중앙역"))
+				() -> assertThat(stations).hasSize(4),
+				() -> assertThat(stations)
+						.containsExactly(new Station("광교역"), new Station("광교중앙역"),
+								new Station("정자역"), new Station("판교역"))
 		);
+
 	}
 
 	/**
