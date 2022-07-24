@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.exception.SectionMinimumLimitException;
 import nextstep.subway.exception.SectionNotFoundException;
 
 @Embeddable
@@ -112,15 +113,52 @@ public class Sections {
     }
 
     public void removeStations(final Station station) {
+        notRegisteredValidation();
+
+        minimumSizeValidation();
+
+        // 맨앞의 역 제거
+        final Section section = getFirstSection();
+        if (section.isSameUpStation(station)) {
+            sections.remove(section);
+            return;
+        }
+
+        // 가운데 역 제거
+        for (Section currentSection : sections) {
+            final Section nextSection = getNextSection(currentSection);
+            if (Objects.nonNull(nextSection) && isMiddleSection(currentSection, nextSection, station)) {
+                currentSection.removeMiddleSection(nextSection.getDistance(), nextSection.getDownStation());
+                sections.remove(nextSection);
+                return;
+            }
+        }
+
+        downStationValidation(station);
+        sections.remove(getLastIndex());
+    }
+
+    private boolean isMiddleSection(final Section currentSection, final Section nextSection, final Station removeStation) {
+        return currentSection.isSameDownStation(removeStation) &&
+            nextSection.isSameUpStation(removeStation);
+    }
+
+    private void notRegisteredValidation() {
         if (sections.isEmpty()) {
             throw new IllegalStateException("등록된 구간이 없습니다.");
         }
+    }
 
+    private void downStationValidation(final Station station) {
         if (isNotEqualLastDownStation(station)) {
             throw new IllegalArgumentException("하행 종점역 정보가 다릅니다.");
         }
+    }
 
-        sections.remove(getLastIndex());
+    private void minimumSizeValidation() {
+        if (sections.size() == 1) {
+            throw new SectionMinimumLimitException();
+        }
     }
 
     private boolean isNotEqualLastDownStation(final Station station) {
