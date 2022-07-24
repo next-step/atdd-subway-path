@@ -51,9 +51,8 @@ public class Sections {
         return getLastSection().getDownStation();
     }
 
-    public void addSectionsToGraph(WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
-        this.sections.forEach(section ->
-            graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance()));
+    public List<Section> getSections() {
+        return this.sections;
     }
 
     private int size() {
@@ -184,4 +183,5 @@ public class Sections {
     private boolean isEmpty() {
         return size() == 0;
     }
+
 }

@@ -1,8 +1,5 @@
 package nextstep.subway.domain;
 
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
-
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
@@ -47,6 +44,10 @@ public class Line {
         this.sections.add(new Section(this, upStation, downStation, distance));
     }
 
+    public List<Section> getSections() {
+        return this.sections.getSections();
+    }
+
     public List<Station> getStations() {
         return this.sections.getStations();
     }
@@ -66,13 +67,6 @@ public class Line {
         if (color != null) {
             this.color = color;
         }
-    }
-
-    public WeightedMultigraph<Station, DefaultWeightedEdge> toGraph() {
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-        this.sections.getStations().forEach(graph::addVertex);
-        this.sections.addSectionsToGraph(graph);
-        return graph;
     }
 
     @Override

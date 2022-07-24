@@ -1,8 +1,5 @@
 package nextstep.subway.domain;
 
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -65,21 +62,6 @@ class LineTest {
         // then
         assertThat(line.getName()).isEqualTo("신분당선");
         assertThat(line.getColor()).isEqualTo("red");
-    }
-
-    @DisplayName("지하철 노선을 경로 찾기 그래프로 변환")
-    @Test
-    void toGraph() {
-        // given
-        Line line = Stub.이호선_생성.get();
-
-        // when
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = line.toGraph();
-
-        // then
-        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-        List<Station> paths = dijkstraShortestPath.getPath(Stub.구로디지털단지역, Stub.신림역).getVertexList();
-        assertThat(paths).containsExactly(Stub.구로디지털단지역, Stub.신대방역, Stub.신림역);
     }
 
     private static class Stub {
