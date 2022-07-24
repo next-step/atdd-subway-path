@@ -74,7 +74,7 @@
 
 ### step 3 - 지하철 구간 삭제 리팩터링
 0. step 2 피드백
-   1. Sections 에서 자신을 가리키는 `this`를 사용하여 distance 를 더 명확하게 나타내주자
+   1. Section 에서 자신을 가리키는 `this`를 사용하여 distance 를 더 명확하게 나타내주자
    2. Sections 에서 `sameNewAndExistingDownStation` 메서드에서 중복되는 로직이 있는데 줄일 수 있을 듯!
    3. Sections 에서 `validateAddSection` 에서 stream 하는 부분을 메서드로 추출하는 것도 좋아보임
    4. Sections 에서 `firstSection` 하는 메서드에서 elseThrow 에서 예외 메시지를 같이 던져주면 좋아보임
