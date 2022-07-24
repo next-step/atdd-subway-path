@@ -1,10 +1,14 @@
 package nextstep.subway.domain;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 @Entity
+@NoArgsConstructor
 public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,42 +16,54 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
-    public Line() {
-    }
-
-    public Line(String name, String color) {
+    private Line(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public Long getId() {
-        return id;
+    public static Line of(String name, String color) {
+        return new Line(name, color);
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void addSection(Station upStation, Station downStation, int distance) {
+        sections.addSection(this, upStation, downStation, distance);
     }
 
-    public String getName() {
-        return name;
+    public Station upStation() {
+        return this.sections.upStation();
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public Station downStation() {
+        return this.sections.downStation();
     }
 
-    public String getColor() {
-        return color;
+    public List<Section> sections() {
+        return this.sections.sections();
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public void deleteSection(Station station) {
+        this.sections.deleteSection(station);
+    }
+    public Station upStation(Station station) {
+        return this.sections.upStation();
+    }
+    public Station downStation(Station station) {
+        return this.sections.downStation();
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public List<Station> stations() {
+        return sections.stations();
+    }
+
+    public void update(String name, String color) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (color != null) {
+            this.color = color;
+        }
     }
 }
