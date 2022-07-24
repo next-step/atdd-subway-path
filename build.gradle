@@ -27,6 +27,8 @@ dependencies {
     // mysql
     implementation 'mysql:mysql-connector-java'
 
+    // SQL 쿼리 파라미터 출력
+    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'
 
     // lombok
     compileOnly 'org.projectlombok:lombok:1.18.24'
