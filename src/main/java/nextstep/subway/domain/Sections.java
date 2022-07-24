@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import nextstep.subway.exception.AddSectionException;
 import nextstep.subway.exception.DeleteSectionException;
+import nextstep.subway.exception.SectionNotFoundException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -111,14 +112,14 @@ public class Sections {
         return sections.stream()
                 .filter(section -> matchSectionsDownStation(section.getUpStation()))
                 .findAny()
-                .orElseThrow();
+                .orElseThrow(() -> new SectionNotFoundException("상행 종점 구간이 존재하지 않습니다."));
     }
 
     public Section lastSection() {
         return sections.stream()
                 .filter(section -> matchSectionsUpStation(section.getDownStation()))
                 .findAny()
-                .orElseThrow();
+                .orElseThrow(() -> new SectionNotFoundException("하행 종점 구간이 존재하지 않습니다."));
     }
 
     private boolean matchSectionsDownStation(Station upStation) {
