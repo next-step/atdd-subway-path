@@ -214,9 +214,7 @@ class SectionsTest {
 
 	    //when
 		List<Station> stations = sections.getStations();
-		for (Station station : stations) {
-			System.out.println(station.getName());
-		}
+
 		//then
 		assertAll(
 				() -> assertThat(stations).hasSize(4),
@@ -224,7 +222,6 @@ class SectionsTest {
 						.containsExactly(new Station("광교역"), new Station("광교중앙역"),
 								new Station("정자역"), new Station("판교역"))
 		);
-
 	}
 
 	/**
