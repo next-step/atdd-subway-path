@@ -84,10 +84,17 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역 사이에 새로운 역을 추가")
     @Test
     void test() {
-//        When
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(논현역, 강남역));
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(논현역, 강남역, 양재역);
+    }
+
+    @DisplayName("새로운 역을 상행 종점으로 등록")
+    @Test
+    void addUpStation() {
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역));
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신논현역, 강남역, 양재역);
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
