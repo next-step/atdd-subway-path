@@ -93,6 +93,19 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
+        validateRemoveSection(station);
+
+        if (firstSection().getUpStation().equals(station)) {
+            sections.remove(firstSection());
+            return;
+        }
+
+        if (lastSection().getDownStation().equals(station)) {
+            sections.remove(lastSection());
+        }
+    }
+
+    private void validateRemoveSection(Station station) {
         if (sections.size() == 1) {
             throw new DeleteSectionException("구간이 1개인 노선은 구간 삭제를 진행할 수 없습니다.");
         }
@@ -100,12 +113,6 @@ public class Sections {
         if (!allStations().contains(station)) {
             throw new DeleteSectionException("삭제하려는 역이 노선에 등록되지 않은 역입니다.");
         }
-
-        if (!lastSection().getDownStation().equals(station)) {
-            throw new DeleteSectionException("삭제하려는 역이 마지막 구간의 역이 아닙니다.");
-        }
-
-        sections.remove(lastSection());
     }
 
     public Section firstSection() {
