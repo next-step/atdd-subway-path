@@ -1,0 +1,15 @@
+package nextstep.subway.exception;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+@AllArgsConstructor
+@Getter
+public enum ErrorCode {
+	CANNOT_INSERT_LONGER_SECTION(HttpStatus.BAD_REQUEST, "기존 구간보다 길이가 더 긴 구간은 삽입할 수 없습니다."),
+	CANNOT_INSERT_SAME_DISTANCE_SECTION(HttpStatus.BAD_REQUEST, "기존 구간보다 길이가 같은 구간은 삽입할 수 없습니다.");
+
+	private HttpStatus status;
+	private String message;
+}

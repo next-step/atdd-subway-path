@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.CannotInsertLongerSectionException;
+import nextstep.subway.exception.CannotInsertSameDistanceSectionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,6 +56,38 @@ class SectionsTest {
 				() -> assertThat(stations).hasSize(3),
 				() -> assertThat(sectionsResponse.get(0).getDistance()).isEqualTo(7),
 				() -> assertThat(sectionsResponse.get(1).getDistance()).isEqualTo(3)
+		);
+	}
+
+	/**
+	 * Given sections에 section을 추가한다.
+	 * When 구간이 길이가 더 큰 section을 삽입하려하면,
+	 * Then 실패한다.
+	 */
+	@DisplayName("구간이 길이가 더 큰 section을 삽입하려하면 실패한다.")
+	@Test
+	void addSectionsWithUpStationFailOnLongerDistance() {
+		//given
+		Sections sections = new Sections();
+		when(section.getUpStation()).thenReturn(new Station("광교역"));
+		when(section.getDownStation()).thenReturn(new Station("상현역"));
+		when(section.getDistance()).thenReturn(10);
+		sections.add(section);
+
+		when(insertSection.getUpStation()).thenReturn(new Station("광교역"));
+		when(insertSection.getDownStation()).thenReturn(new Station("광교중앙역"));
+		when(insertSection.getDistance()).thenReturn(15);
+
+		//when
+		//then
+		assertAll(
+				() -> assertThatThrownBy(() -> sections.add(insertSection))
+							.isInstanceOf(CannotInsertLongerSectionException.class),
+				() -> {
+					when(insertSection.getDistance()).thenReturn(10);
+					assertThatThrownBy(() -> sections.add(insertSection))
+							.isInstanceOf(CannotInsertSameDistanceSectionException.class);
+				}
 		);
 	}
 
