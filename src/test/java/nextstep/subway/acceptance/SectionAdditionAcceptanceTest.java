@@ -132,12 +132,12 @@ public class SectionAdditionAcceptanceTest extends AcceptanceTest{
 
         //then
         Map<String, String> 강남_구의_구간 = createAdditionalBody(강남역.getId(), 구의역.getId(), 11);
-        ExtractableResponse<Response> 구간_추가_요청_응답 = 구간_추가_요청(신분당선_ID, 강남_역삼_구간);
+        ExtractableResponse<Response> 구간_추가_요청_응답 = 구간_추가_요청(신분당선_ID, 강남_구의_구간);
         assertAll(
                 () -> assertThat(구간_추가_요청_응답.statusCode())
                         .isEqualTo(HttpStatus.BAD_REQUEST.value()),
                 () -> assertThat(구간_추가_요청_응답.jsonPath().getString("message"))
-                        .isEqualTo("상행역과 하행역이 모두 등록 되어있는 구간은 등록할 수 없습니다.")
+                        .isEqualTo("역 사이에 등록할 경우 기존의 거리보다 짧은 구간만 등록이 가능합니다.")
         );
     }
 
