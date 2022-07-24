@@ -85,7 +85,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 노선의 하행 종점역에 새로운 구간을 추가하면
-     * Then 노선의 하행 종점역에 새로운 구간을 추가하면
+     * Then 구간 하행에 새로운 구간이 추가된다.
      */
     @DisplayName("하행 종점에 새로운 구간을 등록하면 구간이 추가된다.")
     @Test
