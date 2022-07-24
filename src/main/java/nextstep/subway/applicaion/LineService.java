@@ -11,7 +11,6 @@ import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -89,19 +88,8 @@ public class LineService {
             return Collections.emptyList();
         }
 
-        //상행 종점 찾기
-        List<Section> sortedSections = line.getSections().stream()
-                .filter(section -> line.getSections().stream()
-                        .noneMatch(section2 -> section.getUpStation().getId().equals(section2.getDownStation().getId()))).collect(Collectors.toList());
-
-        //순서 확인후에 삽입하기
-        while(sortedSections.size() < line.getSections().size()){
-            Section nextSection = line.getSections()
-                    .stream().filter(section ->
-                            section.getUpStation().getId().equals(sortedSections.get(sortedSections.size()-1).getDownStation().getId()))
-                    .findAny().orElseThrow();
-            sortedSections.add(nextSection);
-        }
+        //순서대로 삽입하기
+        List<Section> sortedSections = line.getSortedSections(line.getSections(), line.getUpStation());
 
 
         List<Station> stations = sortedSections.stream()

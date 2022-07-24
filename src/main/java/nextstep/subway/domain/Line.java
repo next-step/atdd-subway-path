@@ -69,6 +69,21 @@ public class Line {
                 .orElseThrow(() -> new IllegalArgumentException("WRONG_SECTION_IMFORMATION"));
     }
 
+    public List<Section> getSortedSections(List<Section> sections, Section firstSection) {
+        List<Section> results = new ArrayList<>();
+        results.add(firstSection);
+
+        while (results.size() < sections.size()) {
+            Section nextSection = sections.stream()
+                    .filter(sec -> sec.getUpStation().getId().equals(results.get(results.size() - 1).getDownStation().getId()))
+                    .findAny().orElseThrow();
+            results.add(nextSection);
+        }
+
+
+        return results;
+    }
+
     public void addSection(Section section) {
         //기존 노선의 구간 크기 확인
         int sectionSize = this.sections.size();
