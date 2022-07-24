@@ -4,13 +4,13 @@
 
 ## Step3 PR 수정 TODO list
 
-- [ ] Sections의 deleteMiddleStation 내부 return 제거, early return으로 변경해보기
-- [ ] if문 안의 deleteFirstOrLastStation에 CQRS 적용해보기
-- [ ] SectionsTest에서 displayName 추가와 주석 제거
-- [ ] Sections에서 isSizeLessThanOne 의 매직넘버 제거
-- [ ] Line에서 deleteLastSection 메서드 이름 변경
-- [ ] Sections에서 메서드 레퍼런스 활용하기
-- [ ] 제귀함수 고민하기
+- [x] Sections의 deleteMiddleStation 내부 return 제거, early return으로 변경해보기
+- [x] if문 안의 deleteFirstOrLastStation에 CQRS 적용해보기
+- [x] SectionsTest에서 displayName 추가와 주석 제거
+- [x] Sections에서 isSizeLessThanOne 의 매직넘버 제거
+- [x] Line에서 deleteLastSection 메서드 이름 변경
+- [x] Sections에서 메서드 레퍼런스 활용하기
+- [x] 제귀함수 고민하기
 
 ## Step3 TODO List
 

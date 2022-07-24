@@ -33,7 +33,7 @@ public class Line {
         this.sections.add(section);
     }
 
-    public void deleteLastSection(Station station) {
+    public void deleteSection(Station station) {
         sections.deleteSection(station);
     }
 

@@ -14,6 +14,7 @@ import java.util.List;
 public class Sections {
 
     private static final int FIRST_SECTION_INDEX = 0;
+    private static final int MINIMUM_SECTIONS_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -41,7 +42,18 @@ public class Sections {
             throw SectionsDeleteException.CANT_DELETE_LAST_ONE_SECTION_EXCEPTION();
         }
 
-        if (deleteFirstOrLastStation(station)) return;
+        Section firstSection = getFirstSection();
+        if (firstSection.hasSameUpStation(station)) {
+            sections.remove(firstSection);
+            return;
+        }
+
+        Section lastSection = getLastSection();
+        if (lastSection.hasSameDownStation(station)) {
+            sections.remove(lastSection);
+            return;
+        }
+
         deleteMiddleStation(station);
     }
 
@@ -50,41 +62,20 @@ public class Sections {
     }
 
     private boolean isSizeLessThanOne() {
-        return sections.size() <= 1;
+        return sections.size() <= MINIMUM_SECTIONS_SIZE;
     }
 
     private void deleteMiddleStation(Station station) {
         Section sameUpStationSection = findSameUpStationSection(station);
         Section sameDownStationSection = findSameDownStationSection(station);
-        if (sameUpStationSection != null && sameDownStationSection != null) {
-            Section newSection = Section.combineOf(sameDownStationSection, sameUpStationSection);
-            sections.remove(sameUpStationSection);
-            sections.remove(sameDownStationSection);
-            sections.add(newSection);
+        if (sameUpStationSection == null || sameDownStationSection == null) {
             return;
         }
-    }
 
-    private boolean deleteFirstOrLastStation(Station station) {
-        return deleteFirstStation(station) || deleteLastStation(station);
-    }
-
-    private boolean deleteFirstStation(Station station) {
-        Section firstSection = getFirstSection();
-        if (firstSection.hasSameUpStation(station)) {
-            sections.remove(firstSection);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean deleteLastStation(Station station) {
-        Section lastSection = getLastSection();
-        if (lastSection.hasSameDownStation(station)) {
-            sections.remove(lastSection);
-            return true;
-        }
-        return false;
+        Section newSection = Section.combineOf(sameDownStationSection, sameUpStationSection);
+        sections.remove(sameUpStationSection);
+        sections.remove(sameDownStationSection);
+        sections.add(newSection);
     }
 
     private void addSection(Section section) {
@@ -118,21 +109,21 @@ public class Sections {
         return sections.stream()
                 .filter(s -> s.hasSameUpStation(section.getUpStation()) || s.hasSameDownStation(section.getDownStation()))
                 .findFirst()
-                .orElseThrow(() -> SectionsDeleteException.NOT_FOUND_LAST_SECTION_EXCEPTION());
+                .orElseThrow(SectionsDeleteException::NOT_FOUND_LAST_SECTION_EXCEPTION);
     }
 
     private Section findSameDownStationSection(Station station) {
         return sections.stream()
                 .filter(s -> s.hasSameDownStation(station))
                 .findFirst()
-                .orElseThrow(() -> SectionsDeleteException.NOT_FOUND_STATION_EXCEPTION());
+                .orElseThrow(SectionsDeleteException::NOT_FOUND_STATION_EXCEPTION);
     }
 
     private Section findSameUpStationSection(Station station) {
         return sections.stream()
                 .filter(s -> s.hasSameUpStation(station))
                 .findFirst()
-                .orElseThrow(() -> SectionsDeleteException.NOT_FOUND_STATION_EXCEPTION());
+                .orElseThrow(SectionsDeleteException::NOT_FOUND_STATION_EXCEPTION);
     }
 
     private Station findNextStation(Station station) {

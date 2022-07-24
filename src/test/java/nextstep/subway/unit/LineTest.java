@@ -70,7 +70,7 @@ class LineTest {
     @Test
     void remove_section_when_no_section() {
         // when
-        Exception exception = assertThrows(SectionsDeleteException.class, () -> line.deleteLastSection(downStation));
+        Exception exception = assertThrows(SectionsDeleteException.class, () -> line.deleteSection(downStation));
 
         // then
         assertThat(exception).isInstanceOf(SectionsDeleteException.class);

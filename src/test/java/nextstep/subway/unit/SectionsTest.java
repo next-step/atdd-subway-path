@@ -101,6 +101,7 @@ public class SectionsTest {
         assertThat(sections.getStations()).containsExactly(newStation, upStation, newStation2, downStation);
     }
 
+    @DisplayName("상행역 앞에 하나, 상행역 바로 뒤에 두번의 역을 추가한다")
     @Test
     public void add_section_middle_3() {
         // given
@@ -124,6 +125,7 @@ public class SectionsTest {
         assertThat(sections.getStations()).containsExactly(newStation, upStation, newStation3, newStation2, downStation);
     }
 
+    @DisplayName("상행역 앞에 하나, 상행역 바로 뒤에 한번, 하행역 바로 앞에 한번 추가한다")
     @Test
     public void add_section_middle_4() {
         // given
@@ -235,23 +237,20 @@ public class SectionsTest {
         assertThat(exception).isInstanceOf(SectionsAddException.class);
     }
 
+    @DisplayName("구간을 중간에 추가할때 기존의 거리보다 더 큰 구간이 추가되면 예외가 발생한다")
     @Test
     public void add_section_fail_by_distance() {
         // given
-        // upStation -(10)- downStation
         sections.add(originSection);
 
-        // newStation -(5)- upStation -(10)- downStation
         Station newStation = new Station(3L, "신규역");
         Section newSection = new Section(2L, line, newStation, upStation, 5);
         sections.add(newSection);
 
-        // newStation -(5)- upStation -(9)- newStation2 -(1)- downStation
         Station newStation2 = new Station(4L, "신규역2");
         Section newSection2 = new Section(3L, line, upStation, newStation2, 9);
         sections.add(newSection2);
 
-        // newStation -(5)- upStation -(9)- newStation2 -(3)- newStation3 -(??)- downStation
         Station newStation3 = new Station(5L, "신규역3");
         Section newSection3 = new Section(4L, line, newStation2, newStation3, 3);
 
@@ -362,12 +361,10 @@ public class SectionsTest {
         // given
         sections.add(originSection);
 
-        // upStation -(10)- downStation -(5)- newStation
         Station newStation = new Station(3L, "신규역");
         Section newSection = new Section(2L, line, downStation, newStation, 5);
         sections.add(newSection);
 
-        // upStation -(10)- downStation -(5)- newStation -(9)- newSection2
         Station newStation2 = new Station(4L, "신규역2");
         Section newSection2 = new Section(3L, line, newStation, newStation2, 9);
         sections.add(newSection2);
