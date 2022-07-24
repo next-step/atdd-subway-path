@@ -43,7 +43,7 @@ public class Sections {
         }
 
         // 새로운 역을 상행/하행 종점으로 등록할 경우
-        if (this.getFinalUpStation().equals(section.getDownStation()) || this.getFinalDownStation().equals(section.getUpStation())) {
+        if (this.getFinalUpStation().isEqualTo(section.getDownStation()) || this.getFinalDownStation().isEqualTo(section.getUpStation())) {
             this.sections.add(section);
             return;
         }
@@ -70,7 +70,7 @@ public class Sections {
     }
 
     public Section findOverlapSection(Section section, boolean isUpStation) {
-        Predicate<Section> filter = isUpStation ? s -> s.getUpStation().equals(section.getUpStation()) : s -> s.getDownStation().equals(section.getDownStation());
+        Predicate<Section> filter = isUpStation ? s -> s.getUpStation().isEqualTo(section.getUpStation()) : s -> s.getDownStation().isEqualTo(section.getDownStation());
         return this.sections.stream()
                 .filter(filter)
                 .findAny()
@@ -85,11 +85,11 @@ public class Sections {
     }
 
     public boolean existsStation(Station station) {
-        return this.getStations().stream().anyMatch(s -> s.equals(station));
+        return this.getStations().stream().anyMatch(s -> s.isEqualTo(station));
     }
 
     public void deleteSection(Station station) {
-        if (!this.getFinalDownStation().equals(station)) {
+        if (!this.getFinalDownStation().isEqualTo(station)) {
             throw new IllegalArgumentException();
         }
 
@@ -113,12 +113,12 @@ public class Sections {
     private List<Section> sortedSections() {
         List<Section> sortedSections = new ArrayList<>();
         final Station finalUpStation = getFinalUpStation();
-        Section section = this.sections.stream().filter(s -> s.getUpStation().equals(finalUpStation)).findAny().orElseThrow(IllegalArgumentException::new);
+        Section section = this.sections.stream().filter(s -> s.getUpStation().isEqualTo(finalUpStation)).findAny().orElseThrow(IllegalArgumentException::new);
         sortedSections.add(section);
 
         for (int i = 0; i < this.sections.size()-1; i++) {
             final Station downStation = section.getDownStation();
-            section = this.sections.stream().filter(s -> s.getUpStation().equals(downStation)).findAny().orElseThrow(IllegalArgumentException::new);
+            section = this.sections.stream().filter(s -> s.getUpStation().isEqualTo(downStation)).findAny().orElseThrow(IllegalArgumentException::new);
             sortedSections.add(section);
         }
 
