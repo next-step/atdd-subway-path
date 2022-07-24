@@ -61,6 +61,7 @@ public class PathAccetanceTest extends AcceptanceTest {
      * Then: 경로의 최단거리가 조회된다.
      */
     @Test
+    @DisplayName("최단 거리가 조회된다.")
     void getPaths() {
         // when
         ExtractableResponse<Response> response = 지하철_경로_최단_거리_조회_요청(교대역, 양재역);
@@ -79,6 +80,7 @@ public class PathAccetanceTest extends AcceptanceTest {
      * Then: 경로 조회에 실패한다.
      */
     @Test
+    @DisplayName("연결되어 있지 않은 경로는 경로 조회에 실패한다.")
     void getPathsFail() {
         // given
         Long 신규상행역 = 지하철역_생성_요청("신규상행역").jsonPath().getLong("id");

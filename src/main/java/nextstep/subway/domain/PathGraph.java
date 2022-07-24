@@ -8,6 +8,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.List;
+import java.util.Optional;
 
 public class PathGraph {
     private final WeightedGraph<Station, DefaultWeightedEdge> graph;
@@ -22,19 +23,21 @@ public class PathGraph {
             graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
         }
 
-        this.shortestPath = new DijkstraShortestPath(graph);
+        this.shortestPath = new DijkstraShortestPath<>(graph);
 
     }
 
     public StationPath getShortestPath(Station source, Station target) {
-        if (notContainsEdge(source, target)) {
+        if (notExistVertex(source, target)) {
             throw new IllegalArgumentException("경로를 찾을 수 없어요.");
         }
-        GraphPath<Station, DefaultWeightedEdge> path = shortestPath.getPath(source, target);
+        GraphPath<Station, DefaultWeightedEdge> path = Optional.ofNullable(shortestPath.getPath(source, target))
+                .orElseThrow(() -> new IllegalArgumentException("경로를 찾을 수 없어요."));
+
         return new StationPath(path.getVertexList(), (int) path.getWeight());
     }
 
-    private boolean notContainsEdge(Station source, Station target) {
-        return !graph.containsEdge(source, target);
+    private boolean notExistVertex(Station source, Station target) {
+        return !(graph.containsVertex(source) && graph.containsVertex(target));
     }
 }
