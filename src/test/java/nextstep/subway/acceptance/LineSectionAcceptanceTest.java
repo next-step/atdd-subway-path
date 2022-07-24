@@ -13,7 +13,6 @@ import java.util.Map;
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
@@ -50,8 +49,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         //Then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 강남양재사이역, 양재역);
+        지하철_노선에_지하철역_순서대로_등록_확인(response, 강남역, 강남양재사이역, 양재역);
     }
 
     /**
@@ -67,10 +65,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남이전역, 강남역, 양재역);
-
-
+        지하철_노선에_지하철역_순서대로_등록_확인(response, 강남이전역, 강남역, 양재역);
     }
 
     /**
@@ -86,8 +81,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 양재다음역);
+        지하철_노선에_지하철역_순서대로_등록_확인(response, 강남역, 양재역, 양재다음역);
     }
 
 
@@ -106,7 +100,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(거리가_긴_역, 양재역, 15));
 
         //Then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        에러_500_발생(response);
     }
 
 
@@ -126,7 +120,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(이미_있는_강남역, 이미_있는_양재역, 10));
 
         //Then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        에러_500_발생(response);
     }
 
     /**
@@ -146,7 +140,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(없는역, 없는역2, 5));
 
         //Then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        에러_500_발생(response);
 
     }
 
