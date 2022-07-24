@@ -12,8 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 public class SectionsTest {
 
@@ -21,6 +20,7 @@ public class SectionsTest {
     private Section 선릉_영통_구간;
     private Section 영통_구의_구간;
     private Section 강남_선릉_구간;
+    private Section 영통_신촌_구간;
 
 
     @BeforeEach
@@ -29,6 +29,7 @@ public class SectionsTest {
         선릉_영통_구간 = new Section(분당선, FakeStationFactory.선릉역(), FakeStationFactory.영통역(), 10);
         영통_구의_구간 = new Section(분당선, FakeStationFactory.영통역(), FakeStationFactory.구의역(), 10);
         강남_선릉_구간 = new Section(분당선, FakeStationFactory.강남역(), FakeStationFactory.선릉역(), 10);
+        영통_신촌_구간 = new Section(분당선, FakeStationFactory.영통역(), FakeStationFactory.신촌역(), 7);
     }
 
     @Test
@@ -44,6 +45,70 @@ public class SectionsTest {
                 .containsAnyOf(선릉_영통_구간);
     }
 
+    @Test
+    @DisplayName("새로운 구간을 상행 종점으로 추가한다")
+    void 상행_종점에_구간_추가() {
+        Sections sections = 분당선.getSections();
+        sections.addProcess(선릉_영통_구간);
+        sections.addProcess(영통_구의_구간);
+
+        //when
+        sections.addProcess(강남_선릉_구간);
+
+        //then
+        assertThat(sections.findConnectedStations()).containsExactly(
+                FakeStationFactory.강남역(),
+                FakeStationFactory.선릉역(),
+                FakeStationFactory.영통역(),
+                FakeStationFactory.구의역()
+        );
+    }
+
+    @Test
+    @DisplayName("새로운 구간을 중간에 추가한다")
+    void 중간_지점에_구간_추가() {
+        Sections sections = 분당선.getSections();
+        sections.addProcess(선릉_영통_구간);
+        sections.addProcess(영통_구의_구간);
+
+        //when
+        sections.addProcess(영통_신촌_구간);
+
+        //then
+        assertThat(영통_신촌_구간.getDistance()).isEqualTo(영통_구의_구간.getDistance() - 영통_신촌_구간.getDistance());
+        assertThat(sections.findConnectedStations()).containsExactly(
+                FakeStationFactory.선릉역(),
+                FakeStationFactory.영통역(),
+                FakeStationFactory.신촌역(),
+                FakeStationFactory.구의역()
+        );
+    }
+
+    @Test
+    @DisplayName("등록된 구간에서 상행 종점을 조회한다")
+    void 상행_종점을_조회한다() {
+        //given
+        Sections sections = 분당선.getSections();
+
+        //when
+        sections.addProcess(강남_선릉_구간);
+
+        //then
+        assertThat(sections.findUpTerminus()).isEqualTo(FakeStationFactory.강남역());
+    }
+
+    @Test
+    void 연결된_다음역을_찾는다() {
+        //given
+        Sections sections = 분당선.getSections();
+
+        //when
+        sections.addProcess(강남_선릉_구간);
+
+        //then
+        assertThat(sections.findNextStation(FakeStationFactory.강남역())).isEqualTo(FakeStationFactory.선릉역());
+    }
+
 
     /* given 구간 목록에 구간을 추가한다.
      * when, then
@@ -55,10 +120,10 @@ public class SectionsTest {
     void 구간_등록_실패_테스트_두번째() {
         //when
         Sections sections = 분당선.getSections();
-        sections.add(강남_선릉_구간);
+        sections.addProcess(강남_선릉_구간);
 
         //then
-        assertThatThrownBy(() -> sections.add(영통_구의_구간))
+        assertThatThrownBy(() -> sections.addProcess(영통_구의_구간))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상행역이나 하행역 중 하나는 등록된 구간에 포함되어야 합니다.");
     }
@@ -120,7 +185,7 @@ public class SectionsTest {
 
     private void 구간을_추가한다(Sections sectionList, Section ... sectionParams) {
         for (Section section : sectionParams) {
-            sectionList.add(section);
+            sectionList.addProcess(section);
         }
     }
 
