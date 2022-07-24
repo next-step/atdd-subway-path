@@ -55,12 +55,13 @@ class LineTest {
     void removeSection() {
         //given
         노선_구간_추가(new Station(1L, "잠실역"), new Station(2L, "강남역"), 10);
+        노선_구간_추가(new Station(2L, "강남역"), new Station(3L, "역삼역"), 8);
 
         //when
         line.removeStations(new Station(2L, "강남역"));
 
         //then
-        assertThat(line.getSections().sections()).isEmpty();
+        assertThat(line.getSections().sections()).hasSize(1);
     }
 
     @Test
@@ -76,9 +77,10 @@ class LineTest {
     void downStationNotEqualRemoveException() {
         //when
         노선_구간_추가(new Station(1L, "잠실역"), new Station(2L, "강남역"), 10);
+        노선_구간_추가(new Station(2L, "강남역"), new Station(3L, "선릉역"), 10);
 
         //then
-        assertThatThrownBy(() -> line.removeStations(new Station("역삼역")))
+        assertThatThrownBy(() -> line.removeStations(new Station(4L, "선릉역")))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("하행 종점역 정보가 다릅니다.");
     }
