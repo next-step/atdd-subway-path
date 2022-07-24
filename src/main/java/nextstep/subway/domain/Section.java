@@ -51,4 +51,18 @@ public class Section {
         return List.of(upStation, downStation);
     }
 
+    public void minusDistance(int distance){
+        this.distance = this.distance - distance;
+    }
+
+    public void betweenAddModifyStation(Section section){
+        if(this.upStation.equals(section.getUpStation())){
+            this.upStation = section.getDownStation();
+        }
+        if(this.downStation.equals(section.getDownStation())){
+            this.downStation = section.getUpStation();
+        }
+        minusDistance(section.getDistance());
+    }
+
 }

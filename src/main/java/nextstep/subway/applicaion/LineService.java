@@ -3,14 +3,15 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.SectionResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +30,7 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-        if(!request.requestValidCheck()){
+        if(!request.isValidCheck()){
             return createLineResponse(line);
         }
         Station upStation = stationService.findById(request.getUpStationId());
@@ -93,5 +94,15 @@ public class LineService {
         Station station = stationService.findById(stationId);
 
         line.removeSection(stationId);
+    }
+
+    public List<SectionResponse> getSectionsByLineId(Long lineId){
+        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+
+        List<SectionResponse> responses = new ArrayList<>();
+        line.getSections().forEach(
+                section -> responses.add(SectionResponse.of(section))
+        );
+        return responses;
     }
 }

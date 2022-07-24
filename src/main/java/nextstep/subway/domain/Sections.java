@@ -29,40 +29,103 @@ public class Sections {
     public Sections() {
     }
 
-    public void add(Section addSection) {
-        this.sections.add(addSection);
+    public List<Section> getSections() {
+        List<Section> sectionsSortList = new ArrayList<>();
+        if(sections.isEmpty()){
+            return sectionsSortList;
+        }
+        Section firstSection = getFirstSection();
+        sectionsSortList.add(firstSection);
+        for(int i = 0; i < sections.size(); i++ ){
+            Section nextSection = getNextSection(sectionsSortList.get(i));
+            if(Objects.isNull(nextSection)){
+                break;
+            }
+            sectionsSortList.add(nextSection);
+        }
+        return sectionsSortList;
     }
 
+    public void add(Section newSection) {
+        if(!sections.isEmpty()){
+            validateAddSection(newSection);
+            Section matchedSection = getBetweenSection(newSection);
+            if (!Objects.isNull(matchedSection)){
+                addBetweenSectionValidateAndModify(newSection, matchedSection);
+            }
+        }
+        this.sections.add(newSection);
+    }
+
+
+    public Section getBetweenSection(Section newSection){
+        return sections.stream().filter(
+                section -> newSection.getUpStation().equals(section.getUpStation())
+                        || newSection.getDownStation().equals(section.getDownStation())
+        ).findFirst().orElse(null);
+    }
+
+    public void addBetweenSectionValidateAndModify(Section newSection, Section matchedSection){
+//        역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
+        if( newSection.getDistance() >= matchedSection.getDistance()){
+            throw new BadRequestException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
+        }
+        matchedSection.betweenAddModifyStation(newSection);
+    }
+
+    public void validateAddSection(Section newSection){
+        if(checkExistSection(newSection)){
+            throw new BadRequestException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음");
+        }
+        if( checkNotExistStation(newSection.getUpStation()) && checkNotExistStation(newSection.getDownStation())){
+            throw new BadRequestException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음");
+        }
+    }
+
+    public Boolean checkNotExistStation(Station station){
+        return getStations()
+                .stream()
+                .noneMatch(currentStation -> currentStation.equals(station));
+    }
+
+    public Boolean checkExistSection(Section section){
+        return getSections()
+                .stream()
+                .anyMatch(currentSection -> currentSection.getUpStation().equals(section.getUpStation())
+                            && currentSection.getDownStation().equals(section.getDownStation())
+                );
+    }
+
+
     public List<Station> getStations(){
-        return sections.stream()
+        return getSections().stream()
                 .map(Section::getStations)
                 .flatMap(List::stream)
                 .distinct()
                 .collect(Collectors.toList());
     }
+
     public void removeSection(Long stationId) {
         Section lastSection = getLastSection();
 
         if(!Objects.equals(lastSection.getDownStation().getId(), stationId))
             throw new BadRequestException("지하철 노선에 등록된 역(하행 종점역)만 제거할 수 있다. 즉, 마지막 구간만 제거할 수 있다.");
 
-        if(sections.size() < 2)
+        if(sections.size() == 1)
             throw new BadRequestException("지하철 노선에 상행 종점역과 하행 종점역만 있는 경우(구간이 1개인 경우) 역을 삭제할 수 없다.");
 
         sections.remove(lastSection);
     }
 
     public Section getLastSection(){
-        if(sections.size() < 1){
+        if(sections.isEmpty()){
             throw new NoSuchElementException("저장 된 section정보가 없습니다.");
         }
-        return sections.get(sections.size()-1);
-
+        return sections.stream()
+                .filter(this::isLastSection)
+                .findFirst().orElseThrow(NoSuchElementException::new);
     }
 
-    public Station getLastStation(){
-        return getLastSection().getDownStation();
-    }
 
     public Section getSectionById(Long sectionId){
         return sections.stream()
@@ -70,5 +133,36 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
     }
+
+    public Section getFirstSection(){
+        if(sections.isEmpty()){
+            throw new NoSuchElementException("저장 된 section정보가 없습니다.");
+        }
+        return sections.stream()
+                .filter(this::isFirstSection)
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
+
+    }
+
+    public Section getNextSection(Section section){
+
+        return sections.stream()
+                .filter(thisSection -> section.getDownStation().equals(thisSection.getUpStation()))
+                .findFirst()
+                .orElse(null);
+
+    }
+    public Boolean isFirstSection(Section section){
+        return sections.stream()
+                .noneMatch(currentSection -> section.getUpStation().equals(currentSection.getDownStation()));
+    }
+
+    public Boolean isLastSection(Section section){
+        return sections.stream()
+                .noneMatch(currentSection -> section.getDownStation().getId().equals(currentSection.getUpStation().getId()));
+    }
+
+
 
 }

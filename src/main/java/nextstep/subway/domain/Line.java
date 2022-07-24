@@ -8,7 +8,6 @@ import nextstep.subway.exception.BadRequestException;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -43,6 +42,10 @@ public class Line {
         return sections.getSections();
     }
 
+    public Section getFirstSection(){
+        return sections.getFirstSection();
+    }
+
     public void addSection(Station upStation, Station downStation, int distance) {
         sections.add(new Section(this, upStation, downStation, distance));
     }
@@ -73,7 +76,6 @@ public class Line {
         if (StringUtils.hasText(lineRequest.getName())) {
             this.name = lineRequest.getName();
         }
-
     }
 
 
