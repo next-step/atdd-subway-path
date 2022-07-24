@@ -21,6 +21,7 @@ public class SectionsTest {
     private Section 영통_구의_구간;
     private Section 강남_선릉_구간;
     private Section 영통_신촌_구간;
+    private Section 신촌_영통_구간;
 
 
     @BeforeEach
@@ -30,6 +31,7 @@ public class SectionsTest {
         영통_구의_구간 = new Section(분당선, FakeStationFactory.영통역(), FakeStationFactory.구의역(), 10);
         강남_선릉_구간 = new Section(분당선, FakeStationFactory.강남역(), FakeStationFactory.선릉역(), 10);
         영통_신촌_구간 = new Section(분당선, FakeStationFactory.영통역(), FakeStationFactory.신촌역(), 7);
+        신촌_영통_구간 = new Section(분당선, FakeStationFactory.신촌역(), FakeStationFactory.영통역(), 7);
     }
 
     @Test
@@ -65,24 +67,42 @@ public class SectionsTest {
     }
 
     @Test
-    @DisplayName("새로운 구간을 중간에 추가한다")
-    void 중간_지점에_구간_추가() {
+    @DisplayName("상행역 기준으로 새로운 구간을 중간에 추가한다")
+    void 상행역_기준_중간_지점에_구간_추가() {
         Sections sections = 분당선.getSections();
         sections.addProcess(선릉_영통_구간);
         sections.addProcess(영통_구의_구간);
 
         //when
-        sections.addProcess(영통_신촌_구간);
+        영통_구의_구간.decreaseDistance(영통_신촌_구간.getDistance());
 
         //then
-        assertThat(영통_신촌_구간.getDistance()).isEqualTo(영통_구의_구간.getDistance() - 영통_신촌_구간.getDistance());
+        assertThatThrownBy(
+                () -> sections.addProcess(영통_신촌_구간)
+        ).isInstanceOf(IllegalArgumentException.class)
+         .hasMessage("역 사이에 등록할 경우 기존의 거리보다 짧은 구간만 등록이 가능합니다.");
+    }
+
+    @Test
+    @DisplayName("하행역 기준으로 새로운 구간을 중간에 추가한다")
+    void 하행역_기준_중간_지점에_구간_추가() {
+        Sections sections = 분당선.getSections();
+        sections.addProcess(선릉_영통_구간);
+        sections.addProcess(영통_구의_구간);
+
+        //when
+        sections.addProcess(신촌_영통_구간);
+
+        //then
+        assertThat(선릉_영통_구간.getDistance()).isEqualTo(3);
         assertThat(sections.findConnectedStations()).containsExactly(
                 FakeStationFactory.선릉역(),
-                FakeStationFactory.영통역(),
                 FakeStationFactory.신촌역(),
+                FakeStationFactory.영통역(),
                 FakeStationFactory.구의역()
         );
     }
+
 
     @Test
     @DisplayName("등록된 구간에서 상행 종점을 조회한다")
