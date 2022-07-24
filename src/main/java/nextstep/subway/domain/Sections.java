@@ -77,8 +77,7 @@ public class Sections {
             throw new IllegalArgumentException("구간은 두개 이상부터 제거가 가능해요");
         }
 
-        // 해당하는 역이 없으면
-        if (anyNonMatchSection(section -> section.equalsUpStation(station) || section.equalsDownStation(station))) {
+        if (isNotExistStation(station)) {
             throw new IllegalArgumentException("삭제할 역이 없어요");
         }
 
@@ -98,7 +97,7 @@ public class Sections {
         Section deleteSection = getSectionByCondition(section -> section.equalsUpStation(station));
         Section updateSection = getSectionByCondition(section -> section.equalsDownStation(station));
 
-        updateSection.updateDownStationToSectionDownStationAndAddDistance(deleteSection);
+        updateSection.updateDownStationToSectionDownStation(deleteSection);
         this.sections.remove(deleteSection);
     }
 
@@ -114,6 +113,10 @@ public class Sections {
                 .filter(section -> section.equalsUpStation(downStation))
                 .findAny()
                 .orElse(null);
+    }
+
+    private boolean isNotExistStation(Station station) {
+        return anyNonMatchSection(section -> section.equalsUpStation(station) || section.equalsDownStation(station));
     }
 
     private boolean isEndOfDownStation(Station station) {

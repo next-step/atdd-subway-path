@@ -1,4 +1,4 @@
-package nextstep.subway.acceptance;
+package nextstep.subway.acceptance.steps;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -21,6 +21,16 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
+    public static Long 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId, int distance) {
+        return 지하철_노선_생성_요청(Map.of("name", name,
+                "color", color,
+                "upStationId", upStationId,
+                "downStationId", downStationId,
+                "distance", distance
+        )).jsonPath().getLong("id");
+    }
+
+
     public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
         return RestAssured
                 .given().log().all()
@@ -42,7 +52,7 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, Object> params) {
         return RestAssured
                 .given().log().all()
                 .body(params)

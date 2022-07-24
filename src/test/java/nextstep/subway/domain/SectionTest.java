@@ -77,9 +77,9 @@ class SectionTest {
 
     @Test
     @DisplayName("구간의 하행선을 변경하고 합쳐진 거리로 변경된다.")
-    void updateDownStationToSectionDownStationAndAddDistanceTest() {
+    void updateDownStationToSectionDownStationTest() {
         Station 하행선 = new Station("하행선");
-        section.updateDownStationToSectionDownStationAndAddDistance(new Section(line, new Station("상행선"), 하행선, 6));
+        section.updateDownStationToSectionDownStation(new Section(line, new Station("상행선"), 하행선, 6));
 
         assertAll(
                 () -> assertEquals(중앙역, section.getUpStation()),
