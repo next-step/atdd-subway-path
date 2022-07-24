@@ -62,24 +62,52 @@ public class SectionAdditionAcceptanceTest extends AcceptanceTest{
         assertThat(stationNames.lastIndexOf(구의역.getName())).isEqualTo( stationNames.size() - 1);
     }
 
-    /*
-     *
-     */
-    void 구간_사이에_추가() {
 
+    /* given 노선에 구간을 추가한다.
+     * when 상행 종점역이 될 구간을 추가한다.
+     * then 추가한 구간의 상행역이 구간 목록의 상행 종점과 일치한지 확인한다.
+     */
+    @Test
+    void 상행_종점에_추가() {
+        Map<String, String> 구의_선릉_구간 = createAdditionalBody(구의역.getId(), 선릉역.getId(), 10);
+        구간_추가_요청(신분당선_ID, 구의_선릉_구간);
+
+        //when
+        Map<String, String> 역삼_구의_구간 = createAdditionalBody(역삼역.getId(), 구의역.getId(), 10);
+        구간_추가_요청(신분당선_ID, 역삼_구의_구간);
+
+        //then
+        ExtractableResponse<Response> response = LineSteps.지하철_노선_조회_요청(신분당선_ID);
+        List<String> stationNames = response.jsonPath().getList("stations.name", String.class);
+        assertThat(stationNames).containsExactly(역삼역.getName(), 구의역.getName(), 선릉역.getName());
     }
 
-    /*
-     *
+    /* given 노선에 구간을 추가한다.
+     * when, then
+     * 상행역과 하행역이 모두 포함되지 않은 구간을 추가하면,
+     * 구간 추가가 실패하여 상태코드 400과 지정된 메세지를 응답 받는다.
      */
-    void 상행_종점에_추가() {
+    @Test
+    void 상행역과_하행역이_포함되지_않았을_경우() {
+        //given
+        Map<String, String> 강남_역삼_구간 = createAdditionalBody(강남역.getId(), 역삼역.getId(), 4);
+        구간_추가_요청(신분당선_ID, 강남_역삼_구간);
 
+        //then
+        Map<String, String> 신촌_선릉_구간 = createAdditionalBody(신촌역.getId(), 선릉역.getId(), 5);
+        ExtractableResponse<Response> 신촌_선릉_구간_추가_요청 = 구간_추가_요청(신분당선_ID, 신촌_선릉_구간);
+        assertAll(
+                () -> assertThat(신촌_선릉_구간_추가_요청.statusCode())
+                        .isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(신촌_선릉_구간_추가_요청.jsonPath().getString("message"))
+                        .isEqualTo("상행역이나 하행역 중 하나는 등록된 구간에 포함되어야 합니다.")
+        );
     }
 
     /* given 노선에 구간을 추가한다.
      * when, then
      * 이미 추가된 구간과 동일한 구간을 추가하면,
-     * 구간 추가가 실패하여 IllegalArgumentException 와 지정된 메세지를 응답 받는다.
+     * 구간 추가가 실패하여 상태코드 400과 지정된 메세지를 응답 받는다.
      */
     @Test
     void 상행과_하행역이_모두_동일할_경우() {
