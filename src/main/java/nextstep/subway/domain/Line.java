@@ -6,9 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -35,20 +33,20 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        sections.add(section);
+        sections.addProcess(section);
     }
 
-    public int includedStationCount() {
-        return sections.getList().size();
+    public void removeDownTerminus(Station station) {
+        sections.remove(station);
     }
 
-    public List<Station> showAllStations() {
-        return getSections().getList()
-                            .stream()
-                            .map(Section::getStations)
-                            .flatMap(Collection::stream)
-                            .distinct()
-                            .collect(Collectors.toList());
+    public boolean isEmptySection() {
+        return sections.isEmpty();
     }
+
+    public List<Station> findAllStation() {
+        return sections.findConnectedStations();
+    }
+
 
 }

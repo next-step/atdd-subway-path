@@ -18,4 +18,11 @@ public class FakeStationFactory {
     public static Station 구의역() {
         return new Station(4L, "구의역");
     }
+
+    public static Station 신촌역() {
+        return new Station(5L, "신촌역");
+    }
+    public static Station 역삼역() {
+        return new Station(6L, "역삼역");
+    }
 }

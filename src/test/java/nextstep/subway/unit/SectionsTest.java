@@ -4,7 +4,6 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
-import nextstep.subway.exception.SubwayException;
 import nextstep.subway.fake.FakeLineFactory;
 import nextstep.subway.fake.FakeStationFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 public class SectionsTest {
 
@@ -22,6 +20,8 @@ public class SectionsTest {
     private Section 선릉_영통_구간;
     private Section 영통_구의_구간;
     private Section 강남_선릉_구간;
+    private Section 영통_신촌_구간;
+    private Section 신촌_영통_구간;
 
 
     @BeforeEach
@@ -29,7 +29,9 @@ public class SectionsTest {
         분당선 = FakeLineFactory.분당선();
         선릉_영통_구간 = new Section(분당선, FakeStationFactory.선릉역(), FakeStationFactory.영통역(), 10);
         영통_구의_구간 = new Section(분당선, FakeStationFactory.영통역(), FakeStationFactory.구의역(), 10);
-        강남_선릉_구간 = new Section(분당선, FakeStationFactory.구의역(), FakeStationFactory.선릉역(), 10);
+        강남_선릉_구간 = new Section(분당선, FakeStationFactory.강남역(), FakeStationFactory.선릉역(), 10);
+        영통_신촌_구간 = new Section(분당선, FakeStationFactory.영통역(), FakeStationFactory.신촌역(), 7);
+        신촌_영통_구간 = new Section(분당선, FakeStationFactory.신촌역(), FakeStationFactory.영통역(), 7);
     }
 
     @Test
@@ -40,24 +42,111 @@ public class SectionsTest {
         구간을_추가한다(sections, 선릉_영통_구간);
 
         //then Section의 길이를 확인한다
-        assertThat(sections.getList())
+        assertThat(sections.getValues())
                 .hasSize(1)
                 .containsAnyOf(선릉_영통_구간);
     }
 
     @Test
-    @DisplayName("구간 추가 실패 테스트 - 추가할 구간의 상행역이 하행 종점과 동일하지 않을 경우")
-    void 구간_등록_실패_테스트() {
-        //when
+    @DisplayName("새로운 구간을 상행 종점으로 추가한다")
+    void 상행_종점에_구간_추가() {
         Sections sections = 분당선.getSections();
-        sections.add(선릉_영통_구간);
+        sections.addProcess(선릉_영통_구간);
+        sections.addProcess(영통_구의_구간);
+
+        //when
+        sections.addProcess(강남_선릉_구간);
 
         //then
-        assertThatThrownBy(() -> sections.add(강남_선릉_구간))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("상행역과 하행역 종점역이 동일한 경우에 등록할 수 있습니다.");
+        assertThat(sections.findConnectedStations()).containsExactly(
+                FakeStationFactory.강남역(),
+                FakeStationFactory.선릉역(),
+                FakeStationFactory.영통역(),
+                FakeStationFactory.구의역()
+        );
     }
 
+    @Test
+    @DisplayName("상행역 기준으로 새로운 구간을 중간에 추가한다")
+    void 상행역_기준_중간_지점에_구간_추가() {
+        Sections sections = 분당선.getSections();
+        sections.addProcess(선릉_영통_구간);
+        sections.addProcess(영통_구의_구간);
+
+        //when
+        영통_구의_구간.decreaseDistance(영통_신촌_구간.getDistance());
+
+        //then
+        assertThatThrownBy(
+                () -> sections.addProcess(영통_신촌_구간)
+        ).isInstanceOf(IllegalArgumentException.class)
+         .hasMessage("역 사이에 등록할 경우 기존의 거리보다 짧은 구간만 등록이 가능합니다.");
+    }
+
+    @Test
+    @DisplayName("하행역 기준으로 새로운 구간을 중간에 추가한다")
+    void 하행역_기준_중간_지점에_구간_추가() {
+        Sections sections = 분당선.getSections();
+        sections.addProcess(선릉_영통_구간);
+        sections.addProcess(영통_구의_구간);
+
+        //when
+        sections.addProcess(신촌_영통_구간);
+
+        //then
+        assertThat(선릉_영통_구간.getDistance()).isEqualTo(3);
+        assertThat(sections.findConnectedStations()).containsExactly(
+                FakeStationFactory.선릉역(),
+                FakeStationFactory.신촌역(),
+                FakeStationFactory.영통역(),
+                FakeStationFactory.구의역()
+        );
+    }
+
+
+    @Test
+    @DisplayName("등록된 구간에서 상행 종점을 조회한다")
+    void 상행_종점을_조회한다() {
+        //given
+        Sections sections = 분당선.getSections();
+
+        //when
+        sections.addProcess(강남_선릉_구간);
+
+        //then
+        assertThat(sections.findUpTerminus()).isEqualTo(FakeStationFactory.강남역());
+    }
+
+    @Test
+    void 연결된_다음역을_찾는다() {
+        //given
+        Sections sections = 분당선.getSections();
+
+        //when
+        sections.addProcess(강남_선릉_구간);
+
+        //then
+        assertThat(sections.findNextStation(FakeStationFactory.강남역())).isEqualTo(FakeStationFactory.선릉역());
+    }
+
+
+    /* given 구간 목록에 구간을 추가한다.
+     * when, then
+     * 상행역과 하행역이 전부 포함되어있지 않은 역을 추가하고
+     * IllegalArgumentException 과 지정된 메세지를 리턴받는다.
+     */
+    @Test
+    @DisplayName("구간 등록 - 상행역과 하행역이 모두 포함되어 있지 않을 때")
+    void 구간_등록_실패_테스트_두번째() {
+        //when
+        Sections sections = 분당선.getSections();
+        sections.addProcess(강남_선릉_구간);
+
+        //then
+        assertThatThrownBy(() -> sections.addProcess(영통_구의_구간))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("상행역이나 하행역 중 하나는 등록된 구간에 포함되어야 합니다.");
+    }
 
     @Test
     @DisplayName("지하철 구간에 등록된 지하철역 조회 테스트")
@@ -66,9 +155,9 @@ public class SectionsTest {
         구간을_추가한다(분당선.getSections(), 선릉_영통_구간);
 
         //then Section의 길이를 확인한다
-        List<Station> stations = 분당선.showAllStations();
+        List<Station> stations = 분당선.findAllStation();
         assertThat(stations).hasSize(2);
-        assertThat(분당선.showAllStations()).containsAnyOf(FakeStationFactory.선릉역(), FakeStationFactory.영통역());
+        assertThat(분당선.findAllStation()).containsAnyOf(FakeStationFactory.선릉역(), FakeStationFactory.영통역());
     }
 
     @Test
@@ -82,7 +171,7 @@ public class SectionsTest {
         sections.remove(영통_구의_구간.getDownStation());
 
         //then Section의 길이를 확인한다
-        assertThat(sections.getList())
+        assertThat(sections.getValues())
                 .hasSize(1)
                 .containsAnyOf(선릉_영통_구간);
     }
@@ -105,6 +194,7 @@ public class SectionsTest {
     void 하행종점이_아닌_역을_삭제() {
         //given 지하철 역과 노선을 생성하고 구간을 추가한다
         Sections sections = 분당선.getSections();
+        구간을_추가한다(sections, 선릉_영통_구간);
         구간을_추가한다(sections, 영통_구의_구간);
 
         //then 삭제가 실패했을 때 IllegalArgumentException 발생 여부를 확인한다.
@@ -115,20 +205,8 @@ public class SectionsTest {
 
     private void 구간을_추가한다(Sections sectionList, Section ... sectionParams) {
         for (Section section : sectionParams) {
-            sectionList.add(section);
+            sectionList.addProcess(section);
         }
-    }
-
-    @Test
-    @DisplayName("구간 추가 실패 테스트 - 구간 목록이 비어있을 때 삭제를 시도할 경우")
-    void 비어있는_구간_목록을_삭제() {
-        //when
-        Sections sections = 분당선.getSections();
-
-        //then
-        assertThatThrownBy(() -> sections.remove(FakeStationFactory.강남역()))
-                .isInstanceOf(SubwayException.class)
-                .hasMessage("등록된 구간이 없습니다.");
     }
 
 }

@@ -40,6 +40,31 @@ public class Section {
         return List.of(upStation, downStation);
     }
 
+    public boolean isEqualToUpStation(Station upStation) {
+        return this.upStation.equals(upStation);
+    }
+
+    public boolean isEqualToDownStation(Station downStation) {
+        return this.downStation.equals(downStation);
+    }
+
+    public boolean isSameStation(Station station) {
+        return isEqualToDownStation(station) || isEqualToUpStation(station);
+    }
+
+    public void changeDownStation(Station station) {
+        this.downStation = station;
+    }
+
+    public void changeUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void decreaseDistance(Integer distance) {
+        this.distance = this.distance - distance;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

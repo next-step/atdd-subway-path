@@ -51,7 +51,7 @@ public class LineServiceTest {
         // line.getSections 메서드를 통해 검증
         Line line = lineRepository.findById(분당선.getId()).orElseThrow(IllegalArgumentException::new);
         Sections sections = line.getSections();
-        assertThat(sections.getList()).containsAnyOf(강남역_교대역_구간);
+        assertThat(sections.getValues()).containsAnyOf(강남역_교대역_구간);
     }
 
     @Test
