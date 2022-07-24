@@ -23,12 +23,13 @@ public class PathFinder {
 
     public Path find(Station source, Station target) {
         validateDuplicateStations(source, target);
-
-        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-        GraphPath path = dijkstraShortestPath.getPath(source, target);
-
+        GraphPath path = getGraphPath(source, target);
         isConnectStations(path);
         return new Path(path.getVertexList(), path.getWeight());
+    }
+
+    private GraphPath getGraphPath(Station source, Station target) {
+        return new DijkstraShortestPath(graph).getPath(source, target);
     }
 
     private void isConnectStations(GraphPath path) {
