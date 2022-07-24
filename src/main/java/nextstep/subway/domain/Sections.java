@@ -31,10 +31,10 @@ public class Sections {
     }
 
     public List<Section> getSections() {
-        if(sections.size() < 1){
-            throw new NoSuchElementException("저장 된 section정보가 없습니다.");
-        }
         List<Section> sectionsSortList = new ArrayList<>();
+        if(sections.isEmpty()){
+            return sectionsSortList;
+        }
         Section firstSection = getFirstSection();
         sectionsSortList.add(firstSection);
         for(int i = 0; i < sections.size(); i++ ){
@@ -124,7 +124,7 @@ public class Sections {
     }
 
     public Section getLastSection(){
-        if(sections.size() < 1){
+        if(sections.isEmpty()){
             throw new NoSuchElementException("저장 된 section정보가 없습니다.");
         }
         return sections.stream()
@@ -144,7 +144,7 @@ public class Sections {
     }
 
     public Section getFirstSection(){
-        if(sections.size() < 1){
+        if(sections.isEmpty()){
             throw new NoSuchElementException("저장 된 section정보가 없습니다.");
         }
         return sections.stream()
@@ -164,7 +164,7 @@ public class Sections {
     }
     public Boolean isFirstSection(Section section){
         return sections.stream()
-                .noneMatch(currentSection -> section.getUpStation().getId().equals(currentSection.getDownStation().getId()));
+                .noneMatch(currentSection -> section.getUpStation().equals(currentSection.getDownStation()));
     }
 
     public Boolean isLastSection(Section section){
