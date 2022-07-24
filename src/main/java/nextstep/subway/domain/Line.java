@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Entity
 public class Line {
@@ -96,9 +97,20 @@ public class Line {
         if (sectionSize > 0) {
             LineSectionChecker checker = new LineSectionChecker(sections, section);
             LineSectionMaker maker = new LineSectionMaker();
-            sections = maker.makeSection(checker.checkAddPosition(), sections, section);
-        }
+            Section needUpdateSection = maker.makeSection(checker.checkAddPosition(), sections, section);
+            sections.add(section);
 
+            if (needUpdateSection != null) {
+                updateSection(needUpdateSection);
+            }
+        }
+    }
+
+    public void updateSection(Section needUpdateSection) {
+        int index = IntStream.range(0, sections.size())
+                .filter(i -> sections.get(i).getId().equals(needUpdateSection.getId()))
+                .findAny().orElseThrow(() -> new IllegalArgumentException("WRONG_SECTION_INFOMATION"));
+        sections.set(index, needUpdateSection);
     }
 
     public List<Station> getStations() {
