@@ -72,6 +72,27 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * Given 환승이 포함되어있는 출발역과 도착역을 지정하고
+     * When 역을 전달하여 지하철 경로를 조회하면
+     * Then 지하철 경로와 거리를 확인할 수 있다.
+     */
+    @DisplayName("지하철 환승 경로 조회")
+    @Test
+    void findPathWithTransfer() {
+        // given
+        Long source = 남부터미널역;
+        Long target = 강남역;
+
+        // when
+        ExtractableResponse<Response> response = 지하철_경로_조회(source, target);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(ResponseUtils.getLongList(response, "stations.id")).containsExactly(남부터미널역, 교대역, 강남역);
+        assertThat(ResponseUtils.getInt(response, "distance")).isEqualTo(12);
+    }
+
+    /**
      * When 같은 지하철 역을 전달하여 지하철 경로를 조회하면
      * Then 예외가 발생한다.
      */
