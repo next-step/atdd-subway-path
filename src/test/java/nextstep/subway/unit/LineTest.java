@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static nextstep.subway.fixture.ConstStation.*;
@@ -279,9 +280,34 @@ class LineTest {
         List<Section> sections = 신분당선.getSections();
 
         assertAll(
-                () -> assertThat(sections).hasSize(1),
                 () -> assertThat(stations).hasSize(2),
-                () -> assertThat(stations).containsExactly(신논현역, 정자역)
+                () -> assertThat(stations).containsExactly(신논현역, 정자역),
+                () -> assertThat(sections).hasSize(1),
+                () -> assertThat(sections).extracting("distance")
+                        .isEqualTo(List.of(5))
+        );
+    }
+
+    @DisplayName("지하철 노선에 중간 구간 제거")
+    @Test
+    void removeMiddleSection() {
+        Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
+        Section 신논현_정자 = Section.of(신논현역, 정자역, 5);
+
+        신분당선.addSection(강남_신논현);
+        신분당선.addSection(신논현_정자);
+
+        신분당선.removeSection(신논현역);
+
+        List<Station> stations = 신분당선.allStations();
+        List<Section> sections = 신분당선.getSections();
+
+        assertAll(
+                () -> assertThat(stations).hasSize(2),
+                () -> assertThat(stations).containsExactly(강남역, 정자역),
+                () -> assertThat(sections).hasSize(1),
+                () -> assertThat(sections).extracting("distance")
+                        .isEqualTo(List.of(15))
         );
     }
 
