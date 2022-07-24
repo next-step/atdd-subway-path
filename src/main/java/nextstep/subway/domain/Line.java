@@ -52,6 +52,23 @@ public class Line {
         return sections;
     }
 
+    public Section getUpStation() {
+        return sections.stream()
+                .filter(sec1 -> sections.stream()
+                        .noneMatch(sec2 -> sec1.getUpStation().equals(sec2.getDownStation())))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("WRONG_SECTION_IMFORMATION"));
+
+    }
+
+    public Section getDownStation() {
+        return sections.stream()
+                .filter(sec1 -> sections.stream()
+                        .noneMatch(sec2 -> sec1.getDownStation().equals(sec2.getUpStation())))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("WRONG_SECTION_IMFORMATION"));
+    }
+
     public void addSection(Section section) {
         //기존 노선의 구간 크기 확인
         int sectionSize = this.sections.size();
