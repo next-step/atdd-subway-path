@@ -31,19 +31,21 @@ public class Sections {
     }
 
     private void validateAddSection(Section section) {
-        boolean findUpStation = allStations().stream()
-                .anyMatch(station -> station.equals(section.getUpStation()));
+        boolean matchedUpStation = anyMatchStation(section.getUpStation());
+        boolean matchedDownStation = anyMatchStation(section.getDownStation());
 
-        boolean findDownStation = allStations().stream()
-                .anyMatch(station -> station.equals(section.getDownStation()));
-
-        if (findUpStation && findDownStation) {
+        if (matchedUpStation && matchedDownStation) {
             throw new AddSectionException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
         }
 
-        if (!findUpStation && !findDownStation) {
+        if (!matchedUpStation && !matchedDownStation) {
             throw new AddSectionException("상행역과 하행역 둘 중 하나라도 노선에 존재해야 합니다.");
         }
+    }
+
+    private boolean anyMatchStation(Station findStation) {
+        return allStations().stream()
+                .anyMatch(station -> station.equals(findStation));
     }
 
     private void betweenSection(Section newSection) {
