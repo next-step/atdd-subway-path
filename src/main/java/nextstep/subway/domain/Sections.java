@@ -20,7 +20,7 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public List<Section> getSections() {
-        return this.sortedSections();
+        return this.sections.isEmpty() ? List.of() : this.sortedSections();
     }
 
     public void add(Section section) {
