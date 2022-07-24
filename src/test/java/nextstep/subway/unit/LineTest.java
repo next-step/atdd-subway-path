@@ -43,6 +43,14 @@ class LineTest {
         assertThat(신분당선.stations()).containsExactly(논현역, 신논현역, 강남역, 양재역);
     }
 
+    @DisplayName("구간 사이에 구간 추가")
+    @Test
+    void addSection2() {
+        신분당선.addSection(논현역, 강남역, 5);
+        신분당선.addSection(논현역, 신논현역, 3);
+        assertThat(신분당선.stations()).containsExactly(논현역, 신논현역, 강남역);
+    }
+
     @DisplayName("구간 삭제")
     @Test
     void removeSection() {

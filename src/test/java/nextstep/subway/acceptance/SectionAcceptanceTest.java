@@ -19,6 +19,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     private Long 신분당선;
 
     private Long 강남역;
+    private Long 논현역;
+    private Long 신논현역;
     private Long 양재역;
 
     /**
@@ -27,9 +29,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
-
         강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
         양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+        신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
+        논현역 = 지하철역_생성_요청("논현역").jsonPath().getLong("id");
 
         Map<String, String> lineCreateParams = createLineCreateParams(강남역, 양재역);
         신분당선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
@@ -71,6 +74,20 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+    }
+
+    /**
+     * Given 기존 지하철 구간 사이에 들어가는 구간을 생성하고
+     * When 지하철 노선에 지하철 구간 생성을 요청하면
+     * Then 두 개의 구간으로 나뉘어 생성된다.
+     */
+    @DisplayName("지하철역 사이에 새로운 역을 추가")
+    @Test
+    void test() {
+//        When
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(논현역, 강남역));
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(논현역, 강남역, 양재역);
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
