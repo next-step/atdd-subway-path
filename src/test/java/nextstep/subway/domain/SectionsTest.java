@@ -32,7 +32,8 @@ class SectionsTest {
 	 */
 	@DisplayName("upStation으로 addSections를 하면 성공한다.")
 	@Test
-	void addSections() {
+	void addSectionsWithUpStation() {
+		//given
 		Sections sections = new Sections();
 		when(section.getUpStation()).thenReturn(new Station("광교역"));
 		when(section.getDownStation()).thenReturn(new Station("상현역"));
@@ -107,10 +108,9 @@ class SectionsTest {
 		sections.add(section);
 
 		//given
-		Section insertSection1 = mock(Section.class);
-		when(insertSection1.getUpStation()).thenReturn(new Station("광교역"));
-		when(insertSection1.getDownStation()).thenReturn(new Station("정자역"));
-		sections.add(insertSection1);
+		when(insertSection.getUpStation()).thenReturn(new Station("광교역"));
+		when(insertSection.getDownStation()).thenReturn(new Station("정자역"));
+		sections.add(insertSection);
 
 		//given
 		Section insertSection2 = mock(Section.class);
