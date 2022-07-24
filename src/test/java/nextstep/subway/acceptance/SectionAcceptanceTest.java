@@ -92,9 +92,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void 역_사이에_새로운_역을_등록할_경우_기존_역_사이_길이보다_크거나_같으면_등록을_할_수_없음() {
         // when
         Long 논현역 = 지하철역_생성_요청("논현역").jsonPath().getLong("id");
+        ExtractableResponse<Response> createResponse = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 논현역, 10L));
 
         // then
-        ExtractableResponse<Response> createResponse = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 논현역, 10L));
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
@@ -124,9 +124,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
         // when
         Long 판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        ExtractableResponse<Response> createResponse = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(판교역, 정자역, 7L));
 
         // then
-        ExtractableResponse<Response> createResponse = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(판교역, 정자역, 7L));
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
     /**

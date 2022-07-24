@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
+import nextstep.subway.exception.DistanceException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -78,7 +79,7 @@ public class LineServiceTest {
         final long 정자역_id = 정자역.getId();
 
         assertThatThrownBy(() -> lineService.addSection(신분당선_id, new SectionRequest(미금역_id, 정자역_id, 10)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(DistanceException.class);
 
         // then
         List<Section> sections = 신분당선.getSections();

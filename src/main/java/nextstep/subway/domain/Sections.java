@@ -93,7 +93,7 @@ public class Sections {
             throw new IllegalArgumentException();
         }
 
-        this.getSections().get(this.sections.size() - 1).delete();
+        this.sections.remove(this.getSections().get(this.sections.size() - 1));
     }
 
     private Station getFinalUpStation() {

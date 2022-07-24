@@ -7,6 +7,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.DistanceException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -87,7 +88,7 @@ public class LineServiceMockTest {
 
         // when
         assertThatThrownBy(() -> lineService.addSection(lineId, getSectionRequest(upStationId, downStationId)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(DistanceException.class);
 
         // then
         Line line = lineRepository.findById(lineId).get();

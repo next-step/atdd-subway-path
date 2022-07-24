@@ -59,10 +59,6 @@ public class Section {
         return distance;
     }
 
-    public void delete() {
-        this.line = null;
-    }
-
     public void setUpStation(Station upStation) {
         this.upStation = upStation;
     }
