@@ -135,6 +135,36 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청하고
+     * When 지하철 노선의 중간 구간 제거를 요청 하면
+     * Then 노선에 구간이 제거되고
+     * Then 노선의 길이는 합산된다
+     */
+    @DisplayName("지하철 노선에 중간 구간을 제거")
+    @Test
+    void removeLineMiddleSection() {
+        // given
+
+        // when
+
+        // then
+
+        // then
+    }
+
+    /**
+     * When 지하철 노선의 구간 제거를 요청하면
+     * Then 노선이 정상적으로 제거되지 않는다. (구간이 1개일 경우 구간 제거 불가)
+     */
+    @DisplayName("지하철 노선에 구간이 1개일 경우 구간 제거 요청 시 예외")
+    @Test
+    void removeLineExceptionWhenOnlyOneLine() {
+        // when
+
+        // then
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
