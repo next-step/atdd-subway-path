@@ -9,6 +9,13 @@ public class ExceptionHandlerUtils {
     private ExceptionHandlerUtils() {
     }
 
+    public static ErrorResponse toErrorResponse(ErrorCode errorCode) {
+        return ErrorResponse.builder()
+                .code(errorCode.name())
+                .message(errorCode.getMessage())
+                .build();
+    }
+
     public static ErrorResponse toErrorResponse(ErrorCode errorCode, Exception e) {
         return ErrorResponse.builder()
                 .code(errorCode.name())
