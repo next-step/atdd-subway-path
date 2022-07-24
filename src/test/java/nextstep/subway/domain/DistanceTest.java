@@ -41,9 +41,9 @@ class DistanceTest {
 
         // when
         Distance five = new Distance(5);
-        distance.reduce(five);
+        Distance reducedDistance = distance.reduce(five);
 
         // then
-        assertThat(distance).isEqualTo(new Distance(5));
+        assertThat(reducedDistance).isEqualTo(new Distance(5));
     }
 }

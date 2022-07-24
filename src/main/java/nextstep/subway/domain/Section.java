@@ -55,8 +55,12 @@ public class Section {
         if (isConnectOutSide(section)) {
             throw new IllegalArgumentException();
         }
-        distance.reduce(section.getDistance());
+        reduceDistance(section.getDistance());
         changeEndPoint(section);
+    }
+
+    private void reduceDistance(Distance distance) {
+        this.distance = this.distance.reduce(distance);
     }
 
     private boolean isConnectOutSide(Section section) {

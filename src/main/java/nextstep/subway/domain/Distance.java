@@ -21,11 +21,8 @@ public class Distance {
         this.value = value;
     }
 
-    public void reduce(Distance distance) {
-        if (value <= distance.value()) {
-            throw new IllegalArgumentException();
-        }
-        value = value - distance.value();
+    public Distance reduce(Distance distance) {
+        return new Distance(value - distance.value());
     }
 
     public int value() {
