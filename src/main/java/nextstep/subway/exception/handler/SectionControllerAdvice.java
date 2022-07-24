@@ -1,5 +1,6 @@
 package nextstep.subway.exception.handler;
 
+import nextstep.subway.exception.AlreadyRegisteredException;
 import nextstep.subway.exception.CannotInsertLongerSectionException;
 import nextstep.subway.exception.CannotInsertSameDistanceSectionException;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,11 @@ public class SectionControllerAdvice {
 
 	@ExceptionHandler({CannotInsertLongerSectionException.class, CannotInsertSameDistanceSectionException.class})
 	public ResponseEntity<Void> distanceExceptionHandler() {
+		return ResponseEntity.badRequest().build();
+	}
+
+	@ExceptionHandler(AlreadyRegisteredException.class)
+	public ResponseEntity<Void> alreadyRegisteredExceptionHandler() {
 		return ResponseEntity.badRequest().build();
 	}
 }

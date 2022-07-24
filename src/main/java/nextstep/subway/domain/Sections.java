@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import lombok.Getter;
+import nextstep.subway.exception.AlreadyRegisteredException;
 import nextstep.subway.exception.CannotInsertLongerSectionException;
 import nextstep.subway.exception.CannotInsertSameDistanceSectionException;
 
@@ -12,8 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static nextstep.subway.exception.ErrorCode.CANNOT_INSERT_LONGER_SECTION;
-import static nextstep.subway.exception.ErrorCode.CANNOT_INSERT_SAME_DISTANCE_SECTION;
+import static nextstep.subway.exception.ErrorCode.*;
 
 @Embeddable
 @Getter
@@ -31,6 +31,9 @@ public class Sections {
 	}
 
 	public void add(Line line, Station upStation, Station downStation, int distance) {
+
+		validateStations(upStation, downStation);
+
 		if (isStartWithUpStation(upStation)) {
 			Section section = sections.stream()
 					.filter(s -> s.getUpStation().equals(upStation))
@@ -56,6 +59,17 @@ public class Sections {
 		}
 
 		this.sections.add(new Section(line, upStation, downStation, distance));
+	}
+
+	private void validateStations(Station upStation, Station downStation) {
+		boolean hasSameUpStation = sections.stream()
+				.anyMatch(s -> s.getUpStation().equals(upStation));
+		boolean hasSameDownStation = sections.stream()
+				.anyMatch(s -> s.getDownStation().equals(downStation));
+
+		if (hasSameUpStation && hasSameDownStation) {
+			throw new AlreadyRegisteredException(CANNOT_REGISTER_ALREADY_REGISTERED_SECTION.getMessage());
+		}
 	}
 
 	private void validateDistance(int distance, Section section) {

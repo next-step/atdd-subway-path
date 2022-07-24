@@ -90,6 +90,27 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * Given 노선에 구간을 등록한다.
+     * When 새로운 구간을 추가 할 때, 기존 구간에 상행역과 하행역이 모두 포함되면
+     * Then 노선에 구간이 추가되지 않는다.
+     */
+    @DisplayName("새로운 구간 등록 시, 먼저 상행역과 하행역이 구간으로 이미 등록되어 있으면 실패한다.")
+    @Test
+    void addLineSectionFailWithAlreadyAdded() {
+        // given
+        Long 양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+        Long 신사역 = 지하철역_생성_요청("신사역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 3));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신사역, 강남역, 3));
+
+        // when
+        ExtractableResponse<Response> 구간_생성_요청_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신사역, 양재역, 3));
+
+        // then
+        assertThat(구간_생성_요청_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
      * When 기존 구간의 upStation과 일치하는 downStation을 가진 구간이 추가 요청이 되면
      * Then 노선에 새로운 구간이 추가된다
      */

@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.AlreadyRegisteredException;
 import nextstep.subway.exception.CannotInsertLongerSectionException;
 import nextstep.subway.exception.CannotInsertSameDistanceSectionException;
 import org.junit.jupiter.api.DisplayName;
@@ -89,6 +90,37 @@ class SectionsTest {
 							.isInstanceOf(CannotInsertSameDistanceSectionException.class);
 				}
 		);
+	}
+
+	/**
+	 * Given sections에 section을 2개 추가한다.
+	 * When 기존에 등록된 역을 상행역과 하행역으로 가지고 있는 section을 등록하려하면,
+	 * Then 실패한다.
+	 */
+	@DisplayName("새로운 구간 등록 시, 먼저 상행역과 하행역이 구간으로 이미 등록되어 있으면 실패한다.")
+	@Test
+	void addLineSectionFailWithAlreadyAdded() {
+		//given
+		Sections sections = new Sections();
+		when(section.getUpStation()).thenReturn(new Station("광교역"));
+		when(section.getDownStation()).thenReturn(new Station("상현역"));
+		when(section.getDistance()).thenReturn(15);
+		sections.add(section);
+
+		when(insertSection.getUpStation()).thenReturn(new Station("상현역"));
+		when(insertSection.getDownStation()).thenReturn(new Station("정자역"));
+		when(insertSection.getDistance()).thenReturn(5);
+		sections.add(insertSection);
+
+		//when
+		Section 오류발생구간 = mock(Section.class);
+		when(오류발생구간.getUpStation()).thenReturn(new Station("광교역"));
+		when(오류발생구간.getDownStation()).thenReturn(new Station("정자역"));
+		when(오류발생구간.getDistance()).thenReturn(20);
+
+		//then
+		assertThatThrownBy(() -> sections.add(오류발생구간))
+				.isInstanceOf(AlreadyRegisteredException.class);
 	}
 
 	/**
