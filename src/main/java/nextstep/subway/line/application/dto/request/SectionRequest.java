@@ -12,10 +12,10 @@ public class SectionRequest {
     private long upStationId;
     @Min(1)
     private long downStationId;
-    @Min(0)
-    private int distance;
+    @Min(1)
+    private Integer distance;
 
-    public SectionRequest(Long upStationId, Long downStationId, int distance) {
+    public SectionRequest(Long upStationId, Long downStationId, Integer distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;

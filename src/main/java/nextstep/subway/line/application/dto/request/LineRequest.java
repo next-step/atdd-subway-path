@@ -17,6 +17,6 @@ public class LineRequest {
     private Long upStationId;
     @Min(1)
     private Long downStationId;
-    @Min(0)
-    private int distance;
+    @Min(1)
+    private Integer distance;
 }
