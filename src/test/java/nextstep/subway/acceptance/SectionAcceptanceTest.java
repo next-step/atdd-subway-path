@@ -210,10 +210,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 지하철 노선에 구간이 하나인 경우, 하행 종점역 제거를 요청 하면
+     * When 지하철 노선에 구간이 하나인 경우, 상행 종점역 제거를 요청 하면
      * Then 예외가 발생한다.
      */
-    @DisplayName("지하철 구간이 하나인 하행 종점역을 제거하면 예외가 발행한다.")
+    @DisplayName("지하철 구간이 하나인 상행 종점역을 제거하면 예외가 발행한다.")
     @Test
     void removeFirstStationInOneSection() {
         // when

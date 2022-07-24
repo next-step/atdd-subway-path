@@ -6,7 +6,6 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
-import nextstep.subway.exception.NotFoundLineException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,14 +71,7 @@ public class LineService {
         findLineById(lineId).removeSection(stationService.findById(stationId));
     }
 
-    public Line findByStations(List<Station> stations) {
-        return findAll().stream()
-                .filter(line -> line.getStations().containsAll(stations))
-                .findFirst()
-                .orElseThrow(NotFoundLineException::new);
-    }
-
-    private List<Line> findAll() {
+    public List<Line> findAll() {
         return lineRepository.findAll();
     }
 

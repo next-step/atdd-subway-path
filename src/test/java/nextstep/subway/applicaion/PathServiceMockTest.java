@@ -44,7 +44,7 @@ class PathServiceMockTest {
 
         when(stationService.findById(서울역.getId())).thenReturn(서울역);
         when(stationService.findById(종각역.getId())).thenReturn(종각역);
-        when(lineService.findByStations(List.of(서울역, 종각역))).thenReturn(일호선);
+        when(lineService.findAll()).thenReturn(List.of(일호선));
 
         // when
         PathResponse response = pathService.findPath(서울역.getId(), 종각역.getId());

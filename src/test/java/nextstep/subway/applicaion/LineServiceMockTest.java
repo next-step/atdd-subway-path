@@ -137,38 +137,6 @@ public class LineServiceMockTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("지하철역에 해당하는 노선 조회")
-    @Test
-    void findByStations() {
-        // given
-        Station 구로디지털단지역 = Stub.구로디지털단지역_생성.get();
-        Station 신대방역 = Stub.신대방역_생성.get();
-        Line 이호선 = Stub.이호선_생성.get();
-
-        when(lineRepository.findAll()).thenReturn(List.of(이호선));
-
-        // when
-        Line line = lineService.findByStations(List.of(구로디지털단지역, 신대방역));
-
-        // then
-        assertThat(line).isEqualTo(이호선);
-    }
-
-    @DisplayName("노선에 없는 지하철역으로 노선을 조회하는 경우 예외 발생")
-    @Test
-    void findByStationsUnknownStationInLines() {
-        // given
-        Station 구로디지털단지역 = Stub.구로디지털단지역_생성.get();
-        Station 신림역 = Stub.신림역_생성.get();
-        Line 이호선 = Stub.이호선_생성.get();
-
-        when(lineRepository.findAll()).thenReturn(List.of(이호선));
-
-        // then
-        assertThatThrownBy(() -> lineService.findByStations(List.of(구로디지털단지역, 신림역)))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
     private static class Stub {
         public static final Supplier<Station> 구로디지털단지역_생성 = () -> createStation(1L, "구로디지털단지역");
         public static final Supplier<Station> 신대방역_생성 = () -> createStation(2L, "신대방역");
