@@ -13,6 +13,7 @@ import java.util.Map;
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관리 기능")
 class SectionAcceptanceTest extends AcceptanceTest {
@@ -36,7 +37,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 지하철 노선에 새로운 구간 추가를 요청 하면
+     * When downStation으로 지하철 노선에 새로운 구간 추가를 요청 하면
      * Then 노선에 새로운 구간이 추가된다
      */
     @DisplayName("DownStation으로 지하철 노선에 구간을 등록")
@@ -50,6 +51,25 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 판교역, 정자역);
+    }
+
+    /**
+     * When upStation으로 지하철 노선에 새로운 구간 추가를 요청 하면
+     * Then 노선에 새로운 구간이 추가된다
+     */
+    @DisplayName("upStation으로 지하철 노선에 구간을 등록")
+    @Test
+    void addLineSectionWithUpStation() {
+        // when
+        Long 양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).contains(강남역, 양재역, 판교역)
+        );
     }
 
     /**

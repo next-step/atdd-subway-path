@@ -24,7 +24,30 @@ public class Sections {
 	}
 
 	public void add(Section section) {
-		sections.add(section);
+		add(section.getLine(), section.getUpStation(), section.getDownStation(), section.getDistance());
+	}
+
+	public void add(Line line, Station upStation, Station downStation, int distance) {
+		if (isStartWithUpStation(upStation)) {
+			Section section = sections.stream()
+					.filter(s -> s.getUpStation().equals(upStation))
+					.findFirst()
+					.orElseThrow(IllegalArgumentException::new);
+			this.sections.remove(section);
+			this.sections.add(new Section(line, downStation, section.getDownStation(), modifiedDistance(section.getDistance(), distance)));
+			this.sections.add(new Section(line, upStation, downStation, distance));
+			return;
+		}
+
+		this.sections.add(new Section(line, upStation, downStation, distance));
+	}
+
+	private boolean isStartWithUpStation(Station upStation) {
+		return sections.stream().anyMatch(section -> section.getUpStation().equals(upStation));
+	}
+
+	private Integer modifiedDistance(Integer origin, Integer insert) {
+		return origin - insert;
 	}
 
 	public List<Station> getStations() {
@@ -32,11 +55,9 @@ public class Sections {
 		if (isEmpty()) {
 			return Collections.emptyList();
 		}
-
 		List<Station> stations = sections.stream()
 				.map(Section::getDownStation)
 				.collect(Collectors.toList());
-
 		stations.add(FIRST_IDX, sections.get(FIRST_IDX).getUpStation());
 
 		return stations;
