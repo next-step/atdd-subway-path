@@ -73,6 +73,25 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * When 기존 구간의 upStation과 일치하는 downStation을 가진 구간이 추가 요청이 되면
+     * Then 노선에 새로운 구간이 추가된다
+     */
+    @DisplayName("새로운 구간의 downStation이 기존 구간의 upStation과 일치하는 경우 지하철 노선에 등록된다.")
+    @Test
+    void addLineSectionWithSameDownStation() {
+        // when
+        Long 신사역 = 지하철역_생성_요청("신사역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신사역, 강남역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신사역, 강남역, 판교역)
+        );
+    }
+
+    /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
      * Then 노선에 구간이 제거된다

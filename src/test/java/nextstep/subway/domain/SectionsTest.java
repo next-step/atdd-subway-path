@@ -58,6 +58,40 @@ class SectionsTest {
 
 	/**
 	 * Given sections에 section을 추가한다.
+	 * Given 기존 section의 upStation과 일치하는 downStation을 가진 섹션을 추가한다.
+	 * When sections를 조회하면
+	 * Then 두 개의 구간이 등록되어 있다.
+	 */
+	@DisplayName("새로운 구간의 downStation이 기존 구간의 upStation과 일치하는 경우 addSection이 성공한다.")
+	@Test
+	void addSectionsWithDownStationEqualsUpStation() {
+		//given
+		Sections sections = new Sections();
+		when(section.getUpStation()).thenReturn(new Station("광교역"));
+		when(section.getDownStation()).thenReturn(new Station("상현역"));
+		when(section.getDistance()).thenReturn(10);
+		sections.add(section);
+
+		//given
+		when(insertSection.getUpStation()).thenReturn(new Station("신사역"));
+		when(insertSection.getDownStation()).thenReturn(new Station("광교역"));
+		when(insertSection.getDistance()).thenReturn(3);
+		sections.add(insertSection);
+
+		//when
+		List<Station> stations = sections.getStations();
+		List<Section> sectionsResponse = sections.getSections();
+		
+		//then
+		assertAll(
+				() -> assertThat(stations).hasSize(3),
+				() -> assertThat(sectionsResponse.get(0).getDistance()).isEqualTo(3),
+				() -> assertThat(sectionsResponse.get(1).getDistance()).isEqualTo(10)
+		);
+	}
+
+	/**
+	 * Given sections에 section을 추가한다.
 	 * Given sections에 insertSection1을 추가한다.
 	 * Given sections에 insertSection2을 추가한다.
 	 * When sections에서 getStation을 하면

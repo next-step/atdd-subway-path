@@ -37,7 +37,22 @@ public class Sections {
 			return;
 		}
 
+		if (sameAsOriginUpStationAndNewDownStation(downStation)) {
+			Section section = sections.stream()
+					.filter(s -> s.getUpStation().equals(downStation))
+					.findFirst()
+					.orElseThrow(IllegalArgumentException::new);
+
+			this.sections.add(sections.indexOf(section), new Section(line, upStation, downStation, distance));
+			return;
+		}
+
 		this.sections.add(new Section(line, upStation, downStation, distance));
+	}
+
+	private boolean sameAsOriginUpStationAndNewDownStation(Station downStation) {
+		return sections.stream()
+				.anyMatch(section -> section.getUpStation().equals(downStation));
 	}
 
 	private boolean isStartWithUpStation(Station upStation) {
