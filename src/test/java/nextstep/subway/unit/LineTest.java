@@ -14,21 +14,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class LineTest {
 
+    private Station 지하철_생성(final String stationName) {
+        return new Station(stationName);
+    }
+
+    private Line 노선_생성(final String lineName, final String red) {
+        return Line.makeLine(lineName, red);
+    }
+
     @DisplayName("노선에 구간 등록하기")
     @Test
     void addSection() {
 
         //given
-        final String 강남역_이름 = "강남역_이름";
-        final Station 강남역 = new Station(강남역_이름);
-
-        final String 시청역_이름 = "시청역_이름";
-        final Station 시청역 = new Station(시청역_이름);
-
-        final String 신분당선_이름 = "신분당선_이름";
-        final String red = "red";
-        final Line 신분당선 = Line.makeLine(신분당선_이름, red);
-
+        final Line 신분당선 = 노선_생성("신분당선", "red");
+        final Station 강남역 = 지하철_생성("강남역");
+        final Station 시청역 = 지하철_생성("시청역");
         final int distance = 10;
 
         //when
@@ -43,18 +44,10 @@ class LineTest {
     void getStations() {
 
         //given
-        final String 강남역_이름 = "강남역_이름";
-        final Station 강남역 = new Station(강남역_이름);
-
-        final String 시청역_이름 = "시청역_이름";
-        final Station 시청역 = new Station(시청역_이름);
-
-        final String 구로디지털단지역_이름 = "구로디지털단지역_이름";
-        final Station 구로디지털단지역 = new Station(구로디지털단지역_이름);
-
-        final String 신분당선_이름 = "신분당선_이름";
-        final String red = "red";
-        final Line 신분당선 = Line.makeLine(신분당선_이름, red);
+        final Line 신분당선 = 노선_생성("신분당선", "red");
+        final Station 강남역 = 지하철_생성("강남역");
+        final Station 시청역 = 지하철_생성("시청역");
+        final Station 구로디지털단지역 = 지하철_생성("구로디지털단지역");
 
         final int 첫번째구간_거리 = 10;
         final int 두번째구간_거리 = 5;
@@ -63,10 +56,7 @@ class LineTest {
         신분당선.addSection(시청역, 구로디지털단지역, 두번째구간_거리);
 
         //when
-        List<Station> 지하철역리스트 = 신분당선.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-        지하철역리스트.add(0, 신분당선.getSections().get(0).getUpStation());
+        List<Station> 지하철역리스트 = 신분당선.stations();
 
         //then
         assertThat(지하철역리스트).containsExactly(강남역, 시청역, 구로디지털단지역);
@@ -77,18 +67,11 @@ class LineTest {
     void removeSection() {
 
         //given
-        final String 강남역_이름 = "강남역_이름";
-        final Station 강남역 = new Station(강남역_이름);
+        final Station 강남역 = 지하철_생성("강남역");
+        final Station 시청역 = 지하철_생성("시청역");
+        final Station 구로디지털단지역 = 지하철_생성("구로디지털단지역");
 
-        final String 시청역_이름 = "시청역_이름";
-        final Station 시청역 = new Station(시청역_이름);
-
-        final String 구로디지털단지역_이름 = "구로디지털단지역_이름";
-        final Station 구로디지털단지역 = new Station(구로디지털단지역_이름);
-
-        final String 신분당선_이름 = "신분당선_이름";
-        final String red = "red";
-        final Line 신분당선 = Line.makeLine(신분당선_이름, red);
+        final Line 신분당선 = 노선_생성("신분당선", "red");
 
         final int 첫번째구간_거리 = 10;
         final int 두번째구간_거리 = 5;
@@ -97,9 +80,11 @@ class LineTest {
         신분당선.addSection(시청역, 구로디지털단지역, 두번째구간_거리);
 
         //when
-        신분당선.getSections().remove(신분당선.getSections().size() - 1);
+        신분당선.removeSection(구로디지털단지역);
 
         //then
         assertThat(신분당선.getSections().size()).isEqualTo(1);
     }
+
+
 }
