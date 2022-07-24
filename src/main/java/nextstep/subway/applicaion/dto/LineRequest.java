@@ -27,7 +27,8 @@ public class LineRequest {
 		return distance;
 	}
 
-	public boolean isRegistrableOfSection() {
+	public boolean isAbleAddSection() {
 		return this.upStationId != null && this.downStationId != null && this.distance > 0;
 	}
+
 }

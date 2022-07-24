@@ -1,8 +1,11 @@
 package nextstep.subway.domain;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -28,7 +31,8 @@ public class Section {
 	@JoinColumn(name = "down_station_id")
 	private Station downStation;
 
-	private int distance;
+	@Embedded
+	private SectionDistance distance;
 
 	public Section() {
 
@@ -38,39 +42,61 @@ public class Section {
 		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
-		this.distance = distance;
+		this.distance = new SectionDistance(distance);
 	}
 
-	public Section(Long sectionId, Line line, Station upStation, Station downStation, int distance) {
-		this.id = sectionId;
-		this.line = line;
-		this.upStation = upStation;
-		this.downStation = downStation;
-		this.distance = distance;
+	public List<Station> getStation(long index) {
+		if (index == 1) {
+			return Arrays.asList(this.upStation, this.downStation);
+		}
+		return Arrays.asList(this.downStation);
 	}
 
-	public Long getId() {
-		return id;
+	public List<Station> getStationAll() {
+		return Arrays.asList(this.upStation, this.downStation);
 	}
 
-	public Line getLine() {
-		return line;
-	}
-
-	public Station getUpStation() {
-		return upStation;
-	}
-
-	public Station getDownStation() {
-		return this.downStation;
-	}
-
-	public int getDistance() {
-		return distance;
+	public boolean isSameWithDownStation(Station station) {
+		return this.downStation.equals(station);
 	}
 
 	public boolean isSameWithDownStation(long stationId) {
 		return this.downStation.getId() == stationId;
+	}
+
+	public boolean hasSameDownStation(List<Long> stationId) {
+		return stationId.contains(this.downStation.getId());
+	}
+
+	public boolean isSameWithUpStation(Station station) {
+		return this.upStation.equals(station);
+	}
+
+	public boolean hasSameUpStation(List<Long> stationId) {
+		return stationId.contains(this.upStation.getId());
+	}
+
+	public boolean isSameSectionExists(Station addUpStation, Station addDownStation) {
+		if (this.upStation.equals(addUpStation) && this.downStation.equals(addDownStation)) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isExistAnyStations(Station addUpStation, Station addDownStation) {
+		if (this.upStation.equals(addUpStation) || this.upStation.equals(addDownStation)
+			|| this.downStation.equals(addUpStation) || this.downStation.equals(addDownStation)) {
+			return true;
+		}
+		return false;
+	}
+
+	public void changeUpStation(Station station) {
+		this.upStation = station;
+	}
+
+	public void validateOfDistance(SectionDistance distance) {
+		this.distance.validationOfDistance(distance);
 	}
 
 	@Override
@@ -89,4 +115,25 @@ public class Section {
 	public int hashCode() {
 		return Objects.hash(id, line, upStation, downStation, distance);
 	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public Line getLine() {
+		return line;
+	}
+
+	public Station getUpStation() {
+		return upStation;
+	}
+
+	public Station getDownStation() {
+		return this.downStation;
+	}
+
+	public SectionDistance getDistance() {
+		return this.distance;
+	}
+
 }

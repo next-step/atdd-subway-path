@@ -1,5 +1,7 @@
 package nextstep.subway.applicaion;
 
+import static nextstep.subway.common.exception.errorcode.BusinessErrorCode.*;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,6 +13,7 @@ import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.common.exception.BusinessException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -31,20 +34,19 @@ public class LineService {
 	public LineResponse saveLine(LineRequest request) {
 		Line line = lineRepository.save(Line.of(request.getName(), request.getColor()));
 
-		if (!request.isRegistrableOfSection()) {
-			return createLineResponse(line);
+		if (request.isAbleAddSection()) {
+			line.addSection(
+				findStationById(request.getUpStationId()),
+				findStationById(request.getDownStationId()),
+				request.getDistance());
 		}
-
-		Station upStation = findStationById(request.getUpStationId());
-		Station downStation = findStationById(request.getDownStationId());
-		line.addSection(upStation, downStation, request.getDistance());
 
 		return createLineResponse(line);
 	}
 
 	private Station findStationById(long stationId) {
 		return stationRepository.findById(stationId)
-			.orElseThrow(IllegalArgumentException::new);
+			.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
 	}
 
 	public List<LineResponse> showLines() {
@@ -55,12 +57,12 @@ public class LineService {
 
 	public LineResponse findById(Long id) {
 		return createLineResponse(lineRepository.findById(id)
-			.orElseThrow(IllegalArgumentException::new));
+			.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND)));
 	}
 
 	@Transactional
-	public void updateLine(Long id, LineRequest lineRequest) {
-		Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+	public void updateLine(Long lineId, LineRequest lineRequest) {
+		Line line = findByLineId(lineId);
 		line.changeName(lineRequest.getName());
 		line.changeColor(lineRequest.getColor());
 	}
@@ -73,9 +75,7 @@ public class LineService {
 	@Transactional
 	public void addSection(Long lineId, SectionRequest sectionRequest) {
 
-		Line line = lineRepository.findById(lineId)
-			.orElseThrow(IllegalArgumentException::new);
-
+		Line line = findByLineId(lineId);
 		Station upStation = findStationById(sectionRequest.getUpStationId());
 		Station downStation = findStationById(sectionRequest.getDownStationId());
 
@@ -83,20 +83,20 @@ public class LineService {
 
 	}
 
-	private LineResponse createLineResponse(Line line) {
-		return new LineResponse(
-			line.getId(),
-			line.getName(),
-			line.getColor(),
-			createStationResponses(line)
-		);
+	@Transactional
+	public void deleteSection(Long lineId, Long stationId) {
+		Line line = findByLineId(lineId);
+		Station station = findStationById(stationId);
+		line.removeSection(station);
 	}
 
-	private StationResponse createStationResponse(Station station) {
-		return new StationResponse(
-			station.getId(),
-			station.getName()
-		);
+	private Line findByLineId(long lineId) {
+		return lineRepository.findById(lineId)
+			.orElseThrow(() -> new BusinessException(ENTITY_NOT_FOUND));
+	}
+
+	private LineResponse createLineResponse(Line line) {
+		return LineResponse.of(line, createStationResponses(line));
 	}
 
 	private List<StationResponse> createStationResponses(Line line) {
@@ -106,15 +106,8 @@ public class LineService {
 
 		return line.getStations()
 			.stream()
-			.map(this::createStationResponse)
+			.map(StationResponse::of)
 			.collect(Collectors.toList());
 	}
 
-	@Transactional
-	public void deleteSection(Long lineId, Long stationId) {
-		Line line = lineRepository.findById(lineId)
-			.orElseThrow(IllegalArgumentException::new);
-		Station station = findStationById(stationId);
-		line.removeSection(station);
-	}
 }
