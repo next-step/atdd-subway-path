@@ -48,20 +48,16 @@ public class Sections {
     }
 
     public void add(Section newSection) {
-        if(sections.size() > 0){
-            conditionCheckAndModify(newSection);
+        if(!sections.isEmpty()){
+            validateAddSection(newSection);
+            Section matchedSection = getBetweenSection(newSection);
+            if (!Objects.isNull(matchedSection)){
+                addBetweenSectionValidateAndModify(newSection, matchedSection);
+            }
         }
-
         this.sections.add(newSection);
     }
 
-    public void conditionCheckAndModify(Section newSection){
-        isValidationAddSection(newSection);
-        if (!Objects.isNull(getBetweenSection(newSection))){
-            addBetweenSection(newSection, getBetweenSection(newSection));
-            return;
-        }
-    }
 
     public Section getBetweenSection(Section newSection){
         return sections.stream().filter(
@@ -70,16 +66,15 @@ public class Sections {
         ).findFirst().orElse(null);
     }
 
-    public void addBetweenSection(Section newSection, Section matchedSection){
+    public void addBetweenSectionValidateAndModify(Section newSection, Section matchedSection){
 //        역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
         if( newSection.getDistance() >= matchedSection.getDistance()){
             throw new BadRequestException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
         }
-        matchedSection.minusDistance(newSection.getDistance());
-        matchedSection.modifyStation(newSection);
+        matchedSection.betweenAddModifyStation(newSection);
     }
 
-    public void isValidationAddSection(Section newSection){
+    public void validateAddSection(Section newSection){
         if(checkExistSection(newSection)){
             throw new BadRequestException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음");
         }
@@ -117,7 +112,7 @@ public class Sections {
         if(!Objects.equals(lastSection.getDownStation().getId(), stationId))
             throw new BadRequestException("지하철 노선에 등록된 역(하행 종점역)만 제거할 수 있다. 즉, 마지막 구간만 제거할 수 있다.");
 
-        if(sections.size() < 2)
+        if(sections.size() == 1)
             throw new BadRequestException("지하철 노선에 상행 종점역과 하행 종점역만 있는 경우(구간이 1개인 경우) 역을 삭제할 수 없다.");
 
         sections.remove(lastSection);
