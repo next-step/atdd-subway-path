@@ -48,58 +48,76 @@ public class LineServiceTest {
         lineRepository.save(신분당선);
     }
 
+    /**
+     * When 지하철 노선을 생성하면
+     * Then 생성된 노선에 해당하는 역들을 확인할 수 있다.
+     */
     @DisplayName("노선 생성")
     @Test
     void saveLine() {
         // given 신분당선 강남-양재 구간 setUp
 
-        // when 분당선 생성
+        // when
         LineResponse lineResponse = lineService.saveLine(new LineRequest("분당선", "yellow", 강남역.getId(), 양재역.getId(), 10));
 
-        // then 분당선에 강남역, 양재역이 존재하는지 조회
+        // then
         Line 분당선 = lineRepository.findById(lineResponse.getId()).orElseThrow(IllegalArgumentException::new);
         assertThat(분당선.getStations()).containsExactly(강남역, 양재역);
     }
 
+    /**
+     * Given 지하철역을 추가하고
+     * When 해당 역을 신규 구간으로 추가하면
+     * Then 노선에서 추가된 역을 확인할 수 있다.
+     */
     @DisplayName("구간 추가")
     @Test
     void addSection() {
         // given 신분당선 강남-양재 구간 setUp
-        // 양재시민의숲역 추가
+
+        // given
         Station 양재시민의숲역 = new Station("양재시민의숲역");
         stationRepository.save(양재시민의숲역);
 
-        // when 신분당선에 양재-양재시민의숲 구간 추가
+        // when
         lineService.addSection(신분당선.getId(), new SectionRequest(양재역.getId(), 양재시민의숲역.getId(), 20));
 
-        // then 강남역, 양재역, 양재시민의숲역이 신분당선에 추가되었는지 조회
+        // then
         assertThat(신분당선.getStations()).containsExactly(강남역, 양재역, 양재시민의숲역);
     }
 
+    /**
+     * When 지하철 노선의 이름과 색을 수정하면
+     * Then 노선의 정보가 변경된 것을 확인할 수 있다.
+     */
     @DisplayName("노선 수정")
     @Test
     void updateLine() {
         // given 신분당선 강남-양재 구간 setUp
 
-        // when 신분당선의 이름과 색을 수정
+        // when
         String newName = "2호선";
         String newColor = "green";
         lineService.updateLine(신분당선.getId(), new LineRequest(newName, newColor, 강남역.getId(), 양재역.getId(),10));
 
-        // then 이름과 색이 변경되었는지 확인
+        // then
         assertThat(신분당선.getName()).isEqualTo(newName);
         assertThat(신분당선.getColor()).isEqualTo(newColor);
     }
 
+    /**
+     * When 지하철 노선을 제거하면
+     * Then 해당 역이 제거되어 조회시 에러가 발생한다.
+     */
     @DisplayName("노선 제거")
     @Test
     void deleteLine() {
         // given 신분당선 강남-양재 구간 setUp
 
-        // when 신분당선 제거
+        // when
         lineService.deleteLine(신분당선.getId());
 
-        // then 신분당선이 제거되어 조회시 에러 발생
+        // then
         assertThatThrownBy(()->lineService.findLineResponse(신분당선.getId()))
             .isInstanceOf(IllegalArgumentException.class);
     }

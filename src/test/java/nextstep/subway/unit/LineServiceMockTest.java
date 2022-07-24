@@ -13,8 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
@@ -45,6 +43,11 @@ public class LineServiceMockTest {
 
     }
 
+    /**
+     * Given 노선과 역을 mocking 하고
+     * When 지하철 노선을 생성하면
+     * Then 생성된 노선과 mocking 한 노선의 정보가 일치한다.
+     */
     @DisplayName("노선 생성")
     @Test
     void saveLine() {
@@ -56,14 +59,19 @@ public class LineServiceMockTest {
         // given 신분당선 save mocking
         when(lineRepository.save(any())).thenReturn(신분당선);
 
-        // when 신분당선 저장
+        // when
         lineService.saveLine(new LineRequest(신분당선.getName(), 신분당선.getColor(), 강남역.getId(), 양재역.getId(), 10));
 
-        // then 생성된 라인과 신분당선의 이름이 같은지 확인
+        // then
         Line line = lineRepository.findById(신분당선.getId()).orElseThrow(IllegalArgumentException::new);
         assertThat(line.getName()).isEqualTo(신분당선.getName());
     }
 
+    /**
+     * Given 노선과 역을 mocking 하고
+     * When 구간을 추가하면
+     * Then 해당 노선에 추가한 역들을 확인할 수 있다.
+     */
     @DisplayName("구간 추가")
     @Test
     void addSection() {
@@ -72,36 +80,45 @@ public class LineServiceMockTest {
         양재역_mocking();
         신분당선_mocking();
 
-        // when 강남-양재 구간 추가
+        // when
         lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 양재역.getId(), 10));
 
-        // then 신분당선에 강남역, 양재역이 존재하는지 확인
+        // then
         assertThat(신분당선.getStations()).containsExactly(강남역, 양재역);
     }
 
+    /**
+     * Given 노선을 mocking 하고
+     * When 노선 정보를 수정하면
+     * Then 수정된 노선 정보가 일치한다.
+     */
     @DisplayName("노선 수정")
     @Test
     void updateLine() {
         // given
         신분당선_mocking();
 
-        // when 신분당선의 이름과 색을 수정
+        // when
         String newName = "2호선";
         String newColor = "green";
         lineService.updateLine(신분당선.getId(), new LineRequest(newName, newColor, 강남역.getId(), 양재역.getId(),10));
 
-        // then 이름과 색이 변경되었는지 확인
+        // then
         assertThat(신분당선.getName()).isEqualTo(newName);
         assertThat(신분당선.getColor()).isEqualTo(newColor);
     }
 
+    /**
+     * When 노선을 제거하면
+     * Then 해당 노선이 제거되어 조회시 에러가 발생한다.
+     */
     @DisplayName("노선 제거")
     @Test
     void deleteLine() {
-        // when 신분당선 제거
+        // when
         lineService.deleteLine(신분당선.getId());
 
-        // then 신분당선이 제거되어 조회시 에러 발생
+        // then
         assertThatThrownBy(()->lineService.findLineResponse(신분당선.getId()))
             .isInstanceOf(IllegalArgumentException.class);
     }
