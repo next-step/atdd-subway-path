@@ -2,6 +2,17 @@
 
 [ATDD 강의](https://edu.nextstep.camp/c/R89PYi5H) 실습을 위한 지하철 노선도 애플리케이션
 
+## Step4 TODO List
+
+- [ ] 인수 조건 도출
+- [ ] 인수 테스트 작성
+- [ ] 경로 조회 기능 구현
+    - [ ] 출발역이 존재하지 않는경우 예외발생
+    - [ ] 도착역이 존재하지 않는경우 예외발생
+    - [ ] 출발역과 도착역이 연결되어있지 않은경우 예외발생
+    - [ ] 출발역과 도착역이 같은경우 예외발생
+    - [ ] 출발역과 도착역의 최단거리를 정상 조회한다
+
 ## Step3 PR 수정 TODO list
 
 - [x] Sections의 deleteMiddleStation 내부 return 제거, early return으로 변경해보기
