@@ -20,8 +20,8 @@ public class PathService {
                 .orElseThrow(() -> new IllegalArgumentException("도착역이 존재하지 않아요."));
 
         PathGraph pathGraph = new PathGraph(sectionRepository.findAll());
-        StationPath shortestPath = pathGraph.getShortestPath(sourceStation, targetStation);
+        StationPath stationPath = pathGraph.getShortestPath(sourceStation, targetStation);
 
-        return PathResponse.of(shortestPath);
+        return PathResponse.of(stationPath);
     }
 }
