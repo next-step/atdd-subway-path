@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import java.util.HashMap;
 import java.util.Map;
 
-import static nextstep.subway.line.acceptance.LineSectionSteps.*;
+import static nextstep.subway.steps.LineSectionSteps.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관리 기능")
@@ -122,6 +122,6 @@ class LineAcceptanceTest extends AcceptanceTest {
     private void 노선이_존재하지_않는다(Long lineId) {
         var response = 지하철_노선_조회_요청(lineId);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }

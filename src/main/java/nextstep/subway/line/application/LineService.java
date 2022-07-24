@@ -6,6 +6,7 @@ import nextstep.subway.line.application.dto.request.LineUpdateRequest;
 import nextstep.subway.line.application.dto.response.LineResponse;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.exception.LineNotFoundException;
 import nextstep.subway.station.applicaion.StationService;
 import nextstep.subway.station.applicaion.dto.response.StationResponse;
 import nextstep.subway.station.domain.Station;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,12 +43,12 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        return createLineResponse(lineRepository.findById(id).orElseThrow(LineNotFoundException::new));
     }
 
     @Transactional
     public void updateLine(Long id, LineUpdateRequest request) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
 
         line.updateName(request.getName());
         line.updateColor(request.getColor());
