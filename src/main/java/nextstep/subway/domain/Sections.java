@@ -39,6 +39,22 @@ public class Sections {
         sectionList.remove(sectionList.size() - 1);
     }
 
+    public List<Section> getOrderedSections() {
+        if (sectionList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        var orderedSections = new ArrayList<Section>();
+        var currentSection = Optional.of(getFirstSection());
+
+        while (currentSection.isPresent()) {
+            orderedSections.add(currentSection.get());
+            currentSection = getNextSection(currentSection.get());
+        }
+
+        return orderedSections;
+    }
+
     public List<Station> getStations() {
         if (sectionList.isEmpty()) {
             return Collections.emptyList();
