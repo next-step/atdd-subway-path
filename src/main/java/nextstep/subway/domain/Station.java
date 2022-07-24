@@ -5,28 +5,26 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@Entity
+@Getter
 @ToString
+@NoArgsConstructor
+@Entity
 public class Station {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
 
-    public Station() {
-    }
-
     public Station(String name) {
         this.name = name;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
+    public Station(Long id, String name) {
+        this.id = id;
+        this.name = name;
     }
 }

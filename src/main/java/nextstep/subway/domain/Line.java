@@ -2,17 +2,12 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.springframework.transaction.annotation.Transactional;
-
+import lombok.Getter;
 import lombok.NonNull;
-import nextstep.subway.applicaion.dto.SectionRequest;
 
+@Getter
 @Entity
 public class Line {
 	@Id
@@ -23,8 +18,8 @@ public class Line {
 	@NonNull
 	private String color;
 
-	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-	private final List<Section> sections = new ArrayList<>();
+	@Embedded
+	private Sections sections;
 
 	public Line() {
 	}
@@ -32,57 +27,26 @@ public class Line {
 	public Line(String name, String color) {
 		this.name = name;
 		this.color = color;
+		this.sections = new Sections();
+	}
+
+	public Line(Long id, String name, String color) {
+		this.id = id;
+		this.name = name;
+		this.color = color;
+		this.sections = new Sections();
 	}
 
 	public void addSection(Section section) {
-		this.getSections().add(section);
+		this.sections.add(section);
 	}
 
 	public List<Station> getStations() {
-        List<Station> stations = this.sections.stream().map(Section::getDownStation).collect(Collectors.toList());
-        stations.add(0, this.sections.get(0).getUpStation());
-        return stations;
+        return this.sections.getStations();
 	}
 
 	public void removeSection(Station station) {
-		int count = this.sections.size();
-		if(count <= 1) {
-			throw new IllegalArgumentException();
-		}
-
-		Section lastSection = this.sections.get(count - 1);
-		if (!lastSection.getDownStation().equals(station)) {
-			throw new IllegalArgumentException();
-		}
-		this.sections.remove(lastSection);
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getColor() {
-		return color;
-	}
-
-	public void setColor(String color) {
-		this.color = color;
-	}
-
-	public List<Section> getSections() {
-		return sections;
+		this.sections.remove(station);
 	}
 
 	public void update(String name, String color) {
@@ -92,5 +56,9 @@ public class Line {
 		if (color != null) {
 			this.color = color;
 		}
+	}
+
+	public Boolean isSectionEmpty() {
+		return this.sections.isEmpty();
 	}
 }
