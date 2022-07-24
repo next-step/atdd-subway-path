@@ -3,10 +3,13 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineSteps {
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
@@ -58,6 +61,12 @@ public class LineSteps {
                 .when().post("/lines/{lineId}/sections", lineId)
                 .then().log().all().extract();
     }
+
+    public static void 지하철_노선에_지하철역_순서대로_등록_확인(ExtractableResponse<Response> response, Long... station) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(station);
+    }
+
 
     public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_제거_요청(Long lineId, Long stationId) {
         return RestAssured.given().log().all()
