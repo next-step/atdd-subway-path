@@ -9,6 +9,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import static java.util.Collections.*;
 
@@ -55,7 +56,7 @@ public class Sections {
 
     private void sameNewAndExistingUpStation(Section newSection) {
         Optional<Section> optionalExistingSection = sections.stream()
-                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+                .filter(matchUpStation(newSection.getUpStation()))
                 .findFirst();
 
         if (optionalExistingSection.isEmpty()) {
@@ -68,7 +69,7 @@ public class Sections {
 
     private void sameNewAndExistingDownStation(Section newSection) {
         Optional<Section> optionalExistingSection = sections.stream()
-                .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
+                .filter(matchDownStation(newSection.getDownStation()))
                 .findFirst();
 
         if (optionalExistingSection.isEmpty()) {
@@ -130,11 +131,6 @@ public class Sections {
                 .orElseThrow();
     }
 
-    private boolean matchSectionsDownStation(Station upStation) {
-        return sections.stream()
-                .noneMatch(section -> section.getDownStation().equals(upStation));
-    }
-
     public Section lastSection() {
         return sections.stream()
                 .filter(section -> matchSectionsUpStation(section.getDownStation()))
@@ -142,9 +138,22 @@ public class Sections {
                 .orElseThrow();
     }
 
+    private boolean matchSectionsDownStation(Station upStation) {
+        return sections.stream()
+                .noneMatch(matchDownStation(upStation));
+    }
+
     private boolean matchSectionsUpStation(Station downStation) {
         return sections.stream()
-                .noneMatch(section -> section.getUpStation().equals(downStation));
+                .noneMatch(matchUpStation(downStation));
+    }
+
+    private Predicate<Section> matchDownStation(Station station) {
+        return section -> section.getDownStation().equals(station);
+    }
+
+    private Predicate<Section> matchUpStation(Station station) {
+        return section -> section.getUpStation().equals(station);
     }
 
     public List<Section> getSections() {
