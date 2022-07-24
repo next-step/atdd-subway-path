@@ -13,6 +13,9 @@ public class Distance {
     int distance;
 
     public Distance(int distance) {
+        if (distance <= 0) {
+            throw new IllegalArgumentException("지하철 구간의 길이는 0초과만 등록할 수 있습니다.");
+        }
         this.distance = distance;
     }
 
@@ -26,6 +29,10 @@ public class Distance {
 
     public int minus(Distance target) {
         return this.distance - target.distance;
+    }
+
+    public int plus(Distance target) {
+        return this.distance + target.distance;
     }
 
     @Override

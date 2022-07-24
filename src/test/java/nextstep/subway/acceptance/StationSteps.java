@@ -20,4 +20,8 @@ public class StationSteps {
                 .then().log().all()
                 .extract();
     }
+
+    public static long 신규_지하철역(String name) {
+        return 지하철역_생성_요청(name).jsonPath().getLong("id");
+    }
 }

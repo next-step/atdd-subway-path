@@ -32,7 +32,7 @@ public class Sections {
         Section section = findSectionHasUpStation(getUpStationTerminal());
         sortedSections.add(section);
 
-        while (findNextSectionCount(section.getDownStation()) > 0) {
+        while (isAnyMatchUpStation(section.getDownStation())) {
             section = findSectionHasUpStation(section.getDownStation());
             sortedSections.add(section);
         }
@@ -74,10 +74,38 @@ public class Sections {
         return sortedStations;
     }
 
-    private long findNextSectionCount(Station station) {
+    public void delete(Line line, Station station) {
+        final int ONLY_ONE_SECTION = 1;
+
+        if (this.sections.size() <= MIN_SECTION_SIZE) {
+            throw new IllegalArgumentException("지하철 구간은 최소 1개 이상 있어야합니다.");
+        }
+
+        List<Section> deleteSections = findSectionssHavaStation(station);
+        if (deleteSections.size() > ONLY_ONE_SECTION) {
+            this.relocateSection(line, station);
+        }
+
+        this.sections.removeAll(deleteSections);
+    }
+
+    private void relocateSection(Line line, Station station) {
+        Section sectionHasUpSection = findSectionHasUpStation(station);
+        Section sectionHasDownSection = findSectionHasDownStation(station);
+
+        int newDistance = sectionHasDownSection.getDistance().plus(sectionHasUpSection.getDistance());
+        Station newUpStation = sectionHasDownSection.getUpStation();
+        Station newDownStation = sectionHasUpSection.getDownStation();
+
+        sections.remove(sectionHasUpSection);
+        sections.remove(sectionHasDownSection);
+
+        this.add(new Section(line, newUpStation, newDownStation, newDistance));
+    }
+
+    private boolean isAnyMatchUpStation(Station station) {
         return sections.stream()
-                .filter(it -> it.getUpStation().equals(station))
-                .count();
+                .anyMatch(it -> it.isSameUpStation(station));
     }
 
     private void sectionContainDownStation(Section newSection) {
@@ -152,23 +180,11 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public void delete(Station station) {
-        if (this.sections.size() <= MIN_SECTION_SIZE) {
-            throw new IllegalArgumentException("지하철 구간은 최소 1개 이상 있어야합니다.");
-        }
-
-        Section section = findSectionHasDownStation(station);
-        sections.remove(section);
-    }
-
     private void checkDoesNotExistStations(Section newSection) {
-        if (this.getStations().contains(newSection.getUpStation())) {
-            return;
+        if (!this.getStations().contains(newSection.getUpStation())
+                && !this.getStations().contains(newSection.getDownStation())) {
+            throw new IllegalArgumentException("구간에 해당 되는 역을 찾을 수 없습니다.");
         }
-        if (this.getStations().contains(newSection.getDownStation())) {
-            return;
-        }
-        throw new IllegalArgumentException("구간에 해당 되는 역을 찾을 수 없습니다.");
     }
 
     private void checkDuplicationSection(Section newSection) {
@@ -185,6 +201,16 @@ public class Sections {
                 && this.getStations().contains(newSection.getDownStation())) {
             throw new IllegalArgumentException("상행역과 하행역이 둘 다 포함되어 있습니다.");
         }
+    }
+
+    private List<Section> findSectionssHavaStation(Station station) {
+        List<Section> sections = this.sections.stream()
+                .filter(it -> it.isSameDownStation(station) || it.isSameUpStation(station))
+                .collect(Collectors.toList());
+        if (sections.isEmpty()) {
+            throw new IllegalArgumentException("해당되는 구간을 찾을 수 없습니다.");
+        }
+        return sections;
     }
 
     private Section findSectionHasDownStation(Station station) {
