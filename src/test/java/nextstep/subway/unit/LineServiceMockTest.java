@@ -13,7 +13,6 @@ import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
@@ -54,10 +53,10 @@ public class LineServiceMockTest {
 
         // then
         Line actualLine = lineRepository.findById(1L).orElseThrow(RuntimeException::new);
-        assertThat(line.getSections()).isEqualTo(actualLine.getSections());
-        assertThat(line.getSections()).hasSize(1);
-        assertThat(line.getSections().get(0).getUpStation().getName()).isEqualTo("염창역");
-        assertThat(line.getSections().get(0).getDownStation().getName()).isEqualTo("당산역");
+        assertThat(line.getLineSection()).isEqualTo(actualLine.getLineSection());
+        assertThat(line.getLineSection().size()).isEqualTo(1);
+        assertThat(line.getLineSection().getSections().get(0).getUpStation().getName()).isEqualTo("염창역");
+        assertThat(line.getLineSection().getSections().get(0).getDownStation().getName()).isEqualTo("당산역");
     }
 
     @Test
@@ -67,16 +66,11 @@ public class LineServiceMockTest {
         Line line = new Line(1L,"9호선","YELLOW");
         Station upStation = new Station("염창역");
         Station downStation = new Station("당산역");
-        line.getSections().add(new Section(line,upStation,downStation,10));
+        line.getLineSection().add(new Section(line,upStation,downStation,10));
         List<Line> lines = new ArrayList<>();
         lines.add(line);
 
         given(lineRepository.findAll()).willReturn(lines);
-        given(stationService.createStationResponse(upStation))
-            .willReturn(new StationResponse(upStation.getId(), upStation.getName()));
-        given(stationService.createStationResponse(downStation))
-            .willReturn(new StationResponse(downStation.getId(), downStation.getName()));
-
 
         // when
         List<LineResponse> responses = lineService.showLines();
@@ -96,14 +90,9 @@ public class LineServiceMockTest {
         Line line = new Line(1L,"9호선","YELLOW");
         Station upStation = new Station("염창역");
         Station downStation = new Station("당산역");
-        line.getSections().add(new Section(line,upStation,downStation,10));
+        line.getLineSection().add(new Section(line,upStation,downStation,10));
 
         given(lineRepository.findById(1L)).willReturn(Optional.of(line));
-        given(stationService.createStationResponse(upStation))
-            .willReturn(new StationResponse(upStation.getId(), upStation.getName()));
-        given(stationService.createStationResponse(downStation))
-            .willReturn(new StationResponse(downStation.getId(), downStation.getName()));
-
 
         // when
         LineResponse response = lineService.findById(1L);
@@ -122,7 +111,7 @@ public class LineServiceMockTest {
         Line line = new Line(1L,"9호선","YELLOW");
         Station upStation = new Station(1L,"염창역");
         Station downStation = new Station(2L,"당산역");
-        line.getSections().add(new Section(line,upStation,downStation,10));
+        line.getLineSection().add(new Section(line,upStation,downStation,10));
 
         given(lineRepository.findById(1L)).willReturn(Optional.of(line));
 
@@ -142,7 +131,7 @@ public class LineServiceMockTest {
         Line line = new Line(1L,"9호선","YELLOW");
         Station upStation = new Station(1L,"염창역");
         Station downStation = new Station(2L,"당산역");
-        line.getSections().add(new Section(line,upStation,downStation,10));
+        line.getLineSection().add(new Section(line,upStation,downStation,10));
 
         // when
         lineService.deleteLine(1L);
@@ -169,10 +158,11 @@ public class LineServiceMockTest {
 
         // then
         Line actualLine = lineRepository.findById(1L).orElseThrow(RuntimeException::new);
-        assertThat(line.getSections()).isEqualTo(actualLine.getSections());
-        assertThat(line.getSections()).hasSize(1);
-        assertThat(line.getSections().get(0).getUpStation().getName()).isEqualTo("염창역");
-        assertThat(line.getSections().get(0).getDownStation().getName()).isEqualTo("당산역");
+        assertThat(line.getLineSection()).isEqualTo(actualLine.getLineSection());
+        assertThat(line.getLineSection().size()).isEqualTo(1);
+        assertThat(line.getLineSection().getSections().get(0).getUpStation().getName()).isEqualTo("염창역");
+        assertThat(line.getLineSection().getSections().get(0).getDownStation().getName()).isEqualTo("당산역");
+        assertThat(line.getLineSection().getSections().get(0).getDistance()).isEqualTo(10);
     }
 
     @Test
@@ -185,8 +175,8 @@ public class LineServiceMockTest {
         given(stationService.findById(3L)).willReturn(endStation);
 
         Line line = new Line("9호선","YELLOW");
-        line.getSections().add(new Section(line,upStation,downStation,10));
-        line.getSections().add(new Section(line,downStation,endStation,10));
+        line.getLineSection().add(new Section(line,upStation,downStation,10));
+        line.getLineSection().add(new Section(line,downStation,endStation,10));
         given(lineRepository.findById(1L)).willReturn(Optional.of(line));
 
         // when
@@ -194,7 +184,7 @@ public class LineServiceMockTest {
 
         // then
         Line actualLine = lineRepository.findById(1L).orElseThrow(RuntimeException::new);
-        assertThat(line.getSections()).isEqualTo(actualLine.getSections());
-        assertThat(line.getSections()).hasSize(1);
+        assertThat(line.getLineSection()).isEqualTo(actualLine.getLineSection());
+        assertThat(line.getLineSection().size()).isEqualTo(1);
     }
 }

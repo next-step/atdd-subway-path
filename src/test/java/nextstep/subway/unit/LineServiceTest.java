@@ -64,9 +64,10 @@ public class LineServiceTest {
         lineService.addSection(line.getId(),new SectionRequest(station1.getId(),station2.getId(),10));
 
         // then
-        assertThat(line.getSections()).hasSize(1);
-        assertThat(line.getSections().get(0).getUpStation().getName()).isEqualTo("염창역");
-        assertThat(line.getSections().get(0).getDownStation().getName()).isEqualTo("당산역");
+        assertThat(line.getLineSection().size()).isEqualTo(1);
+        assertThat(line.getLineSection().getSections().get(0).getUpStation().getName()).isEqualTo("염창역");
+        assertThat(line.getLineSection().getSections().get(0).getDownStation().getName()).isEqualTo("당산역");
+        assertThat(line.getLineSection().getSections().get(0).getDistance()).isEqualTo(10);
     }
 
     @Test
@@ -159,14 +160,15 @@ public class LineServiceTest {
         Station station3 = stationRepository.save(new Station("여의도역"));
         lineService.addSection(line.getId(),new SectionRequest(station1.getId(),station2.getId(),10));
         lineService.addSection(line.getId(),new SectionRequest(station2.getId(),station3.getId(),10));
-        assertThat(line.getSections()).hasSize(2);
+        assertThat(line.getLineSection().size()).isEqualTo(2);
 
         // when
         lineService.deleteSection(line.getId(), station3.getId());
 
         // then
-        assertThat(line.getSections()).hasSize(1);
-        assertThat(line.getSections().get(0).getUpStation().getName()).isEqualTo("염창역");
-        assertThat(line.getSections().get(0).getDownStation().getName()).isEqualTo("당산역");
+        assertThat(line.getLineSection().size()).isEqualTo(1);
+        assertThat(line.getLineSection().getSections().get(0).getUpStation().getName()).isEqualTo("염창역");
+        assertThat(line.getLineSection().getSections().get(0).getDownStation().getName()).isEqualTo("당산역");
+        assertThat(line.getLineSection().getSections().get(0).getDistance()).isEqualTo(10);
     }
 }

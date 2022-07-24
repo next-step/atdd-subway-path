@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import java.util.stream.Collectors;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +13,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private LineSection lineSection = new LineSection();
 
     public Line() {
     }
@@ -45,6 +46,15 @@ public class Line {
         this.name = name;
     }
 
+    public void changeLine(String name, String color) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (color != null) {
+            this.color = color;
+        }
+    }
+
     public String getColor() {
         return color;
     }
@@ -53,7 +63,7 @@ public class Line {
         this.color = color;
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public LineSection getLineSection() {
+        return lineSection;
     }
 }

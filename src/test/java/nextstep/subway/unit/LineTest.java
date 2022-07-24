@@ -20,10 +20,12 @@ class LineTest {
         Section section = createSection(line,"염창역","당산역",10);
 
         //when
-        line.getSections().add(section);
+        line.getLineSection().add(section);
 
         //then
-        assertThat(line.getSections()).containsExactly(section);
+        assertThat(line.getLineSection().getSections().get(0).getUpStation().getName()).isEqualTo("염창역");
+        assertThat(line.getLineSection().getSections().get(0).getDownStation().getName()).isEqualTo("당산역");
+        assertThat(line.getLineSection().getSections().get(0).getDistance()).isEqualTo(10);
     }
 
     @Test
@@ -32,10 +34,10 @@ class LineTest {
         //given
         Line line = createLine();
         Section section = createSection(line,"염창역","당산역",10);
-        line.getSections().add(section);
+        line.getLineSection().add(section);
 
         //when
-        List<Section> sections = line.getSections();
+        List<Section> sections = line.getLineSection().getSections();
 
         //then
         assertThat(sections).hasSize(1);
@@ -52,11 +54,11 @@ class LineTest {
         Section section = createSection(line,"염창역","당산역",10);
         Section section2 = createSection(line,"당산역","여의도역",10);
 
-        line.getSections().add(section);
-        line.getSections().add(section2);
+        line.getLineSection().add(section);
+        line.getLineSection().add(section2);
 
         //when
-        line.getSections().removeIf(v->v.getUpStation().getName().equals("염창역"));
+        line.getLineSection().remove("염창역");
         List<String> stationNames = getStationNames(line);
 
         //then
@@ -65,7 +67,7 @@ class LineTest {
     }
 
     private List<String> getStationNames(Line line) {
-        return line.getSections().stream()
+        return line.getLineSection().getSections().stream()
             .map(v->v.getUpStation().getName())
             .collect(Collectors.toList());
     }
