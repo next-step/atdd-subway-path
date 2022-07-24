@@ -83,28 +83,28 @@ public class Sections {
         return currSection;
     }
 
-    private Optional<Section> getPrevSection(Section section) {
+    private Optional<Section> getPrevSection(Section currentSection) {
         return sectionList.stream()
-                .filter(s -> section.getUpStation().equals(s.getDownStation()))
+                .filter(section -> currentSection.getUpStation().equals(section.getDownStation()))
                 .findFirst();
     }
 
-    private Optional<Section> getNextSection(Section section) {
+    private Optional<Section> getNextSection(Section currentSection) {
         return sectionList.stream()
-                .filter(s -> section.getDownStation().equals(s.getUpStation()))
+                .filter(section -> currentSection.getDownStation().equals(section.getUpStation()))
                 .findFirst();
     }
 
     private Section getSectionByUpStation(Station upStation) {
         return sectionList.stream()
-                .filter(s -> upStation.equals(s.getUpStation()))
+                .filter(section -> upStation.equals(section.getUpStation()))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }
 
     private Section getSectionByDownStation(Station downStation) {
         return sectionList.stream()
-                .filter(s -> downStation.equals(s.getDownStation()))
+                .filter(section -> downStation.equals(section.getDownStation()))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }
