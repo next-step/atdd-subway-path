@@ -50,34 +50,17 @@ public class Sections {
     }
 
     private void betweenSection(Section newSection) {
-        sameNewAndExistingUpStation(newSection);
-        sameNewAndExistingDownStation(newSection);
+        findSectionByStation(matchUpStation(newSection.getUpStation()))
+                .ifPresent(section -> section.changeExistingUpStationToNewDownStation(newSection));
+
+        findSectionByStation(matchDownStation(newSection.getDownStation()))
+                .ifPresent(section -> section.changeExistingDownStationToNewUpStation(newSection));
     }
 
-    private void sameNewAndExistingUpStation(Section newSection) {
-        Optional<Section> optionalExistingSection = sections.stream()
-                .filter(matchUpStation(newSection.getUpStation()))
+    private Optional<Section> findSectionByStation(Predicate<Section> sectionPredicate) {
+        return sections.stream()
+                .filter(sectionPredicate)
                 .findFirst();
-
-        if (optionalExistingSection.isEmpty()) {
-            return;
-        }
-
-        Section existingSection = optionalExistingSection.get();
-        existingSection.changeExistingUpStationToNewDownStation(newSection);
-    }
-
-    private void sameNewAndExistingDownStation(Section newSection) {
-        Optional<Section> optionalExistingSection = sections.stream()
-                .filter(matchDownStation(newSection.getDownStation()))
-                .findFirst();
-
-        if (optionalExistingSection.isEmpty()) {
-            return;
-        }
-
-        Section existingSection = optionalExistingSection.get();
-        existingSection.changeExistingDownStationToNewUpStation(newSection);
     }
 
     public List<Station> allStations() {
