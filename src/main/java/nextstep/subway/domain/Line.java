@@ -2,7 +2,6 @@ package nextstep.subway.domain;
 
 import nextstep.subway.util.LineSectionChecker;
 import nextstep.subway.util.LineSectionMaker;
-import nextstep.subway.util.SectionUpdatePosition;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -58,14 +57,14 @@ public class Line {
 
     public void addSection(Section section) {
         //기존 노선의 구간 크기 확인
-        int lineSize = section.getLine().getSections().size();
+        int sectionSize = this.sections.size();
 
         //지하철 노선 초기 생성 시
-        if(lineSize == 0){
+        if (sectionSize == 0) {
             sections.add(section);
         }
         //기존 노선에서 추가 작업 시
-        if(lineSize  > 0){
+        if (sectionSize > 0) {
             LineSectionChecker checker = new LineSectionChecker(sections, section);
             LineSectionMaker maker = new LineSectionMaker();
             sections = maker.makeSection(checker.checkAddPosition(), sections, section);
