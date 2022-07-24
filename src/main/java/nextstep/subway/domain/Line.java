@@ -30,6 +30,13 @@ public class Line {
 		this.sections = new Sections();
 	}
 
+	public Line(Long id, String name, String color) {
+		this.id = id;
+		this.name = name;
+		this.color = color;
+		this.sections = new Sections();
+	}
+
 	public void addSection(Section section) {
 		this.sections.add(section);
 	}
