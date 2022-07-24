@@ -22,6 +22,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     private Long 논현역;
     private Long 신논현역;
     private Long 양재역;
+    private Long 양재시민의숲;
 
     /**
      * Given 지하철역과 노선 생성을 요청 하고
@@ -33,6 +34,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
         신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
         논현역 = 지하철역_생성_요청("논현역").jsonPath().getLong("id");
+        양재시민의숲 = 지하철역_생성_요청("양재시민의숲").jsonPath().getLong("id");
 
         Map<String, String> lineCreateParams = createLineCreateParams(강남역, 양재역);
         신분당선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
@@ -95,6 +97,14 @@ class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역));
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신논현역, 강남역, 양재역);
+    }
+
+    @DisplayName("새로운 역을 하행 종점으로 등록")
+    @Test
+    void addDownStation() {
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 양재시민의숲));
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 양재시민의숲);
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
