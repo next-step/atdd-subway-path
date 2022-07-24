@@ -106,6 +106,8 @@ public class LineServiceMockTest {
 	void saveLine() {
 		//given
 		when(lineRepository.save(any(Line.class))).thenReturn(new Line("신분당선", "red"));
+		when(stationService.findById(광교중앙역)).thenReturn(new Station("광교중앙역"));
+		when(stationService.findById(광교역)).thenReturn(new Station("광교역"));
 
 		//when
 		LineResponse 신분당선_응답 = lineService.saveLine(new LineRequest("신분당선", "red", 광교역, 광교중앙역, 10));
