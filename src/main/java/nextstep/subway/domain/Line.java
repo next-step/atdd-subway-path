@@ -1,8 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.util.LineSectionChecker;
-import nextstep.subway.util.LineSectionMaker;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;

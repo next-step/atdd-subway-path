@@ -1,8 +1,5 @@
-package nextstep.subway.util;
+package nextstep.subway.domain;
 
-import nextstep.subway.domain.Section;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 

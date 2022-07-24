@@ -1,6 +1,4 @@
-package nextstep.subway.util;
-
-import nextstep.subway.domain.Section;
+package nextstep.subway.domain;
 
 import java.util.List;
 
