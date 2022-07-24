@@ -69,7 +69,7 @@ public class Section {
 
     public void addMiddleSection(final Section newSection) {
         distanceValidation(newSection);
-        updateDistance(newSection);
+        updateReduceDistance(newSection);
 
         if(this.upStation.equals(newSection.getUpStation())){
             this.upStation = newSection.getDownStation();
@@ -85,8 +85,13 @@ public class Section {
         }
     }
 
-    private void updateDistance(final Section newSection) {
+    private void updateReduceDistance(final Section newSection) {
         this.distance -= newSection.distance;
+    }
+
+    public void removeMiddleSection(final int backDistance, final Station backStation) {
+        this.distance += backDistance;
+        this.downStation = backStation;
     }
 
     @Override
