@@ -72,6 +72,9 @@ public class LineService {
         }
 
         List<Long> stationIds = line.stationIds();
-        return stationService.findByIds(stationIds);
+        List<StationResponse> responses = stationService.findByIds(stationIds);
+
+        responses.sort(Comparator.comparing(it -> stationIds.indexOf(it.getId())));
+        return responses;
     }
 }
