@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LineTest {
 
@@ -65,6 +66,30 @@ class LineTest {
         신분당선.addSection(신논현역, 강남역, 5);
         신분당선.addSection(강남역, 양재역, 3);
         assertThat(신분당선.stations()).containsExactly(신논현역, 강남역, 양재역);
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @Test
+    void ss() {
+        신분당선.addSection(논현역, 강남역, 5);
+        신분당선.addSection(신논현역, 강남역, 7);
+        assertThrows(IllegalArgumentException.class, () -> 신분당선.addSection(신논현역, 강남역, 7));
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void 상행역_하행역_중복_등록_불가1() {
+        신분당선.addSection(논현역, 신논현역, 5);
+        신분당선.addSection(신논현역, 강남역, 5);
+        assertThrows(IllegalArgumentException.class, () -> 신분당선.addSection(신논현역, 강남역, 3));
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void 상행역_하행역_중복_등록_불가2() {
+        신분당선.addSection(논현역, 신논현역, 5);
+        신분당선.addSection(신논현역, 강남역, 5);
+        assertThrows(IllegalArgumentException.class, () -> 신분당선.addSection(논현역, 강남역, 5));
     }
 
     @DisplayName("구간 삭제")

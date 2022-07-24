@@ -78,7 +78,9 @@ public class Sections {
     public void addSection(Line line, Station upStation, Station downStation, int distance) {
         if (this.sections.size() > 0) {
             if (isSameUpStationRoof(line, upStation, downStation, distance)) {
-                sectionDeplicateUpStation(line, upStation, downStation, distance);
+                if (isSameDownStationRoof(line, upStation, downStation, distance)) {
+                    throw new IllegalArgumentException();
+                }
                 splitLine(line, upStation, downStation, distance, sectionDeplicateUpStation(line, upStation, downStation, distance));
             } else {
                 this.sections.add(Section.of(line, upStation, downStation, distance));
@@ -88,12 +90,31 @@ public class Sections {
         }
     }
 
+    private boolean isSameDownStationRoof(Line line, Station upStation, Station downStation, int distance) {
+        for (Section section : this.sections) {
+            if (section.getDownStation().equals(upStation)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private Section sectionDeplicateUpStation(Line line, Station upStation, Station downStation, int distance) {
-        return this.sections.stream().filter(section -> section.getUpStation().equals(upStation)).findFirst().orElse(null);
+        for (Section section : this.sections) {
+            if (section.getUpStation().equals(upStation)) {
+                return section;
+            }
+        }
+        return null;
     }
 
     private boolean isSameUpStationRoof(Line line, Station upStation, Station downStation, int distance) {
-        return this.sections.stream().anyMatch(section -> section.getUpStation().equals(upStation));
+        for (Section section : this.sections) {
+            if (section.getUpStation().equals(upStation)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void splitLine(Line line, Station upStation, Station downStation, int distance, Section section) {
@@ -102,15 +123,10 @@ public class Sections {
         this.sections.remove(section);
         this.sections.add(Section.of(line, upStation, downStation, distance));
         int tempDistance = section.getDistance();
+        if (distance >= tempDistance) {
+            throw new IllegalArgumentException("길이 오류");
+        }
         this.sections.add(Section.of(line, downStation, tempDownStation, tempDistance - distance));
-    }
-
-    private boolean idSameUpstation(Station upStation, int i) {
-        return this.sections.get(i).getUpStation().equals(upStation);
-    }
-
-    private boolean checkDistance(int distance, int i) {
-        return distance < this.sections.get(i).getDistance();
     }
 
     public void deleteSection(Station station) {
