@@ -52,6 +52,10 @@ public class Line {
         return sections;
     }
 
+    public Section getLastSection() {
+        return getSections().get(sections.size()-1);
+    }
+
     public void addSection(Section section) {
         this.sections.add(section);
     }
