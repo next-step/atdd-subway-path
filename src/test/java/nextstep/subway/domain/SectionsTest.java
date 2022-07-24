@@ -139,11 +139,13 @@ class SectionsTest {
 		Sections sections = new Sections();
 		when(section.getUpStation()).thenReturn(new Station("광교역"));
 		when(section.getDownStation()).thenReturn(new Station("판교역"));
+		when(section.getDistance()).thenReturn(10);
 		sections.add(section);
 
 		//given
 		when(insertSection.getUpStation()).thenReturn(new Station("광교역"));
 		when(insertSection.getDownStation()).thenReturn(new Station("정자역"));
+		when(insertSection.getDistance()).thenReturn(5);
 		sections.add(insertSection);
 
 		//given
