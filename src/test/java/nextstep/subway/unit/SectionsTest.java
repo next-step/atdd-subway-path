@@ -4,8 +4,8 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
-import nextstep.subway.exception.sections.SectionsAddException;
-import nextstep.subway.exception.sections.SectionsDeleteException;
+import nextstep.subway.exception.sections.*;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class SectionsTest {
 
@@ -231,10 +231,12 @@ public class SectionsTest {
 
         // when
         Section newSection = new Section(2L, line, upStation, newStation, overDistance);
-        Exception exception = assertThrows(SectionsAddException.class, () -> sections.add(newSection));
+        ThrowableAssert.ThrowingCallable actual = () -> sections.add(newSection);
 
         // then
-        assertThat(exception).isInstanceOf(SectionsAddException.class);
+        assertThatThrownBy(actual)
+                .isInstanceOf(SectionDistanceException.class)
+                .hasMessage("기존의 구간 길이보다 긴 신규구간을 중간에 추가할 수 없습니다");
     }
 
     @DisplayName("구간을 중간에 추가할때 기존의 거리보다 더 큰 구간이 추가되면 예외가 발생한다")
@@ -255,10 +257,12 @@ public class SectionsTest {
         Section newSection3 = new Section(4L, line, newStation2, newStation3, 3);
 
         //when
-        Exception exception = assertThrows(SectionsAddException.class, () -> sections.add(newSection3));
+        ThrowableAssert.ThrowingCallable actual = () -> sections.add(newSection3);
 
         // then
-        assertThat(exception).isInstanceOf(SectionsAddException.class);
+        assertThatThrownBy(actual)
+                .isInstanceOf(SectionDistanceException.class)
+                .hasMessage("기존의 구간 길이보다 긴 신규구간을 중간에 추가할 수 없습니다");
     }
 
     @DisplayName("역 사이에 새로운 역 추가할때, 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다")
@@ -269,10 +273,12 @@ public class SectionsTest {
 
         // when
         Section newSection = new Section(2L, line, upStation, downStation, 3);
-        Exception exception = assertThrows(SectionsAddException.class, () -> sections.add(newSection));
+        ThrowableAssert.ThrowingCallable actual = () -> sections.add(newSection);
 
         // then
-        assertThat(exception).isInstanceOf(SectionsAddException.class);
+        assertThatThrownBy(actual)
+                .isInstanceOf(AlreadyBothStationRegisterException.class)
+                .hasMessage("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다");
     }
 
     @DisplayName("역 사이에 새로운 역 추가할때, 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다")
@@ -285,10 +291,12 @@ public class SectionsTest {
 
         // when
         Section newSection = new Section(2L, line, 없는역1, 없는역2, 3);
-        Exception exception = assertThrows(SectionsAddException.class, () -> sections.add(newSection));
+        ThrowableAssert.ThrowingCallable actual = () -> sections.add(newSection);
 
         // then
-        assertThat(exception).isInstanceOf(SectionsAddException.class);
+        assertThatThrownBy(actual)
+                .isInstanceOf(NotFoundBothStationException.class)
+                .hasMessage("상행역과 하행역 모두 찾을 수 없습니다");
     }
 
     @DisplayName("Sections에 등록된 모든 역을 조회한다")
@@ -382,11 +390,13 @@ public class SectionsTest {
         // given
         sections.add(originSection);
 
-        // when
-        Exception exception = assertThrows(SectionsDeleteException.class, () -> sections.deleteSection(upStation));
+        //when
+        ThrowableAssert.ThrowingCallable actual = () -> sections.deleteSection(upStation);
 
         // then
-        assertThat(exception).isInstanceOf(SectionsDeleteException.class);
+        assertThatThrownBy(actual)
+                .isInstanceOf(CantDeleteLastSectionException.class)
+                .hasMessage("노선의 마지막 하나 남은 구간은 삭제할 수 없습니다");
     }
 
     @DisplayName("노선에 등록되지 않은 역을 삭제할 경우 예외가 발생한다.")
@@ -401,10 +411,12 @@ public class SectionsTest {
 
         Station 노선에없는역 = new Station(4L, "노선에없는역");
 
-        // when
-        Exception exception = assertThrows(SectionsDeleteException.class, () -> sections.deleteSection(노선에없는역));
+        //when
+        ThrowableAssert.ThrowingCallable actual = () -> sections.deleteSection(노선에없는역);
 
         // then
-        assertThat(exception).isInstanceOf(SectionsDeleteException.class);
+        assertThatThrownBy(actual)
+                .isInstanceOf(NotFoundStationException.class)
+                .hasMessage("해당 역을 찾을 수 없어 구간을 삭제할 수 없습니다");
     }
 }

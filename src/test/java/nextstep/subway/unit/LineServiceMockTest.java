@@ -8,7 +8,9 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.exception.sections.SectionsDeleteException;
+import nextstep.subway.exception.sections.CantDeleteLastSectionException;
+import nextstep.subway.exception.sections.NotFoundStationException;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -99,11 +102,13 @@ public class LineServiceMockTest {
         given(stationService.findById(anyLong())).willReturn(downStation);
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
-        // when
-        Exception exception = assertThrows(SectionsDeleteException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
+        //when
+        ThrowableAssert.ThrowingCallable actual = () -> lineService.deleteSection(line.getId(), downStation.getId());
 
         // then
-        then(exception).isInstanceOf(SectionsDeleteException.class);
+        assertThatThrownBy(actual)
+                .isInstanceOf(CantDeleteLastSectionException.class)
+                .hasMessage("노선의 마지막 하나 남은 구간은 삭제할 수 없습니다");
     }
 
     @DisplayName("구간이 없는 line에 구간삭제 요청시 예외가 발생한다")
@@ -116,11 +121,13 @@ public class LineServiceMockTest {
         given(stationService.findById(anyLong())).willReturn(downStation);
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
-        // when
-        Exception exception = assertThrows(SectionsDeleteException.class, () -> lineService.deleteSection(line.getId(), downStation.getId()));
+        //when
+        ThrowableAssert.ThrowingCallable actual = () -> lineService.deleteSection(line.getId(), downStation.getId());
 
         // then
-        then(exception).isInstanceOf(SectionsDeleteException.class);
+        assertThatThrownBy(actual)
+                .isInstanceOf(CantDeleteLastSectionException.class)
+                .hasMessage("노선의 마지막 하나 남은 구간은 삭제할 수 없습니다");
     }
 
     @DisplayName("존재하지 않는 line에 구간삭제 요청시 예외가 발생한다")
@@ -153,11 +160,13 @@ public class LineServiceMockTest {
         given(stationService.findById(anyLong())).willReturn(다른노선역);
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
-        // when
-        Exception exception = assertThrows(SectionsDeleteException.class, () -> lineService.deleteSection(line.getId(), 다른노선역.getId()));
+        //when
+        ThrowableAssert.ThrowingCallable actual = () -> lineService.deleteSection(line.getId(), 다른노선역.getId());
 
         // then
-        then(exception).isInstanceOf(SectionsDeleteException.class);
+        assertThatThrownBy(actual)
+                .isInstanceOf(NotFoundStationException.class)
+                .hasMessage("해당 역을 찾을 수 없어 구간을 삭제할 수 없습니다");
     }
 
     @DisplayName("존재하는 라인의 색과 이름을 변경할 수 있다")
