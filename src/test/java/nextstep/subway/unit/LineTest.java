@@ -17,10 +17,8 @@ class LineTest {
     private static final String DUCKSOSTATIONNAME = "덕소역";
 
     private static final String FIRSTLINENAME = "1호선";
-    private static final String SECONDLINENAME = "2호선";
 
     private static final String BLUE = "blue";
-    private static final String GREEN = "green";
 
     private Station donongStation;
     private Station gooriStation;
@@ -45,7 +43,7 @@ class LineTest {
 
     @Test
     void addSection() {
-        line.addSection(firstSection);
+        addSection(List.of(firstSection));
 
         assertThat(line.getLastSection()).isEqualTo(firstSection);
     }
@@ -53,13 +51,19 @@ class LineTest {
     @Test
     void getStations() {
         assertThat(line.getAllStation()).containsExactlyElementsOf(List.of());
+    }
 
-        line.addSection(firstSection);
+    @Test
+    void 구간_1개_등록_조회() {
+        addSection(List.of(firstSection));
 
         assertThat(line.getLastSection()).isEqualTo(firstSection);
         assertThat(line.getAllStation()).containsExactlyElementsOf(Arrays.asList(donongStation, gooriStation));
+    }
 
-        line.addSection(secondSection);
+    @Test
+    void 구간_2개_등록_조회() {
+        addSection(List.of(firstSection, secondSection));
 
         assertThat(line.getLastSection()).isEqualTo(secondSection);
         assertThat(line.getAllStation()).containsExactlyElementsOf(Arrays.asList(donongStation, gooriStation, ducksoStation));
@@ -67,15 +71,17 @@ class LineTest {
 
     @Test
     void removeSection() {
-        line.addSection(firstSection);
-        line.addSection(secondSection);
-
-        assertThat(line.getLastSection()).isEqualTo(secondSection);
-        assertThat(line.getAllStation()).containsExactlyElementsOf(Arrays.asList(donongStation, gooriStation, ducksoStation));
+        addSection(List.of(firstSection, secondSection));
 
         line.removeLastSection();
 
         assertThat(line.getLastSection()).isEqualTo(firstSection);
         assertThat(line.getAllStation()).containsExactlyElementsOf(Arrays.asList(donongStation, gooriStation));
+    }
+
+    private void addSection(List<Section> sections) {
+        sections.forEach(
+            section -> line.addSection(section)
+        );
     }
 }
