@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import java.util.Objects;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -25,5 +27,22 @@ public class Station {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o){
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()){
+            return false;
+        }
+        Station that = (Station)o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

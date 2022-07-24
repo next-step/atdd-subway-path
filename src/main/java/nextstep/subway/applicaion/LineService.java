@@ -1,8 +1,6 @@
 package nextstep.subway.applicaion;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
@@ -35,29 +32,21 @@ public class LineService {
             Station downStation = stationService.findById(request.getDownStationId());
             line.addSection(new Section(line, upStation, downStation, request.getDistance()));
         }
-        return createLineResponse(line);
+        return LineResponse.from(line);
     }
 
     public List<LineResponse> showLines() {
-        return lineRepository.findAll().stream()
-                .map(this::createLineResponse)
-                .collect(Collectors.toList());
+        return LineResponse.fromList(lineRepository.findAll());
     }
 
     public LineResponse findById(Long id) {
-        return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        return LineResponse.from(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
     }
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-
-        if (lineRequest.getName() != null) {
-            line.setName(lineRequest.getName());
-        }
-        if (lineRequest.getColor() != null) {
-            line.setColor(lineRequest.getColor());
-        }
+        line.update(lineRequest);
     }
 
     @Transactional
@@ -74,39 +63,14 @@ public class LineService {
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
-    private LineResponse createLineResponse(Line line) {
-        return new LineResponse(
-                line.getId(),
-                line.getName(),
-                line.getColor(),
-                createStationResponses(line)
-        );
-    }
-
-    private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, line.getSections().get(0).getUpStation());
-
-        return stations.stream()
-                .map(it -> stationService.createStationResponse(it))
-                .collect(Collectors.toList());
-    }
-
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        Section lastSection = line.getSections().get(line.getSections().size() - 1);
+        Section lastSection = line.getLastSection();
 
-        if (!lastSection.getDownStation().equals(station)) {
+        if (!lastSection.isSameDownStation(station)) {
             throw new IllegalArgumentException();
         }
 

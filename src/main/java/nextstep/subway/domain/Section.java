@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import java.util.List;
-import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -42,6 +41,12 @@ public class Section {
 		this.distance = distance;
 	}
 
+	public Section(Station upStation, Station downStation, int distance) {
+		this.upStation = upStation;
+		this.downStation = downStation;
+		this.distance = distance;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -66,18 +71,19 @@ public class Section {
 		return List.of(upStation, downStation);
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		Section that = (Section)o;
-		return Objects.equals(id, that.id);
+	public boolean isSameDownStation(Station downStation) {
+		return this.downStation.equals(downStation);
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
+	public boolean isSameDownStation(Section section){
+		return this.downStation.equals(section.getDownStation());
+	}
+
+	public boolean isSameUpStation(Section section) {
+		return this.upStation.equals(section.getUpStation());
+	}
+
+	public boolean isLongerDistance(Section section){
+		return this.distance >= section.getDistance();
 	}
 }
