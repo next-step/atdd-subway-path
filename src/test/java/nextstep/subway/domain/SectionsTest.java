@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import nextstep.subway.domain.exception.NotValidDeleteTargetStation;
+import nextstep.subway.domain.exception.NotValidSectionDistanceException;
+import nextstep.subway.domain.exception.NotValidSectionStationsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -105,7 +108,7 @@ class SectionsTest {
     void sectionAdditionFailsWhenDistanceOfNewSectionInMiddleIsGreater(int distance) {
         var 중간역 = new Station("중간역");
 
-        assertThrows(IllegalArgumentException.class, () -> sut.add(분당선, 청량리역, 중간역, distance));
+        assertThrows(NotValidSectionDistanceException.class, () -> sut.add(분당선, 청량리역, 중간역, distance));
     }
 
     @DisplayName("구간의 상하행역이 모두 노선에 존재하지 않으면 추가 실패")
@@ -114,7 +117,7 @@ class SectionsTest {
         var 새로운역 = new Station("새로운역");
         var 다른새로운역 = new Station("다른새로운역");
 
-        assertThrows(IllegalArgumentException.class, () -> sut.add(분당선, 새로운역, 다른새로운역, 10));
+        assertThrows(NotValidSectionStationsException.class, () -> sut.add(분당선, 새로운역, 다른새로운역, 10));
     }
 
     @DisplayName("구간 제거")
@@ -128,7 +131,7 @@ class SectionsTest {
     @DisplayName("마지막 역이 아닌 역으로 구간 제거시 예외 발생")
     @Test
     void cantRemoveSectionByStationInMiddle() {
-        assertThrows(IllegalArgumentException.class, () -> sut.removeByStation(청량리역));
+        assertThrows(NotValidDeleteTargetStation.class, () -> sut.removeByStation(청량리역));
     }
 
 }

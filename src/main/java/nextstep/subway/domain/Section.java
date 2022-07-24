@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import nextstep.subway.domain.exception.NotValidSectionDistanceException;
 
 @Entity
 public class Section {
@@ -51,7 +52,7 @@ public class Section {
 
     public void setNewUpStation(Station station, int distance) {
         if (distance < 1) {
-            throw new IllegalArgumentException();
+            throw new NotValidSectionDistanceException();
         }
 
         this.upStation = station;
@@ -60,7 +61,7 @@ public class Section {
 
     public void setNewDownStation(Station station, int distance) {
         if (distance < 1) {
-            throw new IllegalArgumentException();
+            throw new NotValidSectionDistanceException();
         }
 
         this.downStation = station;

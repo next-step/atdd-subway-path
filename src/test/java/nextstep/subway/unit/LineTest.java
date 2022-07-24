@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.exception.NotValidSectionDistanceException;
+import nextstep.subway.domain.exception.NotValidSectionStationsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -70,7 +72,7 @@ class LineTest {
     void sectionAdditionFailsWhenDistanceOfNewSectionInMiddleIsGreater(int distance) {
         var 광교중앙중앙역 = new Station("중간역");
 
-        assertThrows(IllegalArgumentException.class, () -> sut.addSection(광교역, 광교중앙중앙역, distance));
+        assertThrows(NotValidSectionDistanceException.class, () -> sut.addSection(광교역, 광교중앙중앙역, distance));
     }
 
     @DisplayName("구간의 상하행역이 모두 노선에 존재하지 않으면 추가 실패")
@@ -79,7 +81,7 @@ class LineTest {
         var 새로운역 = new Station("새로운역");
         var 다른새로운역 = new Station("다른새로운역");
 
-        assertThrows(IllegalArgumentException.class, () -> sut.addSection(새로운역, 다른새로운역, 10));
+        assertThrows(NotValidSectionStationsException.class, () -> sut.addSection(새로운역, 다른새로운역, 10));
     }
 
     @DisplayName("노선 내 역 조회")

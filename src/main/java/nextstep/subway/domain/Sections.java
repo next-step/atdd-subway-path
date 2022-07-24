@@ -7,6 +7,8 @@ import java.util.Optional;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.domain.exception.NotValidDeleteTargetStation;
+import nextstep.subway.domain.exception.NotValidSectionStationsException;
 
 @Embeddable
 public class Sections {
@@ -16,7 +18,7 @@ public class Sections {
 
     public void add(Line line, Station upStation, Station downStation, int distance) {
         if (isNotValidStations(upStation, downStation)) {
-            throw new IllegalArgumentException();
+            throw new NotValidSectionStationsException();
         }
 
         if (isExistStation(upStation) && isNotLastStation(upStation)) {
@@ -34,7 +36,7 @@ public class Sections {
 
     public void removeByStation(Station downStation) {
         if (isNotLastStation(downStation)) {
-            throw new IllegalArgumentException();
+            throw new NotValidDeleteTargetStation();
         }
         sectionList.remove(sectionList.size() - 1);
     }
