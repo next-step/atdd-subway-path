@@ -69,6 +69,31 @@ class SectionsTest {
 	}
 
 	/**
+	 * Given sections에 section을 추가한다.
+	 * Given sections에서 downStation으로 새로운 section을 추가한다
+	 * When sections를 조회하면
+	 * Then 두 개의 구간이 등록되어 있다.
+	 */
+	@DisplayName("downStation으로 addSections를 하면 성공한다.")
+	@Test
+	void addSectionsWithDownStation() {
+		//given
+		Station 광교중앙역 = new Station("광교중앙역");
+		신분당선에_구간을_추가한다(광교중앙역, 판교역, 3);
+
+		//when
+		List<Station> stations = sections.getStations();
+		List<Section> sectionsResponse = sections.getSections();
+
+		//then
+		assertAll(
+				() -> assertThat(stations).hasSize(3),
+				() -> assertThat(sectionsResponse.get(0).getDistance()).isEqualTo(7),
+				() -> assertThat(sectionsResponse.get(1).getDistance()).isEqualTo(3)
+		);
+	}
+
+	/**
 	 * Given 새로운 역을 만든다
 	 * When 구간이 길이가 더 큰 section을 삽입하려하면,
 	 * Then 실패한다.
@@ -83,6 +108,8 @@ class SectionsTest {
 		//then
 		assertThatThrownBy(() -> 신분당선에_구간을_추가한다(광교역, 광교중앙역, 15))
 				.isInstanceOf(CannotInsertLongerSectionException.class);
+		assertThatThrownBy(() -> 신분당선에_구간을_추가한다(광교중앙역, 판교역, 15))
+				.isInstanceOf(CannotInsertLongerSectionException.class);
 	}
 
 	/**
@@ -95,10 +122,11 @@ class SectionsTest {
 	void addSectionsWithUpStationFailOnSameDistance() {
 		//given
 		Station 광교중앙역 = new Station("광교중앙역");
-
 		//when
 		//then
 		assertThatThrownBy(() -> 신분당선에_구간을_추가한다(광교역, 광교중앙역, 광교역_판교역_거리))
+				.isInstanceOf(CannotInsertSameDistanceSectionException.class);
+		assertThatThrownBy(() -> 신분당선에_구간을_추가한다(광교중앙역, 판교역, 광교역_판교역_거리))
 				.isInstanceOf(CannotInsertSameDistanceSectionException.class);
 	}
 

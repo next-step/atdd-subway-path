@@ -32,34 +32,6 @@ public class Sections {
 		addSectionWithCondition(line, upStation, downStation, distance);
 	}
 
-	private void addSectionWithCondition(Line line, Station upStation, Station downStation, int distance) {
-
-		if (isStartWithUpStation(upStation)) {
-			Section section = getSectionMatchingUpStation(upStation);
-			validateDistance(distance, section);
-			addSectionInMiddle(line, upStation, downStation, distance, section);
-			return;
-		}
-
-		if (sameAsOriginUpStationAndNewDownStation(downStation)) {
-			Section section = getSectionMatchingUpStation(downStation);
-			addSectionInFront(line, upStation, downStation, distance, section);
-			return;
-		}
-
-		this.sections.add(new Section(line, upStation, downStation, distance));
-	}
-
-	private void addSectionInFront(Line line, Station upStation, Station downStation, int distance, Section section) {
-		this.sections.add(sections.indexOf(section), new Section(line, upStation, downStation, distance));
-	}
-
-	private void addSectionInMiddle(Line line, Station upStation, Station downStation, int distance, Section section) {
-		this.sections.remove(section);
-		this.sections.add(new Section(line, downStation, section.getDownStation(), modifiedDistance(section.getDistance(), distance)));
-		this.sections.add(new Section(line, upStation, downStation, distance));
-	}
-
 	public List<Station> getStations() {
 		if (isEmpty()) {
 			return Collections.emptyList();
@@ -78,6 +50,47 @@ public class Sections {
 		}
 
 		sections.remove(this.getSections().size() - 1);
+	}
+
+	private void addSectionWithCondition(Line line, Station upStation, Station downStation, Integer distance) {
+
+		if (isStartWithUpStation(upStation)) {
+			Section section = getSectionMatchingUpStation(upStation);
+			validateDistance(distance, section);
+			addSectionInMiddleWithUpStation(line, downStation, distance, section);
+			return;
+		}
+
+		if (sameAsOriginDownStationAndNewDownStation(downStation)) {
+			Section section = getSectionMatchingDownStation(downStation);
+			validateDistance(distance, section);
+			addSectionInMiddleWithDownStation(line, upStation, distance, section);
+			return;
+		}
+
+		if (sameAsOriginUpStationAndNewDownStation(downStation)) {
+			Section section = getSectionMatchingUpStation(downStation);
+			addSectionInFront(line, upStation, downStation, distance, section);
+			return;
+		}
+
+		this.sections.add(new Section(line, upStation, downStation, distance));
+	}
+
+	private void addSectionInFront(Line line, Station upStation, Station downStation, int distance, Section section) {
+		this.sections.add(sections.indexOf(section), new Section(line, upStation, downStation, distance));
+	}
+
+	private void addSectionInMiddleWithUpStation(Line line, Station downStation, int distance, Section section) {
+		this.sections.remove(section);
+		this.sections.add(new Section(line, downStation, section.getDownStation(), modifiedDistance(section.getDistance(), distance)));
+		this.sections.add(new Section(line, section.getUpStation(), downStation, distance));
+	}
+
+	private void addSectionInMiddleWithDownStation(Line line, Station upStation, int distance, Section section) {
+		this.sections.remove(section);
+		sections.add(new Section(line, upStation, section.getUpStation(), modifiedDistance(section.getDistance() , distance)));
+		sections.add(new Section(line, section.getUpStation(), section.getDownStation(), distance));
 	}
 
 	private void validateStations(Station upStation, Station downStation) {
@@ -110,7 +123,6 @@ public class Sections {
 		return sections.stream()
 				.anyMatch(s -> s.getUpStation().equals(station));
 	}
-
 	private void validateDistance(int distance, Section section) {
 		if (section.getDistance() < distance) {
 			throw new CannotInsertLongerSectionException(CANNOT_INSERT_LONGER_SECTION.getMessage());
@@ -119,6 +131,13 @@ public class Sections {
 		if (section.getDistance() == distance) {
 			throw new CannotInsertSameDistanceSectionException(CANNOT_INSERT_SAME_DISTANCE_SECTION.getMessage());
 		}
+	}
+
+	private Section getSectionMatchingDownStation(Station station) {
+		return sections.stream()
+				.filter(s -> s.getDownStation().equals(station))
+				.findFirst()
+				.orElseThrow(IllegalArgumentException::new);
 	}
 
 	private Section getSectionMatchingUpStation(Station station) {
@@ -130,6 +149,10 @@ public class Sections {
 
 	private boolean sameAsOriginUpStationAndNewDownStation(Station downStation) {
 		return hasSameUpStation(downStation);
+	}
+
+	private boolean sameAsOriginDownStationAndNewDownStation(Station downStation) {
+		return hasSameDownStation(downStation);
 	}
 
 	private boolean isStartWithUpStation(Station upStation) {
