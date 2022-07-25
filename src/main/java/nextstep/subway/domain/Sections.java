@@ -77,10 +77,13 @@ public class Sections {
 
     public void addSection(Line line, Station upStation, Station downStation, int distance) {
         if (this.sections.size() > 0) {
+            if (!stations().contains(upStation) && !stations().contains(downStation)) {
+                throw new IllegalArgumentException("둘 중 하나라도");
+            }
+            if (stations().contains(upStation) && stations().contains(downStation)) {
+                throw new IllegalArgumentException("둘 다 포함");
+            }
             if (isSameUpStationRoof(line, upStation, downStation, distance)) {
-                if (isSameDownStationRoof(line, upStation, downStation, distance)) {
-                    throw new IllegalArgumentException();
-                }
                 splitLine(line, upStation, downStation, distance, sectionDeplicateUpStation(line, upStation, downStation, distance));
             } else {
                 this.sections.add(Section.of(line, upStation, downStation, distance));
@@ -88,15 +91,6 @@ public class Sections {
         } else {
             this.sections.add(Section.of(line, upStation, downStation, distance));
         }
-    }
-
-    private boolean isSameDownStationRoof(Line line, Station upStation, Station downStation, int distance) {
-        for (Section section : this.sections) {
-            if (section.getDownStation().equals(upStation)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private Section sectionDeplicateUpStation(Line line, Station upStation, Station downStation, int distance) {
