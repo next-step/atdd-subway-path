@@ -74,6 +74,28 @@ public class PathAcceptanceTest extends AcceptanceTest {
         생성_실패_확인(response, HttpStatus.NOT_FOUND, "해당 역을 찾을 수 없습니다");
     }
 
+    /**
+     * Given 기존 노선에 연결되어있지 않은 시청역을 생성
+     * When 광화문역에서 강남역까지 촤단거리를 조회하면
+     * Then 예외가 발생한다
+     */
+    @DisplayName("출발역과 도착역이 연결되어있지 않은경우 예외발생")
+    @Test
+    public void not_connect_station() {
+        // given
+        Long 일호선 = 지하철_노선_생성_요청("1호선", "green").jsonPath().getLong("id");
+
+        Long 시청역 = 지하철역_생성_요청("시청역").jsonPath().getLong("id");
+        Long 동대문역 = 지하철역_생성_요청("동대문역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(일호선, createSectionCreateParams(시청역, 동대문역, 10));
+
+        // when
+        ExtractableResponse<Response> response = 최단_경로_조회(강남역, 시청역);
+
+        // then
+        생성_실패_확인(response, HttpStatus.NOT_FOUND, "해당 역은 노선에 연결되어있지 않습니다");
+    }
+
     @DisplayName("출발역과 도착역의 최단거리를 정상 조회한다")
     @Test
     public void find_shortest_path() {
