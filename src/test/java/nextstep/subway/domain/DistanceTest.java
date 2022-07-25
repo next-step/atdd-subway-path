@@ -57,4 +57,18 @@ class DistanceTest {
         // then
         assertThat(reducedDistance).isEqualTo(Distance.valueOf(5));
     }
+
+    @Test
+    @DisplayName("거리를 늘어나면 해당 값만큼 거리가 늘어난다.")
+    void increase() {
+        // given
+        Distance distance = Distance.valueOf(10);
+
+        // when
+        Distance five = Distance.valueOf(5);
+        Distance increasedDistance = distance.increase(five);
+
+        // then
+        assertThat(increasedDistance).isEqualTo(Distance.valueOf(15));
+    }
 }

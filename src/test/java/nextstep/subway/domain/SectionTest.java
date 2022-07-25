@@ -155,7 +155,7 @@ class SectionTest {
     }
 
     @Test
-    @DisplayName("선행 Section 과 결합하면 상행역이 선행 Section 의 상행선이 된다.")
+    @DisplayName("선행 Section 과 결합하면 상행역이 선행 Section 의 상행선이 되고 길이가 합쳐진다.")
     void combine() {
         // given
         Section previousSection = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
@@ -165,6 +165,9 @@ class SectionTest {
         postSection.combine(previousSection);
 
         // then
-        assertThat(postSection.getUpStation()).isEqualTo(GANGNAM_STATION);
+        assertAll(() -> {
+            assertThat(postSection.getUpStation()).isEqualTo(GANGNAM_STATION);
+            assertThat(postSection.getDistance()).isEqualTo(Distance.valueOf(15));
+        });
     }
 }

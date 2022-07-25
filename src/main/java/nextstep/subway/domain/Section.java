@@ -97,6 +97,11 @@ public class Section {
 
     public void combine(Section previousSection) {
         upStation = previousSection.upStation;
+        increaseDistance(previousSection.getDistance());
+    }
+
+    private void increaseDistance(Distance distance) {
+        this.distance = this.distance.increase(distance);
     }
 
     public boolean hasStation(Station station) {

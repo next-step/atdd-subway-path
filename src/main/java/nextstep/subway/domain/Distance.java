@@ -35,6 +35,10 @@ public class Distance {
         return Distance.valueOf(value - distance.toInt());
     }
 
+    public Distance increase(Distance distance) {
+        return Distance.valueOf(value + distance.toInt());
+    }
+
     public int toInt() {
         return value;
     }
