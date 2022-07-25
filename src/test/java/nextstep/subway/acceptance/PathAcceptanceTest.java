@@ -66,7 +66,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        생성_실패_확인(response, HttpStatus.NOT_FOUND, "해당 출발역을 찾을 수 없습니다");
+        생성_실패_확인(response, HttpStatus.NOT_FOUND, "해당 역을 찾을 수 없습니다");
     }
 
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, Integer distance) {

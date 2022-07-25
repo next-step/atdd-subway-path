@@ -166,7 +166,7 @@ public class LineServiceMockTest {
         // then
         assertThatThrownBy(actual)
                 .isInstanceOf(NotFoundStationException.class)
-                .hasMessage("해당 역을 찾을 수 없어 구간을 삭제할 수 없습니다");
+                .hasMessage("해당 역을 찾을 수 없습니다");
     }
 
     @DisplayName("존재하는 라인의 색과 이름을 변경할 수 있다")
