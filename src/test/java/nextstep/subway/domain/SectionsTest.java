@@ -44,6 +44,26 @@ class SectionsTest {
         assertThat(sections.getSections()).containsExactly(firstSection, secondSection);
     }
 
+    @DisplayName("역 사이에 새로운 역을 등록할 수 있다.")
+    @Test
+    void addSectionBetweenSection() {
+        //given
+
+        final var firstSection = new Section(_2호선, 선릉역, 종합운동장역, 10);
+        final var secondSection = new Section(_2호선, 선릉역, 삼성역, 3);
+
+        //when
+        final var sections = new Sections();
+        sections.add(firstSection);
+        sections.add(secondSection);
+
+        //then
+        assertAll(
+                () -> assertThat(sections.getSections()).hasSize(2),
+                () -> assertThat(sections.allStations()).containsExactly(선릉역, 삼성역, 종합운동장역)
+        );
+    }
+
     @DisplayName("구간의 모든 역을 찾을 수 있다.")
     @Test
     void allStations() {

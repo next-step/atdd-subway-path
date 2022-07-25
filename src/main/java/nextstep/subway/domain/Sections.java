@@ -21,7 +21,25 @@ public class Sections {
     }
 
     public void add(Section section) {
+
+        for (int i = 0; i < sections.size(); i++) {
+            Section s = sections.get(i);
+            if (section.getUpStation().equals(s.getUpStation())) {
+
+                final int newDistance = s.getDistance() - section.getDistance();
+
+                if (newDistance < 0) {
+                    throw new IllegalArgumentException("구간의 거리가 같아서 추가할 수 없습니다.");
+                }
+
+                sections.add(i + 1, new Section(s.getLine(), section.getDownStation(), s.getDownStation(), newDistance));
+                sections.set(i, section);
+                return;
+            }
+        }
+
         sections.add(section);
+
     }
 
     public List<Station> allStations() {
