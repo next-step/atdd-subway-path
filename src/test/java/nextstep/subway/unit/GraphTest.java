@@ -16,6 +16,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
@@ -64,7 +65,7 @@ public class GraphTest {
                 .hasMessage("노선이 없으면 그레프를 만들 수 없습니다");
     }
 
-    @DisplayName("시작역이나 도착역이 없는 경우 예외가 발생한다")
+    @DisplayName("시작역이나 도착역이 없는 경우 경로를 구할 수 없다")
     @ParameterizedTest
     @MethodSource("param")
     public void not_exists_start_or_arrival_station(Station 출발역, Station 도착역, String expectedMessage) {
@@ -80,7 +81,7 @@ public class GraphTest {
                 .hasMessage(expectedMessage);
     }
 
-    @DisplayName("시작역이나 도착역이 없는 경우 예외가 발생한다")
+    @DisplayName("시작역이나 도착역이 없는 경우 거리를 구할 수 없다")
     @ParameterizedTest
     @MethodSource("param")
     public void get_distance_not_exists_start_or_arrival_station(Station 출발역, Station 도착역, String expectedMessage) {
@@ -88,7 +89,7 @@ public class GraphTest {
         Graph graph = new Graph(List.of(이호선, 삼호선, 신분당선));
 
         // when
-        ThrowableAssert.ThrowingCallable actual = () -> graph.getShortestPath(출발역, 도착역);
+        ThrowableAssert.ThrowingCallable actual = () -> graph.getShortestDistance(출발역, 도착역);
 
         // then
         assertThatThrownBy(actual)
@@ -140,15 +141,30 @@ public class GraphTest {
     }
 
     @DisplayName("Graph 도메인을 통해 최단 경로를 찾아온다")
-    @Test
-    public void find_shortest_path() {
+    @ParameterizedTest
+    @MethodSource("findPathParam")
+    public void find_shortest_path(Station 출발역, Station 도착역, List<Station> nameList, int distance) {
         // when
         Graph graph = new Graph(List.of(이호선, 삼호선, 신분당선));
 
         // then
         assertAll(
-                () -> assertThat(graph.getShortestPath(강남역, 남부터미널역)).containsExactly(강남역, 양재역, 남부터미널역),
-                () -> assertThat(graph.getShortestDistance(강남역, 남부터미널역)).isEqualTo(8)
+                () -> assertThat(graph.getShortestPath(출발역, 도착역)).extracting("name").isEqualTo(nameList),
+                () -> assertThat(graph.getShortestDistance(출발역, 도착역)).isEqualTo(distance)
+        );
+    }
+
+    private static Stream<Arguments> findPathParam() {
+        교대역 = new Station(1L, "교대역");
+        강남역 = new Station(2L, "강남역");
+        양재역 = new Station(3L, "양재역");
+        남부터미널역 = new Station(4L, "남부터미널역");
+
+        return Stream.of(
+                Arguments.of(강남역, 남부터미널역, Arrays.asList("강남역", "양재역", "남부터미널역"), 8),
+                Arguments.of(남부터미널역, 강남역, Arrays.asList("남부터미널역", "양재역", "강남역"), 8),
+                Arguments.of(강남역, 교대역, Arrays.asList("강남역", "교대역"), 10),
+                Arguments.of(교대역, 강남역, Arrays.asList("교대역", "강남역"), 10)
         );
     }
 }
