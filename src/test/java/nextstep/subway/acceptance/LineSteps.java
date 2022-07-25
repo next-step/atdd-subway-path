@@ -62,7 +62,7 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
-    public static void 지하철_노선에_지하철역_순서대로_등록_확인(ExtractableResponse<Response> response, Long... station) {
+    public static void 지하철_노선에_등록된_역을_순서대로_확인(ExtractableResponse<Response> response, Long... station) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(station);
     }
@@ -77,4 +77,9 @@ public class LineSteps {
     public static void 구간_추가에_실패(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
+
+    public static void 구간_삭제에_실패(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
 }
