@@ -19,6 +19,6 @@ public class StationInspectorImpl implements StationInspector {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .anyMatch(line -> line.stationIds().contains(stationId));
+                .anyMatch(line -> line.getOrderedStationIds().contains(stationId));
     }
 }

@@ -47,7 +47,7 @@ public class Line {
         return Collections.unmodifiableList(sections.getSections());
     }
 
-    public List<Long> stationIds() {
+    public List<Long> getOrderedStationIds() {
         return sections.stationIds();
     }
 }
