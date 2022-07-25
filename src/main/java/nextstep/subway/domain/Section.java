@@ -71,7 +71,11 @@ public class Section {
         return upStation.equals(section.getUpStation());
     }
 
-    public int betweenDistacne(Section section) {
-        return distance - section.getDistance();
+    public int betweenDistance(Section section) {
+        int between = distance - section.getDistance();
+        if (between <= 0) {
+            throw new IllegalArgumentException("추가 될 구간의 거리가 크거나 같을 수 없습니다.");
+        }
+        return between;
     }
 }
