@@ -1,6 +1,5 @@
 package nextstep.subway.line.domain;
 
-import lombok.Getter;
 import nextstep.subway.line.domain.exception.CannotAddSectionException;
 import nextstep.subway.line.domain.exception.CannotDeleteSectionException;
 
@@ -12,7 +11,6 @@ import java.util.List;
 
 import static javax.persistence.CascadeType.ALL;
 
-@Getter
 @Embeddable
 public class Sections {
 
@@ -129,5 +127,13 @@ public class Sections {
         return sections.stream()
                 .map(Section::getUpStationId)
                 .noneMatch(id -> id.equals(section.getDownStationId()));
+    }
+
+    public boolean isEmpty() {
+        return sections.isEmpty();
+    }
+
+    List<Section> getSections() {
+        return sections;
     }
 }

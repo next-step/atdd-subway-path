@@ -44,7 +44,7 @@ class SectionServiceMockTest {
         sectionService.addSection(lineId, new SectionRequest(upStationId, downStationId, 6));
 
         // then
-        assertThat(line.getSections()).hasSize(1);
+        assertThat(line.isEmpty()).isFalse();
     }
 
     @Test
@@ -63,7 +63,7 @@ class SectionServiceMockTest {
         sectionService.deleteSection(lineId, downStationId);
 
         // then
-        assertThat(line.getSections()).isEmpty();
+        assertThat(line.isEmpty()).isTrue();
     }
 
     @Test

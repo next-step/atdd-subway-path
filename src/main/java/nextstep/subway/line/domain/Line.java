@@ -43,11 +43,11 @@ public class Line {
         this.color = color;
     }
 
-    public List<Section> getSections() {
-        return Collections.unmodifiableList(sections.getSections());
+    public boolean isEmpty() {
+        return sections.isEmpty();
     }
 
     public List<Long> getOrderedStationIds() {
-        return sections.stationIds();
+        return sections.getOrderedStationIds();
     }
 }

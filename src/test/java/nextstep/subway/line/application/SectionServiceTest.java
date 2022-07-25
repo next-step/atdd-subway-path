@@ -3,7 +3,6 @@ package nextstep.subway.line.application;
 import nextstep.subway.line.application.dto.request.SectionRequest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.exception.CannotDeleteSectionException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -11,8 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -41,12 +38,7 @@ class SectionServiceTest {
         sectionService.addSection(line.getId(), sectionRequest);
 
         // then
-        List<Section> sections = line.getSections();
-        assertThat(sections).hasSize(1);
-
-        Section addedSection = sections.get(0);
-        assertThat(addedSection.getUpStationId()).isEqualTo(upStation.getId());
-        assertThat(addedSection.getDownStationId()).isEqualTo(downStation.getId());
+        assertThat(line.getOrderedStationIds()).containsExactly(upStation.getId(), downStation.getId());
     }
 
     @Test
@@ -62,7 +54,7 @@ class SectionServiceTest {
         sectionService.deleteSection(line.getId(), downStation.getId());
 
         // then
-        assertThat(line.getSections()).isEmpty();
+        assertThat(line.isEmpty()).isTrue();
     }
 
     @Test
