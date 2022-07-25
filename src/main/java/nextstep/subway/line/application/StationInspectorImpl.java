@@ -15,7 +15,7 @@ public class StationInspectorImpl implements StationInspector {
     private final LineRepository lineRepository;
 
     @Override
-    public boolean belongsToSection(Long stationId) {
+    public boolean belongsToLine(Long stationId) {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()

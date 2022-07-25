@@ -80,7 +80,7 @@ public class Sections {
         sections.remove(lastSection);
     }
 
-    public List<Long> stationIds() {
+    public List<Long> getOrderedStationIds() {
         if (sections.isEmpty()) {
             return Collections.emptyList();
         }

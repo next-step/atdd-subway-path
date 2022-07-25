@@ -22,7 +22,7 @@ class SectionsTest {
         sections.add(new Section(LINE, 1L, 2L, 6));
 
         // then
-        assertThat(sections.stationIds()).containsExactly(1L, 2L);
+        assertThat(sections.getOrderedStationIds()).containsExactly(1L, 2L);
     }
 
     @DisplayName("새로운 역을 상행이나 하행 종점으로 등록할 경우 구간이 추가된다.")
@@ -37,7 +37,7 @@ class SectionsTest {
         sections.add(new Section(LINE, 3L, 4L, 6));
 
         // then
-        assertThat(sections.stationIds()).containsExactly(1L, 2L, 3L, 4L);
+        assertThat(sections.getOrderedStationIds()).containsExactly(1L, 2L, 3L, 4L);
     }
 
     @DisplayName("기존 구간 사이에 새로운 구간을 등록할 경우 기존 구간의 길이가 줄어든다.")
@@ -114,7 +114,7 @@ class SectionsTest {
         sections.removeSection(downStationId);
 
         // then
-        assertThat(sections.stationIds()).isEmpty();
+        assertThat(sections.getOrderedStationIds()).isEmpty();
     }
 
     @Test
