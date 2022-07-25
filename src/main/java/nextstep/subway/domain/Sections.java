@@ -5,6 +5,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -100,24 +101,24 @@ public class Sections {
         }
 
         Section findSection = matchDownSection ? findMatchDownSection(section.getDownStation()) : findMatchUpSection(section.getUpStation());
+        sections.remove(findSection);
+        sections.add(new Section(null, section.getLine(), section.getUpStation(), section.getDownStation(), section.getDistance()));
 
         if (matchDownSection) {
-            sections.add(new Section(findSection.getUpStation(), section.getUpStation(), findSection.getDistance() - section.getDistance()));
-        }
-        if (matchUpSection) {
-            sections.add(new Section(section.getDownStation(), findSection.getDownStation(), findSection.getDistance() - section.getDistance()));
+            sections.add(new Section(null, section.getLine(), findSection.getUpStation(), section.getUpStation(), findSection.getDistance() - section.getDistance()));
+            return true;
         }
 
-        sections.remove(findSection);
-        return sections.add(new Section(section.getUpStation(), section.getDownStation(), section.getDistance()));
+        sections.add(new Section(null, section.getLine(), section.getDownStation(), findSection.getDownStation(), findSection.getDistance() - section.getDistance()));
+        return true;
     }
 
     private Section findMatchUpSection(Station station) {
-        return sections.stream().filter(section -> section.getUpStation().equals(station)).findFirst().orElseThrow();
+        return sections.stream().filter(section -> section.getUpStation().equals(station)).findFirst().orElseThrow(IllegalArgumentException::new);
     }
 
     private Section findMatchDownSection(Station station) {
-        return sections.stream().filter(section -> section.getDownStation().equals(station)).findFirst().orElseThrow();
+        return sections.stream().filter(section -> section.getDownStation().equals(station)).findFirst().orElseThrow(IllegalArgumentException::new);
     }
 
     private Station upTerminal() {
