@@ -9,7 +9,6 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static javax.persistence.CascadeType.ALL;
 
@@ -28,7 +27,7 @@ public class Sections {
 
         validateAddedSection(addedSection);
 
-        if (firstSection().isAfter(addedSection) || lastSection().isBefore(addedSection)) {
+        if (isFirstOrLastSection(addedSection)) {
             sections.add(addedSection);
             return;
         }
@@ -41,6 +40,10 @@ public class Sections {
         sections.remove(includingSection);
         sections.add(addedSection);
         sections.add(includingSection.subtract(addedSection));
+    }
+
+    private boolean isFirstOrLastSection(Section addedSection) {
+        return firstSection().isAfter(addedSection) || lastSection().isBefore(addedSection);
     }
 
     private void validateAddedSection(Section addedSection) {
@@ -117,18 +120,14 @@ public class Sections {
     }
 
     private boolean isFirstSection(Section section) {
-        List<Long> downStationIds = sections.stream()
+        return sections.stream()
                 .map(Section::getDownStationId)
-                .collect(Collectors.toList());
-
-        return !downStationIds.contains(section.getUpStationId());
+                .noneMatch(id -> id.equals(section.getUpStationId()));
     }
 
     private boolean isLastSection(Section section) {
-        List<Long> upStationIds = sections.stream()
+        return sections.stream()
                 .map(Section::getUpStationId)
-                .collect(Collectors.toList());
-
-        return !upStationIds.contains(section.getDownStationId());
+                .noneMatch(id -> id.equals(section.getDownStationId()));
     }
 }
