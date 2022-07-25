@@ -64,8 +64,16 @@ public class Line {
         return stations;
     }
 
-    private Station getLastStation() {
+    private Section getLastSection() {
         int lastIndex = sections.size() - 1;
-        return sections.get(lastIndex).getDownStation();
+        return sections.get(lastIndex);
+    }
+
+    private Station getLastStation() {
+        return getLastSection().getDownStation();
+    }
+
+    public void removeSection() {
+        sections.remove(getLastSection());
     }
 }
