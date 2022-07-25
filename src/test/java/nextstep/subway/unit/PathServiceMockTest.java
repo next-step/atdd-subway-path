@@ -79,4 +79,20 @@ public class PathServiceMockTest {
                 .isInstanceOf(NotFoundStationException.class)
                 .hasMessage("해당 역을 찾을 수 없습니다");
     }
+
+    @DisplayName("도착역이 존재하지 않는경우 예외발생")
+    @Test
+    public void not_exists_arrival_station() {
+        // given
+        given(stationService.findById(교대역.getId())).willReturn(교대역);
+        given(stationService.findById(없는역Id)).willThrow(new NotFoundStationException());
+
+        //when
+        ThrowableAssert.ThrowingCallable actual = () -> pathService.findShortestPath(교대역.getId(), 없는역Id);
+
+        // then
+        assertThatThrownBy(actual)
+                .isInstanceOf(NotFoundStationException.class)
+                .hasMessage("해당 역을 찾을 수 없습니다");
+    }
 }
