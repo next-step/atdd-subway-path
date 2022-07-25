@@ -164,8 +164,17 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeLineExceptionWhenOnlyOneLine() {
         // when
+        ExtractableResponse<Response> removeSectionResponse = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
 
         // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+
+        assertAll(
+                () -> assertThat(removeSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(removeSectionResponse.jsonPath().getString("message")).isEqualTo("구간이 1개인 노선은 구간 삭제를 진행할 수 없습니다."),
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역)
+        );
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
