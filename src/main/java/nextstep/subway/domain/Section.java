@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import nextstep.subway.domain.exception.NotValidSectionDistanceException;
 
 @Entity
 public class Section {
@@ -33,12 +34,8 @@ public class Section {
         this.distance = distance;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Line getLine() {
-        return line;
+    public void setDistance(int distance) {
+        this.distance = distance;
     }
 
     public Station getUpStation() {
@@ -51,5 +48,23 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public void setNewUpStation(Station station, int distance) {
+        if (distance < 1) {
+            throw new NotValidSectionDistanceException();
+        }
+
+        this.upStation = station;
+        this.distance = distance;
+    }
+
+    public void setNewDownStation(Station station, int distance) {
+        if (distance < 1) {
+            throw new NotValidSectionDistanceException();
+        }
+
+        this.downStation = station;
+        this.distance = distance;
     }
 }

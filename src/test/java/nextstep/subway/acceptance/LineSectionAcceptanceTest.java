@@ -1,18 +1,22 @@
 package nextstep.subway.acceptance;
 
+import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선_조회_요청;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_제거_요청;
+import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static nextstep.subway.acceptance.LineSteps.*;
-import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
@@ -36,20 +40,59 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 지하철 노선에 새로운 구간 추가를 요청 하면
-     * Then 노선에 새로운 구간이 추가된다
+     * When 새로운 역을 하행 종점으로 추가요청하면
+     * Then 노선 맨 끝에 새로운 구간이 추가된다
      */
-    @DisplayName("지하철 노선에 구간을 등록")
+    @DisplayName("지하철 노선에 마지막 구간을 등록")
     @Test
-    void addLineSection() {
+    void addLastLineSection() {
         // when
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+        Long 양재시민의숲역 = 지하철역_생성_요청("양재시민의숲역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 양재시민의숲역));
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+        구간이_올바른_순서대로_존재하는지_검증(신분당선, List.of(강남역, 양재역, 양재시민의숲역));
+    }
+
+    /**
+     * When 새로운 역을 상행 종점으로 추가요청하면
+     * Then 노선 맨 처음에 새로운 구간이 추가된다
+     */
+    @DisplayName("지하철 노선에 첫 번째 구간을 등록")
+    @Test
+    void addFirstLineSection() {
+        // when
+        var 신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역));
+
+        // then
+        구간이_올바른_순서대로_존재하는지_검증(신분당선, List.of(신논현역, 강남역, 양재역));
+    }
+
+    /**
+     * When 상행역을 기존 역, 하행역을 새로운 역으로 구간 사이에 추가 요청하면
+     * Then 구간 사이에 새로운 구간이 추가된다
+     */
+    @DisplayName("구간 사이에 새로운 구간을 등록 (하행역이 신규역)")
+    @Test
+    void addLineSectionWithNewDownStationInMiddle() {
+        // when
+        var 강재역 = 지하철역_생성_요청("강재역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 강재역));
+
+        // then
+        구간이_올바른_순서대로_존재하는지_검증(신분당선, List.of(강남역, 강재역, 양재역));
+    }
+
+    @DisplayName("구간 사이에 새로운 구간을 등록 (상행역이 신규역)")
+    @Test
+    void addLineSectionWithNewUpStationInMiddle() {
+        // when
+        var 강재역 = 지하철역_생성_요청("강재역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강재역, 양재역));
+
+        // then
+        구간이_올바른_순서대로_존재하는지_검증(신분당선, List.of(강남역, 강재역, 양재역));
     }
 
     /**
@@ -90,5 +133,14 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         params.put("downStationId", downStationId + "");
         params.put("distance", 6 + "");
         return params;
+    }
+
+    private void 구간이_올바른_순서대로_존재하는지_검증(Long lineId, List<Long> stationIds) {
+        var response = 지하철_노선_조회_요청(lineId);
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactlyElementsOf(stationIds)
+        );
     }
 }

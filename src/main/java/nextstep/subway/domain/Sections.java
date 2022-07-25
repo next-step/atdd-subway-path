@@ -3,10 +3,12 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.domain.exception.NotValidDeleteTargetStation;
+import nextstep.subway.domain.exception.NotValidSectionStationsException;
 
 @Embeddable
 public class Sections {
@@ -15,16 +17,44 @@ public class Sections {
     private List<Section> sectionList = new ArrayList<>();
 
     public void add(Line line, Station upStation, Station downStation, int distance) {
-        var section = new Section(line, upStation, downStation, distance);
-        sectionList.add(section);
+        if (isNotValidStations(upStation, downStation)) {
+            throw new NotValidSectionStationsException();
+        }
+
+        if (isExistStation(upStation) && isNotLastStation(upStation)) {
+            var section = getSectionByUpStation(upStation);
+            section.setNewUpStation(downStation, section.getDistance() - distance);
+        }
+
+        if (isExistStation(downStation) && isNotFirstStation(downStation)) {
+            var section = getSectionByDownStation(downStation);
+            section.setNewDownStation(upStation, section.getDistance() - distance);
+        }
+
+        sectionList.add(new Section(line, upStation, downStation, distance));
     }
 
     public void removeByStation(Station downStation) {
-        if (!sectionList.get(sectionList.size() - 1).getDownStation().equals(downStation)) {
-            throw new IllegalArgumentException();
+        if (isNotLastStation(downStation)) {
+            throw new NotValidDeleteTargetStation();
+        }
+        sectionList.remove(sectionList.size() - 1);
+    }
+
+    public List<Section> getOrderedSections() {
+        if (sectionList.isEmpty()) {
+            return Collections.emptyList();
         }
 
-        sectionList.remove(sectionList.size() - 1);
+        var orderedSections = new ArrayList<Section>();
+        var currentSection = Optional.of(getFirstSection());
+
+        while (currentSection.isPresent()) {
+            orderedSections.add(currentSection.get());
+            currentSection = getNextSection(currentSection.get());
+        }
+
+        return orderedSections;
     }
 
     public List<Station> getStations() {
@@ -32,13 +62,75 @@ public class Sections {
             return Collections.emptyList();
         }
 
-        var stations = sectionList.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, sectionList.get(0).getUpStation());
+        var sections = getOrderedSections();
+        var stations = new ArrayList<Station>();
+        stations.add(sections.get(0).getUpStation());
+        sections.forEach(section -> stations.add(section.getDownStation()));
 
         return stations;
     }
 
+    private boolean isNotLastStation(Station station) {
+        var sections = getOrderedSections();
+        var lastStation = sections.get(sections.size() - 1).getDownStation();
+        return !lastStation.equals(station);
+    }
+
+    private boolean isNotFirstStation(Station station) {
+        var firstStation = getFirstSection().getUpStation();
+        return !firstStation.equals(station);
+    }
+
+    private Section getFirstSection() {
+        if (sectionList.isEmpty()) {
+            throw new IllegalStateException();
+        }
+
+        var currSection = sectionList.get(0);
+        var prevSection = getPrevSection(currSection);
+
+        while (prevSection.isPresent()) {
+            currSection = prevSection.get();
+            prevSection = getPrevSection(currSection);
+        }
+
+        return currSection;
+    }
+
+    private Optional<Section> getPrevSection(Section currentSection) {
+        return sectionList.stream()
+                .filter(section -> currentSection.getUpStation().equals(section.getDownStation()))
+                .findFirst();
+    }
+
+    private Optional<Section> getNextSection(Section currentSection) {
+        return sectionList.stream()
+                .filter(section -> currentSection.getDownStation().equals(section.getUpStation()))
+                .findFirst();
+    }
+
+    private Section getSectionByUpStation(Station upStation) {
+        return sectionList.stream()
+                .filter(section -> upStation.equals(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Section getSectionByDownStation(Station downStation) {
+        return sectionList.stream()
+                .filter(section -> downStation.equals(section.getDownStation()))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private boolean isNotValidStations(Station upStation, Station downStation) {
+        return !sectionList.isEmpty() && (
+                (isExistStation(upStation) && isExistStation(downStation)) ||
+                (!isExistStation(upStation) && !isExistStation(downStation))
+        );
+    }
+
+    private boolean isExistStation(Station station) {
+        return getStations().contains(station);
+    }
 }
