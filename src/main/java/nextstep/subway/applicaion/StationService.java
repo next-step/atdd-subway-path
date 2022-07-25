@@ -19,7 +19,7 @@ public class StationService {
 
     @Transactional
     public StationResponse saveStation(StationRequest stationRequest) {
-        Station station = stationRepository.save(Station.builder().name(stationRequest.getName()).build());
+        Station station = stationRepository.save(Station.of(stationRequest.getName()));
         return StationResponse.of(station);
     }
 
