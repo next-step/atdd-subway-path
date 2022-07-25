@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.*;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.WeightedMultigraph;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -30,7 +32,7 @@ public class Sections {
             throw new InvalidRemoveSectionException();
         }
 
-        if (!containStation(station)) {
+        if (notContainStation(station)) {
             throw new NotFoundStationException();
         }
 
@@ -47,6 +49,10 @@ public class Sections {
 
     public Station getLastDownStation() {
         return getLastSection().getDownStation();
+    }
+
+    public List<Section> getSections() {
+        return this.sections;
     }
 
     private int size() {
@@ -166,12 +172,12 @@ public class Sections {
     }
 
     private boolean isNotFoundStations(Section newSection) {
-        return !containStation(newSection.getUpStation())
-                && !containStation(newSection.getDownStation());
+        return notContainStation(newSection.getUpStation())
+                && notContainStation(newSection.getDownStation());
     }
 
-    private boolean containStation(Station newSection) {
-        return this.getStations().contains(newSection);
+    private boolean notContainStation(Station newSection) {
+        return !this.getStations().contains(newSection);
     }
 
     private boolean isEmpty() {

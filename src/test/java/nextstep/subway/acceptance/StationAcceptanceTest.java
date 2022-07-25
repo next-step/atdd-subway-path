@@ -70,7 +70,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
         String location = createResponse.header("location");
         int deleteStatusCode = 지하철역_삭제(location).statusCode();
 
-
         // then
         List<String> stationNames = ResponseUtils.getStringList(지하철역_목록_조회(), "name");
         assertThat(deleteStatusCode).isEqualTo(HttpStatus.NO_CONTENT.value());

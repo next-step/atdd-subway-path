@@ -7,13 +7,11 @@ import nextstep.subway.utils.ResponseUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리 기능")
 class SectionAcceptanceTest extends AcceptanceTest {
@@ -106,7 +104,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionParams(강남역, 신논현역, 10));
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        AssertUtils.badRequest(response);
     }
 
     /**
@@ -120,7 +118,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionParams(강남역, 양재역, 5));
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        AssertUtils.badRequest(response);
     }
 
     /**
@@ -130,11 +128,15 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
     @Test
     void given_newSection_when_unknownInSection_then_exception() {
+        // given
+        Long 정자역 = ResponseUtils.getLong(지하철역_생성_요청("정자역"), "id");
+        Long 양재시민의숲역 = ResponseUtils.getLong(지하철역_생성_요청("양재시민의숲역"), "id");
+
         // when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionParams(강남역, 양재역, 5));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionParams(정자역, 양재시민의숲역, 5));
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        AssertUtils.badRequest(response);
     }
 
     /**
@@ -208,21 +210,21 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        AssertUtils.badRequest(response);
     }
 
     /**
-     * When 지하철 노선에 구간이 하나인 경우, 하행 종점역 제거를 요청 하면
+     * When 지하철 노선에 구간이 하나인 경우, 상행 종점역 제거를 요청 하면
      * Then 예외가 발생한다.
      */
-    @DisplayName("지하철 구간이 하나인 하행 종점역을 제거하면 예외가 발행한다.")
+    @DisplayName("지하철 구간이 하나인 상행 종점역을 제거하면 예외가 발행한다.")
     @Test
     void removeFirstStationInOneSection() {
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        AssertUtils.badRequest(response);
     }
 
     /**
@@ -240,7 +242,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        AssertUtils.badRequest(response);
     }
 
     private Map<String, String> createLineParams(Long upStationId, Long downStationId, int distance) {

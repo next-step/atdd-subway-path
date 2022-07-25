@@ -35,7 +35,7 @@ public class LineService {
     }
 
     public List<LineResponse> showLines() {
-        return lineRepository.findAll().stream()
+        return findAll().stream()
                 .map(LineResponse::new)
                 .collect(Collectors.toList());
     }
@@ -69,6 +69,10 @@ public class LineService {
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         findLineById(lineId).removeSection(stationService.findById(stationId));
+    }
+
+    public List<Line> findAll() {
+        return lineRepository.findAll();
     }
 
 }
