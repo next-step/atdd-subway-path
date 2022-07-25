@@ -1,10 +1,7 @@
 package nextstep.subway.applicaion.dto;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -27,24 +24,10 @@ public class LineResponse {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                createStationResponses(line)
+                line.getStations().stream()
+                        .map(StationResponse::from)
+                        .collect(Collectors.toList())
         );
-    }
-
-    private static List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, line.getSections().get(0).getUpStation());
-
-        return stations.stream()
-                .map(StationResponse::from)
-                .collect(Collectors.toList());
     }
 
     public Long getId() {
