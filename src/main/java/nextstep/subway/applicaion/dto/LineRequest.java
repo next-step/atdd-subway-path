@@ -20,6 +20,14 @@ public class LineRequest {
         this.distance = distance;
     }
 
+    public boolean isStationNullCheck() {
+        return this.getUpStationId() != null && this.getDownStationId() != null;
+    }
+
+    public boolean isDistanceZeroCheck() {
+        return this.getDistance() != 0;
+    }
+
     public String getName() {
         return name;
     }
