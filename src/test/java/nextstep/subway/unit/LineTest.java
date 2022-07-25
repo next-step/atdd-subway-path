@@ -9,7 +9,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LineTest {
     @Test
@@ -172,16 +171,47 @@ class LineTest {
         Station magok = new Station(2L, "마곡역");
         Station balsan = new Station(3L, "발산역");
         Line line = new Line("5호선", "purple");
-        Section section1 = new Section(line, songjeong, magok, 7);
-        Section section2 = new Section(line, magok, balsan, 10);
+        Section section1 = new Section(line, 1L, songjeong, magok, 7);
+        Section section2 = new Section(line, 2L, magok, balsan, 10);
         line.addSection(section1);
         line.addSection(section2);
 
         //When
-        line.removeSection(line.getSections().size() - 1);
+        line.removeSection(magok);
 
         //Then
         assertThat(line.getSections()).hasSize(1);
-
+        assertThat(line.getSections().get(0).getStations()).containsExactly(songjeong, balsan);
     }
+
+    @Test
+    void removeOneSectionException() {
+        //Given
+        Station songjeong = new Station(1L, "송정역");
+        Station magok = new Station(2L, "마곡역");
+        Line line = new Line("5호선", "purple");
+        Section section1 = new Section(line, 1L, songjeong, magok, 7);
+        line.addSection(section1);
+
+
+        //When Then
+        assertThatThrownBy(() -> line.removeSection(magok))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void removeDoNotHaveStationException() {
+        //Given
+        Station songjeong = new Station(1L, "송정역");
+        Station magok = new Station(2L, "마곡역");
+        Station balsan = new Station(3L, "발산역");
+        Line line = new Line("5호선", "purple");
+        Section section1 = new Section(line, 1L, songjeong, magok, 7);
+        line.addSection(section1);
+
+        //When Then
+        assertThatThrownBy(() -> line.removeSection(balsan))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
 }
