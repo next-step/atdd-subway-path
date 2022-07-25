@@ -25,8 +25,6 @@ class SectionsTest {
 
 	private Sections sections;
 
-	private Section 광교역_판교역;
-
 	private Station 광교역;
 	private Station 판교역;
 
@@ -41,9 +39,8 @@ class SectionsTest {
 		판교역 = new Station("판교역");
 		신분당선 = new Line("신분당선", "red");
 
-		광교역_판교역 = 신분당선_구간을_생성한다(광교역, 판교역, 광교역_판교역_거리);
 		sections = new Sections();
-		sections.add(광교역_판교역);
+		신분당선에_구간을_추가한다(광교역, 판교역, 광교역_판교역_거리);
 	}
 
 	/**
@@ -57,8 +54,7 @@ class SectionsTest {
 	void addSectionsWithUpStation() {
 		//given
 		Station 광교중앙역 = new Station("광교중앙역");
-		Section insertSection = 신분당선_구간을_생성한다(광교역, 광교중앙역, 3);
-		sections.add(insertSection);
+		신분당선에_구간을_추가한다(광교역, 광교중앙역, 3);
 
 		//when
 		List<Station> stations = sections.getStations();
@@ -84,10 +80,8 @@ class SectionsTest {
 		Station 광교중앙역 = new Station("광교중앙역");
 
 		//when
-		Section insertSection = 신분당선_구간을_생성한다(광교역, 광교중앙역, 15);
-
 		//then
-		assertThatThrownBy(() -> sections.add(insertSection))
+		assertThatThrownBy(() -> 신분당선에_구간을_추가한다(광교역, 광교중앙역, 15))
 				.isInstanceOf(CannotInsertLongerSectionException.class);
 	}
 
@@ -103,10 +97,8 @@ class SectionsTest {
 		Station 광교중앙역 = new Station("광교중앙역");
 
 		//when
-		Section sameDistanceSection = 신분당선_구간을_생성한다(광교역, 광교중앙역, 광교역_판교역_거리);
-
 		//then
-		assertThatThrownBy(() -> sections.add(sameDistanceSection))
+		assertThatThrownBy(() -> 신분당선에_구간을_추가한다(광교역, 광교중앙역, 광교역_판교역_거리))
 				.isInstanceOf(CannotInsertSameDistanceSectionException.class);
 	}
 
@@ -120,14 +112,11 @@ class SectionsTest {
 	void addLineSectionFailWithAlreadyAdded() {
 		//given
 		Station 정자역 = new Station("정자역");
-		Section insertSection = 신분당선_구간을_생성한다(판교역, 정자역, 5);
-		sections.add(insertSection);
+		신분당선에_구간을_추가한다(판교역, 정자역, 5);
 
 		//when
-		Section 오류발생구간 = 신분당선_구간을_생성한다(광교역, 정자역, 20);
-
 		//then
-		assertThatThrownBy(() -> sections.add(오류발생구간))
+		assertThatThrownBy(() -> 신분당선에_구간을_추가한다(광교역, 정자역, 20))
 				.isInstanceOf(AlreadyRegisteredException.class);
 	}
 
@@ -142,11 +131,10 @@ class SectionsTest {
 		//given
 		Station 강남역 = new Station("강남역");
 		Station 정자역 = new Station("정자역");
-		Section insertSection = 신분당선_구간을_생성한다(강남역, 정자역, 5);
 
 		//when
 		//then
-		assertThatThrownBy(() -> sections.add(insertSection))
+		assertThatThrownBy(() -> 신분당선에_구간을_추가한다(강남역, 정자역, 5))
 				.isInstanceOf(CannotRegisterWithoutRegisteredStation.class);
 	}
 
@@ -160,8 +148,7 @@ class SectionsTest {
 	void addSectionsWithDownStationEqualsUpStation() {
 		//given
 		Station 신사역 = new Station("신사역");
-		Section insertSection = 신분당선_구간을_생성한다(신사역, 광교역, 3);
-		sections.add(insertSection);
+		신분당선에_구간을_추가한다(신사역, 광교역, 3);
 
 		//when
 		List<Station> stations = sections.getStations();
@@ -184,10 +171,12 @@ class SectionsTest {
 	@Test
 	void getStations() {
 		//given
-		sections.add(신분당선_구간을_생성한다(광교역, new Station("정자역"), 5));
-		sections.add(신분당선_구간을_생성한다(광교역, new Station("광교중앙역"), 2));
+		Station 정자역 = new Station("정자역");
+		Station 광교중앙역 = new Station("광교중앙역");
+		신분당선에_구간을_추가한다(광교역, 정자역, 5);
+		신분당선에_구간을_추가한다(광교역, 광교중앙역, 2);
 
-	    //when
+		//when
 		List<Station> stations = sections.getStations();
 
 		//then
@@ -207,14 +196,14 @@ class SectionsTest {
 	@DisplayName("removeSection을 검증한다")
 	@Test
 	void removeSection() {
-	    //given
+		//given
 		Station 광교중앙역 = new Station("광교중앙역");
-		sections.add(신분당선_구간을_생성한다(광교역, 광교중앙역, 2));
+		신분당선에_구간을_추가한다(광교역, 광교중앙역, 2);
 
-	    //when
+		//when
 		sections.removeSection(광교중앙역);
 
-	    //then
+		//then
 		List<Section> response = sections.getSections();
 		assertThat(response).hasSize(1);
 	}
@@ -232,7 +221,7 @@ class SectionsTest {
 				.isInstanceOf(IllegalArgumentException.class);
 	}
 
-	private Section 신분당선_구간을_생성한다(Station upStation, Station downStation, Integer distance) {
-		return new Section(신분당선, upStation, downStation, distance);
+	private void 신분당선에_구간을_추가한다(Station upStation, Station downStation, int distance) {
+		sections.add(신분당선, upStation, downStation, distance);
 	}
 }

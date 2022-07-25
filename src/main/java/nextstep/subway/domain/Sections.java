@@ -27,10 +27,6 @@ public class Sections {
 		return sections.isEmpty();
 	}
 
-	public void add(Section section) {
-		add(section.getLine(), section.getUpStation(), section.getDownStation(), section.getDistance());
-	}
-
 	public void add(Line line, Station upStation, Station downStation, int distance) {
 
 		validateStations(upStation, downStation);
