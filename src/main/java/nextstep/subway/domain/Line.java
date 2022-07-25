@@ -12,7 +12,7 @@ public class Line {
     private Long id;
     private String name;
     private String color;
-
+    @Embedded
     private Sections sections;
 
     protected Line() {/*no-op*/}
