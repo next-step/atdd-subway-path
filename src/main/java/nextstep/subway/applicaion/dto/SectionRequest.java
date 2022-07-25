@@ -5,6 +5,12 @@ public class SectionRequest {
     private Long downStationId;
     private int distance;
 
+    public SectionRequest(long upStationId, long downStationId, int distance) {
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
+    }
+
     public Long getUpStationId() {
         return upStationId;
     }
