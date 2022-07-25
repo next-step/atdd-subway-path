@@ -10,7 +10,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -171,7 +170,7 @@ public class Sections {
 
     public Section getFirstSection(){
         if(sections.isEmpty()){
-            throw new NoSuchElementException("저장 된 section정보가 없습니다.");
+            throw new NotExistElementException("저장 된 section정보가 없습니다.");
         }
         return sections.stream()
                 .filter(this::isFirstSection)
