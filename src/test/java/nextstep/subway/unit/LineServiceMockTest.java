@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
@@ -74,27 +73,5 @@ public class LineServiceMockTest {
 
         // then
         assertThat(line.getStations()).doesNotContain(seolleung);
-    }
-
-    @Test
-    @DisplayName("삭제하려는 구간은 마지막 구간만 가능하다.")
-    void deleteSection_invalid() {
-        // given
-        final long lineId = 1L;
-        final long gangnamId = 1L;
-
-        Station gangnam = new Station("강남역");
-        Station yeoksam = new Station("역삼역");
-        Station seolleung = new Station("선릉역");
-        Line line = new Line("2호선", "bg-green-600");
-        line.addSection(gangnam, yeoksam, 10);
-        line.addSection(yeoksam, seolleung, 10);
-
-        doReturn(Optional.of(line)).when(lineRepository).findById(lineId);
-        doReturn(gangnam).when(stationService).findById(gangnamId);
-
-        // when
-        assertThatThrownBy(() -> lineService.deleteSection(lineId, gangnamId))
-                .isInstanceOf(IllegalArgumentException.class);
     }
 }

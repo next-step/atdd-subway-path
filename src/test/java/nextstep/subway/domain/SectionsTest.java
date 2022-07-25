@@ -1,8 +1,6 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.domain.exception.NotEnoughSectionDeleteException;
-import nextstep.subway.domain.exception.NotExistSectionException;
-import nextstep.subway.domain.exception.SectionDeleteException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -130,40 +128,6 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("구간을 삭제하면 하행종점역이 사라진다.")
-    void delete_section() {
-        // given
-        Sections sections = new Sections();
-        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
-        Section newSection = createSection(YEOKSAM_STATION, SEOLLEUNG_STATION, 5);
-
-        sections.add(section);
-        sections.add(newSection);
-
-        // when
-        sections.delete(SEOLLEUNG_STATION);
-
-        // then
-        assertThat(sections.getStations()).doesNotContain(new Station(3L, "선릉역"));
-    }
-
-    @Test
-    @DisplayName("삭제요청한 구간이 마지막 구간이 아니면 예외를 반환한다.")
-    void invalid_delete_not_last_section() {
-        // given
-        Sections sections = new Sections();
-        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
-        Section newSection = createSection(YEOKSAM_STATION, SEOLLEUNG_STATION, 5);
-
-        sections.add(section);
-        sections.add(newSection);
-
-        // then
-        assertThatThrownBy(() -> sections.delete(YEOKSAM_STATION))
-                .isInstanceOf(SectionDeleteException.class);
-    }
-
-    @Test
     @DisplayName("삭제하려는 지하철 역을 가진 구간이 있어야만 한다.")
     void invalid_delete_section_not_found() {
         // given
@@ -175,7 +139,7 @@ class SectionsTest {
         sections.add(newSection);
 
         // when
-        assertThatThrownBy(() -> sections.delete2(SAMSUNG_STATION))
+        assertThatThrownBy(() -> sections.delete(SAMSUNG_STATION))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -191,8 +155,8 @@ class SectionsTest {
 
         // when
         assertAll(() -> {
-            assertThatThrownBy(() -> emptySections.delete2(YEOKSAM_STATION)).isInstanceOf(NotEnoughSectionDeleteException.class);
-            assertThatThrownBy(() -> onlyOneSections.delete2(YEOKSAM_STATION)).isInstanceOf(NotEnoughSectionDeleteException.class);
+            assertThatThrownBy(() -> emptySections.delete(YEOKSAM_STATION)).isInstanceOf(NotEnoughSectionDeleteException.class);
+            assertThatThrownBy(() -> onlyOneSections.delete(YEOKSAM_STATION)).isInstanceOf(NotEnoughSectionDeleteException.class);
         });
     }
 
@@ -208,7 +172,7 @@ class SectionsTest {
         sections.add(newSection);
 
         // when
-        sections.delete2(SEOLLEUNG_STATION);
+        sections.delete(SEOLLEUNG_STATION);
 
         // then
         assertThat(sections.getStations()).doesNotContain(SEOLLEUNG_STATION);
