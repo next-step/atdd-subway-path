@@ -10,15 +10,13 @@ import org.jgrapht.graph.WeightedMultigraph;
 import java.util.List;
 
 public class PathFinder {
-    private List<Line> lines;
     private WeightedMultigraph<Station, DefaultWeightedEdge> graph;
 
     public PathFinder(List<Line> lines) {
-        this.lines = lines;
         this.graph = new WeightedMultigraph(DefaultWeightedEdge.class);
 
-        addStationVertex();
-        addSectionsToGraph();
+        addStationVertex(lines);
+        addSectionsToGraph(lines);
     }
 
     public Path find(Station source, Station target) {
@@ -38,13 +36,13 @@ public class PathFinder {
         }
     }
 
-    private void addStationVertex() {
-        this.lines.forEach(line ->
+    private void addStationVertex(List<Line> lines) {
+        lines.forEach(line ->
                 line.getStations().forEach(graph::addVertex));
     }
 
-    private void addSectionsToGraph() {
-        this.lines.forEach(line ->
+    private void addSectionsToGraph(List<Line> lines) {
+        lines.forEach(line ->
             line.getSections().forEach(section ->
                     graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance()))
         );
