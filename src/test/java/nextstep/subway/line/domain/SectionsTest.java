@@ -46,15 +46,15 @@ class SectionsTest {
     void 구간_추가3() {
         // given
         Sections sections = new Sections();
-        sections.add(new Section(LINE, 1L, 3L, 6));
+        sections.add(new Section(LINE, 1L, 3L, 7));
 
         // when
-        sections.add(new Section(LINE, 2L, 3L, 4));
+        sections.add(new Section(LINE, 2L, 3L, 3));
 
         // then
-        assertThat(sections.stationIds()).containsExactly(1L, 2L, 3L);
-        assertThat(sections.getSections()).contains(new Section(LINE, 1L, 2L, 2),
-                        new Section(LINE, 2L, 3L, 4));
+        assertThat(sections.getOrderedStationIds()).containsExactly(1L, 2L, 3L);
+
+        assertThat(sections.getSections()).extracting("distance").contains(3, 4);
     }
 
     @DisplayName("기존 구간 사이에 추가할 구간의 길이가 기존 구간의 길이보다 크거나 같을 수 없다.")

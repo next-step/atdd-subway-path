@@ -1,12 +1,11 @@
 package nextstep.subway.line.domain;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import nextstep.subway.line.domain.exception.CannotSubtractSectionException;
 
 import javax.persistence.*;
 
 @Getter
-@EqualsAndHashCode
 @Entity
 public class Section {
     @Id
@@ -60,10 +59,6 @@ public class Section {
 
     private boolean endsTogether(Section anotherSection) {
         return downStationId.equals(anotherSection.downStationId);
-    }
-
-    public boolean isShorterThanOrEqualWith(Section anotherSection) {
-        return distance <= anotherSection.distance;
     }
 
     public boolean matchUpStation(Long stationId) {
