@@ -27,13 +27,16 @@ public class PathService {
         List<Line> lines = lineService.getAllLines();
 
         Graph graph = new Graph(lines);
-
-        List<StationResponse> stationResponses = graph.getShortestPath(startStation, arrivalStation)
-                .stream()
-                .map(StationResponse::of)
-                .collect(Collectors.toList());
+        List<StationResponse> stationResponses = createStationResponses(startStation, arrivalStation, graph);
         int distance = graph.getShortestDistance(startStation, arrivalStation);
 
         return new PathResponse(stationResponses, distance);
+    }
+
+    private List<StationResponse> createStationResponses(Station startStation, Station arrivalStation, Graph graph) {
+        return graph.getShortestPath(startStation, arrivalStation)
+                .stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
     }
 }

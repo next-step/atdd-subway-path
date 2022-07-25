@@ -6,6 +6,7 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.paths.CannotFindPathException;
 import nextstep.subway.exception.paths.EmptyLineException;
+import nextstep.subway.exception.paths.NotConnectedPathException;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -99,6 +100,27 @@ public class GraphTest {
                 Arguments.of(강남역, 없는역, "출발역, 도착역 중 하나라도 없으면 최단경로를 찾을 수 없습니다"),
                 Arguments.of(없는역, 강남역, "출발역, 도착역 중 하나라도 없으면 최단경로를 찾을 수 없습니다")
         );
+    }
+
+    @DisplayName("출발역에서 도착역을 도달할 수 없는 경우 조회 불가")
+    @Test
+    public void not_connect_station() {
+        // given
+        Station 시청역 = new Station(5L, "시청역");
+        Station 동대문역 = new Station(6L, "동대문역");
+        Line 일호선 = new Line(8L, "1호선", "blue");
+
+        일호선.addSection(new Section(10L, 일호선, 시청역, 동대문역, 10));
+
+        Graph graph = new Graph(List.of(일호선, 이호선, 삼호선, 신분당선));
+
+        // when
+        ThrowableAssert.ThrowingCallable actual = () -> graph.getShortestPath(강남역, 시청역);
+
+        // then
+        assertThatThrownBy(actual)
+                .isInstanceOf(NotConnectedPathException.class)
+                .hasMessage("도달할 수 없는 역의 최단경로를 찾을 수 없습니다");
     }
 
     @DisplayName("Graph 도메인을 통해 최단 경로를 찾아온다")

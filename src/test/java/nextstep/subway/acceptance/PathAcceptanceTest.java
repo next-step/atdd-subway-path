@@ -93,7 +93,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 최단_경로_조회(강남역, 시청역);
 
         // then
-        생성_실패_확인(response, HttpStatus.NOT_FOUND, "해당 역은 노선에 연결되어있지 않습니다");
+        생성_실패_확인(response, HttpStatus.NOT_FOUND, "도달할 수 없는 역의 최단경로를 찾을 수 없습니다");
     }
 
     @DisplayName("출발역과 도착역의 최단거리를 정상 조회한다")

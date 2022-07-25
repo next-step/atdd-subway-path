@@ -2,6 +2,8 @@ package nextstep.subway.domain;
 
 import nextstep.subway.exception.paths.CannotFindPathException;
 import nextstep.subway.exception.paths.EmptyLineException;
+import nextstep.subway.exception.paths.NotConnectedPathException;
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -28,7 +30,13 @@ public class Graph {
         if (startStation == null || arrivalStation == null) {
             throw new CannotFindPathException();
         }
-        return dijkstraShortestPath.getPath(startStation, arrivalStation).getVertexList();
+
+        GraphPath path = dijkstraShortestPath.getPath(startStation, arrivalStation);
+        if (path == null) {
+            throw new NotConnectedPathException();
+        }
+
+        return path.getVertexList();
     }
 
     public int getShortestDistance(Station startStation, Station arrivalStation) {
