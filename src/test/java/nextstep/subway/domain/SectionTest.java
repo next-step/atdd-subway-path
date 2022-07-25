@@ -26,6 +26,20 @@ class SectionTest {
     }
 
     @Test
+    @DisplayName("구간의 하행역과 요청한 지하철 역이 같으면 True 를 리턴한다.")
+    void isMatchDownStation() {
+        final Station upStation = GANGNAM_STATION;
+        final Station downStation = YEOKSAM_STATION;
+        Section section = createSection(upStation, downStation, 10);
+
+        assertAll(() -> {
+            assertThat(section.isMatchDownStation(new Station(1L, "강남역"))).isFalse();
+            assertThat(section.isMatchDownStation(new Station(3L, "선릉역"))).isFalse();
+            assertThat(section.isMatchDownStation(new Station(2L, "역삼역"))).isTrue();
+        });
+    }
+
+    @Test
     @DisplayName("상행역 혹은 하행역 중에 동일한 역이 있으면 True, 없으면 False 를 리턴한다.")
     void hasStations() {
         // given

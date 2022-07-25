@@ -38,7 +38,11 @@ public class Section {
     }
 
     public boolean isMissMatchDownStation(Station station) {
-        return !downStation.equals(station);
+        return !isMatchDownStation(station);
+    }
+
+    public boolean isMatchDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     public boolean isConnectable(Section section) {

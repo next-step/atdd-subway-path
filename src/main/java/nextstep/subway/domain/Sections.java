@@ -65,12 +65,24 @@ public class Sections {
         return values.stream().anyMatch(section -> section.hasStation(station));
     }
 
+    // TODO: 리팩터링 완료 후 삭제
     public void delete(Station station) {
         Section lastSection = findLastSection();
         if (lastSection.isMissMatchDownStation(station)) {
             throw new SectionDeleteException(station.getId());
         }
         values.remove(lastSection);
+    }
+
+    public void delete2(Station station) {
+        Section findSection = findSectionByDownStation(station);
+    }
+
+    private Section findSectionByDownStation(Station station) {
+        return values.stream()
+                .filter(section -> section.isMatchDownStation(station))
+                .findAny()
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     private Section findLastSection() {

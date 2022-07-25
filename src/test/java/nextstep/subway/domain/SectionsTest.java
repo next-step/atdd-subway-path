@@ -173,4 +173,19 @@ class SectionsTest {
                 .isInstanceOf(NotExistSectionException.class);
     }
 
+    @Test
+    @DisplayName("삭제하려는 지하철 역을 가진 구간이 있어야만 한다.")
+    void invalid_delete_section_not_found() {
+        // given
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section newSection = createSection(YEOKSAM_STATION, SEOLLEUNG_STATION, 5);
+
+        Sections sections = new Sections();
+        sections.add(section);
+        sections.add(newSection);
+
+        // when
+        assertThatThrownBy(() -> sections.delete2(SAMSUNG_STATION))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }
