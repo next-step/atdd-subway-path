@@ -131,7 +131,7 @@ public class LineServiceMockTest {
         assertThat(result).hasSize(2);
 
         // then
-        LineResponse firstLineResponse = getLineResponse(result, FIRSTLINENAME);
+        LineResponse firstLineResponse = 모든_라인들에서_하나의_라인_꺼내기(result, FIRSTLINENAME);
         final List<String> stationNames = getNames(firstLineResponse);
 
         assertAll(
@@ -140,7 +140,7 @@ public class LineServiceMockTest {
             () -> assertThat(stationNames).contains(DONONGSTATIONNAME, GOORISTATIONNAME)
         );
 
-        LineResponse secondLineResponse = getLineResponse(result, SECONDLINENAME);
+        LineResponse secondLineResponse = 모든_라인들에서_하나의_라인_꺼내기(result, SECONDLINENAME);
         final List<String> secondStationNames = getNames(secondLineResponse);
 
         assertAll(
@@ -150,7 +150,7 @@ public class LineServiceMockTest {
         );
     }
 
-    private LineResponse getLineResponse(List<LineResponse> lineResponses, String name) {
+    private LineResponse 모든_라인들에서_하나의_라인_꺼내기(List<LineResponse> lineResponses, String name) {
         return lineResponses.stream()
             .filter(lineResponse -> lineResponse.getName().equals(name))
             .findFirst()
@@ -295,7 +295,7 @@ public class LineServiceMockTest {
         assertAll(
             () -> assertThat(result.getStations()).hasSize(2),
             () -> assertThat(result.getStations().get(0).getName()).isEqualTo(DONONGSTATIONNAME),
-        () -> assertThat(result.getStations().get(1).getName()).isEqualTo(GOORISTATIONNAME)
+            () -> assertThat(result.getStations().get(1).getName()).isEqualTo(GOORISTATIONNAME)
         );
     }
 }
