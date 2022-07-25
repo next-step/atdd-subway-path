@@ -100,7 +100,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(거리가_긴_역, 양재역, 15));
 
         //Then
-        에러_500_발생(response);
+        구간_추가에_실패(response);
     }
 
 
@@ -120,7 +120,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(이미_있는_강남역, 이미_있는_양재역, 10));
 
         //Then
-        에러_500_발생(response);
+        구간_추가에_실패(response);
     }
 
     /**
@@ -140,7 +140,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(없는역, 없는역2, 5));
 
         //Then
-        에러_500_발생(response);
+        구간_추가에_실패(response);
 
     }
 
