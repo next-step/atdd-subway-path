@@ -5,7 +5,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import nextstep.subway.domain.exception.NotEnoughSectionDeleteException;
 import nextstep.subway.domain.exception.NotExistSectionException;
-import nextstep.subway.domain.exception.SectionDeleteException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -20,7 +19,6 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 public class Sections {
 
-    private static final int CAN_BE_DELETED_SECTION_MINIMUM_COUNT = 2;
     private static final int EMPTY_VALUE = 0;
     private static final int ONE = 1;
 
@@ -68,12 +66,19 @@ public class Sections {
     }
 
     public void delete(Station station) {
+        if (this.hasZeroOrOneSection()) {
+            throw new NotEnoughSectionDeleteException();
+        }
         Section findSection = findSectionByDownStation(station);
         if (isNotFinalSection(findSection)) {
             Section postSection = findPostSection(findSection);
             postSection.combine(findSection);
         }
         values.remove(findSection);
+    }
+
+    private boolean hasZeroOrOneSection() {
+        return values.isEmpty() || values.size() == ONE;
     }
 
     private Section findPostSection(Section section) {
@@ -88,9 +93,6 @@ public class Sections {
     }
 
     private Section findSectionByDownStation(Station station) {
-        if (values.size() < CAN_BE_DELETED_SECTION_MINIMUM_COUNT) {
-            throw new NotEnoughSectionDeleteException();
-        }
         return values.stream()
                 .filter(section -> section.isMatchDownStation(station))
                 .findAny()
