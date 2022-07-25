@@ -70,4 +70,8 @@ public class Section {
         }
         return upStation.equals(section.getUpStation());
     }
+
+    public int betweenDistacne(Section section) {
+        return distance - section.getDistance();
+    }
 }
