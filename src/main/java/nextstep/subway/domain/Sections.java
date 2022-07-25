@@ -183,17 +183,56 @@ public class Sections {
 	}
 
 	public void remove(Station station) {
+		validationOfSectionSize();
+		List<Station> stationList = findAllStations();
 
+		if (removeIfTopSection(stationList, station)) {
+			return;
+		}
+		if (removeIfBottomSection(stationList, station)) {
+			return;
+		}
+		removeIfMiddleSection(station);
+
+	}
+
+	private void validationOfSectionSize() {
 		if (this.values.size() <= 1) {
 			throw new BusinessException(INVALID_STATUS);
 		}
+	}
 
-		Section lastSection = findFirstBottomSection(findAllStations());
-		if (!lastSection.isSameWithDownStation(station)) {
-			throw new BusinessException(INVALID_STATUS);
+	private boolean removeIfTopSection(List<Station> stationList, Station station) {
+		Section topSection = findFirstTopSection(stationList);
+		if (topSection.isSameWithUpStation(station)) {
+			this.values.removeIf(section -> section.equals(topSection));
+			return true;
 		}
+		return false;
+	}
 
-		values.removeIf(section -> section.equals(lastSection));
+	private boolean removeIfBottomSection(List<Station> stationList, Station station) {
+		Section lastSection = findFirstBottomSection(stationList);
+		if (lastSection.isSameWithDownStation(station)) {
+			this.values.removeIf(section -> section.equals(lastSection));
+			return true;
+		}
+		return false;
+	}
+
+	private void removeIfMiddleSection(Station station) {
+		Section previousSection = this.values
+			.stream()
+			.filter(section -> section.isSameWithDownStation(station))
+			.findFirst()
+			.orElseThrow(() -> new BusinessException(INVALID_STATUS));
+
+		Section afterSection = findNextSection(previousSection);
+
+		previousSection.changeDownStation(afterSection.getDownStation());
+		previousSection.plusDistance(afterSection.getDistance());
+
+		this.values.removeIf(section -> section.equals(afterSection));
 	}
 
 }

@@ -144,9 +144,9 @@ class LineTest {
 		assertThat(line.getStations()).isEmpty();
 	}
 
-	@DisplayName("지하철 구간 삭제")
+	@DisplayName("지하철 구간 삭제_하행종점")
 	@Test
-	void removeSection() {
+	void removeLastStation() {
 		//given
 		line.addSection(강남역, 역삼역, DISTANCE_VALUE_1);
 		line.addSection(역삼역, 선릉역, DISTANCE_VALUE_3);
@@ -156,17 +156,51 @@ class LineTest {
 		assertThat(line.getSections()).hasSize(1);
 	}
 
-	@DisplayName("지하철 구간 삭제 실패_삭제역이 마지막 하행선역이 아닌경우")
+	@DisplayName("지하철 구간 삭제_상행종점")
 	@Test
-	void removeSectionFail1() {
+	void removeTopStation() {
+		//given
+		line.addSection(강남역, 역삼역, DISTANCE_VALUE_1);
+		line.addSection(역삼역, 선릉역, DISTANCE_VALUE_3);
+		//when
+		line.removeSection(강남역);
+		//then
+		assertThat(line.getSections()).hasSize(1);
+	}
+
+	@DisplayName("지하철 구간 삭제_중간역")
+	@Test
+	void removeMiddleStation() {
+		//given
+		line.addSection(강남역, 역삼역, DISTANCE_VALUE_1);
+		line.addSection(역삼역, 선릉역, DISTANCE_VALUE_3);
+		//when
+		line.removeSection(역삼역);
+		//then
+		assertThat(line.getSections()).hasSize(1);
+		assertThat(line.getSections().get(0).getDistance().getDistance())
+			.isEqualTo(DISTANCE_VALUE_1 + DISTANCE_VALUE_3);
+	}
+
+	@DisplayName("지하철 구간 삭제_등록되지 않은역")
+	@Test
+	void removeMiddleStationInNotExistingStation() {
 		//when
 		line.addSection(강남역, 역삼역, DISTANCE_VALUE_1);
 		line.addSection(역삼역, 선릉역, DISTANCE_VALUE_3);
-
 		//then
-		assertThatThrownBy(() -> line.removeSection(역삼역))
+		assertThatThrownBy(() -> line.removeSection(양재역))
 			.isInstanceOf(BusinessException.class);
+	}
 
+	@DisplayName("지하철 구간 삭제_섹션1개인경우")
+	@Test
+	void removeStation() {
+		//when
+		line.addSection(강남역, 역삼역, DISTANCE_VALUE_1);
+		//then
+		assertThatThrownBy(() -> line.removeSection(강남역))
+			.isInstanceOf(BusinessException.class);
 	}
 
 	@DisplayName("노선 이름변경")
