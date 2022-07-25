@@ -183,27 +183,9 @@ public class Sections {
 	}
 
 	public void remove(Station station) {
-
-		if (this.values.size() <= 1) {
-			throw new BusinessException(INVALID_STATUS);
-		}
-
+		validationOfSectionSize();
 		List<Station> stationList = findAllStations();
-		/**
-		 * 1. 상행종점, 하행 종점이면 해당 섹션 그대로 삭제
-		 * 2. 상행인경우 해당 섹션 삭제,
-		 *   하행인경우 삭제한 다음 섹션의 상행을 하행으로 변경..총총
-		 *
-		 *
-		 */
-		/**
-		 *   1 - 5
-		 *   5 - 10
-		 *   10 -  15
-		 *   15  - 20
-		 *   상행을 지우는경우
-		 *   하행을 지우는 경우
-		 */
+
 		if (removeIfTopSection(stationList, station)) {
 			return;
 		}
@@ -212,6 +194,12 @@ public class Sections {
 		}
 		removeIfMiddleSection(station);
 
+	}
+
+	private void validationOfSectionSize() {
+		if (this.values.size() <= 1) {
+			throw new BusinessException(INVALID_STATUS);
+		}
 	}
 
 	private boolean removeIfTopSection(List<Station> stationList, Station station) {
