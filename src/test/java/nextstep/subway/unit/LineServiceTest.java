@@ -37,6 +37,7 @@ public class LineServiceTest {
     Station 강남역;
     Station 역삼역;
     Station 선릉역;
+    Station 삼성역;
     Station 서울역;
 
     Line 이호선;
@@ -47,7 +48,8 @@ public class LineServiceTest {
         강남역 = stationRepository.save(new Station(1L, "강남역"));
         역삼역 = stationRepository.save(new Station(2L, "역삼역"));
         선릉역 = stationRepository.save(new Station(3l, "선릉역"));
-        서울역 = stationRepository.save(new Station(4L, "서울역"));
+        삼성역 = stationRepository.save(new Station(4L, "삼성역"));
+        서울역 = stationRepository.save(new Station(5L, "서울역"));
 
         일호선 = lineRepository.save(new Line("1호선", "bg-blue-600"));
         이호선 = lineRepository.save(new Line("2호선", "bg-green-600"));
@@ -163,7 +165,7 @@ public class LineServiceTest {
 
         assertAll(() -> {
             assertThat(이호선.getStations()).hasSize(3);
-            assertThat(이호선.getStations()).containsExactly(new Station[] { 강남역, 역삼역, 선릉역 });
+            assertThat(이호선.getStations()).containsExactly(강남역, 역삼역, 선릉역);
         });
     }
 
@@ -175,7 +177,7 @@ public class LineServiceTest {
 
         assertAll(() -> {
             assertThat(이호선.getStations()).hasSize(3);
-            assertThat(이호선.getStations()).containsExactly(new Station[] { 강남역, 역삼역, 선릉역 });
+            assertThat(이호선.getStations()).containsExactly(강남역, 역삼역, 선릉역);
         });
     }
 
@@ -187,7 +189,7 @@ public class LineServiceTest {
 
         assertAll(() -> {
             assertThat(이호선.getStations()).hasSize(3);
-            assertThat(이호선.getStations()).containsExactly(new Station[] { 강남역, 역삼역, 선릉역 });
+            assertThat(이호선.getStations()).containsExactly(강남역, 역삼역, 선릉역);
         });
     }
 
@@ -199,7 +201,7 @@ public class LineServiceTest {
 
         assertAll(() -> {
             assertThat(이호선.getStations()).hasSize(3);
-            assertThat(이호선.getStations()).containsExactly(new Station[] { 강남역, 역삼역, 선릉역 });
+            assertThat(이호선.getStations()).containsExactly(강남역, 역삼역, 선릉역);
         });
     }
 
@@ -234,6 +236,19 @@ public class LineServiceTest {
                 lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 200));
             })
             .withMessage("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("지하철 노선 중간에도 구간이 추가가 되는지 테스트 합니다.")
+    void insertBetweenSection() {
+        lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 삼성역.getId(), 20));
+        lineService.addSection(이호선.getId(), new SectionRequest(선릉역.getId(), 삼성역.getId(), 6));
+        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 선릉역.getId(), 4));
+
+        assertAll(() -> {
+            assertThat(이호선.getStations()).hasSize(4);
+            assertThat(이호선.getStations()).containsExactly(강남역,역삼역,선릉역,삼성역);
+        });
     }
 
 }
