@@ -10,6 +10,7 @@ import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class Graph {
 
@@ -27,23 +28,13 @@ public class Graph {
     }
 
     public List<Station> getShortestPath(Station startStation, Station arrivalStation) {
-        if (startStation == null || arrivalStation == null) {
-            throw new CannotFindPathException();
-        }
-
-        GraphPath path = dijkstraShortestPath.getPath(startStation, arrivalStation);
-        if (path == null) {
-            throw new NotConnectedPathException();
-        }
-
+        GraphPath path = createGraphPath(startStation, arrivalStation);
         return path.getVertexList();
     }
 
     public int getShortestDistance(Station startStation, Station arrivalStation) {
-        if (startStation == null || arrivalStation == null) {
-            throw new CannotFindPathException();
-        }
-        return (int) dijkstraShortestPath.getPath(startStation, arrivalStation).getWeight();
+        GraphPath path = createGraphPath(startStation, arrivalStation);
+        return (int) path.getWeight();
     }
 
     private void initGraph(List<Line> lines) {
@@ -65,5 +56,18 @@ public class Graph {
                 .flatMap(Collection::stream)
                 .distinct()
                 .forEach(section -> graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance()));
+    }
+
+    private GraphPath createGraphPath(Station startStation, Station arrivalStation) {
+        if (Objects.isNull(startStation) || Objects.isNull(arrivalStation)) {
+            throw new CannotFindPathException();
+        }
+
+        GraphPath path = dijkstraShortestPath.getPath(startStation, arrivalStation);
+        if (Objects.isNull(path)) {
+            throw new NotConnectedPathException();
+        }
+
+        return path;
     }
 }
