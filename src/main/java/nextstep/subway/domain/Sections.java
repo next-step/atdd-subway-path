@@ -99,13 +99,6 @@ public class Sections {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    private Section findLastSection() {
-        if (lastIndex() < EMPTY_VALUE) {
-            throw new NotExistSectionException();
-        }
-        return values.get(lastIndex());
-    }
-
     private int lastIndex() {
         return values.size() - ONE;
     }
