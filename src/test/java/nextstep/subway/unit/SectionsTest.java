@@ -23,8 +23,8 @@ public class SectionsTest {
     void setup() {
         이호선 = new Line("2호선", "bg-green-600");
 
-        강남역 = new Station("강남역");
-        역삼역 = new Station("역삼역");
+        강남역 = new Station(1L, "강남역");
+        역삼역 = new Station(2L, "역삼역");
     }
 
     @Test

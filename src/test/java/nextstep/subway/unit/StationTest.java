@@ -12,7 +12,7 @@ public class StationTest {
     @Test
     @DisplayName("역을 생성한다.")
     void createStation() {
-        Station 강남역 = new Station("강남역");
+        Station 강남역 = new Station(1L, "강남역");
 
         assertThat(강남역.getName()).isEqualTo("강남역");
     }

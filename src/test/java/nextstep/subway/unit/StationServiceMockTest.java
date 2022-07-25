@@ -33,7 +33,7 @@ public class StationServiceMockTest {
     @Test
     @DisplayName("지하철 역을 추가한다.")
     void createStation() {
-        given(stationRepository.save(any())).willReturn(new Station("강남역"));
+        given(stationRepository.save(any())).willReturn(new Station(1L, "강남역"));
 
         StationResponse 강남역 = stationService.saveStation(new StationRequest("강남역"));
 
@@ -43,8 +43,8 @@ public class StationServiceMockTest {
     @Test
     @DisplayName("지하철 목록을 조회힌다.")
     void findAllStation() {
-        Station 강남역 = new Station("강남역");
-        Station 역삼역 = new Station("역삼역");
+        Station 강남역 = new Station(1L, "강남역");
+        Station 역삼역 = new Station(2L, "역삼역");
         List<StationResponse> 비교값 = List.of(강남역, 역삼역).stream()
             .map(StationResponse::of)
             .collect(Collectors.toList());
@@ -59,11 +59,11 @@ public class StationServiceMockTest {
     @Test
     @DisplayName("지하철 역을 조회한다.")
     void findByStation() {
-        given(stationRepository.findById(any())).willReturn(Optional.of(new Station("강남역")));
+        given(stationRepository.findById(any())).willReturn(Optional.of(new Station(1L, "강남역")));
 
         Station 강남역 = stationService.findById(1L);
 
-        assertThat(강남역).isEqualTo(new Station("강남역"));
+        assertThat(강남역).isEqualTo(new Station(1L, "강남역"));
     }
 
     @Test

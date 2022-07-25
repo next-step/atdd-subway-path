@@ -21,7 +21,15 @@ public class Station {
     private String name;
 
     @Builder
-    public Station(String name) {
+    public Station(Long id, String name) {
+        this.id = id;
         this.name = name;
     }
+
+    public static Station of(String name) {
+        return Station.builder()
+            .name(name)
+            .build();
+    }
+
 }
