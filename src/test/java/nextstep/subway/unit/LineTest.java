@@ -306,8 +306,7 @@ class LineTest {
                 () -> assertThat(stations).hasSize(2),
                 () -> assertThat(stations).containsExactly(강남역, 정자역),
                 () -> assertThat(sections).hasSize(1),
-                () -> assertThat(sections).extracting("distance")
-                        .isEqualTo(List.of(15))
+                () -> assertThat(sections).extracting("distance").containsExactly(15)
         );
     }
 
