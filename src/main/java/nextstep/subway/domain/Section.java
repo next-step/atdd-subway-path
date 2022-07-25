@@ -26,7 +26,7 @@ public class Section {
     protected Section() {/*no-op*/}
 
     public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
-        if (upStation == null || downStation == null || distance == 0) {
+        if (upStation == null || downStation == null || distance < 1) {
             throw new IllegalArgumentException();
         }
 
