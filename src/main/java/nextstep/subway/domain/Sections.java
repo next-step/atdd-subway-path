@@ -28,27 +28,35 @@ public class Sections {
 	}
 
 	public void add(Line line, Station upStation, Station downStation, int distance) {
-
 		validateStations(upStation, downStation);
+		addSectionWithCondition(line, upStation, downStation, distance);
+	}
+
+	private void addSectionWithCondition(Line line, Station upStation, Station downStation, int distance) {
 
 		if (isStartWithUpStation(upStation)) {
 			Section section = getSectionMatchingUpStation(upStation);
-
 			validateDistance(distance, section);
-
-			this.sections.remove(section);
-			this.sections.add(new Section(line, downStation, section.getDownStation(), modifiedDistance(section.getDistance(), distance)));
-			this.sections.add(new Section(line, upStation, downStation, distance));
+			addSectionInMiddle(line, upStation, downStation, distance, section);
 			return;
 		}
 
 		if (sameAsOriginUpStationAndNewDownStation(downStation)) {
 			Section section = getSectionMatchingUpStation(downStation);
-
-			this.sections.add(sections.indexOf(section), new Section(line, upStation, downStation, distance));
+			addSectionInFront(line, upStation, downStation, distance, section);
 			return;
 		}
 
+		this.sections.add(new Section(line, upStation, downStation, distance));
+	}
+
+	private void addSectionInFront(Line line, Station upStation, Station downStation, int distance, Section section) {
+		this.sections.add(sections.indexOf(section), new Section(line, upStation, downStation, distance));
+	}
+
+	private void addSectionInMiddle(Line line, Station upStation, Station downStation, int distance, Section section) {
+		this.sections.remove(section);
+		this.sections.add(new Section(line, downStation, section.getDownStation(), modifiedDistance(section.getDistance(), distance)));
 		this.sections.add(new Section(line, upStation, downStation, distance));
 	}
 
