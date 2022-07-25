@@ -1,6 +1,5 @@
 package nextstep.subway.acceptance;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
+import static nextstep.subway.acceptance.PathSteps.최단_경로_조회;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 
 public class PathAcceptanceTest extends AcceptanceTest {
@@ -54,16 +54,19 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("출발역이 존재하지 않는경우 예외발생")
     @Test
+    public void not_exists_start_station() {
+        // when
+        ExtractableResponse<Response> response = 최단_경로_조회(없는역, 강남역);
+
+        // then
+        생성_실패_확인(response, HttpStatus.NOT_FOUND, "해당 역을 찾을 수 없습니다");
+    }
+
+    @DisplayName("도착역이 존재하지 않는경우 예외발생")
+    @Test
     public void not_exists_arrival_station() {
         // when
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .queryParam("source", 없는역)
-                .queryParam("target", 강남역)
-                .when()
-                .get("/paths")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 최단_경로_조회(강남역, 없는역);
 
         // then
         생성_실패_확인(response, HttpStatus.NOT_FOUND, "해당 역을 찾을 수 없습니다");
