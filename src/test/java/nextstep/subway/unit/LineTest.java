@@ -245,9 +245,9 @@ class LineTest {
         );
     }
 
-    @DisplayName("지하철 노선에 특정 구간 제거")
+    @DisplayName("지하철 노선에 마지막 구간 제거")
     @Test
-    void removeSection() {
+    void removeLastSection() {
         Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
         Section 신논현_정자 = Section.of(신논현역, 정자역, 5);
 
@@ -261,6 +261,51 @@ class LineTest {
         assertAll(
                 () -> assertThat(stations).hasSize(2),
                 () -> assertThat(stations).containsExactly(강남역, 신논현역)
+        );
+    }
+
+    @DisplayName("지하철 노선에 처음 구간 제거")
+    @Test
+    void removeFirstSection() {
+        Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
+        Section 신논현_정자 = Section.of(신논현역, 정자역, 5);
+
+        신분당선.addSection(강남_신논현);
+        신분당선.addSection(신논현_정자);
+
+        신분당선.removeSection(강남역);
+
+        List<Station> stations = 신분당선.allStations();
+        List<Section> sections = 신분당선.getSections();
+
+        assertAll(
+                () -> assertThat(stations).hasSize(2),
+                () -> assertThat(stations).containsExactly(신논현역, 정자역),
+                () -> assertThat(sections).hasSize(1),
+                () -> assertThat(sections).extracting("distance")
+                        .isEqualTo(List.of(5))
+        );
+    }
+
+    @DisplayName("지하철 노선에 중간 구간 제거")
+    @Test
+    void removeMiddleSection() {
+        Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
+        Section 신논현_정자 = Section.of(신논현역, 정자역, 5);
+
+        신분당선.addSection(강남_신논현);
+        신분당선.addSection(신논현_정자);
+
+        신분당선.removeSection(신논현역);
+
+        List<Station> stations = 신분당선.allStations();
+        List<Section> sections = 신분당선.getSections();
+
+        assertAll(
+                () -> assertThat(stations).hasSize(2),
+                () -> assertThat(stations).containsExactly(강남역, 정자역),
+                () -> assertThat(sections).hasSize(1),
+                () -> assertThat(sections).extracting("distance").containsExactly(15)
         );
     }
 
@@ -288,19 +333,5 @@ class LineTest {
         assertThatThrownBy(() -> 신분당선.removeSection(판교역))
                 .isInstanceOf(DeleteSectionException.class)
                 .hasMessage("삭제하려는 역이 노선에 등록되지 않은 역입니다.");
-    }
-
-    @DisplayName("삭제하려는 역이 마지막 구간의 역이 아닐 경우 예외")
-    @Test
-    void removeNotLastStationException() {
-        Section 강남_신논현 = Section.of(강남역, 신논현역, 10);
-        Section 신논현_정자 = Section.of(신논현역, 정자역, 5);
-
-        신분당선.addSection(강남_신논현);
-        신분당선.addSection(신논현_정자);
-
-        assertThatThrownBy(() -> 신분당선.removeSection(신논현역))
-                .isInstanceOf(DeleteSectionException.class)
-                .hasMessage("삭제하려는 역이 마지막 구간의 역이 아닙니다.");
     }
 }

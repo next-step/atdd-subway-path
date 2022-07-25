@@ -71,3 +71,43 @@
       1. `역 사이에 새로운 역을 등록`할 경우 기존 역 사이 `길이보다 크거나 같으면` 등록할 수 없음
       2. `상행역과 하행역이 이미 노선에 모두 등록`되어 있다면 추가할 수 없음
       3. `상행역과 하행역 둘 중 하나도 포함되어있지 않으면` 추가할 수 없음
+
+### step 3 - 지하철 구간 삭제 리팩터링
+0. step 2 피드백
+   1. Section 에서 자신을 가리키는 `this`를 사용하여 distance 를 더 명확하게 나타내주자
+   2. Sections 에서 `sameNewAndExistingDownStation` 메서드에서 중복되는 로직이 있는데 줄일 수 있을 듯!
+   3. Sections 에서 `validateAddSection` 에서 stream 하는 부분을 메서드로 추출하는 것도 좋아보임
+   4. Sections 에서 `firstSection` 하는 메서드에서 elseThrow 에서 예외 메시지를 같이 던져주면 좋아보임
+   5. RestControllerAdvice 와 ControllerAdvice 두 개를 따로 만든 이유?
+      1. ControllerAdvice 에서 ResponseEntity 를 사용해도 ResponseBody 가 붙은 거처럼  작동하는지 몰랐습니다.
+   6. 만든 CustomError 에 대한 부분이 아니더라도 다른 `5XX`, `4XX` 에러를 정의해 놓으면 `같은 에러 포멧으로 전달`해줄 수 있다.
+   7. 미션을 진행하면서 비즈니스 로직의 추가에 따라 당연히 코드 라인이 늘어가는데 `가독성`을 신경써서 리팩터링을 진행하자
+   8. 현성님의 방식
+      1. `인수 테스트 작성`을 통해 요구사항과 기능 전반에 대한 이해를 선행
+      2. 내부 구현에 대한 `설계 흐름`을 구상
+      3. 설계가 끝나면 도메인부터 차근차근 TDD 로 기능 구현
+1. 기능 요구사항
+   1. step 2 와 동일
+2. 프로그래밍 요구사항
+   1. step 2 와 동일
+3. 요구사항 설명
+   1. 기존에는 마지막 역 삭제만 가능했는데 `위치에 상관 없이 삭제`가 가능하도록 수정
+   2. 종점이 제거될 경우 다음으로 오던 역이 종점이 됨
+   3. 중간역이 제거될 경우 재배치를 함
+      1. 노선에 A-B-C 역이 연결되어 있을 때 B역을 제거할 경우 A-C로 재배치 됨
+      2. 거리는 `두 구간의 거리의 합`으로 정함
+4. 개발 전 내부 구현에 대한 `설계 흐름`
+   1. DELETE /lines/1/sections?stationId=2
+   2. `(Service Layer)` URL 에 있는 lineId PathVariable 을 통해 Line(노선)을 찾는다.
+   3. `(Service Layer)` URL 에 있는 stationId RequestParam 을 통해 삭제하려는 Station(지하철 역)을 찾는다.
+   4. `(Service Layer)` 찾은 Line(노선)에다가 stationId 를 통해 제거하고자 하는 Station(지하철 역)을 매개 변수로하여 구간 제거 (removeSection)라는 메시지를 보낸다.
+   5. `(Line Domain Layer)` Line(노선)내에 있는 sections 에 구간 제거(removeSection)라는 역할을 위임하도록 또 Sections(구간 집합, 일급 콜렉션)에 메시지를 보낸다.
+   6. `(Sections Domain Layer)` 여기서 비즈니스 로직을 구현한다.
+      1. `(Exception)` 구간이 하나인 노선 (firstSection().equals(lastSection)) 이라면 제거할 수 없음
+      2. `(Exception)` 노선에 등록되어 있지 않은 역을 제거할 수 없음
+      3. `(Logic)` firstSection(), lastSection() 을 통해 상행인지, 하행인지 확인한다.
+         1. 양 끝에 위치한 종점역이라면 별 다른 처리 없이 해당 Section(구간)을 제거하면 된다.
+      4. `(Logic)` 양 끝에 위치한 종점역이 아니라면? 삭제하려는 역이 upStation 으로 등록된 Section 과 downStation 으로 등록된 2개의 Section 을 찾는다.
+         1. 2개의 Section 중 상행인 Section 을 골라서 해당 Section 의 downStation 을 하행 Section 의 upStation 으로 값을 바꾼다.
+         2. 또한, 상행인 Section 의 distance 에 하행 Section 의 distance 값을 `더하여 길이를 늘려준다.`
+         3. 그 이후에 하행 Section 을 `List remove` 를 통해 제거해준다. (JPA Dirty Checking 을 통해 DELETE 메서드 수행)

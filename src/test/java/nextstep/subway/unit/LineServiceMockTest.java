@@ -2,15 +2,14 @@ package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static nextstep.subway.fixture.ConstStation.*;
@@ -83,6 +82,36 @@ public class LineServiceMockTest {
                 () -> assertThat(findLine.getSections()).hasSize(4),
                 () -> assertThat(findLine.allStations()).extracting("name")
                         .containsExactly("판교역", "강남역", "정자역", "신논현역", "이매역")
+        );
+    }
+
+    @Test
+    @DisplayName("중간 구간 제거")
+    void removeMiddleSection() {
+        // given
+        when(stationRepository.findById(1L)).thenReturn(Optional.of(강남역));
+        when(stationRepository.findById(2L)).thenReturn(Optional.of(신논현역));
+        when(stationRepository.findById(3L)).thenReturn(Optional.of(정자역));
+        when(lineRepository.findById(1L)).thenReturn(Optional.of(Line.of(NEW_BUN_DANG, BG_RED_600)));
+        LineService lineService = new LineService(lineRepository, stationRepository);
+
+        lineService.addSection(1L, SectionRequest.of(1L, 2L, 10));
+        lineService.addSection(1L, SectionRequest.of(2L, 3L, 5));
+
+        // when
+        lineService.deleteSection(1L, 2L);
+
+        // then
+        Line findLine = lineService.findLineById(1L);
+
+        List<Section> sections = findLine.getSections();
+        List<Station> stations = findLine.allStations();
+
+        assertAll(
+                () -> assertThat(sections).hasSize(1),
+                () -> assertThat(sections).extracting("distance").containsExactly(15),
+                () -> assertThat(stations).hasSize(2),
+                () -> assertThat(stations).extracting("name").containsExactly("강남역", "정자역")
         );
     }
 }
