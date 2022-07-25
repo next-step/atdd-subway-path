@@ -5,6 +5,7 @@ import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
+import nextstep.subway.exception.NonExistentLineException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -77,6 +79,13 @@ class LineServiceTest {
         assertThat(lineService.findById(이호선.getId())).isEqualTo(이호선);
     }
 
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void findByIdNonExistentLine() {
+        assertThatThrownBy(() -> lineService.findById(1000L))
+                .isInstanceOf(NonExistentLineException.class);
+    }
+
     @DisplayName("지하철 노선 정보를 업데이트한다.")
     @Test
     void updateLine() {
@@ -86,6 +95,13 @@ class LineServiceTest {
 
         LineResponse 변경된_이호선 = lineService.findById(이호선.getId());
         assertThat(변경된_이호선).isEqualTo(new LineResponse(이호선.getId(), "3호선", "green", 이호선.getStations()));
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선의 정보를 업데이트할 수 없다.")
+    @Test
+    void updateNonExistentLine() {
+        assertThatThrownBy(() -> lineService.updateLine(1000L, new LineRequest("3호선", "green", null, null, 0)))
+                .isInstanceOf(NonExistentLineException.class);
     }
 
     @DisplayName("지하철 노선을 삭제한다.")
@@ -111,6 +127,13 @@ class LineServiceTest {
         assertThat(일호선.getSections()).contains(새로운_구간);
     }
 
+    @DisplayName("존재하지 않는 지하철 노선에 구간을 추가할 수 없다.")
+    @Test
+    void addSectionAtNonExistentLine() {
+        assertThatThrownBy(() -> lineService.addSection(1000L, new SectionRequest(강남역.getId(), 교대역.getId(), 10)))
+                .isInstanceOf(NonExistentLineException.class);
+    }
+
     @DisplayName("지하철 노선에서 구간을 삭제한다.")
     @Test
     void deleteSection() {
@@ -121,6 +144,13 @@ class LineServiceTest {
 
         Section 새로운_구간 = new Section(일호선, 강남역, 교대역, 20);
         assertThat(일호선.getSections()).doesNotContain(새로운_구간);
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선에서 구간을 삭제할 수 없다.")
+    @Test
+    void deleteSectionAtNonExistentLine() {
+        assertThatThrownBy(() -> lineService.deleteSection(1000L, 1000L))
+                .isInstanceOf(NonExistentLineException.class);
     }
 
     private Long extractSectionId(Line line) {
