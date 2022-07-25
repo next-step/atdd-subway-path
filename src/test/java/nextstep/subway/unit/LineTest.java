@@ -25,26 +25,24 @@ class LineTest {
                          .downStation(신갈역)
                          .distance(10).build();
         line = new Line("분당선", "yellow");
-        line.addSection(section);
     }
 
     @Test
     void addSection() {
-        // then
-         assertThat(line.isContain(section)).isTrue();
-    }
-
-    @Test
-    void isContain() {
         // when
-        boolean result = line.isContain(section);
+        line.addSection(section);
 
         // then
-        assertThat(result).isTrue();
+        assertThat(line.getSections().size()).isEqualTo(1);
+        assertThat(line.getSections().get(0).getUpStation().getName()).isEqualTo("기흥역");
+        assertThat(line.getSections().get(0).getDownStation().getName()).isEqualTo("신갈역");
     }
 
     @Test
     void getStations() {
+        // given
+        line.addSection(section);
+
         // when
         List<Station> stations = line.getStations();
 
@@ -55,6 +53,9 @@ class LineTest {
 
     @Test
     void removeSection() {
+        // given
+        line.addSection(section);
+
         // when
         line.removeSection(section);
 
