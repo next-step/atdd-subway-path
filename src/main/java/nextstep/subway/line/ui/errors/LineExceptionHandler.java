@@ -5,6 +5,7 @@ import nextstep.subway.common.errors.errorcode.ErrorCode;
 import nextstep.subway.common.errors.utils.ExceptionHandlerUtils;
 import nextstep.subway.line.domain.exception.CannotAddSectionException;
 import nextstep.subway.line.domain.exception.CannotDeleteSectionException;
+import nextstep.subway.line.domain.exception.CannotSubtractSectionException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,13 @@ public class LineExceptionHandler {
     @ExceptionHandler(CannotAddSectionException.class)
     public ResponseEntity<ErrorResponse> cannotAddSectionException(CannotAddSectionException e) {
         ErrorCode errorCode = LineErrorCode.CANT_ADD_SECTION;
+        ErrorResponse errorResponse = ExceptionHandlerUtils.toErrorResponse(errorCode, e);
+        return ExceptionHandlerUtils.toResponseEntity(errorCode, errorResponse);
+    }
+
+    @ExceptionHandler(CannotSubtractSectionException.class)
+    public ResponseEntity<ErrorResponse> cannotSubtractSectionException(CannotSubtractSectionException e) {
+        ErrorCode errorCode = LineErrorCode.CANT_SUBTRACT_SECTION;
         ErrorResponse errorResponse = ExceptionHandlerUtils.toErrorResponse(errorCode, e);
         return ExceptionHandlerUtils.toResponseEntity(errorCode, errorResponse);
     }

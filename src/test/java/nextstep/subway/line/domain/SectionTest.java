@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.domain.exception.CannotSubtractSectionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,7 +38,7 @@ class SectionTest {
     @MethodSource("provideArgumentsForSubTract_Exception")
     void subtract_Exception(Section longSection, Section shortSection) {
         assertThatThrownBy(() -> longSection.subtract(shortSection))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(CannotSubtractSectionException.class)
                 .hasMessage("상행역이나 하행역이 겹치는 구간끼리만 뺄 수 있습니다.");
     }
 

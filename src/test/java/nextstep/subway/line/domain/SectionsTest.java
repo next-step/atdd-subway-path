@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.line.domain.exception.CannotAddSectionException;
 import nextstep.subway.line.domain.exception.CannotDeleteSectionException;
+import nextstep.subway.line.domain.exception.CannotSubtractSectionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -67,12 +68,12 @@ class SectionsTest {
 
         // when + then
         assertThatThrownBy(() -> sections.add(new Section(LINE, 1L, 2L, distance)))
-                .isInstanceOf(CannotAddSectionException.class)
-                .hasMessage("기존 구간 사이에 추가할 구간의 길이가 기존 구간의 길이보다 크거나 같을 수 없습니다.");
+                .isInstanceOf(CannotSubtractSectionException.class)
+                .hasMessage("빼려는 구간의 길이가 기존 구간의 길이보다 크거나 같을 수 없습니다.");
 
         assertThatThrownBy(() -> sections.add(new Section(LINE, 2L, 3L, distance)))
-                .isInstanceOf(CannotAddSectionException.class)
-                .hasMessage("기존 구간 사이에 추가할 구간의 길이가 기존 구간의 길이보다 크거나 같을 수 없습니다.");
+                .isInstanceOf(CannotSubtractSectionException.class)
+                .hasMessage("빼려는 구간의 길이가 기존 구간의 길이보다 크거나 같을 수 없습니다.");
     }
 
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")

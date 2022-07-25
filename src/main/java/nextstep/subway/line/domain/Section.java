@@ -35,7 +35,9 @@ public class Section {
 
     public Section subtract(Section anotherSection) {
         int subtractedDistance = this.distance - anotherSection.distance;
-        assert subtractedDistance > 0;
+        if (subtractedDistance <= 0) {
+            throw new CannotSubtractSectionException("빼려는 구간의 길이가 기존 구간의 길이보다 크거나 같을 수 없습니다.");
+        }
 
         if (startsTogether(anotherSection)) {
             return new Section(line, anotherSection.getDownStationId(), downStationId, subtractedDistance);
@@ -45,7 +47,7 @@ public class Section {
             return new Section(line, upStationId, anotherSection.getUpStationId(), subtractedDistance);
         }
 
-        throw new IllegalArgumentException("상행역이나 하행역이 겹치는 구간끼리만 뺄 수 있습니다.");
+        throw new CannotSubtractSectionException("상행역이나 하행역이 겹치는 구간끼리만 뺄 수 있습니다.");
     }
 
     public boolean startsOrEndsTogether(Section anotherSection) {
