@@ -7,6 +7,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.exception.paths.CannotFindPathException;
 import nextstep.subway.exception.paths.EmptyLineException;
 import nextstep.subway.exception.paths.NotConnectedPathException;
+import nextstep.subway.exception.paths.SameStartArrivalStationException;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -121,6 +122,21 @@ public class GraphTest {
         assertThatThrownBy(actual)
                 .isInstanceOf(NotConnectedPathException.class)
                 .hasMessage("도달할 수 없는 역의 최단경로를 찾을 수 없습니다");
+    }
+
+    @DisplayName("출발역과 도착역이 같은경우 예외발생")
+    @Test
+    public void start_arrival_same_station() {
+        // given
+        Graph graph = new Graph(List.of(이호선, 삼호선, 신분당선));
+
+        // when
+        ThrowableAssert.ThrowingCallable actual = () -> graph.getShortestPath(강남역, 강남역);
+
+        // then
+        assertThatThrownBy(actual)
+                .isInstanceOf(SameStartArrivalStationException.class)
+                .hasMessage("출발역과 도착역이 같은경우 최단경로를 찾을 수 없습니다");
     }
 
     @DisplayName("Graph 도메인을 통해 최단 경로를 찾아온다")

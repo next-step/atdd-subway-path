@@ -11,8 +11,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class PathsExceptionHandler {
 
     @ExceptionHandler({NotConnectedPathException.class})
-    public ResponseEntity<ErrorResponse> notFoundExceptionHandler(BusinessException e) {
+    public ResponseEntity<ErrorResponse> notFoundPathExceptionHandler(BusinessException e) {
         ErrorResponse response = ErrorResponse.of(HttpStatus.NOT_FOUND, e);
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> sameStationExceptionHandler(SameStartArrivalStationException e) {
+        ErrorResponse response = ErrorResponse.of(HttpStatus.BAD_REQUEST, e);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

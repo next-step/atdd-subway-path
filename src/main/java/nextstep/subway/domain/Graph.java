@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.exception.paths.CannotFindPathException;
 import nextstep.subway.exception.paths.EmptyLineException;
 import nextstep.subway.exception.paths.NotConnectedPathException;
+import nextstep.subway.exception.paths.SameStartArrivalStationException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -61,6 +62,10 @@ public class Graph {
     private GraphPath createGraphPath(Station startStation, Station arrivalStation) {
         if (Objects.isNull(startStation) || Objects.isNull(arrivalStation)) {
             throw new CannotFindPathException();
+        }
+
+        if (startStation.equals(arrivalStation)) {
+            throw new SameStartArrivalStationException();
         }
 
         GraphPath path = dijkstraShortestPath.getPath(startStation, arrivalStation);
