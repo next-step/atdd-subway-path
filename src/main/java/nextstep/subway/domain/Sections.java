@@ -58,12 +58,6 @@ public class Sections {
                 .ifPresent(section -> section.changeExistingDownStationToNewUpStation(newSection));
     }
 
-    private Optional<Section> findSectionByStation(Predicate<Section> sectionPredicate) {
-        return sections.stream()
-                .filter(sectionPredicate)
-                .findFirst();
-    }
-
     public List<Station> allStations() {
         if (sections.isEmpty()) {
             return emptyList();
@@ -94,14 +88,8 @@ public class Sections {
 
     public void removeSection(Station station) {
         validateRemoveSection(station);
-
-        if (firstSection().getUpStation().equals(station)) {
-            sections.remove(firstSection());
-            return;
-        }
-
-        if (lastSection().getDownStation().equals(station)) {
-            sections.remove(lastSection());
+        if (!removeFirstOrLastSection(station)) {
+            removeMiddleSection(station);
         }
     }
 
@@ -113,6 +101,36 @@ public class Sections {
         if (!allStations().contains(station)) {
             throw new DeleteSectionException("삭제하려는 역이 노선에 등록되지 않은 역입니다.");
         }
+    }
+
+    private boolean removeFirstOrLastSection(Station station) {
+        if (firstSection().getUpStation().equals(station)) {
+            sections.remove(firstSection());
+            return true;
+        }
+
+        if (lastSection().getDownStation().equals(station)) {
+            sections.remove(lastSection());
+            return true;
+        }
+        return false;
+    }
+
+    private void removeMiddleSection(Station station) {
+        Section sectionWithUpStation = findSectionByStation(matchUpStation(station))
+                .orElseThrow(() -> new SectionNotFoundException("제거하려는 역을 상행역으로 갖는 구간이 없습니다."));
+
+        Section sectionWithDownStation = findSectionByStation(matchDownStation(station))
+                .orElseThrow(() -> new SectionNotFoundException("제거하려는 역을 하행역으로 갖는 구간이 없습니다."));
+
+        sectionWithDownStation.connectStation(sectionWithUpStation);
+        sections.remove(sectionWithUpStation);
+    }
+
+    private Optional<Section> findSectionByStation(Predicate<Section> sectionPredicate) {
+        return sections.stream()
+                .filter(sectionPredicate)
+                .findFirst();
     }
 
     public Section firstSection() {

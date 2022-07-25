@@ -56,6 +56,11 @@ public class Section {
         }
     }
 
+    public void connectStation(Section sectionWithUpStation) {
+        this.downStation = sectionWithUpStation.downStation;
+        this.distance += sectionWithUpStation.distance;
+    }
+
     public void line(Line line) {
         this.line = line;
     }
