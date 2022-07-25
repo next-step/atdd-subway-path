@@ -25,27 +25,21 @@ public class Sections {
 
         validateAddedSection(addedSection);
 
-        if (isFirstOrLastSection(addedSection)) {
+        if (isHeadOrTailSection(addedSection)) {
             sections.add(addedSection);
             return;
         }
 
-        Section includingSection = sections.stream()
-                .filter(s -> s.startsOrEndsTogether(addedSection))
-                .findAny()
-                .orElseThrow(() -> new CannotAddSectionException("추가할 수 없는 구간입니다."));
+        Section connectedSection = findConnectedSection(addedSection);
+        Section subtractedSection = connectedSection.subtract(addedSection);
 
-        sections.remove(includingSection);
+        sections.remove(connectedSection);
         sections.add(addedSection);
-        sections.add(includingSection.subtract(addedSection));
-    }
-
-    private boolean isFirstOrLastSection(Section addedSection) {
-        return firstSection().isAfter(addedSection) || lastSection().isBefore(addedSection);
+        sections.add(subtractedSection);
     }
 
     private void validateAddedSection(Section addedSection) {
-        List<Long> stationIds = stationIds();
+        List<Long> stationIds = getOrderedStationIds();
 
         boolean containsUpStation = stationIds.contains(addedSection.getUpStationId());
         boolean containsDownStation = stationIds.contains(addedSection.getDownStationId());
@@ -57,13 +51,17 @@ public class Sections {
         if (!containsUpStation && !containsDownStation) {
             throw new CannotAddSectionException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 구간을 추가할 수 없습니다.");
         }
+    }
 
-        sections.stream()
-                .filter(s -> s.startsOrEndsTogether(addedSection) && s.isShorterThanOrEqualWith(addedSection))
+    private boolean isHeadOrTailSection(Section addedSection) {
+        return firstSection().isAfter(addedSection) || lastSection().isBefore(addedSection);
+    }
+
+    private Section findConnectedSection(Section section) {
+        return sections.stream()
+                .filter(s -> s.startsOrEndsTogether(section))
                 .findAny()
-                .ifPresent(s -> {
-                    throw new CannotAddSectionException("기존 구간 사이에 추가할 구간의 길이가 기존 구간의 길이보다 크거나 같을 수 없습니다.");
-                });
+                .orElseThrow();
     }
 
     public void removeSection(Long stationId) {
