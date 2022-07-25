@@ -50,6 +50,10 @@ public class Line {
         return sections.isEmptySections();
     }
 
+    public List<Section> getSections() {
+        return sections.getSections();
+    }
+
     public List<Station> getStations() {
         return sections.getStations();
     }

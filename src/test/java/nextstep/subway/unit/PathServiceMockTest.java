@@ -3,6 +3,8 @@ package nextstep.subway.unit;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.PathService;
 import nextstep.subway.applicaion.StationService;
+import nextstep.subway.applicaion.dto.PathResponse;
+import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
@@ -16,7 +18,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -94,5 +101,25 @@ public class PathServiceMockTest {
         assertThatThrownBy(actual)
                 .isInstanceOf(NotFoundStationException.class)
                 .hasMessage("해당 역을 찾을 수 없습니다");
+    }
+
+    @Test
+    public void find_shortest_path() {
+        // given
+        given(stationService.findById(2L)).willReturn(강남역);
+        given(stationService.findById(4L)).willReturn(남부터미널역);
+        given(lineService.getAllLines()).willReturn(List.of(이호선, 삼호선, 신분당선));
+
+        // when
+        PathResponse response = pathService.findShortestPath(2L, 4L);
+        List<String> collect = response.getStations().stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
+
+        // then
+        assertAll(
+                () -> assertThat(collect).containsExactly("강남역", "양재역", "남부터미널역"),
+                () -> assertThat(response.getDistance()).isEqualTo(8)
+        );
     }
 }

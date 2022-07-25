@@ -210,4 +210,8 @@ public class Sections {
                 .map(this::getLastDownStation)
                 .orElse(downStation);
     }
+
+    public List<Section> getSections() {
+        return new ArrayList<>(sections);
+    }
 }
