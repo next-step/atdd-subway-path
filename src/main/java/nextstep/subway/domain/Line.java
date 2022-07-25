@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 @Entity
 public class Line {
@@ -14,8 +13,11 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    //@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    //private List<Section> sections = new ArrayList<>();
+
+    @Embedded
+    private Sections sections;
 
     public Line() {
     }
@@ -23,6 +25,7 @@ public class Line {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+        this.sections = new Sections();
     }
 
     public Long getId() {
@@ -50,26 +53,22 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 
-    public Section getUpStation() {
-        return sections.stream()
-                .filter(sec1 -> sections.stream()
-                        .noneMatch(sec2 -> sec1.getUpStation().equals(sec2.getDownStation())))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("WRONG_SECTION_IMFORMATION"));
-
+    public Section getFirstSection() {
+        return sections.getFirstStation();
     }
 
-    public Section getDownStation() {
-        return sections.stream()
-                .filter(sec1 -> sections.stream()
-                        .noneMatch(sec2 -> sec1.getDownStation().equals(sec2.getUpStation())))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("WRONG_SECTION_IMFORMATION"));
-    }
-
+    /*
+        public Section getDownStation() {
+            return sections.stream()
+                    .filter(sec1 -> sections.stream()
+                            .noneMatch(sec2 -> sec1.getDownStation().equals(sec2.getUpStation())))
+                    .findAny()
+                    .orElseThrow(() -> new IllegalArgumentException("WRONG_SECTION_IMFORMATION"));
+        }
+    */
     public List<Section> getSortedSections(List<Section> sections, Section firstSection) {
         List<Section> results = new ArrayList<>();
         results.add(firstSection);
@@ -86,6 +85,8 @@ public class Line {
     }
 
     public void addSection(Section section) {
+        sections.addSection(section);
+        /*
         //기존 노선의 구간 크기 확인
         int sectionSize = this.sections.size();
 
@@ -104,25 +105,32 @@ public class Line {
                 updateSection(needUpdateSection);
             }
         }
+
+         */
     }
 
-    public void updateSection(Section needUpdateSection) {
-        int index = IntStream.range(0, sections.size())
-                .filter(i -> sections.get(i).getId().equals(needUpdateSection.getId()))
-                .findAny().orElseThrow(() -> new IllegalArgumentException("WRONG_SECTION_INFOMATION"));
-        sections.set(index, needUpdateSection);
-    }
-
+    /*
+        public void updateSection(Section needUpdateSection) {
+            int index = IntStream.range(0, sections.size())
+                    .filter(i -> sections.get(i).getId().equals(needUpdateSection.getId()))
+                    .findAny().orElseThrow(() -> new IllegalArgumentException("WRONG_SECTION_INFOMATION"));
+            sections.set(index, needUpdateSection);
+        }
+    */
     public List<Station> getStations() {
+        /*
         List<Station> stations = new ArrayList<>();
         stations.add(sections.get(0).getUpStation());
         for (Section section : sections) {
             stations.add(section.getDownStation());
         }
         return stations;
+        */
+        return sections.getStations();
     }
 
-    public void removeSection(int lastSection) {
-        this.sections.remove(lastSection);
+    public void removeSection(Station station) {
+        //this.sections.remove(lastSection);
+        sections.removeSection(station);
     }
 }

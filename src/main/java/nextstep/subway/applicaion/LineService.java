@@ -89,7 +89,7 @@ public class LineService {
         }
 
         //순서대로 삽입하기
-        List<Section> sortedSections = line.getSortedSections(line.getSections(), line.getUpStation());
+        List<Section> sortedSections = line.getSortedSections(line.getSections(), line.getFirstSection());
 
 
         List<Station> stations = sortedSections.stream()
@@ -113,6 +113,6 @@ public class LineService {
             throw new IllegalArgumentException();
         }
 
-        line.removeSection(line.getSections().size() - 1);
+        line.removeSection(station);
     }
 }
