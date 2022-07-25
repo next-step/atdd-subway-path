@@ -60,10 +60,6 @@ public class Section {
 		return this.downStation.equals(station);
 	}
 
-	public boolean isSameWithDownStation(long stationId) {
-		return this.downStation.getId() == stationId;
-	}
-
 	public boolean hasSameDownStation(List<Long> stationId) {
 		return stationId.contains(this.downStation.getId());
 	}
@@ -101,10 +97,6 @@ public class Section {
 
 	public void validateOfDistance(SectionDistance distance) {
 		this.distance.validationOfDistance(distance);
-	}
-
-	public void isRemovable(Station station) {
-
 	}
 
 	@Override
