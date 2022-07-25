@@ -83,8 +83,8 @@ public class Sections {
 
 	private void addSectionInMiddleWithUpStation(Line line, Station downStation, int distance, Section section) {
 		this.sections.remove(section);
-		this.sections.add(new Section(line, downStation, section.getDownStation(), modifiedDistance(section.getDistance(), distance)));
 		this.sections.add(new Section(line, section.getUpStation(), downStation, distance));
+		this.sections.add(new Section(line, downStation, section.getDownStation(), modifiedDistance(section.getDistance(), distance)));
 	}
 
 	private void addSectionInMiddleWithDownStation(Line line, Station upStation, int distance, Section section) {

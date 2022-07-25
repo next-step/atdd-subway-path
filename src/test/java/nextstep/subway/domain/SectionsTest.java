@@ -63,8 +63,8 @@ class SectionsTest {
 		//then
 		assertAll(
 				() -> assertThat(stations).hasSize(3),
-				() -> assertThat(sectionsResponse.get(0).getDistance()).isEqualTo(7),
-				() -> assertThat(sectionsResponse.get(1).getDistance()).isEqualTo(3)
+				() -> assertThat(sectionsResponse.get(0).getDistance()).isEqualTo(3),
+				() -> assertThat(sectionsResponse.get(1).getDistance()).isEqualTo(7)
 		);
 	}
 
@@ -229,7 +229,7 @@ class SectionsTest {
 		신분당선에_구간을_추가한다(광교역, 광교중앙역, 2);
 
 		//when
-		sections.removeSection(광교중앙역);
+		sections.removeSection(판교역);
 
 		//then
 		List<Section> response = sections.getSections();
