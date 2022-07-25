@@ -32,6 +32,12 @@ public class ValidExceptionController {
         return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(NotExistElementException.class)
+    public ResponseEntity<ErrorResponse> notExistElementException(NotExistElementException e, HttpServletRequest request){
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value());
+        return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
     private ErrorResponse makeErrorResponse(BindingResult bindingResult, int httpStatus){
         String message = "";
 
