@@ -20,31 +20,29 @@ public class Sections {
         orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public void addSection(Section section) {
-        isEmptySections(section);
-
-        sections.add(section);
-    }
-
-    private void isEmptySections(Section section) {
+    public void addSection(Section insertSection) {
         if(!sections.isEmpty()) {
-            isExistSection(section);
-            isExitsUpStationOrDownStation(section);
+            isExistSection(insertSection);
+            isExitsUpStationOrDownStation(insertSection);
 
-            insertUpStationBetween(section);
-            insertDownStationBetween(section);
+            addSectionProcess(insertSection);
         }
+        sections.add(insertSection);
     }
 
-    private void insertUpStationBetween(Section section) {
-        if (sections.get(0).getUpStation().equals(section.getUpStation())) {
-            sections.get(0).changeDownStationAndDistance(section.getDownStation(), section.getDistance());
-        }
-    }
+    private void addSectionProcess(Section insertSection) {
+        for(int i = 0 ; i < sections.size() ; i++) {
+            Section section = sections.get(i);
 
-    private void insertDownStationBetween(Section section) {
-        if (sections.get(getLastIndexSections()).getDownStation().equals(section.getDownStation())) {
-            sections.get(getLastIndexSections()).changeUpStationAndDistance(section.getUpStation(), section.getDistance());
+            if(section.isDownStationConnection(insertSection)
+                && !(i == 0 && section.getDownStation().equals(insertSection.getUpStation()))) {
+                section.changeDownStation(insertSection.getUpStation(), insertSection.getDistance());
+            }
+
+            if (section.isUpStationConnection(insertSection)
+                && !(i == getLastIndexSections() && section.getUpStation().equals(insertSection.getDownStation()))) {
+                section.changeUpStation(insertSection.getDownStation(), insertSection.getDistance());
+            }
         }
     }
 
@@ -57,16 +55,11 @@ public class Sections {
             });
     }
 
-    private void isExitsUpStationOrDownStation(Section section) {
-        Section upSection = sections.get(0);
-        Section downSection = sections.get(getLastIndexSections());
-
-        if(!upSection.getUpStation().equals(section.getUpStation())
-            && !upSection.getUpStation().equals(section.getDownStation())
-            && !downSection.getDownStation().equals(section.getUpStation())
-            && !downSection.getDownStation().equals(section.getDownStation())) {
-            throw new SectionException("상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 추가할 수 없습니다.");
-        }
+    private Section isExitsUpStationOrDownStation(Section insertSection) {
+        return sections.stream()
+            .filter(section -> section.isConnection(insertSection))
+            .findFirst()
+            .orElseThrow(() -> new SectionException("상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 추가할 수 없습니다."));
     }
 
     public List<Station> getStations() {
@@ -89,19 +82,19 @@ public class Sections {
     private Station findFirstUpStation() {
         return sections.stream()
             .map(Section::getUpStation)
-            .filter(this::isStartStation)
+            .filter(this::isFirstStation)
             .findFirst()
             .orElseThrow(IllegalArgumentException::new);
     }
 
-    private Section findNextLineStation(Station finalDownStation) {
+    private Section findNextLineStation(Station downStation) {
         return sections.stream()
-            .filter(it -> finalDownStation.equals(it.getUpStation()))
+            .filter(it -> downStation.equals(it.getUpStation()))
             .findFirst()
             .orElseThrow(IllegalArgumentException::new);
     }
 
-    private boolean isStartStation(Station station) {
+    private boolean isFirstStation(Station station) {
         return sections.stream()
             .noneMatch(currentStation -> station.equals(currentStation.getDownStation()));
     }

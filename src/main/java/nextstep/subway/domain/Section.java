@@ -48,26 +48,40 @@ public class Section {
         return upStation.equals(section.getUpStation()) && downStation.equals(section.getDownStation());
     }
 
-    private void isOverLength(int insertDistance) {
+    private void checkOverLength(int insertDistance) {
         if(distance <= insertDistance) {
             throw new SectionException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
         }
     }
 
-    private void minuseDistance(int distance) {
+    private void minusDistance(int distance) {
+        checkOverLength(distance);
         this.distance -= distance;
     }
 
-    public void changeDownStationAndDistance(Station station, int distance) {
-        isOverLength(distance);
-        minuseDistance(distance);
+    public void changeUpStation(Station station, int distance) {
+        minusDistance(distance);
         this.upStation = station;
     }
 
-    public void changeUpStationAndDistance(Station station, int distance) {
-        isOverLength(distance);
-        minuseDistance(distance);
+    public void changeDownStation(Station station, int distance) {
+        minusDistance(distance);
         this.downStation = station;
+    }
+
+    public boolean isConnection(Section section) {
+        return isUpStationConnection(section)
+            || isDownStationConnection(section);
+    }
+
+    public boolean isUpStationConnection(Section section) {
+        return upStation.equals(section.getUpStation())
+            || upStation.equals(section.getDownStation());
+    }
+
+    public boolean isDownStationConnection(Section section) {
+        return downStation.equals(section.getUpStation())
+            || downStation.equals(section.getDownStation());
     }
 
 }
