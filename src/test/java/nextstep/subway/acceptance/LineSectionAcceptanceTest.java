@@ -119,6 +119,26 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철역을_찾을수없음(신분당선_노선_정보, 정자역);
     }
 
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 중간 구간 제거를 요청 하면
+     * Then 노선에 구간이 제거된다
+     */
+    @DisplayName("중간 구간을 삭제하면 해당 구간이 삭제된다.")
+    @Test
+    void removeLineMiddleSection() {
+        // given
+        Long 정자역 = 지하철역_생성_요청함("정자역");
+        지하철_노선에_지하철_구간_생성_요청함(신분당선, 양재역, 정자역);
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        ExtractableResponse<Response> 신분당선_노선_정보 = 지하철_노선_조회_요청함(신분당선);
+        지하철역을_찾을수없음(신분당선_노선_정보, 양재역);
+    }
+
     private Long 지하철역_생성_요청함(String name) {
         return 지하철역_생성_요청(name).jsonPath().getLong("id");
     }
