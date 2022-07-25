@@ -8,6 +8,6 @@
 ### 기능 요구사항
 - [x] 지하철 구간 관련 단위 테스트를 완성하세요.
     - [x] 구간 단위 테스트 (LineTest)
-    - [ ] 구간 서비스 단위 테스트 with Mock (LineServiceMockTest)
+    - [x] 구간 서비스 단위 테스트 with Mock (LineServiceMockTest)
     - [ ] 구간 서비스 단위 테스트 without Mock (LineServiceTest)
     - [ ] 단위 테스트를 기반으로 비즈니스 로직을 리팩터링 하세요.

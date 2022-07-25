@@ -1,21 +1,18 @@
 package nextstep.subway.domain;
 
-import javax.persistence.CascadeType;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Embeddable
 public class Sections {
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("id asc")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public List<Section> getSections() {
-        return sections;
+        return this.sections;
     }
 
     public Section getLastSection() {

@@ -44,7 +44,7 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        return LineResponse.from(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
     }
 
     @Transactional
@@ -74,24 +74,24 @@ public class LineService {
     }
 
     private LineResponse createLineResponse(Line line) {
-        return new LineResponse(
+        LineResponse lineResponse = new LineResponse(
                 line.getId(),
                 line.getName(),
                 line.getColor(),
                 createStationResponses(line)
         );
+        return lineResponse;
     }
 
     private List<StationResponse> createStationResponses(Line line) {
         if (line.isEmptySections()) {
             return Collections.emptyList();
         }
-
         List<Station> stations = line.getStations();
-
-        return stations.stream()
+        List<StationResponse> collect = stations.stream()
                 .map(it -> stationService.createStationResponse(it))
                 .collect(Collectors.toList());
+        return collect;
     }
 
     @Transactional
