@@ -32,7 +32,8 @@ public class LineService {
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.getSections().add(new Section(line, upStation, downStation, request.getDistance()));
+            //line.getSections().add(new Section(line, upStation, downStation, request.getDistance()));
+            line.addSection(new Section(line, upStation, downStation, request.getDistance()));
         }
         return createLineResponse(line);
     }
@@ -87,15 +88,20 @@ public class LineService {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getSections().stream()
+        //순서대로 삽입하기
+        List<Section> sortedSections = line.getSortedSections(line.getSections(), line.getUpStation());
+
+
+        List<Station> stations = sortedSections.stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
 
-        stations.add(0, line.getSections().get(0).getUpStation());
+        stations.add(0, sortedSections.get(0).getUpStation());
 
         return stations.stream()
                 .map(it -> stationService.createStationResponse(it))
                 .collect(Collectors.toList());
+
     }
 
     @Transactional
@@ -107,6 +113,6 @@ public class LineService {
             throw new IllegalArgumentException();
         }
 
-        line.removeSection(line.getSections().size() -1);
+        line.removeSection(line.getSections().size() - 1);
     }
 }
