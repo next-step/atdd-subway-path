@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import nextstep.subway.domain.exception.NotEnoughSectionDeleteException;
-import nextstep.subway.domain.exception.NotExistSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 public class Sections {
 
-    private static final int EMPTY_VALUE = 0;
     private static final int ONE = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
