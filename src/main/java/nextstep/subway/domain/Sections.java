@@ -104,7 +104,7 @@ public class Sections implements Comparator<Section> {
         hasOnlyOneSection(sections.size());
 
         if (targetSections.size() > 1) {
-            Collections.sort(targetSections, this::compare);
+            Collections.sort(targetSections, new SectionComparator());
             removeUpdateSection(targetSections);
         }
 
