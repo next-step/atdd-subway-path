@@ -177,4 +177,22 @@ class SectionsTest {
         // then
         assertThat(sections.getStations()).doesNotContain(SEOLLEUNG_STATION);
     }
+
+    @Test
+    @DisplayName("중간 구간을 삭제하면 해당 구간이 사라진다.")
+    void delete_middle_section() {
+        // given
+        Sections sections = new Sections();
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section newSection = createSection(YEOKSAM_STATION, SEOLLEUNG_STATION, 5);
+
+        sections.add(section);
+        sections.add(newSection);
+
+        // when
+        sections.delete(YEOKSAM_STATION);
+
+        // then
+        assertThat(sections.getStations()).doesNotContain(YEOKSAM_STATION);
+    }
 }

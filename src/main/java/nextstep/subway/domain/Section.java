@@ -45,6 +45,10 @@ public class Section {
         return downStation.equals(station);
     }
 
+    public boolean isMatchUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
     public boolean isConnectable(Section section) {
         if (this.equals(section)) {
             return false;
@@ -89,6 +93,10 @@ public class Section {
 
     private boolean isMatchDownStation(Section section) {
         return downStation.equals(section.getDownStation());
+    }
+
+    public void combine(Section previousSection) {
+        upStation = previousSection.upStation;
     }
 
     public boolean hasStation(Station station) {

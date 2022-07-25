@@ -69,7 +69,22 @@ public class Sections {
 
     public void delete(Station station) {
         Section findSection = findSectionByDownStation(station);
+        if (isNotFinalSection(findSection)) {
+            Section postSection = findPostSection(findSection);
+            postSection.combine(findSection);
+        }
         values.remove(findSection);
+    }
+
+    private Section findPostSection(Section section) {
+        return values.stream()
+                .filter(s -> s.isMatchUpStation(section.getDownStation()))
+                .findAny()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private boolean isNotFinalSection(Section findSection) {
+        return !values.get(lastIndex()).equals(findSection);
     }
 
     private Section findSectionByDownStation(Station station) {
