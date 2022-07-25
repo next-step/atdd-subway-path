@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class LineService {
-    private LineRepository lineRepository;
-    private StationService stationService;
+    private final LineRepository lineRepository;
+    private final StationService stationService;
 
     public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
@@ -94,7 +94,7 @@ public class LineService {
         stations.add(0, line.getSections().get(0).getUpStation());
 
         return stations.stream()
-                .map(it -> stationService.createStationResponse(it))
+                .map(stationService::createStationResponse)
                 .collect(Collectors.toList());
     }
 
