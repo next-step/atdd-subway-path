@@ -188,12 +188,36 @@ public class Sections {
 			throw new BusinessException(INVALID_STATUS);
 		}
 
-		Section lastSection = findFirstBottomSection(findAllStations());
-		if (!lastSection.isSameWithDownStation(station)) {
-			throw new BusinessException(INVALID_STATUS);
-		}
+		List<Station> stationList = findAllStations();
+		Section lastSection = findFirstBottomSection(stationList);
+		Section topSection = findFirstBottomSection(stationList);
 
-		values.removeIf(section -> section.equals(lastSection));
+		/**
+		 * 1. 상행종점, 하행 종점이면 해당 섹션 그대로 삭제
+		 * 2. 상행인경우 해당 섹션 삭제,
+		 *   하행인경우 삭제한 다음 섹션의 상행을 하행으로 변경..총총
+		 *
+		 *
+		 */
+		/**
+		 *   1 - 5
+		 *   5 - 10
+		 *   10 -  15
+		 *   15  - 20
+		 *   상행을 지우는경우
+		 *   하행을 지우는 경우
+		 */
+
+		this.values.removeIf(section -> section.equals(lastSection) || section.equals(topSection));
+
+		for (Section section : this.values) {
+			if (section.isSameWithDownStation(station)) {
+				section.changeDownStation(findNextSection(section).getDownStation());
+				//distance도 바꿔야함
+			}
+		}
+		this.values.removeIf(section -> section.isSameWithUpStation(station));
+
 	}
 
 }

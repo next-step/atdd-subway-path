@@ -95,8 +95,16 @@ public class Section {
 		this.upStation = station;
 	}
 
+	public void changeDownStation(Station station) {
+		this.downStation = station;
+	}
+
 	public void validateOfDistance(SectionDistance distance) {
 		this.distance.validationOfDistance(distance);
+	}
+
+	public void isRemovable(Station station) {
+
 	}
 
 	@Override
