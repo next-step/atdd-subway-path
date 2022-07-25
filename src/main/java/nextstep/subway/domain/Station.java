@@ -25,4 +25,11 @@ public class Station {
         this.id = id;
         this.name = name;
     }
+
+    public static Station of(String name) {
+        return Station.builder()
+            .name(name)
+            .build();
+    }
+
 }
