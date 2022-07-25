@@ -74,11 +74,6 @@ public class PathAcceptanceTest extends AcceptanceTest {
         생성_실패_확인(response, HttpStatus.NOT_FOUND, "해당 역을 찾을 수 없습니다");
     }
 
-    /**
-     * Given 기존 노선에 연결되어있지 않은 시청역을 생성
-     * When 광화문역에서 강남역까지 촤단거리를 조회하면
-     * Then 예외가 발생한다
-     */
     @DisplayName("출발역과 도착역이 연결되어있지 않은경우 예외발생")
     @Test
     public void not_connect_station() {
@@ -94,6 +89,16 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         // then
         생성_실패_확인(response, HttpStatus.NOT_FOUND, "도달할 수 없는 역의 최단경로를 찾을 수 없습니다");
+    }
+
+    @DisplayName("출발역과 도착역이 같은경우 예외발생")
+    @Test
+    public void start_arrival_same_station() {
+        // when
+        ExtractableResponse<Response> response = 최단_경로_조회(강남역, 강남역);
+
+        // then
+        생성_실패_확인(response, HttpStatus.BAD_REQUEST, "출발역과 도착역이 같은경우 최단경로를 찾을 수 없습니다");
     }
 
     @DisplayName("출발역과 도착역의 최단거리를 정상 조회한다")
