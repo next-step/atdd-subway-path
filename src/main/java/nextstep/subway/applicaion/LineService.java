@@ -102,10 +102,7 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        if (!line.getLastSection().getDownStation().equals(station)) {
-            throw new IllegalArgumentException("마지막 구간만 삭제할 수 있습니다.");
-        }
-
+        line.validateRemoveSection(station);
         line.removeSection(line.getLastSection());
     }
 }
