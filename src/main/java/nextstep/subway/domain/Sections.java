@@ -93,13 +93,16 @@ public class Sections implements Comparator<Section> {
     }
 
     public void removeSection(Station station) {
-        int sectionSize = sections.size();
-        //구간이 1개만 있는지 확인
-        if (sectionSize <= 1) {
-            throw new IllegalArgumentException("ONLY_ONE_SECTION");
-        }
-        //station이 포함된 Section 검색, 해당 역이 있는 구간이 있는지 확인 ( 사이라면 2개, 상행 혹은 하행이라면 1개)
+        //station이 포함된 Section 검색( 사이라면 2개, 상행 혹은 하행이라면 1개)
         List<Section> targetSections = getTargetSections(station);
+
+        if (targetSections.size() == 0) {
+            throw new IllegalArgumentException("HAS_NO_STATION");
+        }
+
+        //구간이 1개만 있는지 확인
+        hasOnlyOneSection(sections.size());
+
         if (targetSections.size() > 1) {
             Collections.sort(targetSections, this::compare);
             removeUpdateSection(targetSections);
@@ -107,6 +110,12 @@ public class Sections implements Comparator<Section> {
 
         removeSection(targetSections.get(0));
 
+    }
+
+    public void hasOnlyOneSection(int sectionSize) {
+        if (sectionSize <= 1) {
+            throw new IllegalArgumentException("ONLY_ONE_SECTION");
+        }
     }
 
     private void removeUpdateSection(List<Section> targetSections) {
