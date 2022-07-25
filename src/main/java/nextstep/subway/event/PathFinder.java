@@ -1,5 +1,7 @@
-package nextstep.subway.domain;
+package nextstep.subway.event;
 
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Station;
 import nextstep.subway.exception.NonConnectionStationException;
 import nextstep.subway.exception.SameStationException;
 import org.jgrapht.GraphPath;

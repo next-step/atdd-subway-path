@@ -1,5 +1,9 @@
-package nextstep.subway.domain;
+package nextstep.subway.event;
 
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Station;
+import nextstep.subway.event.Path;
+import nextstep.subway.event.PathFinder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

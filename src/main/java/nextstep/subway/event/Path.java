@@ -1,4 +1,6 @@
-package nextstep.subway.domain;
+package nextstep.subway.event;
+
+import nextstep.subway.domain.Station;
 
 import java.util.List;
 
