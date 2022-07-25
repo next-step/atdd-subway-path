@@ -11,6 +11,9 @@ public class SectionDistance {
 	}
 
 	public SectionDistance(int distance) {
+		if (distance <= 0) {
+			throw new BusinessException(INVALID_STATUS);
+		}
 		this.distance = distance;
 	}
 
