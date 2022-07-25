@@ -42,6 +42,7 @@ public class LineServiceMockTest {
     Station 강남역;
     Station 역삼역;
     Station 선릉역;
+    Station 삼성역;
     Station 서울역;
 
     Line 일호선;
@@ -52,7 +53,8 @@ public class LineServiceMockTest {
         강남역 = new Station(1L, "강남역");
         역삼역 = new Station(2L, "역삼역");
         선릉역 = new Station(3L, "선릉역");
-        서울역 = new Station(4L, "서울역");
+        삼성역 = new Station(4L, "삼성역");
+        서울역 = new Station(5L, "서울역");
 
         일호선 = new Line("1호선", "bg-blue-600");
         이호선 = new Line("2호선", "bg-green-600");
@@ -264,6 +266,25 @@ public class LineServiceMockTest {
                 lineService.addSection(1L, new SectionRequest(강남역.getId(), 역삼역.getId(), 10));
             })
             .withMessage("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("지하철 노선 중간에 구간을 추가하는 테스트를 합니다.")
+    void addBetweenSection() {
+        given(lineRepository.findById(1L)).willReturn(Optional.of(이호선));
+        given(stationService.findById(1L)).willReturn(강남역);
+        given(stationService.findById(2L)).willReturn(역삼역);
+        given(stationService.findById(3L)).willReturn(선릉역);
+        given(stationService.findById(4L)).willReturn(삼성역);
+
+        lineService.addSection(1L, new SectionRequest(1L, 4L, 30));
+        lineService.addSection(1L, new SectionRequest(3L, 4L, 10));
+        lineService.addSection(1L, new SectionRequest(2L, 3L, 4));
+
+        assertAll(() -> {
+            assertThat(이호선.getStations()).hasSize(4);
+            assertThat(이호선.getStations()).containsExactly(강남역, 역삼역, 선릉역, 삼성역);
+        });
     }
 
 
