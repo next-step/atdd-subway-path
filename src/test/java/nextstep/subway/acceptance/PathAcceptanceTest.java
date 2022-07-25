@@ -7,9 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
@@ -54,7 +54,28 @@ class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 최단경로_조회_요청(신논현역, 양재역);
 
         // then
-        최단거리조회가_정상수행되었는지검증(response);
+        최단거리조회가_정상수행되었는지검증(response, 신논현역, 강남역, 양재역);
+    }
+
+    /**
+     * Given 한 역과 환승이 필요한 또 다른 역에 대해
+     * When 최단 경로 조회를 요청하면
+     * Then 경로 구간에 있는 역 목록과 거리가 조회된다.
+     */
+    @DisplayName("환승이 필요한 두 역 사이의 최단 경로를 조회한다.")
+    @Test
+    void findPath_NewLine() {
+        // given
+        Long 잠실역 = 지하철역_생성_요청("잠실역").jsonPath().getLong("id");
+
+        Map<String, String> lineCreateParams = 노선생성파라미터(강남역, 잠실역);
+        신분당선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 최단경로_조회_요청(신논현역, 잠실역);
+
+        // then
+        최단거리조회가_정상수행되었는지검증(response, 신논현역, 강남역, 잠실역);
     }
 
     /**
@@ -118,8 +139,10 @@ class PathAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private void 최단거리조회가_정상수행되었는지검증(final ExtractableResponse<Response> response) {
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).isNotEmpty();
+    private void 최단거리조회가_정상수행되었는지검증(final ExtractableResponse<Response> response, Long... stations) {
+        final List<Long> stationIds = response.jsonPath().getList("stations.id", Long.class);
+        assertThat(stationIds).isNotEmpty();
+        assertThat(stationIds).containsExactly(stations);
     }
 
     private void 최단거리조회가_실패했는지검증(final ExtractableResponse<Response> response) {
