@@ -74,7 +74,7 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
-    public static void 에러_500_발생(ExtractableResponse<Response> response) {
+    public static void 구간_추가에_실패(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }
