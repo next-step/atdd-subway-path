@@ -99,10 +99,8 @@ public class LineService {
     public List<SectionResponse> getSectionsByLineId(Long lineId){
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
-        List<SectionResponse> responses = new ArrayList<>();
-        line.getSections().forEach(
-                section -> responses.add(SectionResponse.of(section))
-        );
-        return responses;
+        return line.getSections().stream()
+                .map(SectionResponse::of)
+                .collect(Collectors.toList());
     }
 }
