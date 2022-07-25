@@ -3,7 +3,6 @@ package nextstep.subway.line.domain;
 import lombok.Getter;
 
 import javax.persistence.*;
-import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -16,7 +15,7 @@ public class Line {
     private String color;
 
     @Embedded
-    private Sections sections;
+    private Sections sections = new Sections();
 
     protected Line() {
     }
@@ -24,7 +23,6 @@ public class Line {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.sections = new Sections();
     }
 
     public void addSection(Long upStationId, Long downStationId, int distance) {
