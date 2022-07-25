@@ -44,21 +44,26 @@ class SectionDeleteAcceptanceTest extends AcceptanceTest {
         Map<String, String> lineCreateParams = createLineCreateParams(개봉역, 구일역);
         일호선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
 
-//        지하철_노선에_지하철_구간_생성_요청(일호선, createSectionCreateParams(개봉역, 구일역, DEFAULT_SECTION_DISTANCE));
         지하철_노선에_지하철_구간_생성_요청(일호선, createSectionCreateParams(구일역, 구로역, DEFAULT_SECTION_DISTANCE));
-
     }
 
     //When 구일역 구간 제거를 요청하면.
-    //Then 개봉역 - 구일역 - 구로역 -> 개봉역 - 구로역 의 구간으로 제배치
+    //Then 개봉역 - 구일역 - 구로역 -신도림 -> 개봉역 - 구로역 -신도림 의 구간으로 제배치
     @DisplayName("지하철 구간을 삭제한다.(중간역)")
     @Test
     void deleteSection() {
+        Long 신도림역 = 지하철역_생성_요청("신도림역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(일호선, createSectionCreateParams(구로역, 신도림역, DEFAULT_SECTION_DISTANCE));
         // when
-
+        지하철_노선에_지하철_구간_제거_요청(일호선, 구일역);
         // then
-        지하철_노선_조회_요청(일호선);
-        지하철_노선의_구간목록_조회_요청(일호선);
+        ExtractableResponse<Response> stationResponse = 지하철_노선_조회_요청(일호선);
+        ExtractableResponse<Response> sectionResponse = 지하철_노선의_구간목록_조회_요청(일호선);
+
+        assertAll(
+                () -> assertThat(stationResponse.jsonPath().getList("stations.name",String.class)).containsExactly("개봉역", "구로역","신도림역"),
+                () -> assertThat(sectionResponse.jsonPath().getList("distance", Integer.class)).containsExactly(11,4)
+        );
     }
 
     //When 구로역 구간 제거를 요청하면.
@@ -67,10 +72,15 @@ class SectionDeleteAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSection2() {
         // when
-
+        지하철_노선에_지하철_구간_제거_요청(일호선, 구로역);
         // then
-        지하철_노선_조회_요청(일호선);
-        지하철_노선의_구간목록_조회_요청(일호선);
+        ExtractableResponse<Response> stationResponse = 지하철_노선_조회_요청(일호선);
+        ExtractableResponse<Response> sectionResponse = 지하철_노선의_구간목록_조회_요청(일호선);
+
+        assertAll(
+                () -> assertThat(stationResponse.jsonPath().getList("stations.name",String.class)).containsExactly("개봉역", "구일역"),
+                () -> assertThat(sectionResponse.jsonPath().getList("distance", Integer.class)).containsExactly(7)
+        );
     }
 
     //When 개봉역 구간 제거를 요청하면.
@@ -79,10 +89,41 @@ class SectionDeleteAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSection3() {
         // when
-
+        지하철_노선에_지하철_구간_제거_요청(일호선, 개봉역);
         // then
-        지하철_노선_조회_요청(일호선);
-        지하철_노선의_구간목록_조회_요청(일호선);
+        ExtractableResponse<Response> stationResponse = 지하철_노선_조회_요청(일호선);
+        ExtractableResponse<Response> sectionResponse = 지하철_노선의_구간목록_조회_요청(일호선);
+
+        assertAll(
+                () -> assertThat(stationResponse.jsonPath().getList("stations.name",String.class)).containsExactly("구일역", "구로역"),
+                () -> assertThat(sectionResponse.jsonPath().getList("distance", Integer.class)).containsExactly(4)
+        );
+    }
+
+    //When 구간이 하나 남았을때 삭제 요청을 하면.
+    //Then 제거 실패한다.
+    @DisplayName("지하철 구간을 삭제를 실패한다.")
+    @Test
+    void deleteSectionFail() {
+        지하철_노선에_지하철_구간_제거_요청(일호선, 구로역);
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(일호선, 구일역);
+        // then
+        BADREQUEST_실패케이스_검증("지하철 노선에 상행 종점역과 하행 종점역만 있는 경우(구간이 1개인 경우) 역을 삭제할 수 없다.",response,HttpStatus.BAD_REQUEST);
+
+    }
+
+    //When 노선에 등록되어 있지 않은 지하철역 삭제.
+    //Then 제거 실패한다.
+    @DisplayName("지하철 구간을 삭제를 실패한다 - 노선 구간에 등록되어 있지 않은 지하철역 요청..")
+    @Test
+    void deleteSectionFail2() {
+        Long 신도림역 = 지하철역_생성_요청("신도림역").jsonPath().getLong("id");
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(일호선, 신도림역);
+        // then
+        BADREQUEST_실패케이스_검증("노선에 존재하지 않는 지하철역 입니다.",response, HttpStatus.NOT_FOUND);
+
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
