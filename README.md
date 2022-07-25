@@ -2,6 +2,58 @@
 
 [ATDD 강의](https://edu.nextstep.camp/c/R89PYi5H) 실습을 위한 지하철 노선도 애플리케이션
 
+## Step4 TODO List
+
+- [x] 인수 조건 도출
+- [x] 인수 테스트 작성
+- [x] 경로 조회 기능 구현
+    - [x] 출발역이 존재하지 않는경우 예외발생
+    - [x] 도착역이 존재하지 않는경우 예외발생
+    - [x] 출발역과 도착역이 연결되어있지 않은경우 예외발생
+    - [x] 출발역과 도착역이 같은경우 예외발생
+    - [x] 출발역과 도착역의 최단거리를 정상 조회한다
+
+## Step4 - 인수 조건
+
+```
+BackGround:
+    Given 2호선 교대역 - 강남역
+    Given 3호선 교대역 - 남부터미널역 - 양재역
+    Given 신분당선 강남역 - 양재역
+
+Scenario: 출발역이 존재하지 않는경우 예외발생
+    When 건대입구역에서 강남역까지 촤단거리를 조회하면
+    Then 예외가 발생한다
+    
+Scenario: 도착역이 존재하지 않는경우 예외발생
+    When 강남역에서 건대입구역까지 촤단거리를 조회하면
+    Then 예외가 발생한다
+    
+Scenario: 출발역과 도착역의 최단거리를 정상 조회한다
+    When 강남역에서 남부터미널역까지 촤단거리를 조회하면
+    Then 역 목록과 거리를 응답한다
+    
+Scenario: 출발역과 도착역이 연결되어있지 않은경우 예외발생
+    Given 기존 노선에 연결되어있지 않은 광화문역을 생성
+    When 광화문역에서 강남역까지 촤단거리를 조회하면
+    Then 예외가 발생한다
+    
+Scenario: 출발역과 도착역이 같은경우 예외발생
+    When 강남역에서 강남역까지 촤단거리를 조회하면
+    Then 예외가 발생한다
+    
+```
+
+## Step3 PR 수정 TODO list
+
+- [x] Sections의 deleteMiddleStation 내부 return 제거, early return으로 변경해보기
+- [x] if문 안의 deleteFirstOrLastStation에 CQRS 적용해보기
+- [x] SectionsTest에서 displayName 추가와 주석 제거
+- [x] Sections에서 isSizeLessThanOne 의 매직넘버 제거
+- [x] Line에서 deleteLastSection 메서드 이름 변경
+- [x] Sections에서 메서드 레퍼런스 활용하기
+- [x] 제귀함수 고민하기
+
 ## Step3 TODO List
 
 - [x] 인수 조건 도출

@@ -42,6 +42,10 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    public List<Line> getAllLines() {
+        return lineRepository.findAll();
+    }
+
     public LineResponse findById(Long id) {
         return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
     }
@@ -69,7 +73,7 @@ public class LineService {
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
-        line.deleteLastSection(station);
+        line.deleteSection(station);
     }
 
     private LineResponse createLineResponse(Line line) {

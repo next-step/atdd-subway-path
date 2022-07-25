@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.sections.SectionsAddException;
+import nextstep.subway.exception.sections.SectionDistanceException;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -53,7 +53,7 @@ public class Section {
 
     public Section divideSectionByMiddle(Section section) {
         if (isLessThanDistance(section.getDistance())) {
-            throw SectionsAddException.SECTION_DISTANCE_EXCEPTION();
+            throw new SectionDistanceException();
         }
 
         if (hasSameUpStation(section.getUpStation())) {

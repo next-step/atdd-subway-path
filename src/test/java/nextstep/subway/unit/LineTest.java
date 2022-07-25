@@ -3,7 +3,8 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.exception.sections.SectionsDeleteException;
+import nextstep.subway.exception.sections.CantDeleteLastSectionException;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
 
@@ -69,10 +70,12 @@ class LineTest {
     @DisplayName("Line에 section이 없는데 section을 제거하려 한 경우 예외를 발생한다")
     @Test
     void remove_section_when_no_section() {
-        // when
-        Exception exception = assertThrows(SectionsDeleteException.class, () -> line.deleteLastSection(downStation));
+        //when
+        ThrowableAssert.ThrowingCallable actual = () -> line.deleteSection(downStation);
 
         // then
-        assertThat(exception).isInstanceOf(SectionsDeleteException.class);
+        assertThatThrownBy(actual)
+                .isInstanceOf(CantDeleteLastSectionException.class)
+                .hasMessage("노선의 마지막 하나 남은 구간은 삭제할 수 없습니다");
     }
 }

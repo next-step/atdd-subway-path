@@ -33,7 +33,7 @@ public class Line {
         this.sections.add(section);
     }
 
-    public void deleteLastSection(Station station) {
+    public void deleteSection(Station station) {
         sections.deleteSection(station);
     }
 
@@ -48,6 +48,10 @@ public class Line {
 
     public boolean isEmptySections() {
         return sections.isEmptySections();
+    }
+
+    public List<Section> getSections() {
+        return sections.getSections();
     }
 
     public List<Station> getStations() {

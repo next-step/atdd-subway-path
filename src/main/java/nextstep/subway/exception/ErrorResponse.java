@@ -1,5 +1,7 @@
 package nextstep.subway.exception;
 
+import org.springframework.http.HttpStatus;
+
 public class ErrorResponse {
 
     private int status;
@@ -13,8 +15,8 @@ public class ErrorResponse {
         this.message = message;
     }
 
-    public static ErrorResponse of(BusinessException e) {
-        return new ErrorResponse(e.getStatus().value(), e.getMessage());
+    public static ErrorResponse of(HttpStatus status, BusinessException e) {
+        return new ErrorResponse(status.value(), e.getMessage());
     }
 
     public String getMessage() {

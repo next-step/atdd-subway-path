@@ -205,7 +205,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 노선에등록되지않은역);
 
         // then
-        생성_실패_확인(response, HttpStatus.NOT_FOUND, "해당 역을 찾을 수 없어 구간을 삭제할 수 없습니다");
+        생성_실패_확인(response, HttpStatus.NOT_FOUND, "해당 역을 찾을 수 없습니다");
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
