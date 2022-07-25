@@ -78,6 +78,7 @@ public class Sections {
 
     public void delete2(Station station) {
         Section findSection = findSectionByDownStation(station);
+        values.remove(findSection);
     }
 
     private Section findSectionByDownStation(Station station) {
