@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exception.NotEnoughSectionDeleteException;
 import nextstep.subway.domain.exception.NotExistSectionException;
 import nextstep.subway.domain.exception.SectionDeleteException;
 import org.junit.jupiter.api.DisplayName;
@@ -163,17 +164,6 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("구간이 아무 것도 없을 때 삭제 시 예외를 반환한다.")
-    void invalid_delete_not_found_section() {
-        // given
-        Sections sections = new Sections();
-
-        // then
-        assertThatThrownBy(() -> sections.delete(YEOKSAM_STATION))
-                .isInstanceOf(NotExistSectionException.class);
-    }
-
-    @Test
     @DisplayName("삭제하려는 지하철 역을 가진 구간이 있어야만 한다.")
     void invalid_delete_section_not_found() {
         // given
@@ -187,5 +177,23 @@ class SectionsTest {
         // when
         assertThatThrownBy(() -> sections.delete2(SAMSUNG_STATION))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("구간을 삭제 시 최소 두개 이상의 구간이 존재해야 한다.")
+    void invalid_delete_not_enough_section_count() {
+        // given
+        Sections emptySections = new Sections();
+        Sections onlyOneSections = new Sections();
+
+        Section section = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        onlyOneSections.add(section);
+
+        // when
+        assertAll(() -> {
+            assertThatThrownBy(() -> emptySections.delete2(YEOKSAM_STATION)).isInstanceOf(NotEnoughSectionDeleteException.class);
+            assertThatThrownBy(() -> onlyOneSections.delete2(YEOKSAM_STATION)).isInstanceOf(NotEnoughSectionDeleteException.class);
+        });
+
     }
 }

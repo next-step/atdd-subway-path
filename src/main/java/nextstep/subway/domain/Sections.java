@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import nextstep.subway.domain.exception.NotEnoughSectionDeleteException;
 import nextstep.subway.domain.exception.NotExistSectionException;
 import nextstep.subway.domain.exception.SectionDeleteException;
 
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 public class Sections {
 
+    private static final int CAN_BE_DELETED_SECTION_MINIMUM_COUNT = 2;
     private static final int EMPTY_VALUE = 0;
     private static final int ONE = 1;
 
@@ -79,6 +81,9 @@ public class Sections {
     }
 
     private Section findSectionByDownStation(Station station) {
+        if (values.size() < CAN_BE_DELETED_SECTION_MINIMUM_COUNT) {
+            throw new NotEnoughSectionDeleteException();
+        }
         return values.stream()
                 .filter(section -> section.isMatchDownStation(station))
                 .findAny()
