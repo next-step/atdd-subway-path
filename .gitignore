@@ -19,3 +19,7 @@ build/
 *.iml
 *.ipr
 out/
+
+### Testing
+test.http
+spy.log
