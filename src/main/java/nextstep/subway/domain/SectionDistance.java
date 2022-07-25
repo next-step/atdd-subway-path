@@ -23,4 +23,8 @@ public class SectionDistance {
 			throw new BusinessException(INVALID_STATUS);
 		}
 	}
+
+	public void plusDistance(SectionDistance addDistance) {
+		this.distance = this.distance + addDistance.getDistance();
+	}
 }

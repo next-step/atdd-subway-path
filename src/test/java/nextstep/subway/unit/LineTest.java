@@ -178,7 +178,7 @@ class LineTest {
 		line.removeSection(역삼역);
 		//then
 		assertThat(line.getSections()).hasSize(1);
-		assertThat(line.getSections().get(0).getDistance())
+		assertThat(line.getSections().get(0).getDistance().getDistance())
 			.isEqualTo(DISTANCE_VALUE_1 + DISTANCE_VALUE_3);
 	}
 

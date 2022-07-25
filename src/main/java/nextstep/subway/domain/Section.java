@@ -144,4 +144,8 @@ public class Section {
 		return this.distance;
 	}
 
+	public void plusDistance(SectionDistance addDistance) {
+		this.distance.plusDistance(addDistance);
+	}
+
 }

@@ -189,9 +189,6 @@ public class Sections {
 		}
 
 		List<Station> stationList = findAllStations();
-		Section lastSection = findFirstBottomSection(stationList);
-		Section topSection = findFirstBottomSection(stationList);
-
 		/**
 		 * 1. 상행종점, 하행 종점이면 해당 섹션 그대로 삭제
 		 * 2. 상행인경우 해당 섹션 삭제,
@@ -207,17 +204,47 @@ public class Sections {
 		 *   상행을 지우는경우
 		 *   하행을 지우는 경우
 		 */
-
-		this.values.removeIf(section -> section.equals(lastSection) || section.equals(topSection));
-
-		for (Section section : this.values) {
-			if (section.isSameWithDownStation(station)) {
-				section.changeDownStation(findNextSection(section).getDownStation());
-				//distance도 바꿔야함
-			}
+		if (removeIfTopSection(stationList, station)) {
+			return;
 		}
-		this.values.removeIf(section -> section.isSameWithUpStation(station));
+		if (removeIfBottomSection(stationList, station)) {
+			return;
+		}
+		removeIfMiddleSection(station);
 
+	}
+
+	private boolean removeIfTopSection(List<Station> stationList, Station station) {
+		Section topSection = findFirstTopSection(stationList);
+		if (topSection.isSameWithUpStation(station)) {
+			this.values.removeIf(section -> section.equals(topSection));
+			return true;
+		}
+		return false;
+	}
+
+	private boolean removeIfBottomSection(List<Station> stationList, Station station) {
+		Section lastSection = findFirstBottomSection(stationList);
+		if (lastSection.isSameWithDownStation(station)) {
+			this.values.removeIf(section -> section.equals(lastSection));
+			return true;
+		}
+		return false;
+	}
+
+	private void removeIfMiddleSection(Station station) {
+		Section previousSection = this.values
+			.stream()
+			.filter(section -> section.isSameWithDownStation(station))
+			.findFirst()
+			.orElseThrow(() -> new BusinessException(INVALID_STATUS));
+
+		Section afterSection = findNextSection(previousSection);
+
+		previousSection.changeDownStation(afterSection.getDownStation());
+		previousSection.plusDistance(afterSection.getDistance());
+
+		this.values.removeIf(section -> section.equals(afterSection));
 	}
 
 }
