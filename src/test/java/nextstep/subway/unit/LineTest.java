@@ -79,19 +79,10 @@ class LineTest {
 
     }
 
+    //해당 테스트 기능 개선으로 인한 제거.
     @DisplayName("지하철 구간 삭제 실패")
     @Test
     void removeSectionFail() {
-        //given
-
-        Station 구로역 = new Station(3L, "구로역");
-        일호선.addSection(1L, 개봉역_상행, 구일역_하행, DEFAULT_DISTANCE);
-        일호선.addSection(2L, 구일역_하행, 구로역, DEFAULT_DISTANCE);
-
-        //then
-        assertThatThrownBy(() -> 일호선.removeSection(구일역_하행.getId()))
-                .isInstanceOf(BadRequestException.class);
-
     }
 
 }

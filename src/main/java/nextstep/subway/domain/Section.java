@@ -55,6 +55,10 @@ public class Section {
         this.distance = this.distance - distance;
     }
 
+    public void plusDistance(int distance){
+        this.distance = this.distance + distance;
+    }
+
     public void betweenAddModifyStation(Section section){
         if(this.upStation.equals(section.getUpStation())){
             this.upStation = section.getDownStation();
@@ -63,6 +67,10 @@ public class Section {
             this.downStation = section.getUpStation();
         }
         minusDistance(section.getDistance());
+    }
+
+    public void replaceDownStation(Station station){
+        this.downStation = station;
     }
 
 }
