@@ -26,6 +26,34 @@ class SectionTest {
     }
 
     @Test
+    @DisplayName("구간의 하행역과 요청한 지하철 역이 같으면 True 를 리턴한다.")
+    void isMatchDownStation() {
+        final Station upStation = GANGNAM_STATION;
+        final Station downStation = YEOKSAM_STATION;
+        Section section = createSection(upStation, downStation, 10);
+
+        assertAll(() -> {
+            assertThat(section.isMatchDownStation(new Station(1L, "강남역"))).isFalse();
+            assertThat(section.isMatchDownStation(new Station(3L, "선릉역"))).isFalse();
+            assertThat(section.isMatchDownStation(new Station(2L, "역삼역"))).isTrue();
+        });
+    }
+
+    @Test
+    @DisplayName("구간의 상행역과 요청한 지하철 역이 같으면 True 를 리턴한다.")
+    void isMatchUpStation() {
+        final Station upStation = GANGNAM_STATION;
+        final Station downStation = YEOKSAM_STATION;
+        Section section = createSection(upStation, downStation, 10);
+
+        assertAll(() -> {
+            assertThat(section.isMatchUpStation(new Station(1L, "강남역"))).isTrue();
+            assertThat(section.isMatchUpStation(new Station(3L, "선릉역"))).isFalse();
+            assertThat(section.isMatchUpStation(new Station(2L, "역삼역"))).isFalse();
+        });
+    }
+
+    @Test
     @DisplayName("상행역 혹은 하행역 중에 동일한 역이 있으면 True, 없으면 False 를 리턴한다.")
     void hasStations() {
         // given
@@ -104,7 +132,7 @@ class SectionTest {
         assertAll(() -> {
             assertThat(section.getUpStation()).isNotSameAs(GANGNAM_STATION);
             assertThat(section.getUpStation()).isEqualTo(SEOLLEUNG_STATION);
-            assertThat(section.getDistance()).isEqualTo(new Distance(7));
+            assertThat(section.getDistance()).isEqualTo(Distance.valueOf(7));
         });
     }
 
@@ -122,7 +150,24 @@ class SectionTest {
         assertAll(() -> {
             assertThat(section.getDownStation()).isNotSameAs(YEOKSAM_STATION);
             assertThat(section.getDownStation()).isEqualTo(SEOLLEUNG_STATION);
-            assertThat(section.getDistance()).isEqualTo(new Distance(7));
+            assertThat(section.getDistance()).isEqualTo(Distance.valueOf(7));
+        });
+    }
+
+    @Test
+    @DisplayName("선행 Section 과 결합하면 상행역이 선행 Section 의 상행선이 되고 길이가 합쳐진다.")
+    void combine() {
+        // given
+        Section previousSection = createSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+        Section postSection = createSection(YEOKSAM_STATION, SEOLLEUNG_STATION, 5);
+
+        // when
+        postSection.combine(previousSection);
+
+        // then
+        assertAll(() -> {
+            assertThat(postSection.getUpStation()).isEqualTo(GANGNAM_STATION);
+            assertThat(postSection.getDistance()).isEqualTo(Distance.valueOf(15));
         });
     }
 }

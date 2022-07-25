@@ -5,6 +5,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
+import java.util.HashMap;
+import java.util.Map;
 
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -14,21 +16,43 @@ public class Distance {
 
     private int value;
 
-    public Distance(int value) {
-        if (value < MIN_VALUE) {
-            throw new IllegalArgumentException();
-        }
+    private Distance(int value) {
         this.value = value;
     }
 
-    public void reduce(Distance distance) {
-        if (value <= distance.value()) {
+    public static Distance valueOf(int value) {
+        if (value < MIN_VALUE) {
             throw new IllegalArgumentException();
         }
-        value = value - distance.value();
+        Distance distanceCache = DistanceCache.findByNumber(value);
+        if (distanceCache != null) {
+            return distanceCache;
+        }
+        return DistanceCache.cacheDistance(new Distance(value));
     }
 
-    public int value() {
+    public Distance reduce(Distance distance) {
+        return Distance.valueOf(value - distance.toInt());
+    }
+
+    public Distance increase(Distance distance) {
+        return Distance.valueOf(value + distance.toInt());
+    }
+
+    public int toInt() {
         return value;
+    }
+
+    private static class DistanceCache {
+        private static final Map<Integer, Distance> distanceCache = new HashMap<>();
+
+        private static Distance cacheDistance(Distance distance) {
+            distanceCache.put(distance.toInt(), distance);
+            return distance;
+        }
+
+        private static Distance findByNumber(int number) {
+            return distanceCache.get(number);
+        }
     }
 }

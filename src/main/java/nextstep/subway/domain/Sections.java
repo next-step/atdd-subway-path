@@ -3,8 +3,7 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import nextstep.subway.domain.exception.NotExistSectionException;
-import nextstep.subway.domain.exception.SectionDeleteException;
+import nextstep.subway.domain.exception.NotEnoughSectionDeleteException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 public class Sections {
 
-    private static final int EMPTY_VALUE = 0;
     private static final int ONE = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
@@ -66,18 +64,37 @@ public class Sections {
     }
 
     public void delete(Station station) {
-        Section lastSection = findLastSection();
-        if (lastSection.isMissMatchDownStation(station)) {
-            throw new SectionDeleteException(station.getId());
+        if (this.hasZeroOrOneSection()) {
+            throw new NotEnoughSectionDeleteException();
         }
-        values.remove(lastSection);
+        Section findSection = findSectionByDownStation(station);
+        if (isNotFinalSection(findSection)) {
+            Section postSection = findPostSection(findSection);
+            postSection.combine(findSection);
+        }
+        values.remove(findSection);
     }
 
-    private Section findLastSection() {
-        if (lastIndex() < EMPTY_VALUE) {
-            throw new NotExistSectionException();
-        }
-        return values.get(lastIndex());
+    private boolean hasZeroOrOneSection() {
+        return values.isEmpty() || values.size() == ONE;
+    }
+
+    private Section findPostSection(Section section) {
+        return values.stream()
+                .filter(s -> s.isMatchUpStation(section.getDownStation()))
+                .findAny()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private boolean isNotFinalSection(Section findSection) {
+        return !values.get(lastIndex()).equals(findSection);
+    }
+
+    private Section findSectionByDownStation(Station station) {
+        return values.stream()
+                .filter(section -> section.isMatchDownStation(station))
+                .findAny()
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     private int lastIndex() {

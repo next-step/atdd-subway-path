@@ -34,11 +34,19 @@ public class Section {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = new Distance(distance);
+        this.distance = Distance.valueOf(distance);
     }
 
     public boolean isMissMatchDownStation(Station station) {
-        return !downStation.equals(station);
+        return !isMatchDownStation(station);
+    }
+
+    public boolean isMatchDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    public boolean isMatchUpStation(Station station) {
+        return upStation.equals(station);
     }
 
     public boolean isConnectable(Section section) {
@@ -55,8 +63,12 @@ public class Section {
         if (isConnectOutSide(section)) {
             throw new IllegalArgumentException();
         }
-        distance.reduce(section.getDistance());
+        reduceDistance(section.getDistance());
         changeEndPoint(section);
+    }
+
+    private void reduceDistance(Distance distance) {
+        this.distance = this.distance.reduce(distance);
     }
 
     private boolean isConnectOutSide(Section section) {
@@ -81,6 +93,15 @@ public class Section {
 
     private boolean isMatchDownStation(Section section) {
         return downStation.equals(section.getDownStation());
+    }
+
+    public void combine(Section previousSection) {
+        upStation = previousSection.upStation;
+        increaseDistance(previousSection.getDistance());
+    }
+
+    private void increaseDistance(Distance distance) {
+        this.distance = this.distance.increase(distance);
     }
 
     public boolean hasStation(Station station) {
