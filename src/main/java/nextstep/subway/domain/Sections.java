@@ -5,12 +5,11 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Embeddable
-public class Sections implements Comparator<Section> {
+public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -136,15 +135,4 @@ public class Sections implements Comparator<Section> {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public int compare(Section o1, Section o2) {
-        if (o2.getDownStation().equals(o1.getUpStation())) {
-            return 1;
-        } else if (o1.getDownStation().equals(o2.getUpStation())) {
-            return -1;
-        } else {
-            return 0;
-        }
-
-    }
 }
