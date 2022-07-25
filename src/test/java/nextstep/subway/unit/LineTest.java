@@ -35,5 +35,15 @@ class LineTest {
 
     @Test
     void removeSection() {
+        Line line = new Line();
+        Station firstStation = new Station("강남역");
+        Station secondStation = new Station("역삼역");
+        Station thirdStation = new Station("선릉역");
+        line.addSection(firstStation, secondStation, 10);
+        line.addSection(secondStation, thirdStation, 10);
+
+        line.removeSection();
+
+        assertThat(line.getSections()).hasSize(1);
     }
 }
