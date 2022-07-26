@@ -60,6 +60,37 @@ public class LineSection {
             sections.add(section);
             return;
         }
+
+        addMiddleSection(section);
+    }
+
+    private void addMiddleSection(Section section) {
+        Section target = findSection(section);
+        Station middleStation = section.getDownStation();
+        Station endStation = target.getDownStation();
+        target.changeDownStation(middleStation);
+        section.changeUpStation(middleStation);
+        section.changeDownStation(endStation);
+        int index = findSectionIndex(section);
+        sections.add(index+1,section);
+    }
+
+    private Section findSection(Section section) {
+        List<Section> foundSections = sections.stream()
+            .filter(v -> v.getUpStation().equals(section.getUpStation()))
+            .collect(Collectors.toList());
+        if (foundSections.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+        return foundSections.get(0);
+    }
+    private int findSectionIndex(Section section) {
+        for (int i = 0; i < sections.size(); i++) {
+            if (sections.get(i).getUpStation().equals(section.getUpStation())) {
+                return i;
+            }
+        }
+        return 0;
     }
 
     public void remove(String stationName) {
