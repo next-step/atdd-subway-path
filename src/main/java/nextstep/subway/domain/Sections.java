@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import lombok.Getter;
 import nextstep.subway.exception.BadRequestException;
+import nextstep.subway.exception.NotExistElementException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -9,7 +10,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -106,24 +106,57 @@ public class Sections {
     }
 
     public void removeSection(Long stationId) {
-        Section lastSection = getLastSection();
-
-        if(!Objects.equals(lastSection.getDownStation().getId(), stationId))
-            throw new BadRequestException("지하철 노선에 등록된 역(하행 종점역)만 제거할 수 있다. 즉, 마지막 구간만 제거할 수 있다.");
-
         if(sections.size() == 1)
             throw new BadRequestException("지하철 노선에 상행 종점역과 하행 종점역만 있는 경우(구간이 1개인 경우) 역을 삭제할 수 없다.");
 
-        sections.remove(lastSection);
+        if(removeSectionWhenFirst(stationId)){
+            return;
+        }
+        if(removeSectionWhenLast(stationId)){
+            return;
+        }
+
+        removeSectionWhenBetWeen(stationId);
+    }
+
+
+    public Boolean removeSectionWhenFirst(Long stationId){
+        Section firstSection = getFirstSection();
+        if(Objects.equals(firstSection.getUpStation().getId(), stationId)){
+            sections.remove(firstSection);
+            return true;
+        }
+        return false;
+    }
+
+    public Boolean removeSectionWhenLast(Long stationId){
+        Section lastSection = getLastSection();
+        if(Objects.equals(lastSection.getDownStation().getId(), stationId)){
+            sections.remove(lastSection);
+            return true;
+        }
+        return false;
+    }
+
+    public void removeSectionWhenBetWeen(Long stationId){
+        Section prevSection = getSectionByDownStationId(stationId);
+        Section nextSection = getSectionByUpStationId(stationId);
+
+        prevSection.plusDistance(nextSection.getDistance());
+        prevSection.replaceDownStation(nextSection.getDownStation());
+
+        sections.remove(nextSection);
     }
 
     public Section getLastSection(){
         if(sections.isEmpty()){
-            throw new NoSuchElementException("저장 된 section정보가 없습니다.");
+            throw new NotExistElementException("저장 된 section정보가 없습니다.");
         }
         return sections.stream()
                 .filter(this::isLastSection)
-                .findFirst().orElseThrow(NoSuchElementException::new);
+                .findFirst()
+                .orElseThrow(() -> new NotExistElementException("구간 정보를 찾을 수 없습니다."));
+
     }
 
 
@@ -131,17 +164,18 @@ public class Sections {
         return sections.stream()
                 .filter(section -> sectionId.equals(section.getId()))
                 .findFirst()
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new NotExistElementException("구간 정보를 찾을 수 없습니다."));
+
     }
 
     public Section getFirstSection(){
         if(sections.isEmpty()){
-            throw new NoSuchElementException("저장 된 section정보가 없습니다.");
+            throw new NotExistElementException("저장 된 section정보가 없습니다.");
         }
         return sections.stream()
                 .filter(this::isFirstSection)
                 .findFirst()
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new NotExistElementException("구간 정보를 찾을 수 없습니다."));
 
     }
 
@@ -163,6 +197,19 @@ public class Sections {
                 .noneMatch(currentSection -> section.getDownStation().getId().equals(currentSection.getUpStation().getId()));
     }
 
+    public Section getSectionByUpStationId(Long stationId){
+        return sections.stream()
+                .filter(section -> stationId.equals(section.getUpStation().getId()))
+                .findFirst()
+                .orElseThrow(() -> new NotExistElementException("노선에 존재하지 않는 지하철역 입니다."));
+    }
+
+    public Section getSectionByDownStationId(Long stationId){
+        return sections.stream()
+                .filter(section -> stationId.equals(section.getDownStation().getId()))
+                .findFirst()
+                .orElseThrow(() -> new NotExistElementException("노선에 존재하지 않는 지하철역 입니다."));
+    }
 
 
 }

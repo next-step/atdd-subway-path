@@ -69,10 +69,10 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
-    public static void BADREQUEST_실패케이스_검증(String message, ExtractableResponse<Response> response){
+    public static void BADREQUEST_실패케이스_검증(String message, ExtractableResponse<Response> response, HttpStatus expectedStatus){
         assertAll(
                 () -> assertThat(response.jsonPath().getString("message")).contains(message),
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
+                () -> assertThat(response.statusCode()).isEqualTo(expectedStatus.value())
         );
     }
 }
