@@ -87,13 +87,22 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
-        validateRemoveSection(station);
-        if (!removeFirstOrLastSection(station)) {
-            removeMiddleSection(station);
+        validateCanRemoveSection(station);
+
+        if (isUpStationInFirstSection(station)) {
+            sections.remove(firstSection());
+            return;
         }
+
+        if (isDownStationInLstSection(station)) {
+            sections.remove(lastSection());
+            return;
+        }
+
+        sections.remove(removeMiddleSection(station));
     }
 
-    private void validateRemoveSection(Station station) {
+    private void validateCanRemoveSection(Station station) {
         if (sections.size() == 1) {
             throw new DeleteSectionException("구간이 1개인 노선은 구간 삭제를 진행할 수 없습니다.");
         }
@@ -103,20 +112,15 @@ public class Sections {
         }
     }
 
-    private boolean removeFirstOrLastSection(Station station) {
-        if (firstSection().getUpStation().equals(station)) {
-            sections.remove(firstSection());
-            return true;
-        }
-
-        if (lastSection().getDownStation().equals(station)) {
-            sections.remove(lastSection());
-            return true;
-        }
-        return false;
+    private boolean isUpStationInFirstSection(Station station) {
+        return firstSection().getUpStation().equals(station);
     }
 
-    private void removeMiddleSection(Station station) {
+    private boolean isDownStationInLstSection(Station station) {
+        return lastSection().getDownStation().equals(station);
+    }
+
+    private Section removeMiddleSection(Station station) {
         Section sectionWithUpStation = findSectionByStation(matchUpStation(station))
                 .orElseThrow(() -> new SectionNotFoundException("제거하려는 역을 상행역으로 갖는 구간이 없습니다."));
 
@@ -124,7 +128,8 @@ public class Sections {
                 .orElseThrow(() -> new SectionNotFoundException("제거하려는 역을 하행역으로 갖는 구간이 없습니다."));
 
         sectionWithDownStation.connectStation(sectionWithUpStation);
-        sections.remove(sectionWithUpStation);
+
+        return sectionWithUpStation;
     }
 
     private Optional<Section> findSectionByStation(Predicate<Section> sectionPredicate) {
