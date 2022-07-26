@@ -51,8 +51,28 @@ public class Line {
         return containCheck.contains(section);
     }
 
-    public void removeSection(final Section section) {
-        sections.remove(section);
+    public void removeSection(final Long stationId) {
+        checkIsDownEndStation(stationId);
+        sections.remove(size()-1);
+    }
+
+    private void checkIsDownEndStation(final Long stationId) {
+        if (!getDownEndStation().getId().equals(stationId)) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public void update(final String name, final String color) {
+        if (StringUtils.hasText(name)) {
+            this.name = name;
+        }
+        if (StringUtils.hasText(color)) {
+            this.color = color;
+        }
+    }
+
+    public int size() {
+        return sections.size();
     }
 
     public List<Station> getStations() {
@@ -65,12 +85,7 @@ public class Line {
         return stations;
     }
 
-    public void update(final String name, final String color) {
-        if (StringUtils.hasText(name)) {
-            this.name = name;
-        }
-        if (StringUtils.hasText(color)) {
-            this.color = color;
-        }
+    public Station getDownEndStation() {
+        return sections.get(sections.size() - 1).getDownStation();
     }
 }

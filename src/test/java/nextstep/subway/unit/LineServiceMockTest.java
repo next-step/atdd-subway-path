@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -68,5 +69,36 @@ public class LineServiceMockTest {
         // then
         assertThat(line.getName()).isEqualTo(expectLineName);
         assertThat(line.getColor()).isEqualTo(expectColor);
+    }
+
+    @Test
+    void deleteSection() {
+        // given
+        final Station 기흥역 = new Station(1L, "기흥역");
+        final Station 신갈역 = new Station(2L, "신갈역");
+        final Station 정자역 = new Station(3L, "정자역");
+
+        final Line line = new Line(4L, "분당선", "yellow");
+
+        line.addSection(Section.builder()
+                               .upStation(기흥역)
+                               .downStation(신갈역)
+                               .distance(10).build());
+        line.addSection(Section.builder()
+                               .upStation(신갈역)
+                               .downStation(정자역)
+                               .distance(10).build());
+
+        given(lineRepository.findById(line.getId())).willReturn(Optional.of(line));
+
+        // when
+        lineService.deleteSection(line.getId(), 정자역.getId());
+
+        // then
+        assertAll(
+            () -> assertThat(line.getSections().size()).isEqualTo(1),
+            () -> assertThat(line.getSections().get(0).getUpStation().getName()).isEqualTo("기흥역"),
+            () -> assertThat(line.getSections().get(0).getDownStation().getName()).isEqualTo("신갈역")
+                 );
     }
 }
