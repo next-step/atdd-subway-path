@@ -6,6 +6,7 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.NonExistentLineException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +37,7 @@ public class LineService {
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(id).orElseThrow(NonExistentLineException::new);
         line.update(lineRequest.getName(), lineRequest.getColor());
     }
 
@@ -49,14 +50,14 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(lineId).orElseThrow(NonExistentLineException::new);
 
         line.addSection(upStation, downStation, sectionRequest.getDistance());
     }
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(lineId).orElseThrow(NonExistentLineException::new);
         Station station = stationService.findById(stationId);
 
         line.deleteSection(station);
@@ -69,6 +70,6 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        return LineResponse.from(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        return LineResponse.from(lineRepository.findById(id).orElseThrow(NonExistentLineException::new));
     }
 }

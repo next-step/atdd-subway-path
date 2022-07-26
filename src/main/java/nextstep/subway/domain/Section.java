@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.SectionException;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -37,6 +39,28 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public boolean contains(Station upStation, Station downStation) {
+        return upStation.equals(this.upStation) || upStation.equals(this.downStation)
+                || downStation.equals(this.upStation) || downStation.equals(this.downStation);
+    }
+
+    public void hasSameStations(Station upStation, Station downStation) {
+        boolean hasSameStations = (this.upStation.equals(upStation) && this.downStation.equals(downStation))
+                || (this.upStation.equals(downStation) && this.downStation.equals(upStation));
+
+        if (hasSameStations) {
+            throw new SectionException();
+        }
+    }
+
+    public boolean isUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     public Long getId() {

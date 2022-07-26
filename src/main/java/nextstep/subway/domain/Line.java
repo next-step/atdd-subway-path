@@ -1,7 +1,8 @@
 package nextstep.subway.domain;
 
+import org.springframework.util.StringUtils;
+
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,11 +32,11 @@ public class Line {
     }
 
     public void update(String name, String color) {
-        if (name != null) {
+        if (StringUtils.hasText(name)) {
             this.name = name;
         }
 
-        if (color != null) {
+        if (StringUtils.hasText(color)) {
             this.color = color;
         }
     }
@@ -46,6 +47,10 @@ public class Line {
 
     public void deleteSection(Station station) {
         sections.remove(station);
+    }
+
+    public List<Station> getStations() {
+        return sections.getStations();
     }
 
     public List<Section> getSections() {

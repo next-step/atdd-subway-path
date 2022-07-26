@@ -9,6 +9,7 @@ import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.NonExistentLineException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -73,6 +75,15 @@ class LineServiceMockTest {
         assertThat(lineService.findById(일호선.getId())).isEqualTo(LineResponse.from(일호선));
     }
 
+    @DisplayName("존재하지 않는 지하철 노선은 조회할 수 없다.")
+    @Test
+    void findByIdNonExistentLine() {
+        when(lineRepository.findById(1L)).thenReturn(Optional.ofNullable(null));
+
+        assertThatThrownBy(() -> lineService.findById(1L))
+                .isInstanceOf(NonExistentLineException.class);
+    }
+
     @DisplayName("지하철 노선 정보를 업데이트한다.")
     @Test
     void updateLine() {
@@ -83,6 +94,16 @@ class LineServiceMockTest {
 
         assertThat(일호선.getName()).isEqualTo("3호선");
         assertThat(일호선.getColor()).isEqualTo("blue");
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선의 정보를 업데이트할 수 없다.")
+    @Test
+    void updateNonExistentLine() {
+        Line 일호선 = new Line(1L, "일호선", "green");
+        when(lineRepository.findById(일호선.getId())).thenReturn(Optional.ofNullable(null));
+
+        assertThatThrownBy(() -> lineService.updateLine(일호선.getId(), new LineRequest("3호선", "blue", null, null, 0)))
+                .isInstanceOf(NonExistentLineException.class);
     }
 
     @DisplayName("지하철 노선을 삭제한다.")
@@ -108,7 +129,18 @@ class LineServiceMockTest {
 
         LineResponse 일호선_응답 = lineService.findById(일호선.getId());
         assertThat(일호선_응답.getStations()).containsExactly(StationResponse.from(잠실역), StationResponse.from(선릉역));
+    }
 
+    @DisplayName("존재하지 않는 지하철 노선에 구간을 추가할 수 없다.")
+    @Test
+    void addSectionAtNonExistentLine() {
+        Line 일호선 = new Line(1L, "일호선", "green");
+        when(lineRepository.findById(일호선.getId())).thenReturn(Optional.ofNullable(null));
+        when(stationService.findById(잠실역.getId())).thenReturn(잠실역);
+        when(stationService.findById(선릉역.getId())).thenReturn(선릉역);
+
+        assertThatThrownBy(() -> lineService.addSection(일호선.getId(), new SectionRequest(잠실역.getId(), 선릉역.getId(), 10)))
+                .isInstanceOf(NonExistentLineException.class);
     }
 
     @DisplayName("지하철 노선에서 구간을 삭제한다.")
@@ -126,5 +158,14 @@ class LineServiceMockTest {
 
         assertThat(lineService.findById(일호선.getId())
                 .getStations()).doesNotContain(StationResponse.from(강남역));
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선에서 구간을 삭제할 수 없다.")
+    @Test
+    void deleteSectionAtNonExistentLine() {
+        when(lineRepository.findById(1L)).thenReturn(Optional.ofNullable(null));
+
+        assertThatThrownBy(() -> lineService.deleteSection(1L, 강남역.getId()))
+                .isInstanceOf(NonExistentLineException.class);
     }
 }
