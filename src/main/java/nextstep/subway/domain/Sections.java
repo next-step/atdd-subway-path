@@ -43,12 +43,12 @@ public class Sections {
             throw new SectionException("구간이 하나 일때는 삭제할 수 없습니다.");
         }
 
-        if (isDownStation(station)) {
+        if (isLastDownStation(station)) {
             removeDownStation(station);
             return;
         }
 
-        if (isUpStation(station)) {
+        if (isFirstUpStation(station)) {
             removeUpStation(station);
             return;
         }
@@ -245,12 +245,12 @@ public class Sections {
         return stations.contains(station) && stations.indexOf(station) != 0 && stations.indexOf(station) != stations.size() - 1;
     }
 
-    private boolean isUpStation(Station station) {
+    private boolean isFirstUpStation(Station station) {
         List<Station> stations = getStations();
         return stations.indexOf(station) == 0;
     }
 
-    private boolean isDownStation(Station station) {
+    private boolean isLastDownStation(Station station) {
         List<Station> stations = getStations();
         return stations.indexOf(station) == stations.size() - 1;
     }
