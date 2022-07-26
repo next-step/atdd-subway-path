@@ -39,17 +39,11 @@ public class LineServiceMockTest {
         given(stationService.findById(1L)).willReturn(기흥역);
         given(stationService.findById(2L)).willReturn(신갈역);
 
-        final Section section = Section.builder()
-                                       .upStation(기흥역)
-                                       .downStation(신갈역)
-                                       .distance(10).build();
-
         final Line line = new Line(3L, "분당선", "yellow");
         given(lineRepository.findById(3L)).willReturn(Optional.of(line));
 
         // when
-        lineService.addSection(line.getId(),
-                               new SectionRequest(section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance()));
+        lineService.addSection(line.getId(), new SectionRequest(기흥역.getId(), 신갈역.getId(), 10));
 
         // then
         assertThat(line.getSections().size()).isEqualTo(1);
@@ -80,14 +74,8 @@ public class LineServiceMockTest {
 
         final Line line = new Line(4L, "분당선", "yellow");
 
-        line.addSection(Section.builder()
-                               .upStation(기흥역)
-                               .downStation(신갈역)
-                               .distance(10).build());
-        line.addSection(Section.builder()
-                               .upStation(신갈역)
-                               .downStation(정자역)
-                               .distance(10).build());
+        line.addSection(기흥역, 신갈역, 10);
+        line.addSection(신갈역, 정자역, 10);
 
         given(lineRepository.findById(line.getId())).willReturn(Optional.of(line));
 

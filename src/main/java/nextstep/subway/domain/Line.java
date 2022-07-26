@@ -48,6 +48,13 @@ public class Line {
         sections.add(section);
     }
 
+    public void addSection(Station upStation, Station downStation, int distance) {
+        this.addSection(Section.builder()
+                            .upStation(upStation)
+                            .downStation(downStation)
+                            .distance(distance).build());
+    }
+
     public void update(final String name, final String color) {
         this.name = StringUtils.hasText(name) ? name : this.name;
         this.color = StringUtils.hasText(color) ? color : this.color;
