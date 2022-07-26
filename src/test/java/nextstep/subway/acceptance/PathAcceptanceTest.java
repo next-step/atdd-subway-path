@@ -7,12 +7,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
 import static nextstep.subway.acceptance.PathSteps.지하철_경로_조회_요청;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 경로 검색")
 class PathAcceptanceTest extends AcceptanceTest {
@@ -63,7 +66,14 @@ class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> findPathResponse = 지하철_경로_조회_요청(신논현역, 선릉역);
 
         // then
-        
+        List<String> stationNames = findPathResponse.jsonPath().getList("stations.name", String.class);
+        double totalDistance = findPathResponse.jsonPath().getDouble("distance");
+
+        assertAll(
+                () -> assertThat(stationNames).hasSize(5),
+                () -> assertThat(stationNames).containsExactly("신논현역", "강남역", "양재역", "도곡역", "선릉역"),
+                () -> assertThat(totalDistance).isEqualTo(70)
+        );
     }
 
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
