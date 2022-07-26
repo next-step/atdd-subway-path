@@ -34,7 +34,17 @@ public class Sections {
 
         if (isUpTerminal(section)) {
             sections.add(0, section);
+            return;
         }
+
+        if (isDownTerminal(section)) {
+            sections.add(section);
+            return;
+        }
+    }
+
+    private boolean isDownTerminal(Section section) {
+        return getDownTerminal().equals(section.getUpStation());
     }
 
     private boolean isUpTerminal(Section section) {
@@ -43,6 +53,10 @@ public class Sections {
 
     private Station getUpTerminal() {
         return sections.get(0).getUpStation();
+    }
+
+    private Station getDownTerminal() {
+        return sections.get(sections.size()-1).getDownStation();
     }
 
     private void validateAdd(Section section) {
