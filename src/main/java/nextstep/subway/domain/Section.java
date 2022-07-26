@@ -26,7 +26,7 @@ public class Section {
 
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    protected Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
