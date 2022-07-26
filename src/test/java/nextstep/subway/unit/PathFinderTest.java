@@ -88,4 +88,16 @@ class PathFinderTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("graph must contain the source vertex");
     }
+
+    @DisplayName("존재하지 않은 도착역을 조회할 경우")
+    @Test
+    void notExistsStationForTarget() {
+        Station 모란역 = new Station("모란역");
+
+        PathFinder pathFinder = PathFinder.of(Arrays.asList(신분당선, 분당선));
+
+        assertThatThrownBy(() -> pathFinder.findPath(신논현역, 모란역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("graph must contain the sink vertex");
+    }
 }
