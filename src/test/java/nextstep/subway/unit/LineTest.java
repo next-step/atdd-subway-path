@@ -66,7 +66,7 @@ class LineTest {
         구간_추가(List.of(firstSection, secondSection));
 
         assertThat(line.getLastSection()).isEqualTo(secondSection);
-        assertThat(line.getSections().getAllStation()).containsExactlyElementsOf(Arrays.asList(donongStation, gooriStation, ducksoStation));
+        assertThat(line.getSections().getAllStation()).containsExactly(donongStation, ducksoStation, gooriStation);
     }
 
     @Test
@@ -76,7 +76,7 @@ class LineTest {
         line.getSections().removeLastSection();
 
         assertThat(line.getLastSection()).isEqualTo(firstSection);
-        assertThat(line.getSections().getAllStation()).containsExactlyElementsOf(Arrays.asList(donongStation, gooriStation));
+        assertThat(line.getSections().getAllStation()).containsExactly(donongStation, ducksoStation);
     }
 
     private void 구간_추가(List<Section> sections) {
