@@ -1,8 +1,10 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
@@ -17,14 +19,16 @@ class LineSectionTest {
     private Station station2;
     private Station station3;
     private Station station4;
+    private Station station5;
 
     @BeforeEach
     void setUp() {
          line = createLine();
-         station1 = new Station("가양역");
-         station2 = new Station("염창역");
-         station3 = new Station("당산역");
-         station4 = new Station("여의도역");
+         station1 = new Station(1L,"가양역");
+         station2 = new Station(2L,"염창역");
+         station3 = new Station(3L,"당산역");
+         station4 = new Station(4L,"여의도역");
+         station5 = new Station(5L,"동작역");
     }
 
     @Test
@@ -51,11 +55,13 @@ class LineSectionTest {
     }
 
     @Test
+    @DisplayName("구간 추가 정상 동작")
     void add() {
         //when
-        addSection(line,station2,station4,20);
+        addSection(line,station2,station5,30);
         addSection(line,station1,station2,10);
         addSection(line,station2,station3,10);
+        addSection(line,station4,station5,10);
 
         //then
         List<Station> stations = line.getLineSection().getStations();
@@ -63,18 +69,12 @@ class LineSectionTest {
         assertThat(stations.get(1).getName()).isEqualTo("염창역");
         assertThat(stations.get(2).getName()).isEqualTo("당산역");
         assertThat(stations.get(3).getName()).isEqualTo("여의도역");
+        assertThat(stations.get(4).getName()).isEqualTo("동작역");
 
     }
 
     @Test
-    void remove() {
-    }
-
-    @Test
-    void removeLast() {
-    }
-
-    @Test
+    @DisplayName("정렬된 구간 호출 정상 동작")
     void getSections() {
         //given
         addSection(line,station2,station3,10);
@@ -95,6 +95,7 @@ class LineSectionTest {
     }
 
     @Test
+    @DisplayName("구간 의 사이즈 호출 정상 동작")
     void size() {
         //given
         addSection(line,station2,station3,10);
@@ -109,12 +110,45 @@ class LineSectionTest {
     }
 
     @Test
+    @DisplayName("구간 empty 여부 정상 동작")
     void isEmpty() {
         assertThat(line.getLineSection().isEmpty()).isTrue();
     }
 
     @Test
-    void checkArgument() {
+    @DisplayName("동일구간 존재확인 validation")
+    void checkAddArgument1() {
+        //given
+        addSection(line,station1,station2,10);
+
+        //when
+        assertThatThrownBy(()->line.getLineSection().checkAddArgument(new SectionRequest(station1.getId(),station2.getId(),4)))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("동일한 역의 구간이 존재합니다. upStationId="+station1.getId()+", downStationId="+station2.getId());
+    }
+
+    @Test
+    @DisplayName("어느곳과도 연결되지 않는 구간 추가 validation")
+    void checkAddArgument2() {
+        //given
+        addSection(line,station1,station2,10);
+
+        //when
+        assertThatThrownBy(()->line.getLineSection().checkAddArgument(new SectionRequest(station3.getId(),station4.getId(),10)))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("연결되는 구간의 역이 없습니다. upStationId="+station3.getId() +", downStationId="+station4.getId());
+    }
+
+    @Test
+    @DisplayName("구간 추가 길이 확인 validation")
+    void checkAddArgument3() {
+        //given
+        addSection(line,station1,station2,10);
+
+        //when
+        assertThatThrownBy(()->line.getLineSection().checkAddArgument(new SectionRequest(station1.getId(),station2.getId(),10)))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("기존 구간보다 작은 길이의 구간을 입력해주세요. distance="+10);
     }
 
 
