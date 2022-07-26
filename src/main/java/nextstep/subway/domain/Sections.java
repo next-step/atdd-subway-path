@@ -3,6 +3,8 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.exception.CustomException;
+import nextstep.subway.exception.code.SectionCode;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -22,9 +24,20 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
+    public void add(final Section section){
+        sections.add(section);
+    }
+
     public void removeSection(final Long stationId) {
+        checkInvalidRemoveSize();
         checkIsDownEndStation(stationId);
         sections.remove(size()-1);
+    }
+
+    private void checkInvalidRemoveSize() {
+        if (size() <= INVALID_REMOVE_SIZE) {
+            throw new CustomException(SectionCode.SECTION_REMOVE_INVALID);
+        }
     }
 
     private void checkIsDownEndStation(final Long stationId) {
@@ -44,10 +57,6 @@ public class Sections {
 
     public boolean isEmpty(){
         return sections.isEmpty();
-    }
-
-    public void add(final Section section){
-        sections.add(section);
     }
 
     public List<Station> getStations() {
