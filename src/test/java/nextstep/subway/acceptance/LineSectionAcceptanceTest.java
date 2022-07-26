@@ -75,8 +75,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * given 노선이 생성되어 있음
-     * given 구간이 생성되어 있음 (강남역 - 양재역)
+     * given 노선이 생성되어 있음 and 구간이 생성되어 있음 (강남역 - 양재역)
      * when 판교역을 기준으로 (강남역 - 청계산입구역) 구간을 추가함
      * then 구간 조회시 2개의 구간(강남역 - 양재역, 양재역 - 청계산입구역)이 조회됨
      */
@@ -97,8 +96,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      }
 
     /**
-     * given 노선이 생성되어 있음
-     * given 구간이 생성되어 있음 (강남역 - 양재역)
+     * given 노선이 생성되어 있음 and 구간이 생성되어 있음 (강남역 - 양재역)
      * when 판교역을 기준으로 (강남역 - 청계산입구역) 구간을 추가함 근데 강남역-청계산입구역 거리가 강남역 - 양재역 거리보다 김
      * then 에러 발생
      */
@@ -118,8 +116,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      }
 
     /**
-     * given 노선이 생성되어 있음
-     * given 구간이 생성되어 있음 (강남역 - 양재역)
+     * given 노선이 생성되어 있음 and 구간이 생성되어 있음 (강남역 - 양재역)
      * when 신논현역 - 강남역 구간을 등록
      * then 구간 조회시 신논현역 - 강남역 구간이 조회됨
      */
@@ -141,8 +138,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
       }
 
     /**
-     * given 노선이 생성되어 있음
-     * given 구간이 생성되어 있음 (강남역 - 양재역)
+     * given 노선이 생성되어 있음 and 구간이 생성되어 있음 (강남역 - 양재역)
      * when 양재역-양재시민의숲역 구간을 등록
      * then 구간 조회시 양재역-양재시민의숲역 구간이 조회됨
      */
@@ -164,8 +160,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * given 노선이 생성되어 있음
-     * given 구간이 생성되어 있음 (강남역 - 양재역)
+     * given 노선이 생성되어 있음 and 구간이 생성되어 있음 (강남역 - 양재역)
      * when 판교역을 기준으로 (양재시민의숲역 - 양재역) 구간을 추가함
      * then 구간 조회시 2개의 구간(강남역 - 양재시민의숲역, 양재시민의숲역 - 양재역)이 조회됨
      */

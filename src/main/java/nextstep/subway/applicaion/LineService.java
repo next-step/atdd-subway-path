@@ -1,6 +1,7 @@
 package nextstep.subway.applicaion;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,17 +37,23 @@ public class LineService {
     }
 
     public List<LineResponse> showLines() {
-        return LineResponse.fromList(lineRepository.findAll());
+        return lineRepository.findAll().stream()
+            .map(LineResponse::from)
+            .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
-        return LineResponse.from(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        return LineResponse.from(getLineById(id));
+    }
+
+    private Line getLineById(Long id) {
+        return lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
     }
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-        line.update(lineRequest);
+        Line line = getLineById(id);
+        line.update(lineRequest.getName(), lineRequest.getColor());
     }
 
     @Transactional
@@ -58,14 +65,14 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = getLineById(lineId);
 
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = getLineById(lineId);
         Station station = stationService.findById(stationId);
 
         Section lastSection = line.getLastSection();

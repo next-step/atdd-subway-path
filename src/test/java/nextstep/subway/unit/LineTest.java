@@ -1,17 +1,14 @@
 package nextstep.subway.unit;
 
+import java.util.*;
+
+import org.junit.jupiter.api.*;
+
+import nextstep.subway.applicaion.dto.*;
+import nextstep.subway.domain.*;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.List;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import nextstep.subway.applicaion.dto.LineRequest;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
 
 class LineTest {
 	@DisplayName("구간 추가 테스트")
@@ -65,15 +62,17 @@ class LineTest {
 
 	    //given
 		Line line = new Line("분당선", "yellow");
-		Section section = new Section(line, new Station("서현역"), new Station("이매역"), 10);
+		Station 서현역 = new Station("서현역");
+		Station 이매역 = new Station("이매역");
+		Section section = new Section(line, 서현역, 이매역, 10);
 		line.addSection(section);
 
 	    //when
 		Section lastSection = line.getLastSection();
 
 	    //then
-		assertThat(lastSection.getUpStation().getName()).isEqualTo("서현역");
-		assertThat(lastSection.getDownStation().getName()).isEqualTo("이매역");
+		assertThat(lastSection.getUpStation().getName()).isEqualTo(서현역.getName());
+		assertThat(lastSection.getDownStation().getName()).isEqualTo(이매역.getName());
 	 }
 	 
 	 @DisplayName("노선 정보 수정 테스트")
@@ -87,7 +86,7 @@ class LineTest {
 		 LineRequest updateReqDto = LineRequest.of(updatedName, updatedColor);
 
 	     //when
-	     line.update(updateReqDto);
+	     line.update(updateReqDto.getName(), updateReqDto.getColor());
 
 	     //then
 		 assertAll(
