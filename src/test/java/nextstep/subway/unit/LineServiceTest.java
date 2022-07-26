@@ -139,11 +139,11 @@ class LineServiceTest {
     void deleteSection() {
         lineRepository.save(일호선);
         lineService.addSection(일호선.getId(), new SectionRequest(강남역.getId(), 교대역.getId(), 20));
+        lineService.addSection(일호선.getId(), new SectionRequest(교대역.getId(), 선릉역.getId(), 20));
 
         lineService.deleteSection(일호선.getId(), 교대역.getId());
 
-        Section 새로운_구간 = new Section(일호선, 강남역, 교대역, 20);
-        assertThat(일호선.getSections()).doesNotContain(새로운_구간);
+        assertThat(일호선.getSections()).containsExactly(new Section(일호선, 강남역, 선릉역, 40));
     }
 
     @DisplayName("존재하지 않는 지하철 노선에서 구간을 삭제할 수 없다.")
