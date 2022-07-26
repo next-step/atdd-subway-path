@@ -12,8 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
@@ -21,6 +22,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     private Long 강남역;
     private Long 양재역;
+    private Long 삼성역;
 
     /**
      * Given 지하철역과 노선 생성을 요청 하고
@@ -34,6 +36,9 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         Map<String, String> lineCreateParams = createLineCreateParams(강남역, 양재역);
         신분당선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역));
+
+        삼성역 = 지하철역_생성_요청("삼성역").jsonPath().getLong("id");
     }
 
     @Nested
@@ -92,7 +97,12 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             @DisplayName("상행역과 하행역 모두 등록되어있으면 예외 발생")
             @Test
             void 상행역_하행역_모두_등록_예외 () {
+                // when
+                ExtractableResponse<Response> 구간_생성 =
+                        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역));
 
+                // then
+                assertThat(구간_생성.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
             }
 
             /**
