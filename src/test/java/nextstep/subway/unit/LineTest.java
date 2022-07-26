@@ -135,17 +135,39 @@ class LineTest {
         assertThatThrownBy(() -> line.deleteSection(downStation))
                 .isInstanceOf(IllegalArgumentException.class);
     }
-    
-    @DisplayName("노선에서 삭제를 하는 역이 하행 종점역이 아닌경우 오류가 발생한다")
+
+    @DisplayName("구간에서 상행 종점역이 정상적으로 삭제되었습니다.")
     @Test
-    void removeSectionNotMatchedEndStationException() {
+    void removeUpSection() {
         // given
         Station newStation = new Station("선정릉역");
         line.addSection(new Section(line, downStation, newStation, 6));
-        
-        // when & then
-        assertThatThrownBy(() -> line.deleteSection(upStation))
-                .isInstanceOf(IllegalArgumentException.class);
+
+        // when
+        line.deleteSection(upStation);
+
+        // then
+        assertAll(
+                () -> assertThat(line.getStations()).containsExactly(downStation, newStation),
+                () -> assertThat(line.getStations()).doesNotContain(upStation)
+        );
+    }
+
+    @DisplayName("구간에서 중간역이 정상적으로 삭제되었습니다.")
+    @Test
+    void removeMiddleSection() {
+        // given
+        Station newStation = new Station("선정릉역");
+        line.addSection(new Section(line, downStation, newStation, 6));
+
+        // when
+        line.deleteSection(downStation);
+
+        // then
+        assertAll(
+                () -> assertThat(line.getStations()).containsExactly(upStation, newStation),
+                () -> assertThat(line.getStations()).doesNotContain(downStation)
+        );
     }
 
     @DisplayName("노선의 정보를 정상적으로 수정했습니다")

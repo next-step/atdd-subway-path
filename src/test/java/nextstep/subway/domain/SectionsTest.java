@@ -93,4 +93,42 @@ class SectionsTest {
         assertThatThrownBy(() -> sections.addSection(new Section(line, gangnamStation, seolleungStation, 3)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+    
+    @DisplayName("상행 종점역이 정상적으로 삭제되었습니다.")
+    @Test
+    void removeUpStation() {
+        // given
+        Station newStation = new Station("신규역");
+        sections.addSection(new Section(line, downStation, newStation, 3));
+
+        // when
+        sections.deleteSection(newStation);
+
+        // then
+
+        assertAll(
+                () -> assertThat(sections.getStations()).hasSize(2),
+                () -> assertThat(sections.getStations()).containsExactly(upStation, downStation),
+                () -> assertThat(sections.getStations()).doesNotContain(newStation)
+        );
+    }
+
+    @DisplayName("구간이 하나만 있는 경우에 삭제를 한다면 예외처리 된다.")
+    @Test
+    void exceptionRemoveOnceSection() {
+        // when & then
+        assertThatThrownBy(() -> sections.deleteSection(downStation))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("존재하지 않는 구간을 삭제하는 경우, 예외처리 된다.")
+    @Test
+    void exceptionRemoveNotMatchedSection() {
+        // given
+        Station newStation = new Station("신규역");
+
+        // when & then
+        assertThatThrownBy(() -> sections.deleteSection(newStation))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }
