@@ -43,7 +43,6 @@ public class LineServiceMockTest {
         // given
         when(stationService.findById(anyLong())).thenReturn(StationTestFixtures.지하철역_생성("강남역"));
         when(stationService.findById(anyLong())).thenReturn(StationTestFixtures.지하철역_생성("시청역"));
-        when(stationService.findById(anyLong())).thenReturn(StationTestFixtures.지하철역_생성("구로디지털단지역"));
 
         Line 신분당선 = LineTestFixtures.노선_생성("신분당선", "red");
         ReflectionTestUtils.setField(신분당선, "id", 1L);
