@@ -4,6 +4,7 @@ import nextstep.subway.common.errors.dto.ErrorResponse;
 import nextstep.subway.common.errors.errorcode.ErrorCode;
 import nextstep.subway.common.errors.utils.ExceptionHandlerUtils;
 import nextstep.subway.line.domain.exception.CannotAddSectionException;
+import nextstep.subway.line.domain.exception.CannotCombineSectionException;
 import nextstep.subway.line.domain.exception.CannotDeleteSectionException;
 import nextstep.subway.line.domain.exception.CannotSubtractSectionException;
 import org.springframework.core.Ordered;
@@ -33,6 +34,13 @@ public class LineExceptionHandler {
     @ExceptionHandler(CannotSubtractSectionException.class)
     public ResponseEntity<ErrorResponse> cannotSubtractSectionException(CannotSubtractSectionException e) {
         ErrorCode errorCode = LineErrorCode.CANT_SUBTRACT_SECTION;
+        ErrorResponse errorResponse = ExceptionHandlerUtils.toErrorResponse(errorCode, e);
+        return ExceptionHandlerUtils.toResponseEntity(errorCode, errorResponse);
+    }
+
+    @ExceptionHandler(CannotCombineSectionException.class)
+    public ResponseEntity<ErrorResponse> cannotCombineSectionException(CannotCombineSectionException e) {
+        ErrorCode errorCode = LineErrorCode.CANT_COMBINE_SECTION;
         ErrorResponse errorResponse = ExceptionHandlerUtils.toErrorResponse(errorCode, e);
         return ExceptionHandlerUtils.toResponseEntity(errorCode, errorResponse);
     }
