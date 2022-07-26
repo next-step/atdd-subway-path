@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.Arrays;
@@ -95,5 +96,18 @@ public class JGraphTest {
                 () -> assertThat(shortestPath).containsExactly(교대역, 남부터미널역, 양재역),
                 () -> assertThat(shortestDistance).isEqualTo(5L)
         );
+    }
+
+
+    @DisplayName("출발역과 도착역이 같은 경우 예외 발생")
+    @Test
+    public void sameStationException() {
+        // given
+        JGraph graph = new JGraph(Arrays.asList(이호선, 삼호선, 신분당선));
+
+        // when
+        // then
+        assertThatThrownBy(() -> graph.findShortestPath(교대역, 교대역))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

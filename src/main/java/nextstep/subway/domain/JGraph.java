@@ -23,20 +23,30 @@ public class JGraph implements GraphStrategy {
 
     @Override
     public List<Station> findShortestPath(Station target, Station source) {
-        GraphPath<Station, SectionEdge> graphPath = shortestPath.getPath(target, source);
+        GraphPath<Station, SectionEdge> graphPath = getGraphPath(target, source);
 
         return graphPath.getVertexList();
     }
 
     @Override
     public int getShortestDistance(Station target, Station source) {
-        GraphPath<Station, SectionEdge> graphPath = shortestPath.getPath(target, source);
+        GraphPath<Station, SectionEdge> graphPath = getGraphPath(target, source);
 
         List<Section> sections = graphPath.getEdgeList().stream()
                 .map(SectionEdge::getSection)
                 .collect(Collectors.toList());
 
         return new Sections(sections).getTotalDistance();
+    }
+
+    private GraphPath<Station, SectionEdge> getGraphPath(Station target, Station source) {
+        checkIsSameTargetAndSource(target, source);
+        return shortestPath.getPath(target, source);
+    }
+
+    private void checkIsSameTargetAndSource(Station target, Station source) {
+        if (target.equals(source))
+            throw new IllegalArgumentException("출발역과 도착역이 같을 수 없습니다.");
     }
 
     private void initGraph() {

@@ -4,7 +4,9 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.LineSteps.신규_라인;
@@ -44,16 +46,35 @@ public class PathAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(삼호선, 신규_구간(남부터미널역, 양재역, 3L));
     }
 
-    @DisplayName("출발역과 도착역의 최단거리 조회")
-    @Test
-    void find_shortest_path() {
-        // when
-        ExtractableResponse<Response> response = 최단_경로_조회_요청(강남역, 남부터미널역);
+    @Nested
+    @DisplayName("성공")
+    class success {
+        @DisplayName("출발역과 도착역의 최단거리 조회")
+        @Test
+        void findShortestPath() {
+            // when
+            ExtractableResponse<Response> response = 최단_경로_조회_요청(강남역, 남부터미널역);
 
-        // then
-        assertAll(
-                () -> assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("강남역", "교대역", "남부터미널역"),
-                () -> assertThat(response.jsonPath().getLong("distance")).isEqualTo(12)
-        );
+            // then
+            assertAll(
+                    () -> assertThat(response.jsonPath().getList("stations.name", String.class))
+                            .containsExactly("강남역", "교대역", "남부터미널역"),
+                    () -> assertThat(response.jsonPath().getLong("distance")).isEqualTo(12)
+            );
+        }
+    }
+
+    @Nested
+    @DisplayName("실패")
+    class fail {
+        @DisplayName("출발역과 도착역이 같은 경우 최단거리 조회 실패")
+        @Test
+        void find_shortest_path() {
+            // when
+            ExtractableResponse<Response> response = 최단_경로_조회_요청(강남역, 강남역);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
     }
 }
