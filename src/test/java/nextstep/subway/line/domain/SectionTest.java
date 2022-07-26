@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.domain.exception.CannotCombineSectionException;
 import nextstep.subway.line.domain.exception.CannotSubtractSectionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,6 +52,30 @@ class SectionTest {
                         new Section(LINE, 2L, 3L, 3)),
                 Arguments.of(new Section(LINE, 1L, 2L, 5),
                         new Section(LINE, 3L, 4L, 2)));
+    }
+
+    @DisplayName("두 구간을 합칠 수 있다.")
+    @Test
+    void combine() {
+        Section section = new Section(LINE, 1L, 2L, 3);
+        Section anotherSection = new Section(LINE, 2L, 3L, 4);
+
+        Section combinedSection = section.combine(anotherSection);
+
+        assertThat(combinedSection.getUpStationId()).isEqualTo(1L);
+        assertThat(combinedSection.getDownStationId()).isEqualTo(3L);
+        assertThat(combinedSection.getDistance()).isEqualTo(7);
+    }
+
+    @DisplayName("두 구간이 이어져있지 않으면 합칠 수 없다.")
+    @Test
+    void combine_Exception() {
+        Section section = new Section(LINE, 1L, 2L, 3);
+        Section anotherSection = new Section(LINE, 3L, 4L, 4);
+
+        assertThatThrownBy(() -> section.combine(anotherSection))
+                .isInstanceOf(CannotCombineSectionException.class)
+                .hasMessage("하행역과 상행역이 이어져 있는 구간끼리만 합칠 수 있습니다.");
     }
 
     @DisplayName("두 구간의 상행역이나 하행역중 하나가 똑같은지 알 수 있다.")
