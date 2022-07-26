@@ -6,8 +6,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
@@ -44,15 +43,53 @@ public class Sections {
 
     public List<Station> allStations() {
 
-        return Stream.concat(
-                        Stream.of(firstStation()),
-                        sections.stream().map(Section::getDownStation)
-                )
-                .collect(Collectors.toList());
+        Section firstSection = firstSection();
+        if (firstSection == null) {
+            return List.of();
+        }
+
+        List<Station> allStations = new ArrayList<>();
+        allStations.add(firstSection.getUpStation());
+
+        Station downStation = firstSection.getDownStation();
+        while (true) {
+            allStations.add(downStation);
+            Station finalDownStation = downStation;
+            Optional<Station> stationOptional = sections.stream()
+                    .filter(section -> finalDownStation.equals(section.getUpStation()))
+                    .map(Section::getDownStation)
+                    .findAny();
+            if (stationOptional.isEmpty()) {
+                break;
+            }
+            downStation = stationOptional.get();
+        }
+
+        return allStations;
     }
 
-    private Station firstStation() {
-        return sections.get(0).getUpStation();
+    private Section firstSection() {
+
+        if (sections.isEmpty()) {
+            return null;
+        }
+
+        Section section = sections.get(0);
+        Station upStation = section.getUpStation();
+
+        while (true) {
+            Station finalUpStation = upStation;
+            Optional<Section> sectionOptional = sections.stream()
+                    .filter(s -> finalUpStation.equals(s.getDownStation()))
+                    .findAny();
+            if (sectionOptional.isEmpty()) {
+                break;
+            }
+            section = sectionOptional.get();
+            upStation = section.getUpStation();
+        }
+
+        return section;
     }
 
     public boolean hasStation(Station station) {
