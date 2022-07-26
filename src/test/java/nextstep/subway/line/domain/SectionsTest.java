@@ -117,4 +117,19 @@ class SectionsTest {
                 .isInstanceOf(CannotDeleteSectionException.class)
                 .hasMessage("구간이 하나만 존재하면 역을 제거할 수 없습니다.");
     }
+
+    @DisplayName("지하철 노선에 등록되어있지 않은 역을 제거할 수 없다.")
+    @Test
+    void 구간_제거_예외2() {
+        // given
+        Sections sections = new Sections();
+
+        sections.add(new Section(LINE, 1L, 2L, 6));
+        sections.add(new Section(LINE, 2L, 3L, 6));
+
+        // when + then
+        assertThatThrownBy(() -> sections.removeSection(4L))
+                .isInstanceOf(CannotDeleteSectionException.class)
+                .hasMessage("등록되어 있지 않은 역을 제거할 수 없습니다.");
+    }
 }

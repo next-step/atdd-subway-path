@@ -177,7 +177,24 @@ class SectionAcceptanceTest extends AcceptanceTest {
         노선에서_구간을_제거할수_없다(신분당선, 양재역);
     }
 
+    /**
+     * Given 지하철 노선이 주어졌을 때
+     * When 지하철 노선에 등록되어있지 않은 역을 제거하려 하면
+     * Then 제거에 실패한다
+     */
+    @DisplayName("지하철 노선에 등록되어있지 않은 역을 제거할 수 없다.")
+    @Test
+    void 구간_제거_예외2() {
+        // given
+        Long 교대역 = 지하철역_생성_요청("교대역").jsonPath().getLong("id");
+        Long 서초역 = 지하철역_생성_요청("서초역").jsonPath().getLong("id");
 
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 6));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 서초역, 6));
+
+        // when + then
+        노선에서_구간을_제거할수_없다(신분당선, 교대역);
+    }
 
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
