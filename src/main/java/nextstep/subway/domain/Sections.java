@@ -44,6 +44,15 @@ public class Sections {
         if (containsAllStation(section)) {
             throw new IllegalArgumentException("상행역과 하행역이 이미 등록되어있습니다.");
         }
+
+        // 상행역과 하행역 모두 등록되어있지 않으면 예외 발생
+        if (notContainsAllStation(section)) {
+            throw new IllegalArgumentException("상행역과 하행역이 모두 등록되어있지 않습니다.");
+        }
+    }
+
+    private boolean notContainsAllStation(Section section) {
+        return !getStations().contains(section.getUpStation()) && !getStations().contains(section.getDownStation());
     }
 
     private boolean containsAllStation(Section section) {

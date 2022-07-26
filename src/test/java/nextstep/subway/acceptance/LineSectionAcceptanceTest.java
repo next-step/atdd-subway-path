@@ -106,13 +106,22 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             }
 
             /**
+             * given 역을 등록하고
              * when 모두 등록되어있지 않은 상행역과 하행역을 등록하면
              * then 예외가 발생한다.
              */
             @DisplayName("상행역과 하행역 모두 등록되어있지 않으면 예외 발생")
             @Test
             void 상행역_하행역_모두_미등록_예외 () {
+                // given
+                Long 판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
 
+                // when
+                ExtractableResponse<Response> 구간_생성 =
+                        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(삼성역, 판교역));
+
+                // then
+                assertThat(구간_생성.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
             }
         }
 
