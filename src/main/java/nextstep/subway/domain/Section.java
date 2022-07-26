@@ -69,6 +69,11 @@ public class Section {
         this.downStation = station;
     }
 
+    public void removeUpdateStation(Station station, int distance) {
+        this.distance += distance;
+        this.downStation = station;
+    }
+
     public boolean isConnection(Section section) {
         return isUpStationConnection(section)
             || isDownStationConnection(section);
