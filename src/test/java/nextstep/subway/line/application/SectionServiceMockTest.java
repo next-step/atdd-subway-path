@@ -64,7 +64,7 @@ class SectionServiceMockTest {
         // when + then
         assertThatThrownBy(() -> sectionService.deleteSection(lineId, downStationId))
                 .isInstanceOf(CannotDeleteSectionException.class)
-                .hasMessage("구간이 하나만 존재하면 역을 제거할 수 없습니다.");
+                .hasMessage("구간이 둘 이상이어야 역을 제거할 수 있습니다.");
     }
 
     @Test

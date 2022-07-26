@@ -65,19 +65,32 @@ public class Sections {
     }
 
     public void removeSection(Long stationId) {
-        if (sections.size() == 1) {
-            throw new CannotDeleteSectionException("구간이 하나만 존재하면 역을 제거할 수 없습니다.");
+        if (sections.size() < 2) {
+            throw new CannotDeleteSectionException("구간이 둘 이상이어야 역을 제거할 수 있습니다.");
         }
 
         if (!isExistingStation(stationId)) {
             throw new CannotDeleteSectionException("등록되어 있지 않은 역을 제거할 수 없습니다.");
         }
 
-        Section lastSection = lastSection();
-        if (!lastSection.matchDownStation(stationId)) {
-            throw new CannotDeleteSectionException("노선의 종점만 삭제할 수 있습니다.");
+        List<Long> stationIds = getOrderedStationIds();
+
+        if (stationIds.get(0).equals(stationId)) {
+            sections.remove(firstSection());
+            return;
         }
-        sections.remove(lastSection);
+
+        if (stationIds.get(stationIds.size() - 1).equals(stationId)) {
+            sections.remove(lastSection());
+            return;
+        }
+
+        Long removedSectionIdx = stationIds.get(stationIds.indexOf(stationId) - 1);
+        Section removedSection = findByUpStationId(removedSectionIdx);
+        Section nextSection = findByUpStationId(removedSection.getDownStationId());
+        sections.remove(removedSection);
+        sections.remove(nextSection);
+        sections.add(removedSection.add(nextSection));
     }
 
     private boolean isExistingStation(Long stationId) {

@@ -21,7 +21,8 @@ public class SectionService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId).orElseThrow(LineNotFoundException::new);
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(LineNotFoundException::new);
 
         line.addSection(upStation.getId(), downStation.getId(), sectionRequest.getDistance());
     }

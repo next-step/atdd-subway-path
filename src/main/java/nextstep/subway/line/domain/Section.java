@@ -49,6 +49,11 @@ public class Section {
         throw new CannotSubtractSectionException("상행역이나 하행역이 겹치는 구간끼리만 뺄 수 있습니다.");
     }
 
+    public Section add(Section anotherSection) {
+        int addedDistance = this.distance + anotherSection.distance;
+        return new Section(line, upStationId, anotherSection.downStationId, addedDistance);
+    }
+
     public boolean startsOrEndsTogether(Section anotherSection) {
         return startsTogether(anotherSection) || endsTogether(anotherSection);
     }
