@@ -10,6 +10,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @NoArgsConstructor
 @Embeddable
@@ -41,6 +42,13 @@ public class Sections {
             sections.add(section);
             return;
         }
+
+        int index = IntStream.range(0, sections.size())
+                .filter(i-> sections.get(i).getDownStation().equals(section.getUpStation()))
+                .findFirst()
+                .orElse(0);
+
+        this.sections.add(index, section);
     }
 
     private boolean isDownTerminal(Section section) {
