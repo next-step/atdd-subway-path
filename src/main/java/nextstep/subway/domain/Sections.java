@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -28,12 +27,8 @@ public class Sections {
   private List<Section> sections = new ArrayList<>();
 
   public List<Station> getAllStation() {
-    if (getSections().isEmpty()) {
+    if (isSectionEmpty()) {
       return Collections.emptyList();
-    }
-
-    if (isOneSectionSize()) {
-      return Arrays.asList(getFirstSection().getUpStation(), getFirstSection().getDownStation());
     }
 
     List<Station> result = new ArrayList<>();
@@ -45,13 +40,12 @@ public class Sections {
       }
 
       if (result.contains(section.getUpStation())) {
-        int index = result.indexOf(section.getUpStation());
-        result.add(index + 1, section.getDownStation());
+        result.add(getStationIndex(result, section.getUpStation()) + 1, section.getDownStation());
         continue;
       }
 
       if (result.contains(section.getDownStation())) {
-        int index = result.indexOf(section.getDownStation());
+        int index = getStationIndex(result, section.getDownStation());
         index = index == 0 ? 0 : index - 1;
         result.add(index, section.getUpStation());
         continue;
@@ -61,34 +55,48 @@ public class Sections {
     return result;
   }
 
-  public void addSection(Section section) {
-    for (Section section1 : sections) {
-      if (section1.getUpStation().equals(section.getUpStation())) {
+  private int getStationIndex(List<Station> result, Station station) {
+    return result.indexOf(station);
+  }
 
-        if (section1.getDownStation().equals(section.getDownStation())) {
-          throw new CustomException(HttpStatus.CONFLICT, ErrorMessage.SECTION_DUPLICATION);
-        }
+  public void addSection(Section target) {
+    sections.stream()
+        .filter(section -> section.getUpStation().equals(target.getUpStation()))
+        .forEach(section -> {
+            sectionEqualsCheck(section, target);
+            distanceCompare(section, target);
 
-        if (section1.getDistance() <= section.getDistance()) {
-          throw new CustomException(HttpStatus.CONFLICT, ErrorMessage.SECTION_DISTANCE_EQUALS_OR_LARGE);
-        }
+            Station middleStation = target.getDownStation();
+            Station lastStation = section.getDownStation();
 
-        Station second = section.getDownStation();
-        Station third = section1.getDownStation();
+            section.changeDownStation(middleStation);
+            target.changeUpStation(middleStation);
+            target.changeDownStation(lastStation);
+            section.changeDistance(section.getDistance() - target.getDistance());
+        });
 
-        section1.changeDownStation(second);
-        section.changeUpStation(second);
-        section.changeDownStation(third);
-        section1.changeDistance(section1.getDistance() - section.getDistance());
-      }
+    stationNotInSection(target);
+
+    this.sections.add(target);
+  }
+
+  private void sectionEqualsCheck(Section section, Section target) {
+    if (section.getDownStation().equals(target.getDownStation())) {
+      throw new CustomException(HttpStatus.CONFLICT, ErrorMessage.SECTION_DUPLICATION);
     }
+  }
 
+  private void distanceCompare(Section section, Section target) {
+    if (section.getDistance() <= target.getDistance()) {
+      throw new CustomException(HttpStatus.CONFLICT, ErrorMessage.SECTION_DISTANCE_EQUALS_OR_LARGE);
+    }
+  }
+
+  private void stationNotInSection(Section target) {
     List<Station> stations = getAllStation();
-    if (!stations.isEmpty() && !stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
+    if (!isSectionEmpty() && !stations.contains(target.getUpStation()) && !stations.contains(target.getDownStation())) {
       throw new CustomException(HttpStatus.CONFLICT, ErrorMessage.SECTION_NOT_IN_STATION);
     }
-
-    this.sections.add(section);
   }
 
   public Section getFirstSection() {

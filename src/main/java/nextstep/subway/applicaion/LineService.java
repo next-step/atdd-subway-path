@@ -34,10 +34,6 @@ public class LineService {
         return createLineResponse(line);
     }
 
-    private Station findStation(Long stationId) {
-        return stationService.findById(stationId);
-    }
-
     public List<LineResponse> showLines() {
         return lineRepository.findAll().stream()
             .map(this::createLineResponse)
@@ -49,13 +45,12 @@ public class LineService {
     }
 
     private LineResponse createLineResponse(Line line) {
-        return LineResponse.createLineResponse(line, createStationResponses(line));
+        return LineResponse.createLineResponse(line, createStationResponses(line.getSections()));
     }
 
-    private List<StationResponse> createStationResponses(Line line) {
-        List<Station> stations = line.getSections().getAllStation();
-        return stations.stream()
-            .map(stationService::createStationResponse)
+    private List<StationResponse> createStationResponses(Sections sections) {
+        return sections.getAllStation().stream()
+            .map(StationResponse::createStationResponse)
             .collect(toList());
     }
 
@@ -78,24 +73,27 @@ public class LineService {
 
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
-        Station upStation = stationService.findById(sectionRequest.getUpStationId());
-        Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = getLineById(lineId);
 
+        Station upStation = findStation(sectionRequest.getUpStationId());
+        Station downStation = findStation(sectionRequest.getDownStationId());
         line.getSections().addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
+        Station station = findStation(stationId);
+
         Sections sections = getLineById(lineId).getSections();
-
-        Station station = stationService.findById(stationId);
         sections.isDeleteStationCheck(station);
-
         sections.removeLastSection();
     }
 
     private Line getLineById(Long lineId) {
         return lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Station findStation(Long stationId) {
+        return stationService.findById(stationId);
     }
 }

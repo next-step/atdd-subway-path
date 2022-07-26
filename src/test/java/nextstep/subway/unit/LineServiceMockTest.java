@@ -92,8 +92,6 @@ public class LineServiceMockTest {
         // given
         when(stationService.findById(1L)).thenReturn(donongStation);
         when(stationService.findById(2L)).thenReturn(gooriStation);
-        when(stationService.createStationResponse(donongStation)).thenReturn(new StationResponse(1L, donongStation.getName()));
-        when(stationService.createStationResponse(gooriStation)).thenReturn(new StationResponse(2L, gooriStation.getName()));
 
         when(lineRepository.save(any())).thenReturn(line);
 
@@ -114,10 +112,6 @@ public class LineServiceMockTest {
     @Test
     void 전체_라인_조회() {
         // given
-        when(stationService.createStationResponse(donongStation)).thenReturn(new StationResponse(1L, donongStation.getName()));
-        when(stationService.createStationResponse(gooriStation)).thenReturn(new StationResponse(2L, gooriStation.getName()));
-        when(stationService.createStationResponse(ducksoStation)).thenReturn(new StationResponse(3L, ducksoStation.getName()));
-
         line.addSection(firstSection);
 
         Line secondLine = new Line(SECONDLINENAME, GREEN);
@@ -160,9 +154,6 @@ public class LineServiceMockTest {
     @Test
     void 라인_단건_조회() {
         // given
-        when(stationService.createStationResponse(donongStation)).thenReturn(new StationResponse(1L, donongStation.getName()));
-        when(stationService.createStationResponse(gooriStation)).thenReturn(new StationResponse(2L, gooriStation.getName()));
-
         line.addSection(firstSection);
         when(lineRepository.findById(any())).thenReturn(Optional.of(line));
 
@@ -277,9 +268,6 @@ public class LineServiceMockTest {
         when(stationService.findById(1L)).thenReturn(donongStation);
         when(stationService.findById(2L)).thenReturn(gooriStation);
         when(stationService.findById(3L)).thenReturn(ducksoStation);
-
-        when(stationService.createStationResponse(donongStation)).thenReturn(new StationResponse(1L, donongStation.getName()));
-        when(stationService.createStationResponse(gooriStation)).thenReturn(new StationResponse(2L, gooriStation.getName()));
 
         when(lineRepository.findById(any())).thenReturn(Optional.of(line));
 

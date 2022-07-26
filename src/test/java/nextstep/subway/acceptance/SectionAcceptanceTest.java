@@ -21,6 +21,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     private Long 강남역;
     private Long 양재역;
+    private Long 정자역;
 
     /**
      * Given 지하철역과 노선 생성을 요청 하고
@@ -31,6 +32,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
         양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+        정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
 
         Map<String, String> lineCreateParams = 라인_파라미터_생성(강남역, 양재역);
         신분당선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
@@ -44,7 +46,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선에_구간을_등록() {
         // when
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, 구간_파라미터_생성(양재역, 정자역, 6));
 
         // then
@@ -60,7 +61,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_중간에_구간_등록() {
         // when
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, 구간_파라미터_생성(강남역, 정자역, 6));
 
         // then
@@ -76,7 +76,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_처음에_구간_등록() {
         // when
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, 구간_파라미터_생성(정자역, 강남역, 6));
 
         // then
@@ -93,7 +92,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_중간_등록_길이가_같은_경우_에러() {
         // when
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
 
         // then
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, 구간_파라미터_생성(강남역, 정자역, 10));
@@ -110,7 +108,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_중간_등록_후_새로운_구간_등록_길이가_같은_경우_에러() {
         // when
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         Long 모란역 = 지하철역_생성_요청("모란역").jsonPath().getLong("id");
 
         지하철_노선에_지하철_구간_생성_요청(신분당선, 구간_파라미터_생성(강남역, 정자역, 5));
@@ -130,7 +127,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_중간_등록_길이가_큰_경우_에러() {
         // when
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
 
         // then
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, 구간_파라미터_생성(강남역, 정자역, 15));
@@ -161,7 +157,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_등록할_구간_상행역_하행역_모두_없는_경우_에러() {
         // when
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         Long 모란역 = 지하철역_생성_요청("모란역").jsonPath().getLong("id");
 
         // then
@@ -180,7 +175,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선에_구간을_제거() {
         // given
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, 구간_파라미터_생성(양재역, 정자역, 6));
 
         // when
