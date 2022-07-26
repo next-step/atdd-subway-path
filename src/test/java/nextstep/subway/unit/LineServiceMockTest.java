@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static nextstep.subway.utils.TestVariables.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,11 +35,6 @@ public class LineServiceMockTest {
 
     @InjectMocks
     private LineService lineService;
-    
-    private static final String YELLOW = "YELLOW";
-    private static final String 구호선 = "9호선";
-    private static final String 염창역 = "염창역";
-    private static final String 당산역 = "당산역";
 
     @Test
     @DisplayName("노선 추가 정상동작")

@@ -1,5 +1,6 @@
 package nextstep.subway.unit;
 
+import static nextstep.subway.utils.TestVariables.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -39,34 +40,34 @@ public class LineServiceTest {
     @DisplayName("지하철 노선 생성 정상 동작")
     void saveLine() {
         // given
-        stationRepository.save(new Station("염창역"));
-        stationRepository.save(new Station("당산역"));
+        stationRepository.save(new Station(염창역));
+        stationRepository.save(new Station(당산역));
 
         // when
-        LineResponse response = lineService.saveLine(new LineRequest("9호선", "YELLOW", 1L, 2L, 10));
+        LineResponse response = lineService.saveLine(new LineRequest(구호선, YELLOW, 1L, 2L, 10));
 
         // then
-        assertThat(response.getName()).isEqualTo("9호선");
-        assertThat(response.getColor()).isEqualTo("YELLOW");
-        assertThat(response.getStations().get(0).getName()).isEqualTo("염창역");
-        assertThat(response.getStations().get(1).getName()).isEqualTo("당산역");
+        assertThat(response.getName()).isEqualTo(구호선);
+        assertThat(response.getColor()).isEqualTo(YELLOW);
+        assertThat(response.getStations().get(0).getName()).isEqualTo(염창역);
+        assertThat(response.getStations().get(1).getName()).isEqualTo(당산역);
     }
 
     @Test
     @DisplayName("구간 생성 정상 동작")
     void addSection() {
         // given
-        Line line = lineRepository.save(new Line("9호선", "YELLOW"));
-        Station station1 = stationRepository.save(new Station("염창역"));
-        Station station2 = stationRepository.save(new Station("당산역"));
+        Line line = lineRepository.save(new Line(구호선, YELLOW));
+        Station station1 = stationRepository.save(new Station(염창역));
+        Station station2 = stationRepository.save(new Station(당산역));
 
         // when
         lineService.addSection(line.getId(),new SectionRequest(station1.getId(),station2.getId(),10));
 
         // then
         assertThat(line.getLineSection().size()).isEqualTo(1);
-        assertThat(line.getLineSection().getSections().get(0).getUpStation().getName()).isEqualTo("염창역");
-        assertThat(line.getLineSection().getSections().get(0).getDownStation().getName()).isEqualTo("당산역");
+        assertThat(line.getLineSection().getSections().get(0).getUpStation().getName()).isEqualTo(염창역);
+        assertThat(line.getLineSection().getSections().get(0).getDownStation().getName()).isEqualTo(당산역);
         assertThat(line.getLineSection().getSections().get(0).getDistance()).isEqualTo(10);
     }
 
@@ -74,10 +75,10 @@ public class LineServiceTest {
     @DisplayName("지하철 노선 호출 정상 동작")
     void showLines() {
         // given
-        Line line1 = lineRepository.save(new Line("9호선", "YELLOW"));
-        Line line2 = lineRepository.save(new Line("2호선", "GREEN"));
-        Station station1 = stationRepository.save(new Station("염창역"));
-        Station station2 = stationRepository.save(new Station("당산역"));
+        Line line1 = lineRepository.save(new Line(구호선, YELLOW));
+        Line line2 = lineRepository.save(new Line(이호선, GREEN));
+        Station station1 = stationRepository.save(new Station(염창역));
+        Station station2 = stationRepository.save(new Station(당산역));
         Station station3 = stationRepository.save(new Station("잠실역"));
         lineService.addSection(line1.getId(), new SectionRequest(station1.getId(),station2.getId(),10));
         lineService.addSection(line2.getId(), new SectionRequest(station2.getId(),station3.getId(),10));
@@ -87,13 +88,13 @@ public class LineServiceTest {
 
         // then
         assertThat(responses).hasSize(2);
-        assertThat(responses.get(0).getName()).isEqualTo("9호선");
-        assertThat(responses.get(0).getColor()).isEqualTo("YELLOW");
-        assertThat(responses.get(0).getStations().get(0).getName()).isEqualTo("염창역");
-        assertThat(responses.get(0).getStations().get(1).getName()).isEqualTo("당산역");
-        assertThat(responses.get(1).getName()).isEqualTo("2호선");
-        assertThat(responses.get(1).getColor()).isEqualTo("GREEN");
-        assertThat(responses.get(1).getStations().get(0).getName()).isEqualTo("당산역");
+        assertThat(responses.get(0).getName()).isEqualTo(구호선);
+        assertThat(responses.get(0).getColor()).isEqualTo(YELLOW);
+        assertThat(responses.get(0).getStations().get(0).getName()).isEqualTo(염창역);
+        assertThat(responses.get(0).getStations().get(1).getName()).isEqualTo(당산역);
+        assertThat(responses.get(1).getName()).isEqualTo(이호선);
+        assertThat(responses.get(1).getColor()).isEqualTo(GREEN);
+        assertThat(responses.get(1).getStations().get(0).getName()).isEqualTo(당산역);
         assertThat(responses.get(1).getStations().get(1).getName()).isEqualTo("잠실역");
     }
 
@@ -101,46 +102,46 @@ public class LineServiceTest {
     @DisplayName("지하철 단일 노선 호출 정상 동작")
     void findByLineId() {
         // given
-        Line line = lineRepository.save(new Line("9호선", "YELLOW"));
-        Station station1 = stationRepository.save(new Station("염창역"));
-        Station station2 = stationRepository.save(new Station("당산역"));
+        Line line = lineRepository.save(new Line(구호선, YELLOW));
+        Station station1 = stationRepository.save(new Station(염창역));
+        Station station2 = stationRepository.save(new Station(당산역));
         lineService.addSection(line.getId(),new SectionRequest(station1.getId(),station2.getId(),10));
 
         // when
         LineResponse response = lineService.findById(line.getId());
 
         // then
-        assertThat(response.getName()).isEqualTo("9호선");
-        assertThat(response.getColor()).isEqualTo("YELLOW");
-        assertThat(response.getStations().get(0).getName()).isEqualTo("염창역");
-        assertThat(response.getStations().get(1).getName()).isEqualTo("당산역");
+        assertThat(response.getName()).isEqualTo(구호선);
+        assertThat(response.getColor()).isEqualTo(YELLOW);
+        assertThat(response.getStations().get(0).getName()).isEqualTo(염창역);
+        assertThat(response.getStations().get(1).getName()).isEqualTo(당산역);
     }
 
     @Test
     @DisplayName("지하철 노선 수정 정상 동작")
     void updateLine() {
         // given
-        Line line = lineRepository.save(new Line("9호선", "YELLOW"));
-        Station station1 = stationRepository.save(new Station("염창역"));
-        Station station2 = stationRepository.save(new Station("당산역"));
+        Line line = lineRepository.save(new Line(구호선, YELLOW));
+        Station station1 = stationRepository.save(new Station(염창역));
+        Station station2 = stationRepository.save(new Station(당산역));
         lineService.addSection(line.getId(),new SectionRequest(station1.getId(),station2.getId(),10));
 
         // when
-        lineService.updateLine(line.getId(), new LineRequest("2호선","GREEN",station1.getId(),station2.getId(),10));
+        lineService.updateLine(line.getId(), new LineRequest(이호선,GREEN,station1.getId(),station2.getId(),10));
 
         // then
         Line actual = lineRepository.findById(line.getId()).orElseThrow(NoSuchElementException::new);
-        assertThat(actual.getName()).isEqualTo("2호선");
-        assertThat(actual.getColor()).isEqualTo("GREEN");
+        assertThat(actual.getName()).isEqualTo(이호선);
+        assertThat(actual.getColor()).isEqualTo(GREEN);
     }
 
     @Test
     @DisplayName("지하철 노선 삭제 정상 동작")
     void deleteLine() {
         // given
-        Line line = lineRepository.save(new Line("9호선", "YELLOW"));
-        Station station1 = stationRepository.save(new Station("염창역"));
-        Station station2 = stationRepository.save(new Station("당산역"));
+        Line line = lineRepository.save(new Line(구호선, YELLOW));
+        Station station1 = stationRepository.save(new Station(염창역));
+        Station station2 = stationRepository.save(new Station(당산역));
         lineService.addSection(line.getId(),new SectionRequest(station1.getId(),station2.getId(),10));
 
         // when
@@ -154,9 +155,9 @@ public class LineServiceTest {
     @DisplayName("구간 제거 정상 동작")
     void deleteSection() {
         // given
-        Line line = lineRepository.save(new Line("9호선", "YELLOW"));
-        Station station1 = stationRepository.save(new Station("염창역"));
-        Station station2 = stationRepository.save(new Station("당산역"));
+        Line line = lineRepository.save(new Line(구호선, YELLOW));
+        Station station1 = stationRepository.save(new Station(염창역));
+        Station station2 = stationRepository.save(new Station(당산역));
         Station station3 = stationRepository.save(new Station("여의도역"));
         lineService.addSection(line.getId(),new SectionRequest(station1.getId(),station2.getId(),10));
         lineService.addSection(line.getId(),new SectionRequest(station2.getId(),station3.getId(),10));
@@ -167,8 +168,8 @@ public class LineServiceTest {
 
         // then
         assertThat(line.getLineSection().size()).isEqualTo(1);
-        assertThat(line.getLineSection().getSections().get(0).getUpStation().getName()).isEqualTo("염창역");
-        assertThat(line.getLineSection().getSections().get(0).getDownStation().getName()).isEqualTo("당산역");
+        assertThat(line.getLineSection().getSections().get(0).getUpStation().getName()).isEqualTo(염창역);
+        assertThat(line.getLineSection().getSections().get(0).getDownStation().getName()).isEqualTo(당산역);
         assertThat(line.getLineSection().getSections().get(0).getDistance()).isEqualTo(10);
     }
 }

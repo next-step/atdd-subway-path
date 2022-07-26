@@ -2,6 +2,7 @@ package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static nextstep.subway.utils.TestVariables.*;
 
 import java.util.List;
 import nextstep.subway.applicaion.dto.SectionRequest;
@@ -24,11 +25,11 @@ class LineSectionTest {
     @BeforeEach
     void setUp() {
          line = createLine();
-         station1 = new Station(1L,"가양역");
-         station2 = new Station(2L,"염창역");
-         station3 = new Station(3L,"당산역");
-         station4 = new Station(4L,"여의도역");
-         station5 = new Station(5L,"동작역");
+         station1 = new Station(1L,가양역);
+         station2 = new Station(2L,염창역);
+         station3 = new Station(3L,당산역);
+         station4 = new Station(4L,여의도역);
+         station5 = new Station(5L,동작역);
     }
 
     @Test
@@ -43,10 +44,10 @@ class LineSectionTest {
         List<Station> stations = line.getLineSection().getStations();
 
         //then
-        assertThat(stations.get(0).getName()).isEqualTo("가양역");
-        assertThat(stations.get(1).getName()).isEqualTo("염창역");
-        assertThat(stations.get(2).getName()).isEqualTo("당산역");
-        assertThat(stations.get(3).getName()).isEqualTo("여의도역");
+        assertThat(stations.get(0).getName()).isEqualTo(가양역);
+        assertThat(stations.get(1).getName()).isEqualTo(염창역);
+        assertThat(stations.get(2).getName()).isEqualTo(당산역);
+        assertThat(stations.get(3).getName()).isEqualTo(여의도역);
     }
 
     private void addSection(Line line, Station station1, Station station2, int distance) {
@@ -65,11 +66,11 @@ class LineSectionTest {
 
         //then
         List<Station> stations = line.getLineSection().getStations();
-        assertThat(stations.get(0).getName()).isEqualTo("가양역");
-        assertThat(stations.get(1).getName()).isEqualTo("염창역");
-        assertThat(stations.get(2).getName()).isEqualTo("당산역");
-        assertThat(stations.get(3).getName()).isEqualTo("여의도역");
-        assertThat(stations.get(4).getName()).isEqualTo("동작역");
+        assertThat(stations.get(0).getName()).isEqualTo(가양역);
+        assertThat(stations.get(1).getName()).isEqualTo(염창역);
+        assertThat(stations.get(2).getName()).isEqualTo(당산역);
+        assertThat(stations.get(3).getName()).isEqualTo(여의도역);
+        assertThat(stations.get(4).getName()).isEqualTo(동작역);
 
     }
 
@@ -86,12 +87,12 @@ class LineSectionTest {
 
         //then
         assertThat(sections).hasSize(3);
-        assertThat(sections.get(0).getUpStation().getName()).isEqualTo("가양역");
-        assertThat(sections.get(0).getDownStation().getName()).isEqualTo("염창역");
-        assertThat(sections.get(1).getUpStation().getName()).isEqualTo("염창역");
-        assertThat(sections.get(1).getDownStation().getName()).isEqualTo("당산역");
-        assertThat(sections.get(2).getUpStation().getName()).isEqualTo("당산역");
-        assertThat(sections.get(2).getDownStation().getName()).isEqualTo("여의도역");
+        assertThat(sections.get(0).getUpStation().getName()).isEqualTo(가양역);
+        assertThat(sections.get(0).getDownStation().getName()).isEqualTo(염창역);
+        assertThat(sections.get(1).getUpStation().getName()).isEqualTo(염창역);
+        assertThat(sections.get(1).getDownStation().getName()).isEqualTo(당산역);
+        assertThat(sections.get(2).getUpStation().getName()).isEqualTo(당산역);
+        assertThat(sections.get(2).getDownStation().getName()).isEqualTo(여의도역);
     }
 
     @Test
@@ -153,6 +154,6 @@ class LineSectionTest {
 
 
     private Line createLine() {
-        return new Line("9호선","YELLOW");
+        return new Line(구호선,YELLOW);
     }
 }
