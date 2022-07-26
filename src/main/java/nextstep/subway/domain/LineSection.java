@@ -142,7 +142,7 @@ public class LineSection {
     }
     public void checkDeleteArgument(Station station) {
         if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("올바르지 않은 입력값입니다.");
         }
     }
     public void checkAddArgument(SectionRequest sectionRequest) {
