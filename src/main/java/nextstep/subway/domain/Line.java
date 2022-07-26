@@ -73,7 +73,14 @@ public class Line {
         return getLastSection().getDownStation();
     }
 
-    public void removeSection() {
+    public void removeSection(Station removeStation) {
+        if (lastStationIsDifferent(removeStation)) {
+            throw new IllegalArgumentException();
+        }
         sections.remove(getLastSection());
+    }
+
+    private boolean lastStationIsDifferent(Station removeStation) {
+        return !getLastStation().equals(removeStation);
     }
 }
