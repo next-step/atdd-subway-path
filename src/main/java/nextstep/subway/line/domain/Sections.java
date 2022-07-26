@@ -69,11 +69,19 @@ public class Sections {
             throw new CannotDeleteSectionException("구간이 하나만 존재하면 역을 제거할 수 없습니다.");
         }
 
+        if (!isExistingStation(stationId)) {
+            throw new CannotDeleteSectionException("등록되어 있지 않은 역을 제거할 수 없습니다.");
+        }
+
         Section lastSection = lastSection();
         if (!lastSection.matchDownStation(stationId)) {
             throw new CannotDeleteSectionException("노선의 종점만 삭제할 수 있습니다.");
         }
         sections.remove(lastSection);
+    }
+
+    private boolean isExistingStation(Long stationId) {
+        return getOrderedStationIds().contains(stationId);
     }
 
     public List<Long> getOrderedStationIds() {
