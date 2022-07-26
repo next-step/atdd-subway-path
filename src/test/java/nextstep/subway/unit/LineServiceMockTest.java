@@ -33,6 +33,7 @@ public class LineServiceMockTest {
 	public static final long 신분당선 = 1L;
 	public static final long 광교역 = 2L;
 	public static final long 광교중앙역 = 3L;
+	public static final long 상현역 = 4L;
 
 	@Mock
 	private LineRepository lineRepository;
@@ -61,6 +62,28 @@ public class LineServiceMockTest {
         );
 	}
 
+	@DisplayName("UpStation으로 addSection을 하면 성공한다.")
+	@Test
+	void addSectionWithUpStation() {
+		// given
+		when(lineRepository.findById(신분당선)).thenReturn(Optional.of(new Line("신분당선", "red")));
+		when(stationService.findById(광교역)).thenReturn(new Station("광교역"));
+		when(stationService.findById(상현역)).thenReturn(new Station("상현역"));
+		when(stationService.findById(광교중앙역)).thenReturn(new Station("광교중앙역"));
+
+		lineService.addSection(신분당선, new SectionRequest(광교역, 상현역, 10));
+
+		// when
+		lineService.addSection(신분당선, new SectionRequest(광교역, 광교중앙역, 5));
+
+		// then
+		LineResponse 신분당선_응답 = lineService.findById(신분당선);
+		assertAll(
+				() -> assertThat(신분당선_응답.getName()).isEqualTo("신분당선"),
+				() -> assertThat(신분당선_응답.getStations()).hasSize(3)
+        );
+	}
+
 	@DisplayName("deleteSection을 검증한다")
 	@Test
 	void deleteSection() {
@@ -83,6 +106,8 @@ public class LineServiceMockTest {
 	void saveLine() {
 		//given
 		when(lineRepository.save(any(Line.class))).thenReturn(new Line("신분당선", "red"));
+		when(stationService.findById(광교중앙역)).thenReturn(new Station("광교중앙역"));
+		when(stationService.findById(광교역)).thenReturn(new Station("광교역"));
 
 		//when
 		LineResponse 신분당선_응답 = lineService.saveLine(new LineRequest("신분당선", "red", 광교역, 광교중앙역, 10));
