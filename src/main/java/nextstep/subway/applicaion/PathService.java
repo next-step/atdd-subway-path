@@ -1,7 +1,7 @@
 package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.PathResponse;
-import nextstep.subway.domain.PathFinder;
+import nextstep.subway.event.PathFinder;
 import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 

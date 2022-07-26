@@ -1,6 +1,6 @@
 package nextstep.subway.applicaion.dto;
 
-import nextstep.subway.domain.Path;
+import nextstep.subway.event.Path;
 
 import java.util.List;
 import java.util.stream.Collectors;
