@@ -46,5 +46,14 @@ class LineTest {
 
     @Test
     void removeSection() {
+        신림선.addSection(당곡역, 보라매역, 10);
+        신림선.addSection(보라매역, 신림역, 4);
+
+        신림선.removeSection(신림역);
+
+        assertAll(() -> {
+            assertThat(신림선.getSections()).hasSize(2);
+            assertThat(신림선.getSections()).doesNotContain(new Section(신림선, 보라매역, 신림역, 4));
+        });
     }
 }

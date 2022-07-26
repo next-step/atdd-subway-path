@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.applicaion.exceptions.SectionNotEnoughException;
+import nextstep.subway.enums.exceptions.ErrorCode;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,5 +61,11 @@ public class Line {
 
     public List<Station> getStation() {
         return sections.getStation();
+    }
+
+    public void removeSection(Station lastStation) {
+        if (sections.getSections().size() < 2)
+            throw new SectionNotEnoughException(ErrorCode.NOT_ENOUGH_SECTION);
+        sections.removeSection(lastStation);
     }
 }

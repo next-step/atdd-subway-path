@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.applicaion.exceptions.DataNotFoundException;
+import nextstep.subway.enums.exceptions.ErrorCode;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -30,5 +33,17 @@ public class Sections {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public Station getLastStation() {
+        if (sections.isEmpty())
+            throw new DataNotFoundException(ErrorCode.NOT_FOUND_SECTION);
+
+        return sections.get(sections.size() - 1).getDownStation();
+    }
+
+    public void removeSection(Station lastStation) {
+        if (lastStation.isSame(getLastStation()))
+            sections.remove(lastStation);
     }
 }
