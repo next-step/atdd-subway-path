@@ -14,16 +14,52 @@ public class LineSection {
     private List<Section> sections = new ArrayList<>();
 
     public List<Station> getStations() {
-        List<Station> stations = sections.stream()
-            .map(Section::getDownStation)
+        List<Section> sortedSections = getSections();
+        List<Station> stations = sortedSections.stream()
+            .map(Section::getUpStation)
+            .collect(Collectors.toList());
+        stations.add(sortedSections.get(sortedSections.size()-1).getDownStation());
+        return stations;
+    }
+    private Section getFirstSection() {
+        List<Station> upStations = sections.stream()
+            .map(Section::getUpStation)
             .collect(Collectors.toList());
 
-        stations.add(0, sections.get(0).getUpStation());
-        return stations;
+        List<Station> downStations = sections.stream()
+            .map(Section::getDownStation)
+            .collect(Collectors.toList());
+        upStations.removeAll(downStations);
+        Station upStation = upStations.get(0);
+        for (Section section : sections) {
+            if (section.getUpStation().equals(upStation)) {
+                return section;
+            }
+        }
+        return null;
+    }
+    private Section getNextSection(Section now) {
+        for (Section section : sections) {
+            if (now.getDownStation().equals(section.getUpStation())) {
+                return section;
+            }
+        }
+        return null;
     }
 
     public void add(Section section) {
-        sections.add(section);
+        if (sections.isEmpty()) {
+            sections.add(section);
+            return;
+        }
+        if (section.getDownStation().equals(sections.get(0).getUpStation())) {
+            sections.add(0,section);
+            return;
+        }
+        if (section.getUpStation().equals(sections.get(sections.size()-1).getDownStation())) {
+            sections.add(section);
+            return;
+        }
     }
 
     public void remove(String stationName) {
@@ -34,7 +70,13 @@ public class LineSection {
     }
 
     public List<Section> getSections() {
-        return sections;
+        List<Section> sortedSection = new ArrayList<>();
+        Section section = getFirstSection();
+        sortedSection.add(section);
+        while((section=getNextSection(section)) != null) {
+            sortedSection.add(section);
+        }
+        return sortedSection;
     }
 
     public int size() {
