@@ -2,7 +2,6 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,19 +13,13 @@ import java.util.Map;
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("지하철 구간 관리 기능")
 class SectionAcceptanceTest extends AcceptanceTest {
     private Long 신분당선;
 
     private Long 강남역;
-    private Long 논현역;
-    private Long 신논현역;
     private Long 양재역;
-    private Long 양재시민의숲;
-    private Long 양재전역;
-
     /**
      * Given 지하철역과 노선 생성을 요청 하고
      */
@@ -35,10 +28,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
         super.setUp();
         강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
         양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
-        신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
-        논현역 = 지하철역_생성_요청("논현역").jsonPath().getLong("id");
-        양재시민의숲 = 지하철역_생성_요청("양재시민의숲").jsonPath().getLong("id");
-        양재전역 = 지하철역_생성_요청("양재전역").jsonPath().getLong("id");
 
         Map<String, String> lineCreateParams = createLineCreateParams(강남역, 양재역);
         신분당선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
@@ -82,45 +71,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
-    /**
-     * Given 기존 지하철 구간 사이에 들어가는 구간을 생성하고
-     * When 지하철 노선에 지하철 구간 생성을 요청하면
-     * Then 두 개의 구간으로 나뉘어 생성된다.
-     */
-    @DisplayName("지하철역 사이에 새로운 역을 추가")
-    @Test
-    void test() {
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(논현역, 강남역));
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(논현역, 강남역, 양재역);
-    }
-
-    @DisplayName("새로운 역을 상행 종점으로 등록")
-    @Test
-    void addUpStation() {
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역));
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신논현역, 강남역, 양재역);
-    }
-
-    @DisplayName("새로운 역을 하행 종점으로 등록")
-    @Test
-    void addDownStation() {
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 양재시민의숲));
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 양재시민의숲);
-    }
-
-    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
-    @Test
-    void 길이() {
-        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재전역, 11));
-        Throwable exception = Assertions.assertThrows((Throwable.class), () -> {
-            throw new IllegalArgumentException("길이 오류");
-        });
-        assertEquals("길이 오류", exception.getMessage());
-    }
-
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
@@ -140,11 +90,4 @@ class SectionAcceptanceTest extends AcceptanceTest {
         return params;
     }
 
-    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, Integer distance) {
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", upStationId + "");
-        params.put("downStationId", downStationId + "");
-        params.put("distance", distance + "");
-        return params;
-    }
 }

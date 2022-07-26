@@ -6,6 +6,8 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
+import static nextstep.subway.domain.Section.of;
+
 @Embeddable
 public class Sections {
 
@@ -27,7 +29,7 @@ public class Sections {
     }
 
     public List<Station> stations() {
-            List<Station> stations = new ArrayList<>();
+        List<Station> stations = new ArrayList<>();
         addUpStations(stations);
         addDownStations(stations, getFirstDownStation());
         return stations;
@@ -50,11 +52,9 @@ public class Sections {
 
     private void addUpStations(List<Station> stations) {
         Station upStation = null;
-        for (int i = 0; i < this.sections.size(); i++) {
-            if (upStation == null) {
-                upStation = upStation = sections.get(i).getUpStation();
-            } else if (this.sections.get(i).getDownStation().equals(upStation)) {
-                upStation = sections.get(i).getUpStation();
+        for (Section section : this.sections) {
+            if (upStation == null || section.getDownStation().equals(upStation)) {
+                upStation = section.getUpStation();
             }
         }
         stations.add(upStation);
@@ -77,50 +77,50 @@ public class Sections {
 
     public void addSection(Line line, Station upStation, Station downStation, int distance) {
         if (this.sections.size() > 0) {
-            if (!stations().contains(upStation) && !stations().contains(downStation)) {
-                throw new IllegalArgumentException("둘 중 하나라도");
-            }
-            if (stations().contains(upStation) && stations().contains(downStation)) {
-                throw new IllegalArgumentException("둘 다 포함");
-            }
-            if (isSameUpStationRoof(line, upStation, downStation, distance)) {
-                splitLine(line, upStation, downStation, distance, sectionDeplicateUpStation(line, upStation, downStation, distance));
+            validMinimumOneStation(upStation, downStation);
+            validMaximumOneStation(upStation, downStation);
+            if (isSameUpStation(line, upStation, downStation, distance)) {
+                splitSection(line, upStation, downStation, distance, sameUpStationSection(line, upStation, downStation, distance));
             } else {
-                this.sections.add(Section.of(line, upStation, downStation, distance));
+                this.sections.add(of(line, upStation, downStation, distance));
             }
         } else {
-            this.sections.add(Section.of(line, upStation, downStation, distance));
+            this.sections.add(of(line, upStation, downStation, distance));
         }
     }
 
-    private Section sectionDeplicateUpStation(Line line, Station upStation, Station downStation, int distance) {
+    private void validMaximumOneStation(Station upStation, Station downStation) {
+        assert !stations().contains(upStation) || !stations().contains(downStation) : "최대 1개의 역만 노선에 등록되어 있어야 합니다.";
+    }
+
+    private void validMinimumOneStation(Station upStation, Station downStation) {
+        assert stations().contains(upStation) || stations().contains(downStation) : "최소 1개 이상의 역은 노선에 등록되어 있어야 합니다.";
+    }
+
+    private Section sameUpStationSection(Line line, Station upStation, Station downStation, int distance) {
         for (Section section : this.sections) {
             if (section.getUpStation().equals(upStation)) {
                 return section;
             }
         }
-        return null;
+        throw new IllegalArgumentException("겹치는 상행역을 찾을 수 없습니다.");
     }
 
-    private boolean isSameUpStationRoof(Line line, Station upStation, Station downStation, int distance) {
-        for (Section section : this.sections) {
-            if (section.getUpStation().equals(upStation)) {
-                return true;
-            }
-        }
-        return false;
+    private boolean isSameUpStation(Line line, Station upStation, Station downStation, int distance) {
+        return this.sections.stream().anyMatch(section -> section.getUpStation().equals(upStation));
     }
 
-    private void splitLine(Line line, Station upStation, Station downStation, int distance, Section section) {
-        Station tempUpStation = section.getDownStation();
-        Station tempDownStation = section.getDownStation();
+    private void splitSection(Line line, Station upStation, Station downStation, int distance, Section section) {
+        Station beforeDownStation = section.getDownStation();
+        int beforeDistance = section.getDistance();
         this.sections.remove(section);
-        this.sections.add(Section.of(line, upStation, downStation, distance));
-        int tempDistance = section.getDistance();
-        if (distance >= tempDistance) {
-            throw new IllegalArgumentException("길이 오류");
-        }
-        this.sections.add(Section.of(line, downStation, tempDownStation, tempDistance - distance));
+        this.sections.add(of(line, upStation, downStation, distance));
+        validSectionDistance(distance, beforeDistance);
+        this.sections.add(of(line, downStation, beforeDownStation, beforeDistance - distance));
+    }
+
+    private void validSectionDistance(int distance, int tempDistance) {
+        assert distance < tempDistance : "추가하려는 구간의 길이가 기존 길이보다 같거나 길 수 없습니다.";
     }
 
     public void deleteSection(Station station) {

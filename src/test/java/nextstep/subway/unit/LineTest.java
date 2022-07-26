@@ -72,12 +72,12 @@ class LineTest {
 
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
     @Test
-    void ss() {
+    void 지하철역_등록_길이_오류() {
         신분당선.addSection(논현역, 강남역, 5);
         신분당선.addSection(신논현역, 강남역, 7);
         assertThatThrownBy(() -> {
             신분당선.addSection(논현역, 양재시민의숲, 5);
-        }).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("길이 오류");
+        }).isInstanceOf(AssertionError.class).hasMessageContaining("추가하려는 구간의 길이가 기존 길이보다 같거나 길 수 없습니다.");
     }
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
@@ -86,27 +86,29 @@ class LineTest {
         신분당선.addSection(신논현역, 강남역, 5);
         assertThatThrownBy(() -> {
             신분당선.addSection(논현역, 양재시민의숲, 5);
-        }).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("둘 중 하나라도");
+        }).isInstanceOf(AssertionError.class).hasMessageContaining("최소 1개 이상의 역은 노선에 등록되어 있어야 합니다.");
     }
 
+//    A-B, B-C 구간이 등록된 상황에서 B-C 구간을 등록할 수 없음
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test
-    void 상행역_하행역_중복_등록_불가1() {
+    void 상행역과_하행역이_이미_노선에_모두_등록되어_있다면_추가할_수_없음1() {
         신분당선.addSection(신논현역, 강남역, 5);
         신분당선.addSection(강남역, 양재역, 5);
         assertThatThrownBy(() -> {
             신분당선.addSection(강남역, 양재역, 5);
-        }).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("둘 다 포함");
+        }).isInstanceOf(AssertionError.class).hasMessageContaining("최대 1개의 역만 노선에 등록되어 있어야 합니다.");
     }
 
+    //    A-B, B-C 구간이 등록된 상황에서 A-C 구간을 등록할 수 없음
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test
-    void 상행역_하행역_중복_등록_불가3() {
+    void 상행역과_하행역이_이미_노선에_모두_등록되어_있다면_추가할_수_없음2() {
         신분당선.addSection(신논현역, 강남역, 5);
         신분당선.addSection(강남역, 양재역, 5);
         assertThatThrownBy(() -> {
             신분당선.addSection(신논현역, 양재역, 2);
-        }).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("둘 다 포함");
+        }).isInstanceOf(AssertionError.class).hasMessageContaining("최대 1개의 역만 노선에 등록되어 있어야 합니다.");
     }
 
     @DisplayName("구간 삭제")
