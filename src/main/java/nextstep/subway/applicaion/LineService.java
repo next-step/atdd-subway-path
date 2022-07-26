@@ -53,15 +53,7 @@ public class LineService {
         String name = lineRequest.getName();
         String color = lineRequest.getColor();
 
-        validateNullOrEmpty(name, color);
-
         line.updateLine(name, color);
-    }
-
-    private void validateNullOrEmpty(String name, String color) {
-        if (name == null && color == null) {
-            throw new IllegalArgumentException("입력된 노선명과 색상이이 null입니다.(변경할 노선명 또는 색상이 입력되어야 합니다.)");
-        }
     }
 
     @Transactional
