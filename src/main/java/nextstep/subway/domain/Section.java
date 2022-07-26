@@ -47,7 +47,7 @@ public class Section {
     }
 
     public void changeSectionConditionBy(Section newSection) {
-        checkToAddNewSection(newSection.getDistance());
+        checkToNewSectionDistance(newSection.getDistance());
 
         if (isEqualToUpStation(newSection.getUpStation())) {
             changeUpStation(newSection.getDownStation());
@@ -64,7 +64,7 @@ public class Section {
         this.distance = this.distance - distance;
     }
 
-    private void checkToAddNewSection(Integer newDistance) {
+    private void checkToNewSectionDistance(Integer newDistance) {
         if (!isOriginalDistanceLongThenNew(newDistance)) {
             throw new IllegalArgumentException("역 사이에 등록할 경우 기존의 거리보다 짧은 구간만 등록이 가능합니다.");
         }
@@ -74,13 +74,16 @@ public class Section {
         return newDistance < this.distance;
     }
 
-
-    private void changeDownStation(Station station) {
+    public void changeDownStation(Station station) {
         this.downStation = station;
     }
 
-    private void changeUpStation(Station station) {
+    public void changeUpStation(Station station) {
         this.upStation = station;
+    }
+
+    public void addDistance(int distance) {
+        this.distance += distance;
     }
 
     @Override
