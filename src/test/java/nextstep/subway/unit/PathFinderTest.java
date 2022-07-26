@@ -76,4 +76,16 @@ class PathFinderTest {
         assertThatThrownBy(() -> pathFinder.findPath(신논현역, 수진역))
                 .isInstanceOf(FindPathException.class);
     }
+
+    @DisplayName("존재하지 않은 출발역을 조회할 경우")
+    @Test
+    void notExistsStationForSource() {
+        Station 모란역 = new Station("모란역");
+
+        PathFinder pathFinder = PathFinder.of(Arrays.asList(신분당선, 분당선));
+
+        assertThatThrownBy(() -> pathFinder.findPath(모란역, 신논현역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("graph must contain the source vertex");
+    }
 }
