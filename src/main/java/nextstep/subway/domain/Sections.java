@@ -19,26 +19,36 @@ public class Sections {
         return sections;
     }
 
-    public void add(Section section) {
+    public void add(Section newlySection) {
 
+        // FIXME : 중간에 역을 끼워넣는 로직 리팩토링
         for (int i = 0; i < sections.size(); i++) {
-            Section s = sections.get(i);
-            if (section.getUpStation().equals(s.getUpStation())) {
-
-                final int newDistance = s.getDistance() - section.getDistance();
-
-                if (newDistance < 0) {
-                    throw new IllegalArgumentException("구간의 거리가 같아서 추가할 수 없습니다.");
-                }
-
-                sections.add(i + 1, new Section(s.getLine(), section.getDownStation(), s.getDownStation(), newDistance));
-                sections.set(i, section);
-                return;
+            Section section = sections.get(i);
+            if (!section.hasSameUpStation(newlySection)) {
+                continue;
             }
+            addBetweenSection(newlySection, section);
+            updateSectionToNew(newlySection, i);
+            return;
         }
 
-        sections.add(section);
+        sections.add(newlySection);
 
+    }
+
+    private void addBetweenSection(Section newlySection, Section section) {
+        int newDistance = section.betweenDistance(newlySection);
+        sections.add(betweenSection(newlySection, section, newDistance));
+    }
+
+    private Section betweenSection(Section newlySection, Section section, int newDistance) {
+        return new Section(section.getLine(), newlySection.getDownStation(), section.getDownStation(), newDistance);
+    }
+
+    private void updateSectionToNew(Section newlySection, int i) {
+        Section section;
+        section = newlySection;
+        sections.set(i, section);
     }
 
     public List<Station> allStations() {
