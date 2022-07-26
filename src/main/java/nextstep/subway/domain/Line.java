@@ -55,4 +55,8 @@ public class Line {
     public List<Section> getSections() {
         return sections.getSections();
     }
+
+    public List<Station> getStation() {
+        return sections.getStation();
+    }
 }
