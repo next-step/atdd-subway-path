@@ -2,6 +2,7 @@ package nextstep.subway.acceptance;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +47,18 @@ class PathAcceptanceTest extends AcceptanceTest {
         분당선 = 지하철_노선_생성_요청("분당선", "bg-yellow-600", 도곡역, 선릉역, 25).jsonPath().getLong("id");
 
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 15));
+    }
+
+    /**
+     * When 출발하는 역과 목적지 역의 경로 조회를 요청하면
+     * Then 출발역부터 도착역까지의 경로에 있는 모든 역과 거리가 조회된다.
+     */
+    @DisplayName("출발지와 목적지를 통해 경로를 조회한다.")
+    @Test
+    void findPathSourceToDestination() {
+        // when
+
+        // then
     }
 
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
