@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.FindPathException;
+import org.jgrapht.GraphPath;
 import org.jgrapht.WeightedGraph;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -48,14 +49,22 @@ public class PathFinder {
     }
 
     public List<Station> findPath(Station source, Station target) {
-        sameSourceAndTarget(source, target);
+        GraphPath<Station, DefaultWeightedEdge> path = pathAlgorithm.getPath(source, target);
+        notConnectedSourceAndTarget(path);
+        sameSourceAndTarget(path);
 
-        return unmodifiableList(pathAlgorithm.getPath(source, target).getVertexList());
+        return unmodifiableList(path.getVertexList());
     }
 
-    private void sameSourceAndTarget(Station source, Station target) {
-        if (source.equals(target)) {
+    private void sameSourceAndTarget(GraphPath<Station, DefaultWeightedEdge> path) {
+        if (path.getStartVertex().equals(path.getEndVertex())) {
             throw new FindPathException("출발역과 도착역이 같을 수는 없습니다.");
+        }
+    }
+
+    private void notConnectedSourceAndTarget(GraphPath<Station, DefaultWeightedEdge> path) {
+        if (path == null) {
+            throw new FindPathException("출발역과 도착역이 연결이 되어 있지 않습니다.");
         }
     }
 

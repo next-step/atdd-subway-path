@@ -62,4 +62,18 @@ class PathFinderTest {
                 .isInstanceOf(FindPathException.class)
                 .hasMessage("출발역과 도착역이 같을 수는 없습니다.");
     }
+
+    @DisplayName("출발역과 도착역이 연결되어 있지 않을 경우")
+    @Test
+    void notConnectedWithSourceAndTargetStation() {
+        Line 팔호선 = Line.of("팔호선", "bg-pink-600");
+        Station 모란역 = new Station("모란역");
+        Station 수진역 = new Station("수진역");
+        팔호선.addSection(Section.of(모란역, 수진역, 10));
+
+        PathFinder pathFinder = PathFinder.of(Arrays.asList(신분당선, 분당선, 팔호선));
+
+        assertThatThrownBy(() -> pathFinder.findPath(신논현역, 수진역))
+                .isInstanceOf(FindPathException.class);
+    }
 }
