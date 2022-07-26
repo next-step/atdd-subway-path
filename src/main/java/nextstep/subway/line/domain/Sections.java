@@ -65,8 +65,8 @@ public class Sections {
     }
 
     public void removeSection(Long stationId) {
-        if (sections.isEmpty()) {
-            throw new CannotDeleteSectionException("현재 존재하는 구간이 없습니다.");
+        if (sections.size() == 1) {
+            throw new CannotDeleteSectionException("구간이 하나만 존재하면 역을 제거할 수 없습니다.");
         }
 
         Section lastSection = lastSection();
