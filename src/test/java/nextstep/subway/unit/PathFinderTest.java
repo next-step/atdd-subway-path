@@ -27,6 +27,14 @@ class PathFinderTest {
     private Line 신분당선;
     private Line 분당선;
 
+    /**
+     * 신논현역                          정자역 --- *분당선* (25) --- 이매역
+     * |                                 |
+     * *신분당선* (10)                  *분당선* (20)
+     * |                                 |
+     * 강남역  --- *신분당선* (15) ---  판교역
+     */
+
     @BeforeEach
     void setUp() {
         신분당선 = Line.of(NEW_BUN_DANG, BG_RED_600);
