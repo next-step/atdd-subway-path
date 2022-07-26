@@ -7,6 +7,8 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import java.util.Collection;
 import java.util.List;
 
+import static java.util.Collections.*;
+
 public class PathFinder {
 
     private WeightedGraph<Station, DefaultWeightedEdge> graph;
@@ -40,5 +42,13 @@ public class PathFinder {
                 .map(Line::getSections)
                 .flatMap(Collection::stream)
                 .forEach(section -> graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance()));
+    }
+
+    public List<Station> findPath(Station source, Station target) {
+        return unmodifiableList(pathAlgorithm.getPath(source, target).getVertexList());
+    }
+
+    public double findPathWeight(Station source, Station target) {
+        return pathAlgorithm.getPath(source, target).getWeight();
     }
 }
