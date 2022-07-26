@@ -1,5 +1,7 @@
 package nextstep.subway.acceptance;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +11,7 @@ import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
+import static nextstep.subway.acceptance.PathSteps.지하철_경로_조회_요청;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 
 @DisplayName("지하철 경로 검색")
@@ -55,10 +58,12 @@ class PathAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("출발지와 목적지를 통해 경로를 조회한다.")
     @Test
-    void findPathSourceToDestination() {
+    void findPathSourceToTarget() {
         // when
+        ExtractableResponse<Response> findPathResponse = 지하철_경로_조회_요청(신논현역, 선릉역);
 
         // then
+        
     }
 
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
