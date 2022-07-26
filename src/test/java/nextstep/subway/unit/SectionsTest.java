@@ -18,13 +18,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SectionsTest {
 
-    protected Line 분당선;
-    protected Section 선릉_영통_거리10_구간;
-    protected Section 영통_구의_거리10_구간;
-    protected Section 강남_선릉_거리7_구간;
-    protected Section 영통_신촌_거리7_구간;
-    protected Section 신촌_영통_거리7_구간;
-    protected Section 영통_강남_거리7_구간;
+    private Line 분당선;
+    private Section 선릉_영통_거리10_구간;
+    private Section 영통_구의_거리10_구간;
+    private Section 강남_선릉_거리7_구간;
+    private Section 영통_신촌_거리7_구간;
+    private Section 신촌_영통_거리7_구간;
+    private Section 영통_강남_거리7_구간;
+    private Section 강남_역삼_거리5_구간;
 
 
     @BeforeEach
@@ -36,6 +37,7 @@ public class SectionsTest {
         강남_선릉_거리7_구간 = new Section(분당선, FakeStationFactory.강남역(), FakeStationFactory.선릉역(), 10);
         영통_신촌_거리7_구간 = new Section(분당선, FakeStationFactory.영통역(), FakeStationFactory.신촌역(), 7);
         신촌_영통_거리7_구간 = new Section(분당선, FakeStationFactory.신촌역(), FakeStationFactory.영통역(), 7);
+        강남_역삼_거리5_구간 = new Section(분당선, FakeStationFactory.강남역(), FakeStationFactory.역삼역(), 5);
     }
 
     @Test
@@ -114,7 +116,7 @@ public class SectionsTest {
         sections.add(영통_구의_거리10_구간);
 
         //when
-        Section sameUpStationSection = sections.findSameStationSection(영통_신촌_거리7_구간);
+        Section sameUpStationSection = sections.findSectionWithSameStation(영통_신촌_거리7_구간);
         Station findSameUpStation = sameUpStationSection.getUpStation();
 
         //then
@@ -129,7 +131,7 @@ public class SectionsTest {
         sections.add(영통_구의_거리10_구간);
 
         //when
-        Section sameDownStation = sections.findSameStationSection(신촌_영통_거리7_구간);
+        Section sameDownStation = sections.findSectionWithSameStation(신촌_영통_거리7_구간);
         Station findSameDownStation = sameDownStation.getDownStation();
 
         //then
@@ -146,7 +148,7 @@ public class SectionsTest {
         sections.add(강남_선릉_거리7_구간);
 
         //then
-        assertThat(sections.findUpTerminus()).isEqualTo(FakeStationFactory.강남역());
+        assertThat(sections.findUpTerminusStation()).isEqualTo(FakeStationFactory.강남역());
     }
 
     @Test
@@ -193,8 +195,30 @@ public class SectionsTest {
     }
 
     @Test
-    @DisplayName("지하철 구간 삭제 테스트")
-    void removeSection() {
+    @DisplayName("지하철 구간 삭제 테스트 - 중간역을 삭제한다")
+    void removeMiddleSection() {
+        //given 지하철 역과 노선을 생성하고 구간을 추가한다
+        Sections sections = 분당선.getSections();
+        구간을_추가한다(sections, 선릉_영통_거리10_구간, 영통_강남_거리7_구간, 강남_역삼_거리5_구간);
+
+        //when 구간을 삭제한다.
+        sections.remove(영통_강남_거리7_구간.getDownStation());
+
+        //then 구간이 삭제되었는지 확인한다.
+        int distance = sections.findSectionWithSameStation(영통_강남_거리7_구간).getDistance();
+        assertThat(sections.findConnectedStations())
+                .containsExactly(
+                        선릉_영통_거리10_구간.getUpStation(),
+                        선릉_영통_거리10_구간.getDownStation(),
+                        강남_역삼_거리5_구간.getDownStation()
+
+                );
+        assertThat(distance).isEqualTo(12);
+    }
+
+    @Test
+    @DisplayName("지하철 구간 삭제 테스트 - 하행 종점역을 삭제한다")
+    void removeDownTerminusSection() {
         //given 지하철 역과 노선을 생성하고 구간을 추가한다
         Sections sections = 분당선.getSections();
         구간을_추가한다(sections, 선릉_영통_거리10_구간, 영통_구의_거리10_구간);
@@ -203,9 +227,8 @@ public class SectionsTest {
         sections.remove(영통_구의_거리10_구간.getDownStation());
 
         //then Section의 길이를 확인한다
-        assertThat(sections.getValues())
-                .hasSize(1)
-                .containsAnyOf(선릉_영통_거리10_구간);
+        assertThat(sections.findConnectedStations()).containsExactly(
+                선릉_영통_거리10_구간.getUpStation(), 영통_구의_거리10_구간.getUpStation());
     }
 
     @Test
@@ -221,19 +244,20 @@ public class SectionsTest {
                 .hasMessage("두개 이상의 구간이 등록되어야 제거가 가능합니다.");
     }
 
+    @DisplayName("지하철 구간 삭제 실패 테스트 - 등록되지 않은역은 제거할 수 없다.")
     @Test
-    @DisplayName("지하철 구간 삭제 실패 테스트 - 하행 종점역이 아니면 삭제할 수 없다.")
-    void 하행종점이_아닌_역을_삭제() {
+    void 등록되지_않은_구간_삭제() {
         //given 지하철 역과 노선을 생성하고 구간을 추가한다
         Sections sections = 분당선.getSections();
         구간을_추가한다(sections, 선릉_영통_거리10_구간);
         구간을_추가한다(sections, 영통_구의_거리10_구간);
 
         //then 삭제가 실패했을 때 IllegalArgumentException 발생 여부를 확인한다.
-        assertThatThrownBy(() -> sections.remove(FakeStationFactory.강남역()))
+        assertThatThrownBy(() -> sections.remove(신촌_영통_거리7_구간.getUpStation()))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("하행 종점역이 아니면 제거할 수 없습니다.");
+                .hasMessage("등록되지 않은 역은 제거할 수 없습니다.");
     }
+
 
     private void 구간을_추가한다(Sections sectionList, Section ... sectionParams) {
         for (Section section : sectionParams) {
