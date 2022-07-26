@@ -7,20 +7,31 @@ import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class LineTest {
 
+    private Line line;
+    private Station station1;
+    private Station station2;
+    private Station station3;
+
+
+    @BeforeEach
+    void setUp() {
+        line = createLine();
+        station1 = new Station(1L,"염창역");
+        station2 = new Station(2L,"당산역");
+        station3 = new Station(3L,"여의도역");
+    }
+
     @Test
     @DisplayName("구간 추가 정상 동작")
     void addSection() {
-        //given
-        Line line = createLine();
-        Section section = createSection(line,"염창역","당산역",10);
-
         //when
-        line.getLineSection().add(section);
+        addSection(line,station1,station2,10);
 
         //then
         assertThat(line.getLineSection().getSections().get(0).getUpStation().getName()).isEqualTo("염창역");
@@ -32,9 +43,7 @@ class LineTest {
     @DisplayName("노선 역 호출 정상 동작")
     void getStations() {
         //given
-        Line line = createLine();
-        Section section = createSection(line,"염창역","당산역",10);
-        line.getLineSection().add(section);
+        addSection(line,station1,station2,10);
 
         //when
         List<Section> sections = line.getLineSection().getSections();
@@ -50,12 +59,8 @@ class LineTest {
     @DisplayName("노선 구간 삭제 정상 동작")
     void removeSection() {
         //given
-        Line line = createLine();
-        Section section = createSection(line,"염창역","당산역",10);
-        Section section2 = createSection(line,"당산역","여의도역",10);
-
-        line.getLineSection().add(section);
-        line.getLineSection().add(section2);
+        addSection(line,station1,station2,10);
+        addSection(line,station2,station3,10);
 
         //when
         line.getLineSection().remove("염창역");
@@ -72,14 +77,13 @@ class LineTest {
             .collect(Collectors.toList());
     }
 
-    private Section createSection(Line line,String upStationName,String downStationName,int distance) {
-        Station yumChangStation = new Station(upStationName);
-        Station dangSanStation = new Station(downStationName);
-        return new Section(line, yumChangStation, dangSanStation, distance);
-    }
-
     private Line createLine() {
         return new Line("9호선","YELLOW");
+    }
+
+    private void addSection(Line line, Station station1, Station station2, int distance) {
+        Section section1 = new Section(line, station1, station2, distance);
+        line.getLineSection().add(section1);
     }
 
 }
