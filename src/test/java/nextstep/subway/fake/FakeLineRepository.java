@@ -2,10 +2,8 @@ package nextstep.subway.fake;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class FakeLineRepository implements LineRepository {
 
