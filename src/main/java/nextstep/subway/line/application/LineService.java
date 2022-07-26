@@ -69,14 +69,14 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
+        if (line.isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<Long> stationIds = line.stationIds();
-        List<StationResponse> responses = stationService.findByIds(stationIds);
+        List<Long> orderedStationIds = line.getOrderedStationIds();
+        List<StationResponse> responses = stationService.findByIds(orderedStationIds);
 
-        responses.sort(Comparator.comparing(it -> stationIds.indexOf(it.getId())));
+        responses.sort(Comparator.comparing(it -> orderedStationIds.indexOf(it.getId())));
         return responses;
     }
 }

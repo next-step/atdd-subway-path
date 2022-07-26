@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.domain.exception.CannotCombineSectionException;
+import nextstep.subway.line.domain.exception.CannotSubtractSectionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,18 +20,21 @@ class SectionTest {
     @DisplayName("상행역, 하행역중 하나가 겹치는 구간 둘이 있을 때 긴 구간에서 짧은 구간을 뺀 구간을 구할 수 있다.")
     @ParameterizedTest
     @MethodSource("provideArgumentsForSubTract")
-    void subtract(Section longSection, Section shortSection, Section subtractedSection) {
-        assertThat(longSection.subtract(shortSection)).isEqualTo(subtractedSection);
+    void subtract(Section longSection, Section shortSection, int expected) {
+        Section subtractedSection = longSection.subtract(shortSection);
+
+        assertThat(subtractedSection.getDistance()).isEqualTo(expected);
     }
 
     private static Stream<Arguments> provideArgumentsForSubTract() {
         return Stream.of(
                 Arguments.of(new Section(LINE, 1L, 2L, 4),
                         new Section(LINE, 1L, 3L, 3),
-                        new Section(LINE, 3L, 2L, 1)),
+                        1),
                 Arguments.of(new Section(LINE, 1L, 2L, 5),
                         new Section(LINE, 3L, 2L, 2),
-                        new Section(LINE, 1L, 3L, 3)));
+                        3)
+        );
     }
 
     @DisplayName("상행역, 하행역중 하나도 겹치지 않는 구간끼리는 뺄 수 없다.")
@@ -37,7 +42,7 @@ class SectionTest {
     @MethodSource("provideArgumentsForSubTract_Exception")
     void subtract_Exception(Section longSection, Section shortSection) {
         assertThatThrownBy(() -> longSection.subtract(shortSection))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(CannotSubtractSectionException.class)
                 .hasMessage("상행역이나 하행역이 겹치는 구간끼리만 뺄 수 있습니다.");
     }
 
@@ -47,6 +52,30 @@ class SectionTest {
                         new Section(LINE, 2L, 3L, 3)),
                 Arguments.of(new Section(LINE, 1L, 2L, 5),
                         new Section(LINE, 3L, 4L, 2)));
+    }
+
+    @DisplayName("두 구간을 합칠 수 있다.")
+    @Test
+    void combine() {
+        Section section = new Section(LINE, 1L, 2L, 3);
+        Section anotherSection = new Section(LINE, 2L, 3L, 4);
+
+        Section combinedSection = section.combine(anotherSection);
+
+        assertThat(combinedSection.getUpStationId()).isEqualTo(1L);
+        assertThat(combinedSection.getDownStationId()).isEqualTo(3L);
+        assertThat(combinedSection.getDistance()).isEqualTo(7);
+    }
+
+    @DisplayName("두 구간이 이어져있지 않으면 합칠 수 없다.")
+    @Test
+    void combine_Exception() {
+        Section section = new Section(LINE, 1L, 2L, 3);
+        Section anotherSection = new Section(LINE, 3L, 4L, 4);
+
+        assertThatThrownBy(() -> section.combine(anotherSection))
+                .isInstanceOf(CannotCombineSectionException.class)
+                .hasMessage("하행역과 상행역이 이어져 있는 구간끼리만 합칠 수 있습니다.");
     }
 
     @DisplayName("두 구간의 상행역이나 하행역중 하나가 똑같은지 알 수 있다.")

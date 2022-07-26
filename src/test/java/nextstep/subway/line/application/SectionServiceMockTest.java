@@ -6,6 +6,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.line.domain.exception.CannotDeleteSectionException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -44,11 +45,12 @@ class SectionServiceMockTest {
         sectionService.addSection(lineId, new SectionRequest(upStationId, downStationId, 6));
 
         // then
-        assertThat(line.getSections()).hasSize(1);
+        assertThat(line.isEmpty()).isFalse();
     }
 
+    @DisplayName("지하철 노선에서 구간이 하나면 제거할 수 없다")
     @Test
-    void 구간_삭제() {
+    void 구간_제거_예외1() {
         // given
         Long lineId = 1L;
         Long upStationId = 1L;
@@ -59,11 +61,10 @@ class SectionServiceMockTest {
 
         when(lineRepository.findById(lineId)).thenReturn(Optional.of(line));
 
-        // when
-        sectionService.deleteSection(lineId, downStationId);
-
-        // then
-        assertThat(line.getSections()).isEmpty();
+        // when + then
+        assertThatThrownBy(() -> sectionService.deleteSection(lineId, downStationId))
+                .isInstanceOf(CannotDeleteSectionException.class)
+                .hasMessage("구간이 둘 이상이어야 역을 제거할 수 있습니다.");
     }
 
     @Test

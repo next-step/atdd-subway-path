@@ -48,7 +48,7 @@ public class StationService {
 
     @Transactional
     public void deleteStationById(Long stationId) {
-        if (stationInspector.belongsToSection(stationId)) {
+        if (stationInspector.belongsToLine(stationId)) {
             throw new CannotDeleteStationException("존재하는 구간이 있으면 역을 삭제할 수 없습니다");
         }
 
@@ -56,6 +56,7 @@ public class StationService {
     }
 
     public Station findById(Long id) {
-        return stationRepository.findById(id).orElseThrow(StationNotFoundException::new);
+        return stationRepository.findById(id)
+                .orElseThrow(StationNotFoundException::new);
     }
 }

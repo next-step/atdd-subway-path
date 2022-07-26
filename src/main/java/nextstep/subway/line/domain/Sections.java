@@ -1,6 +1,5 @@
 package nextstep.subway.line.domain;
 
-import lombok.Getter;
 import nextstep.subway.line.domain.exception.CannotAddSectionException;
 import nextstep.subway.line.domain.exception.CannotDeleteSectionException;
 
@@ -9,11 +8,9 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static javax.persistence.CascadeType.ALL;
 
-@Getter
 @Embeddable
 public class Sections {
 
@@ -28,23 +25,21 @@ public class Sections {
 
         validateAddedSection(addedSection);
 
-        if (firstSection().isAfter(addedSection) || lastSection().isBefore(addedSection)) {
+        if (isNewFirstOrLastSection(addedSection)) {
             sections.add(addedSection);
             return;
         }
 
-        Section includingSection = sections.stream()
-                .filter(s -> s.startsOrEndsTogether(addedSection))
-                .findAny()
-                .orElseThrow(() -> new CannotAddSectionException("추가할 수 없는 구간입니다."));
+        Section connectedSection = findConnectedSection(addedSection);
+        Section subtractedSection = connectedSection.subtract(addedSection);
 
-        sections.remove(includingSection);
+        sections.remove(connectedSection);
         sections.add(addedSection);
-        sections.add(includingSection.subtract(addedSection));
+        sections.add(subtractedSection);
     }
 
     private void validateAddedSection(Section addedSection) {
-        List<Long> stationIds = stationIds();
+        List<Long> stationIds = getOrderedStationIds();
 
         boolean containsUpStation = stationIds.contains(addedSection.getUpStationId());
         boolean containsDownStation = stationIds.contains(addedSection.getDownStationId());
@@ -56,28 +51,68 @@ public class Sections {
         if (!containsUpStation && !containsDownStation) {
             throw new CannotAddSectionException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 구간을 추가할 수 없습니다.");
         }
+    }
 
-        sections.stream()
-                .filter(s -> s.startsOrEndsTogether(addedSection) && s.isShorterThanOrEqualWith(addedSection))
+    private boolean isNewFirstOrLastSection(Section addedSection) {
+        return firstSection().isAfter(addedSection) || lastSection().isBefore(addedSection);
+    }
+
+    private Section findConnectedSection(Section section) {
+        return sections.stream()
+                .filter(s -> s.startsOrEndsTogether(section))
                 .findAny()
-                .ifPresent(s -> {
-                    throw new CannotAddSectionException("기존 구간 사이에 추가할 구간의 길이가 기존 구간의 길이보다 크거나 같을 수 없습니다.");
-                });
+                .orElseThrow();
     }
 
     public void removeSection(Long stationId) {
-        if (sections.isEmpty()) {
-            throw new CannotDeleteSectionException("현재 존재하는 구간이 없습니다.");
+        if (sections.size() < 2) {
+            throw new CannotDeleteSectionException("구간이 둘 이상이어야 역을 제거할 수 있습니다.");
         }
 
-        Section lastSection = lastSection();
-        if (!lastSection.matchDownStation(stationId)) {
-            throw new CannotDeleteSectionException("노선의 종점만 삭제할 수 있습니다.");
+        if (!isExistingStation(stationId)) {
+            throw new CannotDeleteSectionException("등록되어 있지 않은 역을 제거할 수 없습니다.");
         }
-        sections.remove(lastSection);
+
+        if (isFirstStation(stationId)) {
+            sections.remove(firstSection());
+            return;
+        }
+
+        if (isLastStation(stationId)) {
+            sections.remove(lastSection());
+            return;
+        }
+
+        List<Long> orderedStationIds = getOrderedStationIds();
+        int stationIdIdx = orderedStationIds.indexOf(stationId);
+        Long firstRemovedSectionIndex = orderedStationIds.get(stationIdIdx - 1);
+
+        Section firstRemovedSection = findByUpStationId(firstRemovedSectionIndex);
+        Section secondRemovedSection = findByUpStationId(stationId);
+        Section combinedSection = firstRemovedSection.combine(secondRemovedSection);
+
+        sections.remove(firstRemovedSection);
+        sections.remove(secondRemovedSection);
+        sections.add(combinedSection);
     }
 
-    public List<Long> stationIds() {
+    private boolean isExistingStation(Long stationId) {
+        return getOrderedStationIds().contains(stationId);
+    }
+
+    private boolean isLastStation(Long stationId) {
+        List<Long> orderedStationIds = getOrderedStationIds();
+        Long lastStationId = orderedStationIds.get(orderedStationIds.size() - 1);
+        return lastStationId.equals(stationId);
+    }
+
+    private boolean isFirstStation(Long stationId) {
+        List<Long> orderedStationIds = getOrderedStationIds();
+        Long firstStationId = orderedStationIds.get(0);
+        return firstStationId.equals(stationId);
+    }
+
+    public List<Long> getOrderedStationIds() {
         if (sections.isEmpty()) {
             return Collections.emptyList();
         }
@@ -117,18 +152,22 @@ public class Sections {
     }
 
     private boolean isFirstSection(Section section) {
-        List<Long> downStationIds = sections.stream()
+        return sections.stream()
                 .map(Section::getDownStationId)
-                .collect(Collectors.toList());
-
-        return !downStationIds.contains(section.getUpStationId());
+                .noneMatch(id -> id.equals(section.getUpStationId()));
     }
 
     private boolean isLastSection(Section section) {
-        List<Long> upStationIds = sections.stream()
+        return sections.stream()
                 .map(Section::getUpStationId)
-                .collect(Collectors.toList());
+                .noneMatch(id -> id.equals(section.getDownStationId()));
+    }
 
-        return !upStationIds.contains(section.getDownStationId());
+    public boolean isEmpty() {
+        return sections.isEmpty();
+    }
+
+    List<Section> getSections() {
+        return sections;
     }
 }
