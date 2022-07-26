@@ -101,14 +101,14 @@ public class Sections {
 
         Section findSection = matchDownSection ? findMatchDownSection(section.getDownStation()) : findMatchUpSection(section.getUpStation());
         sections.remove(findSection);
-        sections.add(new Section(null, section.getLine(), section.getUpStation(), section.getDownStation(), section.getDistance()));
+        sections.add(new Section(section.getLine(), section.getUpStation(), section.getDownStation(), section.getDistance()));
 
         if (matchDownSection) {
-            sections.add(new Section(null, section.getLine(), findSection.getUpStation(), section.getUpStation(), findSection.getDistance() - section.getDistance()));
+            sections.add(new Section(section.getLine(), findSection.getUpStation(), section.getUpStation(), findSection.getDistance() - section.getDistance()));
             return true;
         }
 
-        sections.add(new Section(null, section.getLine(), section.getDownStation(), findSection.getDownStation(), findSection.getDistance() - section.getDistance()));
+        sections.add(new Section(section.getLine(), section.getDownStation(), findSection.getDownStation(), findSection.getDistance() - section.getDistance()));
         return true;
     }
 
