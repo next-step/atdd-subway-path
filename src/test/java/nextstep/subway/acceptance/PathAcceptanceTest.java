@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.List;
@@ -73,6 +74,32 @@ class PathAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(stationNames).hasSize(5),
                 () -> assertThat(stationNames).containsExactly("신논현역", "강남역", "양재역", "도곡역", "선릉역"),
                 () -> assertThat(totalDistance).isEqualTo(70)
+        );
+    }
+
+    /**
+     * Given 어느 구간과 연결되지 않는 새로운 노선을 만들고
+     * When 기존에 있는 노선의 한 역과 새로운 노선에 추가된 역으로 경로 조회를 요청하면
+     * Then 정상적으로 경로를 조회할 수 없다고 예외를 나타낸다.
+     */
+    @DisplayName("출발역과 도착역이 연결되어 있지 않은 경우 조회")
+    @Test
+    void findPathNotConnectedSourceToTarget() {
+        // given
+        Long 모란역 = 지하철역_생성_요청("모란역").jsonPath().getLong("id");
+        Long 수진역 = 지하철역_생성_요청("수진역").jsonPath().getLong("id");
+
+        지하철_노선_생성_요청("팔호선", "bg-pink-600", 모란역, 수진역, 15);
+
+        // when
+        ExtractableResponse<Response> findPathResponse = 지하철_경로_조회_요청(신논현역, 모란역);
+
+        String exceptionMessage = findPathResponse.jsonPath().getString("message");
+
+        // then
+        assertAll(
+                () -> assertThat(findPathResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(exceptionMessage).isEqualTo("출발역과 도착역이 연결이 되어 있지 않습니다.")
         );
     }
 

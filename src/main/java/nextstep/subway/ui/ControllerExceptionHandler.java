@@ -2,6 +2,7 @@ package nextstep.subway.ui;
 
 import nextstep.subway.exception.AddSectionException;
 import nextstep.subway.exception.DeleteSectionException;
+import nextstep.subway.exception.FindPathException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -27,6 +28,11 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResult> illegalArgumentException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(new ErrorResult("잘못된 입력 값 입니다."));
+    }
+
+    @ExceptionHandler(FindPathException.class)
+    public ResponseEntity<ErrorResult> findPathException(FindPathException e) {
+        return ResponseEntity.badRequest().body(new ErrorResult(e.getMessage()));
     }
 
 }
