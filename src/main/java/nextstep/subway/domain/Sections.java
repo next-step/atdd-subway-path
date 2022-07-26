@@ -4,8 +4,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.applicaion.strategy.MiddleSectionAdditor;
-import nextstep.subway.applicaion.strategy.SectionAdditor;
 import nextstep.subway.exception.SubwayException;
 
 import javax.persistence.CascadeType;
@@ -13,6 +11,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Getter
@@ -26,25 +25,25 @@ public class Sections {
     private List<Section> values = new ArrayList<>();
     private static int MIN_SIZE = 1;
 
-    public void addProcess(Section section) {
-        SectionAdditor sectionAdditor = new SectionAdditor(
-                this, new MiddleSectionAdditor(this));
-
+    public void add(Section section) {
         if (values.isEmpty()) {
             values.add(section);
             return;
         }
 
         ensureCanAddition(section);
-        sectionAdditor.add(section);
-    }
-    public void add(Section section) {
+
+        if(canChangeMiddleSection(section)) {
+            Section originSection = findSameStationSection(section);
+            originSection.changeSectionConditionBy(section);
+        }
+
         values.add(section);
     }
 
     public void remove(Station station) {
         ensureCanRemove(station);
-        values.remove(lastSectionIndex());
+        values.remove(getDownTerminus());
     }
 
     public boolean isEmpty() {
@@ -86,11 +85,36 @@ public class Sections {
     }
 
     private List<Station> findAllStations() {
+        List<Station> stations = values.stream()
+                                      .map(Section::getUpStation)
+                                      .collect(Collectors.toList());
+
+        Section downTerminus = getDownTerminus();
+        stations.add(downTerminus.getDownStation());
+        return stations;
+    }
+
+    public Section findSameStationSection(Section section) {
+        return  values.stream()
+                      .filter(hasSameStationToOriginSection(section))
+                      .findAny()
+                      .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private boolean canChangeMiddleSection(Section newSection) {
+        return values.stream().anyMatch(hasSameStationToOriginSection(newSection));
+    }
+
+    private Predicate<Section> hasSameStationToOriginSection(Section newSection) {
+        return s -> s.isEqualToUpStation(newSection.getUpStation())
+                || s.isEqualToDownStation(newSection.getDownStation());
+    }
+
+    private Section getDownTerminus() {
         return values.stream()
-                     .map(Section::getStations)
-                     .flatMap(Collection::stream)
-                     .distinct()
-                     .collect(Collectors.toList());
+                     .filter(s -> isDownTerminus(s.getDownStation()))
+                     .findFirst()
+                     .orElseThrow(IllegalAccessError::new);
     }
 
     private boolean isUpTerminus(Station upStation) {
@@ -105,19 +129,13 @@ public class Sections {
         return new HashSet<>(findConnectedStations()).containsAll(section.getStations());
    }
 
-    private Station downStationTerminus() {
-        return values.get(lastSectionIndex()).getDownStation();
-    }
-
-    private int lastSectionIndex() {
-        return values.size() - 1;
-    }
 
     private void ensureCanRemove(Station station) {
         if (values.size() <= MIN_SIZE) {
             throw new IllegalArgumentException("두개 이상의 구간이 등록되어야 제거가 가능합니다.");
         }
-        if (!downStationTerminus().equals(station)) {
+
+        if (!getDownTerminus().isEqualToDownStation(station)) {
             throw new IllegalArgumentException("하행 종점역이 아니면 제거할 수 없습니다.");
         }
     }
@@ -127,7 +145,6 @@ public class Sections {
                 s1 -> section.getStations().stream().anyMatch(s1::equals)
         );
     }
-
 
     private void ensureCanAddition(Section section) {
         if (existAllStation(section)) {
