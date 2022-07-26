@@ -24,17 +24,25 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        return this.sections.stream()
-                .map(Section::getStationList)
-                .flatMap(List::stream)
-                .distinct()
-                .collect(Collectors.toList());
+        List<Station> stations = this.sections.stream().map(Section::getDownStation).collect(Collectors.toList());
+        stations.add(0, getUpTerminal());
+        return stations;
     }
 
     public void add(Section section) {
         validateAdd(section);
 
-        sections.add(section);
+        if (isUpTerminal(section)) {
+            sections.add(0, section);
+        }
+    }
+
+    private boolean isUpTerminal(Section section) {
+        return getUpTerminal().equals(section.getDownStation());
+    }
+
+    private Station getUpTerminal() {
+        return sections.get(0).getUpStation();
     }
 
     private void validateAdd(Section section) {

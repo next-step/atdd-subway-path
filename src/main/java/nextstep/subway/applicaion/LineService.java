@@ -65,11 +65,12 @@ public class LineService {
     }
 
     @Transactional
-    public void addSection(Long lineId, SectionRequest sectionRequest) {
+    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        return createLineResponse(line);
     }
 
     private LineResponse createLineResponse(Line line) {

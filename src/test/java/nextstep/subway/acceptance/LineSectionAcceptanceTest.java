@@ -53,7 +53,12 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             @DisplayName("새로운 역을 상행 종점으로 등록")
             @Test
             void 상행_종점_등록 () {
+                // when
+                ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(삼성역, 강남역));
 
+                // then
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(삼성역, 강남역, 양재역);
             }
 
             /**
