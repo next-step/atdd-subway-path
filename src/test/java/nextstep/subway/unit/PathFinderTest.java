@@ -4,9 +4,6 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,10 +39,7 @@ class PathFinderTest {
     @DisplayName("지하철 경로 조회")
     @Test
     void findPathSourceToTarget() {
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-        DijkstraShortestPath<Station, DefaultWeightedEdge> pathAlgorithm = new DijkstraShortestPath<>(graph);
-
-        PathFinder pathFinder = PathFinder.of(graph, pathAlgorithm, Arrays.asList(신분당선, 분당선));
+        PathFinder pathFinder = PathFinder.of(Arrays.asList(신분당선, 분당선));
 
         List<Station> path = pathFinder.findPath(신논현역, 이매역);
         double pathWeight = pathFinder.findPathWeight(신논현역, 이매역);

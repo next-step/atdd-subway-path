@@ -2,7 +2,9 @@ package nextstep.subway.domain;
 
 import org.jgrapht.WeightedGraph;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,14 +16,14 @@ public class PathFinder {
     private WeightedGraph<Station, DefaultWeightedEdge> graph;
     private ShortestPathAlgorithm<Station, DefaultWeightedEdge> pathAlgorithm;
 
-    private PathFinder(WeightedGraph<Station, DefaultWeightedEdge> graph, ShortestPathAlgorithm<Station, DefaultWeightedEdge> pathAlgorithm, List<Line> lines) {
-        this.graph = graph;
-        this.pathAlgorithm = pathAlgorithm;
+    private PathFinder(List<Line> lines) {
+        this.graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+        this.pathAlgorithm = new DijkstraShortestPath<>(this.graph);
         initGraph(lines);
     }
 
-    public static PathFinder of(WeightedGraph<Station, DefaultWeightedEdge> graph, ShortestPathAlgorithm<Station, DefaultWeightedEdge> pathAlgorithm, List<Line> lines) {
-        return new PathFinder(graph, pathAlgorithm, lines);
+    public static PathFinder of(List<Line> lines) {
+        return new PathFinder(lines);
     }
 
     private void initGraph(List<Line> lines) {
