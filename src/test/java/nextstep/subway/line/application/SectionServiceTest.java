@@ -6,6 +6,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.exception.CannotDeleteSectionException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,8 +42,9 @@ class SectionServiceTest {
         assertThat(line.getOrderedStationIds()).containsExactly(upStation.getId(), downStation.getId());
     }
 
+    @DisplayName("지하철 노선에서 구간이 하나면 제거할 수 없다")
     @Test
-    void 구간_삭제() {
+    void 구간_제거_예외1() {
         // given
         Station upStation = stationRepository.save(new Station("양재역"));
         Station downStation = stationRepository.save(new Station("교대역"));
@@ -50,11 +52,10 @@ class SectionServiceTest {
 
         line.addSection(upStation.getId(), downStation.getId(), 6);
 
-        // when
-        sectionService.deleteSection(line.getId(), downStation.getId());
-
-        // then
-        assertThat(line.isEmpty()).isTrue();
+        // when + then
+        assertThatThrownBy(() -> sectionService.deleteSection(line.getId(), downStation.getId()))
+                .isInstanceOf(CannotDeleteSectionException.class)
+                .hasMessage("구간이 하나만 존재하면 역을 제거할 수 없습니다.");
     }
 
     @Test
