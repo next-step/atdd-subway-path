@@ -102,7 +102,12 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             @DisplayName("기존 역 사이 길이보다 크거나 같으면 예외 발생")
             @Test
             void 구간_길이_예외 () {
+                // when
+                ExtractableResponse<Response> 구간_생성 =
+                        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 삼성역, 100));
 
+                // then
+                assertThat(구간_생성.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
             }
 
             /**
@@ -179,6 +184,14 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");
         params.put("distance", 6 + "");
+        return params;
+    }
+
+    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", upStationId + "");
+        params.put("downStationId", downStationId + "");
+        params.put("distance", distance + "");
         return params;
     }
 }

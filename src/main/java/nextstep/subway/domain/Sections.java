@@ -48,7 +48,15 @@ public class Sections {
                 .findFirst()
                 .orElse(0);
 
+        validDistance(section, index);
+
         this.sections.add(index, section);
+    }
+
+    private void validDistance(Section section, int index) {
+        if(this.sections.get(index).getDistance() <= section.getDistance()) {
+            throw new IllegalArgumentException("등록하려는 구간 길이가 기존 구간 길이보다 클 수 없습니다.");
+        }
     }
 
     private boolean isDownTerminal(Section section) {
