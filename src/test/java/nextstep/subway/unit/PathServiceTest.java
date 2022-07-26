@@ -4,6 +4,7 @@ import nextstep.subway.applicaion.PathService;
 import nextstep.subway.applicaion.dto.PathRequest;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.domain.*;
+import nextstep.subway.exception.FindPathException;
 import nextstep.subway.fixture.ConstStation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -65,6 +66,14 @@ public class PathServiceTest {
                 () -> assertThat(pathResponse.getStations()).extracting("name")
                         .containsExactly("신논현역", "강남역", "판교역", "정자역", "이매역")
         );
+    }
+
+    @DisplayName("출발지와 목적지가 같을 경우 에러를 뱉는다.")
+    @Test
+    void sameSourceAndTarget() {
+        assertThatThrownBy(() -> pathService.findPath(PathRequest.of(신논현역.getId(), 신논현역.getId())))
+                .isInstanceOf(FindPathException.class)
+                .hasMessage("출발역과 도착역이 같을 수는 없습니다.");
     }
 
     private Line createLine(Line line) {
