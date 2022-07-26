@@ -10,9 +10,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
@@ -24,14 +22,14 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
-    public void add(final Section section){
+    public void add(final Section section) {
         sections.add(section);
     }
 
     public void removeSection(final Long stationId) {
         checkInvalidRemoveSize();
         checkIsDownEndStation(stationId);
-        sections.remove(size()-1);
+        sections.remove(size() - 1);
     }
 
     private void checkInvalidRemoveSize() {
@@ -46,16 +44,11 @@ public class Sections {
         }
     }
 
-    public boolean isContain(final Section section) {
-        Set<Section> containCheck = new HashSet<>(getSections());
-        return containCheck.contains(section);
-    }
-
     public int size() {
         return sections.size();
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return sections.isEmpty();
     }
 
@@ -67,7 +60,7 @@ public class Sections {
                        .collect(Collectors.toUnmodifiableList());
     }
 
-    public List<String> getStationNames(){
+    public List<String> getStationNames() {
         return getStations().stream()
                             .map(Station::getName)
                             .collect(Collectors.toList());

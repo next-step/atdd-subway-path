@@ -5,19 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -50,17 +42,13 @@ public class Line {
 
     public void addSection(Station upStation, Station downStation, int distance) {
         this.addSection(Section.builder()
-                            .upStation(upStation)
-                            .downStation(downStation)
-                            .distance(distance).build());
+                               .upStation(upStation)
+                               .downStation(downStation)
+                               .distance(distance).build());
     }
 
     public void update(final String name, final String color) {
         this.name = StringUtils.hasText(name) ? name : this.name;
         this.color = StringUtils.hasText(color) ? color : this.color;
-    }
-
-    public int size() {
-        return sections.size();
     }
 }

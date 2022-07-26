@@ -1,13 +1,9 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
-import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.LineRequest;
-import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -25,8 +21,6 @@ import static org.mockito.BDDMockito.given;
 public class LineServiceMockTest {
     @Mock
     private LineRepository lineRepository;
-    @Mock
-    private StationService stationService;
     @InjectMocks
     private LineService lineService;
 

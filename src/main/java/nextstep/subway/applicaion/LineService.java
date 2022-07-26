@@ -3,7 +3,6 @@ package nextstep.subway.applicaion;
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
-import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -43,11 +42,11 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        return createLineResponse(findLine(id));
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = findLine(id);
         line.update(lineRequest.getName(), lineRequest.getColor());
     }
 
@@ -73,7 +72,11 @@ public class LineService {
         List<Station> stations = sections.getStations();
 
         return stations.stream()
-                       .map(it -> stationService.createStationResponse(it))
+                       .map(stationService::createStationResponse)
                        .collect(Collectors.toList());
+    }
+
+    private Line findLine(final Long id) {
+        return lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
     }
 }

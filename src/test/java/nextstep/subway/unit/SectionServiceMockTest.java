@@ -1,6 +1,5 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.SectionService;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.SectionRequest;
@@ -33,10 +32,10 @@ public class SectionServiceMockTest {
         // given
         final Station 기흥역 = new Station(1L, "기흥역");
         final Station 신갈역 = new Station(2L, "신갈역");
+        final Line line = new Line(3L, "분당선", "yellow");
+
         given(stationService.findById(1L)).willReturn(기흥역);
         given(stationService.findById(2L)).willReturn(신갈역);
-
-        final Line line = new Line(3L, "분당선", "yellow");
         given(lineRepository.findById(3L)).willReturn(Optional.of(line));
 
         // when
@@ -54,7 +53,6 @@ public class SectionServiceMockTest {
         final Station 기흥역 = new Station(1L, "기흥역");
         final Station 신갈역 = new Station(2L, "신갈역");
         final Station 정자역 = new Station(3L, "정자역");
-
         final Line line = new Line(4L, "분당선", "yellow");
 
         line.addSection(기흥역, 신갈역, 10);

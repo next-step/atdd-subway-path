@@ -2,12 +2,8 @@ package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.LineRequest;
-import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @SpringBootTest
 @Transactional
 public class LineServiceTest {
-    @Autowired
-    private StationRepository stationRepository;
     @Autowired
     private LineRepository lineRepository;
     @Autowired
