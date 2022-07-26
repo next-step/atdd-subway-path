@@ -14,4 +14,12 @@ public class PathRequest {
     public Long getTarget() {
         return target;
     }
+
+    public void setSource(Long source) {
+        this.source = source;
+    }
+
+    public void setTarget(Long target) {
+        this.target = target;
+    }
 }
