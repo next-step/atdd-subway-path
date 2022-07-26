@@ -23,7 +23,7 @@ public class PathResponse {
         List<StationResponse> stations = path.findShortestPath(target, source).stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
-        int distance = path.getShortestDistance();
+        int distance = path.getShortestDistance(target, source);
 
         return new PathResponse(stations, distance);
     }

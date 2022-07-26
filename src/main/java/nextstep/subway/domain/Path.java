@@ -13,7 +13,7 @@ public class Path {
         return graph.findShortestPath(upStation, downStation);
     }
 
-    public int getShortestDistance() {
-        return graph.getShortestPathSize();
+    public int getShortestDistance(Station upStation, Station downStation) {
+        return graph.getShortestDistance(upStation, downStation);
     }
 }

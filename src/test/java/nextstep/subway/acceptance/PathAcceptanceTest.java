@@ -52,8 +52,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         // then
         assertAll(
-                () -> assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("강남역", "교대역", "남부터미널역")
-//                () -> assertThat(response.jsonPath().getLong("distance")).isEqualTo(12)
+                () -> assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("강남역", "교대역", "남부터미널역"),
+                () -> assertThat(response.jsonPath().getLong("distance")).isEqualTo(12)
         );
     }
 }
