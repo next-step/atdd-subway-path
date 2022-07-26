@@ -1,5 +1,6 @@
 package nextstep.subway.unit;
 
+import static nextstep.subway.utils.TestVariables.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
@@ -22,9 +23,9 @@ class LineTest {
     @BeforeEach
     void setUp() {
         line = createLine();
-        station1 = new Station(1L,"염창역");
-        station2 = new Station(2L,"당산역");
-        station3 = new Station(3L,"여의도역");
+        station1 = new Station(1L,염창역);
+        station2 = new Station(2L,당산역);
+        station3 = new Station(3L,여의도역);
     }
 
     @Test
@@ -34,8 +35,8 @@ class LineTest {
         addSection(line,station1,station2,10);
 
         //then
-        assertThat(line.getLineSection().getSections().get(0).getUpStation().getName()).isEqualTo("염창역");
-        assertThat(line.getLineSection().getSections().get(0).getDownStation().getName()).isEqualTo("당산역");
+        assertThat(line.getLineSection().getSections().get(0).getUpStation().getName()).isEqualTo(염창역);
+        assertThat(line.getLineSection().getSections().get(0).getDownStation().getName()).isEqualTo(당산역);
         assertThat(line.getLineSection().getSections().get(0).getDistance()).isEqualTo(10);
     }
 
@@ -50,8 +51,8 @@ class LineTest {
 
         //then
         assertThat(sections).hasSize(1);
-        assertThat(sections.get(0).getUpStation().getName()).isEqualTo("염창역");
-        assertThat(sections.get(0).getDownStation().getName()).isEqualTo("당산역");
+        assertThat(sections.get(0).getUpStation().getName()).isEqualTo(염창역);
+        assertThat(sections.get(0).getDownStation().getName()).isEqualTo(당산역);
         assertThat(sections.get(0).getDistance()).isEqualTo(10);
     }
 
@@ -63,11 +64,11 @@ class LineTest {
         addSection(line,station2,station3,10);
 
         //when
-        line.getLineSection().remove("염창역");
+        line.getLineSection().remove(염창역);
         List<String> stationNames = getStationNames(line);
 
         //then
-        assertThat(stationNames).doesNotContain("염창역");
+        assertThat(stationNames).doesNotContain(염창역);
         assertThat(stationNames).hasSize(1);
     }
 
@@ -78,7 +79,7 @@ class LineTest {
     }
 
     private Line createLine() {
-        return new Line("9호선","YELLOW");
+        return new Line(구호선,YELLOW);
     }
 
     private void addSection(Line line, Station station1, Station station2, int distance) {
