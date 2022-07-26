@@ -23,8 +23,8 @@ public class PathService {
         Station downStation = findByStationId(target);
         List<Line> lines = findLines();
 
-        JGraphImpl subwayGraph = new JGraphImpl(lines);
-        Path path = new Path(subwayGraph);
+        JGraph subwayGraph = new JGraph(lines);
+        PathFinder path = new PathFinder(subwayGraph);
 
         return PathResponse.of(path, upStation, downStation);
     }

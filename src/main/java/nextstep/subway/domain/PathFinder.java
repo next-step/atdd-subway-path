@@ -2,10 +2,10 @@ package nextstep.subway.domain;
 
 import java.util.List;
 
-public class Path {
+public class PathFinder {
     GraphStrategy graph;
 
-    public Path(GraphStrategy graph) {
+    public PathFinder(GraphStrategy graph) {
         this.graph = graph;
     }
 

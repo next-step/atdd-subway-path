@@ -8,17 +8,35 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
-public class JGraphImpl implements GraphStrategy {
+public class JGraph implements GraphStrategy {
     private final List<Line> lines;
     private final WeightedMultigraph<Station, SectionEdge> graph;
     private final DijkstraShortestPath<Station, SectionEdge> shortestPath;
 
 
-    public JGraphImpl(List<Line> lines) {
+    public JGraph(List<Line> lines) {
         this.lines = lines;
         graph = new WeightedMultigraph(DefaultWeightedEdge.class);
         initGraph();
         shortestPath = new DijkstraShortestPath(graph);
+    }
+
+    @Override
+    public List<Station> findShortestPath(Station target, Station source) {
+        GraphPath<Station, SectionEdge> graphPath = shortestPath.getPath(target, source);
+
+        return graphPath.getVertexList();
+    }
+
+    @Override
+    public int getShortestDistance(Station target, Station source) {
+        GraphPath<Station, SectionEdge> graphPath = shortestPath.getPath(target, source);
+
+        List<Section> sections = graphPath.getEdgeList().stream()
+                .map(SectionEdge::getSection)
+                .collect(Collectors.toList());
+
+        return new Sections(sections).getTotalDistance();
     }
 
     private void initGraph() {
@@ -57,23 +75,5 @@ public class JGraphImpl implements GraphStrategy {
                 .map(Line::getSections)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Station> findShortestPath(Station target, Station source) {
-        GraphPath<Station, SectionEdge> graphPath = shortestPath.getPath(target, source);
-
-        return graphPath.getVertexList();
-    }
-
-    @Override
-    public int getShortestDistance(Station target, Station source) {
-        GraphPath<Station, SectionEdge> graphPath = shortestPath.getPath(target, source);
-
-        List<Section> sections = graphPath.getEdgeList().stream()
-                .map(SectionEdge::getSection)
-                .collect(Collectors.toList());
-
-        return new Sections(sections).getTotalDistance();
     }
 }

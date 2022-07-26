@@ -1,6 +1,6 @@
 package nextstep.subway.applicaion.dto;
 
-import nextstep.subway.domain.Path;
+import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Station;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public class PathResponse {
         this.distance = distance;
     }
 
-    public static PathResponse of(Path path, Station target, Station source) {
+    public static PathResponse of(PathFinder path, Station target, Station source) {
         List<StationResponse> stations = path.findShortestPath(target, source).stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
