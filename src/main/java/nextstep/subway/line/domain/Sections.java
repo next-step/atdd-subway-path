@@ -25,7 +25,7 @@ public class Sections {
 
         validateAddedSection(addedSection);
 
-        if (isHeadOrTailSection(addedSection)) {
+        if (isNewFirstOrLastSection(addedSection)) {
             sections.add(addedSection);
             return;
         }
@@ -53,7 +53,7 @@ public class Sections {
         }
     }
 
-    private boolean isHeadOrTailSection(Section addedSection) {
+    private boolean isNewFirstOrLastSection(Section addedSection) {
         return firstSection().isAfter(addedSection) || lastSection().isBefore(addedSection);
     }
 
@@ -73,28 +73,43 @@ public class Sections {
             throw new CannotDeleteSectionException("등록되어 있지 않은 역을 제거할 수 없습니다.");
         }
 
-        List<Long> stationIds = getOrderedStationIds();
-
-        if (stationIds.get(0).equals(stationId)) {
+        if (isFirstStation(stationId)) {
             sections.remove(firstSection());
             return;
         }
 
-        if (stationIds.get(stationIds.size() - 1).equals(stationId)) {
+        if (isLastStation(stationId)) {
             sections.remove(lastSection());
             return;
         }
 
-        Long removedSectionIdx = stationIds.get(stationIds.indexOf(stationId) - 1);
-        Section removedSection = findByUpStationId(removedSectionIdx);
-        Section nextSection = findByUpStationId(removedSection.getDownStationId());
-        sections.remove(removedSection);
-        sections.remove(nextSection);
-        sections.add(removedSection.add(nextSection));
+        List<Long> orderedStationIds = getOrderedStationIds();
+        int stationIdIdx = orderedStationIds.indexOf(stationId);
+        Long firstRemovedSectionIndex = orderedStationIds.get(stationIdIdx - 1);
+
+        Section firstRemovedSection = findByUpStationId(firstRemovedSectionIndex);
+        Section secondRemovedSection = findByUpStationId(stationId);
+        Section combinedSection = firstRemovedSection.combine(secondRemovedSection);
+
+        sections.remove(firstRemovedSection);
+        sections.remove(secondRemovedSection);
+        sections.add(combinedSection);
     }
 
     private boolean isExistingStation(Long stationId) {
         return getOrderedStationIds().contains(stationId);
+    }
+
+    private boolean isLastStation(Long stationId) {
+        List<Long> orderedStationIds = getOrderedStationIds();
+        Long lastStationId = orderedStationIds.get(orderedStationIds.size() - 1);
+        return lastStationId.equals(stationId);
+    }
+
+    private boolean isFirstStation(Long stationId) {
+        List<Long> orderedStationIds = getOrderedStationIds();
+        Long firstStationId = orderedStationIds.get(0);
+        return firstStationId.equals(stationId);
     }
 
     public List<Long> getOrderedStationIds() {
