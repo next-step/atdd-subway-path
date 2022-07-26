@@ -5,6 +5,7 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
@@ -23,6 +24,7 @@ class LineTest {
 
         신림선 = new Line("신림선", "blue-bg-300");
     }
+    @DisplayName("구간 추가하는 메서드")
     @Test
     void addSection() {
         //when
@@ -33,6 +35,7 @@ class LineTest {
                 .filteredOn(section -> section.equals(new Section(신림선, 당곡역, 보라매역, 10)));
     }
 
+    @DisplayName("구간 목록을 조회하는 메서드")
     @Test
     void getStations() {
         신림선.addSection(당곡역, 보라매역, 10);
@@ -44,6 +47,7 @@ class LineTest {
         });
     }
 
+    @DisplayName("구간 제거 메서드")
     @Test
     void removeSection() {
         신림선.addSection(당곡역, 보라매역, 10);
