@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.exceptions.DataNotFoundException;
+import nextstep.subway.applicaion.exceptions.InvalidStationParameterException;
 import nextstep.subway.enums.exceptions.ErrorCode;
 
 import javax.persistence.CascadeType;
@@ -43,7 +44,8 @@ public class Sections {
     }
 
     public void removeSection(Station lastStation) {
-        if (lastStation.isSame(getLastStation()))
-            sections.remove(lastStation);
+        if (!lastStation.isSame(getLastStation()))
+            throw new InvalidStationParameterException(ErrorCode.IS_NOT_SAME_LAST_STATION);
+        sections.remove(lastStation);
     }
 }
