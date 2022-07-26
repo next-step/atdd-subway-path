@@ -26,4 +26,8 @@ public class LineRequest {
     public int getDistance() {
         return distance;
     }
+
+    public boolean validateSaveLineCondition() {
+        return this.getUpStationId() != null && this.getDownStationId() != null && this.getDistance() != 0;
+    }
 }
