@@ -69,9 +69,46 @@ public class PathAcceptanceTest extends AcceptanceTest {
     class fail {
         @DisplayName("출발역과 도착역이 같은 경우 최단거리 조회 실패")
         @Test
-        void find_shortest_path() {
+        void findSameStation() {
             // when
             ExtractableResponse<Response> response = 최단_경로_조회_요청(강남역, 강남역);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
+
+        @DisplayName("출발역이 노선에 없을 경우 조회 실패")
+        @Test
+        void findNotExistsStartStation() {
+            long 출발역 = 신규_지하철역("출발역");
+
+            // when
+            ExtractableResponse<Response> response = 최단_경로_조회_요청(출발역, 강남역);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
+
+        @DisplayName("도착역이 노선에 없을 경우 조회 실패")
+        @Test
+        void findNotExistsEndStation() {
+            long 도착역 = 신규_지하철역("도착역");
+
+            // when
+            ExtractableResponse<Response> response = 최단_경로_조회_요청(강남역, 도착역);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
+
+        @DisplayName("출발역과 도착역이 노선에 없을 경우 조회 실패")
+        @Test
+        void findNotExistsEndStationAndStartStation() {
+            long 출발역 = 신규_지하철역("출발역");
+            long 도착역 = 신규_지하철역("도착역");
+
+            // when
+            ExtractableResponse<Response> response = 최단_경로_조회_요청(출발역, 도착역);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
