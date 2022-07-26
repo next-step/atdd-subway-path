@@ -53,14 +53,17 @@ class LineSectionTest {
     @Test
     void add() {
         //when
-        addSection(line,station2,station3,10);
+        addSection(line,station2,station4,20);
         addSection(line,station1,station2,10);
+        addSection(line,station2,station3,10);
 
         //then
         List<Station> stations = line.getLineSection().getStations();
         assertThat(stations.get(0).getName()).isEqualTo("가양역");
         assertThat(stations.get(1).getName()).isEqualTo("염창역");
         assertThat(stations.get(2).getName()).isEqualTo("당산역");
+        assertThat(stations.get(3).getName()).isEqualTo("여의도역");
+
     }
 
     @Test
