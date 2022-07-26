@@ -102,6 +102,26 @@ class SectionsTest {
                 .hasMessage("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 구간을 추가할 수 없습니다.");
     }
 
+    @DisplayName("지하철 노선에 구간이 둘 이상 있을 때 구간을 제거하면 구간이 재배치 되고 길이가 수정된다.")
+    @Test
+    void 구간_제거() {
+        // given (1 > 2 > 3 > 4 > 5)
+        Sections sections = new Sections();
+
+        sections.add(new Section(LINE, 1L, 2L, 1));
+        sections.add(new Section(LINE, 2L, 3L, 1));
+        sections.add(new Section(LINE, 3L, 4L, 1));
+        sections.add(new Section(LINE, 4L, 5L, 1));
+
+        sections.removeSection(1L); // (2 > 3 > 4 > 5)
+        sections.removeSection(5L); // (2 > 3 > 4)
+        sections.removeSection(3L); // (2 >> 4)
+
+        // then
+        assertThat(sections.getOrderedStationIds()).containsExactly(2L, 4L);
+        assertThat(sections.getSections()).extracting("distance").contains(2);
+    }
+
     @DisplayName("지하철 노선에서 구간이 하나면 제거할 수 없다")
     @Test
     void 구간_제거_예외1() {
