@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 class LineTest {
 
@@ -42,8 +43,22 @@ class LineTest {
         line.addSection(firstStation, secondStation, 10);
         line.addSection(secondStation, thirdStation, 10);
 
-        line.removeSection();
+        line.removeSection(thirdStation);
 
         assertThat(line.getSections()).hasSize(1);
+    }
+
+    @Test
+    void removeSection_Fail() {
+        Line line = new Line();
+        Station firstStation = new Station("강남역");
+        Station secondStation = new Station("역삼역");
+        Station thirdStation = new Station("선릉역");
+        line.addSection(firstStation, secondStation, 10);
+        line.addSection(secondStation, thirdStation, 10);
+
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> line.removeSection(secondStation)
+        );
     }
 }
