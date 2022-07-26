@@ -129,30 +129,76 @@ public class LineServiceMockTest {
     }
 
     @Test
-    @DisplayName("지하철 구간을 삭제 합니다.")
-    void removeSection() {
+    @DisplayName("구간이 하나일때 삭제를 시도할 시 에러를 반환합니다.")
+    void removeSectionException() {
         이호선.addSection(new Section(이호선, 강남역, 역삼역, 6));
 
         given(lineRepository.findById(1L)).willReturn(Optional.of(이호선));
         given(stationService.findById(2L)).willReturn(역삼역);
 
-        lineService.deleteSection(1L, 2L);
 
-        assertThat(lineService.findById(1L).getStations()).isEmpty();
+        assertThatExceptionOfType(SectionException.class).isThrownBy(() -> {
+            lineService.deleteSection(1L, 2L);
+        })
+            .withMessage("구간이 하나일때는 삭제할 수 없습니다.");
     }
 
     @Test
-    @DisplayName("하행선이 아닌 곳을 삭제시 에러가 발생한다.")
-    void removeException() {
+    @DisplayName("상행 종점 지하철 역을 삭제합니다.")
+    void removeFirstStation() {
         이호선.addSection(new Section(이호선, 강남역, 역삼역, 6));
         이호선.addSection(new Section(이호선, 역삼역, 선릉역, 4));
 
         given(lineRepository.findById(1L)).willReturn(Optional.of(이호선));
         given(stationService.findById(1L)).willReturn(강남역);
 
-        assertThatIllegalArgumentException().isThrownBy(() ->
-            lineService.deleteSection(1L, 1L)
-        );
+        lineService.deleteSection(1L, 강남역.getId());
+
+        assertThat(이호선.getStations()).containsExactly(역삼역, 선릉역);
+    }
+
+    @Test
+    @DisplayName("하행 종점 지하철 역을 삭제합니다.")
+    void removeLastStation() {
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 6));
+        이호선.addSection(new Section(이호선, 역삼역, 선릉역, 4));
+
+        given(lineRepository.findById(1L)).willReturn(Optional.of(이호선));
+        given(stationService.findById(선릉역.getId())).willReturn(선릉역);
+
+        lineService.deleteSection(1L, 선릉역.getId());
+
+        assertThat(이호선.getStations()).containsExactly(강남역, 역삼역);
+    }
+
+    @Test
+    @DisplayName("지하철 노선중 중간 지하철 역을 삭제하는 테스트를 합니다.")
+    void removeBetweenStation() {
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 6));
+        이호선.addSection(new Section(이호선, 역삼역, 선릉역, 4));
+        이호선.addSection(new Section(이호선, 선릉역, 삼성역, 10));
+
+        given(lineRepository.findById(1L)).willReturn(Optional.of(이호선));
+        given(stationService.findById(선릉역.getId())).willReturn(선릉역);
+
+        lineService.deleteSection(1L, 선릉역.getId());
+
+        assertThat(이호선.getStations()).containsExactly(강남역, 역삼역, 삼성역);
+    }
+
+    @Test
+    @DisplayName("지하철 노선에 존재하지 않는 지하철역을 삭제할 때 에러를 반환합니다.")
+    void isNotExistsStationException() {
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 6));
+        이호선.addSection(new Section(이호선, 역삼역, 선릉역, 4));
+
+        given(lineRepository.findById(1L)).willReturn(Optional.of(이호선));
+        given(stationService.findById(삼성역.getId())).willReturn(삼성역);
+
+        assertThatExceptionOfType(SectionException.class).isThrownBy(() -> {
+                lineService.deleteSection(1L, 삼성역.getId());
+            })
+            .withMessage("존재하지 않는 지하철역이라 삭제할 수가 없습니다.");
     }
 
     @Test
@@ -244,8 +290,8 @@ public class LineServiceMockTest {
         일호선.addSection(new Section(일호선, 강남역, 역삼역, 10));
 
         given(lineRepository.findById(1L)).willReturn(Optional.of(일호선));
-        given(stationService.findById(3L)).willReturn(선릉역);
-        given(stationService.findById(4L)).willReturn(서울역);
+        given(stationService.findById(선릉역.getId())).willReturn(선릉역);
+        given(stationService.findById(서울역.getId())).willReturn(서울역);
 
         assertThatExceptionOfType(SectionException.class).isThrownBy(() -> {
                 lineService.addSection(1L, new SectionRequest(서울역.getId(), 선릉역.getId(), 200));
