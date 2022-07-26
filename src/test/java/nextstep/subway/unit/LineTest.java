@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class LineTest {
     Station 기흥역;
@@ -28,8 +29,10 @@ class LineTest {
     @Test
     void addSection() {
         // then
-        assertThat(line.getSections().size()).isEqualTo(2);
-        assertThat(line.getSections().getStationNames()).containsExactlyInAnyOrder("기흥역", "신갈역", "정자역");
+        assertAll(
+            () -> assertThat(line.getSections().size()).isEqualTo(2),
+            () -> assertThat(line.getSections().getStationNames()).containsExactlyInAnyOrder("기흥역", "신갈역", "정자역")
+                 );
     }
 
     @Test
@@ -38,8 +41,10 @@ class LineTest {
         List<Station> stations = line.getSections().getStations();
 
         // then
-        assertThat(stations).containsExactlyInAnyOrder(기흥역, 신갈역, 정자역);
-        assertThat(stations).hasSize(3);
+        assertAll(
+            () -> assertThat(stations).containsExactlyInAnyOrder(기흥역, 신갈역, 정자역),
+            () -> assertThat(stations).hasSize(3)
+                 );
     }
 
     @Test

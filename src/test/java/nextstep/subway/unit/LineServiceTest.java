@@ -27,27 +27,6 @@ public class LineServiceTest {
     @Autowired
     private LineService lineService;
 
-    @Test
-    void addSection() {
-        // given
-        final Station 기흥역 = new Station("기흥역");
-        final Station 신갈역 = new Station("신갈역");
-        stationRepository.save(기흥역);
-        stationRepository.save(신갈역);
-
-        final Line line = new Line("분당선", "yellow");
-        lineRepository.save(line);
-
-        // when
-        lineService.addSection(line.getId(), new SectionRequest(기흥역.getId(), 신갈역.getId(), 10));
-
-        // then
-        assertAll(
-            () -> assertThat(line.getSections().size()).isEqualTo(1),
-            () -> assertThat(line.getSections().getStationNames()).containsExactlyInAnyOrder("기흥역", "신갈역")
-                 );
-    }
-
     @ParameterizedTest
     @CsvSource(value = {"에버라인:red:에버라인:red", "에버라인::에버라인:yellow", ":red:분당선:red"}, delimiter = ':')
     void updateLine(String lineName, String color, String expectLineName, String expectColor) {
@@ -62,32 +41,6 @@ public class LineServiceTest {
         assertAll(
             () -> assertThat(line.getName()).isEqualTo(expectLineName),
             () -> assertThat(line.getColor()).isEqualTo(expectColor)
-                 );
-    }
-
-    @Test
-    void deleteSection() {
-        // given
-        final Station 기흥역 = new Station("기흥역");
-        final Station 신갈역 = new Station("신갈역");
-        final Station 정자역 = new Station("정자역");
-        stationRepository.save(기흥역);
-        stationRepository.save(신갈역);
-        stationRepository.save(정자역);
-
-        final Line line = new Line("분당선", "yellow");
-        lineRepository.save(line);
-
-        lineService.addSection(line.getId(), new SectionRequest(기흥역.getId(), 신갈역.getId(), 10));
-        lineService.addSection(line.getId(), new SectionRequest(신갈역.getId(), 정자역.getId(), 10));
-
-        // when
-        lineService.deleteSection(line.getId(), 정자역.getId());
-
-        // then
-        assertAll(
-            () -> assertThat(line.getSections().size()).isEqualTo(1),
-            () -> assertThat(line.getSections().getStationNames()).containsExactlyInAnyOrder("기흥역", "신갈역")
                  );
     }
 }
