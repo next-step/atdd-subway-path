@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import lombok.Getter;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -64,13 +65,12 @@ public class Line {
         return stations;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void update(final String name, final String color) {
+        if (StringUtils.hasText(name)) {
+            this.name = name;
+        }
+        if (StringUtils.hasText(color)) {
+            this.color = color;
+        }
     }
-
-    public void setColor(final String color) {
-        this.color = color;
-    }
-
-
 }
