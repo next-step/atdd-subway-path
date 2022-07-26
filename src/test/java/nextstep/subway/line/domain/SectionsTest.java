@@ -102,24 +102,9 @@ class SectionsTest {
                 .hasMessage("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 구간을 추가할 수 없습니다.");
     }
 
+    @DisplayName("지하철 노선에서 구간이 하나면 제거할 수 없다")
     @Test
-    void 구간_삭제() {
-        // given
-        Sections sections = new Sections();
-        Long upStationId = 1L;
-        Long downStationId = 2L;
-
-        sections.add(new Section(LINE, upStationId, downStationId, 6));
-
-        // when
-        sections.removeSection(downStationId);
-
-        // then
-        assertThat(sections.getOrderedStationIds()).isEmpty();
-    }
-
-    @Test
-    void 구간_삭제_종점이_아니면_예외() {
+    void 구간_제거_예외1() {
         // given
         Sections sections = new Sections();
         Long upStationId = 1L;
@@ -128,7 +113,8 @@ class SectionsTest {
         sections.add(new Section(LINE, upStationId, downStationId, 6));
 
         // when + then
-        assertThatThrownBy(() -> sections.removeSection(upStationId))
-                .isInstanceOf(CannotDeleteSectionException.class);
+        assertThatThrownBy(() -> sections.removeSection(downStationId))
+                .isInstanceOf(CannotDeleteSectionException.class)
+                .hasMessage("구간이 하나만 존재하면 역을 제거할 수 없습니다.");
     }
 }

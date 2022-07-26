@@ -1,7 +1,5 @@
 package nextstep.subway.line.acceptance;
 
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -144,13 +142,13 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * Given 지하철 노선에 구간이 둘 이상 있을 때
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
      * Then 노선에 구간이 제거된다
      */
-    @DisplayName("지하철 노선에 구간을 제거")
+    @DisplayName("지하철 노선에서 마지막 구간을 제거")
     @Test
-    void removeLineSection() {
+    void 구간_제거1() {
         // given
         Long 교대역 = 지하철역_생성_요청("교대역").jsonPath().getLong("id");
 
@@ -164,6 +162,23 @@ class SectionAcceptanceTest extends AcceptanceTest {
         노선에_역들이_순서대로_존재한다(신분당선, 강남역, 양재역);
     }
 
+    /**
+     * Given 지하철 노선에 구간이 하나만 있을 때
+     * When 지하철 노선의 마지막 구간 제거를 요청 하면
+     * Then 제거에 실패한다
+     */
+    @DisplayName("지하철 노선에서 구간이 하나면 제거할 수 없다")
+    @Test
+    void 구간_제거_예외1() {
+        // given
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 6));
+
+        // when + then
+        노선에서_구간을_제거할수_없다(신분당선, 양재역);
+    }
+
+
+
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
@@ -173,7 +188,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private void 노선에_역들이_순서대로_존재한다(Long lineId, Long... stationIds) {
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineId);
+        var response = 지하철_노선_조회_요청(lineId);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class))
@@ -184,7 +199,12 @@ class SectionAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = createSectionCreateParams(upStationId, downStationId, distance);
         var response = 지하철_노선에_지하철_구간_생성_요청(신분당선, params);
 
-        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 노선에서_구간을_제거할수_없다(Long lineId, Long stationId) {
+       var response = 지하철_노선에_지하철_구간_제거_요청(lineId, stationId);
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
