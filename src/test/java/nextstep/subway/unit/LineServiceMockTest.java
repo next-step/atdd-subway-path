@@ -5,7 +5,6 @@ import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +14,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static nextstep.subway.utils.LineFixture.라인_생성_2호선;
+import static nextstep.subway.utils.SectionFixture.구간생성;
+import static nextstep.subway.utils.StationFixture.역생성;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -37,7 +39,7 @@ public class LineServiceMockTest {
     void addSection() {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
-        final Line line = new Line(1L, "2호선", "bg-green");
+        final Line line = 라인_생성_2호선();
         when(stationService.findById(anyLong())).thenReturn(new Station());
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
 
@@ -56,13 +58,13 @@ public class LineServiceMockTest {
 
     @Test
     void deleteSection() {
-        final Line line = new Line(1L, "2호선", "bg-green");
-        final Station 강남역 = new Station(1L, "강남역");
-        final Station 역삼역 = new Station(2L, "역삼역");
-        final Station 선릉역 = new Station(3L, "선릉역");
+        final Line line = 라인_생성_2호선();
+        final Station 강남역 = 역생성("강남역");
+        final Station 역삼역 = 역생성("역삼역");
+        final Station 선릉역 = 역생성("선릉역");
 
-        line.addSection(new Section(line, 강남역, 역삼역, 3));
-        line.addSection(new Section(line, 역삼역, 선릉역, 2));
+        line.addSection(구간생성(line, 강남역, 역삼역, 3));
+        line.addSection(구간생성(line, 역삼역, 선릉역, 2));
 
         when(stationService.findById(anyLong())).thenReturn(선릉역);
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
