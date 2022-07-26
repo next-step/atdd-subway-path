@@ -7,6 +7,15 @@ public class PathRequest {
 
     private PathRequest() { }
 
+    private PathRequest(Long source, Long target) {
+        this.source = source;
+        this.target = target;
+    }
+
+    public static PathRequest of(Long source, Long target) {
+        return new PathRequest(source, target);
+    }
+
     public Long getSource() {
         return source;
     }
