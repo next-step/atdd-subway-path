@@ -7,10 +7,10 @@ import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -30,18 +30,21 @@ public class LineServiceMockTest {
     @Mock
     private StationService stationService;
 
+    @InjectMocks
     private LineService lineService;
 
-    @BeforeEach
-    void setUp() {
-        lineService = new LineService(lineRepository, stationService);
-    }
+    @Mock
+    LineRequest lineRequest;
 
     @Test
     @DisplayName("노선을 생성한다.")
     void saveLine() {
         // given
-        LineRequest lineRequest = new LineRequest("신분당선", "red", 역삼역_ID, 잠실역_ID, 10);
+        when(lineRequest.getUpStationId()).thenReturn(역삼역_ID);
+        when(lineRequest.getDownStationId()).thenReturn(잠실역_ID);
+        when(lineRequest.getName()).thenReturn("신분당선");
+        when(lineRequest.getColor()).thenReturn("red");
+        when(lineRequest.getDistance()).thenReturn(10);
 
         // when
         when(stationService.findById(역삼역_ID)).thenReturn(역삼역);
