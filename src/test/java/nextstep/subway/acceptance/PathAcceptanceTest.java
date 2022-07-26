@@ -26,9 +26,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
      * 남부터미널역  --- *3호선* ---   양재
      */
     @BeforeEach
-    public void setUp() {
-        super.setUp();
-
+    public void createData() {
         교대역 = 신규_지하철역("교대역");
         강남역 = 신규_지하철역("강남역");
         양재역 = 신규_지하철역("양재역");
