@@ -15,6 +15,8 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public List<Section> getSections() {
+        Collections.sort(sections, new SectionComparator());
+
         return sections;
     }
 
@@ -44,7 +46,7 @@ public class Sections {
         int sectionSize = sections.size();
         if (sectionSize > 0) {
             //이미 존재 하는지 확인
-            isAlreadyRegisted(section);
+            checkRegistStatus(section);
             //해당 구간을 찾으면서 상행 하행 둘다 없는 부분 확인
             Section targetSection = getTargetSection(section);
             //업데이트 전에 구간 길이 확인
@@ -53,7 +55,7 @@ public class Sections {
         sections.add(section);
     }
 
-    public void isAlreadyRegisted(Section section) {
+    private void checkRegistStatus(Section section) {
         if (sections.stream()
                 .anyMatch(sec -> sec.getUpStation().equals(section.getUpStation()) &&
                         sec.getDownStation().equals(section.getDownStation()))) {
@@ -72,35 +74,35 @@ public class Sections {
 
         //기존 구간에서 상행을 기준으로 중간 삽입시
         if (targetSection.getUpStation().equals(section.getUpStation())) {
-            isTooLongDistance(targetSection, section);
+            checkLongerDistance(targetSection, section);
             targetSection.setUpStation(section.getDownStation());
             targetSection.setDistance(targetSection.getDistance() - section.getDistance());
         }
 
         //기존 구간에서 하행을 기준으로 중간 삽입시
         if (targetSection.getDownStation().equals(section.getDownStation())) {
-            isTooLongDistance(targetSection, section);
+            checkLongerDistance(targetSection, section);
             targetSection.setDownStation(section.getUpStation());
             targetSection.setDistance(targetSection.getDistance() - section.getDistance());
         }
     }
 
-    private void isTooLongDistance(Section targetSection, Section section) {
+    private void checkLongerDistance(Section targetSection, Section section) {
         if (section.getDistance() >= targetSection.getDistance()) {
             throw new IllegalArgumentException("DISTANCE_TOO_LONG");
         }
     }
 
     public void removeSection(Station station) {
+        //구간이 1개만 있는지 확인
+        checkSectionSize(sections.size());
+
         //station이 포함된 Section 검색( 사이라면 2개, 상행 혹은 하행이라면 1개)
         List<Section> targetSections = getTargetSections(station);
 
         if (targetSections.size() == 0) {
             throw new IllegalArgumentException("HAS_NO_STATION");
         }
-
-        //구간이 1개만 있는지 확인
-        hasOnlyOneSection(sections.size());
 
         if (targetSections.size() > 1) {
             Collections.sort(targetSections, new SectionComparator());
@@ -111,7 +113,7 @@ public class Sections {
 
     }
 
-    public void hasOnlyOneSection(int sectionSize) {
+    private void checkSectionSize(int sectionSize) {
         if (sectionSize <= 1) {
             throw new IllegalArgumentException("ONLY_ONE_SECTION");
         }
@@ -128,7 +130,7 @@ public class Sections {
         sections.remove(section);
     }
 
-    public List<Section> getTargetSections(Station station) {
+    private List<Section> getTargetSections(Station station) {
         return sections.stream()
                 .filter(section -> section.getUpStation().equals(station) ||
                         section.getDownStation().equals(station))

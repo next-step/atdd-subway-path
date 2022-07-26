@@ -89,7 +89,7 @@ public class LineService {
         }
 
         //순서대로 삽입하기
-        List<Section> sortedSections = line.getSortedSections(line.getSections(), line.getFirstSection());
+        List<Section> sortedSections = line.getSections();
 
 
         List<Station> stations = sortedSections.stream()
