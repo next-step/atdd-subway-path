@@ -33,7 +33,7 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        sections.addProcess(section);
+        sections.add(section);
     }
 
     public void removeDownTerminus(Station station) {

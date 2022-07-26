@@ -2,19 +2,19 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Station;
 import nextstep.subway.fake.FakeLineFactory;
 import nextstep.subway.fake.FakeStationFactory;
+import nextstep.subway.fake.SubwayExceptionMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 추가 인수 테스트")
@@ -49,11 +49,11 @@ public class SectionAdditionAcceptanceTest extends AcceptanceTest{
     @Test
     void 하행_종점에_추가() {
         //given
-        Map<String, String> 강남_역삼_구간 = createAdditionalBody(강남역.getId(), 역삼역.getId(), 10);
+        SectionRequest 강남_역삼_구간 = createAdditionalDto(강남역.getId(), 역삼역.getId(), 10);
         구간_추가_요청(신분당선_ID, 강남_역삼_구간);
 
         //when
-        Map<String, String> 역삼_구의_구간 = createAdditionalBody(역삼역.getId(), 구의역.getId(), 10);
+        SectionRequest 역삼_구의_구간 = createAdditionalDto(역삼역.getId(), 구의역.getId(), 10);
         구간_추가_요청(신분당선_ID, 역삼_구의_구간);
 
         //then
@@ -69,11 +69,11 @@ public class SectionAdditionAcceptanceTest extends AcceptanceTest{
      */
     @Test
     void 상행_종점에_추가() {
-        Map<String, String> 구의_선릉_구간 = createAdditionalBody(구의역.getId(), 선릉역.getId(), 10);
+        SectionRequest 구의_선릉_구간 = createAdditionalDto(구의역.getId(), 선릉역.getId(), 10);
         구간_추가_요청(신분당선_ID, 구의_선릉_구간);
 
         //when
-        Map<String, String> 역삼_구의_구간 = createAdditionalBody(역삼역.getId(), 구의역.getId(), 10);
+        SectionRequest 역삼_구의_구간 = createAdditionalDto(역삼역.getId(), 구의역.getId(), 10);
         구간_추가_요청(신분당선_ID, 역삼_구의_구간);
 
         //then
@@ -84,11 +84,11 @@ public class SectionAdditionAcceptanceTest extends AcceptanceTest{
 
     @Test
     void 중간에_구간_추가() {
-        Map<String, String> 구의_선릉_구간 = createAdditionalBody(구의역.getId(), 선릉역.getId(), 10);
+        SectionRequest 구의_선릉_구간 = createAdditionalDto(구의역.getId(), 선릉역.getId(), 10);
         구간_추가_요청(신분당선_ID, 구의_선릉_구간);
 
         //when
-        Map<String, String> 구의_역삼_구간 = createAdditionalBody(구의역.getId(), 역삼역.getId(), 3);
+        SectionRequest 구의_역삼_구간 = createAdditionalDto(구의역.getId(), 역삼역.getId(), 3);
         구간_추가_요청(신분당선_ID, 구의_역삼_구간);
 
         //then
@@ -105,17 +105,17 @@ public class SectionAdditionAcceptanceTest extends AcceptanceTest{
     @Test
     void 상행역과_하행역이_포함되지_않았을_경우() {
         //given
-        Map<String, String> 강남_역삼_구간 = createAdditionalBody(강남역.getId(), 역삼역.getId(), 4);
+        SectionRequest 강남_역삼_구간 = createAdditionalDto(강남역.getId(), 역삼역.getId(), 4);
         구간_추가_요청(신분당선_ID, 강남_역삼_구간);
 
         //then
-        Map<String, String> 신촌_선릉_구간 = createAdditionalBody(신촌역.getId(), 선릉역.getId(), 5);
+        SectionRequest 신촌_선릉_구간 = createAdditionalDto(신촌역.getId(), 선릉역.getId(), 5);
         ExtractableResponse<Response> 신촌_선릉_구간_추가_요청 = 구간_추가_요청(신분당선_ID, 신촌_선릉_구간);
         assertAll(
                 () -> assertThat(신촌_선릉_구간_추가_요청.statusCode())
                         .isEqualTo(HttpStatus.BAD_REQUEST.value()),
                 () -> assertThat(신촌_선릉_구간_추가_요청.jsonPath().getString("message"))
-                        .isEqualTo("상행역이나 하행역 중 하나는 등록된 구간에 포함되어야 합니다.")
+                        .isEqualTo(SubwayExceptionMessage.아무런_역도_포함되지_않은_경우())
         );
     }
 
@@ -127,17 +127,17 @@ public class SectionAdditionAcceptanceTest extends AcceptanceTest{
     @Test
     void 구간_추가_실패_길이가_긴_경우() {
         //given
-        Map<String, String> 강남_역삼_구간 = createAdditionalBody(강남역.getId(), 역삼역.getId(), 10);
+        SectionRequest 강남_역삼_구간 = createAdditionalDto(강남역.getId(), 역삼역.getId(), 10);
         구간_추가_요청(신분당선_ID, 강남_역삼_구간);
 
         //then
-        Map<String, String> 강남_구의_구간 = createAdditionalBody(강남역.getId(), 구의역.getId(), 11);
+        SectionRequest 강남_구의_구간 = createAdditionalDto(강남역.getId(), 구의역.getId(), 11);
         ExtractableResponse<Response> 구간_추가_요청_응답 = 구간_추가_요청(신분당선_ID, 강남_구의_구간);
         assertAll(
                 () -> assertThat(구간_추가_요청_응답.statusCode())
                         .isEqualTo(HttpStatus.BAD_REQUEST.value()),
                 () -> assertThat(구간_추가_요청_응답.jsonPath().getString("message"))
-                        .isEqualTo("역 사이에 등록할 경우 기존의 거리보다 짧은 구간만 등록이 가능합니다.")
+                        .isEqualTo(SubwayExceptionMessage.기존_거리보다_길거나_같은_구간을_등록할_경우())
         );
     }
 
@@ -149,7 +149,7 @@ public class SectionAdditionAcceptanceTest extends AcceptanceTest{
     @Test
     void 상행과_하행역이_모두_동일할_경우() {
         //given
-        Map<String, String> 강남_역삼_구간 = createAdditionalBody(강남역.getId(), 역삼역.getId(), 10);
+        SectionRequest 강남_역삼_구간 = createAdditionalDto(강남역.getId(), 역삼역.getId(), 10);
         구간_추가_요청(신분당선_ID, 강남_역삼_구간);
 
         //then
@@ -158,20 +158,16 @@ public class SectionAdditionAcceptanceTest extends AcceptanceTest{
                 () -> assertThat(구간_추가_요청_응답.statusCode())
                         .isEqualTo(HttpStatus.BAD_REQUEST.value()),
                 () -> assertThat(구간_추가_요청_응답.jsonPath().getString("message"))
-                        .isEqualTo("상행역과 하행역이 모두 등록 되어있는 구간은 등록할 수 없습니다.")
+                        .isEqualTo(SubwayExceptionMessage.중복된_구간을_등록했을_경우())
         );
     }
 
 
-    private Map<String, String> createAdditionalBody(Long upStationId, Long downStationId, Integer distance) {
-        Map<String, String> sectionBody = new HashMap<>();
-        sectionBody.put("upStationId", upStationId + "");
-        sectionBody.put("downStationId", downStationId + "");
-        sectionBody.put("distance", distance + "");
-        return sectionBody;
+    private SectionRequest createAdditionalDto(Long upStationId, Long downStationId, Integer distance) {
+        return new SectionRequest(upStationId, downStationId, distance);
     }
 
-    private ExtractableResponse<Response> 구간_추가_요청(Long id, Map<String, String> body) {
+    private ExtractableResponse<Response> 구간_추가_요청(Long id, SectionRequest body) {
         return LineSteps.지하철_노선에_지하철_구간_생성_요청(id, body);
     }
 

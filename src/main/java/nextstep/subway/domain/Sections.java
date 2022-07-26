@@ -4,8 +4,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.applicaion.strategy.MiddleSectionAdditor;
-import nextstep.subway.applicaion.strategy.SectionAdditor;
 import nextstep.subway.exception.SubwayException;
 
 import javax.persistence.CascadeType;
@@ -13,6 +11,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Getter
@@ -26,25 +25,31 @@ public class Sections {
     private List<Section> values = new ArrayList<>();
     private static int MIN_SIZE = 1;
 
-    public void addProcess(Section section) {
-        SectionAdditor sectionAdditor = new SectionAdditor(
-                this, new MiddleSectionAdditor(this));
-
+    public void add(Section section) {
         if (values.isEmpty()) {
             values.add(section);
             return;
         }
 
         ensureCanAddition(section);
-        sectionAdditor.add(section);
-    }
-    public void add(Section section) {
+
+        if(canChangeMiddleSection(section)) {
+            Section originSection = findSectionWithSameStation(section);
+            originSection.changeSectionConditionBy(section);
+        }
+
         values.add(section);
     }
 
     public void remove(Station station) {
         ensureCanRemove(station);
-        values.remove(lastSectionIndex());
+
+        if(!isEndPointStation(station)) {
+            removeMiddleSection(station);
+            return;
+        }
+
+        removeEndPointSection(station);
     }
 
     public boolean isEmpty() {
@@ -57,7 +62,7 @@ public class Sections {
         }
 
         List<Station> stations = new ArrayList<>();
-        Station upStation = findUpTerminus();
+        Station upStation = findUpTerminusStation();
         stations.add(upStation);
 
         while(!isDownTerminus(upStation)) {
@@ -68,15 +73,6 @@ public class Sections {
         return stations;
     }
 
-
-    public Station findUpTerminus() {
-        return values.stream()
-              .map(Section::getUpStation)
-              .filter(this::isUpTerminus)
-              .findAny()
-              .orElseThrow(SubwayException::new);
-    }
-
     public Station findNextStation(Station upStation) {
         return values.stream()
                      .filter(s -> s.getUpStation().equals(upStation))
@@ -85,16 +81,33 @@ public class Sections {
                      .orElseThrow(IllegalArgumentException::new);
     }
 
-    private List<Station> findAllStations() {
-        return values.stream()
-                     .map(Section::getStations)
-                     .flatMap(Collection::stream)
-                     .distinct()
-                     .collect(Collectors.toList());
+    public Section findSectionWithSameStation(Section section) {
+        return  values.stream()
+                      .filter(hasSameStationToOriginSection(section))
+                      .findAny()
+                      .orElseThrow(IllegalArgumentException::new);
     }
 
+    public Station findUpTerminusStation() {
+        return values.stream()
+                     .map(Section::getUpStation)
+                     .filter(this::isUpTerminus)
+                     .findAny()
+                     .orElseThrow(SubwayException::new);
+    }
+
+    private boolean canChangeMiddleSection(Section newSection) {
+        return values.stream().anyMatch(hasSameStationToOriginSection(newSection));
+    }
+
+    private Predicate<Section> hasSameStationToOriginSection(Section newSection) {
+        return s -> s.isEqualToUpStation(newSection.getUpStation())
+                || s.isEqualToDownStation(newSection.getDownStation());
+    }
+
+
     private boolean isUpTerminus(Station upStation) {
-        return values.stream().noneMatch( s -> s.getDownStation().equals(upStation));
+        return values.stream().noneMatch(s -> s.getDownStation().equals(upStation));
     }
 
     private boolean isDownTerminus(Station station) {
@@ -105,36 +118,74 @@ public class Sections {
         return new HashSet<>(findConnectedStations()).containsAll(section.getStations());
    }
 
-    private Station downStationTerminus() {
-        return values.get(lastSectionIndex()).getDownStation();
-    }
-
-    private int lastSectionIndex() {
-        return values.size() - 1;
-    }
 
     private void ensureCanRemove(Station station) {
         if (values.size() <= MIN_SIZE) {
             throw new IllegalArgumentException("두개 이상의 구간이 등록되어야 제거가 가능합니다.");
         }
-        if (!downStationTerminus().equals(station)) {
-            throw new IllegalArgumentException("하행 종점역이 아니면 제거할 수 없습니다.");
+        if(!hasStation(s -> s.equals(station))) {
+            throw new IllegalArgumentException("등록되지 않은 역은 제거할 수 없습니다.");
         }
     }
-
-    private boolean hasStation(Section section) {
-        return findAllStations().stream().anyMatch(
-                s1 -> section.getStations().stream().anyMatch(s1::equals)
-        );
-    }
-
 
     private void ensureCanAddition(Section section) {
         if (existAllStation(section)) {
             throw new IllegalArgumentException("상행역과 하행역이 모두 등록 되어있는 구간은 등록할 수 없습니다.");
         }
-        if (!hasStation(section)) {
+        if (!hasStation(containsStationOfSection(section))) {
             throw new IllegalArgumentException("상행역이나 하행역 중 하나는 등록된 구간에 포함되어야 합니다.");
         }
     }
+
+    private Predicate<Station> containsStationOfSection(Section section) {
+        return s -> s.equals(section.getUpStation()) || s.equals(section.getDownStation());
+    }
+
+    private boolean hasStation(Predicate<Station> isMach) {
+        return findAllStations().stream().anyMatch(isMach);
+    }
+
+    private List<Station> findAllStations() {
+        List<Station> stations = values.stream()
+                                       .map(Section::getUpStation)
+                                       .collect(Collectors.toList());
+
+        Section downTerminus = getDownTerminus();
+        stations.add(downTerminus.getDownStation());
+        return stations;
+    }
+
+    private Section getDownTerminus() {
+        return values.stream()
+                     .filter(s -> isDownTerminus(s.getDownStation()))
+                     .findFirst()
+                     .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private boolean isEndPointStation(Station station) {
+        return values.stream().anyMatch(s -> isUpTerminus(station) || isDownTerminus(station));
+    }
+
+    private Section findConnectedSectionBy(Predicate<Section> isMachStation) {
+        return values.stream().filter(isMachStation)
+                     .findAny()
+                     .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private void removeMiddleSection(Station station) {
+        Section findSameDownStationSection = findConnectedSectionBy(s -> s.isEqualToDownStation(station));
+        Section findSameUpStationSection = findConnectedSectionBy(s -> s.isEqualToUpStation(station));
+        findSameDownStationSection.changeDownStation(findSameUpStationSection.getDownStation());
+        findSameDownStationSection.addDistance(findSameUpStationSection.getDistance());
+        values.remove(findSameUpStationSection);
+    }
+
+    private void removeEndPointSection(Station station) {
+        values.remove(
+                findConnectedSectionBy(
+                        s -> s.isEqualToDownStation(station) ||  s.isEqualToUpStation(station))
+        );
+    }
+
+
 }

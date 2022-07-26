@@ -1,9 +1,6 @@
 package nextstep.subway.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -32,6 +29,7 @@ public class Section {
 
     private int distance;
 
+    @Builder
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this(null, line, upStation, downStation, distance);
     }
@@ -48,8 +46,32 @@ public class Section {
         return this.downStation.equals(downStation);
     }
 
-    public boolean isSameStation(Station station) {
-        return isEqualToDownStation(station) || isEqualToUpStation(station);
+    public void changeSectionConditionBy(Section newSection) {
+        checkToNewSectionDistance(newSection.getDistance());
+
+        if (isEqualToUpStation(newSection.getUpStation())) {
+            changeUpStation(newSection.getDownStation());
+        }
+
+        if (isEqualToDownStation(newSection.getDownStation())) {
+            changeDownStation(newSection.getUpStation());
+        }
+
+        decreaseDistance(newSection.getDistance());
+    }
+
+    private void decreaseDistance(Integer distance) {
+        this.distance = this.distance - distance;
+    }
+
+    private void checkToNewSectionDistance(Integer newDistance) {
+        if (!isOriginalDistanceLongThenNew(newDistance)) {
+            throw new IllegalArgumentException("역 사이에 등록할 경우 기존의 거리보다 짧은 구간만 등록이 가능합니다.");
+        }
+    }
+
+    private boolean isOriginalDistanceLongThenNew(Integer newDistance) {
+        return newDistance < this.distance;
     }
 
     public void changeDownStation(Station station) {
@@ -60,10 +82,9 @@ public class Section {
         this.upStation = station;
     }
 
-    public void decreaseDistance(Integer distance) {
-        this.distance = this.distance - distance;
+    public void addDistance(int distance) {
+        this.distance += distance;
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -77,4 +98,5 @@ public class Section {
     public int hashCode() {
         return Objects.hash(line, upStation, downStation);
     }
+
 }
