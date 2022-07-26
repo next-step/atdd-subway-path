@@ -44,8 +44,7 @@ public class LineServiceTest {
         // then
         assertAll(
             () -> assertThat(line.getSections().size()).isEqualTo(1),
-            () -> assertThat(line.getSections().get(0).getUpStation().getName()).isEqualTo("기흥역"),
-            () -> assertThat(line.getSections().get(0).getDownStation().getName()).isEqualTo("신갈역")
+            () -> assertThat(line.getSections().getStationNames()).containsExactlyInAnyOrder("기흥역", "신갈역")
                  );
     }
 
@@ -88,8 +87,7 @@ public class LineServiceTest {
         // then
         assertAll(
             () -> assertThat(line.getSections().size()).isEqualTo(1),
-            () -> assertThat(line.getSections().get(0).getUpStation().getName()).isEqualTo("기흥역"),
-            () -> assertThat(line.getSections().get(0).getDownStation().getName()).isEqualTo("신갈역")
+            () -> assertThat(line.getSections().getStationNames()).containsExactlyInAnyOrder("기흥역", "신갈역")
                  );
     }
 }

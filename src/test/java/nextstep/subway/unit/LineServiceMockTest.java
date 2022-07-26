@@ -35,7 +35,7 @@ public class LineServiceMockTest {
     void addSection() {
         // given
         final Station 기흥역 = new Station(1L, "기흥역");
-        final Station 신갈역 = new Station(2L,"신갈역");
+        final Station 신갈역 = new Station(2L, "신갈역");
         given(stationService.findById(1L)).willReturn(기흥역);
         given(stationService.findById(2L)).willReturn(신갈역);
 
@@ -48,17 +48,17 @@ public class LineServiceMockTest {
         given(lineRepository.findById(3L)).willReturn(Optional.of(line));
 
         // when
-        lineService.addSection(line.getId(), new SectionRequest(section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance()));
+        lineService.addSection(line.getId(),
+                               new SectionRequest(section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance()));
 
         // then
         assertThat(line.getSections().size()).isEqualTo(1);
-        assertThat(line.getSections().get(0).getUpStation().getName()).isEqualTo("기흥역");
-        assertThat(line.getSections().get(0).getDownStation().getName()).isEqualTo("신갈역");
+        assertThat(line.getSections().getStationNames()).containsExactlyInAnyOrder("기흥역", "신갈역");
     }
 
     @ParameterizedTest
     @CsvSource(value = {"에버라인:red:에버라인:red", "에버라인::에버라인:yellow", ":red:분당선:red"}, delimiter = ':')
-    void updateLine(String lineName, String color, String expectLineName, String expectColor){
+    void updateLine(String lineName, String color, String expectLineName, String expectColor) {
         // given
         final Line line = new Line(3L, lineName, color);
         given(lineRepository.findById(3L)).willReturn(Optional.of(line));
@@ -97,8 +97,7 @@ public class LineServiceMockTest {
         // then
         assertAll(
             () -> assertThat(line.getSections().size()).isEqualTo(1),
-            () -> assertThat(line.getSections().get(0).getUpStation().getName()).isEqualTo("기흥역"),
-            () -> assertThat(line.getSections().get(0).getDownStation().getName()).isEqualTo("신갈역")
+            () -> assertThat(line.getSections().getStationNames()).containsExactlyInAnyOrder("기흥역", "신갈역")
                  );
     }
 }

@@ -7,6 +7,7 @@ import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,8 +40,8 @@ public class LineService {
 
     public List<LineResponse> showLines() {
         return lineRepository.findAll().stream()
-                .map(this::createLineResponse)
-                .collect(Collectors.toList());
+                             .map(this::createLineResponse)
+                             .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
@@ -69,32 +70,31 @@ public class LineService {
 
     private LineResponse createLineResponse(Line line) {
         return new LineResponse(
-                line.getId(),
-                line.getName(),
-                line.getColor(),
-                createStationResponses(line)
+            line.getId(),
+            line.getName(),
+            line.getColor(),
+            createStationResponses(line)
         );
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
+        Sections sections = line.getSections();
+        if (sections.isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, line.getSections().get(0).getUpStation());
+        List<Station> stations = sections.getStations();
 
         return stations.stream()
-                .map(it -> stationService.createStationResponse(it))
-                .collect(Collectors.toList());
+                       .map(it -> stationService.createStationResponse(it))
+                       .collect(Collectors.toList());
     }
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
-        line.removeSection(stationId);
+        Sections sections = lineRepository.findById(lineId)
+                                          .orElseThrow(IllegalArgumentException::new)
+                                          .getSections();
+        sections.removeSection(stationId);
     }
 }

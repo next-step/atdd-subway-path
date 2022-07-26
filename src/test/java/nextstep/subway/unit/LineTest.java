@@ -41,8 +41,7 @@ class LineTest {
 
         // then
         assertThat(line.getSections().size()).isEqualTo(1);
-        assertThat(line.getSections().get(0).getUpStation().getName()).isEqualTo("기흥역");
-        assertThat(line.getSections().get(0).getDownStation().getName()).isEqualTo("신갈역");
+        assertThat(line.getSections().getStationNames()).containsExactlyInAnyOrder("기흥역", "신갈역");
     }
 
     @Test
@@ -51,7 +50,7 @@ class LineTest {
         line.addSection(section_기흥역_신갈역);
 
         // when
-        List<Station> stations = line.getStations();
+        List<Station> stations = line.getSections().getStations();
 
         // then
         assertThat(stations).containsExactlyInAnyOrder(기흥역, 신갈역);
@@ -65,9 +64,9 @@ class LineTest {
         line.addSection(section_신갈역_정자역);
 
         // when
-        line.removeSection(정자역.getId());
+        line.getSections().removeSection(정자역.getId());
 
         // then
-        assertThat(line.isContain(section_신갈역_정자역)).isFalse();
+        assertThat(line.getSections().isContain(section_신갈역_정자역)).isFalse();
     }
 }

@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -36,6 +37,10 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public List<Station> getAllStation() {
+        return List.of(upStation, downStation);
     }
 
     @Override
