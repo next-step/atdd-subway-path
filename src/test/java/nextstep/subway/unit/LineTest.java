@@ -49,8 +49,7 @@ class LineTest {
         Station downStation = new Station("양재역");
         Section section = new Section(line, upStation, downStation, 10);
         line.addSection(section);
-        List<Station> stations = line.getStations();
-        assertThat(stations).containsExactly(upStation, downStation);
+        assertThat(line.getSections()).contains(section);
 
         // when line 에서 section 을 삭제하면
         line.removeSection(section);
