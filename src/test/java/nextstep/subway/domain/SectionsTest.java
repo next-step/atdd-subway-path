@@ -1,13 +1,10 @@
 package nextstep.subway.domain;
 
+import java.util.*;
+
+import org.junit.jupiter.api.*;
+
 import static org.assertj.core.api.Assertions.*;
-
-import java.util.List;
-import java.util.Optional;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 
 @DisplayName("구간 일급 객체 단위 테스트")
 class SectionsTest {
@@ -18,7 +15,7 @@ class SectionsTest {
 	private Section section;
 
 	@BeforeEach
-	void setUp(){
+	void setUp() {
 		line = new Line("분당선", "yellow");
 		upStation = new Station("서현역");
 		downStation = new Station("야탑역");
@@ -27,8 +24,8 @@ class SectionsTest {
 
 	@DisplayName("기존 구간의 역을 기준으로 새로운 구간을 추가")
 	@Test
-	void addSectionWithUpStation(){
-	
+	void addSectionWithUpStation() {
+
 		//given
 		line.addSection(section);
 		Sections sections = Sections.from(line.getSections());
@@ -42,10 +39,10 @@ class SectionsTest {
 		assertThat(line.getSections()).hasSize(2);
 		assertThat(line.getStations()).contains(upStation, downStation, imaeStation);
 	}
-	 
+
 	@DisplayName("추가하려는 구간의 상행역을 포함하고 있는지 확인하는 메소드 테스트")
 	@Test
-	void isContainsUpStation(){
+	void isContainsUpStation() {
 
 		//given
 		line.addSection(section);
@@ -72,11 +69,11 @@ class SectionsTest {
 		assertThatThrownBy(() -> sections.addSection(newSection)).isInstanceOf(IllegalArgumentException.class).hasMessageContaining(
 			"추가하려는 구간의 길이는 기존 구간의 길이와 같거나 길수 없습니다.");
 
-	 }
+	}
 
 	@DisplayName("새로운 역을 상행 종점으로 등록하는 테스트")
 	@Test
-	void addNewUpStationSectionTest(){
+	void addNewUpStationSectionTest() {
 
 		//given
 		line.addSection(section);
@@ -89,18 +86,18 @@ class SectionsTest {
 		//then
 		assertThat(sections.getSectionList()).contains(newSection);
 	}
-	
+
 	@DisplayName("새로운 구간의 하행종점이 기존 구간의 상행 종점과 일치하는지 확인하는 테스트")
 	@Test
-	void isSameNewSectionDownStationAndUpStation(){
-	
-	    //given
+	void isSameNewSectionDownStationAndUpStation() {
+
+		//given
 		line.addSection(section);
 		Sections sections = Sections.from(line.getSections());
 		Section newSection = new Section(new Station("이매역"), upStation, 5);
 
 		//when
-	    boolean result = sections.isSameNewSectionDownStationAndUpStation(newSection);
+		boolean result = sections.isSameNewSectionDownStationAndUpStation(newSection);
 
 		//then
 		assertThat(result).isTrue();
@@ -108,9 +105,9 @@ class SectionsTest {
 
 	@DisplayName("상행 종점을 찾는 테스트")
 	@Test
-	void getFirstUpStation(){
+	void getFirstUpStation() {
 
-	    //given
+		//given
 		line.addSection(section);
 		Sections sections = Sections.from(line.getSections());
 		Section newSection = new Section(new Station("이매역"), upStation, 5);
@@ -125,7 +122,7 @@ class SectionsTest {
 
 	@DisplayName("하행 종점을 찾는 테스트")
 	@Test
-	void getLastSection(){
+	void getLastSection() {
 		line.addSection(section);
 		Sections sections = Sections.from(line.getSections());
 		Section newSection = new Section(new Station("이매역"), upStation, 5);
@@ -137,11 +134,11 @@ class SectionsTest {
 		//then
 		assertThat(result).isEqualTo(section);
 
-	 }
+	}
 
 	@DisplayName("새로운 구간의 상행역이 기존 노선의 하행 종점과 일치하는지 확인하늩 테스트")
 	@Test
-	void isSameNewSectionUpStationAndDownStation(){
+	void isSameNewSectionUpStationAndDownStation() {
 
 		//given
 		line.addSection(section);
@@ -160,23 +157,23 @@ class SectionsTest {
 	@Test
 	void getStationsTest() throws Exception {
 
-	    //given
+		//given
 		line.addSection(section);
 		Sections sections = Sections.from(line.getSections());
 		Station imaeStation = new Station("이매역");
 		Section newSection = new Section(downStation, imaeStation, 5);
 		line.addSection(newSection);
-		
-	    //when
+
+		//when
 		List<Station> stationList = sections.getStations();
 
-	    //then
+		//then
 		assertThat(stationList).containsExactly(upStation, downStation, imaeStation);
-	 }
+	}
 
 	@DisplayName("기존 구간의 역을 기준으로 새로운 구간을 추가(하행역 기준)")
 	@Test
-	void addSectionWithDownStation(){
+	void addSectionWithDownStation() {
 
 		//given
 		line.addSection(section);
@@ -196,29 +193,84 @@ class SectionsTest {
 	@Test
 	void exceptionAlreadyExistingStation() {
 
-	    //given
+		//given
 		line.addSection(section);
 		Sections sections = Sections.from(line.getSections());
 		Section newSection = new Section(upStation, downStation, 5);
 
-	    //when //then
+		//when //then
 		assertThatThrownBy(() -> sections.addSection(newSection)).isInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("상행역과 하행역이 모두 등록되어있습니다.");
 
-    }
+	}
 
 	@DisplayName("상행역과 하행역 둘중 하나라도 포함되어있지 않다면 구간 추가 불가")
 	@Test
-	void exceptionNoStation() throws Exception {
+	void exceptionNoStation() {
 
-	    //given
+		//given
 		line.addSection(section);
 		Sections sections = Sections.from(line.getSections());
 		Section newSection = new Section(new Station("서울력"), new Station("광화문역"), 5);
 
-	    //when  //then
+		//when  //then
 		assertThatThrownBy(() -> sections.addSection(newSection)).isInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("구간추가가 불가합니다.");
-	 }
+	}
 
+	@DisplayName("구간의 중간역 삭제 테스트")
+	@Test
+	void deleteMiddleStationTest() {
+
+		//given
+		line.addSection(section);
+		Sections sections = Sections.from(line.getSections());
+		Station 이매역 = new Station("이매역");
+		Section newSection = new Section(downStation, 이매역, 5);
+		sections.addSection(newSection);
+
+		//when
+		sections.deleteSection(line, downStation);
+
+		//then
+		assertThat(sections.getStations()).doesNotContain(downStation);
+	}
+
+	@DisplayName("구간의 상행 종점역 삭제 테스트")
+	@Test
+	void deleteFirstUpStationTest() {
+
+		//given
+		line.addSection(section);
+		Sections sections = Sections.from(line.getSections());
+		Station 이매역 = new Station("이매역");
+		Section newSection = new Section(downStation, 이매역, 5);
+		sections.addSection(newSection);
+
+		//when
+		sections.deleteSection(line, upStation);
+
+		//then
+		assertThat(sections.getStations()).doesNotContain(upStation);
+
+	}
+
+	@DisplayName("구간의 하행종점역 삭제 테스트")
+	@Test
+	void deleteLastDownStationTest() {
+
+		//given
+		line.addSection(section);
+		Sections sections = Sections.from(line.getSections());
+		Station 이매역 = new Station("이매역");
+		Section newSection = new Section(downStation, 이매역, 5);
+		sections.addSection(newSection);
+
+		//when
+		sections.deleteSection(line, 이매역);
+
+		//then
+		assertThat(sections.getStations()).doesNotContain(이매역);
+
+	}
 }
