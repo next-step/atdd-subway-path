@@ -140,13 +140,13 @@ public class Sections {
         }
 
         if (isUpEndStation(station)) {
-            Section deleteSection = getUpStationInSections(station);
+            Section deleteSection = getSection(s -> s.isMatchedUpStation(station));
             this.sections.remove(deleteSection);
             return;
         }
 
         if (isDownEndStation(station)) {
-            Section deleteSection = getDownStationInSections(station);
+            Section deleteSection = getSection(s -> s.isMatchedDownStation(station));
             this.sections.remove(deleteSection);
             return;
         }
@@ -164,13 +164,6 @@ public class Sections {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    private Section getDownStationInSections(Station station) {
-        return sections.stream()
-                .filter(s -> s.getDownStation().isMatched(station))
-                .findAny()
-                .orElseThrow(IllegalArgumentException::new);
-    }
-
     private boolean isMatchedSection(Predicate<Section> condition) {
         return sections.stream()
                 .anyMatch(condition);
@@ -179,13 +172,6 @@ public class Sections {
     private boolean isNoneMatchedSection(Predicate<Section> condition) {
         return sections.stream()
                 .noneMatch(condition);
-    }
-
-    private Section getUpStationInSections(Station station) {
-        return sections.stream()
-                .filter(s -> s.getUpStation().isMatched(station))
-                .findAny()
-                .orElseThrow(IllegalArgumentException::new);
     }
 
     private boolean isUpEndStation(Station station) {
