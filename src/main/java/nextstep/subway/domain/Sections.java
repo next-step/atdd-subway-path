@@ -27,7 +27,6 @@ public class Sections {
             throw new SectionAllStationsAlreadyExistException("이미 구간 내 상행역, 하행역이 모두 존재하여 추가할 수 없습니다.");
         }
 
-        // FIXME : 중간에 역을 끼워넣는 로직 리팩토링
         for (int i = 0; i < sections.size(); i++) {
             Section section = sections.get(i);
             if (section.hasSameUpStation(newlySection)) {
