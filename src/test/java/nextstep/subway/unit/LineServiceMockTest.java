@@ -24,7 +24,7 @@ public class LineServiceMockTest {
     private StationService stationService;
 
     @InjectMocks
-    private LineService lineService = new LineService(lineRepository, stationService);
+    private LineService lineService;
 
     @Test
     void addSection() {

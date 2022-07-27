@@ -1,7 +1,11 @@
 package nextstep.subway.applicaion.dto;
 
+import com.sun.istack.NotNull;
+
 public class LineRequest {
+    @NotNull
     private String name;
+    @NotNull
     private String color;
     private Long upStationId;
     private Long downStationId;

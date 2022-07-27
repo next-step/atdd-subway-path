@@ -131,12 +131,12 @@ class SectionAcceptanceTest extends AcceptanceTest {
      */
     @ParameterizedTest(name = "등록한 구간의 길이가 {0}인경우, 기존 구간 길이보다 같거나 큼으로 예외처리 된다.")
     @ValueSource(ints = {10, 15})
-    void exceptionDistanceOfNewSectionOverExistingSectionDistance(int distacne) {
+    void exceptionDistanceOfNewSectionOverExistingSectionDistance(int distance) {
         // given
         Long 중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> result = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 중간역, distacne));
+        ExtractableResponse<Response> result = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 중간역, distance));
 
         // then
         assertThat(result.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());

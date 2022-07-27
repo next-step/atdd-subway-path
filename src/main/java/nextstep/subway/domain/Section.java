@@ -59,12 +59,21 @@ public class Section {
         return distance;
     }
 
-    public boolean isMatchedStationId(Station station) {
+    public boolean isMatchedDownStation(Station station) {
         return this.downStation.equals(station);
     }
 
     public void updateExistingUpStationAndDowStationSection(Section section) {
         this.distance -= section.getDistance();
         this.upStation = section.getDownStation();
+    }
+
+    public boolean isMatchedUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public void updateMiddleSection(Section section) {
+        this.distance = this.distance + section.distance;
+        this.downStation = section.downStation;
     }
 }

@@ -1,20 +1,17 @@
 package nextstep.subway.applicaion;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -56,15 +53,7 @@ public class LineService {
         String name = lineRequest.getName();
         String color = lineRequest.getColor();
 
-        validateNullOrEmpty(name, color);
-
         line.updateLine(name, color);
-    }
-
-    private void validateNullOrEmpty(String name, String color) {
-        if(name == null && color == null) {
-            throw new IllegalArgumentException("입력된 노선명과 색상이이 null입니다.(변경할 노선명 또는 색상이 입력되어야 합니다.)");
-        }
     }
 
     @Transactional
