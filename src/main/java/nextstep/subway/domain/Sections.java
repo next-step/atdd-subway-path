@@ -6,10 +6,7 @@ import nextstep.subway.exception.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static nextstep.subway.exception.ErrorCode.*;
 
@@ -42,6 +39,10 @@ public class Sections {
 	}
 
 	public void removeSection(Station station) {
+
+		if (!isAlreadyRegistered(station)) {
+			throw new IllegalArgumentException("등록되어 있지 않은 역으로 구간을 삭제할 수 없습니다.");
+		}
 
 		if (isOnlyOneSection()) {
 			throw new CannotRemoveLastSectionException(CANNOT_REMOVE_LAST_SECTION.getMessage());
@@ -160,6 +161,10 @@ public class Sections {
 	private boolean haveRegistered(Station upStation, Station downStation) {
 		return hasSameUpStation(upStation) || hasSameDownStation(downStation) ||
 				hasSameUpStation(downStation) || hasSameDownStation(upStation);
+	}
+
+	private boolean isAlreadyRegistered(Station station) {
+		return hasSameUpStation(station) || hasSameDownStation(station);
 	}
 
 	private boolean isAlreadyRegistered(Station upStation, Station downStation) {

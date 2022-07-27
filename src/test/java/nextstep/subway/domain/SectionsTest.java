@@ -279,6 +279,17 @@ class SectionsTest {
 		);
 	}
 
+	// When 노선에 등록되어 있지 않은 역으로 구간을 삭제하려하면
+	// Then IllegalArgumentException 발생한다.
+	@DisplayName("등록되어있지 않은 역을 제거하려면 실패한다.")
+	@Test
+	void removeSectionFailOnNotRegisteredSection() {
+	    //when
+	    //then
+		assertThatThrownBy(() -> sections.removeSection(new Station("등록되어 있지 않은 역")))
+				.isInstanceOf(IllegalArgumentException.class);
+	}
+
 	private void 신분당선에_구간을_추가한다(Station upStation, Station downStation, int distance) {
 		sections.add(신분당선, upStation, downStation, distance);
 	}
