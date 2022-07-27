@@ -30,15 +30,12 @@ public class Sections {
         return this.sections.get(this.sections.size() - 1);
     }
 
-    public void addSection(Section newSection) {
+    public void addSection(Line line, Station newUpStation, Station newDownStation, int newDistance) {
+        Section newSection = new Section(line, newUpStation, newDownStation, newDistance);
         if (this.sections.isEmpty()) {
             this.sections.add(newSection);
             return;
         }
-
-        Station newUpStation = newSection.getUpStation();
-        Station newDownStation = newSection.getDownStation();
-        int newDistance = newSection.getDistance();
 
         // 이미 모두 등록되어 있음
         if (getStations().contains(newUpStation) && getStations().contains(newDownStation)) {

@@ -4,10 +4,8 @@ import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -63,7 +60,7 @@ public class LineServiceMockTest {
         // then
         // line.findLineById 메서드를 통해 검증
         LineResponse 이호선_반환값 = lineService.findById(이호선.getId());
-        LineResponse 이호선_예상값 = createLineResponse(이호선, List.of(서울대입구역, 낙성대역));
+        LineResponse 이호선_예상값 = LineResponse.from(이호선, List.of(서울대입구역, 낙성대역));
         assertThat(이호선_반환값).isEqualTo(이호선_예상값);
     }
 
@@ -74,33 +71,15 @@ public class LineServiceMockTest {
         given(lineRepository.findById(이호선.getId())).willReturn(Optional.of(이호선));
         given(stationService.findById(사당역.getId())).willReturn(사당역);
 
-        이호선.addSection(new Section(이호선, 서울대입구역, 낙성대역, 10));
-        이호선.addSection(new Section(이호선, 낙성대역, 사당역, 10));
+        이호선.addSection(이호선, 서울대입구역, 낙성대역, 10);
+        이호선.addSection(이호선, 낙성대역, 사당역, 10);
 
         // When
         lineService.deleteSection(이호선.getId(), 사당역.getId());
 
         // Then
         LineResponse 이호선_반환값 = lineService.findById(이호선.getId());
-        LineResponse 이호선_예상값 = createLineResponse(이호선, List.of(서울대입구역, 낙성대역));
+        LineResponse 이호선_예상값 = LineResponse.from(이호선, List.of(서울대입구역, 낙성대역));
         assertThat(이호선_반환값).isEqualTo(이호선_예상값);
-    }
-
-    private LineResponse createLineResponse(Line line, List<Station> stations) {
-        LineResponse lineResponse = new LineResponse(
-                line.getId(),
-                line.getName(),
-                line.getColor(),
-                line.getDistance(),
-                createStationResponses(stations)
-        );
-        return lineResponse;
-    }
-
-    private List<StationResponse> createStationResponses(List<Station> stations) {
-        List<StationResponse> collect = stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
-                .collect(Collectors.toList());
-        return collect;
     }
 }

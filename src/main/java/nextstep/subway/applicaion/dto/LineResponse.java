@@ -45,6 +45,24 @@ public class LineResponse {
                 .collect(Collectors.toList());
     }
 
+    public static LineResponse from(Line line, List<Station> stations) {
+        LineResponse lineResponse = new LineResponse(
+                line.getId(),
+                line.getName(),
+                line.getColor(),
+                line.getDistance(),
+                createStationResponses(stations)
+        );
+        return lineResponse;
+    }
+
+    public static List<StationResponse> createStationResponses(List<Station> stations) {
+        List<StationResponse> collect = stations.stream()
+                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .collect(Collectors.toList());
+        return collect;
+    }
+
     public Long getId() {
         return id;
     }

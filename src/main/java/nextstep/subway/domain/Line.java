@@ -56,10 +56,6 @@ public class Line {
         return this.sections.getSections();
     }
 
-    public void addSection(Section section) {
-        this.sections.addSection(section);
-    }
-
     public boolean isEmptySections() {
         return this.sections.isEmpty();
     }
@@ -74,5 +70,9 @@ public class Line {
 
     public int getDistance() {
         return this.sections.getDistance();
+    }
+
+    public void addSection(Line line, Station upStation, Station downStation, int distance) {
+        this.sections.addSection(line, upStation, downStation, distance);
     }
 }
