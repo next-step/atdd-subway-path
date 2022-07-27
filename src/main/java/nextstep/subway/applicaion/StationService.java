@@ -1,5 +1,6 @@
 package nextstep.subway.applicaion;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.subway.applicaion.dto.StationRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Station;
@@ -10,36 +11,33 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Transactional
+@RequiredArgsConstructor
 @Service
-@Transactional(readOnly = true)
 public class StationService {
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
-    public StationService(StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
-    }
-
-    @Transactional
     public StationResponse saveStation(StationRequest stationRequest) {
         Station station = stationRepository.save(new Station(stationRequest.getName()));
         return createStationResponse(station);
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         return stationRepository.findAll().stream()
-                .map(this::createStationResponse)
-                .collect(Collectors.toList());
+                                .map(this::createStationResponse)
+                                .collect(Collectors.toList());
     }
 
-    @Transactional
+
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
     }
 
     public StationResponse createStationResponse(Station station) {
         return new StationResponse(
-                station.getId(),
-                station.getName()
+            station.getId(),
+            station.getName()
         );
     }
 

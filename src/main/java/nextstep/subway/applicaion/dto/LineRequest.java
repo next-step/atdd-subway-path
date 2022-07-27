@@ -1,5 +1,9 @@
 package nextstep.subway.applicaion.dto;
 
+import lombok.Builder;
+import lombok.Getter;
+
+@Getter
 public class LineRequest {
     private String name;
     private String color;
@@ -7,23 +11,12 @@ public class LineRequest {
     private Long downStationId;
     private int distance;
 
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public Long getUpStationId() {
-        return upStationId;
-    }
-
-    public Long getDownStationId() {
-        return downStationId;
-    }
-
-    public int getDistance() {
-        return distance;
+    @Builder
+    public LineRequest(final String name, final String color, final Long upStationId, final Long downStationId, final int distance) {
+        this.name = name;
+        this.color = color;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
     }
 }
