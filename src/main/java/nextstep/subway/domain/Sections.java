@@ -41,11 +41,16 @@ public class Sections {
         }
     }
 
-    boolean hasStation(Section section) {
+    private boolean hasStation(Section section) {
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
         return sections.stream().anyMatch(s -> s.hasStation(upStation))
                 || sections.stream().anyMatch(s -> s.hasStation(downStation));
+    }
+
+    private boolean alreadyExistUpStationAndDownStation(Section newlySection) {
+        return sections.stream()
+                .anyMatch(section -> section.sameUpStationAndDownStation(newlySection));
     }
 
     boolean hasStation(Station station) {
@@ -66,41 +71,47 @@ public class Sections {
     }
 
     private void addNewlySectionIfNotBetween(Section newlySection, ToBeAddedSection toBeAddedSection) {
-        if (SectionLocation.NOT_BETWEEN == toBeAddedSection.getLocation()) {
-            sections.add(newlySection);
+        if (SectionLocation.NOT_BETWEEN != toBeAddedSection.getLocation()) {
+            return;
         }
+        sections.add(newlySection);
     }
 
     private void addNewlySectionIfBetween(Section newlySection, ToBeAddedSection toBeAddedSection) {
 
-        if (SectionLocation.BETWEEN_FRONT == toBeAddedSection.getLocation()) {
-            Section section = toBeAddedSection.getSection();
-            int newDistance = section.betweenDistance(newlySection);
-            sections.add(betweenUpSection(newlySection, section, newDistance));
-            updateSectionToNew(newlySection, toBeAddedSection.getIndex());
+        SectionLocation location = toBeAddedSection.getLocation();
+        if (!isBetweenLocation(location)) {
+            return;
         }
 
-        if (SectionLocation.BETWEEN_BACK == toBeAddedSection.getLocation()) {
-            Section section = toBeAddedSection.getSection();
-            int newDistance = section.betweenDistance(newlySection);
-            sections.add(betweenDownSection(newlySection, section, newDistance));
-            updateSectionToNew(newlySection, toBeAddedSection.getIndex());
+        Section section = toBeAddedSection.getSection();
+        int newDistance = section.betweenDistance(newlySection);
+        Section betweenSection = betweenSection(newlySection, location, section, newDistance);
+
+        sections.add(betweenSection);
+        updateSectionToNew(newlySection, toBeAddedSection.getIndex());
+    }
+
+    private boolean isBetweenLocation(SectionLocation location) {
+        return SectionLocation.BETWEEN_FRONT == location || SectionLocation.BETWEEN_BACK == location;
+    }
+
+    private Section betweenSection(Section newlySection, SectionLocation location, Section section, int newDistance) {
+        if (SectionLocation.BETWEEN_FRONT == location) {
+            return betweenUpSection(newlySection, section, newDistance);
         }
-
-    }
-
-    private boolean alreadyExistUpStationAndDownStation(Section newlySection) {
-        return sections.stream()
-                .anyMatch(section -> section.sameUpStationAndDownStation(newlySection));
-    }
-
-
-    private Section betweenDownSection(Section newlySection, Section section, int newDistance) {
-        return new Section(section.getLine(), newlySection.getDownStation(), section.getDownStation(), newDistance);
+        if (SectionLocation.BETWEEN_BACK == location) {
+            return betweenDownSection(newlySection, section, newDistance);
+        }
+        return null;
     }
 
     private Section betweenUpSection(Section newlySection, Section section, int newDistance) {
         return new Section(section.getLine(), section.getUpStation(), newlySection.getUpStation(), newDistance);
+    }
+
+    private Section betweenDownSection(Section newlySection, Section section, int newDistance) {
+        return new Section(section.getLine(), newlySection.getDownStation(), section.getDownStation(), newDistance);
     }
 
 
@@ -166,13 +177,6 @@ public class Sections {
 
     public boolean isEmpty() {
         return sections.isEmpty();
-    }
-
-    public Station lastStation() {
-        if (sections.isEmpty()) {
-            throw new IllegalStateException("노선에 등록된 역이 없습니다.");
-        }
-        return sections.get(sections.size() - 1).getDownStation();
     }
 
     public void delete(Station station) {
