@@ -28,23 +28,28 @@ class LineTest {
         section = new Section(line, upStation, downStation, 10);
     }
 
+    /**
+     * given line 에 추가할 section 이 존재하고
+     * when line 에 addSection(section) 을 진행하면
+     * then line.sections 에 section 이 추가된다.
+     */
     @DisplayName("지하철 노선에 구간을 추가")
     @Test
     void addSection() {
-        // given line 에 추가할 section 이 존재하고
+        // given
         Section newSection = section(line, "양재역", "양재시민의숲", 8);
 
-        // when line 에 addSection(section) 을 진행하면
+        // when
         line.addSection(newSection);
 
-        // then line.sections 에 section 이 추가된다.
+        // then
         assertThat(line.getSections()).contains(newSection);
     }
 
     /**
      * given line 에 추가할 section 의 상행역이 하행 종점역이 아닐 때
      * when line 에 addSection(section) 을 진행하면
-     * then 예외가 발생한다.
+     * then "구간을 추가할 수 없습니다." 예외가 발생한다.
      */
     @DisplayName("지하철 노선에 구간을 추가 실패 - 새로운 구간 상행역 하행 종점역 아닌 경우")
     @Test
@@ -59,10 +64,15 @@ class LineTest {
                 .hasMessage("구간을 추가할 수 없습니다.");
     }
 
+    /**
+     * given line 에 추가할 section 의 하행역이 line 에 이미 있는 경우
+     * when line 에 addSection(section) 을 진행하면
+     * then "역이 이미 노선에 포함되어 있습니다." 예외가 발생한다.
+     */
     @DisplayName("지하철 노선에 구간을 추가 실패 - 하행역이 해당 노선에 이미 있는 역인 경우")
     @Test
     void addSectionFailStationAlreadyInLine() {
-        // given line 에 추가할 section 이 존재하고
+        // given
         line.addSection(section);
         Section newSection = section(line, "양재역", "강남역", 10);
 
@@ -72,26 +82,36 @@ class LineTest {
                 .hasMessage("역이 이미 노선에 포함되어 있습니다.");
     }
 
+    /**
+     * given line 에 추가할 section 이 존재하고
+     * when line 에 section 을 추가한 후 station 조회(getStations())를 진행하면
+     * then 추가한 section 에 포함된 두 개 역이 포함되어 있다.
+     */
     @DisplayName("지하철 노선에 포함된 역 목록 조회")
     @Test
     void getStations() {
-        // given line 에 추가할 section 이 존재하고
+        // given
         line.addSection(section);
 
         Section newSection = section(line, "양재역", "양재시민의숲", 8);
 
-        // when line 에 section 을 추가한 후 station 조회(getStations())를 진행하면
+        // when
         line.addSection(newSection);
         List<Station> stations = line.getStations();
 
-        // then 추가한 section 에 포함된 두 개 역이 포함되어 있다.
-        assertThat(stations).containsExactly(upStation, downStation, newSection.getDownStation());
+        // then
+        assertThat(stations).containsExactly(upStation, newSection.getUpStation(), newSection.getDownStation());
     }
 
+    /**
+     * given 초기화된(첫 구간 들어간) line 에 section 을 추가하고
+     * when line 에서 section 을 삭제하면
+     * then line 에 처음에 추가한 section 하나만 남아있게 된다.
+     */
     @DisplayName("지하철 노선 구간 삭제")
     @Test
     void removeSection() {
-        // given line 에 추가할 section 이 존재하고 이를 추가한 후
+        // given
         line.addSection(section);
 
         Section newSection = section(line, "양재역", "양재시민의숲", 8);
@@ -99,10 +119,10 @@ class LineTest {
 
         assertThat(line.getSections()).contains(newSection);
 
-        // when line 에서 section 을 삭제하면
+        // when
         line.removeSection(newSection.getDownStation());
 
-        // then line 이 비어있게 된다.
+        // then
         assertThat(line.getSections()).containsOnly(section);
     }
 
