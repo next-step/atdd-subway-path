@@ -10,7 +10,9 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@DisplayName("지하철 노선 Unit Test")
 class LineTest {
 
     private Line line;
@@ -26,13 +28,11 @@ class LineTest {
         section = new Section(line, upStation, downStation, 10);
     }
 
-    @DisplayName("")
+    @DisplayName("지하철 노선에 구간을 추가")
     @Test
     void addSection() {
         // given line 에 추가할 section 이 존재하고
-        Station newUpStation = new Station("양재역");
-        Station newDownStation = new Station("양재시민의숲");
-        Section newSection = new Section(line, newUpStation, newDownStation, 8);
+        Section newSection = section(line, "양재역", "양재시민의숲", 8);
 
         // when line 에 addSection(section) 을 진행하면
         line.addSection(newSection);
@@ -41,33 +41,60 @@ class LineTest {
         assertThat(line.getSections()).contains(newSection);
     }
 
-    @DisplayName("")
+    /**
+     * given line 에 추가할 section 의 상행역이 하행 종점역이 아닐 때
+     * when line 에 addSection(section) 을 진행하면
+     * then 예외가 발생한다.
+     */
+    @DisplayName("지하철 노선에 구간을 추가 실패 - 새로운 구간 상행역 하행 종점역 아닌 경우")
+    @Test
+    void addSectionFailCauseNotEqualUpAndDown() {
+        // given
+        line.addSection(section);
+        Section newSection = section(line, "신논현역", "논현역", 10);
+
+        // when, then
+        assertThatThrownBy(() -> line.addSection(newSection))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("구간을 추가할 수 없습니다.");
+    }
+
+    @DisplayName("지하철 노선에 구간을 추가 실패 - 하행역이 해당 노선에 이미 있는 역인 경우")
+    @Test
+    void addSectionFailStationAlreadyInLine() {
+        // given line 에 추가할 section 이 존재하고
+        line.addSection(section);
+        Section newSection = section(line, "양재역", "강남역", 10);
+
+        // when, then
+        assertThatThrownBy(() -> line.addSection(newSection))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("역이 이미 노선에 포함되어 있습니다.");
+    }
+
+    @DisplayName("지하철 노선에 포함된 역 목록 조회")
     @Test
     void getStations() {
         // given line 에 추가할 section 이 존재하고
         line.addSection(section);
 
-        Station newUpStation = new Station("양재역");
-        Station newDownStation = new Station("양재시민의숲");
-        Section newSection = new Section(line, newUpStation, newDownStation, 8);
+        Section newSection = section(line, "양재역", "양재시민의숲", 8);
 
         // when line 에 section 을 추가한 후 station 조회(getStations())를 진행하면
         line.addSection(newSection);
         List<Station> stations = line.getStations();
 
         // then 추가한 section 에 포함된 두 개 역이 포함되어 있다.
-        assertThat(stations).containsExactly(upStation, downStation, newDownStation);
+        assertThat(stations).containsExactly(upStation, downStation, newSection.getDownStation());
     }
 
-    @DisplayName("")
+    @DisplayName("지하철 노선 구간 삭제")
     @Test
     void removeSection() {
-        // given line 과 두 개의 station, 하나의 section 이 존재하고(init) 이를 추가한 후
+        // given line 에 추가할 section 이 존재하고 이를 추가한 후
         line.addSection(section);
 
-        Station newUpStation = new Station("양재역");
-        Station newDownStation = new Station("양재시민의숲");
-        Section newSection = new Section(line, newUpStation, newDownStation, 8);
+        Section newSection = section(line, "양재역", "양재시민의숲", 8);
         line.addSection(newSection);
 
         assertThat(line.getSections()).contains(newSection);
@@ -77,5 +104,49 @@ class LineTest {
 
         // then line 이 비어있게 된다.
         assertThat(line.getSections()).containsOnly(section);
+    }
+
+    private Section section(Line line, String upStationName, String downStationName, int distance) {
+        Station newUpStation = new Station(upStationName);
+        Station newDownStation = new Station(downStationName);
+        return new Section(line, newUpStation, newDownStation, distance);
+    }
+
+    /**
+     * given 초기화된(첫 구간 들어간) line 에 section 을 추가하고
+     * when 기존에 들어가 있던 section 을 삭제하면
+     * then "구간을 삭제할 수 없습니다." 예외가 발생한다.
+     */
+    @DisplayName("지하철 노선 구간 삭제 실패 - 하행 종점이 아닌 경우")
+    @Test
+    void removeSectionFailCauseSectionIsNotLast() {
+        // given
+        line.addSection(section);
+
+        Section newSection = section(line, "양재역", "양재시민의숲", 8);
+        line.addSection(newSection);
+
+        // when, then
+        assertThatThrownBy(() -> line.removeSection(section))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("구간을 삭제할 수 없습니다.");
+    }
+
+    /**
+     * given line 을 초기화 하고(첫 구간을 추가하고)
+     * when  section 을 삭제하면
+     * then "한 개의 구간만이 존재합니다." 예외가 발생한다.
+     */
+    @DisplayName("지하철 노선 구간 삭제 실패 - 구간이 1개인 경우")
+    @Test
+    void removeSectionFailCauseFinalSection() {
+        // given
+        line.addSection(section);
+
+        // when, then
+        assertThatThrownBy(() -> line.removeSection(section))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("한 개의 구간만이 존재합니다.");
+
     }
 }
