@@ -10,7 +10,9 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import nextstep.subway.applicaion.LineService;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Station;
@@ -21,6 +23,8 @@ public class PathFinderTest {
 	Station 양재역;
 	Station 남부터미널역;
 	List<Line> lines;
+	@Autowired
+	LineService lineService;
 
 	@BeforeEach
 	void setUp() {
@@ -54,7 +58,7 @@ public class PathFinderTest {
 		 */
 
 		//when
-		List<String> stations = PathFinder.getShorPath(lines, 교대역.getId(), 양재역.getId());
+		List<String> stations = PathFinder.getShorPath(lineService, 교대역.getId(), 양재역.getId());
 		List<Station> stationList = getAllStations().stream()
 			.filter(station -> stations.contains(station.getId().toString()))
 			.collect(Collectors.toList());

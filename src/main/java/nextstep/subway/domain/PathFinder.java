@@ -1,52 +1,69 @@
 package nextstep.subway.domain;
 
+import static nextstep.subway.common.exception.errorcode.BusinessErrorCode.*;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
+import org.springframework.util.ObjectUtils;
+
+import nextstep.subway.common.exception.BusinessException;
 
 public class PathFinder {
 
-	public static List<String> getShorPath(List<Line> lineList, long source, long target) {
-		WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-		addVertex(graph, getStationList(lineList));
-		addEdgeWeight(graph, getSectionList(lineList));
+	private WeightedMultigraph<Station, DefaultWeightedEdge> graph;
+	private DijkstraShortestPath dijkstraShortestPath;
 
-		DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-		List<String> shortestPath = dijkstraShortestPath
-			.getPath(Long.toString(source), Long.toString(target)).getVertexList();
-
-		return shortestPath;
+	public PathFinder(List<Section> sectionList) {
+		graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+		addVertex(graph, getStationList(sectionList));
+		addEdgeWeight(graph, sectionList);
+		dijkstraShortestPath = new DijkstraShortestPath(graph);
 	}
 
-	private static List<Station> getStationList(List<Line> lineList) {
-		return lineList.stream()
-			.flatMap(line -> line.getStations().stream())
+	public List<Station> getShortestPath(Station sourStation, Station targetStation) {
+		GraphPath graphPath = dijkstraShortestPath.getPath(sourStation, targetStation);
+		if (ObjectUtils.isEmpty(graphPath)) {
+			throw new BusinessException(INVALID_STATUS);
+		}
+
+		if (graphPath.getEdgeList().isEmpty()) {
+			throw new BusinessException(INVALID_STATUS);
+		}
+
+		return graphPath.getVertexList();
+	}
+
+	public long getSumOfDistance(Station sourStation, Station targetStation) {
+		return (long)dijkstraShortestPath.getPathWeight(sourStation, targetStation);
+	}
+
+	private List<Station> getStationList(List<Section> sectionList) {
+		return sectionList.stream()
+			.flatMap(section -> Arrays.asList(section.getUpStation(), section.getDownStation()).stream())
 			.distinct()
 			.collect(Collectors.toList());
 	}
 
-	private static List<Section> getSectionList(List<Line> lineList) {
-		return lineList.stream()
-			.flatMap(line -> line.getSections().stream())
-			.collect(Collectors.toList());
-	}
-
-	private static void addVertex(WeightedMultigraph<String, DefaultWeightedEdge> graph, List<Station> stationList) {
+	private void addVertex(WeightedMultigraph<Station, DefaultWeightedEdge> graph,
+		List<Station> stationList) {
 		for (Station station : stationList) {
-			graph.addVertex(station.getId().toString());
+			graph.addVertex(station);
 		}
 	}
 
-	private static void addEdgeWeight(WeightedMultigraph<String, DefaultWeightedEdge> graph,
+	private void addEdgeWeight(WeightedMultigraph<Station, DefaultWeightedEdge> graph,
 		List<Section> sectionList) {
-		for (Section section : sectionList) {
-			graph.setEdgeWeight(graph.addEdge(
-					section.getUpStation().getId().toString()
-					, section.getDownStation().getId().toString())
-				, section.getDistance().getDistance());
-		}
+
+		sectionList.forEach(
+			section -> graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()),
+				section.getDistance())
+		);
+
 	}
 }
