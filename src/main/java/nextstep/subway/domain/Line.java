@@ -64,7 +64,13 @@ public class Line {
         return stations;
     }
 
-    public void removeSection(Section section) {
-        sections.remove(section);
+    public void removeSection(Station lastStation) {
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException("한 개의 구간만이 존재합니다.");
+        }
+        if (!sections.get(sections.size() - 1).getDownStation().equals(lastStation)) {
+            throw new IllegalArgumentException("구간을 삭제할 수 없습니다.");
+        }
+        sections.remove(sections.size() - 1);
     }
 }

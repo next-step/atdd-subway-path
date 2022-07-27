@@ -100,7 +100,7 @@ class LineTest {
         assertThat(line.getSections()).contains(newSection);
 
         // when line 에서 section 을 삭제하면
-        line.removeSection(newSection);
+        line.removeSection(newSection.getDownStation());
 
         // then line 이 비어있게 된다.
         assertThat(line.getSections()).containsOnly(section);
@@ -127,7 +127,7 @@ class LineTest {
         line.addSection(newSection);
 
         // when, then
-        assertThatThrownBy(() -> line.removeSection(section))
+        assertThatThrownBy(() -> line.removeSection(section.getDownStation()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("구간을 삭제할 수 없습니다.");
     }
@@ -144,7 +144,7 @@ class LineTest {
         line.addSection(section);
 
         // when, then
-        assertThatThrownBy(() -> line.removeSection(section))
+        assertThatThrownBy(() -> line.removeSection(section.getDownStation()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("한 개의 구간만이 존재합니다.");
 
