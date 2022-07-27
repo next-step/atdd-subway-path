@@ -74,7 +74,7 @@ public class LineServiceTest {
     @Test
     void 라인_구간_안_만들고_저장() {
         // when
-        LineResponse lineResponse = saveLine(FIRSTLINENAME, BLUE, null, null, 10);
+        LineResponse lineResponse = 라인_저장(FIRSTLINENAME, BLUE, null, null, 10);
 
         // then
         assertAll(
@@ -87,10 +87,10 @@ public class LineServiceTest {
     @Test
     void 라인_구간_만들고_저장() {
         // when
-        LineResponse lineResponse = saveLine(FIRSTLINENAME, BLUE, donongStation.getId(), gooriStation.getId(), 10);
+        LineResponse lineResponse = 라인_저장(FIRSTLINENAME, BLUE, donongStation.getId(), gooriStation.getId(), 10);
 
         // then
-        List<String> stationNames = getNames(lineResponse);
+        List<String> stationNames = 라인_역들에서_이름들_꺼내기(lineResponse);
 
         assertAll(
             () -> assertEquals(FIRSTLINENAME, lineResponse.getName()),
@@ -99,7 +99,7 @@ public class LineServiceTest {
         );
     }
 
-    private LineResponse saveLine(String name, String color, Long upStationId, Long downStationId, int distance) {
+    private LineResponse 라인_저장(String name, String color, Long upStationId, Long downStationId, int distance) {
         LineRequest request = new LineRequest(name, color, upStationId, downStationId, distance);
         return lineService.saveLine(request);
     }
@@ -118,8 +118,8 @@ public class LineServiceTest {
         List<LineResponse> lineResponses = lineService.showLines();
 
         // then
-        LineResponse firstLineResponse = getLineResponse(lineResponses, FIRSTLINENAME);
-        final List<String> stationNames = getNames(firstLineResponse);
+        LineResponse firstLineResponse = 모든_라인들에서_하나의_라인_꺼내기(lineResponses, FIRSTLINENAME);
+        final List<String> stationNames = 라인_역들에서_이름들_꺼내기(firstLineResponse);
 
         assertAll(
             () -> assertEquals(FIRSTLINENAME, firstLineResponse.getName()),
@@ -127,8 +127,8 @@ public class LineServiceTest {
             () -> assertThat(stationNames).contains(DONONGSTATIONNAME, GOORISTATIONNAME)
         );
 
-        LineResponse secondLineResponse = getLineResponse(lineResponses, SECONDLINENAME);
-        final List<String> secondStationNames = getNames(secondLineResponse);
+        LineResponse secondLineResponse = 모든_라인들에서_하나의_라인_꺼내기(lineResponses, SECONDLINENAME);
+        final List<String> secondStationNames = 라인_역들에서_이름들_꺼내기(secondLineResponse);
 
         assertAll(
             () -> assertEquals(SECONDLINENAME, secondLineResponse.getName()),
@@ -137,7 +137,7 @@ public class LineServiceTest {
         );
     }
 
-    private LineResponse getLineResponse(List<LineResponse> lineResponses, String name) {
+    private LineResponse 모든_라인들에서_하나의_라인_꺼내기(List<LineResponse> lineResponses, String name) {
         return lineResponses.stream()
             .filter(lineResponse -> lineResponse.getName().equals(name))
             .findFirst()
@@ -154,7 +154,7 @@ public class LineServiceTest {
         LineResponse result = lineService.findById(line.getId());
 
         // then
-        List<String> stationNames = getNames(result);
+        List<String> stationNames = 라인_역들에서_이름들_꺼내기(result);
 
         assertAll(
             () -> assertEquals(FIRSTLINENAME, result.getName()),
@@ -178,7 +178,7 @@ public class LineServiceTest {
         LineResponse result = lineService.findById(line.getId());
 
         // then
-        List<String> stationNames = getNames(result);
+        List<String> stationNames = 라인_역들에서_이름들_꺼내기(result);
 
         assertAll(
             () -> assertEquals(SECONDLINENAME, result.getName()),
@@ -202,7 +202,7 @@ public class LineServiceTest {
         LineResponse result = lineService.findById(line.getId());
 
         // then
-        List<String> stationNames = getNames(result);
+        List<String> stationNames = 라인_역들에서_이름들_꺼내기(result);
 
         assertAll(
             () -> assertEquals(FIRSTLINENAME, result.getName()),
@@ -228,7 +228,7 @@ public class LineServiceTest {
         LineResponse result = lineService.findById(line.getId());
 
         // then
-        List<String> stationNames = getNames(result);
+        List<String> stationNames = 라인_역들에서_이름들_꺼내기(result);
 
         assertAll(
             () -> assertEquals(SECONDLINENAME, result.getName()),
@@ -237,7 +237,7 @@ public class LineServiceTest {
         );
     }
 
-    private List<String> getNames(LineResponse lineResponse) {
+    private List<String> 라인_역들에서_이름들_꺼내기(LineResponse lineResponse) {
         return lineResponse.getStations().stream()
             .map(StationResponse::getName)
             .collect(toList());
@@ -259,7 +259,7 @@ public class LineServiceTest {
     }
 
     @Test
-    void addSection() {
+    void 구간_추가() {
         // given
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         lineRepository.save(line);
@@ -273,8 +273,8 @@ public class LineServiceTest {
         // line.getSections 메서드를 통해 검증
         assertAll(
             () -> assertEquals(firstSection, line.getLastSection()),
-            () -> assertThat(line.getSections()).contains(firstSection),
-            () -> assertThat(line.getAllStation()).containsExactlyElementsOf(Arrays.asList(donongStation, gooriStation))
+            () -> assertThat(line.getSections().getSections()).contains(firstSection),
+            () -> assertThat(line.getSections().getAllStation()).containsExactlyElementsOf(Arrays.asList(donongStation, gooriStation))
         );
     }
 
@@ -290,7 +290,7 @@ public class LineServiceTest {
         lineService.deleteSection(line.getId(), ducksoStation.getId());
 
         // then
-        assertThat(line.getAllStation()).containsExactlyElementsOf(Arrays.asList(donongStation, gooriStation));
+        assertThat(line.getSections().getAllStation()).containsExactlyElementsOf(Arrays.asList(donongStation, gooriStation));
     }
 
     @Test

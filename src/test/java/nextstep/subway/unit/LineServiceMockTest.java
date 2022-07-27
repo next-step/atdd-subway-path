@@ -92,8 +92,6 @@ public class LineServiceMockTest {
         // given
         when(stationService.findById(1L)).thenReturn(donongStation);
         when(stationService.findById(2L)).thenReturn(gooriStation);
-        when(stationService.createStationResponse(donongStation)).thenReturn(new StationResponse(1L, donongStation.getName()));
-        when(stationService.createStationResponse(gooriStation)).thenReturn(new StationResponse(2L, gooriStation.getName()));
 
         when(lineRepository.save(any())).thenReturn(line);
 
@@ -114,10 +112,6 @@ public class LineServiceMockTest {
     @Test
     void 전체_라인_조회() {
         // given
-        when(stationService.createStationResponse(donongStation)).thenReturn(new StationResponse(1L, donongStation.getName()));
-        when(stationService.createStationResponse(gooriStation)).thenReturn(new StationResponse(2L, gooriStation.getName()));
-        when(stationService.createStationResponse(ducksoStation)).thenReturn(new StationResponse(3L, ducksoStation.getName()));
-
         line.addSection(firstSection);
 
         Line secondLine = new Line(SECONDLINENAME, GREEN);
@@ -131,7 +125,7 @@ public class LineServiceMockTest {
         assertThat(result).hasSize(2);
 
         // then
-        LineResponse firstLineResponse = getLineResponse(result, FIRSTLINENAME);
+        LineResponse firstLineResponse = 모든_라인들에서_하나의_라인_꺼내기(result, FIRSTLINENAME);
         final List<String> stationNames = getNames(firstLineResponse);
 
         assertAll(
@@ -140,7 +134,7 @@ public class LineServiceMockTest {
             () -> assertThat(stationNames).contains(DONONGSTATIONNAME, GOORISTATIONNAME)
         );
 
-        LineResponse secondLineResponse = getLineResponse(result, SECONDLINENAME);
+        LineResponse secondLineResponse = 모든_라인들에서_하나의_라인_꺼내기(result, SECONDLINENAME);
         final List<String> secondStationNames = getNames(secondLineResponse);
 
         assertAll(
@@ -150,7 +144,7 @@ public class LineServiceMockTest {
         );
     }
 
-    private LineResponse getLineResponse(List<LineResponse> lineResponses, String name) {
+    private LineResponse 모든_라인들에서_하나의_라인_꺼내기(List<LineResponse> lineResponses, String name) {
         return lineResponses.stream()
             .filter(lineResponse -> lineResponse.getName().equals(name))
             .findFirst()
@@ -160,9 +154,6 @@ public class LineServiceMockTest {
     @Test
     void 라인_단건_조회() {
         // given
-        when(stationService.createStationResponse(donongStation)).thenReturn(new StationResponse(1L, donongStation.getName()));
-        when(stationService.createStationResponse(gooriStation)).thenReturn(new StationResponse(2L, gooriStation.getName()));
-
         line.addSection(firstSection);
         when(lineRepository.findById(any())).thenReturn(Optional.of(line));
 
@@ -278,9 +269,6 @@ public class LineServiceMockTest {
         when(stationService.findById(2L)).thenReturn(gooriStation);
         when(stationService.findById(3L)).thenReturn(ducksoStation);
 
-        when(stationService.createStationResponse(donongStation)).thenReturn(new StationResponse(1L, donongStation.getName()));
-        when(stationService.createStationResponse(gooriStation)).thenReturn(new StationResponse(2L, gooriStation.getName()));
-
         when(lineRepository.findById(any())).thenReturn(Optional.of(line));
 
         lineService.addSection(1L, new SectionRequest(1L, 2L, 10));
@@ -295,7 +283,7 @@ public class LineServiceMockTest {
         assertAll(
             () -> assertThat(result.getStations()).hasSize(2),
             () -> assertThat(result.getStations().get(0).getName()).isEqualTo(DONONGSTATIONNAME),
-        () -> assertThat(result.getStations().get(1).getName()).isEqualTo(GOORISTATIONNAME)
+            () -> assertThat(result.getStations().get(1).getName()).isEqualTo(GOORISTATIONNAME)
         );
     }
 }

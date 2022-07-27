@@ -42,44 +42,44 @@ class LineTest {
     }
 
     @Test
-    void addSection() {
-        addSection(List.of(firstSection));
+    void 구간_추가() {
+        구간_추가(List.of(firstSection));
 
         assertThat(line.getLastSection()).isEqualTo(firstSection);
     }
 
     @Test
-    void getStations() {
-        assertThat(line.getAllStation()).containsExactlyElementsOf(List.of());
+    void 모든_구간_조회() {
+        assertThat(line.getSections().getAllStation()).containsExactlyElementsOf(List.of());
     }
 
     @Test
     void 구간_1개_등록_조회() {
-        addSection(List.of(firstSection));
+        구간_추가(List.of(firstSection));
 
         assertThat(line.getLastSection()).isEqualTo(firstSection);
-        assertThat(line.getAllStation()).containsExactlyElementsOf(Arrays.asList(donongStation, gooriStation));
+        assertThat(line.getSections().getAllStation()).containsExactlyElementsOf(Arrays.asList(donongStation, gooriStation));
     }
 
     @Test
     void 구간_2개_등록_조회() {
-        addSection(List.of(firstSection, secondSection));
+        구간_추가(List.of(firstSection, secondSection));
 
         assertThat(line.getLastSection()).isEqualTo(secondSection);
-        assertThat(line.getAllStation()).containsExactlyElementsOf(Arrays.asList(donongStation, gooriStation, ducksoStation));
+        assertThat(line.getSections().getAllStation()).containsExactly(donongStation, ducksoStation, gooriStation);
     }
 
     @Test
-    void removeSection() {
-        addSection(List.of(firstSection, secondSection));
+    void 구간_삭제() {
+        구간_추가(List.of(firstSection, secondSection));
 
-        line.removeLastSection();
+        line.getSections().removeLastSection();
 
         assertThat(line.getLastSection()).isEqualTo(firstSection);
-        assertThat(line.getAllStation()).containsExactlyElementsOf(Arrays.asList(donongStation, gooriStation));
+        assertThat(line.getSections().getAllStation()).containsExactly(donongStation, ducksoStation);
     }
 
-    private void addSection(List<Section> sections) {
+    private void 구간_추가(List<Section> sections) {
         sections.forEach(
             section -> line.addSection(section)
         );
