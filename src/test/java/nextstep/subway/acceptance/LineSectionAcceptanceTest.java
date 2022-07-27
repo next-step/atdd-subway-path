@@ -142,25 +142,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 //        When
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재전역, 11));
 //        Then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-    }
-
-
-    /**
-     * Given 상행역과 하행역이 이미 노선에 등록되어 있는 구간을 생성하고 (A-B, B-C)인 노선에 B-C추가
-     * When 구간 생성을 요청하면
-     * Then 구간 등록에 실패한다.
-     */
-    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
-    @Test
-    void 노선에_등록된_상행역_하행역_구간_등록_테스트() {
-//        Given
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역, 5));
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 5));
-//        When
-        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 양재역, 2));
-//        Then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("message")).isEqualTo("추가하려는 구간의 길이가 기존 길이보다 같거나 길 수 없습니다.");
     }
 
     /**
@@ -168,7 +151,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 구간 생성을 요청하면
      * Then 구간 등록에 실패한다.
      */
-    @DisplayName("상행역과 하행역이 이미 노선에 등록되어 있는 구간을 생성하고 (A-B, B-C)인 노선에 A-C추가")
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음(A-B, B-C)인 노선에 A-C추가")
     @Test
     void 노선에_등록된_상행역_하행역_구간_등록_테스트_AB_BC_구간_AC추가() {
 //        Given
@@ -177,7 +160,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 //        When
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 양재역, 2));
 //        Then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("message")).isEqualTo("최대 1개의 역만 노선에 등록되어 있어야 합니다.");
     }
 
     /**
@@ -185,7 +169,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 구간 생성을 요청하면
      * Then 구간 등록에 실패한다.
      */
-    @DisplayName("상행역과 하행역이 이미 노선에 등록되어 있는 구간을 생성하고 (A-B, B-C)인 노선에 B-C추가")
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음(A-B, B-C)인 노선에 B-C추가")
     @Test
     void 노선에_존재하지_않는_상행역_하행역_구간_등록_AB_BC_BC구간추가() {
 //        Given
@@ -194,7 +178,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 //        When
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역, 2));
 //        Then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("message")).isEqualTo("최대 1개의 역만 노선에 등록되어 있어야 합니다.");
     }
 
     /**
@@ -211,7 +196,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 //        When
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 양재역, 2));
 //        Then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("message")).isEqualTo("최대 1개의 역만 노선에 등록되어 있어야 합니다.");
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
