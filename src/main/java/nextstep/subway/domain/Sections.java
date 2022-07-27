@@ -100,21 +100,30 @@ public class Sections {
     private void addSectionAtMiddle(Line line, Station upStation, Station downStation, int distance) {
         for (Section section : sections) {
             if (section.isUpStation(upStation)) {
-                checkAvailableDistance(distance, section);
-                sections.add(new Section(line, upStation, downStation, distance));
-                sections.add(new Section(line, downStation, section.getDownStation(), section.getDistance() - distance));
-                sections.remove(section);
+                addSectionBasedUpStation(line, upStation, downStation, distance, section);
                 return;
             }
 
             if (section.isDownStation(downStation)) {
-                checkAvailableDistance(distance, section);
-                sections.add(new Section(line, upStation, downStation, distance));
-                sections.add(new Section(line, section.getUpStation(), upStation, section.getDistance() - distance));
-                sections.remove(section);
+                addSectionBasedDownStation(line, upStation, downStation, distance, section);
                 return;
             }
         }
+    }
+
+    private void addSectionBasedUpStation(Line line, Station upStation, Station downStation, int distance, Section section) {
+        checkAvailableDistance(distance, section);
+        sections.add(new Section(line, upStation, downStation, distance));
+        sections.add(new Section(line, downStation, section.getDownStation(), section.getDistance() - distance));
+        sections.remove(section);
+    }
+
+    private void addSectionBasedDownStation(Line line, Station upStation, Station downStation, int distance, Section section) {
+        checkAvailableDistance(distance, section);
+        sections.add(new Section(line, upStation, downStation, distance));
+        sections.add(new Section(line, section.getUpStation(), upStation, section.getDistance() - distance));
+        sections.remove(section);
+        return;
     }
 
     private void checkAvailableDistance(int distance, Section section) {
