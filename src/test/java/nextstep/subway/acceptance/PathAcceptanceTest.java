@@ -43,7 +43,6 @@ class PathAcceptanceTest extends AcceptanceTest {
 		양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
 		남부터미널역 = 지하철역_생성_요청("남부터미널역").jsonPath().getLong("id");
 
-		createLineCreateParams("2호선", "green", 교대역, 강남역, DISTANCE_VALUE_10);
 		이호선 = 지하철_노선_생성_요청(createLineCreateParams("2호선", "green", 교대역, 강남역, DISTANCE_VALUE_10)).jsonPath()
 			.getLong("id");
 		신분당선 = 지하철_노선_생성_요청(createLineCreateParams("신분당선", "red", 강남역, 양재역, DISTANCE_VALUE_10)).jsonPath()
