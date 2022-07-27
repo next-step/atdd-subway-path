@@ -34,4 +34,8 @@ public class Sections {
     public boolean isEmpty() {
         return this.sections.isEmpty();
     }
+
+    public int size() {
+        return this.sections.size();
+    }
 }

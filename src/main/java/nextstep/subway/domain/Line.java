@@ -22,11 +22,22 @@ public class Line {
     protected Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.sections = new Sections();
+        this.sections = newSections();
+    }
+
+    protected Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this.name = name;
+        this.color = color;
+        this.sections = newSections();
+        this.sections.addSection(this, upStation, downStation, distance);
     }
 
     public static Line makeLine(String name, String color) {
         return new Line(name, color);
+    }
+
+    public static Line makeLine(String name, String color, Station upStation, Station downStation, int distance) {
+        return new Line(name, color, upStation, downStation, distance);
     }
 
     public Long getId() {
@@ -53,6 +64,10 @@ public class Line {
         this.color = color;
     }
 
+    private Sections newSections() {
+        return new Sections();
+    }
+
     public List<Section> getSections() {
         return sections.list();
     }
@@ -77,5 +92,9 @@ public class Line {
         stations.add(0, this.sections.list().get(0).getUpStation());
 
         return stations;
+    }
+
+    public int sectionSize() {
+        return this.sections.size();
     }
 }
