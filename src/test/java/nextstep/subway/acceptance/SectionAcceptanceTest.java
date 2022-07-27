@@ -71,16 +71,52 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 지하철 노선에 역 사이에 새로운 역을 등록하면
+     * When 지하철 노선에 역 사이에 상행역이 같은새로운 역을 등록하면
      * Then 노선에 새로운 구간이 추가된다
      */
-    @DisplayName("지하철 노선 구간에 구간을 추가")
+    @DisplayName("지하철 노선 구간에 상행역이 같은 구간을 추가")
     @Test
     void addStationInSection() {
 
         // when
         Long 중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 중간역, 3));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 중간역, 양재역);
+    }
+
+    /**
+     * When 지하철 노선에 역 사이에 상행역이 같은새로운 역을 등록하면
+     * Then 노선에 새로운 구간이 추가된다
+     */
+    @DisplayName("지하철 노선 구간에 상행역이 같은 구간을 추가")
+    @Test
+    void addStationSameUpStationInSection() {
+
+        // when
+        Long 중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 중간역, 3));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 중간역, 양재역);
+    }
+
+    /**
+     * When 지하철 노선에 역 사이에 하행역이 같은새로운 역을 등록하면
+     * Then 노선에 새로운 구간이 추가된다
+     */
+    @DisplayName("지하철 노선 구간에 하행역이 같은 구간을 추가")
+    @Test
+    void addStationSameDownStationInSection() {
+
+        // when
+        Long 중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(중간역, 양재역, 3));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);

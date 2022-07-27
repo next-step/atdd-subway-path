@@ -43,7 +43,7 @@ class LineServiceMockTest {
     void setUp() {
         선릉역 = new Station("선릉역");
         삼성역 = new Station("삼성역");
-        종합운동장역 = new Station("삼성역");
+        종합운동장역 = new Station("종합운동장역");
         _2호선 = new Line("2호선", "bg-green-600");
 
         when(stationService.findById(1L)).thenReturn(선릉역);

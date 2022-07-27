@@ -24,26 +24,33 @@ public class Sections {
         // FIXME : 중간에 역을 끼워넣는 로직 리팩토링
         for (int i = 0; i < sections.size(); i++) {
             Section section = sections.get(i);
-            if (!section.hasSameUpStation(newlySection)) {
-                continue;
+            if (section.hasSameUpStation(newlySection)) {
+                int newDistance = section.betweenDistance(newlySection);
+                sections.add(betweenDownSection(newlySection, section, newDistance));
+                updateSectionToNew(newlySection, i);
+                return;
             }
-            addBetweenSection(newlySection, section);
-            updateSectionToNew(newlySection, i);
-            return;
+            if (section.hasSameDownStation(newlySection)) {
+                int newDistance = section.betweenDistance(newlySection);
+                sections.add(betweenUpSection(newlySection, section, newDistance));
+                updateSectionToNew(newlySection, i);
+                return;
+            }
         }
 
         sections.add(newlySection);
 
     }
 
-    private void addBetweenSection(Section newlySection, Section section) {
-        int newDistance = section.betweenDistance(newlySection);
-        sections.add(betweenSection(newlySection, section, newDistance));
-    }
 
-    private Section betweenSection(Section newlySection, Section section, int newDistance) {
+    private Section betweenDownSection(Section newlySection, Section section, int newDistance) {
         return new Section(section.getLine(), newlySection.getDownStation(), section.getDownStation(), newDistance);
     }
+
+    private Section betweenUpSection(Section newlySection, Section section, int newDistance) {
+        return new Section(section.getLine(), section.getUpStation(), newlySection.getUpStation(), newDistance);
+    }
+
 
     private void updateSectionToNew(Section newlySection, int i) {
         Section section;
