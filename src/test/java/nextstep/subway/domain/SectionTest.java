@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 
+import nextstep.subway.exception.InSectionDistanceException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -52,7 +53,7 @@ class SectionTest {
         final var section = new Section(new Station("잠실역"), new Station("강변역"), 10);
         //when, then
         assertThatThrownBy(() -> section.betweenDistance(new Section(new Station("잠실역"), new Station("잠실나루역"), distance)))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InSectionDistanceException.class)
                 .hasMessage("추가 될 구간의 거리가 크거나 같을 수 없습니다.");
     }
 }

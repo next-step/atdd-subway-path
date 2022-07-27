@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.InSectionDistanceException;
+
 import javax.persistence.*;
 
 @Entity
@@ -81,7 +83,7 @@ public class Section {
     public int betweenDistance(Section section) {
         int between = distance - section.getDistance();
         if (between <= 0) {
-            throw new IllegalArgumentException("추가 될 구간의 거리가 크거나 같을 수 없습니다.");
+            throw new InSectionDistanceException("추가 될 구간의 거리가 크거나 같을 수 없습니다.");
         }
         return between;
     }

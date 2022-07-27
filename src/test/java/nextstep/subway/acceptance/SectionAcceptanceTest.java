@@ -121,10 +121,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         Long 중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(중간역, 양재역, distance));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(중간역, 양재역, distance));
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("추가 될 구간의 거리가 크거나 같을 수 없습니다.");
     }
