@@ -5,9 +5,11 @@ import javax.persistence.*;
 import java.util.List;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Getter
+@NoArgsConstructor
 @Entity
 public class Line {
 	@Id
@@ -19,10 +21,7 @@ public class Line {
 	private String color;
 
 	@Embedded
-	private Sections sections;
-
-	public Line() {
-	}
+	private Sections sections = new Sections();
 
 	public Line(String name, String color) {
 		this.name = name;

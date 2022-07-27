@@ -38,7 +38,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("지하철 노선에 구간을 등록")
     @Nested
-    class addLineSection {
+    class describe_addLineSection {
         /**
          * Given 새로운 역을 생성하고
          * When 새로운 역을 하행 종점으로 구간 추가를 요청 하면
@@ -46,7 +46,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
          */
         @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
         @Test
-        void addLineSection_성공1() {
+        void action_성공1() {
             // given
             Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
 
@@ -66,7 +66,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
          */
         @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
         @Test
-        void addLineSection_성공2() {
+        void action_성공2() {
             // given
             Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
 
@@ -86,7 +86,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
          */
         @DisplayName("역 사이에 새로운 역을 등록할 경우")
         @Test
-        void addLineSection_성공3() {
+        void action_성공3() {
             // given
             Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
 
@@ -105,7 +105,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
          */
         @DisplayName("예외 1) 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
         @Test
-        void addLineSection_실패1() {
+        void action_실패1() {
             // when AND then
             assertThatThrownBy(()-> 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역)))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -118,7 +118,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
          */
         @DisplayName("예외 2) 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
         @Test
-        void addLineSection_실패2() {
+        void action_실패2() {
             // given
             Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
             Long 판교역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
@@ -135,7 +135,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
          */
         @DisplayName("예외 3) 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
         @Test
-        void addLineSection_실패3() {
+        void action_실패3() {
             // given
             Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
 

@@ -25,7 +25,9 @@ public class LineService {
 	@Transactional
 	public LineResponse saveLine(LineRequest request) {
 		Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-		addSection(line, request.getUpStationId(), request.getDownStationId(), request.getDistance());
+		if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
+			addSection(line, request);
+		}
 		return LineResponse.from(line);
 	}
 
@@ -53,16 +55,13 @@ public class LineService {
 	@Transactional
 	public void addSection(Long lineId, SectionRequest sectionRequest) {
 		Line line = findLine(lineId);
-		addSection(line, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
-			sectionRequest.getDistance());
+		addSection(line, sectionRequest);
 	}
 
-	private void addSection(Line line, Long upStationId, Long downStationId, int distance) {
-		if (upStationId != null && downStationId != null && distance != 0) {
-			Station upStation = stationService.findStation(upStationId);
-			Station downStation = stationService.findStation(downStationId);
-			line.addSection(new Section(line, upStation, downStation, distance));
-		}
+	private void addSection(Line line, SectionRequest sectionRequest) {
+		Station upStation = stationService.findStation(sectionRequest.getUpStationId());
+		Station downStation = stationService.findStation(sectionRequest.getDownStationId());
+		line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
 	}
 
 	@Transactional
