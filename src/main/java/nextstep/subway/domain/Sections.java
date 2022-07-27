@@ -112,30 +112,34 @@ public class Sections {
             .collect(Collectors.toList());
     }
 
-    public void removeStations(final Station station) {
+    public Section findRemoveSection(final Station station) {
         notRegisteredValidation();
 
         minimumSizeValidation();
 
-        // 맨앞의 역 제거
+        return findSectionToRemove(station);
+    }
+
+    public void remove(final Section removeSection) {
+        sections.remove(removeSection);
+    }
+
+    private Section findSectionToRemove(final Station station) {
         final Section section = getFirstSection();
         if (section.isSameUpStation(station)) {
-            sections.remove(section);
-            return;
+            return section;
         }
 
-        // 가운데 역 제거
         for (Section currentSection : sections) {
             final Section nextSection = getNextSection(currentSection);
             if (Objects.nonNull(nextSection) && isMiddleSection(currentSection, nextSection, station)) {
                 currentSection.removeMiddleSection(nextSection.getDistance(), nextSection.getDownStation());
-                sections.remove(nextSection);
-                return;
+                return nextSection;
             }
         }
 
         downStationValidation(station);
-        sections.remove(getLastIndex());
+        return sections.get(getLastIndex());
     }
 
     private boolean isMiddleSection(final Section currentSection, final Section nextSection, final Station removeStation) {

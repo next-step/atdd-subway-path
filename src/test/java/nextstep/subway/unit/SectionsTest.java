@@ -57,7 +57,7 @@ class SectionsTest {
     @DisplayName("구간이 없는경우 삭제 시 예외")
     void removeStationsIsEmpty() {
         assertThatIllegalStateException()
-            .isThrownBy(() -> sections.removeStations(강남역()))
+            .isThrownBy(() -> sections.findRemoveSection(강남역()))
             .withMessage("등록된 구간이 없습니다.");
     }
 
@@ -67,7 +67,7 @@ class SectionsTest {
         구간_등록(강남역(), 역삼역(), 10);
         구간_등록(강남역(), new Station(3L, "선릉역"), 5);
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> sections.removeStations(잠실역()))
+            .isThrownBy(() -> sections.findRemoveSection(잠실역()))
             .withMessage("하행 종점역 정보가 다릅니다.");
     }
 
@@ -76,7 +76,7 @@ class SectionsTest {
     void lessThanEqualMinimumSizeThenThrowException() {
         구간_등록(강남역(), 역삼역(), 10);
         assertThatExceptionOfType(SectionMinimumLimitException.class)
-            .isThrownBy(() -> sections.removeStations(역삼역()))
+            .isThrownBy(() -> sections.findRemoveSection(역삼역()))
             .withMessage("최소 유지 구간보다 작아질 수 없습니다.");
     }
 
@@ -88,7 +88,8 @@ class SectionsTest {
         구간_등록(역삼역(), 잠실역(), 7);
 
         //when
-        sections.removeStations(강남역());
+        final Section removeSection = sections.findRemoveSection(강남역());
+        sections.remove(removeSection);
 
         //then
         assertThat(sections.sections()).hasSize(1)
@@ -96,7 +97,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("가운데 구간 삭제")
+    @DisplayName("제거 되는 구간 검증")
     void removeMiddleSectionOfLine() {
         구간_등록(강남역(), 역삼역(), 10);
         구간_등록(역삼역(), 잠실역(), 7);
@@ -104,15 +105,10 @@ class SectionsTest {
         구간_등록(잠실역(), 선릉역, 9);
 
         //when
-        sections.removeStations(잠실역());
+        final Section removeSection = sections.findRemoveSection(잠실역());
 
         //then
-        //then
-        assertThat(sections.sections()).hasSize(2)
-            .containsExactly(
-                new Section(line, 강남역(), 역삼역(), 10),
-            new Section(line, 역삼역(), 선릉역, 16)
-        );
+        assertThat(removeSection).isEqualTo(new Section(line, 잠실역(), 선릉역, 9));
     }
 
     @Test
