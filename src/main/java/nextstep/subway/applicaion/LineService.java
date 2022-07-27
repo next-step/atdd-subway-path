@@ -89,7 +89,7 @@ public class LineService {
         }
 
         //순서대로 삽입하기
-        List<Section> sortedSections = line.getSortedSections(line.getSections(), line.getUpStation());
+        List<Section> sortedSections = line.getSections();
 
 
         List<Station> stations = sortedSections.stream()
@@ -109,10 +109,6 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-
-        line.removeSection(line.getSections().size() - 1);
+        line.removeSection(station);
     }
 }
