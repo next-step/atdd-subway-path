@@ -26,6 +26,7 @@ public class Sections {
     @OrderBy("id asc")
     private final List<Section> sections = new ArrayList<>();
 
+    private final int MINUMUM_SECTION_SIZE = 1;
     public Sections() {
     }
 
@@ -106,13 +107,18 @@ public class Sections {
     }
 
     public void removeSection(Long stationId) {
-        if(sections.size() == 1)
-            throw new BadRequestException("지하철 노선에 상행 종점역과 하행 종점역만 있는 경우(구간이 1개인 경우) 역을 삭제할 수 없다.");
+        if(sections.size() == MINUMUM_SECTION_SIZE)
+            throw new BadRequestException("지하철 노선에 상행 종점역과 하행 종점역만 있는 경우(구간이 "+MINUMUM_SECTION_SIZE+"개인 경우) 역을 삭제할 수 없다.");
 
-        if(removeSectionWhenFirst(stationId)){
+        Section firstSection = getFirstSection();
+        Section lastSection = getLastSection();
+
+        if(isFirstStation(firstSection, stationId)){
+            sections.remove(firstSection);
             return;
         }
-        if(removeSectionWhenLast(stationId)){
+        if(isLastStation(lastSection, stationId)){
+            sections.remove(lastSection);
             return;
         }
 
@@ -120,19 +126,15 @@ public class Sections {
     }
 
 
-    private Boolean removeSectionWhenFirst(Long stationId){
-        Section firstSection = getFirstSection();
+    private Boolean isFirstStation(Section firstSection, Long stationId){
         if(Objects.equals(firstSection.getUpStation().getId(), stationId)){
-            sections.remove(firstSection);
             return true;
         }
         return false;
     }
 
-    private Boolean removeSectionWhenLast(Long stationId){
-        Section lastSection = getLastSection();
+    private Boolean isLastStation(Section lastSection, Long stationId){
         if(Objects.equals(lastSection.getDownStation().getId(), stationId)){
-            sections.remove(lastSection);
             return true;
         }
         return false;
