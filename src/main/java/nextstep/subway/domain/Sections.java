@@ -52,54 +52,57 @@ public class Sections {
     }
 
     public List<Station> allStations() {
-
-        Section firstSection = firstSection();
-        if (firstSection == null) {
+        if (sections.isEmpty()) {
             return List.of();
         }
-
         List<Station> allStations = new ArrayList<>();
-        allStations.add(firstSection.getUpStation());
-
-        Station downStation = firstSection.getDownStation();
-        while (true) {
-            allStations.add(downStation);
-            Station finalDownStation = downStation;
-            Optional<Station> stationOptional = sections.stream()
-                    .filter(section -> finalDownStation.equals(section.getUpStation()))
-                    .map(Section::getDownStation)
-                    .findAny();
-            if (stationOptional.isEmpty()) {
-                break;
-            }
-            downStation = stationOptional.get();
-        }
-
+        Section firstSection = firstSection();
+        addUpStation(allStations, firstSection);
+        addAllDownStationRepeatedly(allStations, firstSection);
         return allStations;
     }
 
     private Section firstSection() {
-
-        if (sections.isEmpty()) {
-            return null;
-        }
-
         Section section = sections.get(0);
-        Station upStation = section.getUpStation();
-
         while (true) {
-            Station finalUpStation = upStation;
-            Optional<Section> sectionOptional = sections.stream()
-                    .filter(s -> finalUpStation.equals(s.getDownStation()))
-                    .findAny();
-            if (sectionOptional.isEmpty()) {
+            Optional<Section> preSection = pre(section);
+            if (preSection.isEmpty()) {
                 break;
             }
-            section = sectionOptional.get();
-            upStation = section.getUpStation();
+            section = preSection.get();
         }
-
         return section;
+    }
+
+    private Optional<Section> pre(Section section) {
+        Station upStation = section.getUpStation();
+        return sections.stream()
+                .filter(s -> upStation.equals(s.getDownStation()))
+                .findAny();
+    }
+
+    private void addUpStation(List<Station> allStations, Section firstSection) {
+        Station upStation = firstSection.getUpStation();
+        allStations.add(upStation);
+    }
+
+    private void addAllDownStationRepeatedly(List<Station> allStations, Section firstSection) {
+        Station downStation = firstSection.getDownStation();
+        while (true) {
+            allStations.add(downStation);
+            Optional<Station> nextDownStation = next(downStation);
+            if (nextDownStation.isEmpty()) {
+                break;
+            }
+            downStation = nextDownStation.get();
+        }
+    }
+
+    private Optional<Station> next(Station downStation) {
+        return sections.stream()
+                .filter(section -> downStation.equals(section.getUpStation()))
+                .map(Section::getDownStation)
+                .findAny();
     }
 
     public boolean hasStation(Station station) {
