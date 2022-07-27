@@ -21,8 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,9 +41,9 @@ public class LineServiceMockTest {
 
     @BeforeEach
     void setUp() {
-        이호선 = new Line(1L,"이호선", "br-red-600");
-        서울대입구역 = new Station(1L,"서울대입구역");
-        낙성대역 = new Station(2L,"낙성대역");
+        이호선 = new Line(1L, "이호선", "br-red-600");
+        서울대입구역 = new Station(1L, "서울대입구역");
+        낙성대역 = new Station(2L, "낙성대역");
         사당역 = new Station(3L, "사당역");
     }
 
@@ -59,7 +58,7 @@ public class LineServiceMockTest {
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(이호선.getId(), new SectionRequest(서울대입구역.getId(),낙성대역.getId(),10));
+        lineService.addSection(이호선.getId(), new SectionRequest(서울대입구역.getId(), 낙성대역.getId(), 10));
 
         // then
         // line.findLineById 메서드를 통해 검증
@@ -92,6 +91,7 @@ public class LineServiceMockTest {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
+                line.getDistance(),
                 createStationResponses(stations)
         );
         return lineResponse;

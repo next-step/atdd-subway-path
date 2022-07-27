@@ -82,6 +82,7 @@ public class LineService {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
+                line.getDistance(),
                 createStationResponses(line)
         );
         return lineResponse;

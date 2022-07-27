@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -57,19 +56,23 @@ public class Line {
         return this.sections.getSections();
     }
 
-    public void addSection(Section section){
+    public void addSection(Section section) {
         this.sections.addSection(section);
     }
 
-    public boolean isEmptySections(){
+    public boolean isEmptySections() {
         return this.sections.isEmpty();
     }
 
-    public List<Station> getStations(){
-        return this.sections.getStations();
+    public List<Station> getStations() {
+        return this.sections.getStationsInOrder();
     }
 
     public void deleteStation(Station station) {
         this.sections.deleteStation(station);
+    }
+
+    public int getDistance() {
+        return this.sections.getDistance();
     }
 }

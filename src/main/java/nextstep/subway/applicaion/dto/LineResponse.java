@@ -1,7 +1,6 @@
 package nextstep.subway.applicaion.dto;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 
 import java.util.Collections;
@@ -13,12 +12,14 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
+    private int distance;
     private List<StationResponse> stations;
 
-    public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
+    public LineResponse(Long id, String name, String color, int distance, List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
+        this.distance = distance;
         this.stations = stations;
     }
 
@@ -27,6 +28,7 @@ public class LineResponse {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
+                line.getDistance(),
                 createStationResponses(line)
         );
     }
@@ -55,6 +57,10 @@ public class LineResponse {
         return color;
     }
 
+    public int getDistance() {
+        return distance;
+    }
+
     public List<StationResponse> getStations() {
         return stations;
     }
@@ -64,12 +70,12 @@ public class LineResponse {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LineResponse that = (LineResponse) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(color, that.color) && Objects.equals(stations, that.stations);
+        return distance == that.distance && Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(color, that.color) && Objects.equals(stations, that.stations);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, stations);
+        return Objects.hash(id, name, color, distance, stations);
     }
 }
 
