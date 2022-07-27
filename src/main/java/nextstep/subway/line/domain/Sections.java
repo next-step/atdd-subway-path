@@ -30,12 +30,7 @@ public class Sections {
             return;
         }
 
-        Section connectedSection = findConnectedSection(addedSection);
-        Section subtractedSection = connectedSection.subtract(addedSection);
-
-        sections.remove(connectedSection);
-        sections.add(addedSection);
-        sections.add(subtractedSection);
+        divideConnectedSection(addedSection);
     }
 
     private void validateAddedSection(Section addedSection) {
@@ -55,6 +50,15 @@ public class Sections {
 
     private boolean isNewFirstOrLastSection(Section addedSection) {
         return firstSection().isAfter(addedSection) || lastSection().isBefore(addedSection);
+    }
+
+    private void divideConnectedSection(Section addedSection) {
+        Section connectedSection = findConnectedSection(addedSection);
+        Section subtractedSection = connectedSection.subtract(addedSection);
+
+        sections.remove(connectedSection);
+        sections.add(addedSection);
+        sections.add(subtractedSection);
     }
 
     private Section findConnectedSection(Section section) {
@@ -83,21 +87,17 @@ public class Sections {
             return;
         }
 
-        List<Long> orderedStationIds = getOrderedStationIds();
-        int stationIdIdx = orderedStationIds.indexOf(stationId);
-        Long firstRemovedSectionIndex = orderedStationIds.get(stationIdIdx - 1);
-
-        Section firstRemovedSection = findByUpStationId(firstRemovedSectionIndex);
-        Section secondRemovedSection = findByUpStationId(stationId);
-        Section combinedSection = firstRemovedSection.combine(secondRemovedSection);
-
-        sections.remove(firstRemovedSection);
-        sections.remove(secondRemovedSection);
-        sections.add(combinedSection);
+        combineRemovedSections(stationId);
     }
 
     private boolean isExistingStation(Long stationId) {
         return getOrderedStationIds().contains(stationId);
+    }
+
+    private boolean isFirstStation(Long stationId) {
+        int firstStationIndex = 0;
+        Long firstStationId = getOrderedStationIds().get(firstStationIndex);
+        return stationId.equals(firstStationId);
     }
 
     private boolean isLastStation(Long stationId) {
@@ -106,10 +106,19 @@ public class Sections {
         return lastStationId.equals(stationId);
     }
 
-    private boolean isFirstStation(Long stationId) {
+    private void combineRemovedSections(Long stationId) {
         List<Long> orderedStationIds = getOrderedStationIds();
-        Long firstStationId = orderedStationIds.get(0);
-        return firstStationId.equals(stationId);
+        int stationIndex = orderedStationIds.indexOf(stationId);
+        Long firstRemovedSectionIndex = orderedStationIds.get(stationIndex - 1);
+        Long secondRemovedSectionIndex = firstRemovedSectionIndex + 1;
+
+        Section firstRemovedSection = findByUpStationId(firstRemovedSectionIndex);
+        Section secondRemovedSection = findByUpStationId(secondRemovedSectionIndex);
+        Section combinedSection = firstRemovedSection.combine(secondRemovedSection);
+
+        sections.remove(firstRemovedSection);
+        sections.remove(secondRemovedSection);
+        sections.add(combinedSection);
     }
 
     public List<Long> getOrderedStationIds() {
