@@ -74,10 +74,9 @@ class LineTest {
     @Test
     void 지하철역_등록_길이_오류() {
         신분당선.addSection(논현역, 강남역, 5);
-        신분당선.addSection(신논현역, 강남역, 7);
         assertThatThrownBy(() -> {
-            신분당선.addSection(논현역, 양재시민의숲, 5);
-        }).isInstanceOf(AssertionError.class).hasMessageContaining("추가하려는 구간의 길이가 기존 길이보다 같거나 길 수 없습니다.");
+            신분당선.addSection(논현역, 신논현역, 7);
+        }).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("추가하려는 구간의 길이가 기존 길이보다 같거나 길 수 없습니다.");
     }
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
