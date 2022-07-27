@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.jgrapht.GraphPath;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static nextstep.subway.unit.LineTestUtil.DEFAULT_DISTANCE;
@@ -56,25 +58,21 @@ class SectionJGraphTest {
         String target = "v1";
 
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-        graph.addVertex(교대역);
-        graph.addVertex(강남역);
-        graph.addVertex(양재역);
-        graph.addVertex(남부터미널역);
-        graph.setEdgeWeight(graph.addEdge(교대역, 강남역), 10);
-        graph.setEdgeWeight(graph.addEdge(강남역, 양재역), 10);
-        graph.setEdgeWeight(graph.addEdge(교대역, 남부터미널역), 2);
-        graph.setEdgeWeight(graph.addEdge(남부터미널역, 양재역), 3);
+        PathFinder pathFinder = new PathFinder();
 
-        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath(graph);
-        GraphPath<Station, DefaultWeightedEdge> shortestPath = dijkstraShortestPath.getPath(교대역, 강남역);
+        List<Station> stations = List.of(교대역, 강남역, 양재역, 남부터미널역);
+
+        pathFinder.addStationToVertex(stations);
+        pathFinder.addSectionEdgeWeight(이호선.getSections());
+        pathFinder.addSectionEdgeWeight(신분당선.getSections());
+        pathFinder.addSectionEdgeWeight(삼호선.getSections());
+
+        GraphPath<Station, DefaultWeightedEdge> shortestPath = pathFinder.getShoresPath(교대역, 강남역);
+
         System.out.println(shortestPath.getWeight());
         shortestPath.getVertexList().forEach(
                 station -> System.out.println(station.toString())
         );
-
-
-
-
 
     }
 
