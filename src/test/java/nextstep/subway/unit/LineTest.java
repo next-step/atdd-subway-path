@@ -2,6 +2,7 @@ package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
+import org.hibernate.boot.model.naming.IllegalIdentifierException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -85,7 +86,7 @@ class LineTest {
         신분당선.addSection(신논현역, 강남역, 5);
         assertThatThrownBy(() -> {
             신분당선.addSection(논현역, 양재시민의숲, 5);
-        }).isInstanceOf(AssertionError.class).hasMessageContaining("최소 1개 이상의 역은 노선에 등록되어 있어야 합니다.");
+        }).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("최소 1개 이상의 역은 노선에 등록되어 있어야 합니다.");
     }
 
 //    A-B, B-C 구간이 등록된 상황에서 B-C 구간을 등록할 수 없음
@@ -96,7 +97,7 @@ class LineTest {
         신분당선.addSection(강남역, 양재역, 5);
         assertThatThrownBy(() -> {
             신분당선.addSection(강남역, 양재역, 5);
-        }).isInstanceOf(AssertionError.class).hasMessageContaining("최대 1개의 역만 노선에 등록되어 있어야 합니다.");
+        }).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("최대 1개의 역만 노선에 등록되어 있어야 합니다.");
     }
 
     //    A-B, B-C 구간이 등록된 상황에서 A-C 구간을 등록할 수 없음
@@ -107,7 +108,7 @@ class LineTest {
         신분당선.addSection(강남역, 양재역, 5);
         assertThatThrownBy(() -> {
             신분당선.addSection(신논현역, 양재역, 2);
-        }).isInstanceOf(AssertionError.class).hasMessageContaining("최대 1개의 역만 노선에 등록되어 있어야 합니다.");
+        }).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("최대 1개의 역만 노선에 등록되어 있어야 합니다.");
     }
 
     @DisplayName("구간 삭제")

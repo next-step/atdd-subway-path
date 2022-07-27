@@ -133,11 +133,15 @@ public class Sections {
     }
 
     private void validMaximumOneStation(Station upStation, Station downStation) {
-        assert !stations().contains(upStation) || !stations().contains(downStation) : "최대 1개의 역만 노선에 등록되어 있어야 합니다.";
+        if (stations().contains(upStation) && stations().contains(downStation)) {
+            throw new IllegalArgumentException("최대 1개의 역만 노선에 등록되어 있어야 합니다.");
+        }
     }
 
     private void validMinimumOneStation(Station upStation, Station downStation) {
-        assert stations().contains(upStation) || stations().contains(downStation) : "최소 1개 이상의 역은 노선에 등록되어 있어야 합니다.";
+        if (!stations().contains(upStation) && !stations().contains(downStation)) {
+            throw new IllegalArgumentException("최소 1개 이상의 역은 노선에 등록되어 있어야 합니다.");
+        }
     }
 
     private Section sameUpStationSection(Station upStation) {
