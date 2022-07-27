@@ -76,8 +76,6 @@ public class LineService {
 
         List<Station> stations = line.stations();
 
-//        stations.add(0, line.upStation());
-
         return stations.stream()
                 .map(it -> stationService.createStationResponse(it))
                 .collect(Collectors.toList());
