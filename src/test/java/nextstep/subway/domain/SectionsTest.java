@@ -237,6 +237,32 @@ class SectionsTest {
 	}
 
 	/**
+	 * Given sections에 section을 추가한다.
+	 * When sections에서 가운데에 있는 역을 제거하면
+	 * Then 성공한다.
+	 */
+	@DisplayName("구간 가운데에 있는 역을 제거할 수 있다.")
+	@Test
+	void removeSectionInTheMiddle() {
+		//given
+		Station 광교중앙역 = new Station("광교중앙역");
+		신분당선에_구간을_추가한다(광교역, 광교중앙역, 2);
+
+		//when
+		sections.removeSection(광교중앙역);
+
+		//then
+		List<Section> sections = this.sections.getSections();
+		List<Station> stations = this.sections.getStations();
+
+		assertAll(
+				() -> assertThat(sections).hasSize(1),
+				() -> assertThat(sections.get(0).getDistance()).isEqualTo(광교역_판교역_거리),
+				() -> assertThat(stations).containsExactly(광교역, 판교역)
+		);
+	}
+
+	/**
 	 * When section이 한 개가 있는 sections에서 삭제를 시도하면
 	 * Then CannotRemoveLastSectionException이 발생한다.
 	 */

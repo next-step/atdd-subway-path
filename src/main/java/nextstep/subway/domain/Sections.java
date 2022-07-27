@@ -47,11 +47,34 @@ public class Sections {
 			throw new CannotRemoveLastSectionException(CANNOT_REMOVE_LAST_SECTION.getMessage());
 		}
 
+		if (isMiddleOfSection(station)) {
+			removeMiddleStation(station);
+			return;
+		}
+
 		if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
 			throw new IllegalArgumentException();
 		}
 
 		sections.remove(this.getSections().size() - 1);
+	}
+
+	private void removeMiddleStation(Station station) {
+		Section downSection = getSectionMatchingDownStation(station);
+		Section upSection = getSectionMatchingUpStation(station);
+		int index = sections.indexOf(downSection);
+		modifyMiddleSection(downSection, upSection, index);
+	}
+
+	private void modifyMiddleSection(Section downSection, Section upSection, int index) {
+		sections.remove(downSection);
+		sections.remove(upSection);
+		sections.add(index, new Section(upSection.getLine(), downSection.getUpStation(),
+				upSection.getDownStation(), upSection.getDistance() + downSection.getDistance()));
+	}
+
+	private boolean isMiddleOfSection(Station station) {
+		return hasSameUpStation(station) && hasSameDownStation(station);
 	}
 
 	private boolean isOnlyOneSection() {
