@@ -79,10 +79,6 @@ public class Sections {
         return section.getDownStation().equals(upStation);
     }
 
-    private boolean isUpStation(Station downStation, Section section) {
-        return section.getUpStation().equals(downStation);
-    }
-
     private Station findNextStation(Station firstDownStation) {
         return this.sections.stream().filter(section -> firstDownStation.equals(section.getUpStation())).findFirst().map(Section::getDownStation).orElse(null);
     }
@@ -114,11 +110,10 @@ public class Sections {
     }
 
     private void addSplitSection(Line line, Station upStation, Station downStation, int distance) {
-        Station sameUpStationSectionDownStation = sameUpStationSection(upStation).getDownStation();
-        int sameUpStationSectionDistance = sameUpStationSection(upStation).getDistance();
-        this.sections.remove(sameUpStationSection(upStation));
+        Section sameUpStationSection = sameUpStationSection(upStation);
+        this.sections.remove(sameUpStationSection);
         this.sections.add(of(line, upStation, downStation, distance));
-        this.sections.add(of(line, downStation, sameUpStationSectionDownStation, sameUpStationSectionDistance - distance));
+        this.sections.add(of(line, downStation, sameUpStationSection.getDownStation(), sameUpStationSection.getDistance() - distance));
     }
 
     private void validSplitSectionDistance(Station upStation, int distance) {
