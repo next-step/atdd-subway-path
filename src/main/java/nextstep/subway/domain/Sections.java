@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.vo.SectionLocation;
+import nextstep.subway.domain.vo.ToBeAddedSection;
 import nextstep.subway.exception.NewlySectionUpStationAndDownStationNotExist;
 import nextstep.subway.exception.SectionAllStationsAlreadyExistException;
 
@@ -23,27 +25,10 @@ public class Sections {
     }
 
     public void add(Section newlySection) {
-
         validateAddNewlySection(newlySection);
-
-        for (int i = 0; i < sections.size(); i++) {
-            Section section = sections.get(i);
-            if (section.hasSameUpStation(newlySection)) {
-                int newDistance = section.betweenDistance(newlySection);
-                sections.add(betweenDownSection(newlySection, section, newDistance));
-                updateSectionToNew(newlySection, i);
-                return;
-            }
-            if (section.hasSameDownStation(newlySection)) {
-                int newDistance = section.betweenDistance(newlySection);
-                sections.add(betweenUpSection(newlySection, section, newDistance));
-                updateSectionToNew(newlySection, i);
-                return;
-            }
-        }
-
-        sections.add(newlySection);
-
+        ToBeAddedSection toBeAddedSection = toBeAddedSection(newlySection);
+        addNewlySectionIfNotBetween(newlySection, toBeAddedSection);
+        addNewlySectionIfBetween(newlySection, toBeAddedSection);
     }
 
     private void validateAddNewlySection(Section newlySection) {
@@ -65,6 +50,43 @@ public class Sections {
 
     boolean hasStation(Station station) {
         return sections.stream().anyMatch(section -> section.hasStation(station));
+    }
+
+    private ToBeAddedSection toBeAddedSection(Section newlySection) {
+        for (int i = 0; i < sections.size(); i++) {
+            Section section = sections.get(i);
+            if (section.hasSameUpStation(newlySection)) {
+                return new ToBeAddedSection(section, SectionLocation.BETWEEN_BACK, i);
+            }
+            if (section.hasSameDownStation(newlySection)) {
+                return new ToBeAddedSection(section, SectionLocation.BETWEEN_FRONT, i);
+            }
+        }
+        return new ToBeAddedSection(SectionLocation.NOT_BETWEEN);
+    }
+
+    private void addNewlySectionIfNotBetween(Section newlySection, ToBeAddedSection toBeAddedSection) {
+        if (SectionLocation.NOT_BETWEEN == toBeAddedSection.getLocation()) {
+            sections.add(newlySection);
+        }
+    }
+
+    private void addNewlySectionIfBetween(Section newlySection, ToBeAddedSection toBeAddedSection) {
+
+        if (SectionLocation.BETWEEN_FRONT == toBeAddedSection.getLocation()) {
+            Section section = toBeAddedSection.getSection();
+            int newDistance = section.betweenDistance(newlySection);
+            sections.add(betweenUpSection(newlySection, section, newDistance));
+            updateSectionToNew(newlySection, toBeAddedSection.getIndex());
+        }
+
+        if (SectionLocation.BETWEEN_BACK == toBeAddedSection.getLocation()) {
+            Section section = toBeAddedSection.getSection();
+            int newDistance = section.betweenDistance(newlySection);
+            sections.add(betweenDownSection(newlySection, section, newDistance));
+            updateSectionToNew(newlySection, toBeAddedSection.getIndex());
+        }
+
     }
 
     private boolean alreadyExistUpStationAndDownStation(Section newlySection) {
