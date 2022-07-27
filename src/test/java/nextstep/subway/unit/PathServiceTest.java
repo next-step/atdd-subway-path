@@ -59,7 +59,7 @@ public class PathServiceTest {
 		신분당선 = lineRepository.save(new Line("신분당선", "red"));
 
 		이호선.addSection(교대역, 강남역, DISTANCE_VALUE_10);
-		삼호선.addSection(강남역, 양재역, DISTANCE_VALUE_10);
+		삼호선.addSection(교대역, 남부터미널역, DISTANCE_VALUE_10);
 		신분당선.addSection(교대역, 남부터미널역, DISTANCE_VALUE_10);
 		삼호선.addSection(남부터미널역, 양재역, DISTANCE_VALUE_3);
 

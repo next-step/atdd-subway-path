@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.PathService;
+import nextstep.subway.applicaion.dto.PathRequest;
 
 @RestController
 public class PathController {
@@ -20,7 +21,8 @@ public class PathController {
 
 	@GetMapping("/paths")
 	public ResponseEntity<Void> getPath(@RequestParam Long source, @RequestParam Long target) {
-		pathService.getPath(source, target);
+
+		pathService.getPath(new PathRequest(lineService.showLines(), source, target));
 		return ResponseEntity.noContent().build();
 	}
 }
