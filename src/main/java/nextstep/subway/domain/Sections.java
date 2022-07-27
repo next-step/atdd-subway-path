@@ -59,28 +59,6 @@ public class Sections {
 		sections.remove(this.getSections().size() - 1);
 	}
 
-	private void removeMiddleStation(Station station) {
-		Section downSection = getSectionMatchingDownStation(station);
-		Section upSection = getSectionMatchingUpStation(station);
-		int index = sections.indexOf(downSection);
-		modifyMiddleSection(downSection, upSection, index);
-	}
-
-	private void modifyMiddleSection(Section downSection, Section upSection, int index) {
-		sections.remove(downSection);
-		sections.remove(upSection);
-		sections.add(index, new Section(upSection.getLine(), downSection.getUpStation(),
-				upSection.getDownStation(), upSection.getDistance() + downSection.getDistance()));
-	}
-
-	private boolean isMiddleOfSection(Station station) {
-		return hasSameUpStation(station) && hasSameDownStation(station);
-	}
-
-	private boolean isOnlyOneSection() {
-		return sections.size() == 1;
-	}
-
 	private void addSectionWithCondition(Line line, Station upStation, Station downStation, Integer distance) {
 
 		if (isStartWithUpStation(upStation)) {
@@ -118,8 +96,49 @@ public class Sections {
 
 	private void addSectionInMiddleWithDownStation(Line line, Station upStation, int distance, Section section) {
 		this.sections.remove(section);
-		sections.add(new Section(line, section.getUpStation(), upStation, modifiedDistance(section.getDistance() , distance)));
+		sections.add(new Section(line, section.getUpStation(), upStation, modifiedDistance(section.getDistance(), distance)));
 		sections.add(new Section(line, upStation, section.getDownStation(), distance));
+	}
+
+	private List<Station> addStations(Section section) {
+		return new ArrayList<>(Arrays.asList(section.getUpStation(), section.getDownStation()));
+	}
+
+	private void addAllStations(Section firstSection, List<Station> stations) {
+		Section nextSection = firstSection;
+		while (hasNext(nextSection.getDownStation())) {
+			Section section = findSection(nextSection.getDownStation());
+			stations.add(section.getDownStation());
+			nextSection = section;
+		}
+	}
+
+	private void removeMiddleStation(Station station) {
+		Section downSection = getSectionMatchingDownStation(station);
+		Section upSection = getSectionMatchingUpStation(station);
+		int index = sections.indexOf(downSection);
+		modifyMiddleSection(downSection, upSection, index);
+	}
+
+	private void modifyMiddleSection(Section downSection, Section upSection, int index) {
+		sections.remove(downSection);
+		sections.remove(upSection);
+		sections.add(index, new Section(upSection.getLine(), downSection.getUpStation(),
+				upSection.getDownStation(), upSection.getDistance() + downSection.getDistance()));
+	}
+
+	private Integer modifiedDistance(Integer origin, Integer insert) {
+		return origin - insert;
+	}
+
+	private void validateDistance(int distance, Section section) {
+		if (section.getDistance() < distance) {
+			throw new CannotInsertLongerSectionException(CANNOT_INSERT_LONGER_SECTION.getMessage());
+		}
+
+		if (section.getDistance() == distance) {
+			throw new CannotInsertSameDistanceSectionException(CANNOT_INSERT_SAME_DISTANCE_SECTION.getMessage());
+		}
 	}
 
 	private void validateStations(Station upStation, Station downStation) {
@@ -152,14 +171,11 @@ public class Sections {
 		return sections.stream()
 				.anyMatch(s -> s.getUpStation().equals(station));
 	}
-	private void validateDistance(int distance, Section section) {
-		if (section.getDistance() < distance) {
-			throw new CannotInsertLongerSectionException(CANNOT_INSERT_LONGER_SECTION.getMessage());
-		}
 
-		if (section.getDistance() == distance) {
-			throw new CannotInsertSameDistanceSectionException(CANNOT_INSERT_SAME_DISTANCE_SECTION.getMessage());
-		}
+	private boolean hasNext(Station station) {
+		return sections.stream()
+				.map(Section::getUpStation)
+				.anyMatch(s -> s.equals(station));
 	}
 
 	private Section getSectionMatchingDownStation(Station station) {
@@ -188,8 +204,12 @@ public class Sections {
 		return hasSameUpStation(upStation);
 	}
 
-	private Integer modifiedDistance(Integer origin, Integer insert) {
-		return origin - insert;
+	private boolean isMiddleOfSection(Station station) {
+		return hasSameUpStation(station) && hasSameDownStation(station);
+	}
+
+	private boolean isOnlyOneSection() {
+		return sections.size() == 1;
 	}
 
 	private Section getFirstSection() {
@@ -200,29 +220,10 @@ public class Sections {
 				.orElseThrow(AssertionError::new);
 	}
 
-	private boolean hasNext(Station station) {
-		return sections.stream()
-				.map(Section::getUpStation)
-				.anyMatch(s -> s.equals(station));
-	}
-
 	private Section findSection(Station station) {
 		return sections.stream()
 				.filter(s -> s.getUpStation().equals(station))
 				.findFirst()
 				.orElseThrow(AssertionError::new);
-	}
-
-	private List<Station> addStations(Section section) {
-		return new ArrayList<>(Arrays.asList(section.getUpStation(), section.getDownStation()));
-	}
-
-	private void addAllStations(Section firstSection, List<Station> stations) {
-		Section nextSection = firstSection;
-		while (hasNext(nextSection.getDownStation())) {
-			Section section = findSection(nextSection.getDownStation());
-			stations.add(section.getDownStation());
-			nextSection = section;
-		}
 	}
 }
