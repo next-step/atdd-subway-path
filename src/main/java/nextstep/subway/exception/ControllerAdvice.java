@@ -23,4 +23,11 @@ public class ControllerAdvice {
                 .body(new ErrorResponse(e.getMessage()));
     }
 
+    @ExceptionHandler(value = NewlySectionUpStationAndDownStationNotExist.class)
+    public ResponseEntity<ErrorResponse> newlySectionUpStationAndDownStationNotExist(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
 }
