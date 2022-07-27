@@ -63,6 +63,7 @@ class SectionsTest {
 		//then
 		assertAll(
 				() -> assertThat(stations).hasSize(3),
+				() -> assertThat(stations).containsExactly(광교역, 광교중앙역, 판교역),
 				() -> assertThat(sectionsResponse.get(0).getDistance()).isEqualTo(3),
 				() -> assertThat(sectionsResponse.get(1).getDistance()).isEqualTo(7)
 		);
@@ -88,6 +89,7 @@ class SectionsTest {
 		//then
 		assertAll(
 				() -> assertThat(stations).hasSize(3),
+				() -> assertThat(stations).containsExactly(광교역, 광교중앙역, 판교역),
 				() -> assertThat(sectionsResponse.get(0).getDistance()).isEqualTo(7),
 				() -> assertThat(sectionsResponse.get(1).getDistance()).isEqualTo(3)
 		);
@@ -185,6 +187,7 @@ class SectionsTest {
 		//then
 		assertAll(
 				() -> assertThat(stations).hasSize(3),
+				() -> assertThat(stations).containsExactly(신사역, 광교역, 판교역),
 				() -> assertThat(sectionsResponse.get(0).getDistance()).isEqualTo(3),
 				() -> assertThat(sectionsResponse.get(1).getDistance()).isEqualTo(10)
 		);
