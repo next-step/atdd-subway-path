@@ -98,32 +98,41 @@ public class Sections {
     }
 
     private void addSectionAtMiddle(Line line, Station upStation, Station downStation, int distance) {
-        for (Section section : sections) {
-            if (section.isUpStation(upStation)) {
-                addSectionBasedUpStation(line, upStation, downStation, distance, section);
-                return;
-            }
-
-            if (section.isDownStation(downStation)) {
-                addSectionBasedDownStation(line, upStation, downStation, distance, section);
-                return;
-            }
+        if (isAddUpStation(upStation)) {
+            addSectionBasedUpStation(line, upStation, downStation, distance);
+            return;
         }
+
+        addSectionBasedDownStation(line, upStation, downStation, distance);
     }
 
-    private void addSectionBasedUpStation(Line line, Station upStation, Station downStation, int distance, Section section) {
+    private boolean isAddUpStation(Station upStation) {
+        return sections.stream()
+                .anyMatch(it -> it.isUpStation(upStation));
+    }
+
+    private void addSectionBasedUpStation(Line line, Station upStation, Station downStation, int distance) {
+        Section section = sections.stream()
+                .filter(it -> it.isUpStation(upStation))
+                .findAny()
+                .orElseThrow();
+
         checkAvailableDistance(distance, section);
         sections.add(new Section(line, upStation, downStation, distance));
         sections.add(new Section(line, downStation, section.getDownStation(), section.getDistance() - distance));
         sections.remove(section);
     }
 
-    private void addSectionBasedDownStation(Line line, Station upStation, Station downStation, int distance, Section section) {
+    private void addSectionBasedDownStation(Line line, Station upStation, Station downStation, int distance) {
+        Section section = sections.stream()
+                .filter(it -> it.isDownStation(upStation))
+                .findAny()
+                .orElseThrow();
+
         checkAvailableDistance(distance, section);
         sections.add(new Section(line, upStation, downStation, distance));
         sections.add(new Section(line, section.getUpStation(), upStation, section.getDistance() - distance));
         sections.remove(section);
-        return;
     }
 
     private void checkAvailableDistance(int distance, Section section) {
