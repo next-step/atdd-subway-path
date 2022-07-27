@@ -30,45 +30,61 @@ public class Sections {
 
     public List<Station> stations() {
         List<Station> stations = new ArrayList<>();
-        addUpStations(stations);
-        addDownStations(stations, getFirstDownStation());
+        addFirstSection(stations);
+        Station firstDownStation = findDownStation(findFirstUpStation());
+        addNextStations(stations, firstDownStation);
         return stations;
     }
 
-    private Station getFirstDownStation() {
-        Station upStation = null;
-        int num = 0;
-        for (int i = 0; i < this.sections.size(); i++) {
-            if (upStation == null) {
-                upStation = this.sections.get(i).getUpStation();
-                num = i;
-            } else if (this.sections.get(i).getDownStation().equals(upStation)) {
-                upStation = sections.get(i).getUpStation();
-                num = i;
-            }
+    private void addNextStations(List<Station> stations, Station firstDownStation) {
+        Station prevStation = firstDownStation;
+        while (hasNextStation(prevStation)) {
+            Station nextStation = findNextStation(prevStation);
+            stations.add(nextStation);
+            prevStation = nextStation;
         }
-        return this.sections.get(num).getDownStation();
     }
 
-    private void addUpStations(List<Station> stations) {
-        Station upStation = null;
-        for (Section section : this.sections) {
-            if (upStation == null || section.getDownStation().equals(upStation)) {
-                upStation = section.getUpStation();
-            }
-        }
-        stations.add(upStation);
-    }
-
-    private void addDownStations(List<Station> stations, Station firstDownStation) {
+    private void addFirstSection(List<Station> stations) {
+        Station firstUpStation = findFirstUpStation();
+        stations.add(firstUpStation);
+        Station firstDownStation = findDownStation(firstUpStation);
         stations.add(firstDownStation);
-        Station downStation = firstDownStation;
+    }
+
+    private Station findDownStation(Station upStation) {
         for (Section section : this.sections) {
-            if (downStation.equals(section.getUpStation())) {
-                stations.add(section.getDownStation());
-                downStation = section.getDownStation();
+            if (upStation.equals(section.getUpStation())) {
+                return section.getDownStation();
             }
         }
+        throw new IllegalArgumentException();
+    }
+
+    private Station findFirstUpStation() {
+        Station firstUpStation = upStation();
+        for (Section section : this.sections) {
+            if (isDownStation(firstUpStation, section)) {
+                firstUpStation = section.getUpStation();
+            }
+        }
+        return firstUpStation;
+    }
+
+    private boolean hasNextStation(Station prevStation) {
+        return this.sections.stream().anyMatch(section -> prevStation.equals(section.getUpStation()));
+    }
+
+    private boolean isDownStation(Station upStation, Section section) {
+        return section.getDownStation().equals(upStation);
+    }
+
+    private boolean isUpStation(Station downStation, Section section) {
+        return section.getUpStation().equals(downStation);
+    }
+
+    private Station findNextStation(Station firstDownStation) {
+        return this.sections.stream().filter(section -> firstDownStation.equals(section.getUpStation())).findFirst().map(Section::getDownStation).orElse(null);
     }
 
     public List<Section> sections() {
