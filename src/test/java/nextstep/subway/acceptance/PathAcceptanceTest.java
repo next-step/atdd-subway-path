@@ -113,5 +113,19 @@ public class PathAcceptanceTest extends AcceptanceTest {
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
+
+        @DisplayName("출발역과 도착역이 연결되지 않았을 경우 조회 실패")
+        @Test
+        void findNotConnectStation() {
+            long 구로역 = 신규_지하철역("구로역");
+            long 구일역 = 신규_지하철역("구일역");
+            long 일호선 = 신규_지하철_노선(신규_라인("1호선", "blue", 구로역, 구일역, 10L));
+
+            // when
+            ExtractableResponse<Response> response = 최단_경로_조회_요청(양재역, 구일역);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
     }
 }

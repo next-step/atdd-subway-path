@@ -2,11 +2,13 @@ package nextstep.subway.domain;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
+import org.springframework.util.ObjectUtils;
 
 public class JGraph implements GraphStrategy {
     private final List<Line> lines;
@@ -41,7 +43,19 @@ public class JGraph implements GraphStrategy {
 
     private GraphPath<Station, SectionEdge> getGraphPath(Station target, Station source) {
         checkIsSameTargetAndSource(target, source);
-        return shortestPath.getPath(target, source);
+
+        GraphPath<Station, SectionEdge> path = shortestPath.getPath(target, source);
+        checkNotFoundPath(path);
+
+
+
+        return path;
+    }
+
+    private void checkNotFoundPath(GraphPath<Station, SectionEdge> path) {
+        if (ObjectUtils.isEmpty(path)) {
+            throw new IllegalArgumentException("출발역과 도착역 경로를 찾을 수 없습니다.");
+        }
     }
 
     private void checkIsSameTargetAndSource(Station target, Station source) {

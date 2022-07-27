@@ -50,64 +50,110 @@ public class JGraphTest {
     }
 
 
-    /**
-     * 교대역    --- *2호선(10)* ---        강남역(출발역)
-     * |                                    |
-     * *3호선(2)*                         *신분당선(10)*
-     * |                                    |
-     * 남부터미널역(도착역)  --- *3호선(3)* ---   양재
-     */
-    @DisplayName("환승을 포함한 최단거리 경로 조회 성공")
-    @Test
-    void transferShortestDistance(){
-        // given
-        JGraph graph = new JGraph(Arrays.asList(이호선, 삼호선, 신분당선));
+    @Nested
+    @DisplayName("성공")
+    class success {
+        /**
+         * 교대역    --- *2호선(10)* ---        강남역(출발역)
+         * |                                    |
+         * *3호선(2)*                         *신분당선(10)*
+         * |                                    |
+         * 남부터미널역(도착역)  --- *3호선(3)* ---   양재
+         */
+        @DisplayName("환승을 포함한 최단거리 경로 조회 성공")
+        @Test
+        void transferShortestDistance() {
+            // given
+            JGraph graph = new JGraph(Arrays.asList(이호선, 삼호선, 신분당선));
 
-        // when
-        List<Station> shortestPath = graph.findShortestPath(강남역, 남부터미널역);
-        int shortestDistance = graph.getShortestDistance(강남역, 남부터미널역);
+            // when
+            List<Station> shortestPath = graph.findShortestPath(강남역, 남부터미널역);
+            int shortestDistance = graph.getShortestDistance(강남역, 남부터미널역);
 
-        // then
-        assertAll(
-                () -> assertThat(shortestPath).containsExactly(강남역, 교대역, 남부터미널역),
-                () -> assertThat(shortestDistance).isEqualTo(12L)
-        );
+            // then
+            assertAll(
+                    () -> assertThat(shortestPath).containsExactly(강남역, 교대역, 남부터미널역),
+                    () -> assertThat(shortestDistance).isEqualTo(12L)
+            );
+        }
+
+        /**
+         * 교대역(출발역)    --- *2호선(10)* ---     강남역
+         * |                                    |
+         * *3호선(2)*                         *신분당선(10)*
+         * |                                    |
+         * 남부터미널역    --- *3호선(3)* ---       양재역(도착역)
+         */
+        @DisplayName("환승을 포함하지 않은 최단거리 경로 조회 성공")
+        @Test
+        void doseNotTransferShortestDistance() {
+            // given
+            JGraph graph = new JGraph(Arrays.asList(이호선, 삼호선, 신분당선));
+
+            // when
+            List<Station> shortestPath = graph.findShortestPath(교대역, 양재역);
+            int shortestDistance = graph.getShortestDistance(교대역, 양재역);
+
+            // then
+            assertAll(
+                    () -> assertThat(shortestPath).containsExactly(교대역, 남부터미널역, 양재역),
+                    () -> assertThat(shortestDistance).isEqualTo(5L)
+            );
+        }
     }
 
-    /**
-     * 교대역(출발역)    --- *2호선(10)* ---     강남역
-     * |                                    |
-     * *3호선(2)*                         *신분당선(10)*
-     * |                                    |
-     * 남부터미널역    --- *3호선(3)* ---       양재역(도착역)
-     */
-    @DisplayName("환승을 포함하지 않은 최단거리 경로 조회 성공")
-    @Test
-    void doseNotTransferShortestDistance(){
-        // given
-        JGraph graph = new JGraph(Arrays.asList(이호선, 삼호선, 신분당선));
 
-        // when
-        List<Station> shortestPath = graph.findShortestPath(교대역, 양재역);
-        int shortestDistance = graph.getShortestDistance(교대역, 양재역);
+    @Nested
+    @DisplayName("실패")
+    class fail {
+        @DisplayName("출발역과 도착역이 같은 경우 예외 발생")
+        @Test
+        public void sameStationException() {
+            // given
+            JGraph graph = new JGraph(Arrays.asList(이호선, 삼호선, 신분당선));
 
-        // then
-        assertAll(
-                () -> assertThat(shortestPath).containsExactly(교대역, 남부터미널역, 양재역),
-                () -> assertThat(shortestDistance).isEqualTo(5L)
-        );
-    }
+            // when
+            // then
+            assertAll(
+                    () -> assertThatThrownBy(() -> graph.findShortestPath(교대역, 교대역))
+                            .isInstanceOf(IllegalArgumentException.class)
+                            .hasMessage("출발역과 도착역이 같을 수 없습니다."),
+                    () -> assertThatThrownBy(() -> graph.getShortestDistance(교대역, 교대역))
+                            .isInstanceOf(IllegalArgumentException.class)
+                            .hasMessage("출발역과 도착역이 같을 수 없습니다.")
+            );
+        }
 
+        /**
+         * 교대역         --- *2호선(10)* ---        강남역
+         * |                                         |
+         * *3호선(2)*                            *신분당선(10)*
+         * |                                         |
+         * 남부터미널역(도착역)  --- *3호선(3)* ---    양재역
+         *
+         *
+         * 구일역 --- *1호선(10)* --- 구로역(출발역)
+         */
+        @DisplayName("출발역과 도착역이 같은 노선에 있지 않은 경우 예외 발생")
+        @Test
+        void notConnectedStation() {
+            Station 구로역 = new Station("구로역");
+            Station 구일역 = new Station("구일역");
+            Line 일호선 = new Line("1호선", "blue");
+            일호선.addSection(구로역, 구일역, 10);
 
-    @DisplayName("출발역과 도착역이 같은 경우 예외 발생")
-    @Test
-    public void sameStationException() {
-        // given
-        JGraph graph = new JGraph(Arrays.asList(이호선, 삼호선, 신분당선));
+            JGraph graph = new JGraph(Arrays.asList(일호선, 이호선, 삼호선, 신분당선));
 
-        // when
-        // then
-        assertThatThrownBy(() -> graph.findShortestPath(교대역, 교대역))
-                .isInstanceOf(IllegalArgumentException.class);
+            // when
+            // then
+            assertAll(
+                    () -> assertThatThrownBy(() -> graph.findShortestPath(구로역, 남부터미널역))
+                            .isInstanceOf(IllegalArgumentException.class)
+                            .hasMessage("출발역과 도착역 경로를 찾을 수 없습니다."),
+                    () -> assertThatThrownBy(() -> graph.getShortestDistance(구로역, 남부터미널역))
+                            .isInstanceOf(IllegalArgumentException.class)
+                            .hasMessage("출발역과 도착역 경로를 찾을 수 없습니다.")
+            );
+        }
     }
 }
