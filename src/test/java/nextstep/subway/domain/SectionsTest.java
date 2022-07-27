@@ -117,12 +117,6 @@ class SectionsTest {
         assertThat(sut.getStations()).isEmpty();
     }
 
-    @DisplayName("마지막 역이 아닌 역으로 구간 제거시 예외 발생")
-    @Test
-    void cantRemoveSectionByStationInMiddle() {
-        assertThrows(NotValidDeleteTargetStation.class, () -> sut.removeByStation(청량리역));
-    }
-
     private void 역_순서_검증(Sections sections, List<Station> stations) {
         assertThat(sections.getStations()).containsExactlyElementsOf(stations);
     }
