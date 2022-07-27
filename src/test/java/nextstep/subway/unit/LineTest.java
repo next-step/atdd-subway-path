@@ -75,7 +75,7 @@ class LineTest {
 
         // when & then
         assertDoesNotThrow(
-            () -> 분당선.addSection(역삼역_잠실역_구간)
+            () -> 분당선.getSections().addSection(역삼역_잠실역_구간)
         );
     }
 
@@ -87,7 +87,7 @@ class LineTest {
 
         // when & then
         assertThatThrownBy(
-            () -> 분당선.addSection(잠실역_역삼역_구간)
+            () -> 분당선.getSections().addSection(잠실역_역삼역_구간)
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -97,11 +97,11 @@ class LineTest {
         // given
         Section 역삼역_잠실역_구간 = new Section(역삼역, 잠실역, 10);
         Section 잠실역_강남역_구간 = new Section(잠실역, 강남역, 10);
-        분당선.addSection(역삼역_잠실역_구간);
+        분당선.getSections().addSection(역삼역_잠실역_구간);
 
         // when & then
         assertThatThrownBy(
-            () -> 분당선.addSection(잠실역_강남역_구간)
+            () -> 분당선.getSections().addSection(잠실역_강남역_구간)
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -111,11 +111,11 @@ class LineTest {
         // given
         Section 역삼역_잠실역_구간 = new Section(역삼역, 잠실역, 10);
         Section 잠실역_잠실역_구간 = new Section(잠실역, 잠실역, 10);
-        분당선.addSection(역삼역_잠실역_구간);
+        분당선.getSections().addSection(역삼역_잠실역_구간);
 
         // when & then
         assertThatThrownBy(
-            () -> 분당선.addSection(잠실역_잠실역_구간)
+            () -> 분당선.getSections().addSection(잠실역_잠실역_구간)
         ).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -125,7 +125,7 @@ class LineTest {
     void getStations() {
         // when & then
         List<Section> 분당선_구간_조회 = assertDoesNotThrow(
-            분당선::getSections
+            분당선.getSections()::getSections
         );
         assertThat(분당선_구간_조회).hasSize(1);
     }
@@ -135,10 +135,10 @@ class LineTest {
     @DisplayName("구간을 추가한 순서대로 정보를 가져와야 한다.")
     void getStationsValidationTest1() {
         // when
-        분당선.addSection(역삼역_잠실역_구간);
+        분당선.getSections().addSection(역삼역_잠실역_구간);
 
         // then
-        assertThat(분당선.getSections())
+        assertThat(분당선.getSections().getSections())
             .containsExactly(강남역_역삼역_구간, 역삼역_잠실역_구간);
     }
 
@@ -146,25 +146,25 @@ class LineTest {
     @DisplayName("구간을 조회할 때 내부 정보를 수정할 수 없어야 한다.")
     void getStationsValidationTest2() {
         // given
-        List<Section> 구간_정보 = 분당선.getSections();
+        List<Section> 구간_정보 = 분당선.getSections().getSections();
 
         // when
         구간_정보.remove(0);
 
         // then
-        assertThat(분당선.getSections()).hasSize(1);
+        assertThat(분당선.getSections().getSections()).hasSize(1);
     }
 
     @Test
     @DisplayName("구간(Section)을 삭제한다.(deleteSection)")
     void removeSection() {
         // given
-        분당선.addSection(역삼역_잠실역_구간);
+        분당선.getSections().addSection(역삼역_잠실역_구간);
 
         // when & then
         assertAll(
-            () -> assertDoesNotThrow(() -> 분당선.deleteSection(잠실역_ID)),
-            () -> assertThat(분당선.getSections()).hasSize(1)
+            () -> assertDoesNotThrow(() -> 분당선.getSections().deleteSection(잠실역_ID)),
+            () -> assertThat(분당선.getSections().getSections()).hasSize(1)
         );
     }
 
@@ -172,12 +172,12 @@ class LineTest {
     @DisplayName("노선의 종점 하행선만 삭제할 수 있다.")
     void removeSectionValidationTest1() {
         // given
-        분당선.addSection(역삼역_잠실역_구간);
+        분당선.getSections().addSection(역삼역_잠실역_구간);
 
         // when & then
         assertAll(
-            () -> assertThatThrownBy(() -> 분당선.deleteSection(강남역_ID)).isInstanceOf(IllegalArgumentException.class),
-            () -> assertThat(분당선.getSections()).hasSize(2)
+            () -> assertThatThrownBy(() -> 분당선.getSections().deleteSection(강남역_ID)).isInstanceOf(IllegalArgumentException.class),
+            () -> assertThat(분당선.getSections().getSections()).hasSize(2)
         );
     }
 
@@ -186,8 +186,8 @@ class LineTest {
     void removeSectionValidationTest2() {
         // when & then
         assertAll(
-            () -> assertThatThrownBy(() -> 분당선.deleteSection(역삼역_ID)).isInstanceOf(IllegalArgumentException.class),
-            () -> assertThat(분당선.getSections()).hasSize(1)
+            () -> assertThatThrownBy(() -> 분당선.getSections().deleteSection(역삼역_ID)).isInstanceOf(IllegalArgumentException.class),
+            () -> assertThat(분당선.getSections().getSections()).hasSize(1)
         );
     }
 }

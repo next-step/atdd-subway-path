@@ -26,7 +26,7 @@ public class Section {
     protected Section() {/*no-op*/}
 
     public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
-        if (upStation == null || downStation == null || distance == 0) {
+        if (upStation == null || downStation == null || distance < 1) {
             throw new IllegalArgumentException();
         }
 
@@ -35,6 +35,10 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public Section(Line line, Station upStation, Station downStation, int distance) {
+        this(null, line, upStation, downStation, distance);
     }
 
     public Section(Station upStation, Station downStation, int distance) {

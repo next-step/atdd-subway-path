@@ -68,12 +68,13 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        getLine(lineId).addSection(new Section(upStation, downStation, sectionRequest.getDistance()));
+        Line line = getLine(lineId);
+        line.getSections().addSection(new Section(null, line, upStation, downStation, sectionRequest.getDistance()));
     }
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        getLine(lineId).deleteSection(stationId);
+        getLine(lineId).getSections().deleteSection(stationId);
     }
 
     private Line getLine(Long lineId) {
@@ -90,15 +91,15 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
+        if (line.getSections().getSections().isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getSections().stream()
+        List<Station> stations = line.getSections().getSections().stream()
             .map(Section::getDownStation)
             .collect(Collectors.toList());
 
-        stations.add(0, line.getSections().get(0).getUpStation());
+        stations.add(0, line.getSections().getSections().get(0).getUpStation());
 
         return stations.stream()
             .map(it -> stationService.createStationResponse(it))

@@ -5,6 +5,7 @@ import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.*;
 import nextstep.subway.fake.FakeLineRepository;
 import nextstep.subway.fake.FakeStationRepository;
@@ -15,8 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static nextstep.subway.fixture.LineFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -32,6 +33,7 @@ public class LineServiceFakeTest {
     private Station 강남역;
     private Station 역삼역;
     private Station 잠실역;
+    private Station 판교역;
     private Line 신분당선;
     private Line 분당선;
 
@@ -40,6 +42,7 @@ public class LineServiceFakeTest {
         강남역 = stationRepository.save(new Station("강남역"));
         역삼역 = stationRepository.save(new Station("역삼역"));
         잠실역 = stationRepository.save(new Station("잠실역"));
+        판교역 = stationRepository.save(new Station("판교역"));
         신분당선 = lineRepository.save(new Line("신분당선", "red", new Section(강남역, 역삼역, 10)));
         분당선 = lineRepository.save(new Line("분당선", "red", new Section(역삼역, 강남역, 10)));
     }
@@ -147,9 +150,9 @@ public class LineServiceFakeTest {
 
     @Test
     @DisplayName("구간을 추가한다.")
-    void addSection() {
+    void addSection1() {
         // given
-        int 신분당선_구간_개수 = 신분당선.getSections().size();
+        int 신분당선_구간_개수 = 신분당선.getSections().getSections().size();
 
         // when
         SectionRequest 구간_등록_요청 = new SectionRequest(역삼역.getId(), 잠실역.getId(), 10);
@@ -158,7 +161,45 @@ public class LineServiceFakeTest {
         // then
         Line line = lineRepository.findById(신분당선.getId()).get();
         assertAll(
-            () -> assertThat(line.getSections()).hasSize(신분당선_구간_개수 + 1)
+            () -> assertThat(line.getSections().getSections()).hasSize(신분당선_구간_개수 + 1)
+        );
+    }
+
+    @Test
+    @DisplayName("중간 구간을 추가한다.")
+    void addSection2() {
+        // given
+        Section 역삼역_잠실역 = new Section(역삼역, 잠실역, 10);
+        신분당선.getSections().addSection(역삼역_잠실역);
+        int 신분당선_구간_개수 = 신분당선.getSections().getSections().size();
+        // when
+        SectionRequest 구간_등록_요청 = new SectionRequest(판교역.getId(), 역삼역.getId(), 3);
+        lineService.addSection(신분당선.getId(), 구간_등록_요청);
+
+        // then
+        Line line = lineRepository.findById(신분당선.getId()).orElseThrow(IllegalArgumentException::new);
+
+        assertAll(
+            () -> assertThat(line.getSections().getSections()).hasSize(신분당선_구간_개수 + 1)
+        );
+    }
+
+    @Test
+    @DisplayName("상행 구간을 추가한다.")
+    void addSection3() {
+        // given
+        Section 역삼역_잠실역 = new Section(역삼역, 잠실역, 10);
+        신분당선.getSections().addSection(역삼역_잠실역);
+        int 신분당선_구간_개수 = 신분당선.getSections().getSections().size();
+        // when
+        SectionRequest 구간_등록_요청 = new SectionRequest(판교역.getId(), 강남역.getId(), 3);
+        lineService.addSection(신분당선.getId(), 구간_등록_요청);
+
+        // then
+        Line line = lineRepository.findById(신분당선.getId()).orElseThrow(IllegalArgumentException::new);
+
+        assertAll(
+            () -> assertThat(line.getSections().getSections()).hasSize(신분당선_구간_개수 + 1)
         );
     }
 
@@ -166,8 +207,8 @@ public class LineServiceFakeTest {
     @DisplayName("구간을 삭제한다.")
     void deleteSection() {
         // given
-        신분당선.addSection(new Section(역삼역, 잠실역, 10));
-        int 신분당선_구간_개수 = 신분당선.getSections().size();
+        신분당선.getSections().addSection(new Section(역삼역, 잠실역, 10));
+        int 신분당선_구간_개수 = 신분당선.getSections().getSections().size();
 
         // when
         lineService.deleteSection(신분당선.getId(), 잠실역.getId());
@@ -175,9 +216,25 @@ public class LineServiceFakeTest {
         // then
         Line line = lineRepository.findById(신분당선.getId()).get();
         assertAll(
-            () -> assertThat(line.getSections()).hasSize(신분당선_구간_개수 - 1)
+            () -> assertThat(line.getSections().getSections()).hasSize(신분당선_구간_개수 - 1)
         );
     }
 
+    @Test
+    @DisplayName("구간을_순서대로_조회한다")
+    void getSections() {
+        // given
+        Section 역삼역_잠실역 = new Section(역삼역, 잠실역, 10);
+        Section 판교역_역삼역 = new Section(판교역, 역삼역, 3);
+        신분당선.getSections().addSection(역삼역_잠실역);
+        신분당선.getSections().addSection(판교역_역삼역);
 
+        // when
+        List<String> 역_이름_목록 = lineService.findById(신분당선.getId()).getStations().stream().map(StationResponse::getName).collect(Collectors.toList());
+
+        // then
+        assertAll(
+            () -> assertThat(역_이름_목록).containsExactly("강남역", "판교역", "역삼역", "잠실역")
+        );
+    }
 }

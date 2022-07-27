@@ -5,7 +5,6 @@ import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -149,7 +148,7 @@ public class LineServiceTest {
     @DisplayName("구간을 추가한다.")
     void addSection() {
         // given
-        int 신분당선_구간_개수 = 신분당선.getSections().size();
+        int 신분당선_구간_개수 = 신분당선.getSections().getSections().size();
 
         // when
         SectionRequest 구간_등록_요청 = new SectionRequest(역삼역.getId(), 잠실역.getId(), 10);
@@ -158,7 +157,7 @@ public class LineServiceTest {
         // then
         Line line = lineRepository.findById(신분당선.getId()).get();
         assertAll(
-            () -> assertThat(line.getSections()).hasSize(신분당선_구간_개수 + 1)
+            () -> assertThat(line.getSections().getSections()).hasSize(신분당선_구간_개수 + 1)
         );
     }
 
@@ -166,8 +165,8 @@ public class LineServiceTest {
     @DisplayName("구간을 삭제한다.")
     void deleteSection() {
         // given
-        신분당선.addSection(new Section(역삼역, 잠실역, 10));
-        int 신분당선_구간_개수 = 신분당선.getSections().size();
+        신분당선.getSections().addSection(new Section(역삼역, 잠실역, 10));
+        int 신분당선_구간_개수 = 신분당선.getSections().getSections().size();
 
         // when
         lineService.deleteSection(신분당선.getId(), 잠실역.getId());
@@ -175,7 +174,7 @@ public class LineServiceTest {
         // then
         Line line = lineRepository.findById(신분당선.getId()).get();
         assertAll(
-            () -> assertThat(line.getSections()).hasSize(신분당선_구간_개수 - 1)
+            () -> assertThat(line.getSections().getSections()).hasSize(신분당선_구간_개수 - 1)
         );
     }
 }

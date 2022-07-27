@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface JpaLineRepository extends JpaRepository<Line, Long> , LineRepository {
+public interface JpaLineRepository extends JpaRepository<Line, Long>, LineRepository {
     @Override
     <S extends Line> S save(S entity);
 
