@@ -37,51 +37,57 @@ public class Sections {
             return;
         }
 
-        // 이미 모두 등록되어 있음
-        if (getStations().contains(newUpStation) && getStations().contains(newDownStation)) {
-            throw new BusinessException("이미 모두 등록되어 있는 역들 입니다. : " + newUpStation.getName() + ", " + newDownStation.getName(), HttpStatus.BAD_REQUEST);
-        }
-
-        // 둘다 포함되어 있지 않음
-        if (!getStations().contains(newUpStation) && !getStations().contains(newDownStation)) {
-            throw new BusinessException("모두 등록되어 있지 않은 역들 입니다. : " + newUpStation.getName() + ", " + newDownStation.getName(), HttpStatus.BAD_REQUEST);
-        }
+        validateExceptionCase(newUpStation, newDownStation);
 
         for (Section section : this.sections) {
             Station upStation = section.getUpStation();
             Station downStation = section.getDownStation();
             int distance = section.getDistance();
 
-            // 사이에 있음
-            if (upStation.equals(newUpStation) && !downStation.equals(newDownStation) && newDistance < distance) {
+            if (isNewStationInBetween(newUpStation, newDownStation, upStation, downStation, newDistance, distance)) {
                 this.sections.remove(section);
                 this.sections.add(new Section(section.getLine(), newUpStation, newDownStation, newDistance));
                 this.sections.add(new Section(section.getLine(), newDownStation, downStation, distance - newDistance));
                 return;
             }
 
-            // 사이에 있음
-            if (downStation.equals(newDownStation) && !upStation.equals(newUpStation) && newDistance < distance) {
-                this.sections.remove(section);
-                this.sections.add(new Section(section.getLine(), upStation, newUpStation, distance - newDistance));
-                this.sections.add(new Section(section.getLine(), newUpStation, newDownStation, newDistance));
-                return;
-            }
-
-            // 새로운 역이 상행 종점
-            if (newDownStation.equals(this.findFirstStation()) && !getStations().contains(newUpStation)) {
-                this.sections.add(newSection);
-                return;
-            }
-
-            // 새로운 역이 하행 종점
-            if (newUpStation.equals(this.findLastStation()) && !getStations().contains(newDownStation)) {
+            if (isNewUpStation(newUpStation, newDownStation) || isNewDownStation(newUpStation, newDownStation)) {
                 this.sections.add(newSection);
                 return;
             }
         }
 
         throw new BusinessException("해당 구간을 등록할 수 없습니다. : " + newUpStation.getName() + ", " + newDownStation.getName(), HttpStatus.BAD_REQUEST);
+    }
+
+    private boolean isNewDownStation(Station newUpStation, Station newDownStation) {
+        return newUpStation.equals(this.findLastStation()) && !getStations().contains(newDownStation);
+    }
+
+    private boolean isNewUpStation(Station newUpStation, Station newDownStation) {
+        return newDownStation.equals(this.findFirstStation()) && !getStations().contains(newUpStation);
+    }
+
+    private boolean isNewStationInBetween(Station newUpStation, Station newDownStation, Station upStation, Station downStation, int newDistance, int distance) {
+        return (upStation.equals(newUpStation) && !downStation.equals(newDownStation) && newDistance < distance) || (downStation.equals(newDownStation) && !upStation.equals(newUpStation) && newDistance < distance);
+    }
+
+    private void validateExceptionCase(Station newUpStation, Station newDownStation) {
+        if (isAllAlreadyIncluded(newUpStation, newDownStation)) {
+            throw new BusinessException("이미 모두 등록되어 있는 역들 입니다. : " + newUpStation.getName() + ", " + newDownStation.getName(), HttpStatus.BAD_REQUEST);
+        }
+
+        if (isAllNotIncluded(newUpStation, newDownStation)) {
+            throw new BusinessException("모두 등록되어 있지 않은 역들 입니다. : " + newUpStation.getName() + ", " + newDownStation.getName(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private boolean isAllNotIncluded(Station newUpStation, Station newDownStation) {
+        return !getStations().contains(newUpStation) && !getStations().contains(newDownStation);
+    }
+
+    private boolean isAllAlreadyIncluded(Station newUpStation, Station newDownStation) {
+        return getStations().contains(newUpStation) && getStations().contains(newDownStation);
     }
 
     public boolean isEmpty() {
