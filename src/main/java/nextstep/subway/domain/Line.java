@@ -24,6 +24,13 @@ public class Line {
         this.sections = new Sections();
     }
 
+    public Line(Long id, String name, String color) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.sections = new Sections();
+    }
+
     public Long getId() {
         return id;
     }
@@ -50,6 +57,11 @@ public class Line {
 
     public List<Section> getSections() {
         return sections.getSections();
+    }
+
+    public List<Section> getSectionsForSort(SectionComparator.SectionSort sectionSort) {
+        return sections.getSections(sectionSort);
+
     }
 
     public Section getFirstSection() {
