@@ -1,12 +1,8 @@
 package nextstep.subway.unit;
 
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import nextstep.subway.applicaion.LineCommandService;
 import nextstep.subway.applicaion.LineQueryService;
 import nextstep.subway.applicaion.StationQueryService;
-import nextstep.subway.applicaion.dto.LineCreationRequest;
-import nextstep.subway.applicaion.dto.LineModificationRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRegistrationRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
@@ -16,7 +12,6 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.exception.NoLastStationException;
 import nextstep.subway.exception.SectionRegistrationException;
 import nextstep.subway.exception.SectionRemovalException;
-import nextstep.subway.utils.GivenUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.test.annotation.DirtiesContext;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -34,11 +28,9 @@ import java.util.stream.Collectors;
 
 import static nextstep.subway.utils.GivenUtils.FIRST_ID;
 import static nextstep.subway.utils.GivenUtils.FIVE;
-import static nextstep.subway.utils.GivenUtils.FOURTH_ID;
 import static nextstep.subway.utils.GivenUtils.GREEN;
 import static nextstep.subway.utils.GivenUtils.SECOND_ID;
 import static nextstep.subway.utils.GivenUtils.TEN;
-import static nextstep.subway.utils.GivenUtils.THIRD_ID;
 import static nextstep.subway.utils.GivenUtils.YELLOW;
 import static nextstep.subway.utils.GivenUtils.강남_역삼_구간_요청;
 import static nextstep.subway.utils.GivenUtils.강남역;
@@ -50,13 +42,10 @@ import static nextstep.subway.utils.GivenUtils.양재역;
 import static nextstep.subway.utils.GivenUtils.역삼역;
 import static nextstep.subway.utils.GivenUtils.역삼역_이름;
 import static nextstep.subway.utils.GivenUtils.이호선;
-import static nextstep.subway.utils.GivenUtils.이호선_생성_요청;
+import static nextstep.subway.utils.GivenUtils.이호선_객체_생성_요청;
 import static nextstep.subway.utils.GivenUtils.이호선_이름;
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
@@ -85,7 +74,7 @@ public class LineCommandServiceMockTest {
                 .findById(SECOND_ID);
 
         // when
-        LineResponse lineResponse = lineCommandService.saveLine(이호선_생성_요청());
+        LineResponse lineResponse = lineCommandService.saveLine(이호선_객체_생성_요청());
         List<String> stationNames = lineResponse.getStations()
                 .stream()
                 .map(StationResponse::getName)
@@ -106,7 +95,7 @@ public class LineCommandServiceMockTest {
                 .findById(FIRST_ID);
 
         // when
-        Executable executable = () -> lineCommandService.saveLine(이호선_생성_요청());
+        Executable executable = () -> lineCommandService.saveLine(이호선_객체_생성_요청());
         
         // then
         assertThrows(EntityNotFoundException.class, executable);

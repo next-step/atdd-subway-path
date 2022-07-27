@@ -1,20 +1,35 @@
 package nextstep.subway.acceptance;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.client.StationClient;
+import nextstep.subway.utils.GivenUtils;
+import nextstep.subway.utils.HttpStatusValidator;
+import nextstep.subway.utils.JsonResponseConverter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.annotation.DirtiesContext;
 
-import java.util.List;
-
-import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
+import static nextstep.subway.utils.GivenUtils.강남역_이름;
+import static nextstep.subway.utils.GivenUtils.이호선역_이름들;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
+
+    @Autowired
+    StationClient stationClient;
+
+    @Autowired
+    HttpStatusValidator statusValidator;
+
+    @Autowired
+    JsonResponseConverter responseConverter;
+
+    @Autowired
+    GivenUtils givenUtils;
 
     /**
      * When 지하철역을 생성하면
@@ -23,20 +38,17 @@ public class StationAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철역을 생성한다.")
     @Test
+    @DirtiesContext
     void createStation() {
+        // given
+
         // when
-        ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
+        ExtractableResponse<Response> response = givenUtils.강남역_생성();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
-        assertThat(stationNames).containsAnyOf("강남역");
+        statusValidator.validateCreated(response);
+        assertThat(responseConverter.convertToNames(stationClient.fetchStations()))
+                .containsExactly(강남역_이름);
     }
 
     /**
@@ -44,22 +56,21 @@ public class StationAcceptanceTest extends AcceptanceTest {
      * When 지하철역 목록을 조회하면
      * Then 2개의 지하철역을 응답 받는다
      */
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("지하철역 목록을 조회한다.")
     @Test
+    @DirtiesContext
     void getStations() {
         // given
-        지하철역_생성_요청("강남역");
-        지하철역_생성_요청("역삼역");
+        stationClient.createStations(이호선역_이름들);
 
         // when
-        ExtractableResponse<Response> stationResponse = RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = stationClient.fetchStations();
 
         // then
-        List<StationResponse> stations = stationResponse.jsonPath().getList(".", StationResponse.class);
-        assertThat(stations).hasSize(2);
+        statusValidator.validateOk(response);
+        assertThat(responseConverter.convertToNames(response))
+                .hasSize(이호선역_이름들.size())
+                .containsExactly(이호선역_이름들.toArray(String[]::new));
     }
 
     /**
@@ -69,24 +80,38 @@ public class StationAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철역을 제거한다.")
     @Test
+    @DirtiesContext
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철역_생성_요청("강남역");
+        Long stationId = responseConverter.convertToId(givenUtils.강남역_생성());
 
         // when
-        String location = createResponse.header("location");
-        RestAssured.given().log().all()
-                .when()
-                .delete(location)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = stationClient.deleteStation(stationId);
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
-        assertThat(stationNames).doesNotContain("강남역");
+        statusValidator.validateNoContent(response);
+        assertThat(responseConverter.convertToNames(stationClient.fetchStations()))
+                .doesNotContain(강남역_이름);
     }
+
+    /**
+     * When 존재하지 않는 지하철 역을 삭제하면
+     * Then 해당 지하철 역 정보는 삭제된다
+     */
+    @DisplayName("존재하지 않는 지하철 역을 제거한다.")
+    @Test
+    @DirtiesContext
+    void deleteNonExistentStation() {
+        // given
+        Long notExistsStationId = 1L;
+
+        // when
+        ExtractableResponse<Response> response = stationClient.deleteStation(notExistsStationId);
+
+        // then
+        statusValidator.validateBadRequest(response);
+        assertThat(responseConverter.convertToError(response))
+                .contains(EmptyResultDataAccessException.class.getName());
+    }
+
 }

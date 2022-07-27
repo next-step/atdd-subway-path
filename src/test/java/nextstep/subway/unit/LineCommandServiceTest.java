@@ -42,7 +42,7 @@ import static nextstep.subway.utils.GivenUtils.역삼_선릉_구간_요청;
 import static nextstep.subway.utils.GivenUtils.역삼역;
 import static nextstep.subway.utils.GivenUtils.역삼역_이름;
 import static nextstep.subway.utils.GivenUtils.이호선;
-import static nextstep.subway.utils.GivenUtils.이호선_생성_요청;
+import static nextstep.subway.utils.GivenUtils.이호선_객체_생성_요청;
 import static nextstep.subway.utils.GivenUtils.이호선_이름;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -71,7 +71,7 @@ public class LineCommandServiceTest {
         saveAllStations(강남역(), 역삼역());
 
         // when
-        LineResponse lineResponse = lineCommandService.saveLine(이호선_생성_요청());
+        LineResponse lineResponse = lineCommandService.saveLine(이호선_객체_생성_요청());
 
         // then
         assertThat(lineResponse.getId()).isEqualTo(FIRST_ID);
@@ -88,7 +88,7 @@ public class LineCommandServiceTest {
         // given
 
         // when
-        Executable executable = () -> lineCommandService.saveLine(이호선_생성_요청());
+        Executable executable = () -> lineCommandService.saveLine(이호선_객체_생성_요청());
 
         // then
         assertThrows(EntityNotFoundException.class, executable);
