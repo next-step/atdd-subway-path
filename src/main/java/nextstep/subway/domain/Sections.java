@@ -80,7 +80,7 @@ public class Sections {
     }
 
     private Station findNextStation(Station firstDownStation) {
-        return this.sections.stream().filter(section -> firstDownStation.equals(section.getUpStation())).findFirst().map(Section::getDownStation).orElse(null);
+        return this.sections.stream().filter(section -> firstDownStation.equals(section.getUpStation())).findFirst().map(Section::getDownStation).orElseThrow(() -> new IllegalArgumentException("다음 역이 존재하지 않습니다."));
     }
 
     public List<Section> sections() {
