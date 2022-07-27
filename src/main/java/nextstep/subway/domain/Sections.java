@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.NewlySectionUpStationAndDownStationNotExist;
 import nextstep.subway.exception.SectionAllStationsAlreadyExistException;
 
 import javax.persistence.CascadeType;
@@ -23,9 +24,7 @@ public class Sections {
 
     public void add(Section newlySection) {
 
-        if (alreadyExistUpStationAndDownStation(newlySection)) {
-            throw new SectionAllStationsAlreadyExistException("이미 구간 내 상행역, 하행역이 모두 존재하여 추가할 수 없습니다.");
-        }
+        validateAddNewlySection(newlySection);
 
         for (int i = 0; i < sections.size(); i++) {
             Section section = sections.get(i);
@@ -47,12 +46,32 @@ public class Sections {
 
     }
 
+    private void validateAddNewlySection(Section newlySection) {
+        if (!sections.isEmpty() && !hasStation(newlySection)) {
+            throw new NewlySectionUpStationAndDownStationNotExist("추가하고자 하는 상행역, 하행역이 존재하지 않아 추가할 수 없습니다.");
+        }
+
+        if (alreadyExistUpStationAndDownStation(newlySection)) {
+            throw new SectionAllStationsAlreadyExistException("이미 구간 내 상행역, 하행역이 모두 존재하여 추가할 수 없습니다.");
+        }
+    }
+
+    boolean hasStation(Section section) {
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+        return sections.stream().anyMatch(s -> s.hasStation(upStation))
+                || sections.stream().anyMatch(s -> s.hasStation(downStation));
+    }
+
+    boolean hasStation(Station station) {
+        return sections.stream().anyMatch(section -> section.hasStation(station));
+    }
+
     private boolean alreadyExistUpStationAndDownStation(Section newlySection) {
         Station upStation = newlySection.getUpStation();
         Station downStation = newlySection.getDownStation();
-        boolean upStationExist = sections.stream().anyMatch(section -> section.hasStation(upStation));
-        boolean downStationExist = sections.stream().anyMatch(section -> section.hasStation(downStation));
-        return upStationExist && downStationExist;
+        return sections.stream().anyMatch(section -> section.hasStation(upStation))
+                || sections.stream().anyMatch(section -> section.hasStation(downStation));
     }
 
 
@@ -123,10 +142,6 @@ public class Sections {
                 .filter(section -> downStation.equals(section.getUpStation()))
                 .map(Section::getDownStation)
                 .findAny();
-    }
-
-    public boolean hasStation(Station station) {
-        return sections.stream().anyMatch(section -> section.hasStation(station));
     }
 
     public boolean isEmpty() {
