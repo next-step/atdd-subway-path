@@ -81,6 +81,10 @@ public class Section {
         return downStation.equals(section.getDownStation());
     }
 
+    public boolean sameUpStationAndDownStation(Section section) {
+        return upStation.equals(section.getUpStation()) && downStation.equals(section.getDownStation());
+    }
+
     public int betweenDistance(Section section) {
         int between = distance - section.getDistance();
         if (between <= 0) {

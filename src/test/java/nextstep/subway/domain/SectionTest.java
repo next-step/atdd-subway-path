@@ -45,6 +45,18 @@ class SectionTest {
         assertThat(between).isEqualTo(7);
     }
 
+    @DisplayName("모든 역을 포함하고 있는지 확인할 수 있다.")
+    @Test
+    void hasAllStations() {
+        //given
+        final var section = new Section(new Station("잠실역"), new Station("강변역"), 10);
+        //when
+        boolean result =
+                section.sameUpStationAndDownStation(new Section(new Station("잠실역"), new Station("강변역"), 10));
+        //then
+        assertThat(result).isTrue();
+    }
+
     @DisplayName("새로 추가 될 구간이 기존과 같거나 크다면 에러가 발생한다.")
     @ParameterizedTest
     @ValueSource(ints = {10, 11})

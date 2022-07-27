@@ -68,10 +68,8 @@ public class Sections {
     }
 
     private boolean alreadyExistUpStationAndDownStation(Section newlySection) {
-        Station upStation = newlySection.getUpStation();
-        Station downStation = newlySection.getDownStation();
         return sections.stream()
-                .anyMatch(section -> section.hasStation(upStation) && section.hasStation(downStation));
+                .anyMatch(section -> section.sameUpStationAndDownStation(newlySection));
     }
 
 
