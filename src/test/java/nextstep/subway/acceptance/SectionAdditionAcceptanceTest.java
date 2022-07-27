@@ -2,11 +2,11 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.request.SectionRequest;
 import nextstep.subway.domain.Station;
+import nextstep.subway.enums.SubwayErrorMessage;
 import nextstep.subway.fake.FakeLineFactory;
 import nextstep.subway.fake.FakeStationFactory;
-import nextstep.subway.fake.SubwayExceptionMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 추가 인수 테스트")
-public class SectionAdditionAcceptanceTest extends AcceptanceTest{
+class SectionAdditionAcceptanceTest extends AcceptanceTest{
 
     private Station 강남역;
     private Station 구의역;
@@ -115,7 +115,7 @@ public class SectionAdditionAcceptanceTest extends AcceptanceTest{
                 () -> assertThat(신촌_선릉_구간_추가_요청.statusCode())
                         .isEqualTo(HttpStatus.BAD_REQUEST.value()),
                 () -> assertThat(신촌_선릉_구간_추가_요청.jsonPath().getString("message"))
-                        .isEqualTo(SubwayExceptionMessage.아무런_역도_포함되지_않은_경우())
+                        .isEqualTo(SubwayErrorMessage.NOT_EXIST_STATION_OF_SECTION.getMessage())
         );
     }
 
@@ -137,7 +137,7 @@ public class SectionAdditionAcceptanceTest extends AcceptanceTest{
                 () -> assertThat(구간_추가_요청_응답.statusCode())
                         .isEqualTo(HttpStatus.BAD_REQUEST.value()),
                 () -> assertThat(구간_추가_요청_응답.jsonPath().getString("message"))
-                        .isEqualTo(SubwayExceptionMessage.기존_거리보다_길거나_같은_구간을_등록할_경우())
+                        .isEqualTo(SubwayErrorMessage.INVALID_DISTANCE.getMessage())
         );
     }
 
@@ -158,7 +158,7 @@ public class SectionAdditionAcceptanceTest extends AcceptanceTest{
                 () -> assertThat(구간_추가_요청_응답.statusCode())
                         .isEqualTo(HttpStatus.BAD_REQUEST.value()),
                 () -> assertThat(구간_추가_요청_응답.jsonPath().getString("message"))
-                        .isEqualTo(SubwayExceptionMessage.중복된_구간을_등록했을_경우())
+                        .isEqualTo(SubwayErrorMessage.EXIST_SECTION.getMessage())
         );
     }
 

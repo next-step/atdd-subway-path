@@ -1,4 +1,4 @@
-package nextstep.subway.applicaion.dto;
+package nextstep.subway.applicaion.dto.request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,4 +18,13 @@ public class LineRequest {
     public LineRequest(String name, String color) {
         this(name, color, null, null, 0);
     }
+
 }
+
+
+
+
+
+
+
+

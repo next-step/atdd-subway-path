@@ -27,11 +27,11 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
-    @Builder
     public Section(Line line, Station upStation, Station downStation, int distance) {
-        this(null, line, upStation, downStation, distance);
+        this(null, line, upStation, downStation, Distance.of(distance));
     }
 
     public List<Station> getStations() {
@@ -47,7 +47,7 @@ public class Section {
     }
 
     public void changeSectionConditionBy(Section newSection) {
-        checkToNewSectionDistance(newSection.getDistance());
+        distance.decreaseDistance(newSection.getDistance());
 
         if (isEqualToUpStation(newSection.getUpStation())) {
             changeUpStation(newSection.getDownStation());
@@ -56,22 +56,6 @@ public class Section {
         if (isEqualToDownStation(newSection.getDownStation())) {
             changeDownStation(newSection.getUpStation());
         }
-
-        decreaseDistance(newSection.getDistance());
-    }
-
-    private void decreaseDistance(Integer distance) {
-        this.distance = this.distance - distance;
-    }
-
-    private void checkToNewSectionDistance(Integer newDistance) {
-        if (!isOriginalDistanceLongThenNew(newDistance)) {
-            throw new IllegalArgumentException("역 사이에 등록할 경우 기존의 거리보다 짧은 구간만 등록이 가능합니다.");
-        }
-    }
-
-    private boolean isOriginalDistanceLongThenNew(Integer newDistance) {
-        return newDistance < this.distance;
     }
 
     public void changeDownStation(Station station) {
@@ -82,14 +66,18 @@ public class Section {
         this.upStation = station;
     }
 
-    public void addDistance(int distance) {
-        this.distance += distance;
+    public void addDistance(Distance distance) {
+        this.distance.addDistance(distance);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)  {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Section section = (Section) o;
         return Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation);
     }

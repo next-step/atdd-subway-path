@@ -1,9 +1,9 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
-import nextstep.subway.applicaion.dto.LineRequest;
-import nextstep.subway.applicaion.dto.LineResponse;
-import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.request.LineRequest;
+import nextstep.subway.applicaion.dto.response.LineResponse;
+import nextstep.subway.applicaion.dto.request.SectionRequest;
 import nextstep.subway.domain.*;
 import nextstep.subway.fake.FakeLineFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-public class LineServiceTest {
+class LineServiceTest {
     @Autowired
     private StationRepository stationRepository;
     @Autowired
@@ -94,7 +94,7 @@ public class LineServiceTest {
 
         //then
         List<LineResponse> lineResponses = lineService.showLines();
-        assertThat(lineResponses).hasSize(0);
+        assertThat(lineResponses).isEmpty();
     }
 
     private Station 지하철역_생성(String name) {
