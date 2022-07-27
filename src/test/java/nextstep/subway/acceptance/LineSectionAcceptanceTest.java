@@ -145,7 +145,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeUpSection() {
         // given
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 강남역, 5));
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 교대역, 5));
 
         // when
