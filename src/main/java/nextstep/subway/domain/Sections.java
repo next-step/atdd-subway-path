@@ -123,13 +123,83 @@ public class Sections {
     }
 
     public void deleteStation(Station station) {
-        if (!this.getLastSection()
-                .getDownStation()
-                .equals(station)) {
-            throw new IllegalArgumentException();
+        if (this.sections.size() <= 1) {
+            throw new BusinessException("해당 지하철 노선에 지하철 구간이 하나밖에 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        this.sections.remove(getLastSection());
+        if (isNotIncludedStation(station)) {
+            throw new BusinessException("해당 지하철 노선에 등록되지 않은 역입니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (isFirstStation(station)) {
+            removeUpStation(station);
+            return;
+        }
+
+        if (isLastStation(station)) {
+            removeDownStation(station);
+            return;
+        }
+
+        if (isMiddleStation(station)) {
+            removeMiddleStation(station);
+            return;
+        }
+
+        throw new BusinessException("해당 지하철 노선에서 지하철역을 삭제할 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private boolean isNotIncludedStation(Station station) {
+        return !this.getStations()
+                .contains(station);
+    }
+
+    private void removeMiddleStation(Station station) {
+        Line line = this.sections.get(0)
+                .getLine();
+        Section upSection = new Section();
+        Section downSection = new Section();
+        Station upStation = new Station();
+        Station downStation = new Station();
+
+        int upSectionDistance = 0;
+        int downSectionDistance = 0;
+
+        for (Section section : sections) {
+            if (section.isUpStation(station)) {
+                downStation = section.getDownStation();
+                upSectionDistance = section.getDistance();
+                upSection = section;
+            }
+
+            if (section.isDownStation(station)) {
+                upStation = section.getUpStation();
+                downSectionDistance = section.getDistance();
+                downSection = section;
+            }
+        }
+
+        this.sections.remove(upSection);
+        this.sections.remove(downSection);
+        this.sections.add(new Section(line, upStation, downStation, upSectionDistance + downSectionDistance));
+    }
+
+    private void removeUpStation(Station station) {
+        for (Section section : this.sections) {
+            if (section.isUpStation(station)) {
+                this.sections.remove(section);
+                return;
+            }
+        }
+    }
+
+    private void removeDownStation(Station station) {
+        for (Section section : sections) {
+            if (section.isDownStation(station)) {
+                sections.remove(section);
+                return;
+            }
+        }
     }
 
     private Station findFirstStation() {
@@ -163,11 +233,16 @@ public class Sections {
 
     private boolean isLastStation(Station station) {
         for (Section section : this.sections) {
-            if (section.isFirstStation(station)) {
+            if (section.isUpStation(station)) {
                 return false;
             }
         }
         return true;
+    }
+
+    private boolean isMiddleStation(Station station) {
+        return this.getStations()
+                .contains(station) && !isFirstStation(station) && !isLastStation(station);
     }
 
     public int getDistance() {
