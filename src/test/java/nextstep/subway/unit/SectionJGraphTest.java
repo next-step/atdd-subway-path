@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -64,12 +65,13 @@ class SectionJGraphTest {
         graph.setEdgeWeight(graph.addEdge(교대역, 남부터미널역), 2);
         graph.setEdgeWeight(graph.addEdge(남부터미널역, 양재역), 3);
 
-        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-        List<Station> shortestPath = dijkstraShortestPath.getPath(교대역, 강남역).getVertexList();
-
-        shortestPath.forEach(
+        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath(graph);
+        GraphPath<Station, DefaultWeightedEdge> shortestPath = dijkstraShortestPath.getPath(교대역, 강남역);
+        System.out.println(shortestPath.getWeight());
+        shortestPath.getVertexList().forEach(
                 station -> System.out.println(station.toString())
         );
+
 
 
 
