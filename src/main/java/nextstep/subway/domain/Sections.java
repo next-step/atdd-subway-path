@@ -26,6 +26,7 @@ public class Sections {
     @OrderBy("id asc")
     private final List<Section> sections = new ArrayList<>();
 
+    private final int MINUMUM_SECTION_SIZE = 1;
     public Sections() {
     }
 
@@ -58,14 +59,14 @@ public class Sections {
     }
 
 
-    public Section getBetweenSection(Section newSection){
+    private Section getBetweenSection(Section newSection){
         return sections.stream().filter(
                 section -> newSection.getUpStation().equals(section.getUpStation())
                         || newSection.getDownStation().equals(section.getDownStation())
         ).findFirst().orElse(null);
     }
 
-    public void addBetweenSectionValidateAndModify(Section newSection, Section matchedSection){
+    private void addBetweenSectionValidateAndModify(Section newSection, Section matchedSection){
 //        역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
         if( newSection.getDistance() >= matchedSection.getDistance()){
             throw new BadRequestException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
@@ -73,7 +74,7 @@ public class Sections {
         matchedSection.betweenAddModifyStation(newSection);
     }
 
-    public void validateAddSection(Section newSection){
+    private void validateAddSection(Section newSection){
         if(checkExistSection(newSection)){
             throw new BadRequestException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음");
         }
@@ -82,13 +83,13 @@ public class Sections {
         }
     }
 
-    public Boolean checkNotExistStation(Station station){
+    private Boolean checkNotExistStation(Station station){
         return getStations()
                 .stream()
                 .noneMatch(currentStation -> currentStation.equals(station));
     }
 
-    public Boolean checkExistSection(Section section){
+    private Boolean checkExistSection(Section section){
         return getSections()
                 .stream()
                 .anyMatch(currentSection -> currentSection.getUpStation().equals(section.getUpStation())
@@ -106,13 +107,18 @@ public class Sections {
     }
 
     public void removeSection(Long stationId) {
-        if(sections.size() == 1)
-            throw new BadRequestException("지하철 노선에 상행 종점역과 하행 종점역만 있는 경우(구간이 1개인 경우) 역을 삭제할 수 없다.");
+        if(sections.size() == MINUMUM_SECTION_SIZE)
+            throw new BadRequestException("지하철 노선에 상행 종점역과 하행 종점역만 있는 경우(구간이 "+MINUMUM_SECTION_SIZE+"개인 경우) 역을 삭제할 수 없다.");
 
-        if(removeSectionWhenFirst(stationId)){
+        Section firstSection = getFirstSection();
+        Section lastSection = getLastSection();
+
+        if(isFirstStation(firstSection, stationId)){
+            sections.remove(firstSection);
             return;
         }
-        if(removeSectionWhenLast(stationId)){
+        if(isLastStation(lastSection, stationId)){
+            sections.remove(lastSection);
             return;
         }
 
@@ -120,25 +126,21 @@ public class Sections {
     }
 
 
-    public Boolean removeSectionWhenFirst(Long stationId){
-        Section firstSection = getFirstSection();
+    private Boolean isFirstStation(Section firstSection, Long stationId){
         if(Objects.equals(firstSection.getUpStation().getId(), stationId)){
-            sections.remove(firstSection);
             return true;
         }
         return false;
     }
 
-    public Boolean removeSectionWhenLast(Long stationId){
-        Section lastSection = getLastSection();
+    private Boolean isLastStation(Section lastSection, Long stationId){
         if(Objects.equals(lastSection.getDownStation().getId(), stationId)){
-            sections.remove(lastSection);
             return true;
         }
         return false;
     }
 
-    public void removeSectionWhenBetWeen(Long stationId){
+    private void removeSectionWhenBetWeen(Long stationId){
         Section prevSection = getSectionByDownStationId(stationId);
         Section nextSection = getSectionByUpStationId(stationId);
 
@@ -148,7 +150,7 @@ public class Sections {
         sections.remove(nextSection);
     }
 
-    public Section getLastSection(){
+    private Section getLastSection(){
         if(sections.isEmpty()){
             throw new NotExistElementException("저장 된 section정보가 없습니다.");
         }
@@ -179,7 +181,7 @@ public class Sections {
 
     }
 
-    public Section getNextSection(Section section){
+    private Section getNextSection(Section section){
 
         return sections.stream()
                 .filter(thisSection -> section.getDownStation().equals(thisSection.getUpStation()))
@@ -187,24 +189,24 @@ public class Sections {
                 .orElse(null);
 
     }
-    public Boolean isFirstSection(Section section){
+    private Boolean isFirstSection(Section section){
         return sections.stream()
                 .noneMatch(currentSection -> section.getUpStation().equals(currentSection.getDownStation()));
     }
 
-    public Boolean isLastSection(Section section){
+    private Boolean isLastSection(Section section){
         return sections.stream()
                 .noneMatch(currentSection -> section.getDownStation().getId().equals(currentSection.getUpStation().getId()));
     }
 
-    public Section getSectionByUpStationId(Long stationId){
+    private Section getSectionByUpStationId(Long stationId){
         return sections.stream()
                 .filter(section -> stationId.equals(section.getUpStation().getId()))
                 .findFirst()
                 .orElseThrow(() -> new NotExistElementException("노선에 존재하지 않는 지하철역 입니다."));
     }
 
-    public Section getSectionByDownStationId(Long stationId){
+    private Section getSectionByDownStationId(Long stationId){
         return sections.stream()
                 .filter(section -> stationId.equals(section.getDownStation().getId()))
                 .findFirst()

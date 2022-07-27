@@ -55,6 +55,17 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId, int distance) {
+        ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(createLineCreateParams(name, color, upStationId, downStationId, distance))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all().extract();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        return response;
+    }
+
     public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청(Long lineId, Map<String, String> params) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -74,5 +85,27 @@ public class LineSteps {
                 () -> assertThat(response.jsonPath().getString("message")).contains(message),
                 () -> assertThat(response.statusCode()).isEqualTo(expectedStatus.value())
         );
+    }
+
+    public static Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
+        Map<String, String> lineCreateParams;
+        lineCreateParams = new HashMap<>();
+        lineCreateParams.put("name", "신분당선");
+        lineCreateParams.put("color", "bg-red-600");
+        lineCreateParams.put("upStationId", upStationId + "");
+        lineCreateParams.put("downStationId", downStationId + "");
+        lineCreateParams.put("distance", 7 + "");
+        return lineCreateParams;
+    }
+
+    public static Map<String, String> createLineCreateParams(String name, String color, Long upStationId, Long downStationId, int distance) {
+        Map<String, String> lineCreateParams;
+        lineCreateParams = new HashMap<>();
+        lineCreateParams.put("name", name);
+        lineCreateParams.put("color", color);
+        lineCreateParams.put("upStationId", upStationId + "");
+        lineCreateParams.put("downStationId", downStationId + "");
+        lineCreateParams.put("distance", distance + "");
+        return lineCreateParams;
     }
 }
