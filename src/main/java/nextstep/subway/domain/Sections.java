@@ -91,12 +91,12 @@ public class Sections {
 	private void addSectionInMiddleWithUpStation(Line line, Station downStation, int distance, Section section) {
 		this.sections.remove(section);
 		this.sections.add(new Section(line, section.getUpStation(), downStation, distance));
-		this.sections.add(new Section(line, downStation, section.getDownStation(), modifiedDistance(section.getDistance(), distance)));
+		this.sections.add(new Section(line, downStation, section.getDownStation(), modifyDistanceWhenAdd(section.getDistance(), distance)));
 	}
 
 	private void addSectionInMiddleWithDownStation(Line line, Station upStation, int distance, Section section) {
 		this.sections.remove(section);
-		sections.add(new Section(line, section.getUpStation(), upStation, modifiedDistance(section.getDistance(), distance)));
+		sections.add(new Section(line, section.getUpStation(), upStation, modifyDistanceWhenAdd(section.getDistance(), distance)));
 		sections.add(new Section(line, upStation, section.getDownStation(), distance));
 	}
 
@@ -124,10 +124,14 @@ public class Sections {
 		sections.remove(downSection);
 		sections.remove(upSection);
 		sections.add(index, new Section(upSection.getLine(), downSection.getUpStation(),
-				upSection.getDownStation(), upSection.getDistance() + downSection.getDistance()));
+				upSection.getDownStation(), modifyDistanceWhenRemove(downSection, upSection)));
 	}
 
-	private Integer modifiedDistance(Integer origin, Integer insert) {
+	private int modifyDistanceWhenRemove(Section downSection, Section upSection) {
+		return upSection.getDistance() + downSection.getDistance();
+	}
+
+	private int modifyDistanceWhenAdd(Integer origin, Integer insert) {
 		return origin - insert;
 	}
 
