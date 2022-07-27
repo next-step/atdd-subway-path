@@ -207,6 +207,64 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 중간 구간 제거를 요청하면
+     * Then 노선에 중간구간이 제거된다.
+     */
+    @DisplayName("지하철 노선에 중간구간을 제거한다.")
+    @Test
+    void removeLineSection_중간구간제거() {
+        // Given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath()
+                .getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParamsWithDistance(양재역, 정자역, 5));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // Then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath()
+                .getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
+        assertThat(response.jsonPath()
+                .getInt("distance")).isEqualTo(15);
+    }
+
+    /**
+     * Given & When 구간이 하나인 지하철 노선이 주어질때 지하철 노선의 마지막 구간을 제거하면
+     * Then 오류가 발생한다.
+     */
+    @DisplayName("지하철 노선에서 구간이 하나인데 마지막 구간을 제거한다.")
+    @Test
+    void removeLineSection_fail_구간이_하나인_노선에서_마지막_구간을_제거() {
+        // Given & When
+        ExtractableResponse<Response> result = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        // Then
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선에 없는 구간을 제거하려하면
+     * Then 오류가 발생한다.
+     */
+    @DisplayName("지하철 노선에서 없는 구간을 제거한다.")
+    @Test
+    void removeLineSection_fail_없는구간_제거() {
+        // Given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath()
+                .getLong("id");
+
+        // When
+        ExtractableResponse<Response> result = 지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+
+        // Then
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
