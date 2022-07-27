@@ -1,10 +1,7 @@
 package nextstep.subway.domain;
 
 import lombok.Getter;
-import nextstep.subway.exception.AlreadyRegisteredException;
-import nextstep.subway.exception.CannotInsertLongerSectionException;
-import nextstep.subway.exception.CannotInsertSameDistanceSectionException;
-import nextstep.subway.exception.CannotRegisterWithoutRegisteredStation;
+import nextstep.subway.exception.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -45,11 +42,20 @@ public class Sections {
 	}
 
 	public void removeSection(Station station) {
+
+		if (isOnlyOneSection()) {
+			throw new CannotRemoveLastSectionException(CANNOT_REMOVE_LAST_SECTION.getMessage());
+		}
+
 		if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
 			throw new IllegalArgumentException();
 		}
 
 		sections.remove(this.getSections().size() - 1);
+	}
+
+	private boolean isOnlyOneSection() {
+		return sections.size() == 1;
 	}
 
 	private void addSectionWithCondition(Line line, Station upStation, Station downStation, Integer distance) {

@@ -62,7 +62,7 @@ class LineTest {
 	}
 
 	/**
-	 * Given 노선에 섹션 1개가 추가 된다.
+	 * Given 노선에 섹션 2개가 추가 된다.
 	 * When 노선의 downStation을 삭제하면
 	 * Then 노선에서 해당 섹션이 삭제된다.
 	 */
@@ -73,13 +73,19 @@ class LineTest {
 		Line 신분당선 = 신분당선_생성();
 		Station 광교역 = 광교역_생성();
 		Station 광교중앙역 = 광교중앙역_생성();
+		Station 상현역 = new Station("상현역");
 		신분당선.addSection(광교역, 광교중앙역, 10);
+		신분당선.addSection(광교중앙역, 상현역, 5);
 
 		//when
-		신분당선.removeSection(광교중앙역);
+		신분당선.removeSection(상현역);
 
 		//then
 		List<Section> 신분당선_응답 = 신분당선.getSections();
-		assertThat(신분당선_응답).isEmpty();
+		List<Station> stations = 신분당선.getStations();
+		assertAll(
+				() -> assertThat(신분당선_응답).hasSize(1),
+				() -> assertThat(stations).containsExactly(광교역, 광교중앙역)
+		);
 	}
 }

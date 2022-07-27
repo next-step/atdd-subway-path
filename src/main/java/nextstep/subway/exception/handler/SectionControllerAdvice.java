@@ -29,4 +29,9 @@ public class SectionControllerAdvice {
 	public ResponseEntity<Void> withoutRegisteredStationExceptionHandler() {
 		return ResponseEntity.status(CANNOT_REGISTER_WITHOUT_REGISTERED_STATIONS.getStatus()).build();
 	}
+
+	@ExceptionHandler(CannotRemoveLastSectionException.class)
+	public ResponseEntity<Void> cannotRemoveLastSectionExceptionHandler() {
+		return ResponseEntity.status(CANNOT_REMOVE_LAST_SECTION.getStatus()).build();
+	}
 }

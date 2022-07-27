@@ -1,9 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.AlreadyRegisteredException;
-import nextstep.subway.exception.CannotInsertLongerSectionException;
-import nextstep.subway.exception.CannotInsertSameDistanceSectionException;
-import nextstep.subway.exception.CannotRegisterWithoutRegisteredStation;
+import nextstep.subway.exception.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -240,16 +237,20 @@ class SectionsTest {
 	}
 
 	/**
-	 * When section이 한 개가 있는 sections에서 upstaion으로 삭제를 시도하면
-	 * Then IllegalArgumentException이 발생한다.
+	 * When section이 한 개가 있는 sections에서 삭제를 시도하면
+	 * Then CannotRemoveLastSectionException이 발생한다.
 	 */
-	@DisplayName("UpStation으로 섹션을 삭제할 수 없다.")
+	@DisplayName("구간이 하나인 노선의 구간을 삭제할 수 없다.")
 	@Test
-	void removeSectionsFail() {
+	void removeSectionsFailOnLastSection() {
 		//when
 		//then
-		assertThatThrownBy(() -> sections.removeSection(광교역))
-				.isInstanceOf(IllegalArgumentException.class);
+		assertAll(
+				() -> assertThatThrownBy(() -> sections.removeSection(광교역))
+				.isInstanceOf(CannotRemoveLastSectionException.class),
+				() -> assertThatThrownBy(() -> sections.removeSection(광교역))
+				.isInstanceOf(CannotRemoveLastSectionException.class)
+		);
 	}
 
 	private void 신분당선에_구간을_추가한다(Station upStation, Station downStation, int distance) {

@@ -4,6 +4,7 @@ import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -53,15 +55,21 @@ public class LineServiceTest {
         //given
         Station 광교역 = 광교역_생성();
         Station 광교중앙역 = 광교중앙역_생성();
+        Station 상현역 = 상현역_생성();
         Line 신분당선 = 신분당선_생성();
 
         //when
         lineService.addSection(신분당선.getId(), new SectionRequest(광교역.getId(), 광교중앙역.getId(), 10));
-        lineService.deleteSection(신분당선.getId(), 광교중앙역.getId());
+        lineService.addSection(신분당선.getId(), new SectionRequest(광교중앙역.getId(), 상현역.getId(), 10));
+        lineService.deleteSection(신분당선.getId(), 상현역.getId());
 
         //then
-        LineResponse 신분당선_응답 = lineService.findById(신분당선.getId());
-        assertThat(신분당선_응답.getStations()).isEmpty();
+        List<StationResponse> stations = lineService.findById(신분당선.getId()).getStations();
+        List<String> names = stations.stream().map(StationResponse::getName).collect(Collectors.toList());
+        assertAll(
+                () -> assertThat(stations).hasSize(2),
+                () -> assertThat(names).containsExactly(광교역.getName(), 광교중앙역.getName())
+        );
     }
 
     @DisplayName("saveLine을 검증한다")
@@ -143,6 +151,10 @@ public class LineServiceTest {
 
     private Station 광교역_생성() {
         return 역을_등록한다("광교역");
+    }
+
+    private Station 상현역_생성() {
+        return 역을_등록한다("상현역");
     }
 
     private Line 신분당선_생성() {
