@@ -5,6 +5,8 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
@@ -76,24 +78,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선 구간에 상행역이 같은 구간을 추가")
     @Test
-    void addStationInSection() {
-
-        // when
-        Long 중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 중간역, 3));
-
-        // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 중간역, 양재역);
-    }
-
-    /**
-     * When 지하철 노선에 역 사이에 상행역이 같은새로운 역을 등록하면
-     * Then 노선에 새로운 구간이 추가된다
-     */
-    @DisplayName("지하철 노선 구간에 상행역이 같은 구간을 추가")
-    @Test
     void addStationSameUpStationInSection() {
 
         // when
@@ -122,6 +106,27 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 중간역, 양재역);
+    }
+
+
+    /**
+     * When 지하철 노선에 역 사이에 새로운 역 등록 시
+     * 새로운 구간의 역 길이가 같거나 크면
+     * Then 에러가 발생한다
+     */
+    @DisplayName("지하철 노선에 역 사이에 새로운 역 등록 시 새로운 구간의 역 길이가 같거나 크면 에러 발생")
+    @ParameterizedTest
+    @ValueSource(ints = {10, 11})
+    void addStationInSectionDistanceException(int distance) {
+
+        // when
+        Long 중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(중간역, 양재역, distance));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("추가 될 구간의 거리가 크거나 같을 수 없습니다.");
     }
 
 
