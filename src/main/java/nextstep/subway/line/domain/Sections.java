@@ -109,11 +109,10 @@ public class Sections {
     private void combineRemovedSections(Long stationId) {
         List<Long> orderedStationIds = getOrderedStationIds();
         int stationIndex = orderedStationIds.indexOf(stationId);
-        Long firstRemovedSectionIndex = orderedStationIds.get(stationIndex - 1);
-        Long secondRemovedSectionIndex = firstRemovedSectionIndex + 1;
+        Long upStationIdOfFirstRemovedSection = orderedStationIds.get(stationIndex - 1);
 
-        Section firstRemovedSection = findByUpStationId(firstRemovedSectionIndex);
-        Section secondRemovedSection = findByUpStationId(secondRemovedSectionIndex);
+        Section firstRemovedSection = findByUpStationId(upStationIdOfFirstRemovedSection);
+        Section secondRemovedSection = findByUpStationId(stationId);
         Section combinedSection = firstRemovedSection.combine(secondRemovedSection);
 
         sections.remove(firstRemovedSection);
