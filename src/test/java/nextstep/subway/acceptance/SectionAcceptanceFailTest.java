@@ -96,7 +96,6 @@ class SectionAcceptanceFailTest extends AcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 구간이 1개인 지하철 노선의 제거를 요청 하면
      * Then 노선에 구간이 제거된다
      */
