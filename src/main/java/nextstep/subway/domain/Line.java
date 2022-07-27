@@ -53,6 +53,12 @@ public class Line {
     }
 
     public void addSection(Section section) {
+        if (sections.size() != 0 && (!sections.get(sections.size() - 1).getDownStation().equals(section.getUpStation()))) {
+            throw new IllegalArgumentException("구간을 추가할 수 없습니다.");
+        }
+        if (sections.size() != 0 && getStations().contains(section.getDownStation())) {
+            throw new IllegalArgumentException("역이 이미 노선에 포함되어 있습니다.");
+        }
         sections.add(section);
     }
 
