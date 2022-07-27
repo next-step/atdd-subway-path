@@ -106,7 +106,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("새로운 역을 상행 종점으로 등록")
     @Test
-    void addUpStation() {
+    void 상행_종점_등록() {
 //        Given
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역, 6));
 //        When
@@ -122,7 +122,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("새로운 역을 하행 종점으로 등록")
     @Test
-    void addDownStation() {
+    void 하행_종점_등록() {
 //        Given
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 양재시민의숲, 6));
 //        When
@@ -138,7 +138,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
     @Test
-    void 길이() {
+    void 구간_사이_구간_등록_시_길이_조건_테스트() {
 //        When
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재전역, 11));
 //        Then
@@ -151,9 +151,9 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 구간 생성을 요청하면
      * Then 구간 등록에 실패한다.
      */
-    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음1")
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test
-    void 노선에_등록된_상행역_하행역_구간_등록_테스트1() {
+    void 노선에_등록된_상행역_하행역_구간_등록_테스트() {
 //        Given
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역, 5));
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 5));
@@ -168,9 +168,9 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 구간 생성을 요청하면
      * Then 구간 등록에 실패한다.
      */
-    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음2")
+    @DisplayName("상행역과 하행역이 이미 노선에 등록되어 있는 구간을 생성하고 (A-B, B-C)인 노선에 A-C추가")
     @Test
-    void 노선에_등록된_상행역_하행역_구간_등록_테스트2() {
+    void 노선에_등록된_상행역_하행역_구간_등록_테스트_AB_BC_구간_AC추가() {
 //        Given
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역, 5));
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 5));
@@ -181,18 +181,18 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 상행역과 하행역이 이미 노선에 등록되어 있는 구간을 생성하고 (A-B, B-C)인 노선에 A-C추가
+     * Given 상행역과 하행역이 이미 노선에 등록되어 있는 구간을 생성하고 (A-B, B-C)인 노선에 B-C추가
      * When 구간 생성을 요청하면
      * Then 구간 등록에 실패한다.
      */
-    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음2")
+    @DisplayName("상행역과 하행역이 이미 노선에 등록되어 있는 구간을 생성하고 (A-B, B-C)인 노선에 B-C추가")
     @Test
-    void 노선에_존재하지_않는_상행역_하행역_구간_등록_테스트() {
+    void 노선에_존재하지_않는_상행역_하행역_구간_등록_AB_BC_BC구간추가() {
 //        Given
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역, 5));
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 5));
 //        When
-        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 양재역, 2));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역, 2));
 //        Then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
