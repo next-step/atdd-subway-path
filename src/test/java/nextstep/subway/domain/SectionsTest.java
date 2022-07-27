@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.List;
 import nextstep.subway.domain.exception.NotValidDeleteTargetStation;
 import nextstep.subway.domain.exception.NotValidSectionDistanceException;
 import nextstep.subway.domain.exception.NotValidSectionStationsException;
@@ -40,10 +41,8 @@ class SectionsTest {
         var sections = sut.getOrderedSections();
         var lastSection = sections.get(sections.size() - 1);
         assertAll(
-                () -> assertThat(lastSection.getUpStation()).isEqualTo(왕십리역),
-                () -> assertThat(lastSection.getDownStation()).isEqualTo(서울숲역),
-                () -> assertThat(lastSection.getDistance()).isEqualTo(distance),
-                () -> assertThat(sut.getStations()).containsExactly(청량리역, 왕십리역, 서울숲역)
+                () -> 구간_검증(lastSection, 왕십리역, 서울숲역, distance),
+                () -> 역_순서_검증(sut, List.of(청량리역, 왕십리역, 서울숲역))
         );
     }
 
@@ -56,10 +55,8 @@ class SectionsTest {
 
         var firstSection = sut.getOrderedSections().get(0);
         assertAll(
-                () -> assertThat(firstSection.getUpStation()).isEqualTo(새로운역),
-                () -> assertThat(firstSection.getDownStation()).isEqualTo(청량리역),
-                () -> assertThat(firstSection.getDistance()).isEqualTo(distance),
-                () -> assertThat(sut.getStations()).containsExactly(새로운역, 청량리역, 왕십리역)
+                () -> 구간_검증(firstSection, 새로운역, 청량리역, distance),
+                () -> 역_순서_검증(sut, List.of(새로운역, 청량리역, 왕십리역))
         );
     }
 
@@ -73,13 +70,9 @@ class SectionsTest {
         var newSection = sections.get(0);
         var updatedSection = sections.get(1);
         assertAll(
-                () -> assertThat(newSection.getUpStation()).isEqualTo(청량리역),
-                () -> assertThat(newSection.getDownStation()).isEqualTo(중간역),
-                () -> assertThat(newSection.getDistance()).isEqualTo(5),
-                () -> assertThat(updatedSection.getUpStation()).isEqualTo(중간역),
-                () -> assertThat(updatedSection.getDownStation()).isEqualTo(왕십리역),
-                () -> assertThat(updatedSection.getDistance()).isEqualTo(5),
-                () -> assertThat(sut.getStations()).containsExactly(청량리역, 중간역, 왕십리역)
+                () -> 구간_검증(newSection, 청량리역, 중간역, 5),
+                () -> 구간_검증(updatedSection, 중간역, 왕십리역, 5),
+                () -> 역_순서_검증(sut, List.of(청량리역, 중간역, 왕십리역))
         );
     }
 
@@ -93,13 +86,9 @@ class SectionsTest {
         var newSection = sections.get(1);
         var updatedSection = sections.get(0);
         assertAll(
-                () -> assertThat(newSection.getUpStation()).isEqualTo(중간역),
-                () -> assertThat(newSection.getDownStation()).isEqualTo(왕십리역),
-                () -> assertThat(newSection.getDistance()).isEqualTo(5),
-                () -> assertThat(updatedSection.getUpStation()).isEqualTo(청량리역),
-                () -> assertThat(updatedSection.getDownStation()).isEqualTo(중간역),
-                () -> assertThat(updatedSection.getDistance()).isEqualTo(5),
-                () -> assertThat(sut.getStations()).containsExactly(청량리역, 중간역, 왕십리역)
+                () -> 구간_검증(newSection, 중간역, 왕십리역, 5),
+                () -> 구간_검증(updatedSection, 청량리역, 중간역, 5),
+                () -> 역_순서_검증(sut, List.of(청량리역, 중간역, 왕십리역))
         );
     }
 
@@ -134,4 +123,15 @@ class SectionsTest {
         assertThrows(NotValidDeleteTargetStation.class, () -> sut.removeByStation(청량리역));
     }
 
+    private void 역_순서_검증(Sections sections, List<Station> stations) {
+        assertThat(sections.getStations()).containsExactlyElementsOf(stations);
+    }
+
+    private void 구간_검증(Section section, Station upStation, Station downStation, Integer distance) {
+        assertAll(
+                () -> assertThat(section.getUpStation()).isEqualTo(upStation),
+                () -> assertThat(section.getDownStation()).isEqualTo(downStation),
+                () -> assertThat(section.getDistance()).isEqualTo(distance)
+        );
+    }
 }
