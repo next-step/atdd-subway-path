@@ -22,6 +22,17 @@ class SectionTest {
         assertThat(result).isTrue();
     }
 
+    @DisplayName("같은 하행역을 갖는지 확인할 수 있다.")
+    @Test
+    void sameDownStation() {
+        //given
+        final var section = new Section(new Station("잠실역"), new Station("강변역"), 10);
+        //when
+        boolean result = section.hasSameDownStation(new Section(new Station("구의역"), new Station("강변역"), 3));
+        //then
+        assertThat(result).isTrue();
+    }
+
     @DisplayName("새로 추가 될 구간과의 거리를 구할 수 있다.")
     @Test
     void betweenDistance() {
