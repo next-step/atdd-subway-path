@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,6 +64,10 @@ public class Line {
     }
 
     public List<Station> getStations() {
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         List<Station> stations = sections.stream()
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
