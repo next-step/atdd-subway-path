@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -52,9 +53,21 @@ public class PathFinderTest {
 		 * 남부터미널역  --- *3호선* ---   양재
 		 */
 
-		List<Station> stations = PathFinder.getShorPath(lines);
-		assertThat(stations).hasSize(3)
+		//when
+		List<String> stations = PathFinder.getShorPath(lines, 교대역.getId(), 양재역.getId());
+		List<Station> stationList = getAllStations().stream()
+			.filter(station -> stations.contains(station.getId().toString()))
+			.collect(Collectors.toList());
+		//then
+		assertThat(stationList).hasSize(3)
 			.containsExactly(교대역, 남부터미널역, 양재역);
+	}
+
+	private List<Station> getAllStations() {
+		return lines.stream()
+			.flatMap(line -> line.getStations().stream())
+			.distinct()
+			.collect(Collectors.toList());
 	}
 
 }
