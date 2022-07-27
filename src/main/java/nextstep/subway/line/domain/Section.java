@@ -51,12 +51,12 @@ public class Section {
     }
 
     public Section combine(Section anotherSection) {
-        if (this.downStationId.equals(anotherSection.upStationId)) {
-            int addedDistance = this.distance + anotherSection.distance;
-            return new Section(line, upStationId, anotherSection.downStationId, addedDistance);
+        if (!matchDownStation(anotherSection.upStationId)) {
+            throw new CannotCombineSectionException("현재 구간의 하행역이 합치려는 구간의 상행역과 이어져있지 않습니다.");
         }
 
-        throw new CannotCombineSectionException("하행역과 상행역이 이어져 있는 구간끼리만 합칠 수 있습니다.");
+        int addedDistance = this.distance + anotherSection.distance;
+        return new Section(line, upStationId, anotherSection.downStationId, addedDistance);
     }
 
     public boolean startsOrEndsTogether(Section anotherSection) {

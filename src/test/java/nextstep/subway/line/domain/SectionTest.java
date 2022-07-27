@@ -88,7 +88,7 @@ class SectionTest {
 
         assertThatThrownBy(() -> section.combine(anotherSection))
                 .isInstanceOf(CannotCombineSectionException.class)
-                .hasMessage("하행역과 상행역이 이어져 있는 구간끼리만 합칠 수 있습니다.");
+                .hasMessage("현재 구간의 하행역이 합치려는 구간의 상행역과 이어져있지 않습니다.");
     }
 
     @DisplayName("두 구간의 상행역이나 하행역중 하나가 똑같은지 알 수 있다.")
