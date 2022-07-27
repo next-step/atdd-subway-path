@@ -57,21 +57,21 @@ class SectionJGraphTest {
         String source = "v3";
         String target = "v1";
 
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-        PathFinder pathFinder = new PathFinder();
 
-        List<Station> stations = List.of(교대역, 강남역, 양재역, 남부터미널역);
 
-        pathFinder.addStationToVertex(stations);
-        pathFinder.addSectionEdgeWeight(이호선.getSections());
-        pathFinder.addSectionEdgeWeight(신분당선.getSections());
-        pathFinder.addSectionEdgeWeight(삼호선.getSections());
+        List<Line>  lines = List.of(이호선, 신분당선, 삼호선);
+        PathFinder pathFinder = new PathFinder(lines);
 
-        GraphPath<Station, DefaultWeightedEdge> shortestPath = pathFinder.getShoresPath(교대역, 강남역);
+        GraphPath<Station, DefaultWeightedEdge> shortestPath = pathFinder.getShoresPath(교대역, 양재역);
 
         System.out.println(shortestPath.getWeight());
         shortestPath.getVertexList().forEach(
                 station -> System.out.println(station.toString())
+        );
+
+        assertAll(
+                () -> assertThat(shortestPath.getVertexList()).containsExactly(교대역, 남부터미널역, 양재역),
+                () -> assertThat(shortestPath.getWeight()).isEqualTo(5)
         );
 
     }
