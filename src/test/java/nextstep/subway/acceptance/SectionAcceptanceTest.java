@@ -133,16 +133,16 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선에 구간 추가 시 이미 존재하는 구간이 있다면
      * Then 에러가 발생한다
      */
-    @DisplayName("지하철 노선에 역 사이에 새로운 역 등록 시 새로운 구간의 역 길이가 같거나 크면 에러 발생")
+    @DisplayName("지하철 노선에 구간 추가 시 이미 존재하는 구간이 있다면 에러 발생")
     @Test
-    void addSectionAlreadyExist(int distance) {
+    void addSectionAlreadyExist() {
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, distance));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 10));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("이미 구간이 존재하여 추가할 수 없습니다.");
+        assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("이미 구간 내 상행역, 하행역이 모두 존재하여 추가할 수 없습니다.");
     }
 
 

@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.SectionAllStationsAlreadyExistException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -150,5 +151,21 @@ class SectionsTest {
         assertThatThrownBy(() -> sections.delete(삼성역))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상행역과 하행역만 존재하기 때문에 삭제할 수 없습니다.");
+    }
+
+
+    @DisplayName("이미 존재하는 구간을 추가 할 수 없다.")
+    @Test
+    void cantAddAlreadyExistSection() {
+        //given
+        final var section = new Section(_2호선, 선릉역, 삼성역, 10);
+
+        final var sections = new Sections();
+        sections.add(section);
+
+        //when, then
+        assertThatThrownBy(() -> sections.add(new Section(_2호선, 선릉역, 삼성역, 10)))
+                .isInstanceOf(SectionAllStationsAlreadyExistException.class)
+                .hasMessage("이미 구간 내 상행역, 하행역이 모두 존재하여 추가할 수 없습니다.");
     }
 }

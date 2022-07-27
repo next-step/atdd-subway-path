@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.exception.InSectionDistanceException;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -86,5 +87,18 @@ public class Section {
             throw new InSectionDistanceException("추가 될 구간의 거리가 크거나 같을 수 없습니다.");
         }
         return between;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, line, upStation, downStation, distance);
     }
 }
