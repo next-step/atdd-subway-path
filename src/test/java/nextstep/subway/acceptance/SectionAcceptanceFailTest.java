@@ -97,7 +97,7 @@ class SectionAcceptanceFailTest extends AcceptanceTest {
 
     /**
      * When 구간이 1개인 지하철 노선의 제거를 요청 하면
-     * Then 노선에 구간이 제거된다
+     * Then BAD_REQUEST가 반환된다.
      */
     @DisplayName("구간이 하나인 노선의 구간을 삭제하려면 실패한다.")
     @Test
