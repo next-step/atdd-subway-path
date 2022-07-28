@@ -82,6 +82,10 @@ class SectionAdditionAcceptanceTest extends AcceptanceTest{
         assertThat(stationNames).containsExactly(역삼역.getName(), 구의역.getName(), 선릉역.getName());
     }
 
+    /* given 신분당선에 구의_선릉 구간을 추가한다.
+     * when 구의_선릉 구간 사이에 구의_역삼 구간을 추가한다.
+     * then 신분당선 정보를 조회하고 신분당선의 구간이 구의, 역삼, 선릉 순서대로 이뤄져있는지 확인한다.
+     */
     @Test
     void 중간에_구간_추가() {
         SectionRequest 구의_선릉_구간 = createAdditionalDto(구의역.getId(), 선릉역.getId(), 10);
