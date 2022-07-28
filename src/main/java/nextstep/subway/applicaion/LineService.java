@@ -12,12 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.SectionResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.common.exception.BusinessException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 
@@ -54,19 +52,6 @@ public class LineService {
 	public List<LineResponse> showLines() {
 		return lineRepository.findAll().stream()
 			.map(this::createLineResponse)
-			.collect(Collectors.toList());
-	}
-
-	public List<SectionResponse> showSections() {
-		return findAllSections().stream()
-			.map(SectionResponse::of)
-			.collect(Collectors.toList());
-	}
-
-	private List<Section> findAllSections() {
-		return lineRepository.findAll()
-			.stream()
-			.flatMap(line -> line.getSections().stream())
 			.collect(Collectors.toList());
 	}
 

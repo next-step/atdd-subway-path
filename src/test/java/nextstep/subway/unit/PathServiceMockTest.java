@@ -18,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import nextstep.subway.applicaion.PathService;
 import nextstep.subway.applicaion.dto.PathRequest;
 import nextstep.subway.applicaion.dto.PathResponse;
-import nextstep.subway.applicaion.dto.SectionResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -30,8 +29,6 @@ public class PathServiceMockTest {
 	LineRepository lineRepository;
 	@Mock
 	StationRepository stationRepository;
-	@Mock
-	PathService pathService;
 
 	Station 교대역;
 	Station 강남역;
@@ -42,7 +39,6 @@ public class PathServiceMockTest {
 	Line 삼호선;
 	Line 신분당선;
 	List<Line> lineList;
-	List<SectionResponse> sectionResponseList;
 
 	@BeforeEach
 	void setUp() {
@@ -61,13 +57,6 @@ public class PathServiceMockTest {
 		삼호선.addSection(남부터미널역, 양재역, DISTANCE_VALUE_3);
 
 		lineList = Arrays.asList(이호선, 삼호선, 신분당선);
-		sectionResponseList = Arrays.asList(이호선, 삼호선, 신분당선)
-			.stream()
-			.flatMap(line -> line.getSections().stream())
-			.collect(Collectors.toList())
-			.stream()
-			.map(SectionResponse::of)
-			.collect(Collectors.toList());
 	}
 
 	@Test

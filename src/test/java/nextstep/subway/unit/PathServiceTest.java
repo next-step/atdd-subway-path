@@ -3,7 +3,6 @@ package nextstep.subway.unit;
 import static nextstep.subway.unit.LineStaticValues.*;
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -18,7 +17,6 @@ import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.PathService;
 import nextstep.subway.applicaion.dto.PathRequest;
 import nextstep.subway.applicaion.dto.PathResponse;
-import nextstep.subway.applicaion.dto.SectionResponse;
 import nextstep.subway.common.exception.BusinessException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -47,7 +45,6 @@ public class PathServiceTest {
 	Line 신분당선;
 
 	long unRegisterStation = 99L;
-	List<SectionResponse> sectionResponseList;
 
 	@BeforeEach
 	void setUp() {
@@ -65,7 +62,6 @@ public class PathServiceTest {
 		신분당선.addSection(교대역, 남부터미널역, DISTANCE_VALUE_10);
 		삼호선.addSection(남부터미널역, 양재역, DISTANCE_VALUE_3);
 
-		sectionResponseList = lineService.showSections();
 	}
 
 	@Test

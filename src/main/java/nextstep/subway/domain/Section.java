@@ -95,7 +95,7 @@ public class Section {
 		this.downStation = station;
 	}
 
-	public void validateOfDistance(SectionDistance distance) {
+	public void validateOfDistance(long distance) {
 		this.distance.validationOfDistance(distance);
 	}
 
@@ -132,11 +132,11 @@ public class Section {
 		return this.downStation;
 	}
 
-	public SectionDistance getDistance() {
-		return this.distance;
+	public int getDistance() {
+		return this.distance.getDistance();
 	}
 
-	public void plusDistance(SectionDistance addDistance) {
+	public void plusDistance(int addDistance) {
 		this.distance.plusDistance(addDistance);
 	}
 
