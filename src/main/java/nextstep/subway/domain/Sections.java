@@ -4,6 +4,7 @@ import nextstep.subway.domain.vo.SectionLocation;
 import nextstep.subway.domain.vo.ToBeAddedSection;
 import nextstep.subway.exception.NewlySectionUpStationAndDownStationNotExist;
 import nextstep.subway.exception.SectionAllStationsAlreadyExistException;
+import nextstep.subway.exception.SectionNotExistException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -161,18 +162,6 @@ public class Sections {
         return section;
     }
 
-    private Section lastSection() {
-        Section section = sections.get(0);
-        while (true) {
-            Optional<Section> nextSection = next(section);
-            if (nextSection.isEmpty()) {
-                break;
-            }
-            section = nextSection.get();
-        }
-        return section;
-    }
-
     private Optional<Section> pre(Section section) {
         Station upStation = section.getUpStation();
         return sections.stream()
@@ -199,22 +188,18 @@ public class Sections {
     }
 
     public void delete(Station station) {
-
         validateDelete();
 
         Section firstSection = firstSection();
-        if (firstSection.hasSameUpStation(station)) {
-            sections.remove(firstSection);
-            return;
-        }
-
         Section lastSection = lastSection();
-        if (lastSection.hasSameDownStation(station)) {
-            sections.remove(lastSection);
+
+        if (deletableBetweenSection(station, firstSection, lastSection)) {
+            deleteBetweenSection(station);
             return;
         }
 
-        sections.remove(sections.get(sections.size() - 1));
+        deleteIfFirstSectionDeletable(firstSection, station);
+        deleteIfLastSectionDeletable(lastSection, station);
     }
 
     private void validateDelete() {
@@ -226,5 +211,63 @@ public class Sections {
     private boolean onlyOneSectionExist() {
         return sections.size() == 1;
     }
+
+    private boolean deletableBetweenSection(Station station, Section firstSection, Section lastSection) {
+        return !firstSection.hasSameUpStation(station) && !lastSection.hasSameDownStation(station);
+    }
+
+    private void deleteIfFirstSectionDeletable(Section firstSection, Station station) {
+        if (!firstSection.hasSameUpStation(station)) {
+            return;
+        }
+        sections.remove(firstSection);
+    }
+
+    private void deleteIfLastSectionDeletable(Section lastSection, Station station) {
+        if (!lastSection.hasSameDownStation(station)) {
+            return;
+        }
+        sections.remove(lastSection);
+    }
+
+    private Section lastSection() {
+        Section section = sections.get(0);
+        while (true) {
+            Optional<Section> nextSection = next(section);
+            if (nextSection.isEmpty()) {
+                break;
+            }
+            section = nextSection.get();
+        }
+        return section;
+    }
+
+    private void deleteBetweenSection(Station station) {
+        Section frontSection = frontSection(station);
+        Section behindSection = behindSection(station);
+        sections.add(mergedSection(frontSection, behindSection));
+        sections.remove(frontSection);
+        sections.remove(behindSection);
+    }
+
+    private Section frontSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.hasSameDownStation(station))
+                .findAny()
+                .orElseThrow(() -> new SectionNotExistException("구간을 찾을 수 없습니다."));
+    }
+
+    private Section behindSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.hasSameUpStation(station))
+                .findAny()
+                .orElseThrow(() -> new SectionNotExistException("구간을 찾을 수 없습니다."));
+    }
+
+    private Section mergedSection(Section frontSection, Section behindSection) {
+        return new Section(frontSection.getLine(), frontSection.getUpStation(), behindSection.getDownStation(),
+                frontSection.getDistance() + behindSection.getDistance());
+    }
+
 
 }

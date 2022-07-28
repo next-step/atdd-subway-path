@@ -95,20 +95,4 @@ class LineServiceMockTest {
                 .hasMessage("상행역과 하행역만 존재하기 때문에 삭제할 수 없습니다.");
     }
 
-    @DisplayName("삭제하고자 하는 역이 하행 종착역이 아니면 에러가 발생한다.")
-    @Test
-    void deleteExceptionWhenStationIsNotDownStation() {
-        // given
-
-        when(stationService.findById(3L)).thenReturn(종합운동장역);
-
-        lineService.addSection(1L, new SectionRequest(1L, 2L, 10));
-        lineService.addSection(1L, new SectionRequest(2L, 3L, 5));
-
-        // when, then
-        assertThatThrownBy(() -> lineService.deleteSection(1L, 4L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("하행역만 삭제할 수 있습니다.");
-
-    }
 }

@@ -88,21 +88,4 @@ class LineTest {
 
     }
 
-    @DisplayName("삭제하고자 하는 역이 하행 종착역이 아니면 에러가 발생한다.")
-    @Test
-    void removeExceptionWhenStationIsNotDownStation() {
-        // given
-        final var firstSection = new Section(_2호선, 선릉역, 삼성역, 10);
-        final var secondSection = new Section(_2호선, 삼성역, 종합운동장역, 5);
-
-        _2호선.addSection(firstSection);
-        _2호선.addSection(secondSection);
-
-
-        // when, then
-        assertThatThrownBy(() -> _2호선.removeSection(삼성역))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("하행역만 삭제할 수 있습니다.");
-
-    }
 }
