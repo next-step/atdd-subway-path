@@ -108,12 +108,19 @@ class SectionsTest {
         assertThrows(NotValidSectionStationsException.class, () -> sections.add(분당선, 새로운역, 다른새로운역, 10));
     }
 
-    @DisplayName("구간 제거")
+    @DisplayName("마지막 구간 제거")
     @Test
-    void removeSection() {
-        sections.removeByStation(왕십리역);
+    void removeSectionByLastStation() {
+        var 서울숲역 = new Station("서울숲역");
+        sections.add(분당선, 왕십리역, 서울숲역, 10);
 
-        assertThat(sections.getStations()).isEmpty();
+        sections.removeByStation(서울숲역);
+
+        var sectionList = sections.getOrderedSections();
+        assertAll(
+                () -> 구간_검증(sectionList.get(0), 청량리역, 왕십리역, 10),
+                () -> 역_순서_검증(sections, List.of(청량리역, 왕십리역))
+        );
     }
 
     private void 역_순서_검증(Sections sections, List<Station> stations) {
