@@ -1,8 +1,12 @@
 package nextstep.subway.applicaion.dto;
 
+import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class StationResponse {
     private Long id;
@@ -24,8 +28,26 @@ public class StationResponse {
         return name;
     }
 
-    public static StationResponse of(Station station){
+    public static StationResponse of(Station station) {
         return new StationResponse(station.getId(), station.getName());
+    }
+
+    public static List<StationResponse> createStationResponses(Line line) {
+        if (line.isEmptySections()) {
+            return Collections.emptyList();
+        }
+
+        List<Station> stations = line.getStations();
+
+        return stations.stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
+    }
+
+    public static List<StationResponse> createStationResponses(List<Station> stations) {
+        return stations.stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
     }
 
     @Override

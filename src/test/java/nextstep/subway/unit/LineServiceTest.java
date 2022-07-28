@@ -79,7 +79,7 @@ public class LineServiceTest {
 
     private List<StationResponse> createStationResponses(List<Station> stations) {
         List<StationResponse> collect = stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
         return collect;
     }
