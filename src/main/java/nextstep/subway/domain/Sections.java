@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.domain.exception.NotValidDeleteTargetStation;
 import nextstep.subway.domain.exception.NotValidSectionStationsException;
 
 @Embeddable
@@ -34,6 +35,9 @@ public class Sections {
     }
 
     public void removeByStation(Station station) {
+        if (sectionList.size() == 1) {
+            throw new NotValidDeleteTargetStation();
+        }
         var firstSection = getFirstSection();
         if (firstSection.getUpStation().equals(station)) {
             sectionList.remove(0);
