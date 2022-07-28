@@ -1,7 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.AllIncludedStationException;
-import nextstep.subway.exception.DistanceException;
+import nextstep.subway.exception.MininumSectionException;
 import nextstep.subway.exception.NonIncludedStationException;
 
 import java.util.ArrayList;
@@ -54,19 +54,8 @@ public class Sections {
     private void addStationBetweenExistsStations(Section section, boolean isUpStationExists) {
         final Section overlapSection = findOverlapSection(section, isUpStationExists);
 
-        // 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
-        if (section.getDistance() >= overlapSection.getDistance()) {
-            throw new DistanceException();
-        }
-
-        // A-B 간선에 A-C 간선 추가 && A-B 간선에 C-B 간선 추가
+        overlapSection.addStationBetweenExistsStations(section, isUpStationExists);
         this.sections.add(section);
-        overlapSection.setDistance(overlapSection.getDistance() - section.getDistance());
-        if (isUpStationExists) {
-            overlapSection.setUpStation(section.getDownStation());
-        } else {
-            overlapSection.setDownStation(section.getUpStation());
-        }
     }
 
     public Section findOverlapSection(Section section, boolean isUpStation) {
@@ -89,11 +78,25 @@ public class Sections {
     }
 
     public void deleteSection(Station station) {
-        if (!this.getFinalDownStation().isEqualTo(station)) {
-            throw new IllegalArgumentException();
+        if (this.sections.size() <= 1) {
+            throw new MininumSectionException();
         }
 
-        this.sections.remove(this.getSections().get(this.sections.size() - 1));
+        List<Section> sections = this.sections.stream().filter(s -> s.hasStation(station)).collect(Collectors.toList());
+
+        switch (sections.size()) {
+            case 0:
+                throw new NonIncludedStationException();
+            case 1:
+                this.sections.remove(sections.get(0));
+                break;
+            case 2:
+                sections.get(0).merge(sections.get(1), station);
+                this.sections.remove(sections.get(1));
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     private Station getFinalUpStation() {

@@ -6,6 +6,7 @@ import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.exception.AllIncludedStationException;
 import nextstep.subway.exception.DistanceException;
+import nextstep.subway.exception.MininumSectionException;
 import nextstep.subway.exception.NonIncludedStationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -64,7 +65,7 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
-    @ExceptionHandler({DistanceException.class, AllIncludedStationException.class, NonIncludedStationException.class})
+    @ExceptionHandler({DistanceException.class, AllIncludedStationException.class, NonIncludedStationException.class, MininumSectionException.class})
     public ResponseEntity<Void> addSectionExceptionHandler() {
         return ResponseEntity.badRequest().build();
     }

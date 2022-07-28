@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.DistanceException;
+
 import java.util.List;
 
 import javax.persistence.*;
@@ -51,8 +53,15 @@ public class Section {
         return this.downStation;
     }
 
+    /**
+     * @return 무조건 upStation, downStation 순서로 내려준다.
+     */
     public List<Station> getStations() {
         return List.of(getUpStation(), getDownStation());
+    }
+
+    public boolean hasStation(Station station) {
+        return this.upStation.isEqualTo(station) || this.downStation.isEqualTo(station);
     }
 
     public int getDistance() {
@@ -69,6 +78,31 @@ public class Section {
 
     public void setDistance(int distance) {
         this.distance = distance;
+    }
+
+    public void addStationBetweenExistsStations(Section section, boolean isUpStationExists) {
+        // 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
+        if (section.getDistance() >= this.getDistance()) {
+            throw new DistanceException();
+        }
+
+        this.setDistance(this.getDistance() - section.getDistance());
+        if (isUpStationExists) {
+            this.setUpStation(section.getDownStation());
+        } else {
+            this.setDownStation(section.getUpStation());
+        }
+    }
+
+    public void merge(Section otherSection, Station deleteStation) {
+        Station otherStation = otherSection.getStations().stream().filter(s -> !s.isEqualTo(deleteStation)).findAny().orElseThrow(IllegalArgumentException::new);
+
+        if (this.upStation.isEqualTo(deleteStation)) {
+            this.upStation = otherStation;
+        } else {
+            this.downStation = otherStation;
+        }
+        this.setDistance(this.distance + otherSection.distance);
     }
 
     public boolean compareValues(Section other) {
