@@ -97,7 +97,7 @@ public class Sections {
       throw new CustomException(SectionErrorMessage.SECTION_NOT_IN_STATION);
     }
   }
-
+  
   public Section getLastSection() {
     return this.sections.get(this.sections.size() - 1);
   }

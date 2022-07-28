@@ -259,7 +259,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
         assertThat(response.jsonPath().getString("message")).isEqualTo(SectionErrorMessage.SECTION_NOT_EQUALS);
     }
-
+    
     private Map<String, String> 라인_파라미터_생성(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
