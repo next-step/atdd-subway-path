@@ -7,8 +7,9 @@ import java.util.Optional;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import nextstep.subway.domain.exception.NotValidDeleteTargetStation;
+import nextstep.subway.domain.exception.NotValidDeleteTargetStationException;
 import nextstep.subway.domain.exception.NotValidSectionStationsException;
+import nextstep.subway.domain.exception.StationNotFoundException;
 
 @Embeddable
 public class Sections {
@@ -34,11 +35,37 @@ public class Sections {
         sectionList.add(new Section(line, upStation, downStation, distance));
     }
 
-    public void removeByStation(Station downStation) {
-        if (isNotLastStation(downStation)) {
-            throw new NotValidDeleteTargetStation();
+    public void removeByStation(Station station) {
+        if (sectionList.size() == 1) {
+            throw new NotValidDeleteTargetStationException();
         }
-        sectionList.remove(sectionList.size() - 1);
+
+        if (!isExistStation(station)) {
+            throw new StationNotFoundException();
+        }
+
+        var removeTarget = getRemoveTargetSection(station);
+        reorderSections(removeTarget, station);
+        sectionList.remove(removeTarget);
+    }
+
+    private Section getRemoveTargetSection(Station station) {
+        var firstSection = getFirstSection();
+        if (firstSection.getUpStation().equals(station)) {
+            return firstSection;
+        }
+        return getSectionByDownStation(station);
+    }
+
+    private void reorderSections(Section targetSection, Station targetStation) {
+        if (targetSection.getUpStation().equals(targetStation)) {
+            return;
+        }
+        var nextSection = getNextSection(targetSection);
+        nextSection.ifPresent(section -> section.setNewUpStation(
+                targetSection.getUpStation(),
+                targetSection.getDistance() + section.getDistance()
+        ));
     }
 
     public List<Section> getOrderedSections() {

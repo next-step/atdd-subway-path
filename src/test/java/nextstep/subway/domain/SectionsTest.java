@@ -4,9 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import nextstep.subway.domain.exception.NotValidDeleteTargetStation;
+import java.util.List;
+import nextstep.subway.domain.exception.NotValidDeleteTargetStationException;
 import nextstep.subway.domain.exception.NotValidSectionDistanceException;
 import nextstep.subway.domain.exception.NotValidSectionStationsException;
+import nextstep.subway.domain.exception.StationNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class SectionsTest {
 
-    private Sections sut;
+    private Sections sections;
 
     private Line 분당선;
     private Station 청량리역;
@@ -26,8 +28,8 @@ class SectionsTest {
         분당선 = new Line("분당선", "yellow");
         청량리역 = new Station("청량리역");
         왕십리역 = new Station("왕십리역");
-        sut = new Sections();
-        sut.add(분당선, 청량리역, 왕십리역, 10);
+        sections = new Sections();
+        sections.add(분당선, 청량리역, 왕십리역, 10);
     }
 
     @DisplayName("마지막 구간 추가")
@@ -35,15 +37,13 @@ class SectionsTest {
     void addLastSection() {
         var 서울숲역 = new Station("서울숲역");
         var distance = 10;
-        sut.add(분당선, 왕십리역, 서울숲역, distance);
+        sections.add(분당선, 왕십리역, 서울숲역, distance);
 
-        var sections = sut.getOrderedSections();
-        var lastSection = sections.get(sections.size() - 1);
+        var sectionList = sections.getOrderedSections();
+        var lastSection = sectionList.get(sectionList.size() - 1);
         assertAll(
-                () -> assertThat(lastSection.getUpStation()).isEqualTo(왕십리역),
-                () -> assertThat(lastSection.getDownStation()).isEqualTo(서울숲역),
-                () -> assertThat(lastSection.getDistance()).isEqualTo(distance),
-                () -> assertThat(sut.getStations()).containsExactly(청량리역, 왕십리역, 서울숲역)
+                () -> 구간_검증(lastSection, 왕십리역, 서울숲역, distance),
+                () -> 역_순서_검증(sections, List.of(청량리역, 왕십리역, 서울숲역))
         );
     }
 
@@ -52,14 +52,12 @@ class SectionsTest {
     void addFirstSection() {
         var 새로운역 = new Station("새로운역");
         var distance = 10;
-        sut.add(분당선, 새로운역, 청량리역, distance);
+        sections.add(분당선, 새로운역, 청량리역, distance);
 
-        var firstSection = sut.getOrderedSections().get(0);
+        var firstSection = sections.getOrderedSections().get(0);
         assertAll(
-                () -> assertThat(firstSection.getUpStation()).isEqualTo(새로운역),
-                () -> assertThat(firstSection.getDownStation()).isEqualTo(청량리역),
-                () -> assertThat(firstSection.getDistance()).isEqualTo(distance),
-                () -> assertThat(sut.getStations()).containsExactly(새로운역, 청량리역, 왕십리역)
+                () -> 구간_검증(firstSection, 새로운역, 청량리역, distance),
+                () -> 역_순서_검증(sections, List.of(새로운역, 청량리역, 왕십리역))
         );
     }
 
@@ -67,19 +65,15 @@ class SectionsTest {
     @Test
     void addSectionWithNewDownStationInMiddle() {
         var 중간역 = new Station("중간역");
-        sut.add(분당선, 청량리역, 중간역, 5);
+        sections.add(분당선, 청량리역, 중간역, 5);
 
-        var sections = sut.getOrderedSections();
-        var newSection = sections.get(0);
-        var updatedSection = sections.get(1);
+        var sectionList = sections.getOrderedSections();
+        var newSection = sectionList.get(0);
+        var updatedSection = sectionList.get(1);
         assertAll(
-                () -> assertThat(newSection.getUpStation()).isEqualTo(청량리역),
-                () -> assertThat(newSection.getDownStation()).isEqualTo(중간역),
-                () -> assertThat(newSection.getDistance()).isEqualTo(5),
-                () -> assertThat(updatedSection.getUpStation()).isEqualTo(중간역),
-                () -> assertThat(updatedSection.getDownStation()).isEqualTo(왕십리역),
-                () -> assertThat(updatedSection.getDistance()).isEqualTo(5),
-                () -> assertThat(sut.getStations()).containsExactly(청량리역, 중간역, 왕십리역)
+                () -> 구간_검증(newSection, 청량리역, 중간역, 5),
+                () -> 구간_검증(updatedSection, 중간역, 왕십리역, 5),
+                () -> 역_순서_검증(sections, List.of(청량리역, 중간역, 왕십리역))
         );
     }
 
@@ -87,19 +81,15 @@ class SectionsTest {
     @Test
     void addSectionWithNewUpStationInMiddle() {
         var 중간역 = new Station("중간역");
-        sut.add(분당선, 중간역, 왕십리역, 5);
+        sections.add(분당선, 중간역, 왕십리역, 5);
 
-        var sections = sut.getOrderedSections();
-        var newSection = sections.get(1);
-        var updatedSection = sections.get(0);
+        var sectionList = sections.getOrderedSections();
+        var newSection = sectionList.get(1);
+        var updatedSection = sectionList.get(0);
         assertAll(
-                () -> assertThat(newSection.getUpStation()).isEqualTo(중간역),
-                () -> assertThat(newSection.getDownStation()).isEqualTo(왕십리역),
-                () -> assertThat(newSection.getDistance()).isEqualTo(5),
-                () -> assertThat(updatedSection.getUpStation()).isEqualTo(청량리역),
-                () -> assertThat(updatedSection.getDownStation()).isEqualTo(중간역),
-                () -> assertThat(updatedSection.getDistance()).isEqualTo(5),
-                () -> assertThat(sut.getStations()).containsExactly(청량리역, 중간역, 왕십리역)
+                () -> 구간_검증(newSection, 중간역, 왕십리역, 5),
+                () -> 구간_검증(updatedSection, 청량리역, 중간역, 5),
+                () -> 역_순서_검증(sections, List.of(청량리역, 중간역, 왕십리역))
         );
     }
 
@@ -108,7 +98,7 @@ class SectionsTest {
     void sectionAdditionFailsWhenDistanceOfNewSectionInMiddleIsGreater(int distance) {
         var 중간역 = new Station("중간역");
 
-        assertThrows(NotValidSectionDistanceException.class, () -> sut.add(분당선, 청량리역, 중간역, distance));
+        assertThrows(NotValidSectionDistanceException.class, () -> sections.add(분당선, 청량리역, 중간역, distance));
     }
 
     @DisplayName("구간의 상하행역이 모두 노선에 존재하지 않으면 추가 실패")
@@ -117,21 +107,85 @@ class SectionsTest {
         var 새로운역 = new Station("새로운역");
         var 다른새로운역 = new Station("다른새로운역");
 
-        assertThrows(NotValidSectionStationsException.class, () -> sut.add(분당선, 새로운역, 다른새로운역, 10));
+        assertThrows(NotValidSectionStationsException.class, () -> sections.add(분당선, 새로운역, 다른새로운역, 10));
     }
 
-    @DisplayName("구간 제거")
+    @DisplayName("마지막 구간 제거")
     @Test
-    void removeSection() {
-        sut.removeByStation(왕십리역);
+    void removeSectionByLastStation() {
+        var 서울숲역 = new Station("서울숲역");
+        sections.add(분당선, 왕십리역, 서울숲역, 10);
 
-        assertThat(sut.getStations()).isEmpty();
+        sections.removeByStation(서울숲역);
+
+        var sectionList = sections.getOrderedSections();
+        assertAll(
+                () -> 구간_검증(sectionList.get(0), 청량리역, 왕십리역, 10),
+                () -> 역_순서_검증(sections, List.of(청량리역, 왕십리역))
+        );
     }
 
-    @DisplayName("마지막 역이 아닌 역으로 구간 제거시 예외 발생")
+    @DisplayName("첫 번째 역으로 구간 제거")
     @Test
-    void cantRemoveSectionByStationInMiddle() {
-        assertThrows(NotValidDeleteTargetStation.class, () -> sut.removeByStation(청량리역));
+    void removeSectionByFirstStation() {
+        var 서울숲역 = new Station("서울숲역");
+        sections.add(분당선, 왕십리역, 서울숲역, 10);
+
+        sections.removeByStation(청량리역);
+
+        var sectionList = sections.getOrderedSections();
+        assertAll(
+                () -> 구간_검증(sectionList.get(0), 왕십리역, 서울숲역, 10),
+                () -> 역_순서_검증(sections, List.of(왕십리역, 서울숲역))
+        );
     }
 
+    @DisplayName("중간역으로 구간 제거")
+    @Test
+    void removeSectionByMiddleStation() {
+        var 서울숲역 = new Station("서울숲역");
+        sections.add(분당선, 왕십리역, 서울숲역, 10);
+
+        sections.removeByStation(왕십리역);
+
+        var sectionList = sections.getOrderedSections();
+        assertAll(
+                () -> 구간_검증(sectionList.get(0), 청량리역, 서울숲역, 20),
+                () -> 역_순서_검증(sections, List.of(청량리역, 서울숲역))
+        );
+    }
+
+    @DisplayName("마지막 남은 구간의 역 제거시 실패 (상행역)")
+    @Test
+    void removeLastRemainSectionByUpStationFails() {
+        assertThrows(NotValidDeleteTargetStationException.class, () -> sections.removeByStation(청량리역));
+    }
+
+    @DisplayName("마지막 남은 구간의 역 제거시 실패 (하행역)")
+    @Test
+    void removeLastRemainSectionByDownStationFails() {
+        assertThrows(NotValidDeleteTargetStationException.class, () -> sections.removeByStation(왕십리역));
+    }
+
+    @DisplayName("존재하지 않는 역으로 구간 제거 실패")
+    @Test
+    void removeWithStationNotInLineFails() {
+        var 서울숲역 = new Station("서울숲역");
+        sections.add(분당선, 왕십리역, 서울숲역, 10);
+
+        var 뉴욕역 = new Station("뉴욕역");
+        assertThrows(StationNotFoundException.class, () -> sections.removeByStation(뉴욕역));
+    }
+
+    private void 역_순서_검증(Sections sections, List<Station> stations) {
+        assertThat(sections.getStations()).containsExactlyElementsOf(stations);
+    }
+
+    private void 구간_검증(Section section, Station upStation, Station downStation, Integer distance) {
+        assertAll(
+                () -> assertThat(section.getUpStation()).isEqualTo(upStation),
+                () -> assertThat(section.getDownStation()).isEqualTo(downStation),
+                () -> assertThat(section.getDistance()).isEqualTo(distance)
+        );
+    }
 }

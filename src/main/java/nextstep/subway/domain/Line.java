@@ -29,8 +29,8 @@ public class Line {
         sections.add(this, upStation, downStation, distance);
     }
 
-    public void removeSection(Station downStation) {
-        sections.removeByStation(downStation);
+    public void removeSection(Station station) {
+        sections.removeByStation(station);
     }
 
     public List<Station> getStations() {
