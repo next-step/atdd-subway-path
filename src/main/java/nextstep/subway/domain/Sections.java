@@ -39,20 +39,16 @@ public class Sections {
 
         validateExceptionCase(newUpStation, newDownStation);
 
-        for (Section section : this.sections) {
-            Station upStation = section.getUpStation();
-            Station downStation = section.getDownStation();
-            int distance = section.getDistance();
+        if (isNewUpStation(newUpStation, newDownStation) || isNewDownStation(newUpStation, newDownStation)) {
+            this.sections.add(newSection);
+            return;
+        }
 
-            if (isNewStationInBetween(newUpStation, newDownStation, upStation, downStation, newDistance, distance)) {
+        for (Section section : this.sections) {
+            if (isNewStationInBetween(newUpStation, newDownStation, newDistance, section)) {
                 this.sections.remove(section);
                 this.sections.add(new Section(section.getLine(), newUpStation, newDownStation, newDistance));
-                this.sections.add(new Section(section.getLine(), newDownStation, downStation, distance - newDistance));
-                return;
-            }
-
-            if (isNewUpStation(newUpStation, newDownStation) || isNewDownStation(newUpStation, newDownStation)) {
-                this.sections.add(newSection);
+                this.sections.add(new Section(section.getLine(), newDownStation, section.getDownStation(), section.getDistance() - newDistance));
                 return;
             }
         }
@@ -68,7 +64,10 @@ public class Sections {
         return newDownStation.equals(this.findFirstStation()) && !getStations().contains(newUpStation);
     }
 
-    private boolean isNewStationInBetween(Station newUpStation, Station newDownStation, Station upStation, Station downStation, int newDistance, int distance) {
+    private boolean isNewStationInBetween(Station newUpStation, Station newDownStation, int newDistance, Section section) {
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+        int distance = section.getDistance();
         return (upStation.equals(newUpStation) && !downStation.equals(newDownStation) && newDistance < distance) || (downStation.equals(newDownStation) && !upStation.equals(newUpStation) && newDistance < distance);
     }
 
@@ -107,19 +106,25 @@ public class Sections {
         Station firstStation = findFirstStation();
         Station lastStation = findLastStation();
 
-        List<Station> list = new ArrayList<>();
-        list.add(firstStation);
+        List<Station> stationsInOrder = new ArrayList<>();
+        stationsInOrder.add(firstStation);
         Station nextStation = firstStation;
         while (!nextStation.equals(lastStation)) {
-            for (Section section : this.sections) {
-                if (section.getUpStation()
-                        .equals(nextStation)) {
-                    nextStation = section.getDownStation();
-                    list.add(nextStation);
-                }
+            nextStation = findAndAddNextStation(stationsInOrder, nextStation);
+        }
+        return stationsInOrder;
+    }
+
+    private Station findAndAddNextStation(List<Station> list, Station nextStation) {
+        for (Section section : this.sections) {
+            if (section.getUpStation()
+                    .equals(nextStation)) {
+                nextStation = section.getDownStation();
+                list.add(nextStation);
+                return nextStation;
             }
         }
-        return list;
+        throw new BusinessException("NextStation 을 찾을 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     public void deleteStation(Station station) {
