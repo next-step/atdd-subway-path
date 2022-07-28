@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.exception.NotValidDeleteTargetStation;
 import nextstep.subway.domain.exception.NotValidSectionDistanceException;
 import nextstep.subway.domain.exception.NotValidSectionStationsException;
 import org.junit.jupiter.api.BeforeEach;
@@ -95,14 +96,42 @@ class LineTest {
         assertThat(stations).containsExactly(광교역, 광교중앙역, 상현역);
     }
 
-    @DisplayName("노선 내 구간 삭제")
+    @DisplayName("노선의 마지막 역 삭제")
     @Test
-    void removeSection() {
+    void removeLastStation() {
         var 상현역 = new Station("상현역");
         sut.addSection(광교중앙역, 상현역, 10);
 
         sut.removeSection(상현역);
 
         assertThat(sut.getStations()).containsExactly(광교역, 광교중앙역);
+    }
+
+    @DisplayName("노선의 첫 번째 역 삭제")
+    @Test
+    void removeFirstStation() {
+        var 상현역 = new Station("상현역");
+        sut.addSection(광교중앙역, 상현역, 10);
+
+        sut.removeSection(광교역);
+
+        assertThat(sut.getStations()).containsExactly(광교중앙역, 상현역);
+    }
+
+    @DisplayName("노선의 중간 역 삭제")
+    @Test
+    void removeMiddleStation() {
+        var 상현역 = new Station("상현역");
+        sut.addSection(광교중앙역, 상현역, 10);
+
+        sut.removeSection(광교중앙역);
+
+        assertThat(sut.getStations()).containsExactly(광교역, 상현역);
+    }
+
+    @DisplayName("마지막 남은 구간 삭제 실패")
+    @Test
+    void removeLastRemainSectionFails() {
+        assertThrows(NotValidDeleteTargetStation.class, () -> sut.removeSection(광교중앙역));
     }
 }
