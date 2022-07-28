@@ -88,6 +88,13 @@ public class Section {
         return downStation.equals(section.getDownStation());
     }
 
+    public boolean hasSameDownStation(Station station) {
+        if (downStation == null) {
+            return false;
+        }
+        return downStation.equals(station);
+    }
+
     public boolean sameUpStationAndDownStation(Section section) {
         return upStation.equals(section.getUpStation()) && downStation.equals(section.getDownStation());
     }

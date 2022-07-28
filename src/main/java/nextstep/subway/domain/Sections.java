@@ -132,25 +132,6 @@ public class Sections {
         return allStations;
     }
 
-    private Section firstSection() {
-        Section section = sections.get(0);
-        while (true) {
-            Optional<Section> preSection = pre(section);
-            if (preSection.isEmpty()) {
-                break;
-            }
-            section = preSection.get();
-        }
-        return section;
-    }
-
-    private Optional<Section> pre(Section section) {
-        Station upStation = section.getUpStation();
-        return sections.stream()
-                .filter(s -> upStation.equals(s.getDownStation()))
-                .findAny();
-    }
-
     private void addUpStation(List<Station> allStations, Section firstSection) {
         Station upStation = firstSection.getUpStation();
         allStations.add(upStation);
@@ -168,10 +149,48 @@ public class Sections {
         }
     }
 
+    private Section firstSection() {
+        Section section = sections.get(0);
+        while (true) {
+            Optional<Section> preSection = pre(section);
+            if (preSection.isEmpty()) {
+                break;
+            }
+            section = preSection.get();
+        }
+        return section;
+    }
+
+    private Section lastSection() {
+        Section section = sections.get(0);
+        while (true) {
+            Optional<Section> nextSection = next(section);
+            if (nextSection.isEmpty()) {
+                break;
+            }
+            section = nextSection.get();
+        }
+        return section;
+    }
+
+    private Optional<Section> pre(Section section) {
+        Station upStation = section.getUpStation();
+        return sections.stream()
+                .filter(s -> upStation.equals(s.getDownStation()))
+                .findAny();
+    }
+
     private Optional<Station> next(Station downStation) {
         return sections.stream()
                 .filter(section -> downStation.equals(section.getUpStation()))
                 .map(Section::getDownStation)
+                .findAny();
+    }
+
+    private Optional<Section> next(Section section) {
+        Station downStation = section.getDownStation();
+        return sections.stream()
+                .filter(s -> downStation.equals(s.getUpStation()))
                 .findAny();
     }
 
@@ -188,6 +207,12 @@ public class Sections {
             return;
         }
 
+        Section lastSection = lastSection();
+        if (lastSection.hasSameDownStation(station)) {
+            sections.remove(lastSection);
+            return;
+        }
+
         sections.remove(sections.get(sections.size() - 1));
     }
 
@@ -201,7 +226,4 @@ public class Sections {
         return sections.size() == 1;
     }
 
-    private boolean notLastStation(Station station) {
-        return !sections.get(sections.size() - 1).getDownStation().equals(station);
-    }
 }
