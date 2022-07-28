@@ -32,15 +32,15 @@ public class LineService {
             Station downStation = stationService.findById(request.getDownStationId());
             line.addSection(upStation, downStation, request.getDistance());
         }
-        return createLineResponse(line);
+        return LineResponse.of(line);
     }
 
     public List<LineResponse> showLines() {
-        return lineRepository.findAll().stream().map(this::createLineResponse).collect(Collectors.toList());
+        return lineRepository.findAll().stream().map(LineResponse::of).collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
-        return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        return LineResponse.of(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
     }
 
     @Transactional
@@ -61,16 +61,6 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
         line.addSection(upStation, downStation, sectionRequest.getDistance());
-    }
-
-    private LineResponse createLineResponse(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), createStationResponses(line));
-    }
-
-    private List<StationResponse> createStationResponses(Line line) {
-        return line.getStations().stream()
-                .map(stationService::createStationResponse)
-                .collect(Collectors.toList());
     }
 
     @Transactional

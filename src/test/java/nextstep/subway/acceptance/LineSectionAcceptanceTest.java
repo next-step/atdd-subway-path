@@ -30,9 +30,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * Given 지하철역과 노선 생성을 요청 하고
      */
     @BeforeEach
-    public void setUp() {
-        super.setUp();
-
+    public void createData() {
         강남역 = 신규_지하철역("강남역");
         양재역 = 신규_지하철역("양재역");
 

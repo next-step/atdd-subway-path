@@ -8,9 +8,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.신규_지하철역;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,13 +23,11 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * Given 지하철역과 노선 생성을 요청 하고
      */
     @BeforeEach
-    public void setUp() {
-        super.setUp();
-
+    public void createData() {
         강남역 = 신규_지하철역("강남역");
         양재역 = 신규_지하철역("양재역");
 
-        신분당선 = 신규_지하철_노선(신규_구간(강남역, 양재역));
+        신분당선 = 신규_지하철_노선(신규_라인(강남역, 양재역));
     }
 
     /**
@@ -44,7 +39,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void addLineSection() {
         // when
         Long 정자역 = 신규_지하철역("정자역");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, 신규_라인(양재역, 정자역));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, 신규_구간(양재역, 정자역));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
@@ -62,7 +57,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void removeLineSection() {
         // given
         Long 정자역 = 신규_지하철역("정자역");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, 신규_라인(양재역, 정자역));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, 신규_구간(양재역, 정자역));
 
         // when
         지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
@@ -75,28 +70,5 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     private List<Long> getStationsId(ExtractableResponse<Response> response) {
         return response.jsonPath().getList("stations.id", Long.class);
-    }
-
-    private long 신규_지하철_노선(Map<String, String> lineCreateParams) {
-        return 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
-    }
-
-    private Map<String, String> 신규_구간(Long upStationId, Long downStationId) {
-        Map<String, String> lineCreateParams;
-        lineCreateParams = new HashMap<>();
-        lineCreateParams.put("name", "신분당선");
-        lineCreateParams.put("color", "bg-red-600");
-        lineCreateParams.put("upStationId", upStationId + "");
-        lineCreateParams.put("downStationId", downStationId + "");
-        lineCreateParams.put("distance", 10 + "");
-        return lineCreateParams;
-    }
-
-    private Map<String, String> 신규_라인(Long upStationId, Long downStationId) {
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", upStationId + "");
-        params.put("downStationId", downStationId + "");
-        params.put("distance", 6 + "");
-        return params;
     }
 }

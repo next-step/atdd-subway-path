@@ -89,6 +89,14 @@ public class Sections {
         this.sections.removeAll(deleteSections);
     }
 
+    public int getTotalDistance() {
+        int totalDistance = 0;
+        for (Section section : this.sections) {
+            totalDistance += section.getDistance().getValue();
+        }
+        return totalDistance;
+    }
+
     private void relocateSection(Line line, Station station) {
         Section sectionHasUpSection = findSectionHasUpStation(station);
         Section sectionHasDownSection = findSectionHasDownStation(station);
