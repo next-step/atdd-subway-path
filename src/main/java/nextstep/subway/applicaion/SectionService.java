@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,8 +24,8 @@ public class SectionService {
     }
 
     public void deleteSection(Long lineId, Long stationId) {
-        Sections sections = findLine(lineId).getSections();
-        sections.removeSection(stationId);
+        Line line = findLine(lineId);
+        line.removeSection(stationId);
     }
 
     private Line findLine(final Long lineId) {
