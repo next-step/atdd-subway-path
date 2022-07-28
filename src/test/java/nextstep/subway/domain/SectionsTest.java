@@ -5,9 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
-import nextstep.subway.domain.exception.NotValidDeleteTargetStation;
+import nextstep.subway.domain.exception.NotValidDeleteTargetStationException;
 import nextstep.subway.domain.exception.NotValidSectionDistanceException;
 import nextstep.subway.domain.exception.NotValidSectionStationsException;
+import nextstep.subway.domain.exception.StationNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -157,13 +158,23 @@ class SectionsTest {
     @DisplayName("마지막 남은 구간의 역 제거시 실패 (상행역)")
     @Test
     void removeLastRemainSectionByUpStationFails() {
-        assertThrows(NotValidDeleteTargetStation.class, () -> sections.removeByStation(청량리역));
+        assertThrows(NotValidDeleteTargetStationException.class, () -> sections.removeByStation(청량리역));
     }
 
     @DisplayName("마지막 남은 구간의 역 제거시 실패 (하행역)")
     @Test
     void removeLastRemainSectionByDownStationFails() {
-        assertThrows(NotValidDeleteTargetStation.class, () -> sections.removeByStation(왕십리역));
+        assertThrows(NotValidDeleteTargetStationException.class, () -> sections.removeByStation(왕십리역));
+    }
+
+    @DisplayName("존재하지 않는 역으로 구간 제거 실패")
+    @Test
+    void removeWithStationNotInLineFails() {
+        var 서울숲역 = new Station("서울숲역");
+        sections.add(분당선, 왕십리역, 서울숲역, 10);
+
+        var 뉴욕역 = new Station("뉴욕역");
+        assertThrows(StationNotFoundException.class, () -> sections.removeByStation(뉴욕역));
     }
 
     private void 역_순서_검증(Sections sections, List<Station> stations) {

@@ -5,9 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.exception.NotValidDeleteTargetStation;
+import nextstep.subway.domain.exception.NotValidDeleteTargetStationException;
 import nextstep.subway.domain.exception.NotValidSectionDistanceException;
 import nextstep.subway.domain.exception.NotValidSectionStationsException;
+import nextstep.subway.domain.exception.StationNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -132,6 +133,16 @@ class LineTest {
     @DisplayName("마지막 남은 구간 삭제 실패")
     @Test
     void removeLastRemainSectionFails() {
-        assertThrows(NotValidDeleteTargetStation.class, () -> sut.removeSection(광교중앙역));
+        assertThrows(NotValidDeleteTargetStationException.class, () -> sut.removeSection(광교중앙역));
+    }
+
+    @DisplayName("노선에 존재하지 않는 역 삭제 실패")
+    @Test
+    void removeStationNotInLineFails() {
+        var 상현역 = new Station("상현역");
+        sut.addSection(광교중앙역, 상현역, 10);
+
+        var 뉴욕역 = new Station("뉴욕역");
+        assertThrows(StationNotFoundException.class, () -> sut.removeSection(뉴욕역));
     }
 }
