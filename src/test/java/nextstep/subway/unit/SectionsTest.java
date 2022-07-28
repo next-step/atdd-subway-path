@@ -1,13 +1,15 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.List;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.SectionMinimumLimitException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,18 +56,59 @@ class SectionsTest {
     @Test
     @DisplayName("구간이 없는경우 삭제 시 예외")
     void removeStationsIsEmpty() {
-        assertThatThrownBy(() -> sections.removeStations(강남역()))
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessage("등록된 구간이 없습니다.");
+        assertThatIllegalStateException()
+            .isThrownBy(() -> sections.findRemoveSection(강남역()))
+            .withMessage("등록된 구간이 없습니다.");
     }
 
     @Test
     @DisplayName("구간 하행 종점역 정보가 맞지 않는 경우 예외")
     void removeStationsNotEqualDownStation() {
         구간_등록(강남역(), 역삼역(), 10);
-        assertThatThrownBy(() -> sections.removeStations(잠실역()))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("하행 종점역 정보가 다릅니다.");
+        구간_등록(강남역(), new Station(3L, "선릉역"), 5);
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> sections.findRemoveSection(잠실역()))
+            .withMessage("하행 종점역 정보가 다릅니다.");
+    }
+
+    @Test
+    @DisplayName("구간이 1개만 남아있을 때 삭제 시 예외")
+    void lessThanEqualMinimumSizeThenThrowException() {
+        구간_등록(강남역(), 역삼역(), 10);
+        assertThatExceptionOfType(SectionMinimumLimitException.class)
+            .isThrownBy(() -> sections.findRemoveSection(역삼역()))
+            .withMessage("최소 유지 구간보다 작아질 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("첫 구간 삭제")
+    void removeFirstSectionOfLine() {
+        //given
+        구간_등록(강남역(), 역삼역(), 10);
+        구간_등록(역삼역(), 잠실역(), 7);
+
+        //when
+        final Section removeSection = sections.findRemoveSection(강남역());
+        sections.remove(removeSection);
+
+        //then
+        assertThat(sections.sections()).hasSize(1)
+            .containsExactly(new Section(line, 역삼역(), 잠실역(), 7));
+    }
+
+    @Test
+    @DisplayName("제거 되는 구간 검증")
+    void removeMiddleSectionOfLine() {
+        구간_등록(강남역(), 역삼역(), 10);
+        구간_등록(역삼역(), 잠실역(), 7);
+        final Station 선릉역 = new Station(4L, "선릉역");
+        구간_등록(잠실역(), 선릉역, 9);
+
+        //when
+        final Section removeSection = sections.findRemoveSection(잠실역());
+
+        //then
+        assertThat(removeSection).isEqualTo(new Section(line, 잠실역(), 선릉역, 9));
     }
 
     @Test

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.exception.SectionMinimumLimitException;
 import nextstep.subway.exception.SectionNotFoundException;
 
 @Embeddable
@@ -111,16 +112,57 @@ public class Sections {
             .collect(Collectors.toList());
     }
 
-    public void removeStations(final Station station) {
+    public Section findRemoveSection(final Station station) {
+        notRegisteredValidation();
+
+        minimumSizeValidation();
+
+        return findSectionToRemove(station);
+    }
+
+    public void remove(final Section removeSection) {
+        sections.remove(removeSection);
+    }
+
+    private Section findSectionToRemove(final Station station) {
+        final Section section = getFirstSection();
+        if (section.isSameUpStation(station)) {
+            return section;
+        }
+
+        for (Section currentSection : sections) {
+            final Section nextSection = getNextSection(currentSection);
+            if (Objects.nonNull(nextSection) && isMiddleSection(currentSection, nextSection, station)) {
+                currentSection.removeMiddleSection(nextSection.getDistance(), nextSection.getDownStation());
+                return nextSection;
+            }
+        }
+
+        downStationValidation(station);
+        return sections.get(getLastIndex());
+    }
+
+    private boolean isMiddleSection(final Section currentSection, final Section nextSection, final Station removeStation) {
+        return currentSection.isSameDownStation(removeStation) &&
+            nextSection.isSameUpStation(removeStation);
+    }
+
+    private void notRegisteredValidation() {
         if (sections.isEmpty()) {
             throw new IllegalStateException("등록된 구간이 없습니다.");
         }
+    }
 
+    private void downStationValidation(final Station station) {
         if (isNotEqualLastDownStation(station)) {
             throw new IllegalArgumentException("하행 종점역 정보가 다릅니다.");
         }
+    }
 
-        sections.remove(getLastIndex());
+    private void minimumSizeValidation() {
+        if (sections.size() == 1) {
+            throw new SectionMinimumLimitException();
+        }
     }
 
     private boolean isNotEqualLastDownStation(final Station station) {
