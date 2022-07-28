@@ -20,14 +20,12 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     private Long 강남역;
     private Long 양재역;
-
     /**
      * Given 지하철역과 노선 생성을 요청 하고
      */
     @BeforeEach
     public void setUp() {
         super.setUp();
-
         강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
         양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
 
@@ -91,4 +89,5 @@ class SectionAcceptanceTest extends AcceptanceTest {
         params.put("distance", 6 + "");
         return params;
     }
+
 }

@@ -6,11 +6,11 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,9 +38,12 @@ public class LineService {
     }
 
     public List<LineResponse> showLines() {
-        return lineRepository.findAll().stream()
-                .map(this::createLineResponse)
-                .collect(Collectors.toList());
+        List<LineResponse> list = new ArrayList<>();
+        for (Line line : lineRepository.findAll()) {
+            LineResponse lineResponse = createLineResponse(line);
+            list.add(lineResponse);
+        }
+        return list;
     }
 
     public LineResponse findById(Long id) {
@@ -71,11 +74,7 @@ public class LineService {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.sections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, line.upStation());
+        List<Station> stations = line.stations();
 
         return stations.stream()
                 .map(it -> stationService.createStationResponse(it))
