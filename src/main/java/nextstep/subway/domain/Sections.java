@@ -44,7 +44,7 @@ public class Sections {
 
 	public void removeSection(Station station) {
 
-		if (!isAlreadyRegistered(station)) {
+		if (isNotRegistered(station)) {
 			throw new IllegalArgumentException("등록되어 있지 않은 역으로 구간을 삭제할 수 없습니다.");
 		}
 
@@ -175,8 +175,8 @@ public class Sections {
 				hasSameUpStation(downStation) || hasSameDownStation(upStation);
 	}
 
-	private boolean isAlreadyRegistered(Station station) {
-		return hasSameUpStation(station) || hasSameDownStation(station);
+	private boolean isNotRegistered(Station station) {
+		return !(hasSameUpStation(station) || hasSameDownStation(station));
 	}
 
 	private boolean isAlreadyRegistered(Station upStation, Station downStation) {
