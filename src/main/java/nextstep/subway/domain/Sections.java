@@ -46,7 +46,7 @@ public class Sections {
 
         var firstSection = getFirstSection();
         if (firstSection.getUpStation().equals(station)) {
-            sectionList.remove(0);
+            sectionList.remove(firstSection);
         } else {
             var targetSection = getSectionByDownStation(station);
             var nextSection = getNextSection(targetSection);
