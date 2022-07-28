@@ -250,48 +250,4 @@ public class Sections {
                 .mapToInt(section -> section.getDistance())
                 .sum();
     }
-
-    private Station findFirstStation() {
-        List<Station> stations = this.getStations();
-        for (Station station : stations) {
-            if (isFirstStation(station)) {
-                return station;
-            }
-        }
-        throw new IllegalStateException();
-    }
-
-    private boolean isFirstStation(Station station) {
-        for (Section section : this.sections) {
-            if (section.isDownStation(station)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private Station findLastStation() {
-        List<Station> stations = this.getStations();
-        for (Station station : stations) {
-            if (isLastStation(station)) {
-                return station;
-            }
-        }
-        throw new IllegalStateException();
-    }
-
-    private boolean isLastStation(Station station) {
-        for (Section section : this.sections) {
-            if (section.isFirstStation(station)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public int getDistance() {
-        return this.sections.stream()
-                .mapToInt(section -> section.getDistance())
-                .sum();
-    }
 }
