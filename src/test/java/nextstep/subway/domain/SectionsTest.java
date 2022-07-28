@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.NewlySectionUpStationAndDownStationNotExist;
+import nextstep.subway.exception.SectionAllStationsAlreadyExistException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,6 +44,26 @@ class SectionsTest {
 
         //then
         assertThat(sections.getSections()).containsExactly(firstSection, secondSection);
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 수 있다.")
+    @Test
+    void addSectionBetweenSection() {
+        //given
+
+        final var firstSection = new Section(_2호선, 선릉역, 종합운동장역, 10);
+        final var secondSection = new Section(_2호선, 선릉역, 삼성역, 3);
+
+        //when
+        final var sections = new Sections();
+        sections.add(firstSection);
+        sections.add(secondSection);
+
+        //then
+        assertAll(
+                () -> assertThat(sections.getSections()).hasSize(2),
+                () -> assertThat(sections.allStations()).containsExactly(선릉역, 삼성역, 종합운동장역)
+        );
     }
 
     @DisplayName("구간의 모든 역을 찾을 수 있다.")
@@ -130,5 +152,40 @@ class SectionsTest {
         assertThatThrownBy(() -> sections.delete(삼성역))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상행역과 하행역만 존재하기 때문에 삭제할 수 없습니다.");
+    }
+
+
+    @DisplayName("이미 존재하는 구간을 추가 할 수 없다.")
+    @Test
+    void cantAddAlreadyExistSection() {
+        //given
+        final var section = new Section(_2호선, 선릉역, 삼성역, 10);
+
+        final var sections = new Sections();
+        sections.add(section);
+
+        //when, then
+        assertThatThrownBy(() -> sections.add(new Section(_2호선, 선릉역, 삼성역, 10)))
+                .isInstanceOf(SectionAllStationsAlreadyExistException.class)
+                .hasMessage("이미 구간 내 상행역, 하행역이 모두 존재하여 추가할 수 없습니다.");
+    }
+
+
+    @DisplayName("상행역, 하행역 어떤것도 존재하지 않을 때 구간 추가할 수 없다.")
+    @Test
+    void cantAddNoExistUpStationAndDownStation() {
+        //given
+        final var section = new Section(_2호선, 선릉역, 삼성역, 10);
+
+        final var sections = new Sections();
+        sections.add(section);
+
+
+        //when, then
+        final var 신설역1 = new Station("신설역1");
+        final var 신설역2 = new Station("신설역2");
+        assertThatThrownBy(() -> sections.add(new Section(_2호선, 신설역1, 신설역2, 5)))
+                .isInstanceOf(NewlySectionUpStationAndDownStationNotExist.class)
+                .hasMessage("추가하고자 하는 상행역, 하행역이 존재하지 않아 추가할 수 없습니다.");
     }
 }
