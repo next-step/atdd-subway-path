@@ -73,9 +73,4 @@ class LineTest {
         // then
         assertThat(station.getName()).isEqualTo("정자역");
     }
-
-    @Test
-    void getSections(){
-
-    }
 }
