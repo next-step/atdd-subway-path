@@ -8,6 +8,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.exception.DeleteSectionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -93,7 +94,7 @@ class LineServiceTest {
 
         // when
         assertThatThrownBy(() -> lineService.deleteSection(_2호선.getId(), 삼성역.getId()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DeleteSectionException.class)
                 .hasMessage("상행역과 하행역만 존재하기 때문에 삭제할 수 없습니다.");
     }
 

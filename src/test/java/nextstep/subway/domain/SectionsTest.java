@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.DeleteSectionException;
 import nextstep.subway.exception.NewlySectionUpStationAndDownStationNotExist;
 import nextstep.subway.exception.SectionAllStationsAlreadyExistException;
 import org.junit.jupiter.api.BeforeEach;
@@ -178,7 +179,7 @@ class SectionsTest {
 
         //when, then
         assertThatThrownBy(() -> sections.delete(삼성역))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DeleteSectionException.class)
                 .hasMessage("상행역과 하행역만 존재하기 때문에 삭제할 수 없습니다.");
     }
 

@@ -221,6 +221,23 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
 
+    /**
+     * When 지하철 노선의 가운데 역 제거 시 구간이 하나밖에 없으면
+     * Then 에러가 발생한다
+     */
+    @DisplayName("역 삭제 시 구간이 하나 밖에 없으면 에러가 발생")
+    @Test
+    void removeOnlyOneSectionException() {
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("상행역과 하행역만 존재하기 때문에 삭제할 수 없습니다.");
+    }
+
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();

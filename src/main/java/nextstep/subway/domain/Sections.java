@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import nextstep.subway.domain.vo.SectionLocation;
 import nextstep.subway.domain.vo.ToBeAddedSection;
+import nextstep.subway.exception.DeleteSectionException;
 import nextstep.subway.exception.NewlySectionUpStationAndDownStationNotExist;
 import nextstep.subway.exception.SectionAllStationsAlreadyExistException;
 import nextstep.subway.exception.SectionNotExistException;
@@ -204,8 +205,9 @@ public class Sections {
 
     private void validateDelete() {
         if (onlyOneSectionExist()) {
-            throw new IllegalArgumentException("상행역과 하행역만 존재하기 때문에 삭제할 수 없습니다.");
+            throw new DeleteSectionException("상행역과 하행역만 존재하기 때문에 삭제할 수 없습니다.");
         }
+
     }
 
     private boolean onlyOneSectionExist() {
