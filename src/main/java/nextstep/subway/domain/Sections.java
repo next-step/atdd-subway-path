@@ -44,20 +44,28 @@ public class Sections {
             throw new StationNotFoundException();
         }
 
+        var removeTarget = getRemoveTargetSection(station);
+        reorderSections(removeTarget, station);
+        sectionList.remove(removeTarget);
+    }
+
+    private Section getRemoveTargetSection(Station station) {
         var firstSection = getFirstSection();
         if (firstSection.getUpStation().equals(station)) {
-            sectionList.remove(firstSection);
-        } else {
-            var targetSection = getSectionByDownStation(station);
-            var nextSection = getNextSection(targetSection);
-
-            nextSection.ifPresent(section -> section.setNewUpStation(
-                    targetSection.getUpStation(),
-                    targetSection.getDistance() + section.getDistance()
-            ));
-
-            sectionList.remove(targetSection);
+            return firstSection;
         }
+        return getSectionByDownStation(station);
+    }
+
+    private void reorderSections(Section targetSection, Station targetStation) {
+        if (targetSection.getUpStation().equals(targetStation)) {
+            return;
+        }
+        var nextSection = getNextSection(targetSection);
+        nextSection.ifPresent(section -> section.setNewUpStation(
+                targetSection.getUpStation(),
+                targetSection.getDistance() + section.getDistance()
+        ));
     }
 
     public List<Section> getOrderedSections() {
