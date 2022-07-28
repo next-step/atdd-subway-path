@@ -138,6 +138,21 @@ class SectionsTest {
         );
     }
 
+    @DisplayName("중간역으로 구간 제거")
+    @Test
+    void removeSectionByMiddleStation() {
+        var 서울숲역 = new Station("서울숲역");
+        sections.add(분당선, 왕십리역, 서울숲역, 10);
+
+        sections.removeByStation(왕십리역);
+
+        var sectionList = sections.getOrderedSections();
+        assertAll(
+                () -> 구간_검증(sectionList.get(0), 청량리역, 서울숲역, 20),
+                () -> 역_순서_검증(sections, List.of(청량리역, 서울숲역))
+        );
+    }
+
     private void 역_순서_검증(Sections sections, List<Station> stations) {
         assertThat(sections.getStations()).containsExactlyElementsOf(stations);
     }
