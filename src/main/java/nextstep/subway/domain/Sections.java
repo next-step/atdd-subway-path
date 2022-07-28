@@ -1,7 +1,11 @@
 package nextstep.subway.domain;
 
 import lombok.Getter;
-import nextstep.subway.exception.*;
+import nextstep.subway.exception.AlreadyRegisteredException;
+import nextstep.subway.exception.CannotInsertLongerSectionException;
+import nextstep.subway.exception.CannotInsertSameDistanceSectionException;
+import nextstep.subway.exception.CannotRegisterWithoutRegisteredStation;
+import nextstep.subway.exception.CannotRemoveLastSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
