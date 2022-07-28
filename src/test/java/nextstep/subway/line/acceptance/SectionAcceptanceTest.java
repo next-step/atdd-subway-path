@@ -6,7 +6,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static nextstep.subway.steps.LineSectionSteps.*;
@@ -155,14 +154,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // when + then
         노선에서_구간을_제거할수_없다(신분당선, 교대역);
-    }
-
-    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", upStationId + "");
-        params.put("downStationId", downStationId + "");
-        params.put("distance", distance + "");
-        return params;
     }
 
     private void 노선에_역들이_순서대로_존재한다(Long lineId, Long... stationIds) {
