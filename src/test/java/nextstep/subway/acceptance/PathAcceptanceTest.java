@@ -26,6 +26,9 @@ class PathAcceptanceTest extends AcceptanceTest {
 	private Long 이호선;
 	private Long 신분당선;
 	private Long 삼호선;
+	Map<String, Object> 교대 = new HashMap<>();
+	Map<String, Object> 남부터미널 = new HashMap<>();
+	Map<String, Object> 양재 = new HashMap<>();
 
 	/**
 	 * 교대역    --- *2호선* ---   강남역
@@ -51,6 +54,13 @@ class PathAcceptanceTest extends AcceptanceTest {
 
 		지하철_노선에_지하철_구간_생성_요청(삼호선,
 			createSectionCreateParams(남부터미널역, 양재역, DISTANCE_VALUE_3));
+
+		교대.put("id", 교대역);
+		교대.put("name", "교대역");
+		남부터미널.put("id", 남부터미널역);
+		남부터미널.put("name", "남부터미널역");
+		양재.put("id", 양재역);
+		양재.put("name", "양재역");
 	}
 
 	@Test
@@ -60,8 +70,10 @@ class PathAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> stations = 지하철_경로_조회(교대역, 양재역);
 
 		//then
-		assertThat(stations.jsonPath().getList("stations"))
-			.containsExactly(교대역, 강남역, 양재역);
+		assertThat(stations.jsonPath().getList("stations.id", Long.class)).hasSize(3)
+			.containsExactly(교대역, 남부터미널역, 양재역);
+		assertThat(stations.jsonPath().getLong("distance")).isEqualTo(5);
+
 	}
 
 	@Test
@@ -92,7 +104,6 @@ class PathAcceptanceTest extends AcceptanceTest {
 	@Test
 	@DisplayName("지하철 경로 조회-미존재역")
 	void getLinePathToNotExistingStation() {
-
 		//when
 		ExtractableResponse<Response> response = 지하철_경로_조회(교대역, 99L);
 

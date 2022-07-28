@@ -10,11 +10,10 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import nextstep.subway.applicaion.LineService;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.PathFinder;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 
 public class PathFinderTest {
@@ -22,9 +21,7 @@ public class PathFinderTest {
 	Station 강남역;
 	Station 양재역;
 	Station 남부터미널역;
-	List<Line> lines;
-	@Autowired
-	LineService lineService;
+	List<Section> sectionList;
 
 	@BeforeEach
 	void setUp() {
@@ -38,11 +35,14 @@ public class PathFinderTest {
 		Line 신분당선 = new Line("신분당선", "red");
 
 		이호선.addSection(교대역, 강남역, DISTANCE_VALUE_10);
-		삼호선.addSection(교대역, 남부터미널역, DISTANCE_VALUE_10);
+		삼호선.addSection(교대역, 남부터미널역, DISTANCE_VALUE_1);
 		신분당선.addSection(교대역, 남부터미널역, DISTANCE_VALUE_10);
 		삼호선.addSection(남부터미널역, 양재역, DISTANCE_VALUE_3);
 
-		lines = Arrays.asList(이호선, 삼호선, 신분당선);
+		List<Line> lines = Arrays.asList(이호선, 삼호선, 신분당선);
+		sectionList = lines.stream()
+			.flatMap(line -> line.getSections().stream())
+			.collect(Collectors.toList());
 	}
 
 	@Test
@@ -56,22 +56,14 @@ public class PathFinderTest {
 		 * |                        |
 		 * 남부터미널역  --- *3호선* ---   양재
 		 */
-
 		//when
-		List<String> stations = PathFinder.getShorPath(lineService, 교대역.getId(), 양재역.getId());
-		List<Station> stationList = getAllStations().stream()
-			.filter(station -> stations.contains(station.getId().toString()))
-			.collect(Collectors.toList());
+		PathFinder pathFinder = new PathFinder(sectionList);
+		List<Station> stationList = pathFinder.getShortestPath(교대역, 양재역);
 		//then
 		assertThat(stationList).hasSize(3)
 			.containsExactly(교대역, 남부터미널역, 양재역);
-	}
-
-	private List<Station> getAllStations() {
-		return lines.stream()
-			.flatMap(line -> line.getStations().stream())
-			.distinct()
-			.collect(Collectors.toList());
+		assertThat(pathFinder.getSumOfDistance(교대역, 양재역))
+			.isEqualTo(DISTANCE_VALUE_1 + DISTANCE_VALUE_3);
 	}
 
 }

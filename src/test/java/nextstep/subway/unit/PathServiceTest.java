@@ -4,6 +4,7 @@ import static nextstep.subway.unit.LineStaticValues.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -15,9 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.PathService;
-import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.PathRequest;
 import nextstep.subway.applicaion.dto.PathResponse;
+import nextstep.subway.applicaion.dto.SectionResponse;
 import nextstep.subway.common.exception.BusinessException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -45,7 +46,8 @@ public class PathServiceTest {
 	Line 삼호선;
 	Line 신분당선;
 
-	List<LineResponse> lineResponseList;
+	long unRegisterStation = 99L;
+	List<SectionResponse> sectionResponseList;
 
 	@BeforeEach
 	void setUp() {
@@ -63,40 +65,46 @@ public class PathServiceTest {
 		신분당선.addSection(교대역, 남부터미널역, DISTANCE_VALUE_10);
 		삼호선.addSection(남부터미널역, 양재역, DISTANCE_VALUE_3);
 
-		lineResponseList = lineService.showLines();
+		sectionResponseList = lineService.showSections();
 	}
 
 	@Test
 	@DisplayName("최단거리 조회")
 	void getPaths() {
 
-		PathResponse response = pathService.getPath(new PathRequest(lineResponseList, 교대역.getId(), 양재역.getId()));
+		//when
+		PathResponse response = pathService.getPath(new PathRequest(교대역.getId(), 양재역.getId()));
 
-		assertThat(response.getStationList()).hasSize(3)
-			.containsExactly(교대역, 남부터미널역, 양재역);
+		//then
+		assertThat(response.getStations()).hasSize(3);
+		assertThat(response.getStations()
+			.stream()
+			.map(station -> station.getId())
+			.collect(Collectors.toList())).containsExactly(교대역.getId(), 남부터미널역.getId(), 양재역.getId());
+
 		assertThat(response.getDistance()).isEqualTo(13);
 	}
 
 	@Test
 	@DisplayName("최단거리 조회-출발,도착역 동일")
 	void getPathsBySameStations() {
-		assertThatThrownBy(() -> pathService.getPath(new PathRequest(lineResponseList, 교대역.getId(), 교대역.getId())))
+		assertThatThrownBy(() -> pathService.getPath(new PathRequest(교대역.getId(), 교대역.getId())))
 			.isInstanceOf(BusinessException.class);
 	}
 
 	@Test
 	@DisplayName("최단거리 조회-등록되 있지 않은 출발역")
 	void getPathsWithNotExistingUpStation() {
-		Station 녹번역 = stationRepository.save(new Station("녹번역"));
-		assertThatThrownBy(() -> pathService.getPath(new PathRequest(lineResponseList, 녹번역.getId(), 교대역.getId())))
+		assertThatThrownBy(
+			() -> pathService.getPath(new PathRequest(unRegisterStation, 교대역.getId())))
 			.isInstanceOf(BusinessException.class);
 	}
 
 	@Test
 	@DisplayName("최단거리 조회-등록되 있지 않은 도착역")
 	void getPathsWithNotExistingDownStation() {
-		Station 녹번역 = stationRepository.save(new Station("녹번역"));
-		assertThatThrownBy(() -> pathService.getPath(new PathRequest(lineResponseList, 교대역.getId(), 녹번역.getId())))
+		assertThatThrownBy(
+			() -> pathService.getPath(new PathRequest(교대역.getId(), unRegisterStation)))
 			.isInstanceOf(BusinessException.class);
 	}
 
@@ -109,7 +117,7 @@ public class PathServiceTest {
 		Line 일호선 = lineRepository.save(new Line("1호선", "blue"));
 		일호선.addSection(신도림역, 영등포역, DISTANCE_VALUE_10);
 		//then
-		assertThatThrownBy(() -> pathService.getPath(new PathRequest(lineResponseList, 교대역.getId(), 신도림역.getId())))
+		assertThatThrownBy(() -> pathService.getPath(new PathRequest(교대역.getId(), 신도림역.getId())))
 			.isInstanceOf(BusinessException.class);
 	}
 }
