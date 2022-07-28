@@ -2,7 +2,7 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.common.exception.ErrorMessage;
+import nextstep.subway.common.exception.message.SectionErrorMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -97,7 +97,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, 구간_파라미터_생성(강남역, 정자역, 10));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorMessage.SECTION_DISTANCE_EQUALS_OR_LARGE);
+        assertThat(response.jsonPath().getString("message")).isEqualTo(SectionErrorMessage.SECTION_DISTANCE_EQUALS_OR_LARGE);
     }
 
     /**
@@ -116,7 +116,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, 구간_파라미터_생성(정자역, 모란역, 5));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorMessage.SECTION_DISTANCE_EQUALS_OR_LARGE);
+        assertThat(response.jsonPath().getString("message")).isEqualTo(SectionErrorMessage.SECTION_DISTANCE_EQUALS_OR_LARGE);
     }
 
     /**
@@ -132,7 +132,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, 구간_파라미터_생성(강남역, 정자역, 15));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorMessage.SECTION_DISTANCE_EQUALS_OR_LARGE);
+        assertThat(response.jsonPath().getString("message")).isEqualTo(SectionErrorMessage.SECTION_DISTANCE_EQUALS_OR_LARGE);
     }
 
     /**
@@ -146,7 +146,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, 구간_파라미터_생성(강남역, 양재역, 6));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorMessage.SECTION_DUPLICATION);
+        assertThat(response.jsonPath().getString("message")).isEqualTo(SectionErrorMessage.SECTION_DUPLICATION);
     }
 
     /**
@@ -163,7 +163,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, 구간_파라미터_생성(모란역, 정자역, 6));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorMessage.SECTION_NOT_IN_STATION);
+        assertThat(response.jsonPath().getString("message")).isEqualTo(SectionErrorMessage.SECTION_NOT_IN_STATION);
     }
 
     /**
@@ -186,6 +186,80 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 중간 구간 제거를 요청 하면
+     * Then 노선에 구간이 제거된다
+     */
+    @Test
+    void 지하철_노선_중간_구간_제거() {
+        // given
+        지하철_노선에_지하철_구간_생성_요청(신분당선, 구간_파라미터_생성(양재역, 정자역, 6));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 상행역 제거를 요청 하면
+     * Then 노선에 상행역 구간이 제거된다
+     */
+    @Test
+    void 지하철_노선_상행역_제거() {
+        // given
+        지하철_노선에_지하철_구간_생성_요청(신분당선, 구간_파라미터_생성(양재역, 정자역, 6));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(양재역, 정자역);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고, 지하철 노선의 구간 제거를 요청
+     * When 구간이 하나이면
+     * Then 에러 발생
+     */
+    @Test
+    void 지하철_노선_구간_제거시_구간이_하나면_에러() {
+        // given
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+        assertThat(response.jsonPath().getString("message")).isEqualTo(SectionErrorMessage.SECTION_ONLY_ONE);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고, 지하철 노선의 구간 제거를 요청
+     * When 등록되어 있지 않은 구간 제거시
+     * Then 에러 발생
+     */
+    @Test
+    void 지하철_노선_구간_제거시_없는_역_제거의_경우_에러() {
+        // given
+        지하철_노선에_지하철_구간_생성_요청(신분당선, 구간_파라미터_생성(양재역, 정자역, 6));
+
+        // when
+        Long 모란역 = 지하철역_생성_요청("모란역").jsonPath().getLong("id");
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 모란역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+        assertThat(response.jsonPath().getString("message")).isEqualTo(SectionErrorMessage.SECTION_NOT_EQUALS);
+    }
+    
     private Map<String, String> 라인_파라미터_생성(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();

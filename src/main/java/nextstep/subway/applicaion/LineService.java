@@ -85,8 +85,9 @@ public class LineService {
         Station station = findStation(stationId);
 
         Sections sections = getLineById(lineId).getSections();
-        sections.isDeleteStationCheck(station);
-        sections.removeLastSection();
+
+        sections.isDeleteStationCheck();
+        sections.removeSection(station);
     }
 
     private Line getLineById(Long lineId) {
