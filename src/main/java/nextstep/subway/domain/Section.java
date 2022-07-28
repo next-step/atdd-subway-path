@@ -52,4 +52,12 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public boolean isDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public boolean isFirstStation(Station station) {
+        return this.upStation.equals(station);
+    }
 }

@@ -73,7 +73,7 @@ public class LineServiceTest {
     }
 
     private LineResponse createLineResponse(Line line, List<Station> stations) {
-        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(), createStationResponses(stations));
+        LineResponse lineResponse = new LineResponse(line.getId(), line.getName(), line.getColor(), line.getDistance(), createStationResponses(stations));
         return lineResponse;
     }
 
