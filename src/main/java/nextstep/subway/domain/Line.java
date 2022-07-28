@@ -59,6 +59,10 @@ public class Line {
         return sections.getOrderedSections();
     }
 
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
     public void addSection(Section section) {
         sections.add(section);
     }
@@ -104,5 +108,10 @@ public class Line {
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
                 '}';
+    }
+
+    public boolean containsStationIds(List<Long> stationIds) {
+        return stationIds.stream()
+                .anyMatch(stationId -> sections.containsStation(stationId));
     }
 }

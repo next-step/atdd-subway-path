@@ -223,7 +223,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         return lineCreateParams;
     }
 
-    private Map<String, String> createSectionParams(Long upStationId, Long downStationId, int distance) {
+    public static Map<String, String> createSectionParams(Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");

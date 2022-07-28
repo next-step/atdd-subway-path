@@ -225,4 +225,17 @@ public class Sections {
         return sections.stream()
                 .noneMatch(section -> section.equalsDownStation(station));
     }
+
+    public List<Station> getStations() {
+        return sections.stream()
+                .flatMap(section -> section.getAllStations().stream())
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public boolean containsStation(Long stationId) {
+        return getStations()
+                .stream()
+                .anyMatch(station -> station.isEqualStationId(stationId));
+    }
 }

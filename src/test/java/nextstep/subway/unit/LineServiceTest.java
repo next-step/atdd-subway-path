@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+
 import static nextstep.subway.utils.SectionFixture.구간생성;
 import static nextstep.subway.utils.StationFixture.역생성;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -82,7 +84,6 @@ public class LineServiceTest {
     private Line createLineNumber2() {
         return lineRepository.save(LineFixture.라인_생성_2호선());
     }
-
     private Station createStation(String name) {
         return stationRepository.save(역생성(name));
     }
@@ -184,6 +185,34 @@ public class LineServiceTest {
         assertThatThrownBy(() -> lineService.deleteSection(line.getId(), 판교역.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("노선에 등록되어있지 않은 역은 제거 할 수 없습니다.");
+    }
+
+    @DisplayName("역 ID를 구간의 상행종점역 또는 하행종점역으로 포함하고 있는 라인을 찾을 수 있다")
+    @Test
+    void findAllLineByStationIdIn() {
+        // given
+        var 이호선 = lineRepository.save(LineFixture.라인_생성_2호선());
+        var 칠호선 = lineRepository.save(LineFixture.라인_생성_7호선());
+        var 구호선 = lineRepository.save(LineFixture.라인_생성_9호선());
+        var 신분당선 = lineRepository.save(LineFixture.라인_생성_신분당선());
+
+        var 강남역 = createStation("강남역");
+        var 역삼역 = createStation("역삼역");
+        var 선릉역 = createStation("선릉역");
+
+        이호선.addSection(구간생성(이호선, 강남역, 역삼역, 3));
+        이호선.addSection(구간생성(이호선, 역삼역, 선릉역, 2));
+
+        칠호선.addSection(구간생성(칠호선, 역삼역, 선릉역, 2));
+        구호선.addSection(구간생성(구호선, 역삼역, 선릉역, 2));
+        신분당선.addSection(구간생성(신분당선, 역삼역, 선릉역, 2));
+
+        // when
+        var lines = lineService.findAllByStationIdIn(Collections.singletonList(강남역.getId()));
+
+        // then
+        assertThat(lines).hasSize(1);
+        assertThat(lines.get(0)).isEqualTo(이호선);
     }
 
 }

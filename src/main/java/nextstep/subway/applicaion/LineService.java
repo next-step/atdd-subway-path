@@ -103,4 +103,15 @@ public class LineService {
         Station station = stationService.findById(stationId);
         line.deleteSection(station);
     }
+
+    public List<Line> findAllByStationIdIn(List<Long> stationIds) {
+        return lineRepository.findAll()
+                .stream()
+                .filter(line -> line.containsStationIds(stationIds))
+                .collect(Collectors.toList());
+    }
+
+    public List<Line> findAll() {
+        return lineRepository.findAll();
+    }
 }

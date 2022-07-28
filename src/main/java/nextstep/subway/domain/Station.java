@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.Objects;
 
 @Entity
 public class Station {
@@ -32,6 +33,11 @@ public class Station {
         return name;
     }
 
+    public boolean isEqualStationId(Long stationId) {
+        Objects.requireNonNull(stationId);
+        return Objects.equals(id, stationId);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -49,7 +55,6 @@ public class Station {
         result = 31 * result + (getName() != null ? getName().hashCode() : 0);
         return result;
     }
-
     @Override
     public String toString() {
         return "Station{" +

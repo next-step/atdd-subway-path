@@ -16,6 +16,14 @@ public class LineFixture {
         return new Line(getId(), "신분당선", "bg-red");
     }
 
+    public static final Line 라인_생성_9호선() {
+        return new Line(getId(), "9호선", "bg-gold");
+    }
+
+    public static final Line 라인_생성_7호선() {
+        return new Line(getId(), "7호선", "bg-olive");
+    }
+
     private static Long getId() {
         return LINE_IDS.addAndGet(1, 1);
     }
