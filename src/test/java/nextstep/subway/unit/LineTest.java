@@ -50,9 +50,32 @@ class LineTest {
     @Test
     void removeSection() {
         // when
-        line.getSections().removeSection(정자역.getId());
+        line.removeSection(정자역.getId());
 
         // then
         assertThat(line.getSections().getStationNames()).doesNotContain("정자역");
+    }
+
+    @Test
+    void getUpEndStation(){
+        // when
+        Station station = line.getSections().getUpEndStation();
+
+        // then
+        assertThat(station.getName()).isEqualTo("기흥역");
+    }
+
+    @Test
+    void getDownEndStation(){
+        // when
+        Station station = line.getSections().getDownEndStation();
+
+        // then
+        assertThat(station.getName()).isEqualTo("정자역");
+    }
+
+    @Test
+    void getSections(){
+
     }
 }

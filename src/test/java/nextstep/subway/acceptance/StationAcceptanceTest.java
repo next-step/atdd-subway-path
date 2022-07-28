@@ -3,6 +3,7 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.acceptance.support.AcceptanceTest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,7 @@ import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
-import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
+import static nextstep.subway.acceptance.support.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")

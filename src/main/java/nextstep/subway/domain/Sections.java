@@ -10,7 +10,9 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
@@ -67,6 +69,18 @@ public class Sections {
     }
 
     public Station getDownEndStation() {
-        return sections.get(sections.size() - 1).getDownStation();
+        Set<Station> stations = new HashSet<>(getStations());
+        for(Section section : getSections()){
+            stations.remove(section.getUpStation());
+        }
+        return new ArrayList<>(stations).get(0);
+    }
+
+    public Station getUpEndStation() {
+        Set<Station> stations = new HashSet<>(getStations());
+        for(Section section : getSections()){
+            stations.remove(section.getDownStation());
+        }
+        return new ArrayList<>(stations).get(0);
     }
 }
