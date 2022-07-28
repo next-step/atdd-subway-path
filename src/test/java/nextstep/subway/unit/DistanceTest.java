@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class DistanceTest {
 
     @Test
+    @DisplayName("제거대상의 구간과 제거 대상과 연결되어 있는 구간의 거리를 더한다")
     void addDistance() {
         //given
         Distance originDistance = new Distance(10);
@@ -24,6 +25,7 @@ class DistanceTest {
     }
 
     @Test
+    @DisplayName("기존 구간의 거리에서 새롭게 추가할 구간의 거리를 뺀다")
     void decreaseDistance() {
         //given
         Distance originDistance = new Distance(10);
