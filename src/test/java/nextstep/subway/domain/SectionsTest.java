@@ -287,7 +287,7 @@ class SectionsTest {
 	    //when
 	    //then
 		assertThatThrownBy(() -> sections.removeSection(new Station("등록되어 있지 않은 역")))
-				.isInstanceOf(IllegalArgumentException.class);
+				.isInstanceOf(CannotRemoveSectionException.class);
 	}
 
 	private void 신분당선에_구간을_추가한다(Station upStation, Station downStation, int distance) {

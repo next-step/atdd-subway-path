@@ -1,11 +1,7 @@
 package nextstep.subway.domain;
 
 import lombok.Getter;
-import nextstep.subway.exception.AlreadyRegisteredException;
-import nextstep.subway.exception.CannotInsertLongerSectionException;
-import nextstep.subway.exception.CannotInsertSameDistanceSectionException;
-import nextstep.subway.exception.CannotRegisterWithoutRegisteredStation;
-import nextstep.subway.exception.CannotRemoveLastSectionException;
+import nextstep.subway.exception.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -45,7 +41,7 @@ public class Sections {
 	public void removeSection(Station station) {
 
 		if (isNotRegistered(station)) {
-			throw new IllegalArgumentException("등록되어 있지 않은 역으로 구간을 삭제할 수 없습니다.");
+			throw new CannotRemoveSectionException(CANNOT_REMOVE_SECTION.getMessage());
 		}
 
 		if (isOnlyOneSection()) {

@@ -36,8 +36,8 @@ public class SectionControllerAdvice {
 		return ResponseEntity.status(CANNOT_REMOVE_LAST_SECTION.getStatus()).build();
 	}
 
-	@ExceptionHandler(IllegalArgumentException.class)
-	public ResponseEntity<Void> illegalArgumentExceptionHandler() {
-		return ResponseEntity.badRequest().build();
+	@ExceptionHandler(CannotRemoveSectionException.class)
+	public ResponseEntity<Void> cannotRemoveSectionException() {
+		return ResponseEntity.status(CANNOT_REMOVE_SECTION.getStatus()).build();
 	}
 }
