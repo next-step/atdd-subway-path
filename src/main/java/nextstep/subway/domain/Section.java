@@ -67,6 +67,13 @@ public class Section {
         return upStation.equals(station) || downStation.equals(station);
     }
 
+    public boolean hasSameUpStation(Station station) {
+        if (upStation == null) {
+            return false;
+        }
+        return upStation.equals(station);
+    }
+
     public boolean hasSameUpStation(Section section) {
         if (upStation == null) {
             return false;

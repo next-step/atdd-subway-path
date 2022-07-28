@@ -180,15 +180,18 @@ public class Sections {
     }
 
     public void delete(Station station) {
-        validateDelete(station);
+        validateDelete();
+
+        Section firstSection = firstSection();
+        if (firstSection.hasSameUpStation(station)) {
+            sections.remove(firstSection);
+            return;
+        }
+
         sections.remove(sections.get(sections.size() - 1));
     }
 
-    private void validateDelete(Station station) {
-        if (notLastStation(station)) {
-            throw new IllegalArgumentException("하행역만 삭제할 수 있습니다.");
-        }
-
+    private void validateDelete() {
         if (onlyOneSectionExist()) {
             throw new IllegalArgumentException("상행역과 하행역만 존재하기 때문에 삭제할 수 없습니다.");
         }
