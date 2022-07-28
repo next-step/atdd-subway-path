@@ -82,4 +82,36 @@ class SectionsTest {
 
     assertThatThrownBy(() -> sections.addSection(secondSection)).isInstanceOf(CustomException.class);
   }
+
+  @Test
+  void 지하철_노선_중간_구간_제거() {
+    sections.addSection(secondSection);
+
+    sections.removeSection(ducksoStation);
+
+    List<Station> result = sections.getAllStation();
+
+    assertThat(result).containsExactly(donongStation, gooriStation);
+  }
+
+  @Test
+  void 지하철_노선_상행역_제거() {
+    sections.addSection(secondSection);
+
+    sections.removeSection(donongStation);
+
+    List<Station> result = sections.getAllStation();
+
+    assertThat(result).containsExactly(ducksoStation, gooriStation);
+  }
+
+  @Test
+  void 지하철_노선_구간_제거시_구간이_하나면_에러() {
+    assertThatThrownBy(() -> sections.removeSection(donongStation)).isInstanceOf(CustomException.class);
+  }
+
+  @Test
+  void 지하철_노선_구간_제거시_없는_역_제거의_경우_에러() {
+    assertThatThrownBy(() -> sections.removeSection(ducksoStation)).isInstanceOf(CustomException.class);
+  }
 }

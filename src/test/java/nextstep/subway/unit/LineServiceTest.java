@@ -2,7 +2,6 @@ package nextstep.subway.unit;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -291,17 +290,5 @@ public class LineServiceTest {
 
         // then
         assertThat(line.getSections().getAllStation()).containsExactlyElementsOf(Arrays.asList(donongStation, gooriStation));
-    }
-
-    @Test
-    void 삭제할_구간의_마지막_구간이_아니면_오류() {
-        // given
-        line.addSection(firstSection);
-        line.addSection(secondSection);
-
-        lineRepository.save(line);
-
-        assertThatThrownBy(() -> lineService.deleteSection(line.getId(), gooriStation.getId()))
-            .isInstanceOf(IllegalArgumentException.class);
     }
 }

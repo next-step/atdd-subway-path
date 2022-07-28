@@ -50,8 +50,20 @@ public class Section {
         this.downStation = downStation;
     }
 
-    public void changeDistance(int distance) {
-        this.distance = distance;
+    public void plusDistance(int target) {
+        this.distance += target;
+    }
+
+    public void minusDistance(int target) {
+        this.distance -= target;
+    }
+
+    public boolean isUpStationEqualsCheck(Station target) {
+        return this.upStation.equals(target);
+    }
+
+    public boolean isDownStationEqualsCheck(Station target) {
+        return this.downStation.equals(target);
     }
 
     public Long getId() {

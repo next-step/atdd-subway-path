@@ -12,8 +12,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.exception.CustomException;
-import nextstep.subway.common.exception.ErrorMessage;
-import org.springframework.http.HttpStatus;
+import nextstep.subway.common.exception.message.SectionErrorMessage;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -61,7 +60,7 @@ public class Sections {
 
   public void addSection(Section target) {
     sections.stream()
-        .filter(section -> section.getUpStation().equals(target.getUpStation()))
+        .filter(section -> section.isUpStationEqualsCheck(target.getUpStation()))
         .forEach(section -> {
             sectionEqualsCheck(section, target);
             distanceCompare(section, target);
@@ -72,7 +71,7 @@ public class Sections {
             section.changeDownStation(middleStation);
             target.changeUpStation(middleStation);
             target.changeDownStation(lastStation);
-            section.changeDistance(section.getDistance() - target.getDistance());
+            section.minusDistance(target.getDistance());
         });
 
     stationNotInSection(target);
@@ -81,28 +80,24 @@ public class Sections {
   }
 
   private void sectionEqualsCheck(Section section, Section target) {
-    if (section.getDownStation().equals(target.getDownStation())) {
-      throw new CustomException(HttpStatus.CONFLICT, ErrorMessage.SECTION_DUPLICATION);
+    if (section.isDownStationEqualsCheck(target.getDownStation())) {
+      throw new CustomException(SectionErrorMessage.SECTION_DUPLICATION);
     }
   }
 
   private void distanceCompare(Section section, Section target) {
     if (section.getDistance() <= target.getDistance()) {
-      throw new CustomException(HttpStatus.CONFLICT, ErrorMessage.SECTION_DISTANCE_EQUALS_OR_LARGE);
+      throw new CustomException(SectionErrorMessage.SECTION_DISTANCE_EQUALS_OR_LARGE);
     }
   }
 
   private void stationNotInSection(Section target) {
     List<Station> stations = getAllStation();
     if (!isSectionEmpty() && !stations.contains(target.getUpStation()) && !stations.contains(target.getDownStation())) {
-      throw new CustomException(HttpStatus.CONFLICT, ErrorMessage.SECTION_NOT_IN_STATION);
+      throw new CustomException(SectionErrorMessage.SECTION_NOT_IN_STATION);
     }
   }
-
-  public Section getFirstSection() {
-    return this.sections.get(0);
-  }
-
+  
   public Section getLastSection() {
     return this.sections.get(this.sections.size() - 1);
   }
@@ -115,21 +110,74 @@ public class Sections {
     this.sections.remove(getLastSection());
   }
 
-  public void isDeleteStationCheck(Station station) {
-    if (!isLastStationEqualCheck(station)) {
-      throw new IllegalArgumentException();
+  public boolean isSectionEmpty() {
+    return sections.isEmpty();
+  }
+
+  public void removeSection(Station station) {
+    isDeleteStationCheck();
+
+    List<Station> stations = getAllStation();
+    isStationsContainCheck(stations, station);
+
+    if (stations.get(0).equals(station)) {
+      firstStationInSectionRemove(station);
+      return;
+    }
+
+    if (stations.get(stations.size() - 1).equals(station)) {
+      lastStationInSectionRemove(station);
+      return;
+    }
+
+    Section firstSection = new Section();
+    Section secondSection = new Section();
+    for (Section section : sections) {
+      if (section.isDownStationEqualsCheck(station)) {
+        firstSection = section;
+      }
+
+      if (section.isUpStationEqualsCheck(station)) {
+        secondSection = section;
+      }
+    }
+
+    firstSection.changeDownStation(secondSection.getDownStation());
+    firstSection.plusDistance(secondSection.getDistance());
+    sections.remove(secondSection);
+  }
+
+  private void isStationsContainCheck(List<Station> stations, Station station) {
+    if (!stations.contains(station)) {
+      throw new CustomException(SectionErrorMessage.SECTION_NOT_EQUALS);
     }
   }
 
-  public boolean isLastStationEqualCheck(Station station) {
-    return getLastSection().getDownStation().equals(station);
+  private void firstStationInSectionRemove(Station target) {
+    for(Section section : sections) {
+      if (section.isUpStationEqualsCheck(target)) {
+        sections.remove(section);
+        return;
+      }
+    }
   }
 
-  public boolean isOneSectionSize() {
-    return getSectionSize() == MIN_SECTION_SIZE;
+  private void lastStationInSectionRemove(Station target) {
+    for(Section section : sections) {
+      if (section.isDownStationEqualsCheck(target)) {
+        sections.remove(section);
+        return;
+      }
+    }
   }
 
-  public boolean isSectionEmpty() {
-    return sections.isEmpty();
+  public void isDeleteStationCheck() {
+    if (isOneSectionSizeCheck()) {
+      throw new CustomException(SectionErrorMessage.SECTION_ONLY_ONE);
+    }
+  }
+
+  public boolean isOneSectionSizeCheck() {
+    return getSectionSize() == 1;
   }
 }
