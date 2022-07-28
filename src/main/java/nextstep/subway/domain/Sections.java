@@ -256,14 +256,14 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.hasSameDownStation(station))
                 .findAny()
-                .orElseThrow(() -> new SectionNotExistException("구간을 찾을 수 없습니다."));
+                .orElseThrow(() -> new SectionNotExistException("구간이 존재하지 않아 역을 삭제할 수 없습니다."));
     }
 
     private Section behindSection(Station station) {
         return sections.stream()
                 .filter(section -> section.hasSameUpStation(station))
                 .findAny()
-                .orElseThrow(() -> new SectionNotExistException("구간을 찾을 수 없습니다."));
+                .orElseThrow(() -> new SectionNotExistException("구간이 존재하지 않아 역을 삭제할 수 없습니다."));
     }
 
     private Section mergedSection(Section frontSection, Section behindSection) {
