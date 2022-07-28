@@ -157,6 +157,7 @@ public class LineServiceMockTest {
         신분당선.getSections().addSection(역삼역_잠실역);
 
         // when
+        when(stationService.findById(잠실역_ID)).thenReturn(잠실역);
         when(lineRepository.findById(신분당선_ID)).thenReturn(Optional.of(신분당선));
 
         // then

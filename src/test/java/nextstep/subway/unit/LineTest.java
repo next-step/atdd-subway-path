@@ -163,21 +163,8 @@ class LineTest {
 
         // when & then
         assertAll(
-            () -> assertDoesNotThrow(() -> 분당선.getSections().deleteSection(잠실역_ID)),
+            () -> assertDoesNotThrow(() -> 분당선.getSections().deleteSection(잠실역)),
             () -> assertThat(분당선.getSections().getSections()).hasSize(1)
-        );
-    }
-
-    @Test
-    @DisplayName("노선의 종점 하행선만 삭제할 수 있다.")
-    void removeSectionValidationTest1() {
-        // given
-        분당선.getSections().addSection(역삼역_잠실역_구간);
-
-        // when & then
-        assertAll(
-            () -> assertThatThrownBy(() -> 분당선.getSections().deleteSection(강남역_ID)).isInstanceOf(IllegalArgumentException.class),
-            () -> assertThat(분당선.getSections().getSections()).hasSize(2)
         );
     }
 
@@ -186,7 +173,7 @@ class LineTest {
     void removeSectionValidationTest2() {
         // when & then
         assertAll(
-            () -> assertThatThrownBy(() -> 분당선.getSections().deleteSection(역삼역_ID)).isInstanceOf(IllegalArgumentException.class),
+            () -> assertThatThrownBy(() -> 분당선.getSections().deleteSection(역삼역)).isInstanceOf(IllegalArgumentException.class),
             () -> assertThat(분당선.getSections().getSections()).hasSize(1)
         );
     }

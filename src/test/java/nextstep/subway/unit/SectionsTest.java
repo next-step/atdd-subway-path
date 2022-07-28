@@ -189,4 +189,148 @@ public class SectionsTest {
         // then
         assertThat(stationList).containsExactly(강남역, 신림역, 판교역, 역삼역, 잠실역);
     }
+
+    @Test
+    @DisplayName("노선을 삭제한다.")
+    void deleteSection() {
+        // given
+        Sections 노선_구간 = new Sections(강남역_역삼역);
+        노선_구간.addSection(역삼역_잠실역);
+        노선_구간.addSection(잠실역_판교역);
+        int 노선_길이 = 노선_구간.getSections().size();
+
+        // when & then
+        assertAll(
+            () -> assertDoesNotThrow(() -> 노선_구간.deleteSection(판교역)),
+            () -> assertThat(노선_구간.getSections()).hasSize(노선_길이 - 1)
+        );
+    }
+
+    @Test
+    @DisplayName("삭제하려는 역이 노선에 없으면 안된다.")
+    void deleteSectionValidation1() {
+        // given
+        Sections 노선_구간 = new Sections(강남역_역삼역);
+        노선_구간.addSection(역삼역_잠실역);
+
+        // when & then
+        assertThatThrownBy(
+            () -> 노선_구간.deleteSection(판교역)
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("현재 존재하는 노선이 하나이면 삭제할 수 없다.")
+    void deleteSectionValidation2() {
+        // given
+        Sections 노선_구간 = new Sections(강남역_역삼역);
+
+        // when & then
+        assertThatThrownBy(
+            () -> 노선_구간.deleteSection(강남역)
+        ).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("상행 종점역을 삭제하는 경우 상행 노선을 삭제한다.")
+    void deleteSectionValidation3() {
+        // given
+        Sections 노선_구간 = new Sections(강남역_역삼역);
+        노선_구간.addSection(역삼역_잠실역);
+        노선_구간.addSection(잠실역_판교역);
+        int 노선_길이 = 노선_구간.getSections().size();
+
+        // when & then
+        assertAll(
+            () -> assertDoesNotThrow(() -> 노선_구간.deleteSection(강남역)),
+            () -> assertThat(노선_구간.getSections()).hasSize(노선_길이 - 1)
+        );
+    }
+
+    @Test
+    @DisplayName("상행 종점역을 삭제하는 경우 다음으로 오는 역이 상행 종점역이 된다.")
+    void deleteSectionValidation4() {
+        // given
+        Sections 노선_구간 = new Sections(강남역_역삼역);
+        노선_구간.addSection(역삼역_잠실역);
+        노선_구간.addSection(잠실역_판교역);
+
+        // when
+        노선_구간.deleteSection(강남역);
+
+        // then
+        Station 상행종점역 = 노선_구간.getSections().get(0).getUpStation();
+
+        assertThat(상행종점역).isEqualTo(역삼역);
+    }
+
+    @Test
+    @DisplayName("중간역을 삭제하는 경우 중간 노선을 삭제한다.")
+    void deleteSectionValidation5() {
+        // given
+        Sections 노선_구간 = new Sections(강남역_역삼역);
+        노선_구간.addSection(역삼역_잠실역);
+        노선_구간.addSection(잠실역_판교역);
+        int 노선_길이 = 노선_구간.getSections().size();
+
+        // when & then
+        assertAll(
+            () -> assertDoesNotThrow(() -> 노선_구간.deleteSection(역삼역)),
+            () -> assertThat(노선_구간.getSections()).hasSize(노선_길이 - 1)
+        );
+    }
+
+    @Test
+    @DisplayName("중간역을 삭제하는 경우 기존에 있던 두 노선을 하나로 합친다.")
+    void deleteSectionValidation6() {
+        // given
+        Sections 노선_구간 = new Sections(강남역_역삼역);
+        노선_구간.addSection(역삼역_잠실역);
+        노선_구간.addSection(잠실역_판교역);
+
+        // when
+        노선_구간.deleteSection(역삼역);
+
+        // then
+        Section 강남역_잠실역 = new Section(강남역, 잠실역, 20);
+
+        assertAll(
+            () -> assertThat(노선_구간.getSections()).contains(강남역_잠실역),
+            () -> assertThat(노선_구간.getSections().get(0).getDistance()).isEqualTo(강남역_역삼역.getDistance() + 잠실역_판교역.getDistance())
+        );
+    }
+
+
+    @Test
+    @DisplayName("하행 종점역을 삭제하는 경우 하행 노선을 삭제한다.")
+    void deleteSectionValidation7() {
+        // given
+        Sections 노선_구간 = new Sections(강남역_역삼역);
+        노선_구간.addSection(역삼역_잠실역);
+        노선_구간.addSection(잠실역_판교역);
+        int 노선_길이 = 노선_구간.getSections().size();
+
+        // when & then
+        assertAll(
+            () -> assertDoesNotThrow(() -> 노선_구간.deleteSection(판교역)),
+            () -> assertThat(노선_구간.getSections()).hasSize(노선_길이 - 1)
+        );
+    }
+
+    @Test
+    @DisplayName(" 하행 노선을 삭제하는 경우 다음으로 오던 역이 종점이 된다.")
+    void deleteSectionValidation8() {
+        // given
+        Sections 노선_구간 = new Sections(강남역_역삼역);
+        노선_구간.addSection(역삼역_잠실역);
+        노선_구간.addSection(잠실역_판교역);
+
+        // when
+        노선_구간.deleteSection(판교역);
+
+        // then
+        Section 역삼역_잠실역 = new Section(역삼역, 잠실역, 10);
+
+        assertThat(노선_구간.getSections()).contains(역삼역_잠실역);
+    }
 }
