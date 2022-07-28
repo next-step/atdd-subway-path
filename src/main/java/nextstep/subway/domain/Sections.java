@@ -110,17 +110,62 @@ public class Sections {
     this.sections.remove(getLastSection());
   }
 
-  public void isDeleteStationCheck(Station station) {
-    if (!isLastStationEqualCheck(station)) {
-      throw new IllegalArgumentException();
+  public void isDeleteStationCheck() {
+    if (isOneSectionSizeCheck()) {
+      throw new CustomException(SectionErrorMessage.SECTION_ONLY_ONE);
     }
   }
 
-  public boolean isLastStationEqualCheck(Station station) {
-    return getLastSection().getDownStation().equals(station);
+  public boolean isOneSectionSizeCheck() {
+    return getSectionSize() == 1;
   }
 
   public boolean isSectionEmpty() {
     return sections.isEmpty();
+  }
+
+  public void removeSection(Station station) {
+    isDeleteStationCheck();
+
+    List<Station> stations = getAllStation();
+    if (!stations.contains(station)) {
+      throw new CustomException(SectionErrorMessage.SECTION_NOT_EQUALS);
+    }
+
+    if (stations.get(0).equals(station)) {
+      for(Section section : sections) {
+        if (section.getUpStation().equals(station)) {
+          sections.remove(section);
+          System.out.println(sections.size());
+          return;
+        }
+      }
+    }
+
+    if (stations.get(stations.size() - 1).equals(station)) {
+      for(Section section : sections) {
+        if (section.getDownStation().equals(station)) {
+          sections.remove(section);
+          return;
+        }
+      }
+    }
+
+    Section firstSection = new Section();
+    Section secondSection = new Section();
+    for (Section section : sections) {
+      if (section.getDownStation().equals(station)) {
+        firstSection = section;
+      }
+
+      if (section.getUpStation().equals(station)) {
+        secondSection = section;
+      }
+    }
+    System.out.println(firstSection.getDownStation());
+    System.out.println(secondSection.getUpStation());
+    firstSection.changeDownStation(secondSection.getDownStation());
+    firstSection.changeDistance(firstSection.getDistance() + secondSection.getDistance());
+    sections.remove(secondSection);
   }
 }
