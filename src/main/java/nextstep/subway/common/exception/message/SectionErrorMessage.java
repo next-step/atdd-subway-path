@@ -1,6 +1,6 @@
-package nextstep.subway.common.exception;
+package nextstep.subway.common.exception.message;
 
-public class ErrorMessage {
+public class SectionErrorMessage {
 
   public static final String SECTION_DISTANCE_EQUALS_OR_LARGE = "구간의 길이가 같거나 큽니다.";
   public static final String SECTION_DUPLICATION = "구간의 상행역, 하행역이 같습니다.";

@@ -45,3 +45,4 @@ public class Line {
     public Section getLastSection() {
         return this.sections.getLastSection();
     }
+}

@@ -18,7 +18,7 @@ public class ExceptionAdvice {
 
   @ExceptionHandler(CustomException.class)
   public ResponseEntity<ExceptionResponse> customException(CustomException e) {
-    return ResponseEntity.status(e.getHttpStatus())
+    return ResponseEntity.status(HttpStatus.CONFLICT)
         .body(ExceptionResponse.getInstance(e.getMessage()));
   }
 }

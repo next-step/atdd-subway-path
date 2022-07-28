@@ -2,7 +2,7 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.common.exception.ErrorMessage;
+import nextstep.subway.common.exception.message.SectionErrorMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -97,7 +97,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, 구간_파라미터_생성(강남역, 정자역, 10));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorMessage.SECTION_DISTANCE_EQUALS_OR_LARGE);
+        assertThat(response.jsonPath().getString("message")).isEqualTo(SectionErrorMessage.SECTION_DISTANCE_EQUALS_OR_LARGE);
     }
 
     /**
@@ -116,7 +116,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, 구간_파라미터_생성(정자역, 모란역, 5));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorMessage.SECTION_DISTANCE_EQUALS_OR_LARGE);
+        assertThat(response.jsonPath().getString("message")).isEqualTo(SectionErrorMessage.SECTION_DISTANCE_EQUALS_OR_LARGE);
     }
 
     /**
@@ -132,7 +132,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, 구간_파라미터_생성(강남역, 정자역, 15));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorMessage.SECTION_DISTANCE_EQUALS_OR_LARGE);
+        assertThat(response.jsonPath().getString("message")).isEqualTo(SectionErrorMessage.SECTION_DISTANCE_EQUALS_OR_LARGE);
     }
 
     /**
@@ -146,7 +146,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, 구간_파라미터_생성(강남역, 양재역, 6));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorMessage.SECTION_DUPLICATION);
+        assertThat(response.jsonPath().getString("message")).isEqualTo(SectionErrorMessage.SECTION_DUPLICATION);
     }
 
     /**
@@ -163,7 +163,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, 구간_파라미터_생성(모란역, 정자역, 6));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
-        assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorMessage.SECTION_NOT_IN_STATION);
+        assertThat(response.jsonPath().getString("message")).isEqualTo(SectionErrorMessage.SECTION_NOT_IN_STATION);
     }
 
     /**

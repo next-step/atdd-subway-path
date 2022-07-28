@@ -12,8 +12,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.exception.CustomException;
-import nextstep.subway.common.exception.ErrorMessage;
-import org.springframework.http.HttpStatus;
+import nextstep.subway.common.exception.message.SectionErrorMessage;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -82,25 +81,21 @@ public class Sections {
 
   private void sectionEqualsCheck(Section section, Section target) {
     if (section.getDownStation().equals(target.getDownStation())) {
-      throw new CustomException(HttpStatus.CONFLICT, ErrorMessage.SECTION_DUPLICATION);
+      throw new CustomException(SectionErrorMessage.SECTION_DUPLICATION);
     }
   }
 
   private void distanceCompare(Section section, Section target) {
     if (section.getDistance() <= target.getDistance()) {
-      throw new CustomException(HttpStatus.CONFLICT, ErrorMessage.SECTION_DISTANCE_EQUALS_OR_LARGE);
+      throw new CustomException(SectionErrorMessage.SECTION_DISTANCE_EQUALS_OR_LARGE);
     }
   }
 
   private void stationNotInSection(Section target) {
     List<Station> stations = getAllStation();
     if (!isSectionEmpty() && !stations.contains(target.getUpStation()) && !stations.contains(target.getDownStation())) {
-      throw new CustomException(HttpStatus.CONFLICT, ErrorMessage.SECTION_NOT_IN_STATION);
+      throw new CustomException(SectionErrorMessage.SECTION_NOT_IN_STATION);
     }
-  }
-
-  public Section getFirstSection() {
-    return this.sections.get(0);
   }
 
   public Section getLastSection() {
@@ -123,10 +118,6 @@ public class Sections {
 
   public boolean isLastStationEqualCheck(Station station) {
     return getLastSection().getDownStation().equals(station);
-  }
-
-  public boolean isOneSectionSize() {
-    return getSectionSize() == MIN_SECTION_SIZE;
   }
 
   public boolean isSectionEmpty() {
