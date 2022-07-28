@@ -199,6 +199,7 @@ public class Sections {
     }
 
     public void delete(Station station) {
+
         validateDelete();
 
         Section firstSection = firstSection();

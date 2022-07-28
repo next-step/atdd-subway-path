@@ -121,24 +121,6 @@ class SectionsTest {
         assertThat(sections.getSections()).hasSize(1);
     }
 
-    @DisplayName("삭제 시 하행역이 아니면 삭제할 수 없다")
-    @Test
-    void cantDeleteNotDownStation() {
-        //given
-        final var firstSection = new Section(_2호선, 선릉역, 삼성역, 10);
-        final var secondSection = new Section(_2호선, 삼성역, 종합운동장역, 3);
-
-        final var sections = new Sections();
-        sections.add(firstSection);
-        sections.add(secondSection);
-
-        //when, then
-        assertThatThrownBy(() -> sections.delete(삼성역))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("하행역만 삭제할 수 있습니다.");
-    }
-
-
     @DisplayName("삭제 시 상행역과 하행역만이 존재하면 삭제할 수 없다")
     @Test
     void cantDeleteOnlyOneStationInSections() {
