@@ -37,7 +37,7 @@ public class LineResponse {
             return Collections.emptyList();
         }
 
-        return sections.getStations().stream()
+        return sections.getStationsSorted().stream()
                        .map(StationResponse::of)
                        .collect(Collectors.toList());
     }
