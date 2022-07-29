@@ -71,6 +71,14 @@ class PathAcceptanceTest extends AcceptanceTest {
         경로를_조회할_수_없다(교대역, 교대역);
     }
 
+    @DisplayName("출발역과 도착역이 이어져있지 않으면 경로 조회를 할 수 없다.")
+    @Test
+    void 경로_조회_예외2() {
+        Long 새로운역 = 지하철역_생성_요청("새로운역").jsonPath().getLong("id");
+
+        경로를_조회할_수_없다(새로운역, 교대역);
+    }
+
     private void 경로를_조회할_수_없다(Long source, Long target) {
         var response = 경로를_조회한다(source, target);
 
