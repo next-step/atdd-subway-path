@@ -47,12 +47,12 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        return createLineResponse(lineRepository.findById(id).orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_FOUND_LINE)));
+        return createLineResponse(getLine(id));
     }
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_FOUND_LINE));
+        Line line = getLine(id);
 
         if (lineRequest.getName() != null) {
             line.updateName(lineRequest.getName());
@@ -72,9 +72,7 @@ public class LineService {
         Station upStation = getStation(sectionRequest.getUpStationId());
         Station downStation = getStation(sectionRequest.getDownStationId());
 
-        lineRepository.findById(lineId)
-                      .orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_FOUND_LINE))
-                      .addSection(upStation, downStation, sectionRequest.getDistance());
+        getLine(lineId).addSection(upStation, downStation, sectionRequest.getDistance());
     }
 
     private Station getStation(Long stationId) {
@@ -108,7 +106,7 @@ public class LineService {
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_FOUND_LINE));
+        Line line = getLine(lineId);
         Station station = getStation(stationId);
 
         if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
@@ -116,5 +114,10 @@ public class LineService {
         }
 
         line.getSections().remove(line.getSections().size() - 1);
+    }
+
+    private Line getLine(Long lineId) {
+        return lineRepository.findById(lineId)
+                             .orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_FOUND_LINE));
     }
 }
