@@ -85,7 +85,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선에 역 사이에 새로운 역을 등록")
     @Test
-    void addLineSection_역사이에_새로운역을_등록() {
+    void addLineSection_between_two_stations() {
         // Given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath()
                 .getLong("id");
@@ -109,7 +109,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선에 새로운 역을 상행 종점으로 등록")
     @Test
-    void addLineSection_새로운역을_상행_종점으로_등록() {
+    void addLineSection_new_up_station() {
         // Given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath()
                 .getLong("id");
@@ -133,7 +133,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선에 새로운 역을 하행 종점으로 등록")
     @Test
-    void addLineSection_새로운역을_하행_종점으로_등록() {
+    void addLineSection_new_down_station() {
         // Given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath()
                 .getLong("id");
@@ -157,7 +157,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선에 새로운 역을 등록할때 기존 역 사이 길이보다 크거나 같은 경우")
     @Test
-    void addLineSection_fail_역사이_새로운역을_등록할때_기존_역_사이_길이보다_크거나_같은경우() {
+    void addLineSection_fail_because_of_distance() {
         // Given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath()
                 .getLong("id");
@@ -176,7 +176,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선에 새로운 역을 등록할때 기존 역 사이 길이보다 크거나 같은 경우")
     @Test
-    void addLineSection_fail_상행역과_하행역이_이미_노선에_모두_등록되어_있는경우() {
+    void addLineSection_fail_all_stations_is_already_included() {
         // When
         var result = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParamsWithDistance(강남역, 양재역, 10));
 
@@ -191,7 +191,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선에 새로운 역을 등록할때 상행역과 하행역 둘 중 하나도 포함되어 있지 않는 경우")
     @Test
-    void addLineSection_fail_상행역과_하행역_둘_중_하나도_포함되어_있지_않는_경우() {
+    void addLineSection_fail_all_stations_is_not_included() {
         // Given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath()
                 .getLong("id");
@@ -212,7 +212,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선에 중간구간을 제거한다.")
     @Test
-    void removeLineSection_중간구간제거() {
+    void removeLineSection_in_middle() {
         // Given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath()
                 .getLong("id");
@@ -236,7 +236,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선에서 구간이 하나인데 마지막 구간을 제거한다.")
     @Test
-    void removeLineSection_fail_구간이_하나인_노선에서_마지막_구간을_제거() {
+    void removeLineSection_fail_only_one_section() {
         // Given & When
         var result = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
 
@@ -251,7 +251,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선에서 없는 구간을 제거한다.")
     @Test
-    void removeLineSection_fail_없는구간_제거() {
+    void removeLineSection_fail_not_included() {
         // Given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath()
                 .getLong("id");
