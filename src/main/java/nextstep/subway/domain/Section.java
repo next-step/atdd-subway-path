@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import nextstep.subway.exception.InvalidDistanceBetweenStationsException;
 import nextstep.subway.exception.InvalidDistanceValueException;
 
 import javax.persistence.Entity;
@@ -49,16 +50,30 @@ public class Section {
     }
 
     public void updateUpStation(Section section) {
+        validateHeadDistance(section);
         this.upStation = section.downStation;
         this.distance = this.distance - section.distance;
     }
 
     public void updateDownStation(Section section) {
+        validateTailDistance(section);
         downStation = section.upStation;
         this.distance = this.distance - section.distance;
     }
 
-    public boolean isDistanceGreaterThan(Section section) {
+    private void validateTailDistance(Section section) {
+        if (!section.isDistanceGreaterThan(this)) {
+            throw new InvalidDistanceBetweenStationsException();
+        }
+    }
+
+    private void validateHeadDistance(Section section) {
+        if (!section.isDistanceGreaterThan(this)) {
+            throw new InvalidDistanceBetweenStationsException();
+        }
+    }
+
+    private boolean isDistanceGreaterThan(Section section) {
         return this.distance < section.distance;
     }
 

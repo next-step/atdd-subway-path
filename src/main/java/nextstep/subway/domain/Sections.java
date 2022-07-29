@@ -6,19 +6,17 @@ import nextstep.subway.exception.InvalidDistanceBetweenStationsException;
 import nextstep.subway.exception.NoLastStationException;
 import nextstep.subway.exception.SectionRegistrationException;
 import nextstep.subway.exception.SectionRemovalException;
-import org.springframework.util.CollectionUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Embeddable
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Sections {
 
     @OneToMany(
@@ -67,7 +65,6 @@ public class Sections {
         if (!isInFrontOfTail(section)) {
             return false;
         }
-        validateTailDistance(section);
         getLastSection().updateDownStation(section);
         sections.add(section);
         return true;
@@ -93,7 +90,6 @@ public class Sections {
         if (!isNextToHead(section)) {
             return false;
         }
-        validateHeadDistance(section);
         getFirstSection().updateUpStation(section);
         sections.add(0, section);
         return true;
@@ -144,20 +140,6 @@ public class Sections {
     private void validateSingleSection() {
         if (sections.size() == 1) {
             throw new SectionRemovalException();
-        }
-    }
-
-    private void validateTailDistance(Section section) {
-        Section lastSection = getLastSection();
-        if (!section.isDistanceGreaterThan(lastSection)) {
-            throw new InvalidDistanceBetweenStationsException();
-        }
-    }
-
-    private void validateHeadDistance(Section section) {
-        Section firstSection = getFirstSection();
-        if (!section.isDistanceGreaterThan(firstSection)) {
-            throw new InvalidDistanceBetweenStationsException();
         }
     }
 
