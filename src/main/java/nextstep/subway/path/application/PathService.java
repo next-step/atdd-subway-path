@@ -31,23 +31,19 @@ public class PathService {
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
 
-        if (!stationIds.contains(source) || !stationIds.contains(target)) {
-            throw new IllegalArgumentException();
-        }
-
         List<Edge> sections = sectionService.findAllSections()
                 .stream()
                 .map(it -> new Edge(it.getUpStationId(), it.getDownStationId(), it.getDistance()))
                 .collect(Collectors.toList());
 
         Path shortestPath = new Graph(stationIds, sections).findShortestPath(source, target);
-        List<Long> paths = shortestPath.getVertexes();
+        List<Long> pathStationIds = shortestPath.getVertexes();
 
-        List<StationResponse> pathStations = stations.stream()
-                .filter(s -> paths.contains(s.getId()))
-                .sorted(comparing(s -> paths.indexOf(s.getId())))
+        List<StationResponse> pathStationsInOrder = stations.stream()
+                .filter(s -> pathStationIds.contains(s.getId()))
+                .sorted(comparing(s -> pathStationIds.indexOf(s.getId())))
                 .collect(Collectors.toList());
 
-        return new PathResponse(pathStations, shortestPath.getDistance());
+        return new PathResponse(pathStationsInOrder, shortestPath.getDistance());
     }
 }
