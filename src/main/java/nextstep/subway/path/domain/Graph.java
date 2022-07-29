@@ -31,9 +31,13 @@ public class Graph {
         if (source.equals(target)) {
             throw new IllegalArgumentException();
         }
-        
+
         GraphPath<Long, DefaultWeightedEdge> shortestPath
                 = new DijkstraShortestPath<>(graph).getPath(source, target);
+
+        if (shortestPath == null) {
+            throw new IllegalArgumentException();
+        }
 
         List<Long> vertexes = shortestPath.getVertexList();
         int distance = (int) shortestPath.getWeight();
