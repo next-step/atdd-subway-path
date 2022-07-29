@@ -140,7 +140,7 @@ class SectionsTest {
 
 	}
 
-	@DisplayName("새로운 구간의 상행역이 기존 노선의 하행 종점과 일치하는지 확인하늩 테스트")
+	@DisplayName("새로운 구간의 상행역이 기존 노선의 하행 종점과 일치하는지 확인하는 테스트")
 	@Test
 	void isSameNewSectionUpStationAndDownStation() {
 

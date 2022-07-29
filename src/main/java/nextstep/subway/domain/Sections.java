@@ -11,8 +11,13 @@ import javax.persistence.Embeddable;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.exception.BusinessException;
+import nextstep.subway.exception.ErrorCode;
+
 @Embeddable
 public class Sections {
+
+	private static final int MIN_SECTION_SIZE = 1;
 	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
 	private List<Section> sectionList = new ArrayList<>();
 
@@ -184,6 +189,8 @@ public class Sections {
 	}
 
 	public void deleteSection(Line line, Station station) {
+		validateSectionSize(line);
+
 		// 상행 종점일 경우
 		if (isFirstUpStation(station)) {
 			remove(getFirstSection());
@@ -200,11 +207,23 @@ public class Sections {
 		removeMiddleSection(line, station);
 	}
 
+	private void validateSectionSize(Line line) {
+		if (isLineHasOnlyOneSection(line)) {
+			throw new BusinessException(ErrorCode.COULD_NOT_DELETE_SECTION);
+		}
+	}
+
+	private boolean isLineHasOnlyOneSection(Line line) {
+		return line.getSections().size() <= MIN_SECTION_SIZE;
+	}
+
 	private void removeMiddleSection(Line line, Station station) {
 		Sections stationContainsSection = getStationContainsSection(station);
 		Station containsSectionUpStation = stationContainsSection.getContainsSectionUpStation(station);
 		Station containsSectionDownStation = stationContainsSection.getContainsSectionDownStation(station);
+
 		int distanceSum = stationContainsSection.getDistanceSum();
+
 		this.sectionList.removeAll(stationContainsSection.getSectionList());
 		this.sectionList.add(new Section(line, containsSectionUpStation, containsSectionDownStation, distanceSum));
 	}

@@ -230,6 +230,22 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 		assertThat(response.jsonPath().getList("stations.id", Long.class)).contains(강남역, 판교역);
 	}
 
+	/**
+	 * given 노선이 생성되어 있음 and 구간이 생성되어 있음 (강남역 - 양재역)
+	 * when 구간을 삭제함(양재역)
+	 * then 구간 삭제 실패
+	 */
+	@DisplayName("구간이 하나뿐인 노선에서 구간을 삭제할때 에러 발생 테스트")
+	@Test
+	void deleteOnlyOneSectionTest() {
+
+		//given //when
+		ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+		//then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
 	private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
 		Map<String, String> lineCreateParams;
 		lineCreateParams = new HashMap<>();
