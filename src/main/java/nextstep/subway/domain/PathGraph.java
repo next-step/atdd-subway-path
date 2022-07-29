@@ -1,6 +1,9 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exception.NotConnectedPathException;
 import nextstep.subway.domain.exception.NotEnoughStationsException;
+import org.jgrapht.GraphPath;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
@@ -12,9 +15,11 @@ public class PathGraph {
     public static final int MINIMUM_STATION_COUNT = 2;
 
     private final WeightedMultigraph<Station, DefaultWeightedEdge> graph;
+    private final DijkstraShortestPath dijkstraShortestPath;
 
     private PathGraph(WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
         this.graph = graph;
+        this.dijkstraShortestPath = new DijkstraShortestPath(graph);
     }
 
     public static PathGraph valueOf(List<Line> lines) {
@@ -61,6 +66,10 @@ public class PathGraph {
     public Path findShortPath(Station source, Station target) {
         if (source.equals(target)) {
             throw new IllegalArgumentException();
+        }
+        GraphPath path = dijkstraShortestPath.getPath(source, target);
+        if (path == null) {
+            throw new NotConnectedPathException(source.getName(), target.getName());
         }
 
         return null;

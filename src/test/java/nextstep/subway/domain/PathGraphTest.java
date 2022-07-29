@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exception.NotConnectedPathException;
 import nextstep.subway.domain.exception.NotEnoughStationsException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,8 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static nextstep.subway.domain.fixture.StationFixture.GANGNAM_STATION;
-import static nextstep.subway.domain.fixture.StationFixture.YEOKSAM_STATION;
+import static nextstep.subway.domain.fixture.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class PathGraphTest {
@@ -41,7 +41,7 @@ class PathGraphTest {
 
     @Test
     @DisplayName("경로를 조회할 때 출발역과 도착역이 달라야 한다.")
-    void name() {
+    void not_same_source_and_target() {
         // given
         Line line = new Line("2호선", "bg-green-600");
         line.addSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
@@ -54,5 +54,27 @@ class PathGraphTest {
         // when
         assertThatThrownBy(() -> pathGraph.findShortPath(GANGNAM_STATION, GANGNAM_STATION))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("출발역과 도착역이 연결이 되어있어야 한다.")
+    void not_connected_source_and_target() {
+        // given
+        Line greenLine = new Line("2호선", "bg-green-600");
+        greenLine.addSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+
+        Line orangeLine = new Line("3호선", "bg-orange-600");
+        orangeLine.addSection(YANGJAE_STATION, NAMBU_BUS_TERMINAL_STATION, 10);
+
+        List<Line> lines = new ArrayList<>();
+        lines.add(greenLine);
+        lines.add(orangeLine);
+
+        PathGraph pathGraph = PathGraph.valueOf(lines);
+
+        // when
+        assertThatThrownBy(() -> pathGraph.findShortPath(GANGNAM_STATION, NAMBU_BUS_TERMINAL_STATION))
+                .isInstanceOf(NotConnectedPathException.class)
+                .hasMessage("출발역과 도착역이 연결되어 있지 않습니다. 출발역=강남역, 도착역=남부터미널역");
     }
 }
