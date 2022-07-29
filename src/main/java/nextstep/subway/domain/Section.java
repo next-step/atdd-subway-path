@@ -44,13 +44,30 @@ public class Section {
         this.distance = distance;
     }
 
-    public boolean isStationEqualTo(Section section) {
-        return this.getDownStation()
-                .equals(section.getUpStation());
+    public boolean containsStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
+    public void updateUpStation(Section section) {
+        this.upStation = section.downStation;
+        this.distance = this.distance - section.distance;
+    }
+
+    public void updateDownStation(Section section) {
+        downStation = section.upStation;
+        this.distance = this.distance - section.distance;
+    }
+
+    public boolean isDistanceGreaterThan(Section section) {
+        return this.distance < section.distance;
     }
 
     public Long getId() {
         return id;
+    }
+
+    public Line getLine() {
+        return line;
     }
 
     public Station getUpStation() {

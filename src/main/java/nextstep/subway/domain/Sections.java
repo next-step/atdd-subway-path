@@ -2,15 +2,17 @@ package nextstep.subway.domain;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import nextstep.subway.exception.DuplicatedStationException;
+import nextstep.subway.exception.InvalidDistanceBetweenStationsException;
 import nextstep.subway.exception.NoLastStationException;
 import nextstep.subway.exception.SectionRegistrationException;
 import nextstep.subway.exception.SectionRemovalException;
+import org.springframework.util.CollectionUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.EmptyStackException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,15 +26,14 @@ public class Sections {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<Section> sections = new LinkedList<>();
+    private List<Section> sections = new ArrayList<>();
 
-    public void addSection(Section section) {
-        validateNewUpStation(section);
-        validateNewDownStation(section);
-
-        if (containsOrEmpty(section)) {
+    public void add(Section section) {
+        if (sections.isEmpty()) {
             sections.add(section);
+            return;
         }
+        addSection(section);
     }
 
     public void removeSection(Station station) {
@@ -42,19 +43,102 @@ public class Sections {
     }
 
     public List<Station> getStations() {
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
         List<Station> stations = sections.stream()
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
-        stations.add(getLastSection()
-                .getDownStation());
+        stations.add(getTailStation());
         return stations;
     }
 
-    private boolean containsOrEmpty(Section section) {
-        if (sections.isEmpty()) {
-            return true;
+    private void addSection(Section section) {
+        if (addIfNextToHead(section)
+                || addIfInFrontOfHead(section)
+                || addIfNextToTail(section)
+                || addIfInFrontOfTail(section)) {
+            return;
         }
-        return getStations().contains(section.getUpStation());
+        throw new SectionRegistrationException();
+    }
+
+    private boolean addIfInFrontOfTail(Section section) {
+        if (!isInFrontOfTail(section)) {
+            return false;
+        }
+        validateTailDistance(section);
+        getLastSection().updateDownStation(section);
+        sections.add(section);
+        return true;
+    }
+
+    private boolean addIfNextToTail(Section section) {
+        if (!isNextToTail(section)) {
+            return false;
+        }
+        sections.add(section);
+        return true;
+    }
+
+    private boolean addIfInFrontOfHead(Section section) {
+        if (!isInFrontOfHead(section)) {
+            return false;
+        }
+        sections.add(0, section);
+        return true;
+    }
+
+    private boolean addIfNextToHead(Section section) {
+        if (!isNextToHead(section)) {
+            return false;
+        }
+        validateHeadDistance(section);
+        getFirstSection().updateUpStation(section);
+        sections.add(0, section);
+        return true;
+    }
+
+    private boolean containsStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.containsStation(station));
+    }
+
+    private boolean isInFrontOfTail(Section section) {
+        return getTailStation().equals(section.getDownStation())
+                && !containsStation(section.getUpStation());
+    }
+
+    private boolean isNextToTail(Section section) {
+        return getTailStation().equals(section.getUpStation())
+                && !containsStation(section.getDownStation());
+    }
+
+    private boolean isInFrontOfHead(Section section) {
+        return getHeadStation().equals(section.getDownStation())
+                && !containsStation(section.getUpStation());
+    }
+
+    private boolean isNextToHead(Section section) {
+        return getHeadStation().equals(section.getUpStation())
+                && !containsStation(section.getDownStation());
+    }
+
+    private Station getTailStation() {
+        return getLastSection()
+                .getDownStation();
+    }
+
+    private Station getHeadStation() {
+        return getFirstSection()
+                .getUpStation();
+    }
+
+    private void validateLastStation(Station station) {
+        Station lastStation = getTailStation();
+        if (!lastStation.equals(station)) {
+            throw new NoLastStationException();
+        }
     }
 
     private void validateSingleSection() {
@@ -63,41 +147,26 @@ public class Sections {
         }
     }
 
-    private void validateLastStation(Station station) {
-        Station lastStation = getLastSection().getDownStation();
-        if (!lastStation.equals(station)) {
-            throw new NoLastStationException();
+    private void validateTailDistance(Section section) {
+        Section lastSection = getLastSection();
+        if (!section.isDistanceGreaterThan(lastSection)) {
+            throw new InvalidDistanceBetweenStationsException();
+        }
+    }
+
+    private void validateHeadDistance(Section section) {
+        Section firstSection = getFirstSection();
+        if (!section.isDistanceGreaterThan(firstSection)) {
+            throw new InvalidDistanceBetweenStationsException();
         }
     }
 
     private Section getLastSection() {
-        if (sections.isEmpty()) {
-            throw new EmptyStackException();
-        }
         return sections.get(sections.size() - 1);
     }
 
-
-    private void validateNewUpStation(Section section) {
-        if (sections.isEmpty()) {
-            return;
-        }
-        Station upStation = section.getUpStation();
-        Station lastStation = getLastSection()
-                .getDownStation();
-        if (!lastStation.equals(upStation)) {
-            throw new SectionRegistrationException(lastStation, upStation);
-        }
-    }
-
-    private void validateNewDownStation(Section section) {
-        if (sections.isEmpty()) {
-            return;
-        }
-        Station downStation = section.getDownStation();
-        if (getStations().contains(downStation)) {
-            throw new DuplicatedStationException(downStation);
-        }
+    private Section getFirstSection() {
+        return sections.get(0);
     }
 
 }
