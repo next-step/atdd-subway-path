@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.DeleteSectionException;
 import nextstep.subway.exception.NewlySectionUpStationAndDownStationNotExist;
 import nextstep.subway.exception.SectionAllStationsAlreadyExistException;
 import org.junit.jupiter.api.BeforeEach;
@@ -103,9 +104,30 @@ class SectionsTest {
         );
     }
 
-    @DisplayName("하행역 삭제를 통해 구간을 삭제할 수 있다.")
+    @DisplayName("상행 종점역 삭제를 통해 구간을 삭제할 수 있다.")
     @Test
-    void deleteSection() {
+    void deleteFirstSection() {
+        //given
+        final var firstSection = new Section(_2호선, 선릉역, 삼성역, 10);
+        final var secondSection = new Section(_2호선, 삼성역, 종합운동장역, 3);
+
+        final var sections = new Sections();
+        sections.add(firstSection);
+        sections.add(secondSection);
+
+        //when
+        sections.delete(선릉역);
+
+        //then
+        assertAll(
+                () -> assertThat(sections.getSections()).hasSize(1),
+                () -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(3)
+        );
+    }
+
+    @DisplayName("하행 종점역 삭제를 통해 구간을 삭제할 수 있다.")
+    @Test
+    void deleteLastSection() {
         //given
         final var firstSection = new Section(_2호선, 선릉역, 삼성역, 10);
         final var secondSection = new Section(_2호선, 삼성역, 종합운동장역, 3);
@@ -118,12 +140,16 @@ class SectionsTest {
         sections.delete(종합운동장역);
 
         //then
-        assertThat(sections.getSections()).hasSize(1);
+        assertAll(
+                () -> assertThat(sections.getSections()).hasSize(1),
+                () -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(10)
+        );
     }
 
-    @DisplayName("삭제 시 하행역이 아니면 삭제할 수 없다")
+
+    @DisplayName("중간역 삭제를 통해 구간을 삭제할 수 있다.")
     @Test
-    void cantDeleteNotDownStation() {
+    void deleteBetweenSection() {
         //given
         final var firstSection = new Section(_2호선, 선릉역, 삼성역, 10);
         final var secondSection = new Section(_2호선, 삼성역, 종합운동장역, 3);
@@ -132,12 +158,15 @@ class SectionsTest {
         sections.add(firstSection);
         sections.add(secondSection);
 
-        //when, then
-        assertThatThrownBy(() -> sections.delete(삼성역))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("하행역만 삭제할 수 있습니다.");
-    }
+        //when
+        sections.delete(삼성역);
 
+        //then
+        assertAll(
+                () -> assertThat(sections.getSections()).hasSize(1),
+                () -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(13)
+        );
+    }
 
     @DisplayName("삭제 시 상행역과 하행역만이 존재하면 삭제할 수 없다")
     @Test
@@ -150,7 +179,7 @@ class SectionsTest {
 
         //when, then
         assertThatThrownBy(() -> sections.delete(삼성역))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(DeleteSectionException.class)
                 .hasMessage("상행역과 하행역만 존재하기 때문에 삭제할 수 없습니다.");
     }
 

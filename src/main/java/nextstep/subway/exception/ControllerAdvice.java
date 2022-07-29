@@ -30,4 +30,18 @@ public class ControllerAdvice {
                 .body(new ErrorResponse(e.getMessage()));
     }
 
+    @ExceptionHandler(value = SectionNotExistException.class)
+    public ResponseEntity<ErrorResponse> sectionNotExistException(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(value = DeleteSectionException.class)
+    public ResponseEntity<ErrorResponse> deleteSectionException(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
 }

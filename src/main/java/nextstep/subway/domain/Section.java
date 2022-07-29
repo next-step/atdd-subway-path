@@ -67,6 +67,13 @@ public class Section {
         return upStation.equals(station) || downStation.equals(station);
     }
 
+    public boolean hasSameUpStation(Station station) {
+        if (upStation == null) {
+            return false;
+        }
+        return upStation.equals(station);
+    }
+
     public boolean hasSameUpStation(Section section) {
         if (upStation == null) {
             return false;
@@ -79,6 +86,13 @@ public class Section {
             return false;
         }
         return downStation.equals(section.getDownStation());
+    }
+
+    public boolean hasSameDownStation(Station station) {
+        if (downStation == null) {
+            return false;
+        }
+        return downStation.equals(station);
     }
 
     public boolean sameUpStationAndDownStation(Section section) {

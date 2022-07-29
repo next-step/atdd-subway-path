@@ -2,8 +2,10 @@ package nextstep.subway.domain;
 
 import nextstep.subway.domain.vo.SectionLocation;
 import nextstep.subway.domain.vo.ToBeAddedSection;
+import nextstep.subway.exception.DeleteSectionException;
 import nextstep.subway.exception.NewlySectionUpStationAndDownStationNotExist;
 import nextstep.subway.exception.SectionAllStationsAlreadyExistException;
+import nextstep.subway.exception.SectionNotExistException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -132,6 +134,23 @@ public class Sections {
         return allStations;
     }
 
+    private void addUpStation(List<Station> allStations, Section firstSection) {
+        Station upStation = firstSection.getUpStation();
+        allStations.add(upStation);
+    }
+
+    private void addAllDownStationRepeatedly(List<Station> allStations, Section firstSection) {
+        Station downStation = firstSection.getDownStation();
+        while (true) {
+            allStations.add(downStation);
+            Optional<Station> nextDownStation = next(downStation);
+            if (nextDownStation.isEmpty()) {
+                break;
+            }
+            downStation = nextDownStation.get();
+        }
+    }
+
     private Section firstSection() {
         Section section = sections.get(0);
         while (true) {
@@ -151,27 +170,17 @@ public class Sections {
                 .findAny();
     }
 
-    private void addUpStation(List<Station> allStations, Section firstSection) {
-        Station upStation = firstSection.getUpStation();
-        allStations.add(upStation);
-    }
-
-    private void addAllDownStationRepeatedly(List<Station> allStations, Section firstSection) {
-        Station downStation = firstSection.getDownStation();
-        while (true) {
-            allStations.add(downStation);
-            Optional<Station> nextDownStation = next(downStation);
-            if (nextDownStation.isEmpty()) {
-                break;
-            }
-            downStation = nextDownStation.get();
-        }
-    }
-
     private Optional<Station> next(Station downStation) {
         return sections.stream()
                 .filter(section -> downStation.equals(section.getUpStation()))
                 .map(Section::getDownStation)
+                .findAny();
+    }
+
+    private Optional<Section> next(Section section) {
+        Station downStation = section.getDownStation();
+        return sections.stream()
+                .filter(s -> downStation.equals(s.getUpStation()))
                 .findAny();
     }
 
@@ -180,25 +189,87 @@ public class Sections {
     }
 
     public void delete(Station station) {
-        validateDelete(station);
-        sections.remove(sections.get(sections.size() - 1));
+        validateDelete();
+
+        Section firstSection = firstSection();
+        Section lastSection = lastSection();
+
+        if (deletableBetweenSection(station, firstSection, lastSection)) {
+            deleteBetweenSection(station);
+            return;
+        }
+
+        deleteIfFirstSectionDeletable(firstSection, station);
+        deleteIfLastSectionDeletable(lastSection, station);
     }
 
-    private void validateDelete(Station station) {
-        if (notLastStation(station)) {
-            throw new IllegalArgumentException("하행역만 삭제할 수 있습니다.");
+    private void validateDelete() {
+        if (onlyOneSectionExist()) {
+            throw new DeleteSectionException("상행역과 하행역만 존재하기 때문에 삭제할 수 없습니다.");
         }
 
-        if (onlyOneSectionExist()) {
-            throw new IllegalArgumentException("상행역과 하행역만 존재하기 때문에 삭제할 수 없습니다.");
-        }
     }
 
     private boolean onlyOneSectionExist() {
         return sections.size() == 1;
     }
 
-    private boolean notLastStation(Station station) {
-        return !sections.get(sections.size() - 1).getDownStation().equals(station);
+    private boolean deletableBetweenSection(Station station, Section firstSection, Section lastSection) {
+        return !firstSection.hasSameUpStation(station) && !lastSection.hasSameDownStation(station);
     }
+
+    private void deleteIfFirstSectionDeletable(Section firstSection, Station station) {
+        if (!firstSection.hasSameUpStation(station)) {
+            return;
+        }
+        sections.remove(firstSection);
+    }
+
+    private void deleteIfLastSectionDeletable(Section lastSection, Station station) {
+        if (!lastSection.hasSameDownStation(station)) {
+            return;
+        }
+        sections.remove(lastSection);
+    }
+
+    private Section lastSection() {
+        Section section = sections.get(0);
+        while (true) {
+            Optional<Section> nextSection = next(section);
+            if (nextSection.isEmpty()) {
+                break;
+            }
+            section = nextSection.get();
+        }
+        return section;
+    }
+
+    private void deleteBetweenSection(Station station) {
+        Section frontSection = frontSection(station);
+        Section behindSection = behindSection(station);
+        sections.add(mergedSection(frontSection, behindSection));
+        sections.remove(frontSection);
+        sections.remove(behindSection);
+    }
+
+    private Section frontSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.hasSameDownStation(station))
+                .findAny()
+                .orElseThrow(() -> new SectionNotExistException("구간이 존재하지 않아 역을 삭제할 수 없습니다."));
+    }
+
+    private Section behindSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.hasSameUpStation(station))
+                .findAny()
+                .orElseThrow(() -> new SectionNotExistException("구간이 존재하지 않아 역을 삭제할 수 없습니다."));
+    }
+
+    private Section mergedSection(Section frontSection, Section behindSection) {
+        return new Section(frontSection.getLine(), frontSection.getUpStation(), behindSection.getDownStation(),
+                frontSection.getDistance() + behindSection.getDistance());
+    }
+
+
 }
