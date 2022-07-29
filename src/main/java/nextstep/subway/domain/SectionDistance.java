@@ -21,13 +21,13 @@ public class SectionDistance {
 		return distance;
 	}
 
-	public void validationOfDistance(SectionDistance distance) {
-		if (this.distance <= distance.getDistance()) {
+	public void validationOfDistance(long distance) {
+		if (this.distance <= distance) {
 			throw new BusinessException(INVALID_STATUS);
 		}
 	}
 
-	public void plusDistance(SectionDistance addDistance) {
-		this.distance = this.distance + addDistance.getDistance();
+	public void plusDistance(int addDistance) {
+		this.distance = this.distance + addDistance;
 	}
 }

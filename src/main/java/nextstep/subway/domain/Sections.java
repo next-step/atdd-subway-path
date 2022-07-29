@@ -98,6 +98,14 @@ public class Sections {
 		return Collections.unmodifiableList(stations);
 	}
 
+	private Section findPreviousSection(Station station) {
+		return this.values
+			.stream()
+			.filter(section -> section.isSameWithDownStation(station))
+			.findFirst()
+			.orElseThrow(() -> new BusinessException(INVALID_STATUS));
+	}
+
 	private Section findNextSection(Section previousSection) {
 		return this.values
 			.stream()
@@ -193,7 +201,6 @@ public class Sections {
 			return;
 		}
 		removeIfMiddleSection(station);
-
 	}
 
 	private void validationOfSectionSize() {
@@ -221,12 +228,7 @@ public class Sections {
 	}
 
 	private void removeIfMiddleSection(Station station) {
-		Section previousSection = this.values
-			.stream()
-			.filter(section -> section.isSameWithDownStation(station))
-			.findFirst()
-			.orElseThrow(() -> new BusinessException(INVALID_STATUS));
-
+		Section previousSection = findPreviousSection(station);
 		Section afterSection = findNextSection(previousSection);
 
 		previousSection.changeDownStation(afterSection.getDownStation());
