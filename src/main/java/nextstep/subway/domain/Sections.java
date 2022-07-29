@@ -46,16 +46,19 @@ public class Sections {
 	}
 
 	public void remove(Station station) {
-		int count = this.sections.size();
-		if(count <= 1) {
-			throw new IllegalArgumentException("There is no station");
-		}
+		SectionRemovePosition sectionPosition = SectionRemovePosition.from(this, station);
+		sectionPosition.remove(this.sections, station);
 
-		Section lastSection = this.sections.get(count - 1);
-		if (!lastSection.getDownStation().equals(station)) {
-			throw new IllegalArgumentException("Station does not match");
-		}
-		this.sections.remove(lastSection);
+		// int count = this.sections.size();
+		// if(count <= 1) {
+		// 	throw new IllegalArgumentException("There is no station");
+		// }
+		//
+		// Section lastSection = this.sections.get(count - 1);
+		// if (!lastSection.getDownStation().equals(station)) {
+		// 	throw new IllegalArgumentException("Station does not match");
+		// }
+		// this.sections.remove(lastSection);
 	}
 
 	public boolean isEmpty() {

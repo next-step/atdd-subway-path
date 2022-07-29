@@ -253,11 +253,13 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         @DisplayName("예외3) 노선에 등록되지 않은 역은 제거할 수 없다.")
         @Test
         void action_실패3() {
-            // given 강남-양재 등록됨, 정자역은 구간 추가되지 않음
+            // given 강남-양재-정자 등록됨, 미금역은 구간 추가되지 않음
             Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+            지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+            Long 미금역 = 지하철역_생성_요청("미금역").jsonPath().getLong("id");
 
-            // when 정자역 삭제
-            ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+            // when 미금역 삭제
+            ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 미금역);
 
             // then 실패
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
