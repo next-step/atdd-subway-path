@@ -65,12 +65,16 @@ class PathAcceptanceTest extends AcceptanceTest {
         경로정보가_일치한다(response, 8, 교대역, 강남역, 양재역);
     }
 
-    private void 경로정보가_일치한다(ExtractableResponse<Response> response, int distance, Long... stationIds) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    @DisplayName("출발역과 도착역이 같다면 경로 조회를 할 수 없다.")
+    @Test
+    void 경로_조회_예외1() {
+        경로를_조회할_수_없다(교대역, 교대역);
+    }
 
-        assertThat(response.jsonPath().getInt("distance")).isEqualTo(distance);
-        assertThat(response.jsonPath().getList("stations.id", Long.class))
-                .containsExactly(stationIds);
+    private void 경로를_조회할_수_없다(Long source, Long target) {
+        var response = 경로를_조회한다(source, target);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> 경로를_조회한다(Long source, Long target) {
@@ -80,6 +84,14 @@ class PathAcceptanceTest extends AcceptanceTest {
                 .when().get("/paths")
                 .then().log().all()
                 .extract();
+    }
+
+    private void 경로정보가_일치한다(ExtractableResponse<Response> response, int distance, Long... stationIds) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        assertThat(response.jsonPath().getInt("distance")).isEqualTo(distance);
+        assertThat(response.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(stationIds);
     }
 
     private Map<String, String> createPathParams(Long source, Long target) {
