@@ -52,7 +52,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void test() {
+    @DisplayName("최단 경로 요청")
+    void shortestPath() {
         final ExtractableResponse<Response> 최단_경로_요청 = 최단_경로_요청(교대역, 양재역);
 
         final List<Long> 역_id_리스트 = 최단_경로_요청.jsonPath().getList("stations.id", Long.class);
