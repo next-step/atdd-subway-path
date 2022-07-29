@@ -30,8 +30,16 @@ public class Section {
     @Embedded
     private Distance distance;
 
+    public int getDistanceIntValue() {
+        return distance.getValue();
+    }
+
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this(null, line, upStation, downStation, Distance.of(distance));
+    }
+
+    public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
+        this(id, line, upStation, downStation, Distance.of(distance));
     }
 
     public List<Station> getStations() {
