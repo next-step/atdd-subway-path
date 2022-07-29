@@ -1,9 +1,15 @@
 package nextstep.subway.domain;
 
-import java.util.*;
-import java.util.stream.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.OneToMany;
 
 @Embeddable
 public class Sections {

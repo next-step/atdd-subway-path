@@ -1,8 +1,5 @@
 package nextstep.subway.unit;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.BDDMockito.*;
-
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +17,11 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
@@ -64,10 +66,9 @@ public class LineServiceMockTest {
 		assertThat(line.getSections()).hasSize(1);
 	}
 
-
 	@DisplayName("구간 삭제 mock 테스트")
 	@Test
-	void deleteSectionTest(){
+	void deleteSectionTest() {
 		//given
 		line.addSection(new Section(line, upStation, downStation, 10));
 		given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));

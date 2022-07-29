@@ -1,7 +1,5 @@
 package nextstep.subway.unit;
 
-import static org.assertj.core.api.Assertions.*;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +13,8 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
@@ -32,7 +32,7 @@ public class LineServiceTest {
 	private Line line;
 
 	@BeforeEach
-	void setUp(){
+	void setUp() {
 		upStation = new Station("서현역");
 		downStation = new Station("이매역");
 		stationRepository.save(upStation);
@@ -58,7 +58,7 @@ public class LineServiceTest {
 
 	@DisplayName("구간 삭제 테스트")
 	@Test
-	void deleteSectionTest(){
+	void deleteSectionTest() {
 		//given
 		lineService.addSection(line.getId(), new SectionRequest(upStation.getId(), downStation.getId(), 10));
 
@@ -68,6 +68,5 @@ public class LineServiceTest {
 		//then
 		assertThat(line.getSections()).isEmpty();
 	}
-
 
 }
