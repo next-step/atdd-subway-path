@@ -5,7 +5,6 @@ import nextstep.subway.domain.exception.NotEnoughStationsException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,11 +30,8 @@ class PathGraphTest {
         // given
         Line emptyStationLine = new Line("2호선", "bg-green-600");
 
-        List<Line> lines = new ArrayList<>();
-        lines.add(emptyStationLine);
-
         // when
-        assertThatThrownBy(() -> PathGraph.valueOf(new Lines(lines)))
+        assertThatThrownBy(() -> PathGraph.valueOf(createLines(emptyStationLine)))
                 .isInstanceOf(NotEnoughStationsException.class);
     }
 
@@ -46,10 +42,7 @@ class PathGraphTest {
         Line line = new Line("2호선", "bg-green-600");
         line.addSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
 
-        List<Line> lines = new ArrayList<>();
-        lines.add(line);
-
-        PathGraph pathGraph = PathGraph.valueOf(new Lines(lines));
+        PathGraph pathGraph = PathGraph.valueOf(createLines(line));
 
         // when
         assertThatThrownBy(() -> pathGraph.findShortPath(GANGNAM_STATION, GANGNAM_STATION))
@@ -66,15 +59,15 @@ class PathGraphTest {
         Line orangeLine = new Line("3호선", "bg-orange-600");
         orangeLine.addSection(YANGJAE_STATION, NAMBU_BUS_TERMINAL_STATION, 10);
 
-        List<Line> lines = new ArrayList<>();
-        lines.add(greenLine);
-        lines.add(orangeLine);
-
-        PathGraph pathGraph = PathGraph.valueOf(new Lines(lines));
+        PathGraph pathGraph = PathGraph.valueOf(createLines(greenLine, orangeLine));
 
         // when
         assertThatThrownBy(() -> pathGraph.findShortPath(GANGNAM_STATION, NAMBU_BUS_TERMINAL_STATION))
                 .isInstanceOf(NotConnectedPathException.class)
                 .hasMessage("출발역과 도착역이 연결되어 있지 않습니다. 출발역=강남역, 도착역=남부터미널역");
+    }
+
+    private Lines createLines(Line... lines) {
+        return new Lines(List.of(lines));
     }
 }
