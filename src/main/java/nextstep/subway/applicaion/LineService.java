@@ -33,8 +33,8 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
-            Station upStation = stationService.findById(request.getUpStationId());
-            Station downStation = stationService.findById(request.getDownStationId());
+            Station upStation = getStation(request.getUpStationId());
+            Station downStation = getStation(request.getDownStationId());
             line.getSections().add(new Section(line, upStation, downStation, request.getDistance()));
         }
         return createLineResponse(line);
@@ -55,10 +55,10 @@ public class LineService {
         Line line = lineRepository.findById(id).orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_FOUND_LINE));
 
         if (lineRequest.getName() != null) {
-            line.setName(lineRequest.getName());
+            line.updateName(lineRequest.getName());
         }
         if (lineRequest.getColor() != null) {
-            line.setColor(lineRequest.getColor());
+            line.updateColor(lineRequest.getColor());
         }
     }
 
@@ -69,11 +69,15 @@ public class LineService {
 
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
-        Station upStation = stationService.findById(sectionRequest.getUpStationId());
-        Station downStation = stationService.findById(sectionRequest.getDownStationId());
+        Station upStation = getStation(sectionRequest.getUpStationId());
+        Station downStation = getStation(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_FOUND_LINE));
 
         line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+    }
+
+    private Station getStation(Long stationId) {
+        return stationService.findById(stationId);
     }
 
     private LineResponse createLineResponse(Line line) {
@@ -104,7 +108,7 @@ public class LineService {
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_FOUND_LINE));
-        Station station = stationService.findById(stationId);
+        Station station = getStation(stationId);
 
         if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
             throw new InvalidStationParameterException(ErrorCode.IS_NOT_SAME_LAST_STATION);

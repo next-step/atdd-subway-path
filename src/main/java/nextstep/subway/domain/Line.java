@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import lombok.Getter;
 import nextstep.subway.applicaion.exceptions.SectionNotEnoughException;
 import nextstep.subway.enums.exceptions.ErrorCode;
 
@@ -7,6 +8,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 @Entity
 public class Line {
     @Id
@@ -31,15 +33,11 @@ public class Line {
         sections.add(new Section(this, upStation, downStation, distance));
     }
 
-    public void setName(String name) {
+    public void updateName(String name) {
         this.name = name;
     }
 
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
+    public void updateColor(String color) {
         this.color = color;
     }
 
