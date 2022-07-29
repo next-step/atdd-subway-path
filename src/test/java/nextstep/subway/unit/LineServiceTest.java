@@ -58,7 +58,7 @@ public class LineServiceTest {
         // given 신분당선 강남-양재 구간 setUp
 
         // when
-        LineResponse lineResponse = lineService.saveLine(new LineRequest("분당선", "yellow", 강남역.getId(), 양재역.getId(), 10));
+        LineResponse lineResponse = lineService.save(new LineRequest("분당선", "yellow", 강남역.getId(), 양재역.getId(), 10));
 
         // then
         Line 분당선 = lineRepository.findById(lineResponse.getId()).orElseThrow(IllegalArgumentException::new);
@@ -98,7 +98,7 @@ public class LineServiceTest {
         // when
         String newName = "2호선";
         String newColor = "green";
-        lineService.updateLine(신분당선.getId(), new LineRequest(newName, newColor, 강남역.getId(), 양재역.getId(),10));
+        lineService.update(신분당선.getId(), new LineRequest(newName, newColor, 강남역.getId(), 양재역.getId(),10));
 
         // then
         assertThat(신분당선.getName()).isEqualTo(newName);
@@ -115,10 +115,10 @@ public class LineServiceTest {
         // given 신분당선 강남-양재 구간 setUp
 
         // when
-        lineService.deleteLine(신분당선.getId());
+        lineService.delete(신분당선.getId());
 
         // then
-        assertThatThrownBy(()->lineService.findLineResponse(신분당선.getId()))
+        assertThatThrownBy(()->lineService.findById(신분당선.getId()))
             .isInstanceOf(IllegalArgumentException.class);
     }
 }

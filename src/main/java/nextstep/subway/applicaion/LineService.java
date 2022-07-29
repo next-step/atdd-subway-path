@@ -23,7 +23,7 @@ public class LineService {
 	private final StationService stationService;
 
 	@Transactional
-	public LineResponse saveLine(LineRequest request) {
+	public LineResponse save(LineRequest request) {
 		Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
 		if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
 			addSection(line, request);
@@ -31,24 +31,24 @@ public class LineService {
 		return LineResponse.from(line);
 	}
 
-	public List<LineResponse> findAllLineResponse() {
+	public List<LineResponse> findAllById() {
 		return lineRepository.findAll().stream()
 			.map(LineResponse::from)
 			.collect(Collectors.toList());
 	}
 
-	public LineResponse findLineResponse(Long id) {
+	public LineResponse findById(Long id) {
 		return LineResponse.from(findLine(id));
 	}
 
 	@Transactional
-	public void updateLine(Long id, LineRequest lineRequest) {
+	public void update(Long id, LineRequest lineRequest) {
 		Line line = findLine(id);
 		line.update(lineRequest.getName(), lineRequest.getColor());
 	}
 
 	@Transactional
-	public void deleteLine(Long id) {
+	public void delete(Long id) {
 		lineRepository.deleteById(id);
 	}
 

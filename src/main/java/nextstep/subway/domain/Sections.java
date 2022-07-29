@@ -42,7 +42,7 @@ public class Sections {
 		this.sections.remove(lastSection);
 	}
 
-	public Boolean isEmpty() {
+	public boolean isEmpty() {
 		return this.sections.isEmpty();
 	}
 

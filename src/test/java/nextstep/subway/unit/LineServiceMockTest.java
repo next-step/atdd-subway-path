@@ -60,7 +60,7 @@ public class LineServiceMockTest {
         when(lineRepository.save(any())).thenReturn(신분당선);
 
         // when
-        lineService.saveLine(new LineRequest(신분당선.getName(), 신분당선.getColor(), 강남역.getId(), 양재역.getId(), 10));
+        lineService.save(new LineRequest(신분당선.getName(), 신분당선.getColor(), 강남역.getId(), 양재역.getId(), 10));
 
         // then
         Line line = lineRepository.findById(신분당선.getId()).orElseThrow(IllegalArgumentException::new);
@@ -101,7 +101,7 @@ public class LineServiceMockTest {
         // when
         String newName = "2호선";
         String newColor = "green";
-        lineService.updateLine(신분당선.getId(), new LineRequest(newName, newColor, 강남역.getId(), 양재역.getId(),10));
+        lineService.update(신분당선.getId(), new LineRequest(newName, newColor, 강남역.getId(), 양재역.getId(),10));
 
         // then
         assertThat(신분당선.getName()).isEqualTo(newName);
@@ -116,10 +116,10 @@ public class LineServiceMockTest {
     @Test
     void deleteLine() {
         // when
-        lineService.deleteLine(신분당선.getId());
+        lineService.delete(신분당선.getId());
 
         // then
-        assertThatThrownBy(()->lineService.findLineResponse(신분당선.getId()))
+        assertThatThrownBy(()->lineService.findById(신분당선.getId()))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
