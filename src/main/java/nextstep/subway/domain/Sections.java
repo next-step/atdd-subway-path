@@ -128,13 +128,7 @@ public class Sections {
     }
 
     public void deleteStation(Station station) {
-        if (this.sections.size() <= 1) {
-            throw new BusinessException("해당 지하철 노선에 지하철 구간이 하나밖에 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
-        }
-
-        if (isNotIncludedStation(station)) {
-            throw new BusinessException("해당 지하철 노선에 등록되지 않은 역입니다.", HttpStatus.BAD_REQUEST);
-        }
+        validateDeleteStationCondition(station);
 
         if (isFirstStation(station)) {
             removeUpStation(station);
@@ -154,95 +148,94 @@ public class Sections {
         throw new BusinessException("해당 지하철 노선에서 지하철역을 삭제할 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    private void validateDeleteStationCondition(Station station) {
+        if (this.sections.size() <= 1) {
+            throw new BusinessException("해당 지하철 노선에 지하철 구간이 하나밖에 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (isNotIncludedStation(station)) {
+            throw new BusinessException("해당 지하철 노선에 등록되지 않은 역입니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
     private boolean isNotIncludedStation(Station station) {
         return !this.getStations()
                 .contains(station);
     }
 
     private void removeMiddleStation(Station station) {
-        Line line = this.sections.get(0)
-                .getLine();
-        Section upSection = new Section();
-        Section downSection = new Section();
-        Station upStation = new Station();
-        Station downStation = new Station();
+        Section upSection = removeUpSectionNearStation(station);
+        Section downSection = removeDownSectionNearStation(station);
 
-        int upSectionDistance = 0;
-        int downSectionDistance = 0;
+        Line line = upSection.getLine();
+        Station upStation = upSection.getUpStation();
+        Station downStation = downSection.getDownStation();
+        int newDistance = upSection.getDistance() + downSection.getDistance();
+        this.sections.add(new Section(line, upStation, downStation, newDistance));
+    }
 
-        for (Section section : sections) {
-            if (section.isUpStation(station)) {
-                downStation = section.getDownStation();
-                upSectionDistance = section.getDistance();
-                upSection = section;
-            }
-
-            if (section.isDownStation(station)) {
-                upStation = section.getUpStation();
-                downSectionDistance = section.getDistance();
-                downSection = section;
-            }
-        }
-
+    private Section removeUpSectionNearStation(Station station) {
+        Section upSection = findUpSection(station);
         this.sections.remove(upSection);
+        return upSection;
+    }
+
+    private Section removeDownSectionNearStation(Station station) {
+        Section downSection = findDownSection(station);
         this.sections.remove(downSection);
-        this.sections.add(new Section(line, upStation, downStation, upSectionDistance + downSectionDistance));
+        return downSection;
     }
 
-    private void removeUpStation(Station station) {
-        for (Section section : this.sections) {
-            if (section.isUpStation(station)) {
-                this.sections.remove(section);
-                return;
-            }
-        }
+    private void removeUpStation(Station firstStation) {
+        Section firstSection = findDownSection(firstStation);
+        sections.remove(firstSection);
     }
 
-    private void removeDownStation(Station station) {
-        for (Section section : sections) {
-            if (section.isDownStation(station)) {
-                sections.remove(section);
-                return;
-            }
-        }
+    private Section findDownSection(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.isUpStation(station))
+                .findAny()
+                .orElseThrow(IllegalStateException::new);
+    }
+
+    private void removeDownStation(Station lastStation) {
+        Section lastSection = findUpSection(lastStation);
+        sections.remove(lastSection);
+    }
+
+    private Section findUpSection(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.isDownStation(station))
+                .findAny()
+                .orElseThrow(IllegalStateException::new);
     }
 
     private Station findFirstStation() {
-        List<Station> stations = this.getStations();
-        for (Station station : stations) {
-            if (isFirstStation(station)) {
-                return station;
-            }
-        }
-        throw new IllegalStateException();
+        return this.getStations()
+                .stream()
+                .filter(station -> isFirstStation(station))
+                .findAny()
+                .orElseThrow(IllegalStateException::new);
     }
 
     private boolean isFirstStation(Station station) {
-        for (Section section : this.sections) {
-            if (section.isDownStation(station)) {
-                return false;
-            }
-        }
-        return true;
+        return this.sections.stream()
+                .filter(section -> section.isDownStation(station))
+                .count() == 0;
     }
 
     private Station findLastStation() {
-        List<Station> stations = this.getStations();
-        for (Station station : stations) {
-            if (isLastStation(station)) {
-                return station;
-            }
-        }
-        throw new IllegalStateException();
+        return this.getStations()
+                .stream()
+                .filter(station -> isLastStation(station))
+                .findAny()
+                .orElseThrow(IllegalStateException::new);
     }
 
     private boolean isLastStation(Station station) {
-        for (Section section : this.sections) {
-            if (section.isUpStation(station)) {
-                return false;
-            }
-        }
-        return true;
+        return this.sections.stream()
+                .filter(section -> section.isUpStation(station))
+                .count() == 0;
     }
 
     private boolean isMiddleStation(Station station) {
