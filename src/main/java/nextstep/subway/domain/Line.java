@@ -2,7 +2,9 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -49,5 +51,59 @@ public class Line {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void addSection(Section section) {
+        if(!sections.isEmpty()) {
+            validateEqualUpAndDown(section);
+            validateAlreadyExist(section);
+        }
+        sections.add(section);
+    }
+
+    private void validateEqualUpAndDown(Section section) {
+        if (!lastSection().getDownStation().equals(section.getUpStation())) {
+            throw new IllegalArgumentException("구간을 추가할 수 없습니다.");
+        }
+    }
+
+    private void validateAlreadyExist(Section section) {
+        if (getStations().contains(section.getDownStation())) {
+            throw new IllegalArgumentException("역이 이미 노선에 포함되어 있습니다.");
+        }
+    }
+
+    public List<Station> getStations() {
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Station> stations = sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+        stations.add(lastSection().getDownStation());
+        return stations;
+    }
+
+    public void removeSection(Station lastStation) {
+        validateOnlyOneSection();
+        validateIsLast(lastStation);
+        sections.remove(sections.size() - 1);
+    }
+
+    private void validateOnlyOneSection() {
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException("한 개의 구간만이 존재합니다.");
+        }
+    }
+
+    private void validateIsLast(Station lastStation) {
+        if (!lastSection().getDownStation().equals(lastStation)) {
+            throw new IllegalArgumentException("구간을 삭제할 수 없습니다.");
+        }
+    }
+
+    private Section lastSection() {
+        return sections.get(sections.size() - 1);
     }
 }
