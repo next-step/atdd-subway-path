@@ -48,4 +48,8 @@ public class Line {
     public List<Long> getOrderedStationIds() {
         return sections.getOrderedStationIds();
     }
+
+    public List<Section> getSections() {
+        return sections.getSections();
+    }
 }
