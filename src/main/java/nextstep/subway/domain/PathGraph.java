@@ -58,4 +58,11 @@ public class PathGraph {
         }
     }
 
+    public Path findShortPath(Station source, Station target) {
+        if (source.equals(target)) {
+            throw new IllegalArgumentException();
+        }
+
+        return null;
+    }
 }
