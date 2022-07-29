@@ -109,11 +109,8 @@ public class LineService {
         Line line = getLine(lineId);
         Station station = getStation(stationId);
 
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new InvalidStationParameterException(ErrorCode.IS_NOT_SAME_LAST_STATION);
-        }
-
-        line.getSections().remove(line.getSections().size() - 1);
+        line.removeSection(station);
+        stationService.deleteStationById(station.getId());
     }
 
     private Line getLine(Long lineId) {
