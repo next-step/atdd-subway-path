@@ -77,7 +77,8 @@ public class LineService {
         List<Station> stations = line.findAllStation();
 
         return stations.stream()
-                .map(stationService::createStationResponse)
+                .map(stationService::createStationDto)
+                .map(StationResponse::from)
                 .collect(Collectors.toList());
     }
 

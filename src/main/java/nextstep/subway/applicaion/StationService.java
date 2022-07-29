@@ -1,8 +1,9 @@
 package nextstep.subway.applicaion;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.subway.applicaion.dto.SectionDto;
+import nextstep.subway.applicaion.dto.StationDto;
 import nextstep.subway.applicaion.dto.request.StationRequest;
-import nextstep.subway.applicaion.dto.response.StationResponse;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -18,15 +19,13 @@ public class StationService {
     private final StationRepository stationRepository;
 
     @Transactional
-    public StationResponse saveStation(StationRequest stationRequest) {
+    public StationDto saveStation(StationRequest stationRequest) {
         Station station = stationRepository.save(new Station(stationRequest.getName()));
-        return createStationResponse(station);
+        return createStationDto(station);
     }
 
-    public List<StationResponse> findAllStations() {
-        return stationRepository.findAll().stream()
-                .map(this::createStationResponse)
-                .collect(Collectors.toList());
+    public List<StationDto> findAllStations() {
+        return createStationDto(stationRepository.findAll());
     }
 
     @Transactional
@@ -34,11 +33,12 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    public StationResponse createStationResponse(Station station) {
-        return new StationResponse(
-                station.getId(),
-                station.getName()
-        );
+    public StationDto createStationDto(Station station) {
+        return StationDto.from(station);
+    }
+
+    public List<StationDto> createStationDto(List<Station> station) {
+        return StationDto.from(station);
     }
 
     public Station findById(Long id) {
