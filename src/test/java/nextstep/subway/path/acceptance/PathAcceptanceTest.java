@@ -1,6 +1,5 @@
 package nextstep.subway.path.acceptance;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -8,15 +7,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static nextstep.subway.steps.LineSectionSteps.*;
+import static nextstep.subway.steps.PathSteps.경로_조회_요청;
 import static nextstep.subway.steps.StationSteps.지하철역_삭제_요청;
 import static nextstep.subway.steps.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 경로 조회 기능")
 class PathAcceptanceTest extends AcceptanceTest {
@@ -59,13 +56,14 @@ class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("출발역과 도착역이 이어져있을 때 경로를 조회하면 경로와 최단거리를 응답받는다.")
     @Test
     void 경로_조회() {
-        // when
-        var response = 경로를_조회한다(교대역, 양재역);
-
-        // then
-        경로정보가_일치한다(response, 8, 교대역, 강남역, 양재역);
+        assertAll(
+                () -> 경로_조회_정보가_일치한다(경로_조회_요청(교대역, 양재역), 8, 교대역, 강남역, 양재역),
+                () -> 경로_조회_정보가_일치한다(경로_조회_요청(교대역, 강남역), 6, 교대역, 강남역),
+                () -> 경로_조회_정보가_일치한다(경로_조회_요청(남부터미널역, 강남역), 8, 남부터미널역, 교대역, 강남역),
+                () -> 경로_조회_정보가_일치한다(경로_조회_요청(교대역, 남부터미널역), 2, 교대역, 남부터미널역)
+        );
     }
-
+    
     @DisplayName("출발역과 도착역이 같다면 경로 조회를 할 수 없다.")
     @Test
     void 경로_조회_예외1() {
@@ -86,33 +84,24 @@ class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void 경로_조회_예외3() {
         // when
-        Long 제거역 = 지하철역을_생성했다가_제거한다("삭제역");
+        Long 제거역 = 지하철역을_생성했다가_제거한다("제거역");
 
         // then
         경로를_조회할_수_없다(제거역, 강남역);
     }
 
     private void 경로를_조회할_수_없다(Long source, Long target) {
-        var response = 경로를_조회한다(source, target);
+        var response = 경로_조회_요청(source, target);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private ExtractableResponse<Response> 경로를_조회한다(Long source, Long target) {
-        return RestAssured.given().log().all()
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .params(createPathParams(source, target))
-                .when().get("/paths")
-                .then().log().all()
-                .extract();
-    }
-
-    private void 경로정보가_일치한다(ExtractableResponse<Response> response, int distance, Long... stationIds) {
+    private void 경로_조회_정보가_일치한다(ExtractableResponse<Response> response, int distance, Long... pathStationIds) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         assertThat(response.jsonPath().getInt("distance")).isEqualTo(distance);
         assertThat(response.jsonPath().getList("stations.id", Long.class))
-                .containsExactly(stationIds);
+                .containsExactly(pathStationIds);
     }
 
     private Long 지하철역을_생성했다가_제거한다(String name) {
@@ -124,12 +113,5 @@ class PathAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         return 제거역;
-    }
-
-    private Map<String, String> createPathParams(Long source, Long target) {
-        Map<String, String> params = new HashMap<>();
-        params.put("source", source + "");
-        params.put("target", target + "");
-        return params;
     }
 }
