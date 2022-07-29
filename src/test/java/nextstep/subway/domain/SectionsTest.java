@@ -162,7 +162,7 @@ class SectionsTest {
 		//when
 		//then
 		assertThatThrownBy(() -> 신분당선에_구간을_추가한다(강남역, 정자역, 5))
-				.isInstanceOf(CannotRegisterWithoutRegisteredStation.class);
+				.isInstanceOf(CannotRegisterWithoutRegisteredStationException.class);
 	}
 
 	/**

@@ -26,7 +26,7 @@ public class SectionControllerAdvice {
 		return ResponseEntity.status(CANNOT_REGISTER_ALREADY_REGISTERED_SECTION.getStatus()).build();
 	}
 
-	@ExceptionHandler(CannotRegisterWithoutRegisteredStation.class)
+	@ExceptionHandler(CannotRegisterWithoutRegisteredStationException.class)
 	public ResponseEntity<Void> withoutRegisteredStationExceptionHandler() {
 		return ResponseEntity.status(CANNOT_REGISTER_WITHOUT_REGISTERED_STATIONS.getStatus()).build();
 	}
