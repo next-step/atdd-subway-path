@@ -21,7 +21,7 @@ class PathGraphTest {
         List<Line> lines = Collections.emptyList();
 
         // when
-        assertThatThrownBy(() -> PathGraph.valueOf(lines))
+        assertThatThrownBy(() -> PathGraph.valueOf(new Lines(lines)))
                 .isInstanceOf(NotEnoughStationsException.class);
     }
 
@@ -35,7 +35,7 @@ class PathGraphTest {
         lines.add(emptyStationLine);
 
         // when
-        assertThatThrownBy(() -> PathGraph.valueOf(lines))
+        assertThatThrownBy(() -> PathGraph.valueOf(new Lines(lines)))
                 .isInstanceOf(NotEnoughStationsException.class);
     }
 
@@ -49,7 +49,7 @@ class PathGraphTest {
         List<Line> lines = new ArrayList<>();
         lines.add(line);
 
-        PathGraph pathGraph = PathGraph.valueOf(lines);
+        PathGraph pathGraph = PathGraph.valueOf(new Lines(lines));
 
         // when
         assertThatThrownBy(() -> pathGraph.findShortPath(GANGNAM_STATION, GANGNAM_STATION))
@@ -70,7 +70,7 @@ class PathGraphTest {
         lines.add(greenLine);
         lines.add(orangeLine);
 
-        PathGraph pathGraph = PathGraph.valueOf(lines);
+        PathGraph pathGraph = PathGraph.valueOf(new Lines(lines));
 
         // when
         assertThatThrownBy(() -> pathGraph.findShortPath(GANGNAM_STATION, NAMBU_BUS_TERMINAL_STATION))

@@ -8,7 +8,6 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class PathGraph {
 
@@ -16,39 +15,22 @@ public class PathGraph {
 
     private final WeightedMultigraph<Station, DefaultWeightedEdge> graph;
     private final DijkstraShortestPath dijkstraShortestPath;
+    private final Lines lines;
 
-    private PathGraph(WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
+    private PathGraph(WeightedMultigraph<Station, DefaultWeightedEdge> graph, Lines lines) {
         this.graph = graph;
         this.dijkstraShortestPath = new DijkstraShortestPath(graph);
+        this.lines = lines;
     }
 
-    public static PathGraph valueOf(List<Line> lines) {
-        if (hasLessThanTwoStations(lines)) {
+    public static PathGraph valueOf(Lines lines) {
+        if (lines.hasLessThanStations(MINIMUM_STATION_COUNT)) {
             throw new NotEnoughStationsException();
         }
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-        initializeVertex(graph, findStations(lines));
-        initializeEdgeWeight(graph, findSections(lines));
-        return new PathGraph(graph);
-    }
-
-    private static boolean hasLessThanTwoStations(List<Line> lines) {
-        return findStations(lines).size() < MINIMUM_STATION_COUNT;
-    }
-
-    private static List<Station> findStations(List<Line> lines) {
-        return lines.stream()
-                .map(Line::getStations)
-                .flatMap(List::stream)
-                .distinct()
-                .collect(Collectors.toUnmodifiableList());
-    }
-
-    private static List<Section> findSections(List<Line> lines) {
-        return lines.stream()
-                .map(Line::getSections)
-                .flatMap(List::stream)
-                .collect(Collectors.toUnmodifiableList());
+        initializeVertex(graph, lines.getStations());
+        initializeEdgeWeight(graph, lines.getSections());
+        return new PathGraph(graph, lines);
     }
 
     private static void initializeVertex(WeightedMultigraph<Station, DefaultWeightedEdge> graph, List<Station> stations) {
