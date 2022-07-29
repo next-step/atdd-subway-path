@@ -1,6 +1,8 @@
 package nextstep.subway.path.acceptance;
 
 import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +28,8 @@ class PathAcceptanceTest extends AcceptanceTest {
     private Long 신분당선;
     private Long 삼호선;
 
-    /**
+    /** GIVEN
+     *
      * 교대역    ---    *2호선* ---   강남역
      *   |                           |
      * *3호선*                     *신분당선*
@@ -52,22 +55,31 @@ class PathAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 2));
     }
 
-    /**
-     * Given: 지하철 노선도에서 출발역과 도착역이 이어져있다면
-     * When: 경로조회시
-     * Then: 최단거리로 이어진 역의 정보들과, 최단거리를 응답받는다.
-     */
+    @DisplayName("출발역과 도착역이 이어져있을 때 경로를 조회하면 경로와 최단거리를 응답받는다.")
     @Test
-    void name() {
-        var response = RestAssured.given().log().all()
+    void 경로_조회() {
+        // when
+        var response = 경로를_조회한다(교대역, 양재역);
+
+        // then
+        경로정보가_일치한다(response, 8, 교대역, 강남역, 양재역);
+    }
+
+    private void 경로정보가_일치한다(ExtractableResponse<Response> response, int distance, Long... stationIds) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        assertThat(response.jsonPath().getInt("distance")).isEqualTo(distance);
+        assertThat(response.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(stationIds);
+    }
+
+    private ExtractableResponse<Response> 경로를_조회한다(Long source, Long target) {
+        return RestAssured.given().log().all()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-                .params(createPathParams(교대역, 양재역))
+                .params(createPathParams(source, target))
                 .when().get("/paths")
                 .then().log().all()
                 .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getInt("distance")).isEqualTo(8);
     }
 
     private Map<String, String> createPathParams(Long source, Long target) {
