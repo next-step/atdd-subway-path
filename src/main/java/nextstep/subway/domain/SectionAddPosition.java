@@ -67,6 +67,4 @@ public enum SectionAddPosition {
 	public interface AddStationFunction {
 		void add(List<Section> sections, Section section);
 	}
-
-
 }
