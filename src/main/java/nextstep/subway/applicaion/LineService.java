@@ -71,9 +71,10 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = getStation(sectionRequest.getUpStationId());
         Station downStation = getStation(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_FOUND_LINE));
 
-        line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        lineRepository.findById(lineId)
+                      .orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_FOUND_LINE))
+                      .addSection(upStation, downStation, sectionRequest.getDistance());
     }
 
     private Station getStation(Long stationId) {
