@@ -136,4 +136,8 @@ public class Sections {
         return values.stream()
                 .allMatch(section -> section.isMissMatchDownStation(station));
     }
+
+    public List<Section> toList() {
+        return Collections.unmodifiableList(values);
+    }
 }
