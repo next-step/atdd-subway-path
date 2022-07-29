@@ -1,6 +1,6 @@
 package nextstep.subway.config;
 
-import nextstep.subway.exception.DuplicatedStationException;
+import nextstep.subway.exception.InvalidDistanceBetweenStationsException;
 import nextstep.subway.exception.NoLastStationException;
 import nextstep.subway.exception.SectionRegistrationException;
 import nextstep.subway.exception.SectionRemovalException;
@@ -35,9 +35,9 @@ public class SubwayExceptionHandler {
                 .body(errorResponse);
     }
 
-    @ExceptionHandler({DuplicatedStationException.class})
-    public ResponseEntity<ErrorResponse> duplicatedStationException(DuplicatedStationException e) {
-        final ErrorResponse errorResponse = new ErrorResponse(DuplicatedStationException.class.getName(), e.getMessage());
+    @ExceptionHandler({InvalidDistanceBetweenStationsException.class})
+    public ResponseEntity<ErrorResponse> invalidDistanceBetweenStationsException(InvalidDistanceBetweenStationsException e) {
+        final ErrorResponse errorResponse = new ErrorResponse(InvalidDistanceBetweenStationsException.class.getName(), e.getMessage());
         return ResponseEntity.badRequest()
                 .body(errorResponse);
     }

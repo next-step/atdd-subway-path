@@ -35,6 +35,7 @@ public class GivenUtils {
     public static final String 역삼역_이름 = "역삼역";
     public static final String 양재역_이름 = "양재역";
     public static final String 선릉역_이름 = "선릉역";
+    public static final String 교대역_이름 = "교대역";
     public static final List<String> 이호선역_이름들 = List.of(강남역_이름, 역삼역_이름);
     public static final List<String> 신분당선역_이름들 = List.of(강남역_이름, 양재역_이름);
 
@@ -137,6 +138,36 @@ public class GivenUtils {
                 stationIds.get(stationIds.size() - 1),
                 downStationId,
                 TEN
+        );
+    }
+
+    public nextstep.subway.client.dto.SectionRegistrationRequest 선릉_역삼_구간_생성_요청(int distance) {
+        List<Long> stationIds = responseConverter.convertToIds(stationClient.fetchStations());
+        Long upStationId = responseConverter.convertToId(stationClient.createStation(선릉역_이름));
+        return new nextstep.subway.client.dto.SectionRegistrationRequest(
+                upStationId,
+                stationIds.get(stationIds.size() - 1),
+                distance
+        );
+    }
+
+    public nextstep.subway.client.dto.SectionRegistrationRequest 교대_강남_구간_생성_요청() {
+        List<Long> stationIds = responseConverter.convertToIds(stationClient.fetchStations());
+        Long upStationId = responseConverter.convertToId(stationClient.createStation(교대역_이름));
+        return new nextstep.subway.client.dto.SectionRegistrationRequest(
+                upStationId,
+                stationIds.get(0),
+                TEN
+        );
+    }
+
+    public nextstep.subway.client.dto.SectionRegistrationRequest 강남_교대_구간_생성_요청(int distance) {
+        List<Long> stationIds = responseConverter.convertToIds(stationClient.fetchStations());
+        Long downStationId = responseConverter.convertToId(stationClient.createStation(교대역_이름));
+        return new nextstep.subway.client.dto.SectionRegistrationRequest(
+                stationIds.get(0),
+                downStationId,
+                distance
         );
     }
 
