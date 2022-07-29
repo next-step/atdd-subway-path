@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static nextstep.subway.steps.LineSectionSteps.*;
+import static nextstep.subway.steps.StationSteps.지하철역_삭제_요청;
 import static nextstep.subway.steps.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -74,9 +75,21 @@ class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("출발역과 도착역이 이어져있지 않으면 경로 조회를 할 수 없다.")
     @Test
     void 경로_조회_예외2() {
+        // when
         Long 새로운역 = 지하철역_생성_요청("새로운역").jsonPath().getLong("id");
 
+        // then
         경로를_조회할_수_없다(새로운역, 교대역);
+    }
+
+    @DisplayName("존재하지 않는 역에대해 경로 조회를 할 수 없다.")
+    @Test
+    void 경로_조회_예외3() {
+        // when
+        Long 제거역 = 지하철역을_생성했다가_제거한다("삭제역");
+
+        // then
+        경로를_조회할_수_없다(제거역, 강남역);
     }
 
     private void 경로를_조회할_수_없다(Long source, Long target) {
@@ -100,6 +113,17 @@ class PathAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getInt("distance")).isEqualTo(distance);
         assertThat(response.jsonPath().getList("stations.id", Long.class))
                 .containsExactly(stationIds);
+    }
+
+    private Long 지하철역을_생성했다가_제거한다(String name) {
+        var createResponse = 지하철역_생성_요청(name);
+        assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        Long 제거역 = createResponse.jsonPath().getLong("id");
+        var response = 지하철역_삭제_요청(제거역);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        return 제거역;
     }
 
     private Map<String, String> createPathParams(Long source, Long target) {
