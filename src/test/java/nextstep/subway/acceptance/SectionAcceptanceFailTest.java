@@ -9,8 +9,7 @@ import org.springframework.http.HttpStatus;
 
 import java.util.Map;
 
-import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
-import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
+import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.SectionSteps.createLineCreateParams;
 import static nextstep.subway.acceptance.SectionSteps.createSectionCreateParams;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
@@ -96,4 +95,34 @@ class SectionAcceptanceFailTest extends AcceptanceTest {
         assertThat(구간_생성_요청_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * When 구간이 1개인 지하철 노선의 제거를 요청 하면
+     * Then BAD_REQUEST가 반환된다.
+     */
+    @DisplayName("구간이 하나인 노선의 구간을 삭제하려면 실패한다.")
+    @Test
+    void removeLineSection() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 노선에 등록되어있지 않은 역으로 구간을 제거하려하면
+     * Then 오류가 발생한다.
+     */
+    @DisplayName("구간이 하나인 노선의 구간을 삭제하려면 실패한다.")
+    @Test
+    void removeSectionWithNotRegisteredStation() {
+        // given
+        long 등록되어_있지_않은_역 = 지하철역_생성_요청("등록되어 있지 않은 역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 등록되어_있지_않은_역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

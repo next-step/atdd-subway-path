@@ -1,9 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.AlreadyRegisteredException;
-import nextstep.subway.exception.CannotInsertLongerSectionException;
-import nextstep.subway.exception.CannotInsertSameDistanceSectionException;
-import nextstep.subway.exception.CannotRegisterWithoutRegisteredStation;
+import nextstep.subway.exception.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -63,6 +60,7 @@ class SectionsTest {
 		//then
 		assertAll(
 				() -> assertThat(stations).hasSize(3),
+				() -> assertThat(stations).containsExactly(광교역, 광교중앙역, 판교역),
 				() -> assertThat(sectionsResponse.get(0).getDistance()).isEqualTo(3),
 				() -> assertThat(sectionsResponse.get(1).getDistance()).isEqualTo(7)
 		);
@@ -88,6 +86,7 @@ class SectionsTest {
 		//then
 		assertAll(
 				() -> assertThat(stations).hasSize(3),
+				() -> assertThat(stations).containsExactly(광교역, 광교중앙역, 판교역),
 				() -> assertThat(sectionsResponse.get(0).getDistance()).isEqualTo(7),
 				() -> assertThat(sectionsResponse.get(1).getDistance()).isEqualTo(3)
 		);
@@ -185,6 +184,7 @@ class SectionsTest {
 		//then
 		assertAll(
 				() -> assertThat(stations).hasSize(3),
+				() -> assertThat(stations).containsExactly(신사역, 광교역, 판교역),
 				() -> assertThat(sectionsResponse.get(0).getDistance()).isEqualTo(3),
 				() -> assertThat(sectionsResponse.get(1).getDistance()).isEqualTo(10)
 		);
@@ -237,16 +237,57 @@ class SectionsTest {
 	}
 
 	/**
-	 * When section이 한 개가 있는 sections에서 upstaion으로 삭제를 시도하면
-	 * Then IllegalArgumentException이 발생한다.
+	 * Given sections에 section을 추가한다.
+	 * When sections에서 가운데에 있는 역을 제거하면
+	 * Then 성공한다.
 	 */
-	@DisplayName("UpStation으로 섹션을 삭제할 수 없다.")
+	@DisplayName("구간 가운데에 있는 역을 제거할 수 있다.")
 	@Test
-	void removeSectionsFail() {
+	void removeSectionInTheMiddle() {
+		//given
+		Station 광교중앙역 = new Station("광교중앙역");
+		신분당선에_구간을_추가한다(광교역, 광교중앙역, 2);
+
+		//when
+		sections.removeSection(광교중앙역);
+
+		//then
+		List<Section> sections = this.sections.getSections();
+		List<Station> stations = this.sections.getStations();
+
+		assertAll(
+				() -> assertThat(sections).hasSize(1),
+				() -> assertThat(sections.get(0).getDistance()).isEqualTo(광교역_판교역_거리),
+				() -> assertThat(stations).containsExactly(광교역, 판교역)
+		);
+	}
+
+	/**
+	 * When section이 한 개가 있는 sections에서 삭제를 시도하면
+	 * Then CannotRemoveLastSectionException이 발생한다.
+	 */
+	@DisplayName("구간이 하나인 노선의 구간을 삭제할 수 없다.")
+	@Test
+	void removeSectionsFailOnLastSection() {
 		//when
 		//then
-		assertThatThrownBy(() -> sections.removeSection(광교역))
-				.isInstanceOf(IllegalArgumentException.class);
+		assertAll(
+				() -> assertThatThrownBy(() -> sections.removeSection(광교역))
+				.isInstanceOf(CannotRemoveLastSectionException.class),
+				() -> assertThatThrownBy(() -> sections.removeSection(광교역))
+				.isInstanceOf(CannotRemoveLastSectionException.class)
+		);
+	}
+
+	// When 노선에 등록되어 있지 않은 역으로 구간을 삭제하려하면
+	// Then IllegalArgumentException 발생한다.
+	@DisplayName("등록되어있지 않은 역을 제거하려면 실패한다.")
+	@Test
+	void removeSectionFailOnNotRegisteredSection() {
+	    //when
+	    //then
+		assertThatThrownBy(() -> sections.removeSection(new Station("등록되어 있지 않은 역")))
+				.isInstanceOf(CannotRemoveSectionException.class);
 	}
 
 	private void 신분당선에_구간을_추가한다(Station upStation, Station downStation, int distance) {

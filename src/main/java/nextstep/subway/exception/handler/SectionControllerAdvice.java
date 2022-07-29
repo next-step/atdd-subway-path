@@ -1,13 +1,14 @@
 package nextstep.subway.exception.handler;
 
 import nextstep.subway.exception.*;
+import nextstep.subway.ui.LineController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import static nextstep.subway.exception.ErrorCode.*;
 
-@RestControllerAdvice
+@RestControllerAdvice(assignableTypes = LineController.class)
 public class SectionControllerAdvice {
 
 	@ExceptionHandler(CannotInsertLongerSectionException.class)
@@ -28,5 +29,15 @@ public class SectionControllerAdvice {
 	@ExceptionHandler(CannotRegisterWithoutRegisteredStation.class)
 	public ResponseEntity<Void> withoutRegisteredStationExceptionHandler() {
 		return ResponseEntity.status(CANNOT_REGISTER_WITHOUT_REGISTERED_STATIONS.getStatus()).build();
+	}
+
+	@ExceptionHandler(CannotRemoveLastSectionException.class)
+	public ResponseEntity<Void> cannotRemoveLastSectionExceptionHandler() {
+		return ResponseEntity.status(CANNOT_REMOVE_LAST_SECTION.getStatus()).build();
+	}
+
+	@ExceptionHandler(CannotRemoveSectionException.class)
+	public ResponseEntity<Void> cannotRemoveSectionException() {
+		return ResponseEntity.status(CANNOT_REMOVE_SECTION.getStatus()).build();
 	}
 }
