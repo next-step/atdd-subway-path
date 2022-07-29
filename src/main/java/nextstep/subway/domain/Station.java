@@ -27,6 +27,10 @@ public class Station {
         this.name = name;
     }
 
+    public boolean isMatchId(Long stationId) {
+        return id.equals(stationId);
+    }
+
     public Long getId() {
         return id;
     }

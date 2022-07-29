@@ -10,6 +10,7 @@ import java.util.List;
 
 import static nextstep.subway.domain.fixture.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class PathGraphTest {
 
@@ -45,7 +46,7 @@ class PathGraphTest {
         PathGraph pathGraph = PathGraph.valueOf(createLines(line));
 
         // when
-        assertThatThrownBy(() -> pathGraph.findShortPath(GANGNAM_STATION, GANGNAM_STATION))
+        assertThatThrownBy(() -> pathGraph.findShortPath(GANGNAM_STATION.getId(), GANGNAM_STATION.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -62,9 +63,32 @@ class PathGraphTest {
         PathGraph pathGraph = PathGraph.valueOf(createLines(greenLine, orangeLine));
 
         // when
-        assertThatThrownBy(() -> pathGraph.findShortPath(GANGNAM_STATION, NAMBU_BUS_TERMINAL_STATION))
+        assertThatThrownBy(() -> pathGraph.findShortPath(GANGNAM_STATION.getId(), NAMBU_BUS_TERMINAL_STATION.getId()))
                 .isInstanceOf(NotConnectedPathException.class)
                 .hasMessage("출발역과 도착역이 연결되어 있지 않습니다. 출발역=강남역, 도착역=남부터미널역");
+    }
+
+    @Test
+    @DisplayName("출발역과 도착역이 모두 노선에 등록되어 있어야한다.")
+    void not_found_source() {
+        // given
+        Line greenLine = new Line("2호선", "bg-green-600");
+        greenLine.addSection(GANGNAM_STATION, YEOKSAM_STATION, 10);
+
+        Line orangeLine = new Line("3호선", "bg-orange-600");
+        orangeLine.addSection(YANGJAE_STATION, NAMBU_BUS_TERMINAL_STATION, 10);
+
+        PathGraph pathGraph = PathGraph.valueOf(createLines(greenLine, orangeLine));
+
+        // when
+        assertAll(() -> {
+            assertThatThrownBy(() -> pathGraph.findShortPath(GANGNAM_STATION.getId(), YANGJAE_STATION.getId()))
+                    .isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> pathGraph.findShortPath(YANGJAE_STATION.getId(), GANGNAM_STATION.getId()))
+                    .isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> pathGraph.findShortPath(YANGJAE_STATION.getId(), SEOLLEUNG_STATION.getId()))
+                    .isInstanceOf(IllegalArgumentException.class);
+        });
     }
 
     private Lines createLines(Line... lines) {

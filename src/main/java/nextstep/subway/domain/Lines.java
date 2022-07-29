@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Lines {
@@ -13,6 +14,13 @@ public class Lines {
 
     public boolean hasLessThanStations(int stationCount) {
         return getStations().size() < stationCount;
+    }
+
+    public Station findStation(Long stationId) {
+        return getStations().stream()
+                .filter(station -> station.isMatchId(stationId))
+                .findAny()
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     public List<Station> getStations() {

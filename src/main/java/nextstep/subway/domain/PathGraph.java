@@ -45,13 +45,16 @@ public class PathGraph {
         }
     }
 
-    public Path findShortPath(Station source, Station target) {
-        if (source.equals(target)) {
+    public Path findShortPath(Long source, Long target) {
+        Station sourceStation = lines.findStation(source);
+        Station targetStation = lines.findStation(target);
+        if (sourceStation.equals(targetStation)) {
             throw new IllegalArgumentException();
         }
-        GraphPath path = dijkstraShortestPath.getPath(source, target);
+
+        GraphPath path = dijkstraShortestPath.getPath(sourceStation, targetStation);
         if (path == null) {
-            throw new NotConnectedPathException(source.getName(), target.getName());
+            throw new NotConnectedPathException(sourceStation.getName(), targetStation.getName());
         }
 
         return null;
