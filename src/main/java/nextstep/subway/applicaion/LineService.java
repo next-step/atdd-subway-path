@@ -4,10 +4,13 @@ import nextstep.subway.applicaion.dto.request.LineRequest;
 import nextstep.subway.applicaion.dto.response.LineResponse;
 import nextstep.subway.applicaion.dto.request.SectionRequest;
 import nextstep.subway.applicaion.dto.response.StationResponse;
+import nextstep.subway.applicaion.exceptions.DataNotFoundException;
+import nextstep.subway.applicaion.exceptions.InvalidStationParameterException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.enums.exceptions.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,12 +47,12 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        return createLineResponse(lineRepository.findById(id).orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_FOUND_LINE)));
     }
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(id).orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_FOUND_LINE));
 
         if (lineRequest.getName() != null) {
             line.setName(lineRequest.getName());
@@ -68,7 +71,7 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_FOUND_LINE));
 
         line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
@@ -100,11 +103,11 @@ public class LineService {
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_FOUND_LINE));
         Station station = stationService.findById(stationId);
 
         if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
+            throw new InvalidStationParameterException(ErrorCode.IS_NOT_SAME_LAST_STATION);
         }
 
         line.getSections().remove(line.getSections().size() - 1);
