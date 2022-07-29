@@ -28,6 +28,10 @@ public class Graph {
     }
 
     public Path findShortestPath(Long source, Long target) {
+        if (source.equals(target)) {
+            throw new IllegalArgumentException();
+        }
+        
         GraphPath<Long, DefaultWeightedEdge> shortestPath
                 = new DijkstraShortestPath<>(graph).getPath(source, target);
 
