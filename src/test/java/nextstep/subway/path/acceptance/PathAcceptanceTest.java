@@ -63,7 +63,7 @@ class PathAcceptanceTest extends AcceptanceTest {
                 () -> 경로_조회_정보가_일치한다(경로_조회_요청(교대역, 남부터미널역), 2, 교대역, 남부터미널역)
         );
     }
-    
+
     @DisplayName("출발역과 도착역이 같다면 경로 조회를 할 수 없다.")
     @Test
     void 경로_조회_예외1() {
