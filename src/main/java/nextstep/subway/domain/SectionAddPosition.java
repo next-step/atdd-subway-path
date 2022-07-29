@@ -12,7 +12,7 @@ public enum SectionAddPosition {
 			.findFirst()
 			.orElse(0);
 		if(sections.get(index).getDistance() <= section.getDistance()) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("The distance is too large");
 		}
 		sections.add(index, section);
 	});
@@ -42,12 +42,12 @@ public enum SectionAddPosition {
 
 		// 상행과 하행이 모두 새로운 역이면 에러
 		if(!sections.getStations().contains(section.getUpStation()) && !sections.getStations().contains(section.getDownStation())) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Station does not match");
 		}
 
 		// 상행과 하행이 모두 등록되어 있으면 에러
 		if(sections.getStations().contains(section.getUpStation()) && sections.getStations().contains(section.getDownStation())) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("This section already exists");
 		}
 	}
 

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 
 public class LineResponse {
@@ -35,7 +34,7 @@ public class LineResponse {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getStations();
+        List<Station> stations = line.getOrderedStations();
 
         return stations.stream()
             .map(StationResponse::from)

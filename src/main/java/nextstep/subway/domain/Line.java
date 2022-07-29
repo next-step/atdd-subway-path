@@ -44,6 +44,10 @@ public class Line {
         return this.sections.getStations();
 	}
 
+	public List<Station> getOrderedStations() {
+		return this.sections.getOrderedStations();
+	}
+
 	public void removeSection(Station station) {
 		this.sections.remove(station);
 	}
@@ -57,7 +61,7 @@ public class Line {
 		}
 	}
 
-	public Boolean isSectionEmpty() {
+	public boolean isSectionEmpty() {
 		return this.sections.isEmpty();
 	}
 }

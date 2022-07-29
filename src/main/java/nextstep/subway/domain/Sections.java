@@ -24,20 +24,36 @@ public class Sections {
 	}
 
 	public List<Station> getStations() {
-		List<Station> stations = this.sections.stream().map(Section::getDownStation).collect(Collectors.toList());
-		stations.add(0, this.sections.get(0).getUpStation());
+		return getStations(this.sections);
+	}
+
+	public List<Station> getStations(List<Section> sections) {
+		List<Station> stations = sections.stream().map(Section::getDownStation).collect(Collectors.toList());
+		stations.add(0, sections.get(0).getUpStation());
 		return stations;
+	}
+
+	public List<Station> getOrderedStations() {
+		Sections orderedSections = new Sections();
+		SectionAddPosition sectionPosition;
+
+		for(Section section: sections) {
+			sectionPosition = SectionAddPosition.from(orderedSections, section);
+			sectionPosition.add(orderedSections.getSections(), section);
+		}
+
+		return getStations(orderedSections.getSections());
 	}
 
 	public void remove(Station station) {
 		int count = this.sections.size();
 		if(count <= 1) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("There is no station");
 		}
 
 		Section lastSection = this.sections.get(count - 1);
 		if (!lastSection.getDownStation().equals(station)) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Station does not match");
 		}
 		this.sections.remove(lastSection);
 	}

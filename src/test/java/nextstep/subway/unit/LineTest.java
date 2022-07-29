@@ -1,6 +1,5 @@
 package nextstep.subway.unit;
 
-import static nextstep.subway.acceptance.LineSteps.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;

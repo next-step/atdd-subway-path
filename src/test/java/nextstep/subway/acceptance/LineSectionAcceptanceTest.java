@@ -91,7 +91,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
 
             // when
-            지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역));
+            지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 3));
 
             // then
             ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
@@ -107,8 +107,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         @Test
         void action_실패1() {
             // when AND then
-            assertThatThrownBy(()-> 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역)))
-                .isInstanceOf(IllegalArgumentException.class);
+            ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역));
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
 
         /**
@@ -124,8 +124,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             Long 판교역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
 
             // when AND then
-            assertThatThrownBy(()-> 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 판교역)))
-                .isInstanceOf(IllegalArgumentException.class);
+            ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 판교역));
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
 
         /**
@@ -140,8 +140,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
 
             // when AND then
-            assertThatThrownBy(()-> 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 100)))
-                .isInstanceOf(IllegalArgumentException.class);
+            ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 100));
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
     }
 
