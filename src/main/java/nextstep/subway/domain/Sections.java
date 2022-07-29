@@ -53,19 +53,6 @@ public class Sections {
         return addMiddleSection(section);
     }
 
-
-    public void deleteSection(Long stationId) {
-        if (sections.size() < 2) {
-            throw new IllegalArgumentException("하나 남은 노선은 삭제할 수 없습니다.");
-        }
-
-        if (!sections.get(sections.size() - 1).getDownStation().getId().equals(stationId)) {
-            throw new IllegalArgumentException("하핵역의 노선만 삭제할 수 있습니다.");
-        }
-
-        sections.remove(sections.size() - 1);
-    }
-
     public boolean addUpSection(Section section) {
         if (isMatchStation(section.getUpStation())) {
             throw new IllegalArgumentException("이미 존재하는 역입니다.");
@@ -90,7 +77,6 @@ public class Sections {
         return sections.add(section);
     }
 
-
     public boolean addMiddleSection(Section section) {
         boolean matchDownSection = isMatchStation(section.getDownStation());
         boolean matchUpSection = isMatchStation(section.getUpStation());
@@ -99,7 +85,7 @@ public class Sections {
             throw new IllegalArgumentException("이미 존재하는 역입니다.");
         }
 
-        Section findSection = matchDownSection ? findMatchDownSection(section.getDownStation()) : findMatchUpSection(section.getUpStation());
+        Section findSection = matchDownSection ? findMatchDownStation(section.getDownStation()) : findMatchUpStation(section.getUpStation());
         sections.remove(findSection);
         sections.add(new Section(section.getLine(), section.getUpStation(), section.getDownStation(), section.getDistance()));
 
@@ -112,11 +98,38 @@ public class Sections {
         return true;
     }
 
-    private Section findMatchUpSection(Station station) {
+    public void deleteSection(Station station) {
+        if (!isMatchStation(station)) {
+            throw new IllegalArgumentException("역이 존재하지 않습니다.");
+        }
+
+        if (sections.size() < 2) {
+            throw new IllegalArgumentException("하나 남은 노선은 삭제할 수 없습니다.");
+        }
+
+        if (station.equals(upTerminal())) {
+            sections.remove(ZERO);
+            return;
+        }
+
+        if (station.equals(downTerminal())) {
+            sections.remove(sections.size() - ONE);
+            return;
+        }
+
+        Section upSection = findMatchDownStation(station);
+        Section downSection = findMatchUpStation(station);
+
+        sections.add(new Section(downSection.getLine(), upSection.getUpStation(), downSection.getDownStation(), upSection.getDistance() + downSection.getDistance()));
+        sections.remove(upSection);
+        sections.remove(downSection);
+    }
+
+    private Section findMatchUpStation(Station station) {
         return sections.stream().filter(section -> isMatchStation(section.getUpStation(), station)).findFirst().orElseThrow(IllegalArgumentException::new);
     }
 
-    private Section findMatchDownSection(Station station) {
+    private Section findMatchDownStation(Station station) {
         return sections.stream().filter(section -> isMatchStation(section.getDownStation(), station)).findFirst().orElseThrow(IllegalArgumentException::new);
     }
 
