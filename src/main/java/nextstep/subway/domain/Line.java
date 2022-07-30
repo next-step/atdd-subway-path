@@ -1,9 +1,14 @@
 package nextstep.subway.domain;
 
+import lombok.Getter;
+import nextstep.subway.applicaion.exceptions.SectionNotEnoughException;
+import nextstep.subway.enums.exceptions.ErrorCode;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 @Entity
 public class Line {
     @Id
@@ -12,8 +17,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections;
 
     public Line() {
     }
@@ -21,33 +26,32 @@ public class Line {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+        this.sections = new Sections();
     }
 
-    public Long getId() {
-        return id;
+    public void addSection(Station upStation, Station downStation, int distance) {
+        sections.add(new Section(this, upStation, downStation, distance));
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
+    public void updateName(String name) {
         this.name = name;
     }
 
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
+    public void updateColor(String color) {
         this.color = color;
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
+    }
+
+    public List<Station> getStation() {
+        return sections.getStation();
+    }
+
+    public void removeSection(Station lastStation) {
+        if (sections.getSections().size() < 2)
+            throw new SectionNotEnoughException(ErrorCode.NOT_ENOUGH_SECTION);
+        sections.removeSection(lastStation);
     }
 }

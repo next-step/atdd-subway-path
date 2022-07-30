@@ -1,4 +1,4 @@
-package nextstep.subway.applicaion.dto;
+package nextstep.subway.applicaion.dto.request;
 
 public class LineRequest {
     private String name;
@@ -27,3 +27,4 @@ public class LineRequest {
         return distance;
     }
 }
+
