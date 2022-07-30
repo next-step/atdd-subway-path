@@ -2,6 +2,8 @@ package nextstep.subway.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import nextstep.subway.exception.CustomException;
+import nextstep.subway.exception.code.CommonCode;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -45,6 +47,22 @@ public class Section {
         this.distance = distance;
     }
 
+    public void minus(Section section){
+        if (this.equals(section)){
+            return;
+        }
+        if(distance <= section.distance){
+            throw new CustomException(CommonCode.PARAM_INVALID);
+        }
+        if (downStation.equals(section.downStation)){
+            downStation = section.upStation;
+        }
+        if (upStation.equals(section.upStation)){
+            upStation = section.downStation;
+        }
+        distance -= section.getDistance();
+    }
+
     public List<Station> getAllStation() {
         return List.of(upStation, downStation);
     }
@@ -58,7 +76,7 @@ public class Section {
             return false;
         }
         final Section section = (Section) o;
-        return Objects.equals(id, section.id) ||
+        return Objects.equals(id, section.id) &&
                Objects.equals(line, section.line) &&
                Objects.equals(upStation, section.upStation) &&
                Objects.equals(downStation, section.downStation);

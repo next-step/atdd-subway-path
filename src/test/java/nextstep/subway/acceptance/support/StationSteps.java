@@ -1,4 +1,4 @@
-package nextstep.subway.acceptance;
+package nextstep.subway.acceptance.support;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -19,5 +19,9 @@ public class StationSteps {
                 .post("/stations")
                 .then().log().all()
                 .extract();
+    }
+
+    public static Long 지하철역_생성_요청후_식별자_반환(String name){
+        return 지하철역_생성_요청(name).jsonPath().getLong("id");
     }
 }

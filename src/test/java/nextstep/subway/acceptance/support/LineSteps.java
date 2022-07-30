@@ -1,4 +1,4 @@
-package nextstep.subway.acceptance;
+package nextstep.subway.acceptance.support;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -49,6 +49,10 @@ public class LineSteps {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all().extract();
+    }
+
+    public static Long 지하철_노선_생성_요청후_식별자_반환(Map<String, String> params){
+        return 지하철_노선_생성_요청(params).jsonPath().getLong("id");
     }
 
     public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청(Long lineId, Map<String, String> params) {
