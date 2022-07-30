@@ -119,7 +119,6 @@ class LineTest {
         assertThat(신분당선.sections().size()).isEqualTo(1);
     }
 
-
     @DisplayName("하행역 삭제")
     @Test
     void removeSection() {
@@ -127,5 +126,14 @@ class LineTest {
         신분당선.addSection(신논현역, 강남역, 5);
         신분당선.deleteSection(강남역);
         assertThat(신분당선.sections().size()).isEqualTo(1);
+    }
+
+    @DisplayName("중간역 삭제")
+    @Test
+    void deleteMiddleSection() {
+        신분당선.addSection(논현역, 신논현역, 5);
+        신분당선.addSection(신논현역, 강남역, 5);
+        신분당선.deleteSection(신논현역);
+        assertThat(신분당선.stations()).containsExactly(논현역, 강남역);
     }
 }

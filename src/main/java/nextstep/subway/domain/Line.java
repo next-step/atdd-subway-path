@@ -45,15 +45,16 @@ public class Line {
     }
 
     public void deleteSection(Station station) {
-        this.sections.delete(station);
+        this.sections.delete(station, this);
     }
+
     public Station upStation(Station station) {
         return this.sections.upStation();
     }
+
     public Station downStation(Station station) {
         return this.sections.downStation();
     }
-
     public List<Station> stations() {
         return sections.stations();
     }

@@ -192,7 +192,7 @@ public class Sections {
         return this.sections.stream().anyMatch(section -> section.getUpStation().equals(upStation));
     }
 
-    public void delete(Station station) {
+    public void delete(Station station, Line line) {
         if (isFirstUpStation(station)) {
             deleteFirstStation(station);
             return;
@@ -201,18 +201,28 @@ public class Sections {
             deleteLastStation(station);
             return;
         }
-        deleteMiddleStation(station);
+        deleteMiddleStation(station, line);
     }
 
-    private void deleteMiddleStation(Station station) {
+    private void deleteMiddleStation(Station station, Line line) {
+
+        Section upSection = null;
+        Section downSection = null;
+
+        int size = this.sections.size();
+        List<Section> deleteSections = new ArrayList<>();
         for (Section section : this.sections) {
             if (section.getUpStation().equals(station)) {
-                this.sections.remove(section);
+                deleteSections.add(section);
+                downSection = section;
             }
             if (section.getDownStation().equals(station)) {
-                this.sections.remove(section);
+                deleteSections.add(section);
+                upSection = section;
             }
         }
+        this.sections.removeAll(deleteSections);
+        this.sections.add(new Section(line, upSection.getUpStation(), downSection.getDownStation(), upSection.getDistance() + downSection.getDistance()));
     }
 
     private void deleteLastStation(Station station) {
@@ -222,7 +232,7 @@ public class Sections {
     private boolean isLastStation(Station station) {
         Station lastStation = station;
         for (Section section : this.sections) {
-            if (isDownStation(lastStation, section)) {
+            if (isUpStation(lastStation, section)) {
                 lastStation = section.getDownStation();
             }
         }
