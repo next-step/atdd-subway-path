@@ -91,9 +91,7 @@ class PathGraphTest {
                     .isInstanceOf(IllegalArgumentException.class);
         });
     }
-
-    // 순환구조 , 환승구조, 단일 노선
-
+    
     /**
      * 양재역  ---  *3호선*  ---  남부터미널역  ---  *3호선*  ---  교대역
      */
