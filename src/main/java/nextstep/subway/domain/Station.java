@@ -33,6 +33,10 @@ public class Station {
         return name;
     }
 
+    public boolean isEqualToId(final long stationId) {
+        return id.equals(stationId);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
