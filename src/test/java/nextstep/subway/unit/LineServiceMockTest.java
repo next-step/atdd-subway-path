@@ -36,7 +36,7 @@ public class LineServiceMockTest {
         lineService = new LineService(lineRepository, stationService);
     }
 
-    @DisplayName("구간 등록하기")
+    @DisplayName("지하철 노선의 구간 사이에 구간 등록하기")
     @Test
     void addSection() {
 
@@ -64,6 +64,46 @@ public class LineServiceMockTest {
         // then
         Line 반환된_신분당선 = lineService.findLineById(신분당선.getId());
         assertThat(반환된_신분당선.sectionSize()).isEqualTo(2);
+    }
+
+    @DisplayName("지하철 노선 사이에 구간 등록 시 기존 구간의 거리보다 클 경우")
+    @Test
+    void InternalServerErrorIfAddSectionExistSectionGreatorThanSectionDistance() {
+
+    }
+
+    @DisplayName("지하철 노선 사이에 구간 등록 시 기존 구간의 거리와 동일할 경우")
+    void InternalServerErrorIfAddSectionExistSectionEqualsThanSectionDistance() {
+
+    }
+
+    @DisplayName("지하철 노선 사이에 구간 등록 시 구간의 거리가 0 혹은 음수일경우")
+    void InternalServerErrorIfAddSectionDistanceZeroOrNegative() {
+
+    }
+
+    @DisplayName("지하철 노선의 구간과 등록할 구간이 같을경우")
+    void InternalServerErrorIfEqualsAddSection() {
+
+    }
+    @DisplayName("지하철 노선의 구간 가장 상위 구간에 구간을 등록할 경우")
+    void addSectionToTopSection() {
+
+    }
+
+    @DisplayName("지하철 노선의 구간 가장 하위 구간에 구간을 등록할 경우")
+    void addSectionToDownSection() {
+
+    }
+
+    @DisplayName("지하철 노선의 구간 중 일치하지 않은 상행, 하행을 가진 구간을 등록할 경우")
+    void InternalServerErrorIfNotHasStations() {
+
+    }
+
+    @DisplayName("노선의 모든 지하철역 조회")
+    void getStations() {
+
     }
 
     @DisplayName("구간 제거하기")

@@ -64,11 +64,11 @@ public class LineService {
     }
 
     @Transactional
-    public void addSection(Long lineId, SectionRequest sectionRequest) {
+    public boolean addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = findLineById(lineId);
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        line.addSection(upStation, downStation, sectionRequest.getDistance());
+        return line.addSection(upStation, downStation, sectionRequest.getDistance());
     }
 
     private LineResponse createLineResponse(Line line) {
