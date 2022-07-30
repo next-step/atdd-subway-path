@@ -3,11 +3,11 @@ package nextstep.subway.applicaion.dto;
 import java.util.List;
 
 public class PathResponse {
-	private final List<StationResponse> stationResponseList;
+	private final List<StationResponse> stations;
 	private final int distance;
 
-	private PathResponse(List<StationResponse> stationResponseList, int distance) {
-		this.stationResponseList = stationResponseList;
+	private PathResponse(List<StationResponse> stations, int distance) {
+		this.stations = stations;
 		this.distance = distance;
 	}
 
@@ -15,8 +15,8 @@ public class PathResponse {
 		return new PathResponse(stationResponseList, distance);
 	}
 
-	public List<StationResponse> getStationResponseList() {
-		return this.stationResponseList;
+	public List<StationResponse> getStations() {
+		return this.stations;
 	}
 
 	public int getDistance() {
