@@ -57,7 +57,7 @@ public class Section {
         return this.downStation.equals(station);
     }
 
-    public boolean isFirstStation(Station station) {
+    public boolean isUpStation(Station station) {
         return this.upStation.equals(station);
     }
 }

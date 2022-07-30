@@ -55,11 +55,12 @@ class LineTest {
     void removeSection() {
         // Given
         이호선.addSection(이호선, 서울대입구역, 낙성대역, 10);
+        이호선.addSection(이호선, 낙성대역, 사당역, 10);
 
         // When
-        이호선.deleteStation(낙성대역);
+        이호선.deleteStation(사당역);
 
         // Then
-        assertThat(이호선.isEmptySections()).isTrue();
+        assertThat(이호선.getStations()).containsExactly(서울대입구역, 낙성대역);
     }
 }

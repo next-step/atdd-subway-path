@@ -3,10 +3,10 @@ package nextstep.subway.applicaion.dto;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+
+import static nextstep.subway.applicaion.dto.StationResponse.createStationResponses;
 
 public class LineResponse {
     private Long id;
@@ -33,18 +33,6 @@ public class LineResponse {
         );
     }
 
-    private static List<StationResponse> createStationResponses(Line line) {
-        if (line.isEmptySections()) {
-            return Collections.emptyList();
-        }
-
-        List<Station> stations = line.getStations();
-
-        return stations.stream()
-                .map(StationResponse::of)
-                .collect(Collectors.toList());
-    }
-
     public static LineResponse from(Line line, List<Station> stations) {
         LineResponse lineResponse = new LineResponse(
                 line.getId(),
@@ -54,13 +42,6 @@ public class LineResponse {
                 createStationResponses(stations)
         );
         return lineResponse;
-    }
-
-    public static List<StationResponse> createStationResponses(List<Station> stations) {
-        List<StationResponse> collect = stations.stream()
-                .map(it -> new StationResponse(it.getId(), it.getName()))
-                .collect(Collectors.toList());
-        return collect;
     }
 
     public Long getId() {

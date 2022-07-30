@@ -39,20 +39,16 @@ public class Sections {
 
         validateExceptionCase(newUpStation, newDownStation);
 
-        for (Section section : this.sections) {
-            Station upStation = section.getUpStation();
-            Station downStation = section.getDownStation();
-            int distance = section.getDistance();
+        if (isNewUpStation(newUpStation, newDownStation) || isNewDownStation(newUpStation, newDownStation)) {
+            this.sections.add(newSection);
+            return;
+        }
 
-            if (isNewStationInBetween(newUpStation, newDownStation, upStation, downStation, newDistance, distance)) {
+        for (Section section : this.sections) {
+            if (isNewStationInBetween(newUpStation, newDownStation, newDistance, section)) {
                 this.sections.remove(section);
                 this.sections.add(new Section(section.getLine(), newUpStation, newDownStation, newDistance));
-                this.sections.add(new Section(section.getLine(), newDownStation, downStation, distance - newDistance));
-                return;
-            }
-
-            if (isNewUpStation(newUpStation, newDownStation) || isNewDownStation(newUpStation, newDownStation)) {
-                this.sections.add(newSection);
+                this.sections.add(new Section(section.getLine(), newDownStation, section.getDownStation(), section.getDistance() - newDistance));
                 return;
             }
         }
@@ -68,7 +64,10 @@ public class Sections {
         return newDownStation.equals(this.findFirstStation()) && !getStations().contains(newUpStation);
     }
 
-    private boolean isNewStationInBetween(Station newUpStation, Station newDownStation, Station upStation, Station downStation, int newDistance, int distance) {
+    private boolean isNewStationInBetween(Station newUpStation, Station newDownStation, int newDistance, Section section) {
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+        int distance = section.getDistance();
         return (upStation.equals(newUpStation) && !downStation.equals(newDownStation) && newDistance < distance) || (downStation.equals(newDownStation) && !upStation.equals(newUpStation) && newDistance < distance);
     }
 
@@ -107,67 +106,141 @@ public class Sections {
         Station firstStation = findFirstStation();
         Station lastStation = findLastStation();
 
-        List<Station> list = new ArrayList<>();
-        list.add(firstStation);
+        List<Station> stationsInOrder = new ArrayList<>();
+        stationsInOrder.add(firstStation);
         Station nextStation = firstStation;
         while (!nextStation.equals(lastStation)) {
-            for (Section section : this.sections) {
-                if (section.getUpStation()
-                        .equals(nextStation)) {
-                    nextStation = section.getDownStation();
-                    list.add(nextStation);
-                }
+            nextStation = findAndAddNextStation(stationsInOrder, nextStation);
+        }
+        return stationsInOrder;
+    }
+
+    private Station findAndAddNextStation(List<Station> list, Station nextStation) {
+        for (Section section : this.sections) {
+            if (section.getUpStation()
+                    .equals(nextStation)) {
+                nextStation = section.getDownStation();
+                list.add(nextStation);
+                return nextStation;
             }
         }
-        return list;
+        throw new BusinessException("NextStation 을 찾을 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     public void deleteStation(Station station) {
-        if (!this.getLastSection()
-                .getDownStation()
-                .equals(station)) {
-            throw new IllegalArgumentException();
+        validateDeleteStationCondition(station);
+
+        if (isFirstStation(station)) {
+            removeUpStation(station);
+            return;
         }
 
-        this.sections.remove(getLastSection());
+        if (isLastStation(station)) {
+            removeDownStation(station);
+            return;
+        }
+
+        if (isMiddleStation(station)) {
+            removeMiddleStation(station);
+            return;
+        }
+
+        throw new BusinessException("해당 지하철 노선에서 지하철역을 삭제할 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private void validateDeleteStationCondition(Station station) {
+        if (this.sections.size() <= 1) {
+            throw new BusinessException("해당 지하철 노선에 지하철 구간이 하나밖에 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (isNotIncludedStation(station)) {
+            throw new BusinessException("해당 지하철 노선에 등록되지 않은 역입니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private boolean isNotIncludedStation(Station station) {
+        return !this.getStations()
+                .contains(station);
+    }
+
+    private void removeMiddleStation(Station station) {
+        Section upSection = removeUpSectionNearStation(station);
+        Section downSection = removeDownSectionNearStation(station);
+
+        Line line = upSection.getLine();
+        Station upStation = upSection.getUpStation();
+        Station downStation = downSection.getDownStation();
+        int newDistance = upSection.getDistance() + downSection.getDistance();
+        this.sections.add(new Section(line, upStation, downStation, newDistance));
+    }
+
+    private Section removeUpSectionNearStation(Station station) {
+        Section upSection = findUpSection(station);
+        this.sections.remove(upSection);
+        return upSection;
+    }
+
+    private Section removeDownSectionNearStation(Station station) {
+        Section downSection = findDownSection(station);
+        this.sections.remove(downSection);
+        return downSection;
+    }
+
+    private void removeUpStation(Station firstStation) {
+        Section firstSection = findDownSection(firstStation);
+        sections.remove(firstSection);
+    }
+
+    private Section findDownSection(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.isUpStation(station))
+                .findAny()
+                .orElseThrow(IllegalStateException::new);
+    }
+
+    private void removeDownStation(Station lastStation) {
+        Section lastSection = findUpSection(lastStation);
+        sections.remove(lastSection);
+    }
+
+    private Section findUpSection(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.isDownStation(station))
+                .findAny()
+                .orElseThrow(IllegalStateException::new);
     }
 
     private Station findFirstStation() {
-        List<Station> stations = this.getStations();
-        for (Station station : stations) {
-            if (isFirstStation(station)) {
-                return station;
-            }
-        }
-        throw new IllegalStateException();
+        return this.getStations()
+                .stream()
+                .filter(station -> isFirstStation(station))
+                .findAny()
+                .orElseThrow(IllegalStateException::new);
     }
 
     private boolean isFirstStation(Station station) {
-        for (Section section : this.sections) {
-            if (section.isDownStation(station)) {
-                return false;
-            }
-        }
-        return true;
+        return this.sections.stream()
+                .filter(section -> section.isDownStation(station))
+                .count() == 0;
     }
 
     private Station findLastStation() {
-        List<Station> stations = this.getStations();
-        for (Station station : stations) {
-            if (isLastStation(station)) {
-                return station;
-            }
-        }
-        throw new IllegalStateException();
+        return this.getStations()
+                .stream()
+                .filter(station -> isLastStation(station))
+                .findAny()
+                .orElseThrow(IllegalStateException::new);
     }
 
     private boolean isLastStation(Station station) {
-        for (Section section : this.sections) {
-            if (section.isFirstStation(station)) {
-                return false;
-            }
-        }
-        return true;
+        return this.sections.stream()
+                .filter(section -> section.isUpStation(station))
+                .count() == 0;
+    }
+
+    private boolean isMiddleStation(Station station) {
+        return this.getStations()
+                .contains(station) && !isFirstStation(station) && !isLastStation(station);
     }
 
     public int getDistance() {

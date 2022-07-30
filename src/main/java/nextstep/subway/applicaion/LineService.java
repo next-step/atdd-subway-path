@@ -3,16 +3,16 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static nextstep.subway.applicaion.dto.StationResponse.createStationResponses;
 
 @Service
 @Transactional(readOnly = true)
@@ -72,7 +72,7 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(IllegalArgumentException::new);
-                
+
         line.addSection(line, upStation, downStation, sectionRequest.getDistance());
     }
 
@@ -85,17 +85,6 @@ public class LineService {
                 createStationResponses(line)
         );
         return lineResponse;
-    }
-
-    private List<StationResponse> createStationResponses(Line line) {
-        if (line.isEmptySections()) {
-            return Collections.emptyList();
-        }
-        List<Station> stations = line.getStations();
-        List<StationResponse> collect = stations.stream()
-                .map(it -> stationService.createStationResponse(it))
-                .collect(Collectors.toList());
-        return collect;
     }
 
     @Transactional
