@@ -65,4 +65,32 @@ class PathFinderTest {
 			() -> assertThat(pathResponse.getDistance()).isEqualTo(10)
 		);
 	}
+
+	@DisplayName("교대역에서 양재역까지 경로찾기 테스트")
+	@Test
+	void searchPathFrom교대To양재Test() throws Exception {
+
+		//given //when
+		PathResponse pathResponse = pathFinder.searchShortestPath(교대역, 양재역);
+
+		//then
+		assertAll(
+			() -> assertThat(pathResponse.getStationResponseList()).hasSize(3),
+			() -> assertThat(pathResponse.getDistance()).isEqualTo(5)
+		);
+	}
+
+	@DisplayName("남부터미널역에서 강남역까지 경로찾기 테스트")
+	@Test
+	void searchPathFrom남부터미널To강남Test() {
+
+		//given //when
+		PathResponse pathResponse = pathFinder.searchShortestPath(남부터미널역, 강남역);
+
+		//then
+		assertAll(
+			() -> assertThat(pathResponse.getStationResponseList()).hasSize(3),
+			() -> assertThat(pathResponse.getDistance()).isEqualTo(12)
+		);
+	}
 }
