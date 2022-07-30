@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static nextstep.subway.domain.fixture.StationFixture.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -88,6 +89,95 @@ class PathGraphTest {
                     .isInstanceOf(IllegalArgumentException.class);
             assertThatThrownBy(() -> pathGraph.findShortPath(YANGJAE_STATION.getId(), SEOLLEUNG_STATION.getId()))
                     .isInstanceOf(IllegalArgumentException.class);
+        });
+    }
+
+    // 순환구조 , 환승구조, 단일 노선
+
+    /**
+     * 양재역  ---  *3호선*  ---  남부터미널역  ---  *3호선*  ---  교대역
+     */
+    @Test
+    @DisplayName("단일 노선 구조에서 최소경로를 찾으면 최소경로를 찾는다.")
+    void findShortPath() {
+        // given
+        Line orangeLine = new Line("3호선", "bg-orange-600");
+        orangeLine.addSection(YANGJAE_STATION, NAMBU_BUS_TERMINAL_STATION, 5);
+        orangeLine.addSection(NAMBU_BUS_TERMINAL_STATION, SEOUL_UNIV_EDUCATION_STATION, 10);
+
+        PathGraph pathGraph = PathGraph.valueOf(createLines(orangeLine));
+
+        // when
+        Path shortPath = pathGraph.findShortPath(YANGJAE_STATION.getId(), NAMBU_BUS_TERMINAL_STATION.getId());
+
+        //then
+        assertAll(() -> {
+            assertThat(shortPath.getStations()).containsExactly(YANGJAE_STATION, NAMBU_BUS_TERMINAL_STATION);
+            assertThat(shortPath.getDistance()).isEqualTo(Distance.valueOf(5));
+        });
+    }
+
+    /**
+     * 양재역  ---  *3호선*  ---  남부터미널역  ---  *3호선*  ---  교대역
+     *                                                             |
+     *                                                             *2호선*
+     *                                                             |
+     *                                                             강남역  ---  *2호선*  ---  역삼역
+     */
+    @Test
+    @DisplayName("환승구조에서 최소경로를 찾으면 최소경로를 찾는다.")
+    void findShortPath_transfer() {
+        // given
+        Line greenLine = new Line("2호선", "bg-green-600");
+        greenLine.addSection(SEOUL_UNIV_EDUCATION_STATION, GANGNAM_STATION, 4);
+        greenLine.addSection(GANGNAM_STATION, YEOKSAM_STATION, 6);
+
+        Line orangeLine = new Line("3호선", "bg-orange-600");
+        orangeLine.addSection(YANGJAE_STATION, NAMBU_BUS_TERMINAL_STATION, 5);
+        orangeLine.addSection(NAMBU_BUS_TERMINAL_STATION, SEOUL_UNIV_EDUCATION_STATION, 10);
+
+        PathGraph pathGraph = PathGraph.valueOf(createLines(greenLine, orangeLine));
+
+        // when
+        Path shortPath = pathGraph.findShortPath(YEOKSAM_STATION.getId(), NAMBU_BUS_TERMINAL_STATION.getId());
+
+        //then
+        assertAll(() -> {
+            assertThat(shortPath.getStations()).containsExactly(YEOKSAM_STATION, GANGNAM_STATION, SEOUL_UNIV_EDUCATION_STATION, NAMBU_BUS_TERMINAL_STATION);
+            assertThat(shortPath.getDistance()).isEqualTo(Distance.valueOf(20));
+        });
+    }
+
+    /**
+     * 교대역        ---   *2호선*   ---   강남역
+     * |                                   |
+     * *3호선*                             *신분당선*
+     * |                                   |
+     * 남부터미널역  ---   *3호선*   ---   양재역
+     */
+    @Test
+    @DisplayName("순환구조에서 최소경로를 찾으면 최소경로를 찾는다.")
+    void findShortPath_cycle() {
+        // given
+        Line greenLine = new Line("2호선", "bg-green-600");
+        greenLine.addSection(SEOUL_UNIV_EDUCATION_STATION, GANGNAM_STATION, 4);
+
+        Line orangeLine = new Line("3호선", "bg-orange-600");
+        orangeLine.addSection(SEOUL_UNIV_EDUCATION_STATION, NAMBU_BUS_TERMINAL_STATION, 5);
+        orangeLine.addSection(NAMBU_BUS_TERMINAL_STATION, YANGJAE_STATION, 7);
+
+        Line redLine = new Line("신분당선", "bg-red-600");
+        redLine.addSection(GANGNAM_STATION, YANGJAE_STATION, 20);
+
+        PathGraph pathGraph = PathGraph.valueOf(createLines(greenLine, orangeLine));
+
+        // when
+        Path shortPath = pathGraph.findShortPath(GANGNAM_STATION.getId(), YANGJAE_STATION.getId());
+
+        //then
+        assertAll(() -> {
+            assertThat(shortPath.getStations()).containsExactly(GANGNAM_STATION, SEOUL_UNIV_EDUCATION_STATION, NAMBU_BUS_TERMINAL_STATION, YANGJAE_STATION);
+            assertThat(shortPath.getDistance()).isEqualTo(Distance.valueOf(16));
         });
     }
 

@@ -57,6 +57,6 @@ public class PathGraph {
             throw new NotConnectedPathException(sourceStation.getName(), targetStation.getName());
         }
 
-        return null;
+        return new Path(path.getVertexList(), path.getWeight());
     }
 }
