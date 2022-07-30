@@ -6,6 +6,7 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -15,6 +16,7 @@ import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철
 import static nextstep.subway.acceptance.PathSteps.경로조회_요청;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 경로 검색 인수 테스트")
 public class PathAcceptanceTest extends AcceptanceTest {
@@ -63,9 +65,12 @@ public class PathAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> result = 경로조회_요청(남부터미널역, 강남역);
 
 		//then
-		assertThat(result.jsonPath().getList("id")).hasSize(3);
-		assertThat(result.jsonPath().getList("id")).containsExactly(남부터미널역, 교대역, 강남역);
-		assertThat(result.jsonPath().getInt("distance")).isEqualTo(12);
+		assertAll(
+			() -> assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(result.jsonPath().getList("stations.id")).hasSize(3),
+			() -> assertThat(result.jsonPath().getList("stations.id", Long.class)).containsExactly(남부터미널역, 교대역, 강남역),
+			() -> assertThat(result.jsonPath().getInt("distance")).isEqualTo(12)
+		);
 	}
 
 	private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {

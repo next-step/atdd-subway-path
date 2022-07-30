@@ -61,7 +61,7 @@ class PathFinderTest {
 
 		//then
 		assertAll(
-			() -> assertThat(pathResponse.getStationResponseList()).hasSize(2),
+			() -> assertThat(pathResponse.getStations()).hasSize(2),
 			() -> assertThat(pathResponse.getDistance()).isEqualTo(10)
 		);
 	}
@@ -75,7 +75,7 @@ class PathFinderTest {
 
 		//then
 		assertAll(
-			() -> assertThat(pathResponse.getStationResponseList()).hasSize(3),
+			() -> assertThat(pathResponse.getStations()).hasSize(3),
 			() -> assertThat(pathResponse.getDistance()).isEqualTo(5)
 		);
 	}
@@ -89,7 +89,7 @@ class PathFinderTest {
 
 		//then
 		assertAll(
-			() -> assertThat(pathResponse.getStationResponseList()).hasSize(3),
+			() -> assertThat(pathResponse.getStations()).hasSize(3),
 			() -> assertThat(pathResponse.getDistance()).isEqualTo(12)
 		);
 	}
