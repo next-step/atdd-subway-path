@@ -25,10 +25,14 @@ public class LineService {
 	@Transactional
 	public LineResponse save(LineRequest request) {
 		Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-		if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
+		if (hasSection(request)) {
 			addSection(line, request);
 		}
 		return LineResponse.from(line);
+	}
+
+	private boolean hasSection(LineRequest request) {
+		return request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0;
 	}
 
 	public List<LineResponse> findAllById() {

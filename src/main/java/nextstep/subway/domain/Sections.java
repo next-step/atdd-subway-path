@@ -8,19 +8,28 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Embeddable
 public class Sections {
 	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
 	private final List<Section> sections = new ArrayList<>();
 
+	public void addToLast(Section section) {
+		this.sections.add(section);
+	}
+
+	public void addById(int index, Section section) {
+		this.sections.add(index, section);
+	}
+
 	public void add(Section section) {
 		SectionAddPosition sectionPosition = SectionAddPosition.from(this, section);
-		sectionPosition.add(this.sections, section);
+		sectionPosition.add(this, section);
 	}
 
 	public List<Station> getStations() {
@@ -39,26 +48,19 @@ public class Sections {
 
 		for(Section section: sections) {
 			sectionPosition = SectionAddPosition.from(orderedSections, section);
-			sectionPosition.add(orderedSections.getSections(), section);
+			sectionPosition.add(orderedSections, section);
 		}
 
 		return getStations(orderedSections.getSections());
 	}
 
+	public void removeById(int index) {
+		this.sections.remove(index);
+	}
+
 	public void remove(Station station) {
 		SectionRemovePosition sectionPosition = SectionRemovePosition.from(this, station);
-		sectionPosition.remove(this.sections, station);
-
-		// int count = this.sections.size();
-		// if(count <= 1) {
-		// 	throw new IllegalArgumentException("There is no station");
-		// }
-		//
-		// Section lastSection = this.sections.get(count - 1);
-		// if (!lastSection.getDownStation().equals(station)) {
-		// 	throw new IllegalArgumentException("Station does not match");
-		// }
-		// this.sections.remove(lastSection);
+		sectionPosition.remove(this, station);
 	}
 
 	public boolean isEmpty() {
@@ -71,5 +73,29 @@ public class Sections {
 
 	public Station lastStation() {
 		return this.sections.get(this.sections.size() - 1).getDownStation();
+	}
+
+	public Station getDownStationById(int index) {
+		return this.sections.get(index).getDownStation();
+	}
+
+	public Station getUpStationById(int index) {
+		return this.sections.get(index).getUpStation();
+	}
+
+	public int getDistanceById(int index) {
+		return this.sections.get(index).getDistance();
+	}
+
+	public int size() {
+		return this.sections.size();
+	}
+
+	public Section getSectionById(int index) {
+		return this.sections.get(index);
+	}
+
+	public boolean contains(Station station) {
+		return this.getStations().contains(station);
 	}
 }

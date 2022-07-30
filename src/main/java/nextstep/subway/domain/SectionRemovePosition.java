@@ -1,75 +1,81 @@
 package nextstep.subway.domain;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
+import nextstep.subway.ui.SubwayErrorCode;
+import nextstep.subway.ui.SubwayException;
+
 public enum SectionRemovePosition {
-	FIRST((List<Section> sections, Station station) -> sections.remove(0)),
-	LAST((List<Section> sections, Station station) -> sections.remove(sections.size() - 1)),
-	MIDDLE((List<Section> sections, Station station) -> {
+	FIRST((Sections sections, Station station) -> sections.firstStation() == station,
+		(Sections sections, Station station) -> sections.removeById(0)),
+
+	LAST((Sections sections, Station station) -> sections.lastStation() == station,
+		(Sections sections, Station station) -> sections.removeById(sections.size() - 1)),
+
+	MIDDLE(Sections::contains,
+		(Sections sections, Station station) -> {
 		int index = IntStream.range(0, sections.size())
-			.filter(i -> sections.get(i).getUpStation().equals(station))
+			.filter(i -> sections.getUpStationById(i).equals(station))
 			.findFirst()
 			.orElse(sections.size() - 1);
 
 		// 양쪽 구간 합치기
-		Section upSection = sections.get(index - 1);
-		Section downSection = sections.get(index);
+		Section upSection = sections.getSectionById(index - 1);
+		Section downSection = sections.getSectionById(index);
 		Section newSection = new Section(upSection.getLine(), upSection.getUpStation(), downSection.getDownStation(),
 			upSection.getDistance() + downSection.getDistance());
 
 		// 기존 구간 제거
-		sections.remove(index - 1);
-		sections.remove(index - 1);
+		sections.removeById(index - 1);
+		sections.removeById(index - 1);
 
 		// 합친 구간 추가
 		sections.add(newSection);
 	});
 
-	private final SectionRemovePosition.RemoveStationFunction action;
+	private final RemoveStationFunction action;
+	private final FindPositionFunction position;
 
-	SectionRemovePosition(SectionRemovePosition.RemoveStationFunction action) {
+	SectionRemovePosition(FindPositionFunction position, RemoveStationFunction action) {
+		this.position = position;
 		this.action = action;
 	}
 
 	public static SectionRemovePosition from(Sections sections, Station station) {
 		validate(sections, station);
 
-		if (isLastSection(sections, station)) {
-			return LAST;
-		}
-		if (isFirstSection(sections, station)) {
-			return FIRST;
-		}
-		return MIDDLE;
+		return Arrays.stream(values())
+			.filter(position -> position.find(sections, station))
+			.findFirst()
+			.orElse(MIDDLE);
 	}
 
 	private static void validate(Sections sections, Station station) {
-		// 구간이 하나인 경우 삭제할 수 없음
-		if (sections.getSections().size() <= 1) {
-			throw new IllegalArgumentException("There is only one section left");
+		if (sections.size() <= 1) {
+			throw new SubwayException(SubwayErrorCode.NO_SECTIONS_LEFT);
 		}
 
-		// 노선에 역이 등록되어 있지 않으면 에러
-		if (!sections.getStations().contains(station)) {
-			throw new IllegalArgumentException("Station does not registered");
+		if (!sections.contains(station)) {
+			throw new SubwayException(SubwayErrorCode.NOT_EXIST_STATION);
 		}
 	}
 
-	private static boolean isLastSection(Sections sections, Station station) {
-		return sections.lastStation() == station;
-	}
-
-	private static boolean isFirstSection(Sections sections, Station station) {
-		return sections.firstStation() == station;
-	}
-
-	public void remove(List<Section> sections, Station station) {
+	public void remove(Sections sections, Station station) {
 		this.action.remove(sections, station);
 	}
 
 	@FunctionalInterface
 	public interface RemoveStationFunction {
-		void remove(List<Section> sections, Station station);
+		void remove(Sections sections, Station station);
+	}
+
+	private boolean find(Sections sections, Station station) {
+		return this.position.find(sections, station);
+	}
+
+	@FunctionalInterface
+	public interface FindPositionFunction {
+		boolean find(Sections sections, Station station);
 	}
 }
