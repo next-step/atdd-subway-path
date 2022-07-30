@@ -120,12 +120,12 @@ public class Sections {
     List<Station> stations = getAllStation();
     isStationsContainCheck(stations, station);
 
-    if (stations.get(0).equals(station)) {
+    if (getFirstStation(stations).equals(station)) {
       firstStationInSectionRemove(station);
       return;
     }
 
-    if (stations.get(stations.size() - 1).equals(station)) {
+    if (getLastStation(stations).equals(station)) {
       lastStationInSectionRemove(station);
       return;
     }
@@ -153,22 +153,30 @@ public class Sections {
     }
   }
 
+  private Station getFirstStation(List<Station> stations) {
+    return stations.get(0);
+  }
+
+  private Station getLastStation(List<Station> stations) {
+    return stations.get(stations.size() - 1);
+  }
+
   private void firstStationInSectionRemove(Station target) {
-    for(Section section : sections) {
-      if (section.isUpStationEqualsCheck(target)) {
-        sections.remove(section);
-        return;
-      }
-    }
+    Section removeSection = sections.stream()
+        .filter(section -> section.isUpStationEqualsCheck(target))
+        .findFirst()
+        .get();
+
+    sections.remove(removeSection);
   }
 
   private void lastStationInSectionRemove(Station target) {
-    for(Section section : sections) {
-      if (section.isDownStationEqualsCheck(target)) {
-        sections.remove(section);
-        return;
-      }
-    }
+    Section removeSection = sections.stream()
+        .filter(section -> section.isDownStationEqualsCheck(target))
+        .findFirst()
+        .get();
+
+    sections.remove(removeSection);
   }
 
   public void isDeleteStationCheck() {

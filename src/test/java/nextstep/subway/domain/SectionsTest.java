@@ -47,7 +47,7 @@ class SectionsTest {
 
   @Test
   void 모든_역_상행역부터_하행역_순으로_조회() {
-    sections.addSection(secondSection);
+    addSection(secondSection);
 
     List<Station> result = sections.getAllStation();
 
@@ -85,24 +85,26 @@ class SectionsTest {
 
   @Test
   void 지하철_노선_중간_구간_제거() {
-    sections.addSection(secondSection);
+    addSection(secondSection);
 
     sections.removeSection(ducksoStation);
 
     List<Station> result = sections.getAllStation();
 
     assertThat(result).containsExactly(donongStation, gooriStation);
+    assertThat(sections.getSections().get(0).getDistance()).isEqualTo(10);
   }
 
   @Test
   void 지하철_노선_상행역_제거() {
-    sections.addSection(secondSection);
+    addSection(secondSection);
 
     sections.removeSection(donongStation);
 
     List<Station> result = sections.getAllStation();
 
     assertThat(result).containsExactly(ducksoStation, gooriStation);
+    assertThat(sections.getSections().get(0).getDistance()).isEqualTo(5);
   }
 
   @Test
@@ -113,5 +115,10 @@ class SectionsTest {
   @Test
   void 지하철_노선_구간_제거시_없는_역_제거의_경우_에러() {
     assertThatThrownBy(() -> sections.removeSection(ducksoStation)).isInstanceOf(CustomException.class);
+  }
+
+  private void addSection(Section section) {
+    sections.addSection(section);
+    assertThat(sections.getSections().get(0).getDistance()).isEqualTo(5);
   }
 }
