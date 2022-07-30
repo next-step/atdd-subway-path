@@ -1,8 +1,9 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.dto.PathResponse;
-import nextstep.subway.exception.SameStationException;
 import nextstep.subway.exception.DisconnectedStationsException;
+import nextstep.subway.exception.NotRegisteredStationException;
+import nextstep.subway.exception.SameStationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -58,7 +59,7 @@ class PathFinderTest {
 	@DisplayName("findPath를 검증한다")
 	@Test
 	void findPath() {
-	    //when
+		//when
 		PathResponse 경로_조회_결과 = pathFinder.findPath(종합운동장역, 천호역);
 
 		//then
@@ -100,5 +101,30 @@ class PathFinderTest {
 		//then
 		assertThatThrownBy(() -> finder.findPath(종합운동장역, 강남역))
 				.isInstanceOf(DisconnectedStationsException.class);
+	}
+
+	/**
+	 * Given 노선에 존재하지 않는 역을 등록한다.
+	 * When 출발역과 종점역이 존재하지 않으면
+	 * Then 조회할 수 없다.
+	 */
+	@DisplayName("출발역과 종점역이 등록되어 있지 않으면 조회할 수 없다.")
+	@Test
+	void pathFindFailOnNotRegisteredStations() {
+		//given
+		Station 강남역 = new Station("강남역");
+		Station 판교역 = new Station("판교역");
+
+		//when
+		//then
+		assertAll(
+				() -> assertThatThrownBy(() -> pathFinder.findPath(종합운동장역, 강남역))
+						.isInstanceOf(NotRegisteredStationException.class),
+				() -> assertThatThrownBy(() -> pathFinder.findPath(강남역, 종합운동장역))
+						.isInstanceOf(NotRegisteredStationException.class),
+				() -> assertThatThrownBy(() -> pathFinder.findPath(판교역, 강남역))
+						.isInstanceOf(NotRegisteredStationException.class)
+		);
+
 	}
 }

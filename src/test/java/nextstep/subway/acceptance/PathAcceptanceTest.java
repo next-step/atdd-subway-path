@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("경로 조회를 검증한다.")
-public class PathAcceptanceTest extends AcceptanceTest{
+public class PathAcceptanceTest extends AcceptanceTest {
 
 	private long 종합운동장역;
 	private long 잠실역;
@@ -106,6 +106,31 @@ public class PathAcceptanceTest extends AcceptanceTest{
 
 		//then
 		assertThat(경로조회.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	/**
+	 * Given 노선에 존재하지 않는 역을 등록한다.
+	 * When 출발역과 종점역이 존재하지 않으면
+	 * Then 조회할 수 없다.
+	 */
+	@DisplayName("출발역과 종점역이 등록되어 있지 않으면 조회할 수 없다.")
+	@Test
+	void pathFindFailOnNotRegisteredStations() {
+		//given
+		long 강남역 = 100L;
+		long 판교역 = 101L;
+
+		//when
+		ExtractableResponse<Response> 경로조회_종합운동장역_강남역 = 경로를_조회한다(종합운동장역, 강남역);
+		ExtractableResponse<Response> 경로조회_강남역_종합운동장역 = 경로를_조회한다(강남역, 종합운동장역);
+		ExtractableResponse<Response> 경로조회_강남역_판교역 = 경로를_조회한다(강남역, 종합운동장역);
+
+		//then
+		assertAll(
+				() -> assertThat(경로조회_종합운동장역_강남역.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+				() -> assertThat(경로조회_강남역_종합운동장역.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+				() -> assertThat(경로조회_강남역_판교역.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
+		);
 	}
 
 	private ExtractableResponse<Response> 경로를_조회한다(long source, long target) {
