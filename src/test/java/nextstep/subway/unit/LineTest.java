@@ -6,6 +6,8 @@ import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LineTest {
@@ -34,7 +36,16 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("노선의 역을 조회한다.")
     void getStations() {
+        // given
+        일호선.addSection(신도림, 가산디지털단지, DISTANCE_DEFAULT);
+
+        // when
+        List<Station> stations = 일호선.getStations();
+
+        // then
+        assertThat(stations).containsExactly(신도림, 가산디지털단지);
     }
 
     @Test
