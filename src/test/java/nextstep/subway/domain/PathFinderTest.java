@@ -21,6 +21,8 @@ class PathFinderTest {
   private Line 신분당선;
   private Line 삼호선;
 
+  private PathFinder pathFinder;
+
   /**
    * 교대역    --- *2호선* ---   강남역
    * |                        |
@@ -44,12 +46,12 @@ class PathFinderTest {
     신분당선.addSection(new Section(신분당선, 강남역, 양재역, 10));
     삼호선.addSection(new Section(삼호선, 교대역, 남부터미널역, 10));
     삼호선.addSection(new Section(삼호선, 남부터미널역, 양재역, 5));
+
+    pathFinder = new PathFinder(삼호선.getSections().getSections());
   }
 
   @Test
   void 최단_경로_지하철역_조회() {
-    PathFinder pathFinder = new PathFinder(삼호선.getSections().getSections());
-
     List<Station> result = pathFinder.getPath(교대역, 양재역);
 
     assertAll(
@@ -60,8 +62,6 @@ class PathFinderTest {
 
   @Test
   void 최단_경로_지하철역_길이_합계_조회() {
-    PathFinder pathFinder = new PathFinder(삼호선.getSections().getSections());
-
     int distance = pathFinder.getDistance(교대역, 양재역);
 
     assertThat(distance).isEqualTo(15);
@@ -69,8 +69,6 @@ class PathFinderTest {
 
   @Test
   void 출발역이_존재하지_않을경우_에러() {
-    PathFinder pathFinder = new PathFinder(삼호선.getSections().getSections());
-
     Station 판교역 = new Station("판교역");
 
     assertThatThrownBy(() -> pathFinder.getPath(판교역, 양재역)).isInstanceOf(CustomException.class);
@@ -78,8 +76,6 @@ class PathFinderTest {
 
   @Test
   void 도착역이_존재하지_않을경우_에러() {
-    PathFinder pathFinder = new PathFinder(삼호선.getSections().getSections());
-
     Station 판교역 = new Station("판교역");
 
     assertThatThrownBy(() -> pathFinder.getPath(교대역, 판교역)).isInstanceOf(CustomException.class);
@@ -87,8 +83,6 @@ class PathFinderTest {
 
   @Test
   void 동일한_역_조회한_경우_에러() {
-    PathFinder pathFinder = new PathFinder(삼호선.getSections().getSections());
-
     assertThatThrownBy(() -> pathFinder.getPath(교대역, 교대역)).isInstanceOf(CustomException.class);
   }
 }

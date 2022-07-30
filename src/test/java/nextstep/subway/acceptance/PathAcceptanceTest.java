@@ -54,10 +54,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
   @Test
   void 최단_경로_조회() {
-    ExtractableResponse<Response> result = RestAssured.given().log().all()
-        .when().get("/paths?source={sourceId}&target={targetId}", 교대역, 양재역)
-        .then().log().all()
-        .extract();
+    ExtractableResponse<Response> result = 최단_경로_조회(교대역, 양재역);
 
     assertThat(result.jsonPath().getList("stations.id", Long.class)).hasSize(3).containsExactly(교대역, 남부터미널역, 양재역);
     assertThat(result.jsonPath().getLong("distance")).isEqualTo(5);
@@ -67,10 +64,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
   void 최단_경로_출발역이_없으면_에러() {
     Long 판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
 
-    ExtractableResponse<Response> result = RestAssured.given().log().all()
-        .when().get("/paths?source={sourceId}&target={targetId}", 판교역, 양재역)
-        .then().log().all()
-        .extract();
+    ExtractableResponse<Response> result = 최단_경로_조회(판교역, 양재역);
 
     assertThat(result.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     assertThat(result.jsonPath().getString("message")).isEqualTo(PathErrorMessage.PATH_STATION_EMPTY);
@@ -80,10 +74,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
   void 최단_경로_종착역이_없으면_에러() {
     Long 판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
 
-    ExtractableResponse<Response> result = RestAssured.given().log().all()
-        .when().get("/paths?source={sourceId}&target={targetId}", 교대역, 판교역)
-        .then().log().all()
-        .extract();
+    ExtractableResponse<Response> result = 최단_경로_조회(교대역, 판교역);
 
     assertThat(result.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     assertThat(result.jsonPath().getString("message")).isEqualTo(PathErrorMessage.PATH_STATION_EMPTY);
@@ -91,13 +82,17 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
   @Test
   void 최단_경로_동일한_역을_조회하면_에러() {
-    ExtractableResponse<Response> result = RestAssured.given().log().all()
-        .when().get("/paths?source={sourceId}&target={targetId}", 교대역, 교대역)
-        .then().log().all()
-        .extract();
+    ExtractableResponse<Response> result = 최단_경로_조회(교대역, 교대역);
 
     assertThat(result.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     assertThat(result.jsonPath().getString("message")).isEqualTo(PathErrorMessage.STATION_DUPLICATE);
+  }
+
+  private ExtractableResponse<Response> 최단_경로_조회(Long sourceId, Long targetId) {
+    return RestAssured.given().log().all()
+        .when().get("/paths?source={sourceId}&target={targetId}", sourceId, targetId)
+        .then().log().all()
+        .extract();
   }
 
   private Map<String, String> 라인_파라미터_생성(String name, String color, Long upStationId, Long downStationId, int distance) {
