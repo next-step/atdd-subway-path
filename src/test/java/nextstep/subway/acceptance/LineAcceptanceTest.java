@@ -6,7 +6,8 @@ import nextstep.subway.client.LineClient;
 import nextstep.subway.client.StationClient;
 import nextstep.subway.client.dto.LineCreationRequest;
 import nextstep.subway.client.dto.SectionRegistrationRequest;
-import nextstep.subway.exception.DuplicatedStationException;
+import nextstep.subway.domain.Line;
+import nextstep.subway.exception.InvalidDistanceBetweenStationsException;
 import nextstep.subway.exception.NoLastStationException;
 import nextstep.subway.exception.SectionRegistrationException;
 import nextstep.subway.exception.SectionRemovalException;
@@ -15,6 +16,7 @@ import nextstep.subway.utils.HttpStatusValidator;
 import nextstep.subway.utils.JsonResponseConverter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.annotation.DirtiesContext;
@@ -22,16 +24,25 @@ import org.springframework.test.annotation.DirtiesContext;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
+import static nextstep.subway.utils.GivenUtils.FIVE;
 import static nextstep.subway.utils.GivenUtils.GREEN;
 import static nextstep.subway.utils.GivenUtils.TEN;
 import static nextstep.subway.utils.GivenUtils.YELLOW;
 import static nextstep.subway.utils.GivenUtils.강남역;
+import static nextstep.subway.utils.GivenUtils.강남역_이름;
+import static nextstep.subway.utils.GivenUtils.교대역_이름;
 import static nextstep.subway.utils.GivenUtils.분당선_이름;
+import static nextstep.subway.utils.GivenUtils.선릉역;
+import static nextstep.subway.utils.GivenUtils.선릉역_이름;
 import static nextstep.subway.utils.GivenUtils.신분당선_이름;
+import static nextstep.subway.utils.GivenUtils.양재역;
 import static nextstep.subway.utils.GivenUtils.역삼역;
+import static nextstep.subway.utils.GivenUtils.역삼역_이름;
+import static nextstep.subway.utils.GivenUtils.이호선;
 import static nextstep.subway.utils.GivenUtils.이호선_이름;
 import static nextstep.subway.utils.GivenUtils.이호선역_이름들;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -233,13 +244,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 지하철 노선을 생성하고
-     * When 지하철 노선에 구간을 추가하면
+     * When 지하철 노선의 하행 종점 뒤에 구간을 추가하면
      * Then 해당 구간이 노선 구간 목록에 존재한다
      */
-    @DisplayName("지하철 노선에 구간을 등록")
     @Test
+    @DisplayName("지하철 노선에 구간을 등록 - 하행 종점 뒤에 추가")
     @DirtiesContext
-    void addSection() {
+    void addSectionNextToTail() {
         // given
         int expectedSize = 3;
         long lineId = responseConverter.convertToId(givenUtils.이호선_생성());
@@ -255,18 +266,138 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 지하철 노선을 생성하고
-     * When 지하철 노선에 하행 종점역과 다른 상행역 구간을 추가하면
+     * When 지하철 노선의 하행 종점 앞에 구간을 추가하면
+     * Then 해당 구간이 노선 구간 목록에 존재한다
+     */
+    @Test
+    @DisplayName("지하철 노선에 구간을 등록 - 하행 종점 앞에 추가")
+    @DirtiesContext
+    void addSectionInFrontOfTail() {
+        // given
+        int expectedSize = 3;
+        long lineId = responseConverter.convertToId(givenUtils.이호선_생성());
+
+        // when
+        ExtractableResponse<Response> response = lineClient.addSection(lineId, givenUtils.선릉_역삼_구간_생성_요청(FIVE));
+
+        // then
+        statusValidator.validateOk(response);
+        assertThat(responseConverter.convert(lineClient.fetchLine(lineId), "stations", List.class))
+                .hasSize(expectedSize);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 지하철 노선의 상행 종점 뒤에 구간을 추가하면
+     * Then 해당 구간이 노선 구간 목록에 존재한다
+     */
+    @Test
+    @DisplayName("지하철 노선에 구간을 등록 - 상행 종점 뒤에 추가")
+    @DirtiesContext
+    void addSectionNextToHead() {
+        // given
+        int expectedSize = 3;
+        long lineId = responseConverter.convertToId(givenUtils.이호선_생성());
+
+        // when
+        ExtractableResponse<Response> response = lineClient.addSection(lineId, givenUtils.강남_교대_구간_생성_요청(FIVE));
+
+        // then
+        statusValidator.validateOk(response);
+        assertThat(responseConverter.convert(lineClient.fetchLine(lineId), "stations", List.class))
+                .hasSize(expectedSize);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 지하철 노선의 상행 종점 앞에 구간을 추가하면
+     * Then 해당 구간이 노선 구간 목록에 존재한다
+     */
+    @Test
+    @DisplayName("지하철 노선에 구간을 등록 - 상행 종점 앞에 추가")
+    @DirtiesContext
+    void addSectionInFrontOfHead() {
+        // given
+        int expectedSize = 3;
+        long lineId = responseConverter.convertToId(givenUtils.이호선_생성());
+
+        // when
+        ExtractableResponse<Response> response = lineClient.addSection(lineId, givenUtils.교대_강남_구간_생성_요청());
+
+        // then
+        statusValidator.validateOk(response);
+        assertThat(responseConverter.convert(lineClient.fetchLine(lineId), "stations", List.class))
+                .hasSize(expectedSize);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 지하철 노선 하행 종점 앞에 추가 (역 사이 거리보다 같거나 큰 구간 추가) 하면
+     * Then 오류(InvalidDistanceBetweenStationsException) 객체를 반환한다
+     */
+    @Test
+    @DisplayName("지하철 노선에 구간 등록 실패 - 하행 종점 앞에 추가 (역 사이 거리보다 같거나 큰 구간 추가)")
+    @DirtiesContext
+    void addSectionInFrontOfTailWithInvalidDistance() {
+        // given
+        long lineId = responseConverter.convertToId(givenUtils.이호선_생성());
+        Long 선릉역_Id = responseConverter.convertToId(stationClient.createStation(선릉역_이름));
+        SectionRegistrationRequest sectionRequest = new SectionRegistrationRequest(
+                선릉역_Id,
+                역삼역().getId(),
+                TEN
+        );
+
+        // when
+        ExtractableResponse<Response> response = lineClient.addSection(lineId, sectionRequest);
+
+        // then
+        statusValidator.validateBadRequest(response);
+        assertThat(responseConverter.convertToError(response))
+                .contains(InvalidDistanceBetweenStationsException.class.getName());
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 지하철 노선 상행 종점 뒤에 추가 (역 사이 거리보다 같거나 큰 구간 추가) 하면
+     * Then 오류(InvalidDistanceBetweenStationsException) 객체를 반환한다
+     */
+    @Test
+    @DisplayName("지하철 노선에 구간 등록 실패 - 상행 종점 뒤에 추가 (역 사이 거리보다 같거나 큰 구간 추가)")
+    @DirtiesContext
+    void addSectionNextToHeadWithInvalidDistance() {
+        // given
+        long lineId = responseConverter.convertToId(givenUtils.이호선_생성());
+        Long 선릉역_Id = responseConverter.convertToId(stationClient.createStation(선릉역_이름));
+        SectionRegistrationRequest sectionRequest = new SectionRegistrationRequest(
+                강남역().getId(),
+                선릉역_Id,
+                TEN
+        );
+
+        // when
+        ExtractableResponse<Response> response = lineClient.addSection(lineId, sectionRequest);
+
+        // then
+        statusValidator.validateBadRequest(response);
+        assertThat(responseConverter.convertToError(response))
+                .contains(InvalidDistanceBetweenStationsException.class.getName());
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 지하철 노선에 이미 등록된 상행, 하행역을 추가 하면
      * Then 오류(SectionRegistrationException) 객체를 반환한다
      */
-    @DisplayName("지하철 노선에 구간을 등록 - 노선의 하행 종점역과 다른 상행역 구간 추가")
     @Test
+    @DisplayName("지하철 노선에 구간 등록 실패 - 등록하려는 상행, 하행역이 노선에 이미 등록된 경우")
     @DirtiesContext
-    void addSectionWithInvalidUpStationId() {
+    void addSectionWithDuplicatedStations() {
         // given
         long lineId = responseConverter.convertToId(givenUtils.이호선_생성());
         SectionRegistrationRequest sectionRequest = new SectionRegistrationRequest(
-                responseConverter.convertToId(stationClient.createStation(신분당선_이름)),
                 강남역().getId(),
+                역삼역().getId(),
                 TEN
         );
 
@@ -281,18 +412,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 지하철 노선을 생성하고
-     * When 지하철 노선에 하행 종점역과 다른 상행역 구간을 추가하면
-     * Then 오류(DuplicatedStationException) 객체를 반환한다
+     * When 지하철 노선의 상행, 하행 종점에 포함되지 않는 상행, 하행역을 추가 하면
+     * Then 오류(SectionRegistrationException) 객체를 반환한다
      */
-    @DisplayName("지하철 노선에 구간을 등록 - 노선에 이미 존재하는 하행역 구간 추가")
     @Test
+    @DisplayName("지하철 노선에 구간 등록 실패 - 등록하려는 역이 노선의 상행, 하행역에 포함되지 않는 경우")
     @DirtiesContext
-    void addSectionWithInvalidDownStationId() {
+    void addSectionWithInvalidStations() {
         // given
         long lineId = responseConverter.convertToId(givenUtils.이호선_생성());
+        Long 선릉역_Id = responseConverter.convertToId(stationClient.createStation(선릉역_이름));
+        Long 교대역_Id = responseConverter.convertToId(stationClient.createStation(교대역_이름));
         SectionRegistrationRequest sectionRequest = new SectionRegistrationRequest(
-                역삼역().getId(),
-                강남역().getId(),
+                선릉역_Id,
+                교대역_Id,
                 TEN
         );
 
@@ -302,7 +435,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         statusValidator.validateBadRequest(response);
         assertThat(responseConverter.convertToError(response))
-                .contains(DuplicatedStationException.class.getName());
+                .contains(SectionRegistrationException.class.getName());
     }
 
     /**

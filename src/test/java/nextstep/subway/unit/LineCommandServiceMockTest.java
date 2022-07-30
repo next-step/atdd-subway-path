@@ -167,22 +167,23 @@ public class LineCommandServiceMockTest {
     }
 
     @Test
-    @DisplayName("지하철 노선에 구간 등록 실패 - 노선의 하행 종점역과 다른 상행역 구간 추가")
-    void addSectionWithInvalidUpStationId() {
+    @DisplayName("지하철 노선에 구간 등록 실패 - 노선의 상행, 하행 종점역과 무관한 역 추가")
+    void addSectionWithInvalidStation() {
         // given
         Line 이호선 = 이호선();
         Station 양재역 = 양재역();
         Station 강남역 = 강남역();
+        Station 선릉역 = 선릉역();
+        이호선.addSection(강남역, 역삼역(), TEN);
         doReturn(양재역).when(stationQueryService)
                 .findById(양재역.getId());
-        doReturn(강남역).when(stationQueryService)
-                .findById(강남역.getId());
-        이호선.addSection(강남역, 역삼역(), TEN);
+        doReturn(선릉역).when(stationQueryService)
+                .findById(선릉역.getId());
         doReturn(이호선).when(lineQueryService)
                 .findById(이호선.getId());
         SectionRegistrationRequest sectionRequest = new SectionRegistrationRequest(
                 양재역.getId(),
-                강남역.getId(),
+                선릉역.getId(),
                 TEN
         );
 

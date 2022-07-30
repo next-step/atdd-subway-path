@@ -9,7 +9,6 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
-import nextstep.subway.exception.DuplicatedStationException;
 import nextstep.subway.exception.NoLastStationException;
 import nextstep.subway.exception.SectionRegistrationException;
 import nextstep.subway.exception.SectionRemovalException;
@@ -28,6 +27,7 @@ import java.util.stream.Collectors;
 
 import static nextstep.subway.utils.GivenUtils.FIRST_ID;
 import static nextstep.subway.utils.GivenUtils.FIVE;
+import static nextstep.subway.utils.GivenUtils.FOURTH_ID;
 import static nextstep.subway.utils.GivenUtils.GREEN;
 import static nextstep.subway.utils.GivenUtils.TEN;
 import static nextstep.subway.utils.GivenUtils.THIRD_ID;
@@ -179,19 +179,19 @@ public class LineCommandServiceTest {
     }
 
     @Test
-    @DisplayName("지하철 노선에 구간 추가 실패 - 노선의 하행 종점역과 다른 상행역 구간 추가")
+    @DisplayName("지하철 노선에 구간 추가 실패 - 노선의 상행, 하행 종점과 무관한 역 추가")
     @DirtiesContext
-    void addSectionWithInvalidUpStationId() {
+    void addSectionWithInvalidStation() {
         // given
         Line 이호선 = 이호선();
         Station 강남역 = 강남역();
         Station 역삼역 = 역삼역();
         이호선.addSection(강남역, 역삼역, TEN);
-        saveAllStations(강남역, 역삼역, 양재역());
+        saveAllStations(강남역, 역삼역, 양재역(), 선릉역());
         lineRepository.save(이호선);
         SectionRegistrationRequest sectionRequest = new SectionRegistrationRequest(
                 THIRD_ID,
-                FIRST_ID,
+                FOURTH_ID,
                 TEN
         );
 
@@ -205,7 +205,7 @@ public class LineCommandServiceTest {
     @Test
     @DisplayName("지하철 노선에 구간 추가 실패 - 노선에 이미 존재하는 하행역 구간 추가")
     @DirtiesContext
-    void addSectionWithInvalidDownStationId() {
+    void addSectionWithDuplicatedStation() {
         // given
         Line 이호선 = 이호선();
         Station 강남역 = 강남역();
@@ -224,7 +224,7 @@ public class LineCommandServiceTest {
 
 
         // then
-        assertThrows(DuplicatedStationException.class, executable);
+        assertThrows(SectionRegistrationException.class, executable);
     }
 
     @Test

@@ -45,7 +45,7 @@ public class Line {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        sections.addSection(new Section(this, upStation, downStation, distance));
+        sections.add(new Section(this, upStation, downStation, distance));
     }
 
     public void removeSection(Station station) {
