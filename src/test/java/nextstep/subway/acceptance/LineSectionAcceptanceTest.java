@@ -214,6 +214,42 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getString("message")).isEqualTo("두 개 이상의 구간일때만 삭제가 가능합니다.");
     }
 
+    /**
+     * Given 2개 이상의 구간을 가지는 노선을 생성한다.
+     * When 중간역 삭제를 한다.
+     * Then 중간역 삭제에 성공한다.
+     */
+    @DisplayName("중간역 삭제")
+    @Test
+    void 중간역_삭제() {
+
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역, 5));
+
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신논현역, 양재역);
+    }
+
+    /**
+     * Given 2개 이상의 구간을 가지는 노선을 생성한다.
+     * When 상행역 삭제를 한다.
+     * Then 상행역 삭제에 성공한다.
+     */
+    @DisplayName("상행역 삭제")
+    @Test
+    void 상행역_삭제() {
+
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역, 5));
+
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 신논현역);
+
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
