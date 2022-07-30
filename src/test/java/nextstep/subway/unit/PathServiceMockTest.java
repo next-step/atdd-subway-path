@@ -48,10 +48,10 @@ class PathServiceMockTest {
         삼호선 = new Line("3호선", "orange");
         신분당선 = new Line("신분당선", "red");
 
-        이호선.addSection(이호선, 교대역, 강남역, 10);
-        삼호선.addSection(삼호선, 교대역, 남부터미널역, 10);
-        신분당선.addSection(신분당선, 교대역, 남부터미널역, 10);
-        삼호선.addSection(삼호선, 남부터미널역, 양재역, 3);
+        이호선.addSection(교대역, 강남역, 10);
+        삼호선.addSection(교대역, 남부터미널역, 10);
+        신분당선.addSection(교대역, 남부터미널역, 10);
+        삼호선.addSection(남부터미널역, 양재역, 3);
 
         lineList = Arrays.asList(이호선, 삼호선, 신분당선);
     }

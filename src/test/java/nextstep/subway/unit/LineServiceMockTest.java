@@ -71,8 +71,8 @@ public class LineServiceMockTest {
         given(lineRepository.findById(이호선.getId())).willReturn(Optional.of(이호선));
         given(stationService.findById(사당역.getId())).willReturn(사당역);
 
-        이호선.addSection(이호선, 서울대입구역, 낙성대역, 10);
-        이호선.addSection(이호선, 낙성대역, 사당역, 10);
+        이호선.addSection(서울대입구역, 낙성대역, 10);
+        이호선.addSection(낙성대역, 사당역, 10);
 
         // When
         lineService.deleteSection(이호선.getId(), 사당역.getId());
