@@ -142,4 +142,9 @@ public class Sections {
             .findFirst().orElse(null);
     }
 
+    public boolean containsStation(final long stationId) {
+        return getStations().stream()
+            .anyMatch(station -> station.isEqualToId(stationId));
+    }
+
 }

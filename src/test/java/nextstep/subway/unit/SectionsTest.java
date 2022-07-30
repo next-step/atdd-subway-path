@@ -114,8 +114,10 @@ class SectionsTest {
     @Test
     @DisplayName("맨 앞 구간 조회")
     void getFirstSection() {
-        //when
+        //given
         구간_등록(강남역(), 역삼역(), 10);
+
+        //when
         sections.addSections(line, 잠실역(), 강남역(), 4);
 
         //then
@@ -125,14 +127,31 @@ class SectionsTest {
     @Test
     @DisplayName("구간 정렬")
     void sectionSort() {
+        //given
         구간_등록(강남역(), 역삼역(), 10);
         구간_등록(강남역(), 잠실역(), 7);
 
+        //when
         final List<Section> sortedSections = sections.sections();
+
+        //then
         assertThat(sortedSections).containsExactly(
             new Section(line, 강남역(), 잠실역(), 7),
             new Section(line, 잠실역(), 역삼역(), 3)
         );
+    }
+
+    @Test
+    @DisplayName("역의 id 가 구간에 포함되어있는지 검증")
+    void containsStation() {
+        //given
+        구간_등록(강남역(), 역삼역(), 10);
+
+        //when
+        final boolean actual = sections.containsStation(2L);
+
+        //then
+        assertThat(actual).isTrue();
     }
 
     private Station 강남역() {
