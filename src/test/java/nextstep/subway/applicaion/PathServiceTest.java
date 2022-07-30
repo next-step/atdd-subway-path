@@ -13,6 +13,7 @@ import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.exception.NotConnectedException;
 import nextstep.subway.exception.SameStationException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -84,8 +85,9 @@ class PathServiceTest {
         long 까치울역 = 역_생성("까치울역");
         long 강남구청역 = 역_생성("강남구청역");
         노선_생성("7호선", "red", 까치울역, 강남구청역, 5);
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> pathService.getShortestPath(까치울역, 강남역));
+        assertThatExceptionOfType(NotConnectedException.class)
+            .isThrownBy(() -> pathService.getShortestPath(까치울역, 강남역))
+            .withMessage("입력한 두개의 역이 연결되어 있지 않습니다.");
     }
 
     private void 최단거리_경로_거리_검증(final PathResponse shortestPath) {
