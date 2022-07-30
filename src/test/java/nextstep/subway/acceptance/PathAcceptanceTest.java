@@ -10,6 +10,8 @@ import org.springframework.http.MediaType;
 
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
+import static nextstep.subway.acceptance.PathSteps.최단_거리_조회_요청;
+import static nextstep.subway.acceptance.PathSteps.최단_거리_조회_요청_성공;
 import static nextstep.subway.acceptance.SectionSteps.createSectionCreateParams;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -123,21 +125,5 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(최단_거리_조회.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private ExtractableResponse<Response> 최단_거리_조회_요청_성공(long sourceId, long targetId) {
-        return RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .queryParam("sourceId", sourceId)
-            .queryParam("targetId", targetId)
-            .when().get("/paths")
-            .then().log().all().statusCode(HttpStatus.OK.value()).extract();
-    }
 
-    private ExtractableResponse<Response> 최단_거리_조회_요청(long sourceId, long targetId) {
-        return RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .queryParam("sourceId", sourceId)
-            .queryParam("targetId", targetId)
-            .when().get("/paths")
-            .then().log().all().extract();
-    }
 }
