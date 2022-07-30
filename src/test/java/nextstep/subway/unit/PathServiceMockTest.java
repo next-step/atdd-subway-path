@@ -3,11 +3,10 @@ package nextstep.subway.unit;
 import nextstep.subway.applicaion.PathService;
 import nextstep.subway.applicaion.SectionService;
 import nextstep.subway.applicaion.StationService;
+import nextstep.subway.applicaion.dto.PathDto;
 import nextstep.subway.applicaion.dto.SectionDto;
 import nextstep.subway.applicaion.dto.StationDto;
 import nextstep.subway.applicaion.dto.request.PathRequest;
-import nextstep.subway.applicaion.dto.response.PathResponse;
-import nextstep.subway.applicaion.dto.response.StationResponse;
 import nextstep.subway.domain.*;
 import nextstep.subway.fake.FakeLineFactory;
 import nextstep.subway.fake.FakeStationFactory;
@@ -22,7 +21,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -65,14 +63,18 @@ public class PathServiceMockTest {
 
         //when
         PathRequest pathRequest = new PathRequest(FakeStationFactory.강남역().getId(), FakeStationFactory.왕십리역().getId());
-        PathResponse pathResponse = pathService.findShortPath(pathRequest);
+        PathDto pathDto = pathService.findShortPath(pathRequest);
 
         //then
-        assertThat(pathResponse.getStations()
-                               .stream()
-                               .map(StationResponse::getName)
-                               .collect(Collectors.toList()))
+        최단경로와_최단거리_조회_검증(pathDto);
+    }
+
+    private void 최단경로와_최단거리_조회_검증(PathDto pathDto) {
+        assertThat(pathDto.getShortestPath()
+                          .stream()
+                          .map(Station::getName)
+                          .collect(Collectors.toList()))
                 .containsExactly("강남역", "선릉역", "왕십리역");
-        assertThat(pathResponse.getDistance()).isEqualTo(7);
+        assertThat(pathDto.getShortestDistance()).isEqualTo(7);
     }
 }
