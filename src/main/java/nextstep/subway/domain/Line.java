@@ -45,7 +45,7 @@ public class Line {
     }
 
     public void deleteSection(Station station) {
-        this.sections.deleteSection(station);
+        this.sections.delete(station);
     }
     public Station upStation(Station station) {
         return this.sections.upStation();

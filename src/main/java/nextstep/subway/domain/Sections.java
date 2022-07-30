@@ -71,12 +71,52 @@ public class Sections {
         return firstUpStation;
     }
 
+    private Section sectionOfFirstUpStation() {
+        Station firstUpStation = upStation();
+        Section firstUpStationSection = null;
+        for (Section section : this.sections) {
+            if (isDownStation(firstUpStation, section)) {
+                firstUpStation = section.getUpStation();
+                firstUpStationSection = section;
+            }
+        }
+
+        if (firstUpStationSection == null) {
+            firstUpStationSection = this.sections.get(0);
+        }
+        return firstUpStationSection;
+    }
+
+    private Section sectionOfLastStation() {
+        Station lastStation = downStation();
+        Section sectionOfLastStation = null;
+        for (Section section : this.sections) {
+            lastStation = section.upStation(lastStation);
+            sectionOfLastStation = section;
+        }
+        return sectionOfLastStation;
+    }
+
+    private boolean isFirstUpStation(Station station) {
+        Station firstUpStation = upStation();
+        for (Section section : this.sections) {
+            if (isDownStation(firstUpStation, section)) {
+                firstUpStation = section.getUpStation();
+            }
+        }
+        return station.equals(firstUpStation);
+    }
+
     private boolean hasNextStation(Station prevStation) {
         return this.sections.stream().anyMatch(section -> prevStation.equals(section.getUpStation()));
     }
 
     private boolean isDownStation(Station upStation, Section section) {
         return section.getDownStation().equals(upStation);
+    }
+
+    private boolean isUpStation(Station station, Section section) {
+        return section.getUpStation().equals(station);
     }
 
     private Station findNextStation(Station firstDownStation) {
@@ -152,11 +192,45 @@ public class Sections {
         return this.sections.stream().anyMatch(section -> section.getUpStation().equals(upStation));
     }
 
-    public void deleteSection(Station station) {
-        if (!this.downStation().equals(station)) {
-            throw new IllegalArgumentException();
+    public void delete(Station station) {
+        if (isFirstUpStation(station)) {
+            deleteFirstStation(station);
+            return;
         }
-        this.sections.remove(this.sections.size() - 1);
+        if (isLastStation(station)) {
+            deleteLastStation(station);
+            return;
+        }
+        deleteMiddleStation(station);
+    }
+
+    private void deleteMiddleStation(Station station) {
+        for (Section section : this.sections) {
+            if (section.getUpStation().equals(station)) {
+                this.sections.remove(section);
+            }
+            if (section.getDownStation().equals(station)) {
+                this.sections.remove(section);
+            }
+        }
+    }
+
+    private void deleteLastStation(Station station) {
+        this.sections.remove(sectionOfLastStation());
+    }
+
+    private boolean isLastStation(Station station) {
+        Station lastStation = station;
+        for (Section section : this.sections) {
+            if (isDownStation(lastStation, section)) {
+                lastStation = section.getDownStation();
+            }
+        }
+        return station.equals(lastStation);
+    }
+
+    private void deleteFirstStation(Station station) {
+        this.sections.remove(sectionOfFirstUpStation());
     }
 
 }

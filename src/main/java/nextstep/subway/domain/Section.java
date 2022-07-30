@@ -38,4 +38,12 @@ public class Section {
         return new Section(line, upStation, downStation, distance);
     }
 
+    public boolean isUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public Station upStation(Station lastStation) {
+        return isUpStation(lastStation) ? upStation : null;
+    }
+
 }
