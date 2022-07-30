@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ public class PathFinder {
     public PathFinder(Station source, Station target, List<Line> lines) {
 
         if (source.equals(target)) {
-            throw new IllegalArgumentException("출발역과 도착역이 같을 수 없습니다.");
+            throw new DataIntegrityViolationException("출발역과 도착역이 같을 수 없습니다.");
         }
 
         graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
@@ -31,8 +32,12 @@ public class PathFinder {
         );
         dijkstraShortestPath = new DijkstraShortestPath<>(graph);
 
+        if (!graph.containsVertex(source) || !graph.containsVertex(target)) {
+            throw new DataIntegrityViolationException("역이 존재하지 않습니다.");
+        }
+
         if (dijkstraShortestPath.getPath(source, target) == null) {
-            throw new IllegalArgumentException("연결되지 않은 역입니다.");
+            throw new DataIntegrityViolationException("연결되지 않은 역입니다.");
         }
 
         this.source = source;

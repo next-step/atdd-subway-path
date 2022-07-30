@@ -6,6 +6,7 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
@@ -21,8 +22,8 @@ public class PathService {
     }
 
     public PathResponse findPath(long sourceId, long targetId) {
-        Station source = stationRepository.findById(sourceId).orElseThrow(IllegalArgumentException::new);
-        Station target = stationRepository.findById(targetId).orElseThrow(IllegalArgumentException::new);
+        Station source = stationRepository.findById(sourceId).orElseThrow(() -> new DataIntegrityViolationException("존재하지 않은역 입니다."));
+        Station target = stationRepository.findById(targetId).orElseThrow(() -> new DataIntegrityViolationException("존재하지 않은역 입니다."));
         PathFinder pathFinder = new PathFinder(source, target, lineRepository.findAll());
         return new PathResponse(
             pathFinder.getPath().stream().map(station -> new StationResponse(station.getId(), station.getName())).collect(Collectors.toList()),
