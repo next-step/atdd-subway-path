@@ -136,4 +136,13 @@ class LineTest {
         신분당선.deleteSection(신논현역);
         assertThat(신분당선.stations()).containsExactly(논현역, 강남역);
     }
+
+    @DisplayName("구간이 하나인 노선을 삭제할 때 삭제할 수 없음")
+    @Test
+    void deleteOneSection() {
+        신분당선.addSection(논현역, 신논현역, 5);
+        assertThatThrownBy(() -> {
+            신분당선.deleteSection(신논현역);
+        }).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("두 개 이상의 구간일때만 삭제가 가능합니다.");
+    }
 }

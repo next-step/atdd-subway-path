@@ -193,6 +193,7 @@ public class Sections {
     }
 
     public void delete(Station station, Line line) {
+        validDeleteSection(line);
         if (isFirstUpStation(station)) {
             deleteFirstStation(station);
             return;
@@ -202,6 +203,12 @@ public class Sections {
             return;
         }
         deleteMiddleStation(station, line);
+    }
+
+    private void validDeleteSection(Line line) {
+        if (line.sections().size() == 1) {
+            throw new IllegalArgumentException("두 개 이상의 구간일때만 삭제가 가능합니다.");
+        }
     }
 
     private void deleteMiddleStation(Station station, Line line) {
