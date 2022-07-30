@@ -27,17 +27,19 @@ public class PathFinder {
 
 
   public List<Station> getPath(Station sourceStation, Station targetStation) {
-    validateStationEmpty(sourceStation);
-    validateStationEmpty(targetStation);
-    validateDuplicateStation(sourceStation, targetStation);
+    validateStation(sourceStation, targetStation);
     return dijkstraShortestPath.getPath(sourceStation, targetStation).getVertexList();
   }
 
   public int getDistance(Station sourceStation, Station targetStation) {
+    validateStation(sourceStation, targetStation);
+    return (int) dijkstraShortestPath.getPathWeight(sourceStation, targetStation);
+  }
+
+  private void validateStation(Station sourceStation, Station targetStation) {
     validateStationEmpty(sourceStation);
     validateStationEmpty(targetStation);
     validateDuplicateStation(sourceStation, targetStation);
-    return (int) dijkstraShortestPath.getPathWeight(sourceStation, targetStation);
   }
 
   private void validateStationEmpty(Station station) {

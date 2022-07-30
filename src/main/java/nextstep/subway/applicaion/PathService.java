@@ -28,30 +28,50 @@ public class PathService {
     Station sourceStation = stationRepository.findById(sourceId).orElseThrow();
     Station targetStation = stationRepository.findById(targetId).orElseThrow();
 
+    PathResponse pathResponse = getPathResponse(sourceStation, targetStation);
+
+    isStationsEmptyCheck(pathResponse);
+
+    return pathResponse;
+  }
+
+  private PathResponse getPathResponse(Station sourceStation, Station targetStation) {
     PathResponse pathResponse = new PathResponse();
     List<Line> lines = lineRepository.findAll();
     for (Line line : lines) {
-      List<Station> stations = line.getSections().getAllStation();
-      if (stations.contains(sourceStation) && stations.contains(targetStation)) {
-        PathFinder pathFinder = new PathFinder(line.getSections().getSections());
-        List<Station> pathStations = pathFinder.getPath(sourceStation, targetStation);
-        int pathDistance = pathFinder.getDistance(sourceStation, targetStation);
 
-        if (pathResponse.getDistance() > pathDistance) {
-          List<StationResponse> stationResponses = pathStations.stream()
-              .map(StationResponse::createStationResponse)
-              .collect(toList());
-
-          pathResponse.changeStations(stationResponses);
-          pathResponse.changeDistance(pathDistance);
-        }
+      if (lineContainStations(line, sourceStation,targetStation)) {
+        getPathFinder(line, sourceStation, targetStation, pathResponse);
       }
     }
 
+    return pathResponse;
+  }
+
+  private boolean lineContainStations(Line line, Station sourceStation, Station targetStation) {
+    List<Station> stations = line.getSections().getAllStation();
+    return stations.contains(sourceStation) && stations.contains(targetStation);
+  }
+
+  private void getPathFinder(Line line, Station sourceStation, Station targetStation, PathResponse pathResponse) {
+    PathFinder pathFinder = new PathFinder(line.getSections().getSections());
+    int pathDistance = pathFinder.getDistance(sourceStation, targetStation);
+
+    if (pathResponse.getDistance() > pathDistance) {
+      pathResponse.changeStations(getStationResponse(pathFinder.getPath(sourceStation, targetStation)));
+      pathResponse.changeDistance(pathDistance);
+    }
+  }
+
+  private List<StationResponse> getStationResponse(List<Station> stations) {
+    return stations.stream()
+        .map(StationResponse::createStationResponse)
+        .collect(toList());
+  }
+
+  private void isStationsEmptyCheck(PathResponse pathResponse) {
     if (pathResponse.getStations().isEmpty()) {
       throw new CustomException(PathErrorMessage.PATH_STATION_EMPTY);
     }
-
-    return pathResponse;
   }
 }
