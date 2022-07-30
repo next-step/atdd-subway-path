@@ -47,7 +47,7 @@ class PathGraphTest {
         PathGraph pathGraph = PathGraph.valueOf(createLines(line));
 
         // when
-        assertThatThrownBy(() -> pathGraph.findShortPath(GANGNAM_STATION.getId(), GANGNAM_STATION.getId()))
+        assertThatThrownBy(() -> pathGraph.findShortestPath(GANGNAM_STATION.getId(), GANGNAM_STATION.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -64,7 +64,7 @@ class PathGraphTest {
         PathGraph pathGraph = PathGraph.valueOf(createLines(greenLine, orangeLine));
 
         // when
-        assertThatThrownBy(() -> pathGraph.findShortPath(GANGNAM_STATION.getId(), NAMBU_BUS_TERMINAL_STATION.getId()))
+        assertThatThrownBy(() -> pathGraph.findShortestPath(GANGNAM_STATION.getId(), NAMBU_BUS_TERMINAL_STATION.getId()))
                 .isInstanceOf(NotConnectedPathException.class)
                 .hasMessage("출발역과 도착역이 연결되어 있지 않습니다. 출발역=강남역, 도착역=남부터미널역");
     }
@@ -83,11 +83,11 @@ class PathGraphTest {
 
         // when
         assertAll(() -> {
-            assertThatThrownBy(() -> pathGraph.findShortPath(GANGNAM_STATION.getId(), YANGJAE_STATION.getId()))
+            assertThatThrownBy(() -> pathGraph.findShortestPath(GANGNAM_STATION.getId(), YANGJAE_STATION.getId()))
                     .isInstanceOf(IllegalArgumentException.class);
-            assertThatThrownBy(() -> pathGraph.findShortPath(YANGJAE_STATION.getId(), GANGNAM_STATION.getId()))
+            assertThatThrownBy(() -> pathGraph.findShortestPath(YANGJAE_STATION.getId(), GANGNAM_STATION.getId()))
                     .isInstanceOf(IllegalArgumentException.class);
-            assertThatThrownBy(() -> pathGraph.findShortPath(YANGJAE_STATION.getId(), SEOLLEUNG_STATION.getId()))
+            assertThatThrownBy(() -> pathGraph.findShortestPath(YANGJAE_STATION.getId(), SEOLLEUNG_STATION.getId()))
                     .isInstanceOf(IllegalArgumentException.class);
         });
     }
@@ -108,7 +108,7 @@ class PathGraphTest {
         PathGraph pathGraph = PathGraph.valueOf(createLines(orangeLine));
 
         // when
-        Path shortPath = pathGraph.findShortPath(YANGJAE_STATION.getId(), NAMBU_BUS_TERMINAL_STATION.getId());
+        Path shortPath = pathGraph.findShortestPath(YANGJAE_STATION.getId(), NAMBU_BUS_TERMINAL_STATION.getId());
 
         //then
         assertAll(() -> {
@@ -139,7 +139,7 @@ class PathGraphTest {
         PathGraph pathGraph = PathGraph.valueOf(createLines(greenLine, orangeLine));
 
         // when
-        Path shortPath = pathGraph.findShortPath(YEOKSAM_STATION.getId(), NAMBU_BUS_TERMINAL_STATION.getId());
+        Path shortPath = pathGraph.findShortestPath(YEOKSAM_STATION.getId(), NAMBU_BUS_TERMINAL_STATION.getId());
 
         //then
         assertAll(() -> {
@@ -172,7 +172,7 @@ class PathGraphTest {
         PathGraph pathGraph = PathGraph.valueOf(createLines(greenLine, orangeLine));
 
         // when
-        Path shortPath = pathGraph.findShortPath(GANGNAM_STATION.getId(), YANGJAE_STATION.getId());
+        Path shortPath = pathGraph.findShortestPath(GANGNAM_STATION.getId(), YANGJAE_STATION.getId());
 
         //then
         assertAll(() -> {

@@ -45,7 +45,7 @@ public class PathGraph {
         }
     }
 
-    public Path findShortPath(Long source, Long target) {
+    public Path findShortestPath(Long source, Long target) {
         Station sourceStation = lines.findStation(source);
         Station targetStation = lines.findStation(target);
         if (sourceStation.equals(targetStation)) {

@@ -19,7 +19,7 @@ public class PathService {
     public PathResponse findShortestPath(PathRequest pathRequest) {
         Lines lines = lineService.getLines();
         PathGraph pathGraph = PathGraph.valueOf(lines);
-        Path shortestPath = pathGraph.findShortPath(pathRequest.getSource(), pathRequest.getTarget());
+        Path shortestPath = pathGraph.findShortestPath(pathRequest.getSource(), pathRequest.getTarget());
         return PathResponse.from(shortestPath);
     }
 }
