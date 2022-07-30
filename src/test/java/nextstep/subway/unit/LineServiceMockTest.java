@@ -17,10 +17,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static nextstep.subway.fixture.LineFixture.*;
+import static nextstep.subway.fixture.LineFixture.강남역_역삼역;
+import static nextstep.subway.fixture.LineFixture.신분당선;
+import static nextstep.subway.fixture.LineFixture.신분당선_ID;
+import static nextstep.subway.fixture.LineFixture.역삼역;
+import static nextstep.subway.fixture.LineFixture.역삼역_ID;
+import static nextstep.subway.fixture.LineFixture.역삼역_잠실역;
+import static nextstep.subway.fixture.LineFixture.잠실역;
+import static nextstep.subway.fixture.LineFixture.잠실역_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {

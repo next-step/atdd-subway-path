@@ -11,7 +11,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.fixture.LineFixture.*;
+import static nextstep.subway.fixture.LineFixture.강남역;
+import static nextstep.subway.fixture.LineFixture.신림역;
+import static nextstep.subway.fixture.LineFixture.역삼역;
+import static nextstep.subway.fixture.LineFixture.잠실역;
+import static nextstep.subway.fixture.LineFixture.판교역;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
