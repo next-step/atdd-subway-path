@@ -11,10 +11,10 @@ import java.util.List;
 public class PathFinder {
     private final WeightedMultigraph<Station, DefaultWeightedEdge> graph;
     private final DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath;
-    private Station source;
-    private Station target;
+    private final Station source;
+    private final Station target;
 
-    public PathFinder(Station source, Station target, List<Line> lines) {
+    public PathFinder(final Station source, final Station target, final List<Line> lines) {
 
         if (source.equals(target)) {
             throw new DataIntegrityViolationException("출발역과 도착역이 같을 수 없습니다.");
@@ -52,14 +52,14 @@ public class PathFinder {
         return (int) dijkstraShortestPath.getPathWeight(source, target);
     }
 
-    private void setEdgeWeight(Section section) {
+    private void setEdgeWeight(final Section section) {
         graph.setEdgeWeight(
             graph.addEdge(section.getUpStation(), section.getDownStation()),
             section.getDistance()
         );
     }
 
-    private boolean addVertex(Station station) {
+    private boolean addVertex(final Station station) {
         return graph.addVertex(station);
     }
 
