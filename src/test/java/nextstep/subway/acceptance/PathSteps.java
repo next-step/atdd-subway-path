@@ -9,7 +9,7 @@ public class PathSteps {
     public static ExtractableResponse<Response> 지하철_최소_경로_조회_요청(Long source, Long target) {
         return RestAssured
                 .given().log().all()
-                .when().get("/paths?source={source}&target-{target}", source, target)
+                .when().get("/paths?source={source}&target={target}", source, target)
                 .then().log().all().extract();
     }
 }

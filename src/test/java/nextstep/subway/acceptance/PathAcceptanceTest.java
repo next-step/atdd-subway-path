@@ -97,7 +97,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     private void 최소_경로를_찾을수있음(ExtractableResponse<Response> response, int distance, Long... stationIds) {
         assertAll(() -> {
-            assertThat(response.jsonPath().getList("id", Long.class)).containsExactly(stationIds);
+            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(stationIds);
             assertThat(response.jsonPath().getInt("distance")).isEqualTo(distance);
         });
     }
