@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import nextstep.subway.enums.SubwayErrorMessage;
 
 import java.util.List;
 
@@ -27,4 +28,5 @@ public class Path {
         StationDijkstraShortestPath dijkstraShortestPath = new StationDijkstraShortestPath(graph, source, target);
         return dijkstraShortestPath.getWeight();
     }
+
 }
