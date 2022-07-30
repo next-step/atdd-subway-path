@@ -16,18 +16,20 @@ public class PathService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
-    public PathService(LineRepository lineRepository, StationRepository stationRepository) {
+    public PathService(final LineRepository lineRepository, final StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
     }
 
-    public PathResponse findPath(long sourceId, long targetId) {
-        Station source = stationRepository.findById(sourceId).orElseThrow(() -> new DataIntegrityViolationException("존재하지 않은역 입니다."));
-        Station target = stationRepository.findById(targetId).orElseThrow(() -> new DataIntegrityViolationException("존재하지 않은역 입니다."));
-        PathFinder pathFinder = new PathFinder(source, target, lineRepository.findAll());
+    public PathResponse findPath(final long sourceId, final long targetId) {
+        PathFinder pathFinder = new PathFinder(getStation(sourceId), getStation(targetId), lineRepository.findAll());
         return new PathResponse(
             pathFinder.getPath().stream().map(station -> new StationResponse(station.getId(), station.getName())).collect(Collectors.toList()),
             pathFinder.getDistance()
         );
+    }
+
+    private Station getStation(final long sourceId) {
+        return stationRepository.findById(sourceId).orElseThrow(() -> new DataIntegrityViolationException("존재하지 않은역 입니다."));
     }
 }
