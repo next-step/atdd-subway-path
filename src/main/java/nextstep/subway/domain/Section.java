@@ -49,6 +49,11 @@ public class Section {
         return upStation.equals(station) || downStation.equals(station);
     }
 
+    public void removeUpStation(Section section) {
+        this.upStation = section.upStation;
+        this.distance += section.getDistance();
+    }
+
     public void updateUpStation(Section section) {
         validateHeadDistance(section);
         this.upStation = section.downStation;

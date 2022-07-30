@@ -1,7 +1,6 @@
 package nextstep.subway.config;
 
 import nextstep.subway.exception.InvalidDistanceBetweenStationsException;
-import nextstep.subway.exception.NoLastStationException;
 import nextstep.subway.exception.SectionRegistrationException;
 import nextstep.subway.exception.SectionRemovalException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -10,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class SubwayExceptionHandler {
@@ -42,16 +42,16 @@ public class SubwayExceptionHandler {
                 .body(errorResponse);
     }
 
-    @ExceptionHandler({NoLastStationException.class})
-    public ResponseEntity<ErrorResponse> noLastStationException(NoLastStationException e) {
-        final ErrorResponse errorResponse = new ErrorResponse(NoLastStationException.class.getName(), e.getMessage());
+    @ExceptionHandler({SectionRemovalException.class})
+    public ResponseEntity<ErrorResponse> sectionRemovalException(SectionRemovalException e) {
+        final ErrorResponse errorResponse = new ErrorResponse(SectionRemovalException.class.getName(), e.getMessage());
         return ResponseEntity.badRequest()
                 .body(errorResponse);
     }
 
-    @ExceptionHandler({SectionRemovalException.class})
-    public ResponseEntity<ErrorResponse> sectionRemovalException(SectionRemovalException e) {
-        final ErrorResponse errorResponse = new ErrorResponse(SectionRemovalException.class.getName(), e.getMessage());
+    @ExceptionHandler({NoSuchElementException.class})
+    public ResponseEntity<ErrorResponse> noSuchElementException(NoSuchElementException e) {
+        final ErrorResponse errorResponse = new ErrorResponse(NoSuchElementException.class.getName(), e.getMessage());
         return ResponseEntity.badRequest()
                 .body(errorResponse);
     }

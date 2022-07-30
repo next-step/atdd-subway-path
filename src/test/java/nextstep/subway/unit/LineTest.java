@@ -3,7 +3,6 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.InvalidDistanceBetweenStationsException;
-import nextstep.subway.exception.NoLastStationException;
 import nextstep.subway.exception.SectionRegistrationException;
 import nextstep.subway.exception.SectionRemovalException;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +23,7 @@ import static nextstep.subway.utils.GivenUtils.선릉역;
 import static nextstep.subway.utils.GivenUtils.선릉역_이름;
 import static nextstep.subway.utils.GivenUtils.신분당선_이름;
 import static nextstep.subway.utils.GivenUtils.양재역;
+import static nextstep.subway.utils.GivenUtils.양재역_이름;
 import static nextstep.subway.utils.GivenUtils.역삼역;
 import static nextstep.subway.utils.GivenUtils.역삼역_이름;
 import static nextstep.subway.utils.GivenUtils.이호선;
@@ -167,8 +167,8 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("section 제거")
-    void removeSection() {
+    @DisplayName("section 제거 - 마지막 역")
+    void removeLastSection() {
         // given
         int expectedSize = 2;
         Line line = 이호선();
@@ -184,18 +184,52 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("section 제거 실패 - 하행 종점역이 아닌 다른 역 제거")
-    void removeSectionWithInvalidLastStation() {
+    @DisplayName("section 제거 - 첫번째 역")
+    void removeFirstSection() {
         // given
+        int expectedSize = 2;
         Line line = 이호선();
         line.addSection(강남역(), 역삼역(), TEN);
         line.addSection(역삼역(), 선릉역(), FIVE);
 
         // when
-        Executable executable = () -> line.removeSection(역삼역());
+        line.removeSection(강남역());
 
         // then
-        assertThrows(NoLastStationException.class, executable);
+        assertThat(getStationNames(line)).hasSize(expectedSize)
+                .containsExactly(역삼역_이름, 선릉역_이름);
+    }
+
+    @Test
+    @DisplayName("section 제거 - 중간역")
+    void removeMiddleSection() {
+        // given
+        int expectedSize = 3;
+        Line line = 이호선();
+        line.addSection(양재역(), 강남역(), TEN);
+        line.addSection(강남역(), 역삼역(), TEN);
+        line.addSection(역삼역(), 선릉역(), FIVE);
+
+        // when
+        line.removeSection(역삼역());
+
+        // then
+        assertThat(getStationNames(line)).hasSize(expectedSize)
+                .containsExactly(양재역_이름, 강남역_이름, 선릉역_이름);
+    }
+
+    @Test
+    @DisplayName("section 제거 실패 - 존재하지 않는 역 제거")
+    void removeSectionWithNonExistStation() {
+        // given
+        Line line = 이호선();
+        line.addSection(강남역(), 역삼역(), TEN);
+
+        // when
+        Executable executable = () -> line.removeSection(선릉역());
+
+        // then
+        assertThrows(NoSuchElementException.class, executable);
     }
 
     @Test

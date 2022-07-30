@@ -111,4 +111,25 @@ class SectionTest {
         assertThrows(InvalidDistanceBetweenStationsException.class, executable);
     }
 
+    @Test
+    @DisplayName("구간의 상행역 제거")
+    void removeUpStation() {
+        // given
+        int distance = 10;
+        int newDistance = 3;
+        Line line = 이호선();
+        Station 강남역 = 강남역();
+        Station 역삼역 = 역삼역();
+        Station 선릉역 = 선릉역();
+        Section section = new Section(line, 역삼역, 선릉역, distance);
+
+        // when
+        section.removeUpStation(new Section(line, 강남역, 역삼역, newDistance));
+
+        // then
+        assertThat(section.getDistance()).isEqualTo(distance + newDistance);
+        assertThat(section.getUpStation()).isEqualTo(강남역);
+        assertThat(section.getDownStation()).isEqualTo(선릉역);
+    }
+
 }

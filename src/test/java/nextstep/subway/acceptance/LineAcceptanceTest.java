@@ -6,9 +6,7 @@ import nextstep.subway.client.LineClient;
 import nextstep.subway.client.StationClient;
 import nextstep.subway.client.dto.LineCreationRequest;
 import nextstep.subway.client.dto.SectionRegistrationRequest;
-import nextstep.subway.domain.Line;
 import nextstep.subway.exception.InvalidDistanceBetweenStationsException;
-import nextstep.subway.exception.NoLastStationException;
 import nextstep.subway.exception.SectionRegistrationException;
 import nextstep.subway.exception.SectionRemovalException;
 import nextstep.subway.utils.GivenUtils;
@@ -16,33 +14,28 @@ import nextstep.subway.utils.HttpStatusValidator;
 import nextstep.subway.utils.JsonResponseConverter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.annotation.DirtiesContext;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static nextstep.subway.utils.GivenUtils.FIVE;
 import static nextstep.subway.utils.GivenUtils.GREEN;
 import static nextstep.subway.utils.GivenUtils.TEN;
 import static nextstep.subway.utils.GivenUtils.YELLOW;
 import static nextstep.subway.utils.GivenUtils.강남역;
-import static nextstep.subway.utils.GivenUtils.강남역_이름;
 import static nextstep.subway.utils.GivenUtils.교대역_이름;
 import static nextstep.subway.utils.GivenUtils.분당선_이름;
-import static nextstep.subway.utils.GivenUtils.선릉역;
 import static nextstep.subway.utils.GivenUtils.선릉역_이름;
 import static nextstep.subway.utils.GivenUtils.신분당선_이름;
-import static nextstep.subway.utils.GivenUtils.양재역;
+import static nextstep.subway.utils.GivenUtils.양재역_이름;
 import static nextstep.subway.utils.GivenUtils.역삼역;
-import static nextstep.subway.utils.GivenUtils.역삼역_이름;
-import static nextstep.subway.utils.GivenUtils.이호선;
 import static nextstep.subway.utils.GivenUtils.이호선_이름;
 import static nextstep.subway.utils.GivenUtils.이호선역_이름들;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -440,13 +433,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 지하철 노선을 생성하고 구간을 추가한 후
-     * When 지하철 노선에 구간을 삭제하면
+     * When 지하철 노선에 마지막 역 구간을 삭제하면
      * Then 해당 구간이 노선 구간 목록에서 존재하지 않는다
      */
-    @DisplayName("지하철 노선에 구간을 제거")
     @Test
+    @DisplayName("지하철 노선에 구간을 제거 - 마지막 역")
     @DirtiesContext
-    void removeSection() {
+    void removeLastSection() {
         // given
         int expectedSize = 2;
         long lineId = responseConverter.convertToId(givenUtils.이호선_생성());
@@ -464,24 +457,74 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 지하철 노선을 생성하고 구간을 추가한 후
-     * When 지하철 노선에 하행 종점역이 아닌 다른 역을 삭제하면
-     * Then Then 오류(NoLastStationException) 객체를 반환한다
+     * When 지하철 노선에 첫번째 역 구간을 삭제하면
+     * Then 해당 구간이 노선 구간 목록에서 존재하지 않는다
      */
-    @DisplayName("지하철 노선에 구간을 제거 - 하행 종점역이 아닌 다른 역 제거")
+    @Test
+    @DisplayName("section 제거 - 첫번째 역")
+    @DirtiesContext
+    void removeFirstSection() {
+        // given
+        int expectedSize = 2;
+        long lineId = responseConverter.convertToId(givenUtils.이호선_생성());
+        lineClient.addSection(lineId, givenUtils.역삼_선릉_구간_생성_요청());
+        long stationId = 1L;
+
+        // when
+        ExtractableResponse<Response> response = lineClient.removeSection(lineId, stationId);
+
+        // then
+        statusValidator.validateNoContent(response);
+        assertThat(responseConverter.convert(lineClient.fetchLine(lineId), "stations", List.class))
+                .hasSize(expectedSize);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고 구간을 추가한 후
+     * When 지하철 노선에 중간역 역 구간을 삭제하면
+     * Then 해당 구간이 노선 구간 목록에서 존재하지 않는다
+     */
+    @Test
+    @DisplayName("section 제거 - 중간역")
+    @DirtiesContext
+    void removeMiddleSection() {
+        // given
+        int expectedSize = 3;
+        long lineId = responseConverter.convertToId(givenUtils.이호선_생성());
+        lineClient.addSection(lineId, givenUtils.역삼_선릉_구간_생성_요청());
+        lineClient.addSection(lineId, givenUtils.교대_강남_구간_생성_요청());
+        long stationId = 2L;
+
+        // when
+        ExtractableResponse<Response> response = lineClient.removeSection(lineId, stationId);
+
+        // then
+        statusValidator.validateNoContent(response);
+        assertThat(responseConverter.convert(lineClient.fetchLine(lineId), "stations", List.class))
+                .hasSize(expectedSize);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고 구간을 추가한 후
+     * When 지하철 노선에 구간에 존재하지 않는 역을 삭제하면
+     * Then Then 오류(NoSuchElementException) 객체를 반환한다
+     */
+    @DisplayName("지하철 노선에 구간 제거 실패 - 구간에 존재하지 않는 역 제거")
     @Test
     @DirtiesContext
-    void removeSectionWithInvalidLastStation() {
+    void removeSectionWithInvalidStation() {
         // given
         long lineId = responseConverter.convertToId(givenUtils.이호선_생성());
         lineClient.addSection(lineId, givenUtils.역삼_선릉_구간_생성_요청());
+        Long 양재역_Id = responseConverter.convertToId(stationClient.createStation(양재역_이름));
 
         // when
-        ExtractableResponse<Response> response = lineClient.removeSection(lineId, 역삼역().getId());
+        ExtractableResponse<Response> response = lineClient.removeSection(lineId, 양재역_Id);
 
         // then
         statusValidator.validateBadRequest(response);
         assertThat(responseConverter.convertToError(response))
-                .contains(NoLastStationException.class.getName());
+                .contains(NoSuchElementException.class.getName());
     }
 
     /**
@@ -489,7 +532,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선에 하행 종점역이 아닌 다른 역을 삭제하면
      * Then Then 오류(SectionRemovalException) 객체를 반환한다
      */
-    @DisplayName("지하철 노선에 구간을 제거 - 구간이 1개인 경우")
+    @DisplayName("지하철 노선에 구간 제거 실패 - 구간이 1개인 경우")
     @Test
     @DirtiesContext
     void removeSingleSection() {

@@ -3,7 +3,6 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
-import nextstep.subway.exception.NoLastStationException;
 import nextstep.subway.exception.SectionRegistrationException;
 import nextstep.subway.exception.SectionRemovalException;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.utils.GivenUtils.FIVE;
@@ -76,7 +76,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("section 제거 - 성공적인 제거")
+    @DisplayName("section 제거 - 마지막 역 제거")
     void removeSection() {
         // given
         int expectedSize = 2;
@@ -93,7 +93,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("section 제거 - 하행 종점역이 아닌 다른 역 제거")
+    @DisplayName("section 제거 - 존재하지 않는 역 제거")
     void removeSectionWithInvalidLastStation() {
         // given
         Sections sections = new Sections();
@@ -101,10 +101,10 @@ class SectionsTest {
         sections.add(역삼_선릉_구간());
 
         // when
-        Executable executable = () -> sections.removeSection(역삼역());
+        Executable executable = () -> sections.removeSection(양재역());
 
         // then
-        assertThrows(NoLastStationException.class, executable);
+        assertThrows(NoSuchElementException.class, executable);
     }
 
     @Test
