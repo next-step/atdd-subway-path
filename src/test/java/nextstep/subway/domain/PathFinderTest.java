@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.exception.CannotFindPathWithSameStationException;
+import nextstep.subway.exception.DisconnectedStationsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -78,5 +79,26 @@ class PathFinderTest {
 		//then
 		assertThatThrownBy(() -> pathFinder.findPath(종합운동장역, 종합운동장역))
 				.isInstanceOf(CannotFindPathWithSameStationException.class);
+	}
+
+	/**
+	 * Given 연결되어 있지 않은 노선을 추가한다.
+	 * When 출발역과 종점역이 서로 연결되지 않은 채로 경로를 조회하면
+	 * Then 조회할 수 없다.
+	 */
+	@DisplayName("출발역과 종점역이 연결되어 있지 않으면 경로를 조회할 수 없다")
+	@Test
+	void pathFindFailOnDisconnectedStations() {
+		//given
+		Station 강남역 = new Station("강남역");
+		Station 판교역 = new Station("판교역");
+		Line 신분당선 = new Line("신분당선", "red");
+		신분당선.addSection(강남역, 판교역, 10);
+
+		PathFinder finder = new PathFinder(List.of(신분당선, 이호선, 팔호선));
+		//when
+		//then
+		assertThatThrownBy(() -> finder.findPath(종합운동장역, 강남역))
+				.isInstanceOf(DisconnectedStationsException.class);
 	}
 }

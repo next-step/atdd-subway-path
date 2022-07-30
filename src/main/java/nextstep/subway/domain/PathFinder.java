@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.exception.CannotFindPathWithSameStationException;
+import nextstep.subway.exception.DisconnectedStationsException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -10,6 +11,7 @@ import org.jgrapht.graph.WeightedMultigraph;
 import java.util.Collection;
 import java.util.List;
 
+import static nextstep.subway.exception.ErrorCode.CANNOT_FIND_PATH_WITH_DISCONNECTED_STATIONS;
 import static nextstep.subway.exception.ErrorCode.CANNOT_FIND_PATH_WITH_SAME_STATION;
 
 public class PathFinder {
@@ -34,7 +36,16 @@ public class PathFinder {
 		}
 
 		GraphPath path = getShortestPath(departure, destination);
+
+		if (isNotConnected(path)) {
+			throw new DisconnectedStationsException(CANNOT_FIND_PATH_WITH_DISCONNECTED_STATIONS.getMessage());
+		}
+
 		return new PathResponse(path.getVertexList(), (int) path.getWeight());
+	}
+
+	private boolean isNotConnected(GraphPath path) {
+		return path == null;
 	}
 
 	private boolean isSameStation(Station departure, Station destination) {

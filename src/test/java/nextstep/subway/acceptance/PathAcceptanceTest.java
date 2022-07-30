@@ -87,16 +87,37 @@ public class PathAcceptanceTest extends AcceptanceTest{
 		assertThat(경로조회.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
-	private ExtractableResponse<Response> 경로를_조회한다(long 종합운동장역, long 천호역) {
+	/**
+	 * Given 연결되어 있지 않은 노선을 추가한다.
+	 * When 출발역과 종점역이 서로 연결되지 않은 채로 조회하면
+	 * Then 조회할 수 없다.
+	 */
+	@DisplayName("출발역과 종점역이 연결되어 있지 않으면 경로를 조회할 수 없다")
+	@Test
+	void pathFindFailOnDisconnectedStations() {
+		//given
+		long 강남역 = 지하철역을_생성한다("강남역");
+		long 판교역 = 지하철역을_생성한다("판교역");
+		long 신분당선 = 지하철노선을_생성한다("신분당선", "red");
+		노선에_구간을_추가한다(신분당선, 강남역, 판교역, 10);
+
+		//when
+		ExtractableResponse<Response> 경로조회 = 경로를_조회한다(종합운동장역, 강남역);
+
+		//then
+		assertThat(경로조회.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	private ExtractableResponse<Response> 경로를_조회한다(long source, long target) {
 		return RestAssured.given().log().all()
 				.contentType(MediaType.APPLICATION_JSON_VALUE)
-				.when().get("/paths?source={source}&target={target}", 종합운동장역, 천호역)
+				.when().get("/paths?source={source}&target={target}", source, target)
 				.then().log().all()
 				.extract();
 	}
 
-	private void 노선에_구간을_추가한다(long 이호선, long 종합운동장역, long 잠실역, int distance) {
-		지하철_노선에_지하철_구간_생성_요청(이호선, createSectionCreateParams(종합운동장역, 잠실역, distance));
+	private void 노선에_구간을_추가한다(long lineId, long upStationId, long downStationId, int distance) {
+		지하철_노선에_지하철_구간_생성_요청(lineId, createSectionCreateParams(upStationId, downStationId, distance));
 	}
 
 	private long 지하철노선을_생성한다(String name, String color) {
