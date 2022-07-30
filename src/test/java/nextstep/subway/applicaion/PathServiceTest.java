@@ -78,6 +78,16 @@ class PathServiceTest {
             .isThrownBy(() -> pathService.getShortestPath(Long.MAX_VALUE, 강남역));
     }
 
+    @Test
+    @DisplayName("연결되어 있지 않은 역을 조회할 경우 예외")
+    void notConnectedException() {
+        long 까치울역 = 역_생성("까치울역");
+        long 강남구청역 = 역_생성("강남구청역");
+        노선_생성("7호선", "red", 까치울역, 강남구청역, 5);
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> pathService.getShortestPath(까치울역, 강남역));
+    }
+
     private void 최단거리_경로_거리_검증(final PathResponse shortestPath) {
         assertAll(
             () -> assertThat(shortestPath.getStations()).hasSize(3)

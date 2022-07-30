@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.Comparator;
 import java.util.List;
+import nextstep.subway.exception.NotConnectedException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.KShortestPaths;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -51,7 +52,7 @@ public class Path {
 
         return paths.stream()
             .min(Comparator.comparing(GraphPath::getWeight))
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(NotConnectedException::new);
     }
 
 }
