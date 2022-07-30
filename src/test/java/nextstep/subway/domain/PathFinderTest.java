@@ -1,7 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.dto.PathResponse;
-import nextstep.subway.exception.CannotFindPathWithSameStationException;
+import nextstep.subway.exception.SameStationException;
 import nextstep.subway.exception.DisconnectedStationsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -78,7 +78,7 @@ class PathFinderTest {
 		//when
 		//then
 		assertThatThrownBy(() -> pathFinder.findPath(종합운동장역, 종합운동장역))
-				.isInstanceOf(CannotFindPathWithSameStationException.class);
+				.isInstanceOf(SameStationException.class);
 	}
 
 	/**

@@ -1,7 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.dto.PathResponse;
-import nextstep.subway.exception.CannotFindPathWithSameStationException;
+import nextstep.subway.exception.SameStationException;
 import nextstep.subway.exception.DisconnectedStationsException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -32,7 +32,7 @@ public class PathFinder {
 
 	public PathResponse findPath(Station departure, Station destination) {
 		if (isSameStation(departure, destination)) {
-			throw new CannotFindPathWithSameStationException(CANNOT_FIND_PATH_WITH_SAME_STATION.getMessage());
+			throw new SameStationException(CANNOT_FIND_PATH_WITH_SAME_STATION.getMessage());
 		}
 
 		GraphPath path = getShortestPath(departure, destination);

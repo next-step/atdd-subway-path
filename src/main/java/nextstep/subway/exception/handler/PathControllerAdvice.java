@@ -1,6 +1,6 @@
 package nextstep.subway.exception.handler;
 
-import nextstep.subway.exception.CannotFindPathWithSameStationException;
+import nextstep.subway.exception.SameStationException;
 import nextstep.subway.exception.DisconnectedStationsException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,7 +12,7 @@ import static nextstep.subway.exception.ErrorCode.CANNOT_FIND_PATH_WITH_SAME_STA
 @RestControllerAdvice
 public class PathControllerAdvice {
 
-	@ExceptionHandler(CannotFindPathWithSameStationException.class)
+	@ExceptionHandler(SameStationException.class)
 	public ResponseEntity<Void> cannotFindPathWithSameStationExceptionHandler() {
 		return ResponseEntity.status(CANNOT_FIND_PATH_WITH_SAME_STATION.getStatus()).build();
 	}
