@@ -13,7 +13,7 @@ public class PathController {
 
     private final PathService pathService;
 
-    public PathController(PathService pathService) {
+    public PathController(final PathService pathService) {
         this.pathService = pathService;
     }
 
@@ -21,7 +21,7 @@ public class PathController {
         value = "/paths",
         consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<PathResponse> getPath(@RequestParam long sourceId, @RequestParam long targetId) {
+    public ResponseEntity<PathResponse> getPath(@RequestParam final long sourceId, @RequestParam final long targetId) {
         return ResponseEntity.ok(pathService.findPath(sourceId, targetId));
     }
 }
