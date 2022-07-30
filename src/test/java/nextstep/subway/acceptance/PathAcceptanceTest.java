@@ -11,7 +11,6 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
 import nextstep.subway.common.exception.message.PathErrorMessage;
-import nextstep.subway.common.exception.message.SectionErrorMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,6 +38,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
   @BeforeEach
   public void setUp() {
+    super.setUp();
+
     교대역 = 지하철역_생성_요청("교대역").jsonPath().getLong("id");
     강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
     양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
@@ -64,8 +65,10 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
   @Test
   void 최단_경로_출발역이_없으면_에러() {
+    Long 판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
+
     ExtractableResponse<Response> result = RestAssured.given().log().all()
-        .when().get("/paths?source={sourceId}&target={targetId}", 강남역, 양재역)
+        .when().get("/paths?source={sourceId}&target={targetId}", 판교역, 양재역)
         .then().log().all()
         .extract();
 
@@ -75,8 +78,10 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
   @Test
   void 최단_경로_종착역이_없으면_에러() {
+    Long 판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
+
     ExtractableResponse<Response> result = RestAssured.given().log().all()
-        .when().get("/paths?source={sourceId}&target={targetId}", 교대역, 강남역)
+        .when().get("/paths?source={sourceId}&target={targetId}", 교대역, 판교역)
         .then().log().all()
         .extract();
 
