@@ -26,18 +26,27 @@ public class PathService {
     }
 
     public PathResponse findPaths(Long source, Long target) {
-        if (Objects.isNull(source) || Objects.isNull(target)) {
-            throw new BusinessException("source 나 target이 Null 일 수 없습니다", HttpStatus.BAD_REQUEST);
-        }
+        vaildateFindPathCondition(source, target);
 
         Station sourceStation = stationService.findById(source);
         Station targetStation = stationService.findById(target);
 
         PathFinder pathFinder = new PathFinder(getAllSections());
         List<Station> stationList = pathFinder.getShortestPath(sourceStation, targetStation);
-        long distance = pathFinder.getSumOfDistance(sourceStation, targetStation);
+        long distance = pathFinder.getShortestDistance(sourceStation, targetStation);
 
         return new PathResponse(distance, stationList);
+    }
+
+    private void vaildateFindPathCondition(Long source, Long target) {
+        if (Objects.isNull(source) || Objects.isNull(target)) {
+            throw new BusinessException("파라미터 source나 target이 Null일 수 없습니다", HttpStatus.BAD_REQUEST);
+        }
+
+        if (source.equals(target)) {
+            throw new BusinessException("출발역과 도착역이 동일합니다.", HttpStatus.BAD_REQUEST);
+        }
+        return;
     }
 
     private List<Section> getAllSections() {
