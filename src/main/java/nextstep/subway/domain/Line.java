@@ -29,7 +29,7 @@ public class Line {
         this.name = name;
         this.color = color;
         this.sections = newSections();
-        this.sections.addSection(this, upStation, downStation, distance);
+        this.sections.addSection(new Section(this, upStation, downStation, distance));
     }
 
     public static Line makeLine(String name, String color) {
@@ -86,12 +86,7 @@ public class Line {
             return Collections.emptyList();
         }
 
-        List<Station> stations = this.sections.list().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-        stations.add(0, this.sections.list().get(0).getUpStation());
-
-        return stations;
+        return this.sections.stations();
     }
 
     public int sectionSize() {

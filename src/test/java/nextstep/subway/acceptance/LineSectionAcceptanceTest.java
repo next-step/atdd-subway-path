@@ -148,7 +148,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> 지하철_노선_응답 = 지하철_노선_조회_요청(신분당선);
         assertThat(지하철_노선_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(지하철_노선_응답.jsonPath().getList("station.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+        assertThat(지하철_노선_응답.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
     }
 
     /**
@@ -166,7 +166,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> 지하철_노선_응답 = 지하철_노선_조회_요청(신분당선);
         assertThat(지하철_노선_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(지하철_노선_응답.jsonPath().getList("station.id", Long.class)).containsExactly(정자역, 강남역, 양재역);
+        assertThat(지하철_노선_응답.jsonPath().getList("stations.id", Long.class)).containsExactly(정자역, 강남역, 양재역);
     }
 
     /**
@@ -178,12 +178,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     void addLineSectionNotHasStations() {
 
         // when
-        final Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        final Long 양재역 = 지하철역_생성_요청("양재역").jsonPath().get("id");
+        ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, "5"));
 
         // then
-        assertThatThrownBy(() -> 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 양재역, "5")))
-                .isInstanceOf(IllegalStateException.class);
+        assertThat(지하철_노선에_지하철_구간_생성_응답.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     /**

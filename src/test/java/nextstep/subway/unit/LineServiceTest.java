@@ -34,8 +34,12 @@ public class LineServiceTest {
         return stationRepository.save(지하철역);
     }
 
-    private Line 노선_저장(final String lineName, final String color) {
-        return lineRepository.save(LineTestFixtures.노선_생성(lineName, color));
+    private Line 노선_저장(final String 노선명, final String 노선색) {
+        return lineRepository.save(LineTestFixtures.노선_생성(노선명, 노선색));
+    }
+
+    private Line 노선_저장(final String 노선명, final String 노선색, final Station 상행역, final Station 하행역, final int 거리) {
+        return lineRepository.save(LineTestFixtures.노선_생성(노선명, 노선색, 상행역, 하행역, 거리));
     }
 
     @DisplayName("구간 등록하기")
@@ -45,14 +49,17 @@ public class LineServiceTest {
         // given
         final Station 강남역 = 지하철역_저장("강남역");
         final Station 시청역 = 지하철역_저장("시청역");
-        final Line 신분당선 = 노선_저장("신분당선", "red");
-        SectionRequest sectionRequest = LineTestFixtures.구간요청_생성(강남역.getId(), 시청역.getId(), 10);
+        final Station 구로디지털단지역 = 지하철역_저장("구로디지털단지역");
+
+        final Line 신분당선 = 노선_저장("신분당선", "red", 강남역, 시청역, 10);
+
+        SectionRequest 두번째_구간_요청 = LineTestFixtures.구간요청_생성(시청역.getId(), 구로디지털단지역.getId(), 6);
 
         // when
-        lineService.addSection(신분당선.getId(), sectionRequest);
+        lineService.addSection(신분당선.getId(), 두번째_구간_요청);
 
         // then
-        assertThat(신분당선.getSections().size()).isEqualTo(1);
+        assertThat(신분당선.sectionSize()).isEqualTo(2);
     }
 
     @DisplayName("구간 제거하기")
@@ -64,12 +71,9 @@ public class LineServiceTest {
         final Station 시청역 = 지하철역_저장("시청역");
         final Station 구로디지털단지역 = 지하철역_저장("구로디지털단지역");
 
-        final Line 신분당선 = 노선_저장("신분당선", "red");
+        final Line 신분당선 = 노선_저장("신분당선", "red", 강남역, 시청역, 10);
 
-        SectionRequest 첫번째_구간_요청 = LineTestFixtures.구간요청_생성(강남역.getId(), 시청역.getId(), 10);
         SectionRequest 두번째_구간_요청 = LineTestFixtures.구간요청_생성(시청역.getId(), 구로디지털단지역.getId(), 5);
-
-        lineService.addSection(신분당선.getId(), 첫번째_구간_요청);
         lineService.addSection(신분당선.getId(), 두번째_구간_요청);
 
         //when
@@ -78,4 +82,5 @@ public class LineServiceTest {
         //then
         assertThat(신분당선.getSections().size()).isEqualTo(1);
     }
+
 }

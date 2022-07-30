@@ -133,15 +133,15 @@ class LineTest {
     void getStations() {
 
         //given
-        final Line 신분당선 = LineTestFixtures.노선_생성("신분당선", "red");
         final Station 강남역 = StationTestFixtures.지하철역_생성("강남역");
         final Station 시청역 = StationTestFixtures.지하철역_생성("시청역");
         final Station 구로디지털단지역 = StationTestFixtures.지하철역_생성("구로디지털단지역");
 
         final int 첫번째구간_거리 = 10;
+        final Line 신분당선 = LineTestFixtures.노선_생성("신분당선", "red", 강남역, 시청역, 첫번째구간_거리);
+
         final int 두번째구간_거리 = 5;
 
-        신분당선.addSection(강남역, 시청역, 첫번째구간_거리);
         신분당선.addSection(시청역, 구로디지털단지역, 두번째구간_거리);
 
         //when
@@ -159,13 +159,11 @@ class LineTest {
         final Station 강남역 = StationTestFixtures.지하철역_생성("강남역");
         final Station 시청역 = StationTestFixtures.지하철역_생성("시청역");
         final Station 구로디지털단지역 = StationTestFixtures.지하철역_생성("구로디지털단지역");
-
-        final Line 신분당선 = LineTestFixtures.노선_생성("신분당선", "red");
-
         final int 첫번째구간_거리 = 10;
-        final int 두번째구간_거리 = 5;
 
-        신분당선.addSection(강남역, 시청역, 첫번째구간_거리);
+        final Line 신분당선 = LineTestFixtures.노선_생성("신분당선", "red", 강남역, 시청역, 첫번째구간_거리);
+
+        final int 두번째구간_거리 = 5;
         신분당선.addSection(시청역, 구로디지털단지역, 두번째구간_거리);
 
         //when
