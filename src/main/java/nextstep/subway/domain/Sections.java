@@ -1,9 +1,6 @@
 package nextstep.subway.domain;
 
-import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import nextstep.subway.exception.InvalidDistanceBetweenStationsException;
-import nextstep.subway.exception.NoLastStationException;
 import nextstep.subway.exception.SectionRegistrationException;
 import nextstep.subway.exception.SectionRemovalException;
 
@@ -13,6 +10,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -35,9 +33,22 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
-        validateLastStation(station);
+        validateExistsStation(station);
         validateSingleSection();
-        sections.remove(sections.size() - 1);
+        removeStation(station);
+    }
+
+    private void removeStation(Station station) {
+        int stationPosition = getStations().indexOf(station);
+        if (stationPosition == 0) {
+            removeFirstStation();
+            return;
+        }
+        if (stationPosition >= sections.size()) {
+            removeLastStation();
+            return;
+        }
+        removeMiddleStation(stationPosition);
     }
 
     public List<Station> getStations() {
@@ -130,10 +141,9 @@ public class Sections {
                 .getUpStation();
     }
 
-    private void validateLastStation(Station station) {
-        Station lastStation = getTailStation();
-        if (!lastStation.equals(station)) {
-            throw new NoLastStationException();
+    private void validateExistsStation(Station station) {
+        if (!containsStation(station)) {
+            throw new NoSuchElementException();
         }
     }
 
@@ -149,6 +159,20 @@ public class Sections {
 
     private Section getFirstSection() {
         return sections.get(0);
+    }
+
+    private void removeFirstStation() {
+        sections.remove(0);
+    }
+
+    private void removeLastStation() {
+        sections.remove(sections.size() - 1);
+    }
+
+    private void removeMiddleStation(int stationPosition) {
+        Section removedSection = sections.remove(stationPosition - 1);
+        sections.get(stationPosition - 1)
+                .removeUpStation(removedSection);
     }
 
 }
