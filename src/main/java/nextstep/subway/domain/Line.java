@@ -1,11 +1,19 @@
 package nextstep.subway.domain;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,47 +21,20 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
-
-    public Line() {
-    }
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
-
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 
     public Section getLastSection() {
-        return getSections().get(sections.size()-1);
+        return getSections().get(sections.getSize()-1);
     }
 
     public void addSection(Section section) {
@@ -61,14 +42,16 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        return this.sections.stream()
-            .map(Section::getStationList)
-            .flatMap(List::stream)
-            .distinct()
-            .collect(Collectors.toList());
+        return sections.getStations();
     }
 
     public void removeSection(Section section) {
         this.sections.remove(section);
+    }
+
+    public void validateRemoveSection(Station station) {
+        if (!getLastSection().getDownStation().equals(station)) {
+            throw new IllegalArgumentException("마지막 구간만 삭제할 수 있습니다.");
+        }
     }
 }

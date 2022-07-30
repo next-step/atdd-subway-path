@@ -27,6 +27,10 @@ dependencies {
     testImplementation 'io.rest-assured:rest-assured:4.2.0'
 
     runtimeOnly 'com.h2database:h2'
+
+    // Lombok
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok:")
 }
 
 test {

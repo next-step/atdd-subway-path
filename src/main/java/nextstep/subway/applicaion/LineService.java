@@ -44,12 +44,16 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        return createLineResponse(findLine(id));
+    }
+
+    public Line findLine(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
     }
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = findLine(id);
 
         if (lineRequest.getName() != null) {
             line.setName(lineRequest.getName());
@@ -65,11 +69,12 @@ public class LineService {
     }
 
     @Transactional
-    public void addSection(Long lineId, SectionRequest sectionRequest) {
+    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = findLine(lineId);
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        return createLineResponse(line);
     }
 
     private LineResponse createLineResponse(Line line) {
@@ -99,13 +104,10 @@ public class LineService {
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = findLine(lineId);
         Station station = stationService.findById(stationId);
 
-        if (!line.getLastSection().getDownStation().equals(station)) {
-            throw new IllegalArgumentException("마지막 구간만 삭제할 수 있습니다.");
-        }
-
+        line.validateRemoveSection(station);
         line.removeSection(line.getLastSection());
     }
 }
