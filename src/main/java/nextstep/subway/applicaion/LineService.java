@@ -88,4 +88,11 @@ public class LineService {
         Station station = stationService.findById(stationId);
         line.removeStations(station);
     }
+
+    public List<Line> lineContainingStation(List<Long> stationIds) {
+        return lineRepository.findAll()
+            .stream()
+            .filter(line -> line.containsStationIds(stationIds))
+            .collect(Collectors.toList());
+    }
 }

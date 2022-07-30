@@ -5,14 +5,14 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.junit.jupiter.api.Assertions.assertAll;
 import java.util.List;
 import nextstep.subway.applicaion.LineService;
-import nextstep.subway.applicaion.dto.LineSaveRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
+import nextstep.subway.applicaion.dto.LineSaveRequest;
 import nextstep.subway.applicaion.dto.LineUpdateRequest;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,6 +140,19 @@ class LineServiceTest {
         assertThat(삭제후_응답.getStations()).hasSize(2);
     }
 
+    @Test
+    @DisplayName("실제 출발역 또는 도착역이 하나라도 포함되어 있는지")
+    void containingStation() {
+        final long 강남역 = 역_생성("강남역");
+        final long 역삼역 = 역_생성("역삼역");
+        final LineResponse 노선_생성 = 노선_생성("2호선", "green", 강남역, 역삼역, 10);
+
+        final List<Line> lines = lineService.lineContainingStation(List.of(강남역, 역삼역));
+
+        assertThat(lines).hasSize(1);
+        assertThat(lines.get(0).getId()).isEqualTo(노선_생성.getId());
+    }
+
     private LineResponse 노선_생성(final String name, final String color, final long upStationId, final long downStationId
         , final int distance) {
         LineSaveRequest request = new LineSaveRequest(name, color, upStationId, downStationId, distance);
@@ -150,4 +163,5 @@ class LineServiceTest {
         final Station station = stationRepository.save(new Station(stationName));
         return station.getId();
     }
+
 }
