@@ -83,4 +83,9 @@ public class Line {
         }
     }
 
+    public boolean containsStationIds(final List<Long> stationIds) {
+        return stationIds.stream()
+                .anyMatch(stationId -> sections.containsStation(stationId));
+    }
+
 }
