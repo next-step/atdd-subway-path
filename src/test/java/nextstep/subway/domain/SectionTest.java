@@ -83,4 +83,18 @@ class SectionTest {
         assertThat(section.getDistance()).isEqualTo(3);
     }
 
+    @Test
+    @DisplayName("중간 구간이 삭제될 시 업데이트")
+    void removeThenUpdateMiddleSection() {
+        //given
+        Station station = new Station(3L, "역삼역");
+
+        //when
+        section.removeMiddleSection(3, station);
+
+        //then
+        assertThat(section.getDownStation()).isEqualTo(station);
+        assertThat(section.getDistance()).isEqualTo(13);
+    }
+
 }

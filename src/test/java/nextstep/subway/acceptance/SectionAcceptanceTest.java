@@ -2,6 +2,9 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.domain.Section;
+import nextstep.subway.exception.SectionMinimumLimitException;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,8 +51,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+        역_순서_검증(response, 강남역, 양재역, 정자역);
     }
 
     @DisplayName("지하철 노선에 상행역 종점을 등록")
@@ -61,8 +63,12 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        역_순서_검증(response, 정자역, 강남역, 양재역);
+    }
+
+    private void 역_순서_검증(final ExtractableResponse<Response> response, final Long... stationIds) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(정자역, 강남역, 양재역);
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(stationIds);
     }
 
     @DisplayName("지하철 노선에 중간 구간 등록")
@@ -74,8 +80,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역, 양재역);
+        역_순서_검증(response, 강남역, 정자역, 양재역);
     }
 
     /**
@@ -83,7 +88,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
      * Then 노선에 구간이 제거된다
      */
-    @DisplayName("지하철 노선에 구간을 제거")
+    @DisplayName("지하철 노선에 마지막 구간을 제거")
     @Test
     void removeLineSection() {
         // given
@@ -95,8 +100,32 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+
+        역_순서_검증(response, 강남역, 양재역);
+    }
+
+    @Test
+    @DisplayName("구간이 하나밖에 없는 경우 구간을 제거할 시 예외")
+    void removeSectionLimitSizeException() {
+        //when
+        final ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(1L, 2L);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @DisplayName("가운데 구간 제거")
+    void removeLineMiddleSection() {
+        //given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(1L, createSectionCreateParams(양재역, 정자역));
+
+        //when
+        final ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(1L, 2L);
+
+        //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {

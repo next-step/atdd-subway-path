@@ -70,7 +70,8 @@ public class Line {
     }
 
     public void removeStations(final Station station) {
-        sections.removeStations(station);
+        final Section removeSection = sections.findRemoveSection(station);
+        sections.remove(removeSection);
     }
 
     public void updateLineInfo(final String name, final String color) {
