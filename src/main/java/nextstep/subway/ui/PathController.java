@@ -2,6 +2,7 @@ package nextstep.subway.ui;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.applicaion.PathService;
+import nextstep.subway.applicaion.dto.PathDto;
 import nextstep.subway.applicaion.dto.request.PathRequest;
 import nextstep.subway.applicaion.dto.response.PathResponse;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class PathController {
 
     @GetMapping
     public ResponseEntity<PathResponse> findShortPath(@Valid PathRequest pathRequest) {
-        PathResponse pathResponse = pathService.findShortPath(pathRequest);
-        return ResponseEntity.ok().body(pathResponse);
+        PathDto pathDto = pathService.findShortPath(pathRequest);
+        return ResponseEntity.ok().body(PathResponse.from(pathDto));
     }
 }
