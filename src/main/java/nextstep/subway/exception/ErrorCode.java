@@ -13,7 +13,9 @@ public enum ErrorCode {
 	CANNOT_REGISTER_WITHOUT_REGISTERED_STATIONS(HttpStatus.BAD_REQUEST, "상행역과 하행역이 모두 등록되어 있지 않은 구간은 등록할 수 없습니다."),
 
 	CANNOT_REMOVE_SECTION(HttpStatus.BAD_REQUEST, "등록되지 않은 역으로 삭제할 수 없습니다."),
-	CANNOT_REMOVE_LAST_SECTION(HttpStatus.BAD_REQUEST, "구간이 하나인 노선의 구간을 삭제할 수 없습니다.");
+	CANNOT_REMOVE_LAST_SECTION(HttpStatus.BAD_REQUEST, "구간이 하나인 노선의 구간을 삭제할 수 없습니다."),
+
+	CANNOT_FIND_PATH_WITH_SAME_STATION(HttpStatus.BAD_REQUEST, "출발역과 종점역이 같으면 구간을 조회할 수 없습니다.");
 
 	private HttpStatus status;
 	private String message;

@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.dto.PathResponse;
+import nextstep.subway.exception.CannotFindPathWithSameStationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("경로검색을 검증한다")
@@ -63,5 +65,18 @@ class PathFinderTest {
 				() -> assertThat(경로_조회_결과.getStations()).containsExactly(종합운동장역, 석촌역, 잠실역, 천호역),
 				() -> assertThat(경로_조회_결과.getDistance()).isEqualTo(23)
 		);
+	}
+
+	/**
+	 * When 출발역과 종점역이 같으면
+	 * Then 조회할 수 없다.
+	 */
+	@DisplayName("출발역과 종점역이 같으면 경로를 조회할 수 없다")
+	@Test
+	void pathFindFailOnSameStation() {
+		//when
+		//then
+		assertThatThrownBy(() -> pathFinder.findPath(종합운동장역, 종합운동장역))
+				.isInstanceOf(CannotFindPathWithSameStationException.class);
 	}
 }

@@ -73,6 +73,20 @@ public class PathAcceptanceTest extends AcceptanceTest{
 		);
 	}
 
+	/**
+	 * When 출발역과 종점역이 같으면
+	 * Then 조회할 수 없다.
+	 */
+	@DisplayName("출발역과 종점역이 같으면 경로를 조회할 수 없다")
+	@Test
+	void pathFindFailOnSameStation() {
+		//when
+		ExtractableResponse<Response> 경로조회 = 경로를_조회한다(종합운동장역, 종합운동장역);
+
+		//then
+		assertThat(경로조회.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
 	private ExtractableResponse<Response> 경로를_조회한다(long 종합운동장역, long 천호역) {
 		return RestAssured.given().log().all()
 				.contentType(MediaType.APPLICATION_JSON_VALUE)

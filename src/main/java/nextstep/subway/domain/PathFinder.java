@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.dto.PathResponse;
+import nextstep.subway.exception.CannotFindPathWithSameStationException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -8,6 +9,8 @@ import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.Collection;
 import java.util.List;
+
+import static nextstep.subway.exception.ErrorCode.CANNOT_FIND_PATH_WITH_SAME_STATION;
 
 public class PathFinder {
 
@@ -26,8 +29,16 @@ public class PathFinder {
 	}
 
 	public PathResponse findPath(Station departure, Station destination) {
+		if (isSameStation(departure, destination)) {
+			throw new CannotFindPathWithSameStationException(CANNOT_FIND_PATH_WITH_SAME_STATION.getMessage());
+		}
+
 		GraphPath path = getShortestPath(departure, destination);
 		return new PathResponse(path.getVertexList(), (int) path.getWeight());
+	}
+
+	private boolean isSameStation(Station departure, Station destination) {
+		return departure.equals(destination);
 	}
 
 	private void initVertex(List<Line> lines) {
