@@ -14,6 +14,11 @@ public class PathFinder {
     private Station target;
 
     public PathFinder(Station source, Station target, List<Line> lines) {
+
+        if (source.equals(target)) {
+            throw new IllegalArgumentException("출발역과 도착역이 같을 수 없습니다.");
+        }
+
         graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         lines.stream().map(Line::getSections).forEach(
             sections -> sections.getSections().forEach(section -> {
@@ -25,6 +30,11 @@ public class PathFinder {
             })
         );
         dijkstraShortestPath = new DijkstraShortestPath<>(graph);
+
+        if (dijkstraShortestPath.getPath(source, target) == null) {
+            throw new IllegalArgumentException("연결되지 않은 역입니다.");
+        }
+
         this.source = source;
         this.target = target;
     }
