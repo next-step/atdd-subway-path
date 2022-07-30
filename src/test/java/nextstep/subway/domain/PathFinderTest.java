@@ -7,8 +7,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import nextstep.subway.applicaion.dto.PathResponse;
+import nextstep.subway.exception.BusinessException;
+import nextstep.subway.exception.ErrorCode;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("경로 찾기 클래스 테스트")
@@ -93,4 +96,29 @@ class PathFinderTest {
 			() -> assertThat(pathResponse.getDistance()).isEqualTo(12)
 		);
 	}
+
+	@DisplayName("출발지와 같은 도착지를 검색할 경우 에러 발생")
+	@Test
+	void exceptionSameSourceAndTarget() {
+
+		//given //when //then
+		assertThatThrownBy(() -> pathFinder.searchShortestPath(강남역, 강남역)).
+			isInstanceOf(BusinessException.class)
+			.hasMessageContaining(ErrorCode.SAME_SOURCE_AND_TARGET.getMessage());
+	}
+
+	@DisplayName("연결되어 있지 않은 역을 검색할 경우 에러 발생")
+	@Test
+	void exceptionNotConnectedStation() {
+
+		//given
+		Station 서현역 = new Station("서현역");
+
+		//when //then
+		assertThatThrownBy(() -> pathFinder.searchShortestPath(서현역, 강남역))
+			.isInstanceOf(BusinessException.class)
+			.hasMessageContaining(ErrorCode.STATION_NOT_INCLUDE_PATH.getMessage());
+
+	}
+
 }
