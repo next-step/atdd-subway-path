@@ -33,7 +33,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 		/**
 		 * 종합운동장 -2호선(10)- 잠실 -2호선(10)- 천호
 		 *    \  			|
-		 *	8호선(10)	8호선(10)
+		 *	8호선(5)		8호선(4)
 		 *    	\		   |
 		 *        석촌
 		 */
@@ -49,9 +49,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
 		노선에_구간을_추가한다(이호선, 종합운동장역, 잠실역, 10);
 		노선에_구간을_추가한다(이호선, 잠실역, 천호역, 10);
 
-		노선에_구간을_추가한다(팔호선, 종합운동장역, 석촌역, 10);
-		노선에_구간을_추가한다(팔호선, 석촌역, 잠실역, 10);
-		노선에_구간을_추가한다(팔호선, 잠실역, 천호역, 10);
+		노선에_구간을_추가한다(팔호선, 종합운동장역, 석촌역, 5);
+		노선에_구간을_추가한다(팔호선, 석촌역, 잠실역, 4);
 	}
 
 	/**
@@ -67,9 +66,9 @@ public class PathAcceptanceTest extends AcceptanceTest {
 		//then
 		assertAll(
 				() -> assertThat(경로조회.statusCode()).isEqualTo(HttpStatus.OK.value()),
-				() -> assertThat(경로조회.jsonPath().getList("stations")).hasSize(3),
-				() -> assertThat(경로조회.jsonPath().getList("stations.name")).containsExactly("종합운동장역", "잠실역", "천호역"),
-				() -> assertThat(경로조회.jsonPath().getInt("distance")).isEqualTo(20)
+				() -> assertThat(경로조회.jsonPath().getList("stations")).hasSize(4),
+				() -> assertThat(경로조회.jsonPath().getList("stations.name")).containsExactly("종합운동장역", "석촌역", "잠실역", "천호역"),
+				() -> assertThat(경로조회.jsonPath().getInt("distance")).isEqualTo(19)
 		);
 	}
 
