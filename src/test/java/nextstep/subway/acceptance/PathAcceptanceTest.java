@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
@@ -13,6 +14,7 @@ import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철
 import static nextstep.subway.acceptance.SectionSteps.createSectionCreateParams;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("경로 조회를 검증한다.")
 public class PathAcceptanceTest extends AcceptanceTest{
@@ -51,6 +53,7 @@ public class PathAcceptanceTest extends AcceptanceTest{
 		노선에_구간을_추가한다(팔호선, 석촌역, 잠실역, 10);
 		노선에_구간을_추가한다(팔호선, 잠실역, 천호역, 10);
 	}
+
 	/**
 	 * When 출발역과 종점역이 주어지면
 	 * Then 경로상에 포함된 역들과 총 거리의 합이 반환된다.
@@ -62,9 +65,12 @@ public class PathAcceptanceTest extends AcceptanceTest{
 		ExtractableResponse<Response> 경로조회 = 경로를_조회한다(종합운동장역, 천호역);
 
 		//then
-		assertThat(경로조회.jsonPath().getList("stations")).hasSize(3);
-		assertThat(경로조회.jsonPath().getList("stations.name")).containsExactly("종합운동장역", "잠실역", "천호역");
-		assertThat(경로조회.jsonPath().getInt("distance")).isEqualTo(20);
+		assertAll(
+				() -> assertThat(경로조회.statusCode()).isEqualTo(HttpStatus.OK.value()),
+				() -> assertThat(경로조회.jsonPath().getList("stations")).hasSize(3),
+				() -> assertThat(경로조회.jsonPath().getList("stations.name")).containsExactly("종합운동장역", "잠실역", "천호역"),
+				() -> assertThat(경로조회.jsonPath().getInt("distance")).isEqualTo(20)
+		);
 	}
 
 	private ExtractableResponse<Response> 경로를_조회한다(long 종합운동장역, long 천호역) {
