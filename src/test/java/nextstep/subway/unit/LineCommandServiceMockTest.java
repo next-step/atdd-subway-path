@@ -9,7 +9,6 @@ import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
-import nextstep.subway.exception.NoLastStationException;
 import nextstep.subway.exception.SectionRegistrationException;
 import nextstep.subway.exception.SectionRemovalException;
 import org.junit.jupiter.api.DisplayName;
@@ -22,8 +21,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import javax.persistence.EntityNotFoundException;
-
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.utils.GivenUtils.FIRST_ID;
@@ -218,25 +217,26 @@ public class LineCommandServiceMockTest {
     }
 
     @Test
-    @DisplayName("지하철 노선에 구간 제거 실패 - 하행 종점역이 아닌 다른 역 제거")
-    void removeSectionWithInvalidLastStation() {
+    @DisplayName("지하철 노선에 구간 제거 실패 - 존재하지 않는 역 제거")
+    void removeSectionWithInvalidStation() {
         // given
         Line 이호선 = 이호선();
         Station 강남역 = 강남역();
         Station 역삼역 = 역삼역();
         Station 선릉역 = 선릉역();
+        Station 양재역 = 양재역();
         이호선.addSection(강남역, 역삼역, TEN);
         이호선.addSection(역삼역, 선릉역, FIVE);
-        doReturn(역삼역).when(stationQueryService)
-                .findById(역삼역.getId());
+        doReturn(양재역).when(stationQueryService)
+                .findById(양재역.getId());
         doReturn(이호선).when(lineQueryService)
                 .findById(이호선.getId());
 
         // when
-        Executable executable = () -> lineCommandService.removeSection(이호선.getId(), 역삼역().getId());
+        Executable executable = () -> lineCommandService.removeSection(이호선.getId(), 양재역.getId());
 
         // then
-        assertThrows(NoLastStationException.class, executable);
+        assertThrows(NoSuchElementException.class, executable);
     }
 
     @Test
