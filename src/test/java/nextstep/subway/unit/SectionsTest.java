@@ -7,6 +7,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.exception.CustomException;
 import nextstep.subway.exception.code.CommonCode;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,8 +38,9 @@ class SectionsTest {
         sections.add(new Section(line, 신갈역, 정자역, 9));
     }
 
+    @DisplayName("구간등록")
     @Nested
-    class 구간등록 {
+    class Add {
         @Test
         void 지하철구간_사이에_새로운구간_추가() {
             // given
@@ -129,6 +131,7 @@ class SectionsTest {
         }
     }
 
+    @DisplayName("정렬된 지하철역 리스트 조회")
     @Test
     void getStationsSorted() {
         // given
@@ -145,6 +148,7 @@ class SectionsTest {
                  );
     }
 
+    @DisplayName("정렬된 구간 리스트 조회")
     @Test
     void getSectionsSorted() {
         // given
@@ -163,6 +167,7 @@ class SectionsTest {
                  );
     }
 
+    @DisplayName("구간 제거")
     @Test
     void removeSection() {
         // when
@@ -172,6 +177,7 @@ class SectionsTest {
         assertThat(line.getSections().getStationNames()).doesNotContain("정자역");
     }
 
+    @DisplayName("상행 종점역 조회")
     @Test
     void getUpEndStation() {
         // when
@@ -181,6 +187,7 @@ class SectionsTest {
         assertThat(station.getName()).isEqualTo("기흥역");
     }
 
+    @DisplayName("하행 종점역 조회")
     @Test
     void getDownEndStation() {
         // when

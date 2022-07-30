@@ -34,9 +34,9 @@ public class SectionServiceMockTest {
         final Station 신갈역 = new Station(2L, "신갈역");
         final Line line = new Line(3L, "분당선", "yellow");
 
-        given(stationService.findById(1L)).willReturn(기흥역);
-        given(stationService.findById(2L)).willReturn(신갈역);
-        given(lineRepository.findById(3L)).willReturn(Optional.of(line));
+        given(stationService.findById(기흥역.getId())).willReturn(기흥역);
+        given(stationService.findById(신갈역.getId())).willReturn(신갈역);
+        given(lineRepository.findById(line.getId())).willReturn(Optional.of(line));
 
         // when
         sectionService.addSection(line.getId(), new SectionRequest(기흥역.getId(), 신갈역.getId(), 10));
@@ -47,6 +47,7 @@ public class SectionServiceMockTest {
             () -> assertThat(line.getSections().getStationNames()).containsExactlyInAnyOrder("기흥역", "신갈역")
                  );
     }
+
     @Test
     void deleteSection() {
         // given

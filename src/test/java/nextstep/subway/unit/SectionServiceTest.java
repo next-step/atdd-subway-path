@@ -27,13 +27,9 @@ public class SectionServiceTest {
     @Test
     void addSection() {
         // given
-        final Station 기흥역 = new Station("기흥역");
-        final Station 신갈역 = new Station("신갈역");
-        stationRepository.save(기흥역);
-        stationRepository.save(신갈역);
-
-        final Line line = new Line("분당선", "yellow");
-        lineRepository.save(line);
+        final Station 기흥역 = createStation("기흥역");
+        final Station 신갈역 = createStation("신갈역");
+        final Line line = createLine("분당선", "yellow");
 
         // when
         sectionService.addSection(line.getId(), new SectionRequest(기흥역.getId(), 신갈역.getId(), 10));
@@ -48,15 +44,10 @@ public class SectionServiceTest {
     @Test
     void deleteSection() {
         // given
-        final Station 기흥역 = new Station("기흥역");
-        final Station 신갈역 = new Station("신갈역");
-        final Station 정자역 = new Station("정자역");
-        stationRepository.save(기흥역);
-        stationRepository.save(신갈역);
-        stationRepository.save(정자역);
-
-        final Line line = new Line("분당선", "yellow");
-        lineRepository.save(line);
+        final Station 기흥역 = createStation("기흥역");
+        final Station 신갈역 = createStation("신갈역");
+        final Station 정자역 = createStation("정자역");
+        final Line line = createLine("분당선", "yellow");
 
         sectionService.addSection(line.getId(), new SectionRequest(기흥역.getId(), 신갈역.getId(), 10));
         sectionService.addSection(line.getId(), new SectionRequest(신갈역.getId(), 정자역.getId(), 10));
@@ -69,5 +60,13 @@ public class SectionServiceTest {
             () -> assertThat(line.getSections().size()).isEqualTo(1),
             () -> assertThat(line.getSections().getStationNames()).containsExactlyInAnyOrder("기흥역", "신갈역")
                  );
+    }
+
+    private Station createStation(String name){
+        return stationRepository.save(new Station(name));
+    }
+
+    private Line createLine(String name, String color){
+        return lineRepository.save(new Line(name, color));
     }
 }

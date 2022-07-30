@@ -26,9 +26,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
     private Long 강남역;
     private Long 양재역;
 
-    /**
-     * Given 지하철역과 노선 생성을 요청 하고
-     */
     @BeforeEach
     public void setUp() {
         super.setUp();
@@ -53,9 +50,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
             지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 6));
 
             // then
-            ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역, 양재역);
+            노선_조회후_구간_추가된것_확인(강남역, 정자역, 양재역);
         }
 
         /**
@@ -70,9 +65,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
             지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 강남역,6));
 
             // then
-            ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(정자역, 강남역, 양재역);
+            노선_조회후_구간_추가된것_확인(정자역, 강남역, 양재역);
         }
 
         /**
@@ -87,9 +80,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
             지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 6));
 
             // then
-            ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+            노선_조회후_구간_추가된것_확인(강남역, 양재역, 정자역);
         }
     }
 
@@ -109,9 +100,13 @@ class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
 
         // then
+        노선_조회후_구간_추가된것_확인(강남역, 양재역);
+    }
+
+    private void 노선_조회후_구간_추가된것_확인(Long... stationId) {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(stationId);
     }
 
     private Map<String, String> createLineCreateParams(String name, Long upStationId, Long downStationId, int distance) {
