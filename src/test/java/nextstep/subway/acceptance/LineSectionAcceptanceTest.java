@@ -198,6 +198,22 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getString("message")).isEqualTo("최소 1개 이상의 역은 노선에 등록되어 있어야 합니다.");
     }
 
+    /**
+     * Given 구간이 하나의 노선을 생성한다.
+     * When 구간 삭제를 한다.
+     * Then 구간 삭제에 실패를 한다.
+     * Then 구간 삭제에 실패를 한다.
+     */
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거 불가")
+    @Test
+    void 하나인_구간_삭제_실패() {
+
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("message")).isEqualTo("두 개 이상의 구간일때만 삭제가 가능합니다.");
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
