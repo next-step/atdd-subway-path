@@ -81,6 +81,7 @@ public class LineServiceTest {
     }
 
     @DisplayName("지하철 노선 사이에 구간 등록 시 기존 구간의 거리와 동일할 경우")
+    @Test
     void throwsExceptionIfAddSectionExistSectionEqualsThanSectionDistance() {
 
         // given
@@ -135,6 +136,7 @@ public class LineServiceTest {
 
 
     @DisplayName("지하철 노선의 구간 가장 상위 구간에 구간을 등록할 경우")
+    @Test
     void addSectionToTopSection() {
 
         // given
@@ -155,6 +157,7 @@ public class LineServiceTest {
     }
 
     @DisplayName("지하철 노선의 구간 가장 하위 구간에 구간을 등록할 경우")
+    @Test
     void addSectionToDownSection() {
 
         // given
@@ -175,6 +178,7 @@ public class LineServiceTest {
     }
 
     @DisplayName("지하철 노선의 구간 중 일치하지 않은 상행, 하행을 가진 구간을 등록할 경우")
+    @Test
     void throwsExceptionIfNotHasStations() {
 
         // given
@@ -193,12 +197,13 @@ public class LineServiceTest {
     }
 
     @DisplayName("노선의 모든 지하철역 조회")
+    @Test
     void getStations() {
 
         // given
         final Station 강남역 = 지하철역_저장("강남역");
         final Station 시청역 = 지하철역_저장("시청역");
-        final Station 구로디지털단지역 = 지하철역_저장("저장");
+        final Station 구로디지털단지역 = 지하철역_저장("구로디지털단지역");
         final Station 선릉역 = 지하철역_저장("선릉역");
 
         final Line 신분당선 = 노선_저장("신분당선", "green", 시청역, 강남역, 10);
@@ -213,7 +218,7 @@ public class LineServiceTest {
         LineResponse response = lineService.findById(신분당선.getId());
 
         // then
-        assertThat(response.getStations()).isEqualTo(4);
+        assertThat(response.getStations().size()).isEqualTo(4);
         assertThat(response.getStations().stream()
                 .map(StationResponse::getId)
                 .collect(toList())).containsExactly(시청역.getId(), 구로디지털단지역.getId(), 강남역.getId(), 선릉역.getId());
