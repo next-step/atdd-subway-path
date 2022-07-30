@@ -26,18 +26,18 @@ public class PathFinder {
   }
 
 
-  public List<Station> getPath(Station sourceStation, Station endStation) {
+  public List<Station> getPath(Station sourceStation, Station targetStation) {
     validateStationEmpty(sourceStation);
-    validateStationEmpty(endStation);
-    validateDuplicateStation(sourceStation, endStation);
-    return dijkstraShortestPath.getPath(sourceStation, endStation).getVertexList();
+    validateStationEmpty(targetStation);
+    validateDuplicateStation(sourceStation, targetStation);
+    return dijkstraShortestPath.getPath(sourceStation, targetStation).getVertexList();
   }
 
-  public int getDistance(Station sourceStation, Station endStation) {
+  public int getDistance(Station sourceStation, Station targetStation) {
     validateStationEmpty(sourceStation);
-    validateStationEmpty(endStation);
-    validateDuplicateStation(sourceStation, endStation);
-    return (int) dijkstraShortestPath.getPathWeight(sourceStation, endStation);
+    validateStationEmpty(targetStation);
+    validateDuplicateStation(sourceStation, targetStation);
+    return (int) dijkstraShortestPath.getPathWeight(sourceStation, targetStation);
   }
 
   private void validateStationEmpty(Station station) {
@@ -46,8 +46,8 @@ public class PathFinder {
     }
   }
 
-  private void validateDuplicateStation(Station sourceStation, Station endStation) {
-    if (sourceStation.equals(endStation)) {
+  private void validateDuplicateStation(Station sourceStation, Station targetStation) {
+    if (sourceStation.equals(targetStation)) {
       throw new CustomException(PathErrorMessage.STATION_DUPLICATE);
     }
   }
