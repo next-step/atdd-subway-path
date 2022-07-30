@@ -1,9 +1,9 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.exception.DisconnectedStationsException;
 import nextstep.subway.exception.NotRegisteredStationException;
 import nextstep.subway.exception.SameStationException;
+import org.jgrapht.GraphPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,12 +60,14 @@ class PathFinderTest {
 	@Test
 	void findPath() {
 		//when
-		PathResponse 경로_조회_결과 = pathFinder.findPath(종합운동장역, 천호역);
+		GraphPath path = pathFinder.findPath(종합운동장역, 천호역);
 
 		//then
+		List<Station> stations = path.getVertexList();
+		int distance = (int) path.getWeight();
 		assertAll(
-				() -> assertThat(경로_조회_결과.getStations()).containsExactly(종합운동장역, 석촌역, 잠실역, 천호역),
-				() -> assertThat(경로_조회_결과.getDistance()).isEqualTo(23)
+				() -> assertThat(stations).containsExactly(종합운동장역, 석촌역, 잠실역, 천호역),
+				() -> assertThat(distance).isEqualTo(23)
 		);
 	}
 

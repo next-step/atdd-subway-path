@@ -1,7 +1,9 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.PathService;
+import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.PathResponse;
+import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -16,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -29,6 +32,8 @@ public class PathServiceTest {
 	StationRepository stationRepository;
 	@Mock
 	LineRepository lineRepository;
+	@Mock
+	StationService stationService;
 
 	@InjectMocks
 	PathService pathService;
@@ -72,17 +77,29 @@ public class PathServiceTest {
 		 */
 		when(stationRepository.findById(1L)).thenReturn(Optional.of(종합운동장역));
 		when(stationRepository.findById(4L)).thenReturn(Optional.of(잠실역));
+		when(stationService.createStationResponse(종합운동장역)).thenReturn(stationResponse를_반환한다(종합운동장역));
+		when(stationService.createStationResponse(잠실역)).thenReturn(stationResponse를_반환한다(잠실역));
+		when(stationService.createStationResponse(석촌역)).thenReturn(stationResponse를_반환한다(석촌역));
 		when(lineRepository.findAll()).thenReturn(List.of(이호선, 팔호선));
 
 		//when
 		PathResponse response = pathService.findPath(1L, 4L);
 
 		//then
-		List<Station> stations = response.getStations();
+		List<StationResponse> stationResponses = response.getStations();
 		assertAll(
-				() -> assertThat(stations).hasSize(3),
-				() -> assertThat(stations).containsExactly(종합운동장역, 석촌역, 잠실역),
+				() -> assertThat(stationResponses).hasSize(3),
+				() -> {
+					List<String> names = stationResponses.stream()
+							.map(StationResponse::getName)
+							.collect(Collectors.toList());
+					assertThat(names).containsExactly(종합운동장역.getName(), 석촌역.getName(), 잠실역.getName());
+				},
 				() -> assertThat(response.getDistance()).isEqualTo(8)
 		);
+	}
+
+	private StationResponse stationResponse를_반환한다(Station station) {
+		return new StationResponse(station.getId(), station.getName());
 	}
 }

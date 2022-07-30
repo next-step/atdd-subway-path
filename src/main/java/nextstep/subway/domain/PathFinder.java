@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.exception.DisconnectedStationsException;
 import nextstep.subway.exception.NotRegisteredStationException;
 import nextstep.subway.exception.SameStationException;
@@ -34,7 +33,7 @@ public class PathFinder {
 		initEdgeWeight(lines);
 	}
 
-	public PathResponse findPath(Station departure, Station destination) {
+	public GraphPath findPath(Station departure, Station destination) {
 		if (isSameStation(departure, destination)) {
 			throw new SameStationException(CANNOT_FIND_PATH_WITH_SAME_STATION.getMessage());
 		}
@@ -49,7 +48,7 @@ public class PathFinder {
 			throw new DisconnectedStationsException(CANNOT_FIND_PATH_WITH_DISCONNECTED_STATIONS.getMessage());
 		}
 
-		return new PathResponse(path.getVertexList(), (int) path.getWeight());
+		return path;
 	}
 
 	private boolean isNotRegistered(Station departure, Station destination) {

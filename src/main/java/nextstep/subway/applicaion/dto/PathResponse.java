@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nextstep.subway.domain.Station;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 public class PathResponse {
 
-	private List<Station> stations = new ArrayList<>();
+	private List<StationResponse> stations = new ArrayList<>();
 	private int distance;
 }
