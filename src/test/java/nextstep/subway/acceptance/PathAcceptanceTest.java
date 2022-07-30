@@ -35,7 +35,10 @@ public class PathAcceptanceTest extends AcceptanceTest {
 	 * *3호선* 2                 *신분당선*  10
 	 * |                        |
 	 * 남부터미널역  --- *3호선* ---   양재
-	 *                 3
+	 *                  3
+	 *
+	 *             5
+	 * 서현역 --- *분당선* --- 이매역
 	 */
 	@BeforeEach
 	public void setUp() {
@@ -57,7 +60,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 	 * when 경로 찾기 요청(남부터미널 -> 강남역)
 	 * then 남부터미널 -> 교대 -> 강남 의 경로가 조회됨
 	 */
-	@DisplayName("경록 탐색 테스트(남부터미널 -> 강남역)")
+	@DisplayName("경로 탐색 테스트(남부터미널 -> 강남역)")
 	@Test
 	void searchShortestPath() {
 
@@ -71,6 +74,58 @@ public class PathAcceptanceTest extends AcceptanceTest {
 			() -> assertThat(result.jsonPath().getList("stations.id", Long.class)).containsExactly(남부터미널역, 교대역, 강남역),
 			() -> assertThat(result.jsonPath().getInt("distance")).isEqualTo(12)
 		);
+	}
+
+	/**
+	 * given 노선과 구간이 생성되어 있음
+	 * when 경로 찾기 요청(남부터미널 -> 남부터미널)
+	 * then 에러가 발생함
+	 */
+	@DisplayName("출발역과 도착역이 같은 경우 에러 발생 테스트")
+	@Test
+	void exceptionSameSourceAndTarget() {
+
+		//given //when
+		ExtractableResponse<Response> result = 경로조회_요청(남부터미널역, 남부터미널역);
+
+		//then
+		assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	/**
+	 * given 노선과 구간이 생성되어 있음 and 위 약도에 추가로 분당선 구간이 생성되어 있음
+	 * when 경로 찾기 요청(양재역 -> 서현역 *연결되어 있지 않음*)
+	 * then 에러가 발생함
+	 */
+	@DisplayName("출발역과 도착역이 연결되어있지 않은 경우 에러 발생")
+	@Test
+	void exceptionNotConnectedStation() {
+
+		//given
+		Long 서현역 = 지하철역_생성_요청("서현역").jsonPath().getLong("id");
+		Long 이매역 = 지하철역_생성_요청("이매역").jsonPath().getLong("id");
+		지하철_노선_생성_요청("분당선", "yellow", 서현역, 이매역, 5);
+		ExtractableResponse<Response> result = 경로조회_요청(양재역, 이매역);
+
+		//then
+		assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+	}
+
+	/**
+	 * given 노선과 구간이 생성되어 있음
+	 * when 경로 찾기 요청(서현역(10L)*존재하지 않음* -> 남부터미널)
+	 * then 에러가 발생함
+	 */
+	@DisplayName("존재하지 않는 역으로 조회시 에러 발생")
+	@Test
+	void exceptionNotExistStation() {
+
+		//given //when
+		ExtractableResponse<Response> result = 경로조회_요청(10L, 남부터미널역);
+
+		//then
+		assertThat(result.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
