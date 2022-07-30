@@ -5,6 +5,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static nextstep.subway.domain.Section.of;
 
@@ -212,23 +213,16 @@ public class Sections {
     }
 
     private void deleteMiddleStation(Station station, Line line) {
-
-        Section upSection = null;
-        Section downSection = null;
-
-        int size = this.sections.size();
-        List<Section> deleteSections = new ArrayList<>();
-        for (Section section : this.sections) {
-            if (section.getUpStation().equals(station)) {
-                deleteSections.add(section);
-                downSection = section;
-            }
-            if (section.getDownStation().equals(station)) {
-                deleteSections.add(section);
-                upSection = section;
-            }
-        }
-        this.sections.removeAll(deleteSections);
+        Section upSection = this.sections.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("상행역이 존재하지 않습니다."));
+        this.sections.remove(upSection);
+        Section downSection = this.sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("하행역이 존재하지 않습니다."));
+        this.sections.remove(downSection);
         this.sections.add(new Section(line, upSection.getUpStation(), downSection.getDownStation(), upSection.getDistance() + downSection.getDistance()));
     }
 

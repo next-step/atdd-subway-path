@@ -202,7 +202,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * Given 구간이 하나의 노선을 생성한다.
      * When 구간 삭제를 한다.
      * Then 구간 삭제에 실패를 한다.
-     * Then 구간 삭제에 실패를 한다.
      */
     @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거 불가")
     @Test
