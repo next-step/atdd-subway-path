@@ -10,13 +10,12 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
 import java.util.Map;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("지하철 경로 검색")
-public class PathAcceptanceTest extends AcceptanceTest {
+class PathAcceptanceTest extends AcceptanceTest {
 
     private Long 교대역;
     private Long 강남역;
@@ -49,6 +48,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(이호선, createSectionCreateParams(교대역, 강남역, 10));
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 10));
         지하철_노선에_지하철_구간_생성_요청(삼호선, createSectionCreateParams(교대역, 남부터미널역, 2));
+        지하철_노선에_지하철_구간_생성_요청(삼호선, createSectionCreateParams(남부터미널역, 양재역, 3));
     }
 
     @Test
@@ -60,7 +60,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         final List<String> 역_이름_리스트 = 최단_경로_요청.jsonPath().getList("stations.name", String.class);
         final long 거리의_합 = 최단_경로_요청.jsonPath().getLong("distance");
 
-        assertThat(역_id_리스트).containsExactly(1L, 4L, 3L);
+        assertThat(역_id_리스트).containsExactly(교대역, 남부터미널역, 양재역);
         assertThat(역_이름_리스트).containsExactly("교대역", "남부터미널역", "양재역");
         assertThat(거리의_합).isEqualTo(5);
     }
