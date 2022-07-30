@@ -1,13 +1,14 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.applicaion.PathService;
-import nextstep.subway.applicaion.dto.PathRequest;
 import nextstep.subway.applicaion.dto.PathResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
 public class PathController {
 
     private final PathService pathService;
@@ -20,7 +21,7 @@ public class PathController {
         value = "/paths",
         consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<PathResponse> getPath(@ModelAttribute PathRequest pathRequest) {
-        return ResponseEntity.ok(pathService.findPath(pathRequest));
+    public ResponseEntity<PathResponse> getPath(@RequestParam long sourceId, @RequestParam long targetId) {
+        return ResponseEntity.ok(pathService.findPath(sourceId, targetId));
     }
 }

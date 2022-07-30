@@ -1,6 +1,5 @@
 package nextstep.subway.applicaion;
 
-import nextstep.subway.applicaion.dto.PathRequest;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.domain.*;
 import nextstep.subway.fake.FakeLineRepository;
@@ -37,8 +36,7 @@ class PathServiceTest {
     @Test
     @DisplayName("최적의 경로와 길이를 출력합니다.")
     void test1() {
-        PathRequest request = new PathRequest(강남역.getId(), 잠실역.getId());
-        PathResponse response = pathService.findPath(request);
+        PathResponse response = pathService.findPath(강남역.getId(), 잠실역.getId());
 
         assertAll(
             () -> assertThat(response.getStations()).hasSize(3),
