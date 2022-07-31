@@ -1,7 +1,7 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.PathFinder;
+import nextstep.subway.domain.Path;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class PathFinderTest {
+public class PathTest {
     Station 교대역;
     Station 강남역;
     Station 양재역;
@@ -53,12 +53,12 @@ public class PathFinderTest {
     @DisplayName("최단경로 조회")
     void getShortestPaths() {
         //when
-        PathFinder pathFinder = new PathFinder(sectionList);
-        List<Station> stationList = pathFinder.getShortestPath(교대역, 양재역);
+        Path path = new Path(sectionList);
+        List<Station> stationList = path.getShortestPath(교대역, 양재역);
         //then
         assertThat(stationList).hasSize(3)
                 .containsExactly(교대역, 남부터미널역, 양재역);
-        assertThat(pathFinder.getShortestDistance(교대역, 양재역))
+        assertThat(path.getShortestDistance(교대역, 양재역))
                 .isEqualTo(10 + 3);
     }
 

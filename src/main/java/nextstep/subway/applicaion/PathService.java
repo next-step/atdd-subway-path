@@ -2,7 +2,7 @@ package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.PathFinder;
+import nextstep.subway.domain.Path;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.BusinessException;
@@ -31,9 +31,9 @@ public class PathService {
         Station sourceStation = stationService.findById(source);
         Station targetStation = stationService.findById(target);
 
-        PathFinder pathFinder = new PathFinder(getAllSections());
-        List<Station> stationList = pathFinder.getShortestPath(sourceStation, targetStation);
-        long distance = pathFinder.getShortestDistance(sourceStation, targetStation);
+        Path path = new Path(getAllSections());
+        List<Station> stationList = path.getShortestPath(sourceStation, targetStation);
+        long distance = path.getShortestDistance(sourceStation, targetStation);
 
         return new PathResponse(distance, stationList);
     }

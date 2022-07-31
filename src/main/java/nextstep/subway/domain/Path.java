@@ -11,13 +11,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class PathFinder {
+public class Path {
 
     private WeightedMultigraph<Station, DefaultWeightedEdge> graph;
     private DijkstraShortestPath dijkstraShortestPath;
 
 
-    public PathFinder(List<Section> sectionList) {
+    public Path(List<Section> sectionList) {
         this.graph = new WeightedMultigraph(DefaultWeightedEdge.class);
         addVertex(getStationList(sectionList));
         addEdgeWeight(sectionList);
