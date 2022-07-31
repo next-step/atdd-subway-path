@@ -32,12 +32,10 @@ public class LineSection {
             .collect(Collectors.toList());
         upStations.removeAll(downStations);
         Station upStation = upStations.get(0);
-        for (Section section : sections) {
-            if (section.getUpStation().equals(upStation)) {
-                return section;
-            }
-        }
-        return null;
+        return sections.stream()
+            .filter(v -> v.getUpStation().equals(upStation))
+            .findFirst()
+            .orElseThrow();
     }
     private Section getNextSection(Section now) {
         for (Section section : sections) {
@@ -48,16 +46,25 @@ public class LineSection {
         return null;
     }
 
+    private boolean hasNextSection(Section now) {
+        for (Section section : sections) {
+            if (now.getDownStation().equals(section.getUpStation())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void add(Section section) {
         if (sections.isEmpty()) {
             sections.add(section);
             return;
         }
-        if (section.getDownStation().equals(sections.get(0).getUpStation())) {
+        if (isFirstAdd(section)) {
             sections.add(0,section);
             return;
         }
-        if (section.getUpStation().equals(sections.get(sections.size()-1).getDownStation())) {
+        if (isLastAdd(section)) {
             sections.add(section);
             return;
         }
@@ -65,19 +72,26 @@ public class LineSection {
         addMiddleSection(section);
     }
 
+    private boolean isLastAdd(Section section) {
+        return section.getUpStation().equals(sections.get(sections.size() - 1).getDownStation());
+    }
+
+    private boolean isFirstAdd(Section section) {
+        return section.getDownStation().equals(sections.get(0).getUpStation());
+    }
+
     private void addMiddleSection(Section section) {
-        Section target = findSectionByUpStationId(section.getUpStation().getId());
-        if (target==null) {
-            target = findSectionByDownStationId(section.getDownStation().getId());
-            addMiddleDownSection(section,target);
+        if (hasSectionByUpStationId(section.getUpStation().getId())) {
+            addMiddleUpSection(section, findSectionByUpStationId(section.getUpStation().getId()));
             return;
         }
-        addMiddleUpSection(section, target);
+        addMiddleDownSection(section, findSectionByDownStationId(section.getDownStation().getId()));
     }
 
     private void addMiddleUpSection(Section section, Section target) {
         Station middleStation = section.getDownStation();
         target.changeUpStation(middleStation);
+        target.changeDistance(target.getDistance()-section.getDistance());
         int index = findSectionIndex(section);
         sections.add(index, section);
     }
@@ -85,27 +99,49 @@ public class LineSection {
     private void addMiddleDownSection(Section section, Section target) {
         Station middleStation = section.getUpStation();
         target.changeDownStation(middleStation);
+        target.changeDistance(target.getDistance()-section.getDistance());
         int index = findSectionIndex(section);
         sections.add(index+1, section);
     }
 
     private Section findSectionByUpStationId(Long upStationId) {
+        return sections.stream()
+            .filter(v -> v.getUpStation().getId().equals(upStationId))
+            .findFirst()
+            .orElseThrow();
+    }
+    private boolean hasSectionByUpStationId(Long upStationId) {
         List<Section> foundSections = sections.stream()
             .filter(v -> v.getUpStation().getId().equals(upStationId))
             .collect(Collectors.toList());
-        if (foundSections.isEmpty()) {
-            return null;
-        }
-        return foundSections.get(0);
+        return !foundSections.isEmpty();
+    }
+
+    private boolean findSectionByUpStation(Long upStationId) {
+        List<Section> foundSections = sections.stream()
+            .filter(v -> v.getUpStation().getId().equals(upStationId))
+            .collect(Collectors.toList());
+        return !foundSections.isEmpty();
     }
     private Section findSectionByDownStationId(Long downStationId) {
+        return sections.stream()
+            .filter(v -> v.getDownStation().getId().equals(downStationId))
+            .findFirst()
+            .orElseThrow();
+    }
+
+    private boolean hasSectionByDownStationId(Long downStationId) {
         List<Section> foundSections = sections.stream()
             .filter(v -> v.getDownStation().getId().equals(downStationId))
             .collect(Collectors.toList());
-        if (foundSections.isEmpty()) {
-            return null;
-        }
-        return foundSections.get(0);
+        return !foundSections.isEmpty();
+    }
+    private boolean findSectionByDownStation(Long downStationId) {
+        List<Section> foundSections = sections.stream()
+            .filter(v -> v.getDownStation().getId().equals(downStationId))
+            .collect(Collectors.toList());
+        return !foundSections.isEmpty();
+
     }
     private int findSectionIndex(Section section) {
         for (int i = 0; i < sections.size(); i++) {
@@ -127,7 +163,8 @@ public class LineSection {
         List<Section> sortedSection = new ArrayList<>();
         Section section = getFirstSection();
         sortedSection.add(section);
-        while((section=getNextSection(section)) != null) {
+        while(hasNextSection(section)) {
+            section=getNextSection(section);
             sortedSection.add(section);
         }
         return sortedSection;
@@ -149,20 +186,13 @@ public class LineSection {
         if (sections.isEmpty()) {
             return;
         }
-        if (findSectionByUpStationId(sectionRequest.getDownStationId())!=null) {
+        if (findSectionByUpStation(sectionRequest.getDownStationId())) {
             return;
         }
-        if (findSectionByDownStationId(sectionRequest.getUpStationId()) != null) {
+        if (findSectionByDownStation(sectionRequest.getUpStationId())) {
             return;
         }
-        Section target = findSectionByUpStationId(sectionRequest.getUpStationId());
-        if (target == null) {
-            target = findSectionByDownStationId(sectionRequest.getDownStationId());
-        }
-        if (target==null) {
-            throw new IllegalArgumentException("연결되는 구간의 역이 없습니다. upStationId="+sectionRequest.getUpStationId()
-                +", downStationId="+sectionRequest.getDownStationId());
-        }
+        Section target = findSectionByStation(sectionRequest);
         if (target.getDistance()<=sectionRequest.getDistance()) {
             throw new IllegalArgumentException("기존 구간보다 작은 길이의 구간을 입력해주세요. distance="+sectionRequest.getDistance());
         }
@@ -171,5 +201,18 @@ public class LineSection {
             throw new IllegalArgumentException("동일한 역의 구간이 존재합니다. upStationId="+sectionRequest.getUpStationId()
                 +", downStationId="+sectionRequest.getDownStationId());
         }
+    }
+
+    private Section findSectionByStation(SectionRequest sectionRequest) {
+        for (Section section : sections) {
+            if (section.getUpStation().getId().equals(sectionRequest.getUpStationId())) {
+                return section;
+            }
+            if (section.getDownStation().getId().equals(sectionRequest.getDownStationId())) {
+                return section;
+            }
+        }
+        throw new IllegalArgumentException("연결되는 구간의 역이 없습니다. upStationId="+ sectionRequest.getUpStationId()
+            +", downStationId="+ sectionRequest.getDownStationId());
     }
 }
