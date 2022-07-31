@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayName("지하철 경로 검색")
-public class PathAcceptanceTest extends AcceptanceTest {
+class PathAcceptanceTest extends AcceptanceTest {
 
     private Long 교대역;
     private Long 강남역;
@@ -86,8 +85,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> 지하철_경로조회_요청(Long sourceId, Long targetId) {
         return RestAssured
                 .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/paths?source=${sourceId}&target=${targetId}", sourceId, targetId)
+                .when().get("/paths?source={sourceId}&target={targetId}", sourceId, targetId)
                 .then().log().all().extract();
     }
 
