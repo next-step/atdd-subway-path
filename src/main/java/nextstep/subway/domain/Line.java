@@ -1,13 +1,8 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Entity
@@ -56,15 +51,54 @@ public class Line {
     public List<Section> getSections() {
         return sections;
     }
-    
+
     public void addSection(Section newSection) {
+        if (sections.isEmpty()) {
+            sections.add(newSection);
+            return;
+        }
+
+        validateAllStationsAlreadyExist(newSection);
+        validateAllStationsDoesNotExist(newSection);
+
         Optional<Section> addingSection = sections.stream()
                 .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
                 .findFirst();
 
-        addingSection.ifPresent(section -> section.updateUpStationToDownStationOf(newSection));
+
+        if (addingSection.isPresent()) {
+            Section section = addingSection.get();
+            valifateSameDistanceBothSections(section, newSection);
+            section.updateUpStationToDownStationOf(newSection);
+        }
 
         sections.add(newSection);
+    }
+
+    private void valifateSameDistanceBothSections(Section section, Section newSection) {
+        if (section.sameDistanceWith(newSection)) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private void validateAllStationsAlreadyExist(Section newSection) {
+        Station upStation = newSection.getUpStation();
+        Station downStation = newSection.getDownStation();
+        List<Station> stations = getStations();
+
+        if (stations.containsAll(Arrays.asList(upStation, downStation))) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private void validateAllStationsDoesNotExist(Section newSection) {
+        Station upStation = newSection.getUpStation();
+        Station downStation = newSection.getDownStation();
+        List<Station> stations = getStations();
+
+        if (!stations.contains(upStation) && !stations.contains(downStation)) {
+            throw new IllegalArgumentException();
+        }
     }
 
     public List<Station> getStations() {
