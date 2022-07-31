@@ -64,15 +64,24 @@ public class Line {
         validateAllStationsAlreadyExist(newSection);
         validateAllStationsDoesNotExist(newSection);
 
-        Optional<Section> addingSection = sections.stream()
+        Optional<Section> addingFrontSection = sections.stream()
                 .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
-                .findFirst();
+                .findAny();
 
-
-        if (addingSection.isPresent()) {
-            Section section = addingSection.get();
+        if (addingFrontSection.isPresent()) {
+            Section section = addingFrontSection.get();
             validateSameDistanceBothSections(section, newSection);
             section.updateUpStationToDownStationOf(newSection);
+        }
+
+        Optional<Section> addingBehindSection = sections.stream()
+                .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
+                .findAny();
+
+        if (addingBehindSection.isPresent()) {
+            Section section = addingBehindSection.get();
+            validateSameDistanceBothSections(section, newSection);
+            section.updateDownStationToUpStationOf(newSection);
         }
 
         sections.add(newSection);
