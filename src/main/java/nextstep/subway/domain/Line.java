@@ -1,10 +1,10 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.ExceptionMessage;
+import nextstep.subway.exception.SubwayException;
+
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Entity
 public class Line {
@@ -17,7 +17,7 @@ public class Line {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public Line() {
+    private Line() {
     }
 
     public Line(String name, String color) {
@@ -53,23 +53,68 @@ public class Line {
         return sections;
     }
 
-    public void addSection(Section section) {
-        if(!sections.isEmpty()) {
-            validateEqualUpAndDown(section);
-            validateAlreadyExist(section);
+    public void addSection(Section newSection) {
+        if (sections.isEmpty()) {
+            sections.add(newSection);
+            return;
         }
-        sections.add(section);
+
+        validateAllStationsAlreadyExist(newSection);
+        validateAllStationsDoesNotExist(newSection);
+
+        addMiddleSectionWhenSameUpStation(newSection);
+        addMiddleSectionWhenSameDownStation(newSection);
+
+        sections.add(newSection);
     }
 
-    private void validateEqualUpAndDown(Section section) {
-        if (!lastSection().getDownStation().equals(section.getUpStation())) {
-            throw new IllegalArgumentException("구간을 추가할 수 없습니다.");
+    private void addMiddleSectionWhenSameUpStation(Section newSection) {
+        Optional<Section> addingFrontSection = sections.stream()
+                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+                .findAny();
+
+        if (addingFrontSection.isPresent()) {
+            Section section = addingFrontSection.get();
+            validateSameDistanceBothSections(section, newSection);
+            section.updateUpStationToDownStationOf(newSection);
         }
     }
 
-    private void validateAlreadyExist(Section section) {
-        if (getStations().contains(section.getDownStation())) {
-            throw new IllegalArgumentException("역이 이미 노선에 포함되어 있습니다.");
+    private void addMiddleSectionWhenSameDownStation(Section newSection) {
+        Optional<Section> addingBehindSection = sections.stream()
+                .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
+                .findAny();
+
+        if (addingBehindSection.isPresent()) {
+            Section section = addingBehindSection.get();
+            validateSameDistanceBothSections(section, newSection);
+            section.updateDownStationToUpStationOf(newSection);
+        }
+    }
+
+    private void validateSameDistanceBothSections(Section section, Section newSection) {
+        if (newSection.sameOrBiggerThen(section)) {
+            throw new SubwayException(ExceptionMessage.TOO_LONG_DISTANCE_OF_SECTION);
+        }
+    }
+
+    private void validateAllStationsAlreadyExist(Section newSection) {
+        Station upStation = newSection.getUpStation();
+        Station downStation = newSection.getDownStation();
+        List<Station> stations = getStations();
+
+        if (stations.containsAll(Arrays.asList(upStation, downStation))) {
+            throw new SubwayException(ExceptionMessage.ALREADY_EXIST_STATIONS);
+        }
+    }
+
+    private void validateAllStationsDoesNotExist(Section newSection) {
+        Station upStation = newSection.getUpStation();
+        Station downStation = newSection.getDownStation();
+        List<Station> stations = getStations();
+
+        if (!stations.contains(upStation) && !stations.contains(downStation)) {
+            throw new SubwayException(ExceptionMessage.DOES_NOT_EXIST_STATIONS);
         }
     }
 
@@ -78,12 +123,56 @@ public class Line {
             return Collections.emptyList();
         }
 
-        List<Station> stations = sections.stream()
-                .map(Section::getUpStation)
-                .collect(Collectors.toList());
-        stations.add(lastSection().getDownStation());
+        List<Station> stations = new ArrayList<>();
+        Section firstSection = getFirstSection();
+        stations.add(firstSection.getUpStation());
+
+        boolean isLast = false;
+        Station nextUpStation = firstSection.getDownStation();
+        while (!isLast) {
+            Optional<Section> behindSection = getBehindSectionOf(nextUpStation);
+            if (behindSection.isPresent()) {
+                stations.add(behindSection.get().getUpStation());
+                nextUpStation = behindSection.get().getDownStation();
+            } else {
+                isLast = true;
+            }
+        }
+
+        stations.add(nextUpStation);
+
         return stations;
     }
+
+    private Section getFirstSection() {
+        Section firstSection = sections.get(0);
+
+        boolean isFirst = false;
+        Station firstStation = firstSection.getUpStation();
+        while (!isFirst) {
+            Optional<Section> frontSection = getFrontSectionOf(firstStation);
+            if (frontSection.isPresent()) {
+                firstStation = frontSection.get().getUpStation();
+                firstSection = frontSection.get();
+            } else {
+                isFirst = true;
+            }
+        }
+        return firstSection;
+    }
+
+    private Optional<Section> getFrontSectionOf(Station frontStation) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(frontStation))
+                .findAny();
+    }
+
+    private Optional<Section> getBehindSectionOf(Station nextUpStation) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(nextUpStation))
+                .findAny();
+    }
+
 
     public void removeSection(Station lastStation) {
         validateOnlyOneSection();
@@ -93,13 +182,13 @@ public class Line {
 
     private void validateOnlyOneSection() {
         if (sections.size() == 1) {
-            throw new IllegalArgumentException("한 개의 구간만이 존재합니다.");
+            throw new SubwayException(ExceptionMessage.ONLY_ONE_SECTION);
         }
     }
 
     private void validateIsLast(Station lastStation) {
         if (!lastSection().getDownStation().equals(lastStation)) {
-            throw new IllegalArgumentException("구간을 삭제할 수 없습니다.");
+            throw new SubwayException(ExceptionMessage.CANNOT_DELETE_SECTION);
         }
     }
 

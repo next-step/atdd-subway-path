@@ -54,6 +54,20 @@ public class Section {
         return distance;
     }
 
+    public void updateUpStationToDownStationOf(Section newSection) {
+        this.upStation = newSection.downStation;
+        this.distance = distance - newSection.distance;
+    }
+
+    public void updateDownStationToUpStationOf(Section newSection) {
+        this.downStation = newSection.upStation;
+        this.distance = distance - newSection.distance;
+    }
+
+    public boolean sameOrBiggerThen(Section section) {
+        return this.distance >= section.distance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
