@@ -6,6 +6,7 @@ import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.CustomException;
 import nextstep.subway.exception.code.CommonCode;
+import nextstep.subway.exception.code.ResponseCode;
 import nextstep.subway.exception.code.SectionCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -51,11 +52,8 @@ class SectionsTest {
             sections.add(new Section(line, 구성역, 정자역, 3));
 
             // then
-            assertAll(
-                () -> assertThat(sections.size()).isEqualTo(3),
-                () -> assertThat(sections.getStationNames()).containsExactly("기흥역", "신갈역", "구성역", "정자역"),
-                () -> assertThat(getDistances()).containsExactly(10, 6, 3)
-                     );
+            지하철역_순서_고려하여_포함_여부확인("기흥역", "신갈역", "구성역", "정자역");
+            assertThat(getDistances()).containsExactly(10, 6, 3);
         }
 
         @Test
@@ -67,11 +65,8 @@ class SectionsTest {
             sections.add(new Section(line, 구성역, 기흥역, 3));
 
             // then
-            assertAll(
-                () -> assertThat(line.getSections().size()).isEqualTo(3),
-                () -> assertThat(line.getSections().getStationNames()).containsExactly("구성역", "기흥역", "신갈역", "정자역"),
-                () -> assertThat(getDistances()).containsExactly(3, 10, 9)
-                     );
+            지하철역_순서_고려하여_포함_여부확인("구성역", "기흥역", "신갈역", "정자역");
+            assertThat(getDistances()).containsExactly(3, 10, 9);
         }
 
         @Test
@@ -83,11 +78,8 @@ class SectionsTest {
             sections.add(new Section(line, 정자역, 구성역, 3));
 
             // then
-            assertAll(
-                () -> assertThat(line.getSections().size()).isEqualTo(3),
-                () -> assertThat(line.getSections().getStationNames()).containsExactly("기흥역", "신갈역", "정자역", "구성역"),
-                () -> assertThat(getDistances()).containsExactly(10, 9, 3)
-                     );
+            지하철역_순서_고려하여_포함_여부확인("기흥역", "신갈역", "정자역", "구성역");
+            assertThat(getDistances()).containsExactly(10, 9, 3);
         }
 
 
@@ -103,7 +95,7 @@ class SectionsTest {
             });
 
             // then
-            assertThat(exception.getResponseCode()).isEqualTo(CommonCode.PARAM_INVALID);
+            에러코드_확인(exception, CommonCode.PARAM_INVALID);
         }
 
         @Test
@@ -114,7 +106,7 @@ class SectionsTest {
             });
 
             // then
-            assertThat(exception.getResponseCode()).isEqualTo(CommonCode.PARAM_INVALID);
+            에러코드_확인(exception, CommonCode.PARAM_INVALID);
         }
 
         @Test
@@ -128,49 +120,40 @@ class SectionsTest {
             });
 
             // then
-            assertThat(exception.getResponseCode()).isEqualTo(CommonCode.PARAM_INVALID);
+            에러코드_확인(exception, CommonCode.PARAM_INVALID);
         }
     }
 
     @Nested
-    class RemoveSection{
+    class RemoveSection {
         @Test
-        void 상행_종점역_제거(){
+        void 상행_종점역_제거() {
             // when
             sections.removeSection(기흥역);
 
             // then
-            assertAll(
-                () -> assertThat(line.getSections().size()).isEqualTo(1),
-                () -> assertThat(line.getSections().getStationNames()).containsExactly("신갈역", "정자역"),
-                () -> assertThat(getDistances()).containsExactly(9)
-                     );
+            지하철역_순서_고려하여_포함_여부확인("신갈역", "정자역");
+            assertThat(getDistances()).containsExactly(9);
         }
 
         @Test
-        void 하행_종점역_제거(){
+        void 하행_종점역_제거() {
             // when
             sections.removeSection(정자역);
 
             // then
-            assertAll(
-                () -> assertThat(line.getSections().size()).isEqualTo(1),
-                () -> assertThat(line.getSections().getStationNames()).containsExactly("기흥역", "신갈역"),
-                () -> assertThat(getDistances()).containsExactly(10)
-                     );
+            지하철역_순서_고려하여_포함_여부확인("기흥역", "신갈역");
+            assertThat(getDistances()).containsExactly(10);
         }
 
         @Test
-        void 중간역_제거(){
+        void 중간역_제거() {
             // when
             sections.removeSection(신갈역);
 
             // then
-            assertAll(
-                () -> assertThat(line.getSections().size()).isEqualTo(1),
-                () -> assertThat(line.getSections().getStationNames()).containsExactly("기흥역", "정자역"),
-                () -> assertThat(getDistances()).containsExactly(19)
-                     );
+            지하철역_순서_고려하여_포함_여부확인("기흥역", "정자역");
+            assertThat(getDistances()).containsExactly(19);
         }
 
         @Test
@@ -186,7 +169,7 @@ class SectionsTest {
             });
 
             // then
-            assertThat(exception.getResponseCode()).isEqualTo(SectionCode.SECTION_REMOVE_INVALID);
+            에러코드_확인(exception, SectionCode.SECTION_REMOVE_INVALID);
         }
 
         @Test
@@ -200,7 +183,7 @@ class SectionsTest {
             });
 
             // then
-            assertThat(exception.getResponseCode()).isEqualTo(CommonCode.PARAM_INVALID);
+            에러코드_확인(exception, CommonCode.PARAM_INVALID);
         }
     }
 
@@ -276,5 +259,16 @@ class SectionsTest {
             .stream()
             .map(Section::getDistance)
             .collect(Collectors.toList());
+    }
+
+    private void 지하철역_순서_고려하여_포함_여부확인(String... names) {
+        assertAll(
+            () -> assertThat(sections.size()).isEqualTo(names.length - 1),
+            () -> assertThat(sections.getStationNames()).containsExactly(names)
+                 );
+    }
+
+    private void 에러코드_확인(final CustomException exception, final ResponseCode responseCode) {
+        assertThat(exception.getResponseCode()).isEqualTo(responseCode);
     }
 }
