@@ -23,46 +23,49 @@ public class LineService {
 	private final StationService stationService;
 
 	@Transactional
-	public LineResponse saveLine(LineRequest request) {
+	public LineResponse save(LineRequest request) {
 		Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-		addSection(line, request.getUpStationId(), request.getDownStationId(), request.getDistance());
+		if (hasSection(request)) {
+			addSection(line, request);
+		}
 		return LineResponse.from(line);
 	}
 
-	public List<LineResponse> findAllLineResponse() {
+	private boolean hasSection(LineRequest request) {
+		return request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0;
+	}
+
+	public List<LineResponse> findAllById() {
 		return lineRepository.findAll().stream()
 			.map(LineResponse::from)
 			.collect(Collectors.toList());
 	}
 
-	public LineResponse findLineResponse(Long id) {
+	public LineResponse findById(Long id) {
 		return LineResponse.from(findLine(id));
 	}
 
 	@Transactional
-	public void updateLine(Long id, LineRequest lineRequest) {
+	public void update(Long id, LineRequest lineRequest) {
 		Line line = findLine(id);
 		line.update(lineRequest.getName(), lineRequest.getColor());
 	}
 
 	@Transactional
-	public void deleteLine(Long id) {
+	public void delete(Long id) {
 		lineRepository.deleteById(id);
 	}
 
 	@Transactional
 	public void addSection(Long lineId, SectionRequest sectionRequest) {
 		Line line = findLine(lineId);
-		addSection(line, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
-			sectionRequest.getDistance());
+		addSection(line, sectionRequest);
 	}
 
-	private void addSection(Line line, Long upStationId, Long downStationId, int distance) {
-		if (upStationId != null && downStationId != null && distance != 0) {
-			Station upStation = stationService.findStation(upStationId);
-			Station downStation = stationService.findStation(downStationId);
-			line.addSection(new Section(line, upStation, downStation, distance));
-		}
+	private void addSection(Line line, SectionRequest sectionRequest) {
+		Station upStation = stationService.findStation(sectionRequest.getUpStationId());
+		Station downStation = stationService.findStation(sectionRequest.getDownStationId());
+		line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
 	}
 
 	@Transactional

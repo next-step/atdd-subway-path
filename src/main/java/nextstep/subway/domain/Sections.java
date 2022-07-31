@@ -3,101 +3,99 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 @Embeddable
 public class Sections {
 	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
 	private final List<Section> sections = new ArrayList<>();
 
+	public void addToLast(Section section) {
+		this.sections.add(section);
+	}
+
+	public void addById(int index, Section section) {
+		this.sections.add(index, section);
+	}
+
 	public void add(Section section) {
-		validate(section);
-
-		if(isLastSection(section)) {
-			this.sections.add(section);
-			return;
-		}
-
-		if(isFirstSection(section)) {
-			this.sections.add(0, section);
-			return;
-		}
-
-		if(isMiddleSection(section)) {
-			int index = IntStream.range(0, sections.size())
-					.filter(i-> sections.get(i).getDownStation().equals(section.getUpStation()))
-					.findFirst()
-					.orElse(0);
-			if(this.sections.get(index).getDistance() <= section.getDistance()) {
-				throw new IllegalArgumentException();
-			}
-			this.sections.add(index, section);
-		}
-	}
-
-	private void validate(Section section) {
-		if(this.sections.isEmpty()){
-			return;
-		}
-
-		// 상행과 하행이 모두 새로운 역이면 에러
-		if(!getStations().contains(section.getUpStation()) && !getStations().contains(section.getDownStation())) {
-			throw new IllegalArgumentException();
-		}
-
-		// 상행과 하행이 모두 등록되어 있으면 에러
-		if(getStations().contains(section.getUpStation()) && getStations().contains(section.getDownStation())) {
-			throw new IllegalArgumentException();
-		}
-	}
-
-	private boolean isLastSection(Section section) {
-		return this.sections.isEmpty() || lastStation() == section.getUpStation();
-	}
-
-	private boolean isFirstSection(Section section) {
-		return firstStation() == section.getDownStation();
-	}
-
-	private boolean isMiddleSection(Section section) {
-		return getStations().contains(section.getUpStation());
+		SectionAddPosition sectionPosition = SectionAddPosition.from(this, section);
+		sectionPosition.add(this, section);
 	}
 
 	public List<Station> getStations() {
-		List<Station> stations = this.sections.stream().map(Section::getDownStation).collect(Collectors.toList());
-		stations.add(0, this.sections.get(0).getUpStation());
+		return getStations(this.sections);
+	}
+
+	public List<Station> getStations(List<Section> sections) {
+		List<Station> stations = sections.stream().map(Section::getDownStation).collect(Collectors.toList());
+		stations.add(0, sections.get(0).getUpStation());
 		return stations;
 	}
 
-	public void remove(Station station) {
-		int count = this.sections.size();
-		if(count <= 1) {
-			throw new IllegalArgumentException();
+	public List<Station> getOrderedStations() {
+		Sections orderedSections = new Sections();
+		SectionAddPosition sectionPosition;
+
+		for(Section section: sections) {
+			sectionPosition = SectionAddPosition.from(orderedSections, section);
+			sectionPosition.add(orderedSections, section);
 		}
 
-		Section lastSection = this.sections.get(count - 1);
-		if (!lastSection.getDownStation().equals(station)) {
-			throw new IllegalArgumentException();
-		}
-		this.sections.remove(lastSection);
+		return getStations(orderedSections.getSections());
 	}
 
-	public Boolean isEmpty() {
+	public void removeById(int index) {
+		this.sections.remove(index);
+	}
+
+	public void remove(Station station) {
+		SectionRemovePosition sectionPosition = SectionRemovePosition.from(this, station);
+		sectionPosition.remove(this, station);
+	}
+
+	public boolean isEmpty() {
 		return this.sections.isEmpty();
 	}
 
-	private Station firstStation() {
+	public Station firstStation() {
 		return this.sections.get(0).getUpStation();
 	}
 
-	private Station lastStation() {
+	public Station lastStation() {
 		return this.sections.get(this.sections.size() - 1).getDownStation();
+	}
+
+	public Station getDownStationById(int index) {
+		return this.sections.get(index).getDownStation();
+	}
+
+	public Station getUpStationById(int index) {
+		return this.sections.get(index).getUpStation();
+	}
+
+	public int getDistanceById(int index) {
+		return this.sections.get(index).getDistance();
+	}
+
+	public int size() {
+		return this.sections.size();
+	}
+
+	public Section getSectionById(int index) {
+		return this.sections.get(index);
+	}
+
+	public boolean contains(Station station) {
+		return this.getStations().contains(station);
 	}
 }

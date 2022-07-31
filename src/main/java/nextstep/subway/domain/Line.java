@@ -4,10 +4,13 @@ import javax.persistence.*;
 
 import java.util.List;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Line {
 	@Id
@@ -19,10 +22,7 @@ public class Line {
 	private String color;
 
 	@Embedded
-	private Sections sections;
-
-	public Line() {
-	}
+	private Sections sections = new Sections();
 
 	public Line(String name, String color) {
 		this.name = name;
@@ -45,6 +45,10 @@ public class Line {
         return this.sections.getStations();
 	}
 
+	public List<Station> getOrderedStations() {
+		return this.sections.getOrderedStations();
+	}
+
 	public void removeSection(Station station) {
 		this.sections.remove(station);
 	}
@@ -58,7 +62,7 @@ public class Line {
 		}
 	}
 
-	public Boolean isSectionEmpty() {
+	public boolean isSectionEmpty() {
 		return this.sections.isEmpty();
 	}
 }

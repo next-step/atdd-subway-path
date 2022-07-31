@@ -2,7 +2,11 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,10 +25,6 @@ public class Section {
     private Station downStation;
 
     private int distance;
-
-    public Section() {
-
-    }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
