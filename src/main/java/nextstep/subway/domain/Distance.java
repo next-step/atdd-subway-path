@@ -19,13 +19,13 @@ public class Distance {
         return new Distance(distance);
     }
 
-    public void addDistance(Distance distance) {
-        this.value += distance.getValue();
+    public Distance getAddedDistanceBy(Distance newDistance) {
+        return of(this.value + newDistance.getValue());
     }
 
-    public void decreaseDistance(Distance newDistance) {
+    public Distance getDecreaseDistanceBy(Distance newDistance) {
         checkToDecreaseDistance(newDistance);
-        this.value -= newDistance.getValue();
+        return of(this.value - newDistance.getValue());
     }
 
     private void checkToDecreaseDistance(Distance newDistance) {

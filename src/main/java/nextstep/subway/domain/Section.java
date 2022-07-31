@@ -66,7 +66,9 @@ public class Section {
     }
 
     public void changeSectionConditionBy(Section newSection) {
-        distance.decreaseDistance(newSection.getDistance());
+        changeDistance(
+                this.distance.getDecreaseDistanceBy(newSection.getDistance())
+        );
 
         if (isEqualToUpStation(newSection.getUpStation())) {
             changeUpStation(newSection.getDownStation());
@@ -85,8 +87,14 @@ public class Section {
         this.upStation = station;
     }
 
+    private void changeDistance(Distance newDistance) {
+        this.distance = newDistance;
+    }
+
     public void addDistance(Distance distance) {
-        this.distance.addDistance(distance);
+        changeDistance(
+                this.distance.getAddedDistanceBy(distance)
+        );
     }
 
     @Override

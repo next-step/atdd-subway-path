@@ -15,4 +15,8 @@ public class FakeLineFactory {
         return new Line("분당선", "yellow");
     }
 
+    public static Line 이호선() {
+        return new Line("2호선", "yellow");
+    }
+
 }

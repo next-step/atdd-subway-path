@@ -18,10 +18,10 @@ class DistanceTest {
         Distance newDistance = new Distance(7);
 
         //when
-        originDistance.addDistance(newDistance);
+        Distance addedDistance = originDistance.getAddedDistanceBy(newDistance);
 
         //then
-        assertThat(originDistance.getValue()).isEqualTo(17);
+        assertThat(addedDistance.getValue()).isEqualTo(17);
     }
 
     @Test
@@ -32,10 +32,10 @@ class DistanceTest {
         Distance newDistance = new Distance(5);
 
         //when
-        originDistance.decreaseDistance(newDistance);
+        Distance decreaseDistance = originDistance.getDecreaseDistanceBy(newDistance);
 
         //then
-        assertThat(originDistance.getValue()).isEqualTo(5);
+        assertThat(decreaseDistance.getValue()).isEqualTo(5);
     }
 
     @Test
@@ -46,7 +46,7 @@ class DistanceTest {
         Distance newDistance = new Distance(11);
 
         //when, then
-        assertThatThrownBy(() -> originDistance.decreaseDistance(newDistance))
+        assertThatThrownBy(() -> originDistance.getDecreaseDistanceBy(newDistance))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(SubwayErrorMessage.INVALID_DISTANCE.getMessage());
     }
