@@ -20,6 +20,10 @@ public class Distance {
         this.value = value;
     }
 
+    public static Distance valueOf(double value) {
+        return valueOf((int) value);
+    }
+
     public static Distance valueOf(int value) {
         if (value < MIN_VALUE) {
             throw new IllegalArgumentException();
