@@ -194,7 +194,7 @@ public class Sections {
         Section firstSection = firstSection();
         Section lastSection = lastSection();
 
-        if (deletableBetweenSection(station, firstSection, lastSection)) {
+        if (deleteIfBetweenSectionDeletable(station, firstSection, lastSection)) {
             deleteBetweenSection(station);
             return;
         }
@@ -214,7 +214,7 @@ public class Sections {
         return sections.size() == 1;
     }
 
-    private boolean deletableBetweenSection(Station station, Section firstSection, Section lastSection) {
+    private boolean deleteIfBetweenSectionDeletable(Station station, Section firstSection, Section lastSection) {
         return !firstSection.hasSameUpStation(station) && !lastSection.hasSameDownStation(station);
     }
 

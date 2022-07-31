@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -162,9 +164,10 @@ class SectionsTest {
         sections.delete(삼성역);
 
         //then
+        List<Section> deletedSections = sections.getSections();
         assertAll(
-                () -> assertThat(sections.getSections()).hasSize(1),
-                () -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(13)
+                () -> assertThat(deletedSections).hasSize(1),
+                () -> assertThat(deletedSections.get(0).getDistance()).isEqualTo(13)
         );
     }
 
