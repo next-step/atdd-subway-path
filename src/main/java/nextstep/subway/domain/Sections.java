@@ -16,6 +16,18 @@ public class Sections {
 
     public List<Section> getSections() {
         Collections.sort(sections, new SectionComparator());
+        return sections;
+    }
+
+
+    public List<Section> getSections(SectionComparator.SectionSort sort) {
+
+        if (sort.equals(SectionComparator.SectionSort.ASC)) {
+            Collections.sort(sections, new SectionComparator());
+        }
+        if (sort.equals(SectionComparator.SectionSort.DESC)) {
+            Collections.sort(sections, new SectionComparator().reversed());
+        }
 
         return sections;
     }
@@ -46,7 +58,7 @@ public class Sections {
         int sectionSize = sections.size();
         if (sectionSize > 0) {
             //이미 존재 하는지 확인
-            checkRegistStatus(section);
+            checkDuplicatedSection(section);
             //해당 구간을 찾으면서 상행 하행 둘다 없는 부분 확인
             Section targetSection = getTargetSection(section);
             //업데이트 전에 구간 길이 확인
@@ -55,7 +67,7 @@ public class Sections {
         sections.add(section);
     }
 
-    private void checkRegistStatus(Section section) {
+    private void checkDuplicatedSection(Section section) {
         if (sections.stream()
                 .anyMatch(sec -> sec.getUpStation().equals(section.getUpStation()) &&
                         sec.getDownStation().equals(section.getDownStation()))) {
