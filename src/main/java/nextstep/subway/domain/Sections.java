@@ -32,34 +32,53 @@ public class Sections {
             return;
         }
 
+        validNotExistStation(section);
+        validExistAllStation(section);
+
+        addSectionIfNotBetween(section);
+        addSectionIfBetween(section);
+    }
+
+    private void validNotExistStation(final Section section) {
+        if (!hasStation(section.getDownStation()) && !hasStation(section.getUpStation())) {
+            throw new CustomException(CommonCode.PARAM_INVALID);
+        }
+    }
+
+    private void validExistAllStation(final Section section) {
+        if (hasStation(section.getDownStation()) && hasStation(section.getUpStation())) {
+            throw new CustomException(CommonCode.PARAM_INVALID);
+        }
+    }
+
+    private void addSectionIfNotBetween(final Section section) {
         Station upEndStation = getUpEndStation();
         Station downEndStation = getDownEndStation();
         if (upEndStation.equals(section.getDownStation()) || downEndStation.equals(section.getUpStation())) {
             sections.add(section);
+        }
+    }
+
+    private void addSectionIfBetween(final Section section) {
+        Section matchSection = getSectionHasSameUpStation(section.getUpStation())
+            .orElse(getSectionHasSameDownStation(section.getDownStation())
+                        .orElse(null));
+        if (matchSection == null || matchSection.equals(section)) {
             return;
         }
-
-        Optional<Section> sectionMatchUpStation = getSectionSameUpStation(section.getUpStation());
-        Optional<Section> sectionMatchDownStation = getSectionSameDownStation(section.getDownStation());
-
-        checkContainAllStationInLine(sectionMatchUpStation, sectionMatchDownStation);
-        checkNotContainAllStationInLine(sectionMatchUpStation, sectionMatchDownStation);
-
-        sectionMatchUpStation.ifPresent(originSection -> originSection.minus(section));
-        sectionMatchDownStation.ifPresent(originSection -> originSection.minus(section));
+        if (matchSection.getDistance() <= section.getDistance()) {
+            throw new CustomException(CommonCode.PARAM_INVALID);
+        }
+        Station upStation = matchSection.hasSameDownStation(section.getDownStation()) ?
+                            matchSection.getUpStation() :
+                            section.getDownStation();
+        Station downStation = matchSection.hasSameDownStation(section.getDownStation()) ?
+                              section.getUpStation():
+                              matchSection.getDownStation();
+        int distance = matchSection.getDistance() - section.getDistance();
+        sections.add(new Section(matchSection.getLine(), upStation, downStation, distance));
         sections.add(section);
-    }
-
-    private void checkNotContainAllStationInLine(final Optional<Section> sectionMatchUpStation, final Optional<Section> sectionMatchDownStation) {
-        if(sectionMatchUpStation.isEmpty() && sectionMatchDownStation.isEmpty()){
-            throw new CustomException(CommonCode.PARAM_INVALID);
-        }
-    }
-
-    private void checkContainAllStationInLine(final Optional<Section> sectionMatchUpStation, final Optional<Section> sectionMatchDownStation) {
-        if(sectionMatchUpStation.isPresent() && sectionMatchDownStation.isPresent()){
-            throw new CustomException(CommonCode.PARAM_INVALID);
-        }
+        sections.remove(matchSection);
     }
 
     public void removeSection(final Long stationId) {
@@ -106,10 +125,10 @@ public class Sections {
 
     public List<Station> getStations() {
         return getSections().stream()
-                                  .map(Section::getAllStation)
-                                  .flatMap(List::stream)
-                                  .distinct()
-                                  .collect(Collectors.toUnmodifiableList());
+                            .map(Section::getAllStation)
+                            .flatMap(List::stream)
+                            .distinct()
+                            .collect(Collectors.toUnmodifiableList());
     }
 
 
@@ -123,10 +142,10 @@ public class Sections {
 
     public List<Section> getSectionsSorted() {
         List<Section> result = new ArrayList<>();
-        Optional<Section> section = getSectionSameUpStation(getUpEndStation());
+        Optional<Section> section = getSectionHasSameUpStation(getUpEndStation());
         while (section.isPresent()) {
             result.add(section.get());
-            section = getSectionSameUpStation(section.get().getDownStation());
+            section = getSectionHasSameUpStation(section.get().getDownStation());
         }
         return result;
     }
@@ -137,15 +156,20 @@ public class Sections {
                                   .collect(Collectors.toList());
     }
 
-    private Optional<Section> getSectionSameUpStation(final Station station) {
+    private Optional<Section> getSectionHasSameUpStation(final Station station) {
         return sections.stream()
-                       .filter(section -> section.getUpStation().equals(station))
+                       .filter(section -> section.hasSameUpStation(station))
                        .findFirst();
     }
 
-    private Optional<Section> getSectionSameDownStation(final Station station) {
+    private Optional<Section> getSectionHasSameDownStation(final Station station) {
         return sections.stream()
-                       .filter(section -> section.getDownStation().equals(station))
+                       .filter(section -> section.hasSameDownStation(station))
                        .findFirst();
+    }
+
+    private boolean hasStation(Station station) {
+        return sections.stream()
+                       .anyMatch(section -> section.hasStation(station));
     }
 }
