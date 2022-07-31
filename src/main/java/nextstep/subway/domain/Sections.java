@@ -22,10 +22,10 @@ public class Sections {
 
     public List<Section> getSections(SectionComparator.SectionSort sort) {
 
-        if (sort.getSortType().equals(SectionComparator.SectionSort.ASC)) {
+        if (sort.equals(SectionComparator.SectionSort.ASC)) {
             Collections.sort(sections, new SectionComparator());
         }
-        if (sort.getSortType().equals(SectionComparator.SectionSort.DESC)) {
+        if (sort.equals(SectionComparator.SectionSort.DESC)) {
             Collections.sort(sections, new SectionComparator().reversed());
         }
 
