@@ -5,7 +5,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 import static nextstep.subway.domain.Section.of;
 
@@ -213,16 +213,16 @@ public class Sections {
     }
 
     private void deleteMiddleStation(Station station, Line line) {
+        List<Section> deleteSections = new ArrayList<>();
         Section upSection = this.sections.stream()
                 .filter(section -> section.getDownStation().equals(station))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("상행역이 존재하지 않습니다."));
-        this.sections.remove(upSection);
         Section downSection = this.sections.stream()
                 .filter(section -> section.getUpStation().equals(station))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("하행역이 존재하지 않습니다."));
-        this.sections.remove(downSection);
+        sections.removeAll(List.of(upSection, downSection));
         this.sections.add(new Section(line, upSection.getUpStation(), downSection.getDownStation(), upSection.getDistance() + downSection.getDistance()));
     }
 
@@ -231,13 +231,11 @@ public class Sections {
     }
 
     private boolean isLastStation(Station station) {
-        Station lastStation = station;
-        for (Section section : this.sections) {
-            if (isUpStation(lastStation, section)) {
-                lastStation = section.getDownStation();
-            }
-        }
-        return station.equals(lastStation);
+        Section lastSection = this.sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst()
+                .orElse(null);
+        return Objects.equals(lastSection == null ? station : lastSection.getDownStation(), station);
     }
 
     private void deleteFirstStation(Station station) {
