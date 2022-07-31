@@ -97,6 +97,25 @@ class LineServiceTest {
         assertThat(lineResponses).isEmpty();
     }
 
+    @Test
+    void 노선에_등록된_모든_구간조회() {
+        //given
+        Station 강남역 = 지하철역_생성("강남역");
+        Station 교대역 = 지하철역_생성("교대역");
+        Station 선릉역 = 지하철역_생성("선릉역");
+        Line 분당선 = 구간_생성(new Line("분당선", "green"));
+        Line 신분당선 = 구간_생성(new Line("신분당선", "green"));
+
+        // when
+        SectionRequest 강남_교대_구간 = new SectionRequest(강남역.getId(), 교대역.getId(), 10);
+        SectionRequest 교대_선릉_구간 = new SectionRequest(교대역.getId(), 선릉역.getId(), 10);
+        lineService.addSection(분당선.getId(), 교대_선릉_구간);
+        lineService.addSection(신분당선.getId(), 강남_교대_구간);
+
+        //then
+        assertThat(lineService.findAllSection()).hasSize(2);
+    }
+
     private Station 지하철역_생성(String name) {
         return stationRepository.save(new Station(name));
     }
