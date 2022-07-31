@@ -21,7 +21,14 @@ public class PathFinder {
     private final StationRepository stationRepository;
 
     public Path solve(Station sourceStation, Station targetStation) {
+        if (sourceStation.equals(targetStation)) {
+            throw new IllegalArgumentException("출발역과 도착역이 동일합니다.");
+        }
+
         var path = new DijkstraShortestPath(buildGraph()).getPath(sourceStation, targetStation);
+        if (path == null) {
+            throw new IllegalStateException("출발역과 도착역 사이의 경로가 없습니다.");
+        }
 
         List<Station> stations = path.getVertexList();
         var distance = (int) path.getWeight();
