@@ -37,12 +37,12 @@ class LineTest {
     @Test
     void addLineSectionNextToDown() {
         // given
-        line.addSection2(section);
+        line.addSection(section);
 
         // when
         Section newSection = section(line, "양재역", "양재시민의숲", 8);
-        line.addSection2(newSection);
-        List<Station> stations = line.getStations2();
+        line.addSection(newSection);
+        List<Station> stations = line.getStations();
 
         // then
         assertThat(line.getSections()).contains(newSection);
@@ -58,12 +58,12 @@ class LineTest {
     @Test
     void addSectionBetweenUpAndDown() {
         // given
-        line.addSection2(section);
+        line.addSection(section);
 
         // when
         Section newSection = section(line, "강남역", "양재시민의숲", 8);
-        line.addSection2(newSection);
-        List<Station> stations = line.getStations2();
+        line.addSection(newSection);
+        List<Station> stations = line.getStations();
 
         // then
         assertThat(line.getSections()).contains(newSection);
@@ -79,12 +79,12 @@ class LineTest {
     @Test
     void addSectionFrontOfUp() {
         // given
-        line.addSection2(section);
+        line.addSection(section);
 
         // when
         Section newSection = section(line, "양재시민의숲", "강남역", 8);
-        line.addSection2(newSection);
-        List<Station> stations = line.getStations2();
+        line.addSection(newSection);
+        List<Station> stations = line.getStations();
 
         // then
         assertThat(line.getSections()).contains(newSection);

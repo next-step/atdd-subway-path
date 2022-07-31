@@ -56,7 +56,7 @@ public class Line {
     public List<Section> getSections() {
         return sections;
     }
-
+    
     public void addSection(Section newSection) {
         Optional<Section> addingSection = sections.stream()
                 .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
@@ -68,29 +68,6 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        if (sections.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Station> stations = sections.stream()
-                .map(Section::getUpStation)
-                .collect(Collectors.toList());
-        stations.add(lastSection().getDownStation());
-
-        return stations;
-    }
-
-    public void addSection2(Section newSection) {
-        Optional<Section> addingSection = sections.stream()
-                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
-                .findFirst();
-
-        addingSection.ifPresent(section -> section.updateUpStationToDownStationOf(newSection));
-
-        sections.add(newSection);
-    }
-
-    public List<Station> getStations2() {
         if (sections.isEmpty()) {
             return Collections.emptyList();
         }
