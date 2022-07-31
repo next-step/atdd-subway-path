@@ -3,6 +3,7 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.*;
+import nextstep.subway.exception.SourceAndTargetNotLinkedException;
 import nextstep.subway.exception.SourceAndTargetSameException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -93,6 +94,33 @@ class PathServiceMockTest {
         assertThatThrownBy(() -> pathService.findPath(source, source))
                 .isInstanceOf(SourceAndTargetSameException.class)
                 .hasMessage("구간 조회 시 출발역과 도착역이 같을 수 없습니다.");
+
+    }
+
+    @DisplayName("경로를 조회 시 출발역과 도착역이 연결되지 않으면 에러 발생")
+    @Test
+    void findPathSourceAndTargetNotLinkedException() {
+        //given
+
+        Station 천호역 = new Station("천호역");
+        Station 강동역 = new Station("강동역");
+
+        Line 오호선 = new Line("오호선", "purple");
+        오호선.addSection(new Section(오호선, 천호역, 강동역, 2));
+
+        Long source = 1L;
+        Long target = 5L;
+
+        when(lineRepository.findAll()).thenReturn(List.of(이호선, 오호선));
+
+        when(stationRepository.findById(source)).thenReturn(Optional.of(교대역));
+        when(stationRepository.findById(target)).thenReturn(Optional.of(천호역));
+
+
+        //when, then
+        assertThatThrownBy(() -> pathService.findPath(source, target))
+                .isInstanceOf(SourceAndTargetNotLinkedException.class)
+                .hasMessage("출발역과 도착역이 연결되어 있지 않습니다.");
 
     }
 

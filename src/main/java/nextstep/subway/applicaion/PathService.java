@@ -3,6 +3,7 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.*;
+import nextstep.subway.exception.SourceAndTargetNotLinkedException;
 import nextstep.subway.exception.SourceAndTargetSameException;
 import nextstep.subway.exception.StationNotExistException;
 import org.jgrapht.GraphPath;
@@ -30,16 +31,17 @@ public class PathService {
     }
 
     public PathResponse findPath(Long source, Long target) {
-        validate(source, target);
+        checkSourceAndTargetDifferent(source, target);
         List<Line> lines = lineRepository.findAll();
         List<Section> sections = allSectionsFrom(lines);
         GraphPath<Station, DefaultWeightedEdge> path = shortestPath(source, target, sections);
+        checkPathExist(path);
         List<Station> stations = path.getVertexList();
         int distance = (int) path.getWeight();
         return new PathResponse(toStationResponses(stations), distance);
     }
 
-    private void validate(Long source, Long target) {
+    private void checkSourceAndTargetDifferent(Long source, Long target) {
         if (Objects.equals(source, target)) {
             throw new SourceAndTargetSameException("구간 조회 시 출발역과 도착역이 같을 수 없습니다.");
         }
@@ -56,6 +58,12 @@ public class PathService {
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath
                 = new DijkstraShortestPath<>(toWeightedMultiGraph(sections));
         return dijkstraShortestPath.getPath(stationFrom(source), stationFrom(target));
+    }
+
+    private void checkPathExist(GraphPath<Station, DefaultWeightedEdge> path) {
+        if (path == null) {
+            throw new SourceAndTargetNotLinkedException("출발역과 도착역이 연결되어 있지 않습니다.");
+        }
     }
 
     private Station stationFrom(Long source) {

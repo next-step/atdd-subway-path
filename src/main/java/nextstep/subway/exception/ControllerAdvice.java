@@ -58,4 +58,11 @@ public class ControllerAdvice {
                 .body(new ErrorResponse(e.getMessage()));
     }
 
+    @ExceptionHandler(value = SourceAndTargetNotLinkedException.class)
+    public ResponseEntity<ErrorResponse> sourceAndTargetNotLinkedException(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
 }

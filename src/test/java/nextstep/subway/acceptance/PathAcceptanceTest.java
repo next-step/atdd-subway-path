@@ -105,6 +105,33 @@ class PathAcceptanceTest extends AcceptanceTest {
 
     }
 
+
+    /**
+     * Given 연결되지 않은 구간을 추가하고, 출발역과 도착역이 주어졌을 때
+     * When 경로를 조회 시
+     * Then 에러가 발생한다
+     */
+    @DisplayName("출발역과 도착역이 연결되지 않았을 때 에러 발생")
+    @Test
+    void findPathSourceAndTargetNotLinkedException() {
+        //given
+        Long 출발역 = 교대역;
+
+        Long 천호역 = 지하철역_생성_요청("천호역").jsonPath().getLong("id");
+        Long 강동역 = 지하철역_생성_요청("강동역").jsonPath().getLong("id");
+
+        지하철_노선_생성_요청("오호선", "purple", 천호역, 강동역, 1).jsonPath().getLong("id");
+
+        //when
+        ExtractableResponse<Response> response = 지하철_경로조회_요청(출발역, 천호역);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("errorMessage"))
+                .isEqualTo("출발역과 도착역이 연결되어 있지 않습니다.");
+
+    }
+
     private ExtractableResponse<Response> 지하철_경로조회_요청(Long sourceId, Long targetId) {
         return RestAssured
                 .given().log().all()
