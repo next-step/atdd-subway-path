@@ -251,7 +251,7 @@ public class LineServiceTest {
     @Test
     void removeSectionToDownSection() {
 
-        //given
+        // given
         final Station 강남역 = 지하철역_저장("강남역");
         final Station 시청역 = 지하철역_저장("시청역");
         final Station 구로디지털단지역 = 지하철역_저장("구로디지털단지역");
@@ -261,10 +261,10 @@ public class LineServiceTest {
         SectionRequest 두번째_구간_요청 = LineTestFixtures.구간요청_생성(시청역.getId(), 구로디지털단지역.getId(), 5);
         lineService.addSection(신분당선.getId(), 두번째_구간_요청);
 
-        //when
+        // when
         boolean isRemoved = lineService.removeSection(신분당선.getId(), 구로디지털단지역.getId());
 
-        //then
+        // then
         assertThat(isRemoved).isTrue();
         LineResponse 노선_요청_응답 = lineService.findById(신분당선.getId());
         assertThat(노선_요청_응답.getStations().stream()
