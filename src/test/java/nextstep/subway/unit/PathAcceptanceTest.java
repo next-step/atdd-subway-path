@@ -68,10 +68,22 @@ class PathAcceptanceTest extends AcceptanceTest {
         var response = 지하철노선_최단경로_조회요청(교대역, 양재역);
 
         // Then
+        교대역_양재역_경로요청_응답이_정상이다(response);
+        교대역_양재역_최단거리는_5이다(response);
+        교대역_양재역_최단거리경로는_교대역_남부터미널역_양재역_순서이다(response);
+    }
+
+    private void 교대역_양재역_경로요청_응답이_정상이다(ExtractableResponse<Response> response) {
         assertThat(response.statusCode())
                 .isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 교대역_양재역_최단거리는_5이다(ExtractableResponse<Response> response) {
         assertThat(response.jsonPath()
                 .getInt("distance")).isEqualTo(5);
+    }
+
+    private void 교대역_양재역_최단거리경로는_교대역_남부터미널역_양재역_순서이다(ExtractableResponse<Response> response) {
         assertThat(response.jsonPath()
                 .getList("stations.id", Long.class)).containsExactly(교대역, 남부터미널역, 양재역);
     }
