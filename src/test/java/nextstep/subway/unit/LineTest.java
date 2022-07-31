@@ -110,12 +110,39 @@ class LineTest {
         }).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("최대 1개의 역만 노선에 등록되어 있어야 합니다.");
     }
 
-    @DisplayName("구간 삭제")
+    @DisplayName("상행역 삭제")
+    @Test
+    void 상행역_삭제_테스트() {
+        신분당선.addSection(논현역, 신논현역, 5);
+        신분당선.addSection(신논현역, 강남역, 5);
+        신분당선.deleteSection(논현역);
+        assertThat(신분당선.sections().size()).isEqualTo(1);
+    }
+
+    @DisplayName("하행역 삭제")
     @Test
     void removeSection() {
         신분당선.addSection(논현역, 신논현역, 5);
         신분당선.addSection(신논현역, 강남역, 5);
         신분당선.deleteSection(강남역);
         assertThat(신분당선.sections().size()).isEqualTo(1);
+    }
+
+    @DisplayName("중간역 삭제")
+    @Test
+    void deleteMiddleSection() {
+        신분당선.addSection(논현역, 신논현역, 5);
+        신분당선.addSection(신논현역, 강남역, 5);
+        신분당선.deleteSection(신논현역);
+        assertThat(신분당선.stations()).containsExactly(논현역, 강남역);
+    }
+
+    @DisplayName("구간이 하나인 노선을 삭제할 때 삭제할 수 없음")
+    @Test
+    void deleteOneSection() {
+        신분당선.addSection(논현역, 신논현역, 5);
+        assertThatThrownBy(() -> {
+            신분당선.deleteSection(신논현역);
+        }).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("두 개 이상의 구간일때만 삭제가 가능합니다.");
     }
 }

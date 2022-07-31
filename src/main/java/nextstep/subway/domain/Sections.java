@@ -5,6 +5,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static nextstep.subway.domain.Section.of;
 
@@ -46,37 +47,40 @@ public class Sections {
     }
 
     private void addFirstSection(List<Station> stations) {
-        Station firstUpStation = findFirstUpStation();
-        stations.add(firstUpStation);
-        Station firstDownStation = findDownStation(firstUpStation);
-        stations.add(firstDownStation);
+        stations.add(firstSection().getUpStation());
+        stations.add(firstSection().getDownStation());
     }
 
     private Station findDownStation(Station upStation) {
-        for (Section section : this.sections) {
-            if (upStation.equals(section.getUpStation())) {
-                return section.getDownStation();
-            }
-        }
-        throw new IllegalArgumentException();
+        return this.sections.stream().filter(section -> upStation.equals(section.getUpStation())).findFirst().orElseThrow(IllegalArgumentException::new).getDownStation();
     }
 
     private Station findFirstUpStation() {
-        Station firstUpStation = upStation();
-        for (Section section : this.sections) {
-            if (isDownStation(firstUpStation, section)) {
-                firstUpStation = section.getUpStation();
-            }
-        }
-        return firstUpStation;
+        return firstSection().getUpStation();
+    }
+
+    private Section firstSection() {
+        Section firstSection = this.sections.get(0);
+        return this.sections.stream()
+                .filter(section -> section.getDownStation().equals(firstSection.getUpStation()))
+                .findFirst()
+                .orElse(firstSection);
+    }
+
+    private Section lastSection() {
+        Section firstSection = this.sections.get(0);
+        return this.sections.stream()
+                .filter(section -> section.getUpStation().equals(firstSection.getDownStation()))
+                .findFirst()
+                .orElse(firstSection);
+    }
+
+    private boolean isFirstUpStation(Station station) {
+        return firstSection().getUpStation().equals(station);
     }
 
     private boolean hasNextStation(Station prevStation) {
         return this.sections.stream().anyMatch(section -> prevStation.equals(section.getUpStation()));
-    }
-
-    private boolean isDownStation(Station upStation, Section section) {
-        return section.getDownStation().equals(upStation);
     }
 
     private Station findNextStation(Station firstDownStation) {
@@ -93,11 +97,10 @@ public class Sections {
             return;
         }
         validAddSection(upStation, downStation);
-        if (!isSplitSection(line, upStation, downStation, distance)) {
+        if (!isSplitSection(upStation)) {
             this.sections.add(of(line, upStation, downStation, distance));
             return;
         }
-        validSplitSectionDistance(upStation, distance);
         addSplitSection(line, upStation, downStation, distance);
     }
 
@@ -105,11 +108,12 @@ public class Sections {
         return this.sections.size() == 0;
     }
 
-    private boolean isSplitSection(Line line, Station upStation, Station downStation, int distance) {
+    private boolean isSplitSection(Station upStation) {
         return this.sections.stream().anyMatch(section -> section.getUpStation().equals(upStation));
     }
 
     private void addSplitSection(Line line, Station upStation, Station downStation, int distance) {
+        validSplitSectionDistance(upStation, distance);
         Section sameUpStationSection = sameUpStationSection(upStation);
         this.sections.remove(sameUpStationSection);
         this.sections.add(of(line, upStation, downStation, distance));
@@ -140,23 +144,75 @@ public class Sections {
     }
 
     private Section sameUpStationSection(Station upStation) {
-        for (Section section : this.sections) {
-            if (section.getUpStation().equals(upStation)) {
-                return section;
-            }
-        }
-        throw new IllegalArgumentException("겹치는 상행역을 찾을 수 없습니다.");
+        return this.sections.stream()
+                .filter(section -> section.getUpStation().equals(upStation))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("겹치는 상행역을 찾을 수 없습니다."));
     }
 
-    private boolean isSameUpStation(Line line, Station upStation, Station downStation, int distance) {
-        return this.sections.stream().anyMatch(section -> section.getUpStation().equals(upStation));
+    public void delete(Station station, Line line) {
+        validDeleteSection(line);
+        if (isFirstUpStation(station)) {
+            deleteFirstStation();
+            return;
+        }
+        if (isLastStation(station)) {
+            deleteLastStation();
+            return;
+        }
+        deleteAndMergeMiddleStation(station, line);
     }
 
-    public void deleteSection(Station station) {
-        if (!this.downStation().equals(station)) {
-            throw new IllegalArgumentException();
+    private void validDeleteSection(Line line) {
+        if (line.sections().size() == 1) {
+            throw new IllegalArgumentException("두 개 이상의 구간일때만 삭제가 가능합니다.");
         }
-        this.sections.remove(this.sections.size() - 1);
+    }
+
+    private void deleteAndMergeMiddleStation(Station station, Line line) {
+        Section previousSection = previousSection(station);
+        Section nextSection = nextSection(station);
+        deleteSections(previousSection, nextSection);
+        mergeSection(line, previousSection, nextSection);
+    }
+
+    private void deleteSections(Section previousSection, Section nextSection) {
+        sections.remove(previousSection);
+        sections.remove(nextSection);
+    }
+
+    private void mergeSection(Line line, Section previousSection, Section nextSection) {
+        this.sections.add(new Section(line, previousSection.getUpStation(), nextSection.getDownStation(), previousSection.getDistance() + nextSection.getDistance()));
+    }
+
+    private Section previousSection(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("상행 구간이 존재하지 않습니다."));
+    }
+
+    private Section nextSection(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("하행 구간이 존재하지 않습니다."));
+    }
+
+    private boolean isLastStation(Station station) {
+        Section lastSection = this.sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst()
+                .orElse(null);
+        return Objects.equals(lastSection == null ? station : lastSection.getDownStation(), station);
+    }
+
+    private void deleteLastStation() {
+        this.sections.remove(lastSection());
+    }
+
+    private void deleteFirstStation() {
+        this.sections.remove(firstSection());
     }
 
 }
