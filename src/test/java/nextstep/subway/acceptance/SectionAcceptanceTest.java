@@ -108,12 +108,29 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * When 중간 추가 시 기존과 거리가 같은 구간을 생성 요청하는 경우
      * Then BAD_REQUEST 를 반환한다.
      */
-    @DisplayName("지하철 노선에 구간을 등록 실패 - 중간에, 거리 같은 경우")
+    @DisplayName("지하철 노선에 구간을 등록 실패 - 중간에(상행역 같음), 거리 같은 경우")
     @Test
-    void addLineSectionFailCauseSameDistance() {
+    void addLineSectionFailCauseSameDistanceInSameUpStation() {
         // when
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 10));
+        String message = response.jsonPath().get("msg");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(message).isEqualTo(ExceptionMessage.TOO_LONG_DISTANCE_OF_SECTION.msg());
+    }
+
+    /**
+     * When 중간 추가 시 기존과 거리가 같은 구간을 생성 요청하는 경우
+     * Then BAD_REQUEST 를 반환한다.
+     */
+    @DisplayName("지하철 노선에 구간을 등록 실패 - 중간에(하행역 같음), 거리 같은 경우")
+    @Test
+    void addLineSectionFailCauseSameDistanceInSameDownStation() {
+        // when
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 양재역, 10));
         String message = response.jsonPath().get("msg");
 
         // then
