@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Entity
@@ -17,7 +18,7 @@ public class Line {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public Line() {
+    private Line() {
     }
 
     public Line(String name, String color) {
@@ -53,25 +54,32 @@ public class Line {
         return sections;
     }
 
-    public void addSection(Section section) {
-        if(!sections.isEmpty()) {
-            validateEqualUpAndDown(section);
-            validateAlreadyExist(section);
-        }
-        sections.add(section);
+    public void addSection(Section newSection) {
+//        if(!sections.isEmpty()) {
+//            validateEqualUpAndDown(section);
+//            validateAlreadyExist(section);
+//        }
+
+        Optional<Section> addingSection = sections.stream()
+                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+                .findFirst();
+
+        addingSection.ifPresent(section -> section.updateUpStationToDownStationOf(newSection));
+
+        sections.add(newSection);
     }
 
-    private void validateEqualUpAndDown(Section section) {
-        if (!lastSection().getDownStation().equals(section.getUpStation())) {
-            throw new IllegalArgumentException("구간을 추가할 수 없습니다.");
-        }
-    }
+//    private void validateEqualUpAndDown(Section section) {
+//        if (!lastSection().getDownStation().equals(section.getUpStation())) {
+//            throw new IllegalArgumentException("구간을 추가할 수 없습니다.");
+//        }
+//    }
 
-    private void validateAlreadyExist(Section section) {
-        if (getStations().contains(section.getDownStation())) {
-            throw new IllegalArgumentException("역이 이미 노선에 포함되어 있습니다.");
-        }
-    }
+//    private void validateAlreadyExist(Section section) {
+//        if (getStations().contains(section.getDownStation())) {
+//            throw new IllegalArgumentException("역이 이미 노선에 포함되어 있습니다.");
+//        }
+//    }
 
     public List<Station> getStations() {
         if (sections.isEmpty()) {

@@ -54,6 +54,16 @@ public class Section {
         return distance;
     }
 
+    public void updateDownStation(Section newSection) {
+        this.downStation = newSection.upStation;
+        this.distance = newSection.distance;
+    }
+
+    public void updateUpStationToDownStationOf(Section newSection) {
+        this.upStation = newSection.downStation;
+        this.distance = distance - newSection.distance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
