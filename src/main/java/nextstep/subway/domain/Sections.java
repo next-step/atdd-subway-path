@@ -60,9 +60,7 @@ public class Sections {
     }
 
     private void addSectionIfBetween(final Section section) {
-        Section matchSection = getSectionHasSameUpStation(section.getUpStation())
-            .orElse(getSectionHasSameDownStation(section.getDownStation())
-                        .orElse(null));
+        Section matchSection = getSectionHasSameStation(section).orElse(null);
         if (matchSection == null || matchSection.equals(section)) {
             return;
         }
@@ -73,7 +71,7 @@ public class Sections {
                             matchSection.getUpStation() :
                             section.getDownStation();
         Station downStation = matchSection.hasSameDownStation(section.getDownStation()) ?
-                              section.getUpStation():
+                              section.getUpStation() :
                               matchSection.getDownStation();
         int distance = matchSection.getDistance() - section.getDistance();
         sections.add(new Section(matchSection.getLine(), upStation, downStation, distance));
@@ -154,6 +152,13 @@ public class Sections {
         return getStationsSorted().stream()
                                   .map(Station::getName)
                                   .collect(Collectors.toList());
+    }
+
+    private Optional<Section> getSectionHasSameStation(final Section section) {
+        Section matchSection = getSectionHasSameUpStation(section.getUpStation())
+            .orElse(getSectionHasSameDownStation(section.getDownStation())
+                        .orElse(null));
+        return Optional.ofNullable(matchSection);
     }
 
     private Optional<Section> getSectionHasSameUpStation(final Station station) {
