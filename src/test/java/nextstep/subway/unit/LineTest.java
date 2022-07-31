@@ -215,6 +215,7 @@ class LineTest {
 
         // then
         assertThat(isRemoved).isTrue();
+        assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(15);
     }
 
     @DisplayName("지하철 노선의 구간이 1개일 때 구간 제거 시 예외")
