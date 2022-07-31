@@ -1,14 +1,17 @@
 package nextstep.subway.unit;
 
-import java.util.*;
+import java.util.List;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
-import nextstep.subway.applicaion.dto.*;
-import nextstep.subway.domain.*;
+import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class LineTest {
 	@DisplayName("구간 추가 테스트")
@@ -60,38 +63,38 @@ class LineTest {
 	@Test
 	void getLastSectionTest() {
 
-	    //given
+		//given
 		Line line = new Line("분당선", "yellow");
 		Station 서현역 = new Station("서현역");
 		Station 이매역 = new Station("이매역");
 		Section section = new Section(line, 서현역, 이매역, 10);
 		line.addSection(section);
 
-	    //when
+		//when
 		Section lastSection = line.getLastSection();
 
-	    //then
+		//then
 		assertThat(lastSection.getUpStation().getName()).isEqualTo(서현역.getName());
 		assertThat(lastSection.getDownStation().getName()).isEqualTo(이매역.getName());
-	 }
-	 
-	 @DisplayName("노선 정보 수정 테스트")
-	 @Test
-	 void updateLineTest() {
-	 
-	     //given
-		 Line line = new Line("분당선", "yellow");
-		 String updatedName = "신분당선";
-		 String updatedColor = "red";
-		 LineRequest updateReqDto = LineRequest.of(updatedName, updatedColor);
+	}
 
-	     //when
-	     line.update(updateReqDto.getName(), updateReqDto.getColor());
+	@DisplayName("노선 정보 수정 테스트")
+	@Test
+	void updateLineTest() {
 
-	     //then
-		 assertAll(
-			 () -> assertThat(line.getName()).isEqualTo(updatedName),
-			 () -> assertThat(line.getColor()).isEqualTo(updatedColor)
-		 );
-	  }
+		//given
+		Line line = new Line("분당선", "yellow");
+		String updatedName = "신분당선";
+		String updatedColor = "red";
+		LineRequest updateReqDto = LineRequest.of(updatedName, updatedColor);
+
+		//when
+		line.update(updateReqDto.getName(), updateReqDto.getColor());
+
+		//then
+		assertAll(
+			() -> assertThat(line.getName()).isEqualTo(updatedName),
+			() -> assertThat(line.getColor()).isEqualTo(updatedColor)
+		);
+	}
 }

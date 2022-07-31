@@ -1,15 +1,22 @@
 package nextstep.subway.acceptance;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.junit.jupiter.api.*;
-import org.springframework.http.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
-import io.restassured.response.*;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 
-import static nextstep.subway.acceptance.LineSteps.*;
-import static nextstep.subway.acceptance.StationSteps.*;
-import static org.assertj.core.api.Assertions.*;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선_조회_요청;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_제거_요청;
+import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
@@ -221,6 +228,22 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 		assertThat(response.jsonPath().getList("stations.id", Long.class)).contains(강남역, 판교역);
+	}
+
+	/**
+	 * given 노선이 생성되어 있음 and 구간이 생성되어 있음 (강남역 - 양재역)
+	 * when 구간을 삭제함(양재역)
+	 * then 구간 삭제 실패
+	 */
+	@DisplayName("구간이 하나뿐인 노선에서 구간을 삭제할때 에러 발생 테스트")
+	@Test
+	void deleteOnlyOneSectionTest() {
+
+		//given //when
+		ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+		//then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
 	private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {

@@ -1,19 +1,25 @@
 package nextstep.subway.applicaion;
 
-import java.util.*;
-import java.util.stream.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import org.springframework.stereotype.*;
-import org.springframework.transaction.annotation.*;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import nextstep.subway.applicaion.dto.*;
-import nextstep.subway.domain.*;
+import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.applicaion.dto.LineResponse;
+import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Sections;
+import nextstep.subway.domain.Station;
 
 @Service
 @Transactional(readOnly = true)
 public class LineService {
-	private LineRepository lineRepository;
-	private StationService stationService;
+	private final LineRepository lineRepository;
+	private final StationService stationService;
 
 	public LineService(LineRepository lineRepository, StationService stationService) {
 		this.lineRepository = lineRepository;
@@ -23,12 +29,20 @@ public class LineService {
 	@Transactional
 	public LineResponse saveLine(LineRequest request) {
 		Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-		if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
+		addLine(request, line);
+		return LineResponse.from(line);
+	}
+
+	private void addLine(LineRequest request, Line line) {
+		if (isAddable(request)) {
 			Station upStation = stationService.findById(request.getUpStationId());
 			Station downStation = stationService.findById(request.getDownStationId());
 			line.addSection(new Section(line, upStation, downStation, request.getDistance()));
 		}
-		return LineResponse.from(line);
+	}
+
+	private boolean isAddable(LineRequest request) {
+		return request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0;
 	}
 
 	public List<LineResponse> showLines() {

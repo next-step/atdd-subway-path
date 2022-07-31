@@ -1,10 +1,14 @@
 package nextstep.subway.domain;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("구간 일급 객체 단위 테스트")
 class SectionsTest {
@@ -136,7 +140,7 @@ class SectionsTest {
 
 	}
 
-	@DisplayName("새로운 구간의 상행역이 기존 노선의 하행 종점과 일치하는지 확인하늩 테스트")
+	@DisplayName("새로운 구간의 상행역이 기존 노선의 하행 종점과 일치하는지 확인하는 테스트")
 	@Test
 	void isSameNewSectionUpStationAndDownStation() {
 
