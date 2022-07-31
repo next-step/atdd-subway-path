@@ -68,7 +68,7 @@ public class Sections {
 
     public List<Station> getStations() {
         return this.sections.stream()
-                .flatMap(section -> section.getStations().stream())
+                .flatMap(section -> section.getStationsAsc().stream())
                 .distinct()
                 .collect(Collectors.toList());
     }

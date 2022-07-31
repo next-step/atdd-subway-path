@@ -195,7 +195,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * Then 실패한다.
      */
     @Test
-    void 구간이_하나인_노선에서_마지막_구간을_제거() {
+    void 구간이_하나인_노선에서_마지막_구간을_제거할_수_없음() {
         // when
         ExtractableResponse<Response> deleteResponse = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
 
@@ -212,7 +212,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * Then 실패한다.
      */
     @Test
-    void 지하철_노선에_없는_구간_제거() {
+    void 지하철_노선에_없는_구간은_제거할_수_없음() {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 7L));
