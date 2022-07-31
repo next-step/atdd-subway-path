@@ -132,6 +132,48 @@ class PathAcceptanceTest extends AcceptanceTest {
 
     }
 
+
+    /**
+     * When 존재하지 않는 출발역으로 경로를 조회 시
+     * Then 에러가 발생한다
+     */
+    @DisplayName("존재하지 않는 출발역으로 경로를 조회 시 에러 발생")
+    @Test
+    void findPathNotExistSourceStationException() {
+        //given
+        Long 천호역 = 지하철역_생성_요청("천호역").jsonPath().getLong("id");
+
+        //when
+        ExtractableResponse<Response> response = 지하철_경로조회_요청(천호역, 교대역);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("errorMessage"))
+                .isEqualTo("출발역 또는 도착역이 존재하지 않습니다.");
+
+    }
+
+
+    /**
+     * When 존재하지 않는 출발역으로 경로를 조회 시
+     * Then 에러가 발생한다
+     */
+    @DisplayName("존재하지 않는 출발역으로 경로를 조회 시 에러 발생")
+    @Test
+    void findPathNotExistTargetStationException() {
+        //given
+        Long 천호역 = 지하철역_생성_요청("천호역").jsonPath().getLong("id");
+
+        //when
+        ExtractableResponse<Response> response = 지하철_경로조회_요청(교대역, 천호역);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("errorMessage"))
+                .isEqualTo("출발역 또는 도착역이 존재하지 않습니다.");
+
+    }
+
     private ExtractableResponse<Response> 지하철_경로조회_요청(Long sourceId, Long targetId) {
         return RestAssured
                 .given().log().all()

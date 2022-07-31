@@ -3,6 +3,7 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.*;
+import nextstep.subway.exception.NotRegisteredInAllSectionsException;
 import nextstep.subway.exception.SourceAndTargetNotLinkedException;
 import nextstep.subway.exception.SourceAndTargetSameException;
 import org.junit.jupiter.api.BeforeEach;
@@ -121,6 +122,55 @@ class PathServiceMockTest {
         assertThatThrownBy(() -> pathService.findPath(source, target))
                 .isInstanceOf(SourceAndTargetNotLinkedException.class)
                 .hasMessage("출발역과 도착역이 연결되어 있지 않습니다.");
+
+    }
+
+    @DisplayName("경로를 조회 시 출발역이 존재하지 않으면 에러 발생")
+    @Test
+    void findPathNotExistSourceException() {
+        //given
+
+        Station 천호역 = new Station("천호역");
+
+
+        Long source = 1L;
+        Long target = 5L;
+
+        when(lineRepository.findAll()).thenReturn(List.of(이호선, 신분당선, 삼호선));
+
+        when(stationRepository.findById(source)).thenReturn(Optional.of(교대역));
+        when(stationRepository.findById(target)).thenReturn(Optional.of(천호역));
+
+
+        //when, then
+        assertThatThrownBy(() -> pathService.findPath(source, target))
+                .isInstanceOf(NotRegisteredInAllSectionsException.class)
+                .hasMessage("출발역 또는 도착역이 존재하지 않습니다.");
+
+    }
+
+
+    @DisplayName("경로를 조회 시 도착역이 존재하지 않으면 에러 발생")
+    @Test
+    void findPathNotExistTargetException() {
+        //given
+
+        Station 천호역 = new Station("천호역");
+
+
+        Long source = 1L;
+        Long target = 5L;
+
+        when(lineRepository.findAll()).thenReturn(List.of(이호선, 신분당선, 삼호선));
+
+        when(stationRepository.findById(source)).thenReturn(Optional.of(천호역));
+        when(stationRepository.findById(target)).thenReturn(Optional.of(교대역));
+
+
+        //when, then
+        assertThatThrownBy(() -> pathService.findPath(source, target))
+                .isInstanceOf(NotRegisteredInAllSectionsException.class)
+                .hasMessage("출발역 또는 도착역이 존재하지 않습니다.");
 
     }
 

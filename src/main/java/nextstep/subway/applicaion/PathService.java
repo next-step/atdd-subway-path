@@ -3,6 +3,7 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.*;
+import nextstep.subway.exception.NotRegisteredInAllSectionsException;
 import nextstep.subway.exception.SourceAndTargetNotLinkedException;
 import nextstep.subway.exception.SourceAndTargetSameException;
 import nextstep.subway.exception.StationNotExistException;
@@ -57,7 +58,11 @@ public class PathService {
     private GraphPath<Station, DefaultWeightedEdge> shortestPath(Long source, Long target, List<Section> sections) {
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath
                 = new DijkstraShortestPath<>(toWeightedMultiGraph(sections));
-        return dijkstraShortestPath.getPath(stationFrom(source), stationFrom(target));
+        try {
+            return dijkstraShortestPath.getPath(stationFrom(source), stationFrom(target));
+        } catch (IllegalArgumentException e) {
+            throw new NotRegisteredInAllSectionsException("출발역 또는 도착역이 존재하지 않습니다.");
+        }
     }
 
     private void checkPathExist(GraphPath<Station, DefaultWeightedEdge> path) {

@@ -65,4 +65,11 @@ public class ControllerAdvice {
                 .body(new ErrorResponse(e.getMessage()));
     }
 
+    @ExceptionHandler(value = NotRegisteredInAllSectionsException.class)
+    public ResponseEntity<ErrorResponse> notRegisteredInAllSectionsException(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
 }
