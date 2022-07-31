@@ -10,6 +10,7 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,8 @@ class PathFinderTest {
     @Autowired
     private LineService lineService;
     @Autowired
+    private LineRepository lineRepository;
+    @Autowired
     private StationRepository stationRepository;
 
     private Long 교대역;
@@ -40,6 +43,8 @@ class PathFinderTest {
 
     @BeforeEach
     void setUp() {
+        pathFinder = new PathFinder(lineRepository, stationRepository);
+
         교대역 = createStationStep("교대역");
         강남역 = createStationStep("강남역");
         양재역 = createStationStep("양재역");
