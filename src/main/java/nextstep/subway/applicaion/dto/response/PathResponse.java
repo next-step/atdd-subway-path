@@ -4,8 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.applicaion.dto.PathDto;
-import nextstep.subway.applicaion.dto.StationDto;
+import nextstep.subway.domain.Station;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,14 +17,10 @@ public class PathResponse {
     private List<StationResponse> stations;
     private int distance;
 
-    public static PathResponse from(PathDto pathDto) {
-        List<StationResponse> stations = pathDto.getShortestPath()
-                                               .stream()
-                                               .map(StationDto::from)
-                                               .map(StationResponse::from)
-                                               .collect(Collectors.toList());
-
-        return new PathResponse(stations, pathDto.getShortestDistance());
+    public static PathResponse of(List<Station> stations, int distance) {
+        List<StationResponse> stationResponses = stations.stream()
+                                                         .map(StationResponse::from)
+                                                         .collect(Collectors.toList());
+        return new PathResponse(stationResponses, distance);
     }
-
 }

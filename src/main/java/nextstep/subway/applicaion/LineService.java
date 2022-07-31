@@ -1,7 +1,6 @@
 package nextstep.subway.applicaion;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.subway.applicaion.dto.StationDto;
 import nextstep.subway.applicaion.dto.request.LineRequest;
 import nextstep.subway.applicaion.dto.response.LineResponse;
 import nextstep.subway.applicaion.dto.request.SectionRequest;
@@ -78,7 +77,6 @@ public class LineService {
         List<Station> stations = line.findAllStation();
 
         return stations.stream()
-                .map(StationDto::from)
                 .map(StationResponse::from)
                 .collect(Collectors.toList());
     }

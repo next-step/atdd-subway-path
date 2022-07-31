@@ -2,7 +2,6 @@ package nextstep.subway.ui;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.applicaion.StationService;
-import nextstep.subway.applicaion.dto.StationDto;
 import nextstep.subway.applicaion.dto.request.StationRequest;
 import nextstep.subway.applicaion.dto.response.StationResponse;
 import org.springframework.http.MediaType;
@@ -19,13 +18,13 @@ public class StationController {
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        StationDto station = stationService.saveStation(stationRequest);
-        return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(StationResponse.from(station));
+        StationResponse stationResponse = stationService.saveStation(stationRequest);
+        return ResponseEntity.created(URI.create("/stations/" + stationResponse.getId())).body(stationResponse);
     }
 
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        return ResponseEntity.ok().body(StationResponse.from(stationService.findAllStations()));
+        return ResponseEntity.ok().body(stationService.findAllStations());
     }
 
     @DeleteMapping("/stations/{id}")
