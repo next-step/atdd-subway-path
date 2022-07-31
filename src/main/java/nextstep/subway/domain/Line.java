@@ -72,7 +72,7 @@ public class Line {
         return this.sections.getDistance();
     }
 
-    public void addSection(Line line, Station upStation, Station downStation, int distance) {
-        this.sections.addSection(line, upStation, downStation, distance);
+    public void addSection(Station upStation, Station downStation, int distance) {
+        this.sections.addSection(this, upStation, downStation, distance);
     }
 }

@@ -29,7 +29,7 @@ class LineTest {
     @Test
     void addSection() {
         // Given & When
-        이호선.addSection(이호선, 서울대입구역, 낙성대역, 10);
+        이호선.addSection(서울대입구역, 낙성대역, 10);
 
         // Then
         assertThat(이호선.getSectionList()
@@ -41,7 +41,7 @@ class LineTest {
     @Test
     void getStations() {
         // Given
-        이호선.addSection(이호선, 서울대입구역, 낙성대역, 10);
+        이호선.addSection(서울대입구역, 낙성대역, 10);
 
         // When
         List<Station> stations = 이호선.getStations();
@@ -54,8 +54,8 @@ class LineTest {
     @Test
     void removeSection() {
         // Given
-        이호선.addSection(이호선, 서울대입구역, 낙성대역, 10);
-        이호선.addSection(이호선, 낙성대역, 사당역, 10);
+        이호선.addSection(서울대입구역, 낙성대역, 10);
+        이호선.addSection(낙성대역, 사당역, 10);
 
         // When
         이호선.deleteStation(사당역);

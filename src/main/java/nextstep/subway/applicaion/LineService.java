@@ -31,7 +31,7 @@ public class LineService {
         if (request.validateSaveLineCondition()) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.addSection(line, upStation, downStation, request.getDistance());
+            line.addSection(upStation, downStation, request.getDistance());
         }
         return createLineResponse(line);
     }
@@ -73,7 +73,7 @@ public class LineService {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(IllegalArgumentException::new);
 
-        line.addSection(line, upStation, downStation, sectionRequest.getDistance());
+        line.addSection(upStation, downStation, sectionRequest.getDistance());
     }
 
     private LineResponse createLineResponse(Line line) {
