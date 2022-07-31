@@ -1,7 +1,10 @@
 package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.PathResponse;
-import nextstep.subway.domain.*;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.PathFinder;
+import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,33 +27,11 @@ public class PathService {
         Station sourceStation = stationService.findById(source);
         Station targetStation = stationService.findById(target);
         List<Line> lines = lineRepository.findAll();
-        checkStationStatus(lines, sourceStation, targetStation);
 
-        SubwayGraph graph = new SubwayGraph(lines);
-        PathFinder pathFinder = new PathFinder(graph);
-        List<Station> stations = pathFinder.getShortestPath(sourceStation, targetStation);
-        int totalDistance = pathFinder.getShortestDistance(sourceStation, targetStation);
+        PathFinder pathFinder = new PathFinder(lines);
 
-        return new PathResponse(stations, totalDistance);
+        return new PathResponse(pathFinder, sourceStation, targetStation);
     }
 
-    private void checkStationStatus(List<Line> lines, Station source, Station target) {
-        if (isSameStation(source, target)) {
-            throw new IllegalArgumentException("IS_SAME_STATION");
-        }
-        if (haveNotStation(lines, source, target)) {
-            throw new IllegalArgumentException("HAVE_NOT_STATION");
-        }
-    }
-
-    private boolean isSameStation(Station source, Station target) {
-        return source.equals(target);
-    }
-
-    private boolean haveNotStation(List<Line> lines, Station source, Station target) {
-        return lines.stream().anyMatch(line -> line.getStations().equals(source) &&
-                line.getStations().equals(target));
-
-    }
 
 }
