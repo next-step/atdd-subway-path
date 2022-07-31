@@ -5,7 +5,7 @@ import java.util.Comparator;
 public class SectionComparator implements Comparator<Section> {
 
     public static enum SectionSort {
-        ASC("ASC"), DESC("DESC"), NONE("NONE");
+        ASC("ASC"), DESC("DESC");
 
         private final String sortType;
 
