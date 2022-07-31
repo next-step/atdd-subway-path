@@ -185,24 +185,105 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
-     * When 지하철 노선의 마지막 구간 제거를 요청 하면
-     * Then 노선에 구간이 제거된다
+     * Given 지하철 노선에 새로운 구간 추가를 요청하고
+     * When 지하철 노선의 첫번째 구간 제거를 요청하면
+     * Then 지하철 노선의 첫번째 구간이 제거된다.
      */
-    @DisplayName("지하철 노선에 구간을 제거")
+    @DisplayName("지하철 노선에 상행 종점을 제거")
     @Test
-    void removeLineSection() {
+    void removeLineSectionToTopStation() {
+
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 강남역));
+
+        // when
+        ExtractableResponse<Response> 지하철_노선에_지하철_구간_제거_응답 = 지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+
+        // then
+        assertThat(지하철_노선에_지하철_구간_제거_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> 지하철_노선_조회_응답 = 지하철_노선_조회_요청(신분당선);
+        assertThat(지하철_노선_조회_응답.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청하고
+     * When 지하철 노선의 마지막 구간 제거를 요청하면
+     * Then 지하철 노선의 마지막 구간이 제거된다
+     */
+    @DisplayName("지하철 노선에 하행 종점을 제거")
+    @Test
+    void removeLineSectionToDownStation() {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
 
         // when
-        지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+        ExtractableResponse<Response> 지하철_노선에_지하철_구간_제거_응답 = 지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+        ExtractableResponse<Response> 지하철_노선_조회_응답 = 지하철_노선_조회_요청(신분당선);
+        assertThat(지하철_노선에_지하철_구간_제거_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(지하철_노선_조회_응답.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+    }
+
+
+    /**
+     * Given 지하철 노선에 구간을 추가 요청하고
+     * When 지하철 노선의 중간역을 제거 요청하면
+     * Then 지하철 노선의 중간 구간이 제거된다.
+     */
+    @DisplayName("지하철 노선 중간 구간의 역 제거")
+    @Test
+    void removeLineSectionToMiddleStation() {
+
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역));
+
+        // when
+        ExtractableResponse<Response> 지하철_노선에_지하철_구간_제거_응답 = 지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+
+        // then
+        assertThat(지하철_노선에_지하철_구간_제거_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> 지하철_노선_조회_응답 = 지하철_노선_조회_요청(신분당선);
+        assertThat(지하철_노선_조회_응답.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+    }
+
+    /**
+     * When 지하철의 노선에 구간 제거 요청하면
+     * Then 오류가 발생한다.
+     */
+    @DisplayName("지하철의 노선이 1개일 때 제거 시 오류")
+    @Test
+    void InternalErrorRemoveLineSectionIfSectionCountOne() {
+
+        // when
+        ExtractableResponse<Response> 지하철_노선에_지하철_구간_제거_응답 = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        assertThat(지하철_노선에_지하철_구간_제거_응답.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    /**
+     * Given 지하철의 노선에 구간 추가 요청하고
+     * When 지하철의 노선에 구간 제거 요청하면
+     * Then 오류가 발생한다.
+     */
+    @DisplayName("제거하려는 역이 지하철의 노선에 존재하지 않을 경우 오류")
+    @Test
+    void InternalErrorRemoveLineSectionIfHasNotStation() {
+
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        Long 구로디지털단지역 = 지하철역_생성_요청("구로디지털단지역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역));
+
+        // when
+        ExtractableResponse<Response> 지하철_노선에_지하철_구간_제거_응답 = 지하철_노선에_지하철_구간_제거_요청(신분당선, 구로디지털단지역);
+
+        // then
+        assertThat(지하철_노선에_지하철_구간_제거_응답.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
