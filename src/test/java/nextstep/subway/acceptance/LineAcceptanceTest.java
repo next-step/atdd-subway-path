@@ -31,11 +31,11 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 강남역_요청_응답 = StationSteps.지하철역_생성_요청("강남역");
         ExtractableResponse<Response> 시청역_요청_응답 = StationSteps.지하철역_생성_요청("시청역");
 
-        String 강남역 = String.valueOf(강남역_요청_응답.jsonPath().getLong("id"));
-        String 시청역 = String.valueOf(시청역_요청_응답.jsonPath().getLong("id"));
+        Long 강남역 = 강남역_요청_응답.jsonPath().getLong("id");
+        Long 시청역 = 시청역_요청_응답.jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green", 강남역, 시청역, "10");
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green", 강남역, 시청역, 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -60,13 +60,13 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 가락시장역_요청_응답 = StationSteps.지하철역_생성_요청("가락시장역");
         ExtractableResponse<Response> 수서역_요청_응답 = StationSteps.지하철역_생성_요청("수서역");
 
-        final String 강남역 = String.valueOf(강남역_요청_응답.jsonPath().getLong("id"));
-        final String 시청역 = String.valueOf(시청역_요청_응답.jsonPath().getLong("id"));
-        final String 가락시장역 = String.valueOf(가락시장역_요청_응답.jsonPath().getLong("id"));
-        final String 수서역 = String.valueOf(수서역_요청_응답.jsonPath().getLong("id"));
+        final Long 강남역 = 강남역_요청_응답.jsonPath().getLong("id");
+        final Long 시청역 = 시청역_요청_응답.jsonPath().getLong("id");
+        final Long 가락시장역 = 가락시장역_요청_응답.jsonPath().getLong("id");
+        final Long 수서역 = 수서역_요청_응답.jsonPath().getLong("id");
 
-        지하철_노선_생성_요청("2호선", "green", 강남역, 시청역, "10");
-        지하철_노선_생성_요청("3호선", "orange", 가락시장역, 수서역, "5");
+        지하철_노선_생성_요청("2호선", "green", 강남역, 시청역, 10);
+        지하철_노선_생성_요청("3호선", "orange", 가락시장역, 수서역, 5);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -89,10 +89,10 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 강남역_요청_응답 = StationSteps.지하철역_생성_요청("강남역");
         ExtractableResponse<Response> 시청역_요청_응답 = StationSteps.지하철역_생성_요청("시청역");
 
-        String 강남역 = String.valueOf(강남역_요청_응답.jsonPath().getLong("id"));
-        String 시청역 = String.valueOf(시청역_요청_응답.jsonPath().getLong("id"));
+        final Long 강남역 = 강남역_요청_응답.jsonPath().getLong("id");
+        final Long 시청역 = 시청역_요청_응답.jsonPath().getLong("id");
 
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", 강남역, 시청역, "10");
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", 강남역, 시청역, 10);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
@@ -116,10 +116,10 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 강남역_요청_응답 = StationSteps.지하철역_생성_요청("강남역");
         ExtractableResponse<Response> 시청역_요청_응답 = StationSteps.지하철역_생성_요청("시청역");
 
-        String 강남역 = String.valueOf(강남역_요청_응답.jsonPath().getLong("id"));
-        String 시청역 = String.valueOf(시청역_요청_응답.jsonPath().getLong("id"));
+        final Long 강남역 = 강남역_요청_응답.jsonPath().getLong("id");
+        final Long 시청역 = 시청역_요청_응답.jsonPath().getLong("id");
 
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", 강남역, 시청역, "10");
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", 강남역, 시청역, 10);
 
         // when
         Map<String, String> params = new HashMap<>();
@@ -150,10 +150,10 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 강남역_요청_응답 = StationSteps.지하철역_생성_요청("강남역");
         ExtractableResponse<Response> 시청역_요청_응답 = StationSteps.지하철역_생성_요청("시청역");
 
-        String 강남역 = String.valueOf(강남역_요청_응답.jsonPath().getLong("id"));
-        String 시청역 = String.valueOf(시청역_요청_응답.jsonPath().getLong("id"));
+        final Long 강남역 = 강남역_요청_응답.jsonPath().getLong("id");
+        final Long 시청역 = 시청역_요청_응답.jsonPath().getLong("id");
 
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", 강남역, 시청역, "10");
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", 강남역, 시청역, 10);
 
         // when
         ExtractableResponse<Response> response = RestAssured

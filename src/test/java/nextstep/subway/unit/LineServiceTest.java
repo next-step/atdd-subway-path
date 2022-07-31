@@ -135,7 +135,7 @@ public class LineServiceTest {
     }
 
 
-    @DisplayName("지하철 노선의 구간 가장 상위 구간에 구간을 등록할 경우")
+    @DisplayName("지하철 노선의 Top Section에 구간을 등록할 경우")
     @Test
     void addSectionToTopSection() {
 
@@ -156,7 +156,7 @@ public class LineServiceTest {
         assertThat(신분당선.sectionSize()).isEqualTo(2);
     }
 
-    @DisplayName("지하철 노선의 구간 가장 하위 구간에 구간을 등록할 경우")
+    @DisplayName("지하철 노선의 Down Section에 구간을 등록할 경우")
     @Test
     void addSectionToDownSection() {
 
