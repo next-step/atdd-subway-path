@@ -68,4 +68,8 @@ public class Section {
     public void changeDownStation(Station downStation) {
         this.downStation = downStation;
     }
+
+    public void changeDistance(int distance) {
+        this.distance = distance;
+    }
 }
