@@ -60,4 +60,8 @@ public class Line {
     public void removeSection(Station station) {
         sections.delete(station);
     }
+
+    public List<Section> getSections() {
+        return sections.getSections();
+    }
 }

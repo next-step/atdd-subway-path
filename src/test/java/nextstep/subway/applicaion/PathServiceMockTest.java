@@ -2,11 +2,7 @@ package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
-import org.jgrapht.alg.util.Pair;
+import nextstep.subway.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,6 +23,9 @@ class PathServiceMockTest {
 
     @Mock
     private LineRepository lineRepository;
+
+    @Mock
+    private StationRepository stationRepository;
 
     @InjectMocks
     private PathService pathService;
@@ -54,6 +54,7 @@ class PathServiceMockTest {
 
         삼호선 = new Line("삼호선", "orange");
         삼호선.addSection(new Section(삼호선, 교대역, 남부터미널역, 2));
+        삼호선.addSection(new Section(삼호선, 남부터미널역, 양재역, 3));
 
     }
 
@@ -67,23 +68,21 @@ class PathServiceMockTest {
 
         when(lineRepository.findAll()).thenReturn(List.of(이호선, 신분당선, 삼호선));
 
+        when(stationRepository.findById(source)).thenReturn(Optional.of(교대역));
+        when(stationRepository.findById(target)).thenReturn(Optional.of(양재역));
+
         //when
         PathResponse pathResponse = pathService.findPath(source, target);
 
         //then
         assertThat(pathResponse.getDistance()).isEqualTo(5);
-        assertThat(toIdAndNamePairs(pathResponse.getStations()))
-                .containsExactly(
-                        Pair.of(1L, "교대역"),
-                        Pair.of(4L, "남부터미널역"),
-                        Pair.of(3L, "양재역")
-                );
+        assertThat(toStationsNames(pathResponse.getStations())).containsExactly("교대역", "남부터미널역", "양재역");
 
     }
 
-    private List<Pair<Long, String>> toIdAndNamePairs(List<StationResponse> stations) {
+    private List<String> toStationsNames(List<StationResponse> stations) {
         return stations.stream()
-                .map(stationResponse -> Pair.of(stationResponse.getId(), stationResponse.getName()))
+                .map(stationResponse -> stationResponse.getName())
                 .collect(Collectors.toList());
     }
 
