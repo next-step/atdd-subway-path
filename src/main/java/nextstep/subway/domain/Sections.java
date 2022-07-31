@@ -54,12 +54,7 @@ public class Sections {
     }
 
     private Station findDownStation(Station upStation) {
-        for (Section section : this.sections) {
-            if (upStation.equals(section.getUpStation())) {
-                return section.getDownStation();
-            }
-        }
-        throw new IllegalArgumentException();
+        return this.sections.stream().filter(section -> upStation.equals(section.getUpStation())).findFirst().orElseThrow(IllegalArgumentException::new).getDownStation();
     }
 
     private Station findFirstUpStation() {
@@ -72,20 +67,12 @@ public class Sections {
         return firstUpStation;
     }
 
-    private Section sectionOfFirstUpStation() {
-        Station firstUpStation = upStation();
-        Section firstUpStationSection = null;
-        for (Section section : this.sections) {
-            if (isDownStation(firstUpStation, section)) {
-                firstUpStation = section.getUpStation();
-                firstUpStationSection = section;
-            }
-        }
-
-        if (firstUpStationSection == null) {
-            firstUpStationSection = this.sections.get(0);
-        }
-        return firstUpStationSection;
+    private Section firstSection() {
+        Section firstSection = this.sections.get(0);
+        return this.sections.stream()
+                .filter(section -> section.getDownStation().equals(firstSection.getUpStation()))
+                .findFirst()
+                .orElse(firstSection);
     }
 
     private Section sectionOfLastStation() {
@@ -203,7 +190,7 @@ public class Sections {
             deleteLastStation(station);
             return;
         }
-        deleteMiddleStation(station, line);
+        deleteAndMergeMiddleStation(station, line);
     }
 
     private void validDeleteSection(Line line) {
@@ -212,18 +199,34 @@ public class Sections {
         }
     }
 
-    private void deleteMiddleStation(Station station, Line line) {
-        List<Section> deleteSections = new ArrayList<>();
-        Section upSection = this.sections.stream()
-                .filter(section -> section.getDownStation().equals(station))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("상행역이 존재하지 않습니다."));
-        Section downSection = this.sections.stream()
+    private void deleteAndMergeMiddleStation(Station station, Line line) {
+        Section previousSection = previousSection(station);
+        Section nextSection = nextSection(station);
+        deleteSections(previousSection, nextSection);
+        mergeSection(line, previousSection, nextSection);
+    }
+
+    private void deleteSections(Section previousSection, Section nextSection) {
+        sections.remove(previousSection);
+        sections.remove(nextSection);
+    }
+
+    private void mergeSection(Line line, Section previousSection, Section nextSection) {
+        this.sections.add(new Section(line, previousSection.getUpStation(), nextSection.getDownStation(), previousSection.getDistance() + nextSection.getDistance()));
+    }
+
+    private Section nextSection(Station station) {
+        return this.sections.stream()
                 .filter(section -> section.getUpStation().equals(station))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("하행역이 존재하지 않습니다."));
-        sections.removeAll(List.of(upSection, downSection));
-        this.sections.add(new Section(line, upSection.getUpStation(), downSection.getDownStation(), upSection.getDistance() + downSection.getDistance()));
+                .orElseThrow(() -> new IllegalArgumentException("하행 구간이 존재하지 않습니다."));
+    }
+
+    private Section previousSection(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("상행 구간이 존재하지 않습니다."));
     }
 
     private void deleteLastStation(Station station) {
@@ -239,7 +242,7 @@ public class Sections {
     }
 
     private void deleteFirstStation(Station station) {
-        this.sections.remove(sectionOfFirstUpStation());
+        this.sections.remove(firstSection());
     }
 
 }
