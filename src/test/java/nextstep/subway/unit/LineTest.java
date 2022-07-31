@@ -151,9 +151,31 @@ class LineTest {
         assertThat(지하철역리스트).containsExactly(강남역, 시청역, 구로디지털단지역);
     }
 
-    @DisplayName("노선의 구간 제거하기")
+    @DisplayName("지하철 노선의 상행 구간 제거하기")
     @Test
-    void removeSection() {
+    void removeSectionToTopSection() {
+
+        // given
+        final Station 강남역 = StationTestFixtures.지하철역_생성("강남역");
+        final Station 시청역 = StationTestFixtures.지하철역_생성("시청역");
+        final Station 구로디지털단지역 = StationTestFixtures.지하철역_생성("구로디지털단지역");
+
+        final int 첫번째_구간_거리 = 10;
+        final Line 신분당선 = LineTestFixtures.노선_생성("신분당선", "green", 강남역, 시청역, 첫번째_구간_거리);
+        final int 두번째_구간_거리 = 5;
+
+        신분당선.addSection(구로디지털단지역, 강남역, 두번째_구간_거리);
+
+        // when
+        boolean isRemoved = 신분당선.removeSection(구로디지털단지역);
+
+        // then
+        assertThat(isRemoved).isTrue();
+    }
+
+    @DisplayName("지하철 노선의 하행 구간 제거하기")
+    @Test
+    void removeSectionToDownSection() {
 
         //given
         final Station 강남역 = StationTestFixtures.지하철역_생성("강남역");
@@ -173,5 +195,59 @@ class LineTest {
         assertThat(신분당선.getSections().size()).isEqualTo(1);
     }
 
+    @DisplayName("지하철 노선의 중간 구간 제거하기")
+    @Test
+    void removeSectionToMiddleSection() {
+
+        // given
+        final Station 강남역 = StationTestFixtures.지하철역_생성("강남역");
+        final Station 시청역 = StationTestFixtures.지하철역_생성("시청역");
+        final Station 구로디지털단지역 = StationTestFixtures.지하철역_생성("구로디지털단지역");
+
+        final int 첫번째_구간_거리 = 10;
+        final Line 신분당선 = LineTestFixtures.노선_생성("신분당선", "green", 강남역, 시청역, 첫번째_구간_거리);
+        final int 두번째_구간_거리 = 5;
+
+        신분당선.addSection(강남역, 구로디지털단지역, 두번째_구간_거리);
+
+        // when
+        boolean isRemoved = 신분당선.removeSection(구로디지털단지역);
+
+        // then
+        assertThat(isRemoved).isTrue();
+    }
+
+    @DisplayName("지하철 노선의 구간이 1개일 때 구간 제거 시 예외")
+    @Test
+    void throwsExceptionRemoveSectionIfSectionCountOne() {
+
+        // given
+        final Station 강남역 = StationTestFixtures.지하철역_생성("강남역");
+        final Station 시청역 = StationTestFixtures.지하철역_생성("시청역");
+
+        final int 첫번째_구간_거리 = 10;
+        final Line 신분당선 = LineTestFixtures.노선_생성("신분당선", "green", 강남역, 시청역, 첫번째_구간_거리);
+
+        // then
+        assertThatThrownBy(() -> 신분당선.removeSection(강남역))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @DisplayName("제거하려는 구간이 지하철의 노선에 존재하지 않을경우 예외")
+    @Test
+    void throwsExceptionRemoveSectionIfHasNotSection() {
+
+        // given
+        final Station 강남역 = StationTestFixtures.지하철역_생성("강남역");
+        final Station 시청역 = StationTestFixtures.지하철역_생성("시청역");
+        final Station 구로디지털단지역 = StationTestFixtures.지하철역_생성("구로디지털단지역");
+
+        final int 첫번째_구간_거리 = 10;
+        final Line 신분당선 = LineTestFixtures.노선_생성("신분당선", "green", 강남역, 시청역, 첫번째_구간_거리);
+
+        // then
+        assertThatThrownBy(() -> 신분당선.removeSection(구로디지털단지역))
+                .isInstanceOf(IllegalStateException.class);
+    }
 
 }

@@ -191,7 +191,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선에 상행 종점을 제거")
     @Test
-    void removeLineSectionToTopStation() {
+    void removeLineSectionToTopSection() {
 
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
@@ -213,7 +213,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선에 하행 종점을 제거")
     @Test
-    void removeLineSectionToDownStation() {
+    void removeLineSectionToDownSection() {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
@@ -235,7 +235,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선 중간 구간의 역 제거")
     @Test
-    void removeLineSectionToMiddleStation() {
+    void removeLineSectionToMiddleSection() {
 
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
@@ -272,7 +272,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("제거하려는 역이 지하철의 노선에 존재하지 않을 경우 오류")
     @Test
-    void InternalErrorRemoveLineSectionIfHasNotStation() {
+    void InternalErrorRemoveLineSectionIfHasNotSection() {
 
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
