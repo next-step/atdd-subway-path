@@ -33,17 +33,62 @@ class LineTest {
      * when line 에 addSection(section) 을 진행하면
      * then line.sections 에 section 이 추가된다.
      */
-    @DisplayName("지하철 노선에 구간을 추가")
+    @DisplayName("지하철 노선에 구간을 추가 - 뒤에")
     @Test
-    void addSection() {
+    void addLineSectionNextToDown() {
         // given
-        Section newSection = section(line, "양재역", "양재시민의숲", 8);
+        line.addSection(section);
 
         // when
+        Section newSection = section(line, "양재역", "양재시민의숲", 8);
         line.addSection(newSection);
+        List<Station> stations = line.getStations();
 
         // then
         assertThat(line.getSections()).contains(newSection);
+        assertThat(stations).containsExactly(upStation, newSection.getUpStation(), newSection.getDownStation());
+    }
+
+    /**
+     * given line 에 추가할 section 이 존재하고
+     * when line 에 addSection(section) 을 진행하면
+     * then line.sections 에 section 이 추가된다.
+     */
+    @DisplayName("지하철 노선에 구간을 추가 - 중간에")
+    @Test
+    void addSectionBetweenUpAndDown() {
+        // given
+        line.addSection(section);
+
+        // when
+        Section newSection = section(line, "강남역", "양재시민의숲", 8);
+        line.addSection(newSection);
+        List<Station> stations = line.getStations();
+
+        // then
+        assertThat(line.getSections()).contains(newSection);
+        assertThat(stations).containsExactly(newSection.getUpStation(), newSection.getDownStation(), downStation);
+    }
+
+    /**
+     * given line 에 추가할 section 이 존재하고
+     * when line 에 addSection(section) 을 진행하면
+     * then line.sections 에 section 이 추가된다.
+     */
+    @DisplayName("지하철 노선에 구간을 추가 - 앞에")
+    @Test
+    void addSectionFrontOfUp() {
+        // given
+        line.addSection(section);
+
+        // when
+        Section newSection = section(line, "양재시민의숲", "강남역", 8);
+        line.addSection(newSection);
+        List<Station> stations = line.getStations();
+
+        // then
+        assertThat(line.getSections()).contains(newSection);
+        assertThat(stations).containsExactly(newSection.getUpStation(), upStation, downStation);
     }
 
 //    /**
@@ -81,27 +126,6 @@ class LineTest {
 //                .isInstanceOf(IllegalArgumentException.class)
 //                .hasMessage("역이 이미 노선에 포함되어 있습니다.");
 //    }
-
-    /**
-     * given line 에 추가할 section 이 존재하고
-     * when line 에 section 을 추가한 후 station 조회(getStations())를 진행하면
-     * then 추가한 section 에 포함된 두 개 역이 포함되어 있다.
-     */
-    @DisplayName("지하철 노선에 포함된 역 목록 조회")
-    @Test
-    void getStations() {
-        // given
-        line.addSection(section);
-
-        Section newSection = section(line, "양재역", "양재시민의숲", 8);
-
-        // when
-        line.addSection(newSection);
-        List<Station> stations = line.getStations();
-
-        // then
-        assertThat(stations).containsExactly(upStation, newSection.getUpStation(), newSection.getDownStation());
-    }
 
     /**
      * given 초기화된(첫 구간 들어간) line 에 section 을 추가하고
