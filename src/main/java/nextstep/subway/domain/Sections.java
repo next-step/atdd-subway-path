@@ -158,7 +158,7 @@ public class Sections {
 
 
 		if (!isEmpty() && !haveRegistered(upStation, downStation)) {
-			throw new CannotRegisterWithoutRegisteredStation(CANNOT_REGISTER_WITHOUT_REGISTERED_STATIONS.getMessage());
+			throw new CannotRegisterWithoutRegisteredStationException(CANNOT_REGISTER_WITHOUT_REGISTERED_STATIONS.getMessage());
 		}
 	}
 
