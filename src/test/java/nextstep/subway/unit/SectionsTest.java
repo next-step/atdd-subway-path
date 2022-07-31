@@ -11,17 +11,21 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.fixture.LineFixture.*;
+import static nextstep.subway.fixture.LineFixture.강남역;
+import static nextstep.subway.fixture.LineFixture.신림역;
+import static nextstep.subway.fixture.LineFixture.역삼역;
+import static nextstep.subway.fixture.LineFixture.잠실역;
+import static nextstep.subway.fixture.LineFixture.판교역;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class SectionsTest {
-    public static final Section 강남역_역삼역 = new Section(강남역, 역삼역, 10);
-    public static final Section 잠실역_강남역 = new Section(잠실역, 강남역, 10);
-    public static final Section 잠실역_판교역 = new Section(잠실역, 판교역, 10);
-    public static final Section 역삼역_잠실역 = new Section(역삼역, 잠실역, 10);
+    private static final Section 강남역_역삼역 = new Section(강남역, 역삼역, 10);
+    private static final Section 잠실역_강남역 = new Section(잠실역, 강남역, 10);
+    private static final Section 잠실역_판교역 = new Section(잠실역, 판교역, 10);
+    private static final Section 역삼역_잠실역 = new Section(역삼역, 잠실역, 10);
 
     @Test
     @DisplayName("상행 구간을 추가할 수 있다.")
