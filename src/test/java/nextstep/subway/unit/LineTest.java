@@ -2,6 +2,7 @@ package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.SectionComparator;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,7 @@ class LineTest {
 
         //Then
         assertThat(line.getSections()).hasSize(1);
-        assertThat(line.getSections()).containsExactly(section);
+        assertThat(line.getSections(SectionComparator.SectionSort.ASC)).containsExactly(section);
     }
 
     @DisplayName("노선 중간에 구간 추가하기")
@@ -46,7 +47,7 @@ class LineTest {
         Section section2 = new Section(line, 2L, magok, balsan, 3);
         line.addSection(section2);
 
-        List<Section> sections = line.getSections();
+        List<Section> sections = line.getSections(SectionComparator.SectionSort.ASC);
 
         assertThat(sections).hasSize(2);
         assertThat(sections.get(0).getUpStation()).isEqualTo(section2.getUpStation());
@@ -70,7 +71,7 @@ class LineTest {
         Section section2 = new Section(line, 2L, magok, balsan, 3);
         line.addSection(section2);
 
-        List<Section> sections = line.getSections();
+        List<Section> sections = line.getSections(SectionComparator.SectionSort.ASC);
 
         assertThat(sections).hasSize(2);
         assertThat(sections.get(0).getUpStation()).isEqualTo(section2.getUpStation());
@@ -94,7 +95,7 @@ class LineTest {
         Section section2 = new Section(line, balsan, woojangsan, 3);
         line.addSection(section2);
 
-        List<Section> sections = line.getSections();
+        List<Section> sections = line.getSections(SectionComparator.SectionSort.ASC);
 
         assertThat(sections).hasSize(2);
         assertThat(sections.get(0).getUpStation()).isEqualTo(section1.getUpStation());
@@ -191,7 +192,7 @@ class LineTest {
 
         //Then
         assertThat(line.getSections()).hasSize(1);
-        assertThat(line.getSections().get(0).getStations()).containsExactly(songjeong, balsan);
+        assertThat(line.getSections(SectionComparator.SectionSort.ASC).get(0).getStations()).containsExactly(songjeong, balsan);
     }
 
     @DisplayName("한개만 있는 구간 삭제시 예외 발생")
