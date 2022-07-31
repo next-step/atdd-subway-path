@@ -57,9 +57,10 @@ public class SectionServiceMockTest {
         final Line line = new Line(4L, "분당선", "yellow");
 
         line.addSection(기흥역, 신갈역, 10);
-        line.addSection(신갈역, 정자역, 10);
+        line.addSection(신갈역, 정자역, 9);
 
         given(lineRepository.findById(line.getId())).willReturn(Optional.of(line));
+        given(stationService.findById(정자역.getId())).willReturn(정자역);
 
         // when
         sectionService.deleteSection(line.getId(), 정자역.getId());

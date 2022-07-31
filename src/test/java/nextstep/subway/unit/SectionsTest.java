@@ -188,6 +188,20 @@ class SectionsTest {
             // then
             assertThat(exception.getResponseCode()).isEqualTo(SectionCode.SECTION_REMOVE_INVALID);
         }
+
+        @Test
+        void 등록되어있지않는_역제거() {
+            // given
+            Station 삼가역 = new Station(135L, "삼가역");
+
+            // when
+            CustomException exception = assertThrows(CustomException.class, () -> {
+                line.getSections().removeSection(삼가역);
+            });
+
+            // then
+            assertThat(exception.getResponseCode()).isEqualTo(CommonCode.PARAM_INVALID);
+        }
     }
 
     @DisplayName("정렬된 지하철역 리스트 조회")

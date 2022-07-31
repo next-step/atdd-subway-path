@@ -80,13 +80,20 @@ public class Sections {
     }
 
     public void removeSection(final Station station) {
-        checkInvalidRemoveSize();
+        validInvalidRemoveSize();
+        validStationExist(station);
 
         removeIfNotBetween(station);
         removeIfBetween(station);
     }
 
-    private void checkInvalidRemoveSize() {
+    private void validStationExist(final Station station) {
+        if(!hasStation(station)){
+            throw new CustomException(CommonCode.PARAM_INVALID);
+        }
+    }
+
+    private void validInvalidRemoveSize() {
         if (size() <= INVALID_REMOVE_SIZE) {
             throw new CustomException(SectionCode.SECTION_REMOVE_INVALID);
         }
