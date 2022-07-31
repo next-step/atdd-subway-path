@@ -1,6 +1,8 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.*;
+import nextstep.subway.applicaion.facade.PathFinder;
+import nextstep.subway.applicaion.strategy.strategy.DijkstraPathFindStrategy;
 import nextstep.subway.enums.SubwayErrorMessage;
 import nextstep.subway.fake.FakeLineFactory;
 import nextstep.subway.fake.FakeStationFactory;
@@ -13,7 +15,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class PathTest {
+class PathFinderTest {
 
     private Line 분당선;
     private Line 신분당선;
@@ -48,10 +50,10 @@ class PathTest {
     @Test
     void 최단_경로를_조회한다() {
         //given
-        Path path = new Path(지하철_목록, 전체구간);
+        PathFinder pathFinder = new PathFinder(new DijkstraPathFindStrategy(지하철_목록, 전체구간));
 
         //when
-        List<Station> shortest = path.getShortestWithDijkstra(FakeStationFactory.강남역(), FakeStationFactory.왕십리역());
+        List<Station> shortest = pathFinder.findShortestPath(FakeStationFactory.강남역(), FakeStationFactory.왕십리역());
 
         //then
         최단_경로_조회_검증(shortest);
@@ -59,10 +61,10 @@ class PathTest {
 
     @Test
     void 최단_경로의_거리_조회() {
-        Path path = new Path(지하철_목록, 전체구간);
+        PathFinder pathFinder = new PathFinder(new DijkstraPathFindStrategy(지하철_목록, 전체구간));
 
         //when
-        int shortestDistance = path.getShortestDistance(FakeStationFactory.강남역(), FakeStationFactory.왕십리역());
+        int shortestDistance = pathFinder.getShortestDistance(FakeStationFactory.강남역(), FakeStationFactory.왕십리역());
 
         //then
         최단_거리_조회_검증(shortestDistance);
@@ -71,26 +73,26 @@ class PathTest {
     @Test
     void 출발역과_목적지가_같을_경우() {
         //given
-        Path path = new Path(지하철_목록, 전체구간);
+        PathFinder pathFinder = new PathFinder(new DijkstraPathFindStrategy(지하철_목록, 전체구간));
         Station 강남역 = FakeStationFactory.강남역();
 
         //then
-        출발지와_목적지가_동일할_경우_실패_검증(path, 강남역);
+        출발지와_목적지가_동일할_경우_실패_검증(pathFinder, 강남역);
     }
 
     @Test
     void 출발역과_목적지가_이어져있지_않은_경우() {
         //given
-        Path path = new Path(지하철_목록, 전체구간);
+        PathFinder pathFinder = new PathFinder(new DijkstraPathFindStrategy(지하철_목록, 전체구간));
         Station 강남역 = FakeStationFactory.강남역();
         Station 역삼역 = FakeStationFactory.역삼역();
 
         //then
-        출발지와_목적지가_이어지지_않음을_검증(path, 강남역, 역삼역);
+        출발지와_목적지가_이어지지_않음을_검증(pathFinder, 강남역, 역삼역);
     }
 
-    private void 출발지와_목적지가_이어지지_않음을_검증(Path path, Station 강남역, Station 역삼역) {
-        assertThatThrownBy(() -> path.getShortestWithDijkstra(강남역, 역삼역))
+    private void 출발지와_목적지가_이어지지_않음을_검증(PathFinder path, Station 강남역, Station 역삼역) {
+        assertThatThrownBy(() -> path.findShortestPath(강남역, 역삼역))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(SubwayErrorMessage.UNCONNECTED_PATH.getMessage());
         assertThatThrownBy(() -> path.getShortestDistance(강남역, 역삼역))
@@ -111,12 +113,12 @@ class PathTest {
         ).containsExactly("강남역", "선릉역", "왕십리역");
     }
 
-    private void 출발지와_목적지가_동일할_경우_실패_검증(Path path, Station 강남역) {
-        assertThatThrownBy(() -> path.getShortestDistance(강남역, 강남역))
+    private void 출발지와_목적지가_동일할_경우_실패_검증(PathFinder path, Station station) {
+        assertThatThrownBy(() -> path.getShortestDistance(station, station))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(SubwayErrorMessage.SAME_SOURCE_AND_DESTINATION.getMessage());
 
-        assertThatThrownBy(() -> path.getShortestDistance(강남역, 강남역))
+        assertThatThrownBy(() -> path.getShortestDistance(station, station))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(SubwayErrorMessage.SAME_SOURCE_AND_DESTINATION.getMessage());
     }
