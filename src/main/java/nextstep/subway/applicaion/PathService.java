@@ -4,7 +4,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
-import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import org.springframework.stereotype.Service;
 
@@ -24,14 +23,8 @@ public class PathService {
         var path = pathFinder.solve(sourceStation, targetStation);
 
         return new PathResponse(
-                path.getStations().stream().map(this::createStationResponse).collect(Collectors.toList()),
+                path.getStations().stream().map(StationResponse::of).collect(Collectors.toList()),
                 path.getDistance()
         );
     }
-
-    private StationResponse createStationResponse(Station station) {
-        return new StationResponse(station.getId(), station.getName());
-    }
-
-
 }
