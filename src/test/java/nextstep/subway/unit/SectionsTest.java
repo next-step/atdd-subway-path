@@ -161,6 +161,19 @@ class SectionsTest {
         }
 
         @Test
+        void 중간역_제거(){
+            // when
+            sections.removeSection(신갈역);
+
+            // then
+            assertAll(
+                () -> assertThat(line.getSections().size()).isEqualTo(1),
+                () -> assertThat(line.getSections().getStationNames()).containsExactly("기흥역", "정자역"),
+                () -> assertThat(getDistances()).containsExactly(19)
+                     );
+        }
+
+        @Test
         void 구간이_하나인_노선에서_마지막구간_제거() {
             // given
             Line 에버라인 = new Line(21L, "에버라인", "yellow");

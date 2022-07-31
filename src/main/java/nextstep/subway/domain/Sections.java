@@ -83,6 +83,13 @@ public class Sections {
         checkInvalidRemoveSize();
 
         removeIfNotBetween(station);
+        removeIfBetween(station);
+    }
+
+    private void checkInvalidRemoveSize() {
+        if (size() <= INVALID_REMOVE_SIZE) {
+            throw new CustomException(SectionCode.SECTION_REMOVE_INVALID);
+        }
     }
 
     private void removeIfNotBetween(final Station station) {
@@ -97,10 +104,18 @@ public class Sections {
         }
     }
 
-    private void checkInvalidRemoveSize() {
-        if (size() <= INVALID_REMOVE_SIZE) {
-            throw new CustomException(SectionCode.SECTION_REMOVE_INVALID);
+    private void removeIfBetween(final Station station) {
+        Optional<Section> beforeSection = getSectionHasSameDownStation(station);
+        Optional<Section> afterSection = getSectionHasSameUpStation(station);
+
+        if (afterSection.isEmpty() || beforeSection.isEmpty()){
+            return;
         }
+
+        int newDistance = afterSection.get().getDistance() + beforeSection.get().getDistance();
+        sections.add(new Section(beforeSection.get().getLine(), beforeSection.get().getUpStation(), afterSection.get().getDownStation(), newDistance));
+        sections.remove(beforeSection.get());
+        sections.remove(afterSection.get());
     }
 
     public int size() {
