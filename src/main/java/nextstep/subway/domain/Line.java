@@ -59,7 +59,7 @@ public class Line {
         return sections.getSections();
     }
 
-    public List<Section> getSectionsForSort(SectionComparator.SectionSort sectionSort) {
+    public List<Section> getSections(SectionComparator.SectionSort sectionSort) {
         return sections.getSections(sectionSort);
 
     }
