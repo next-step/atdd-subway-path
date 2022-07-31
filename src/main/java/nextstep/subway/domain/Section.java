@@ -60,4 +60,16 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public void changeUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void changeDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
+    public void changeDistance(int distance) {
+        this.distance = distance;
+    }
 }
