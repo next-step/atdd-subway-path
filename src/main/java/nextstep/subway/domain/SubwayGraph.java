@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SubwayGraph {
+public class SubwayGraph implements CommonGraph {
     List<Line> lines;
     WeightedMultigraph<Station, DefaultWeightedEdge> graph;
     DijkstraShortestPath<Station, DefaultWeightedEdge> shortestPath;
@@ -57,16 +57,57 @@ public class SubwayGraph {
     }
 
     public List<Station> getShortestPath(Station source, Station target) {
+        checkStationStatus(lines, source, target);
         GraphPath<Station, DefaultWeightedEdge> path = shortestPath.getPath(source, target);
         if (path == null) {
             throw new IllegalArgumentException("STATIONS_ARE_NOT_LINKED");
         }
-
         return path.getVertexList();
     }
 
     public int getShortestDistance(Station source, Station target) {
-        return (int) shortestPath.getPath(source, target).getWeight();
+        checkStationStatus(lines, source, target);
+
+        GraphPath<Station, DefaultWeightedEdge> result = shortestPath.getPath(source, target);
+        if (result == null) {
+            throw new IllegalArgumentException("STATIONS_ARE_NOT_LINKED");
+        }
+
+        int distance = (int) result.getWeight();
+        return distance;
+    }
+
+    private void checkStationStatus(List<Line> lines, Station source, Station target) {
+        if (isSameStation(source, target)) {
+            throw new IllegalArgumentException("IS_SAME_STATION");
+        }
+        if (!haveStations(lines, source, target)) {
+            throw new IllegalArgumentException("HAVE_NOT_STATION");
+        }
+    }
+
+    private boolean isSameStation(Station source, Station target) {
+        return source.equals(target);
+    }
+
+    private boolean haveStations(List<Line> lines, Station source, Station target) {
+        boolean haveSource = false;
+        boolean haveTarget = false;
+        for (Line line : lines) {
+            List<Station> stations = line.getStations();
+            if (stations.contains(source)) {
+                haveSource = true;
+            }
+            if (stations.contains(target)) {
+                haveTarget = true;
+            }
+        }
+
+        if (haveSource && haveTarget) {
+            return true;
+        }
+        return false;
+
     }
 
 
