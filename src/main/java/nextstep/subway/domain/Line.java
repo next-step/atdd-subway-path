@@ -43,6 +43,18 @@ public class Line {
                 .collect(Collectors.toList());
     }
 
+    public void removeSection(Long stationId) {
+        if (sections.get(sections.size() - 1).getDownStation().getId() != stationId) {
+            throw new IllegalArgumentException();
+        }
+
+        sections.removeIf(section -> section.getDownStation().getId() == stationId);
+    }
+
+    public Station getLastStation() {
+        return sections.get(sections.size() - 1).getDownStation();
+    }
+
     public Long getId() {
         return id;
     }
