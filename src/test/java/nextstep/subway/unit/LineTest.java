@@ -1,7 +1,9 @@
 package nextstep.subway.unit;
 
+import static nextstep.subway.unit.LineUnitSteps.노선_구간_추가;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import java.util.List;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +23,7 @@ class LineTest {
     @DisplayName("비어있는 상태에서 구간 추가")
     void emptyStateAddSection() {
         //when
-        노선_구간_추가(new Station(1L, "잠실역"), new Station(2L, "강남역"), 10);
+        노선_구간_추가(line, new Station(1L, "잠실역"), new Station(2L, "강남역"), 10);
 
         //then
         assertThat(line.getSections().sections()).hasSize(1);
@@ -31,10 +33,10 @@ class LineTest {
     @DisplayName("존재하는 상태에서 구간 추가")
     void existStateAddSection() {
         //given
-        노선_구간_추가(new Station(1L, "잠실역"), new Station(2L, "강남역"), 10);
+        노선_구간_추가(line, new Station(1L, "잠실역"), new Station(2L, "강남역"), 10);
 
         //when
-        노선_구간_추가(new Station(2L, "강남역"), new Station(3L, "역삼역"), 10);
+        노선_구간_추가(line, new Station(2L, "강남역"), new Station(3L, "역삼역"), 10);
 
         //then
         assertThat(line.getSections().sections()).hasSize(2);
@@ -44,7 +46,7 @@ class LineTest {
     @DisplayName("해당 노선의 모든 구간 역 정보를 조회")
     void getStations() {
         //given, when
-        노선_구간_추가(new Station(1L, "잠실역"), new Station(2L, "강남역"), 10);
+        노선_구간_추가(line, new Station(1L, "잠실역"), new Station(2L, "강남역"), 10);
 
         //then
         assertThat(line.getStations()).containsExactly(new Station(1L, "잠실역"), new Station(2L, "강남역"));
@@ -54,8 +56,8 @@ class LineTest {
     @DisplayName("노선 구간 삭제")
     void removeSection() {
         //given
-        노선_구간_추가(new Station(1L, "잠실역"), new Station(2L, "강남역"), 10);
-        노선_구간_추가(new Station(2L, "강남역"), new Station(3L, "역삼역"), 8);
+        노선_구간_추가(line, new Station(1L, "잠실역"), new Station(2L, "강남역"), 10);
+        노선_구간_추가(line, new Station(2L, "강남역"), new Station(3L, "역삼역"), 8);
 
         //when
         line.removeStations(new Station(2L, "강남역"));
@@ -76,8 +78,8 @@ class LineTest {
     @DisplayName("하행 종점역 정보가 맞지 않는 경우 예외")
     void downStationNotEqualRemoveException() {
         //when
-        노선_구간_추가(new Station(1L, "잠실역"), new Station(2L, "강남역"), 10);
-        노선_구간_추가(new Station(2L, "강남역"), new Station(3L, "선릉역"), 10);
+        노선_구간_추가(line, new Station(1L, "잠실역"), new Station(2L, "강남역"), 10);
+        노선_구간_추가(line, new Station(2L, "강남역"), new Station(3L, "선릉역"), 10);
 
         //then
         assertThatThrownBy(() -> line.removeStations(new Station(4L, "선릉역")))
@@ -85,8 +87,17 @@ class LineTest {
             .hasMessage("하행 종점역 정보가 다릅니다.");
     }
 
-    private void 노선_구간_추가(final Station upStation, final Station downStation, final int distance) {
-        line.addSections(upStation, downStation, distance);
+    @Test
+    @DisplayName("노선이 해당 역들 중 하나라도 포함하고 있는지 검증")
+    void lineContainingStation() {
+        //given
+        노선_구간_추가(line, new Station(1L, "잠실역"), new Station(2L, "강남역"), 10);
+
+        //when
+        final boolean actual = line.containsStationIds(List.of(1L, 3L));
+
+        //then
+        assertThat(actual).isTrue();
     }
 
 }
