@@ -55,11 +55,6 @@ public class Line {
     }
 
     public void addSection(Section newSection) {
-//        if(!sections.isEmpty()) {
-//            validateEqualUpAndDown(section);
-//            validateAlreadyExist(section);
-//        }
-
         Optional<Section> addingSection = sections.stream()
                 .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
                 .findFirst();
@@ -69,19 +64,30 @@ public class Line {
         sections.add(newSection);
     }
 
-//    private void validateEqualUpAndDown(Section section) {
-//        if (!lastSection().getDownStation().equals(section.getUpStation())) {
-//            throw new IllegalArgumentException("구간을 추가할 수 없습니다.");
-//        }
-//    }
-
-//    private void validateAlreadyExist(Section section) {
-//        if (getStations().contains(section.getDownStation())) {
-//            throw new IllegalArgumentException("역이 이미 노선에 포함되어 있습니다.");
-//        }
-//    }
-
     public List<Station> getStations() {
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Station> stations = sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+        stations.add(lastSection().getDownStation());
+
+        return stations;
+    }
+
+    public void addSection2(Section newSection) {
+        Optional<Section> addingSection = sections.stream()
+                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+                .findFirst();
+
+        addingSection.ifPresent(section -> section.updateUpStationToDownStationOf(newSection));
+
+        sections.add(newSection);
+    }
+
+    public List<Station> getStations2() {
         if (sections.isEmpty()) {
             return Collections.emptyList();
         }
