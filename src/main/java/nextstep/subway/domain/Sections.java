@@ -79,21 +79,27 @@ public class Sections {
         sections.remove(matchSection);
     }
 
-    public void removeSection(final Long stationId) {
+    public void removeSection(final Station station) {
         checkInvalidRemoveSize();
-        checkIsDownEndStation(stationId);
-        sections.remove(size() - 1);
+
+        removeIfNotBetween(station);
+    }
+
+    private void removeIfNotBetween(final Station station) {
+        Optional<Section> upEndSection = getUpEndSection();
+        if(upEndSection.isPresent() && station.equals(upEndSection.get().getUpStation())){
+            sections.remove(upEndSection.get());
+        }
+
+        Optional<Section> downEndSection = getDownEndSection();
+        if(downEndSection.isPresent() && station.equals(downEndSection.get().getDownStation())){
+            sections.remove(downEndSection.get());
+        }
     }
 
     private void checkInvalidRemoveSize() {
         if (size() <= INVALID_REMOVE_SIZE) {
             throw new CustomException(SectionCode.SECTION_REMOVE_INVALID);
-        }
-    }
-
-    private void checkIsDownEndStation(final Long stationId) {
-        if (!getDownEndStation().getId().equals(stationId)) {
-            throw new IllegalArgumentException();
         }
     }
 
@@ -121,6 +127,14 @@ public class Sections {
         return new ArrayList<>(stations).get(0);
     }
 
+    public Optional<Section> getUpEndSection(){
+        return getSectionHasSameUpStation(getUpEndStation());
+    }
+
+    public Optional<Section> getDownEndSection(){
+        return getSectionHasSameDownStation(getDownEndStation());
+    }
+
     public List<Station> getStations() {
         return getSections().stream()
                             .map(Section::getAllStation)
@@ -146,6 +160,10 @@ public class Sections {
             section = getSectionHasSameUpStation(section.get().getDownStation());
         }
         return result;
+    }
+
+    public List<Section> getSections() {
+        return new ArrayList<>(sections);
     }
 
     public List<String> getStationNames() {

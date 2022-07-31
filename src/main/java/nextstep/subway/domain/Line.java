@@ -35,8 +35,8 @@ public class Line {
         this.sections = new Sections();
     }
 
-    public void removeSection(final Long stationId){
-        sections.removeSection(stationId);
+    public void removeSection(final Station station){
+        sections.removeSection(station);
     }
 
     public void addSection(final Section section) {
