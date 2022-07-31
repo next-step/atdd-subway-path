@@ -82,6 +82,29 @@ class PathAcceptanceTest extends AcceptanceTest {
 
     }
 
+
+    /**
+     * Given 출발역과 도착역이 같은 값으로 주어지고
+     * When 경로를 조회하면
+     * Then 에러가 발생한다
+     */
+    @DisplayName("출발역과 도착역이 같을 때 에러 발생")
+    @Test
+    void findPathSourceAndTargetEqualsException() {
+        //given
+        Long 출발역 = 교대역;
+        Long 도착역 = 교대역;
+
+        //when
+        ExtractableResponse<Response> response = 지하철_경로조회_요청(출발역, 도착역);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("errorMessage"))
+                .isEqualTo("구간 조회 시 출발역과 도착역이 같을 수 없습니다.");
+
+    }
+
     private ExtractableResponse<Response> 지하철_경로조회_요청(Long sourceId, Long targetId) {
         return RestAssured
                 .given().log().all()

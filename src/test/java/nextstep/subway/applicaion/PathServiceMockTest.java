@@ -3,6 +3,7 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.*;
+import nextstep.subway.exception.SourceAndTargetSameException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -77,6 +79,20 @@ class PathServiceMockTest {
         //then
         assertThat(pathResponse.getDistance()).isEqualTo(5);
         assertThat(toStationsNames(pathResponse.getStations())).containsExactly("교대역", "남부터미널역", "양재역");
+
+    }
+
+
+    @DisplayName("경로를 조회 시 출발역과 도착역이 같으면 에러 발생")
+    @Test
+    void findPathSourceAndTargetSameException() {
+        //given
+        Long source = 1L;
+
+        //when, then
+        assertThatThrownBy(() -> pathService.findPath(source, source))
+                .isInstanceOf(SourceAndTargetSameException.class)
+                .hasMessage("구간 조회 시 출발역과 도착역이 같을 수 없습니다.");
 
     }
 

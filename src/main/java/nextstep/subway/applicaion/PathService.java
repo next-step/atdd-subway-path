@@ -3,6 +3,7 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.*;
+import nextstep.subway.exception.SourceAndTargetSameException;
 import nextstep.subway.exception.StationNotExistException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +30,9 @@ public class PathService {
     }
 
     public PathResponse findPath(Long source, Long target) {
+        if (Objects.equals(source, target)) {
+            throw new SourceAndTargetSameException("구간 조회 시 출발역과 도착역이 같을 수 없습니다.");
+        }
         List<Line> lines = lineRepository.findAll();
         List<Section> sections = allSectionsFrom(lines);
         GraphPath<Station, DefaultWeightedEdge> path = shortestPath(source, target, sections);
