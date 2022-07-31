@@ -44,7 +44,7 @@ public class Line {
     }
 
     public void removeSection(Long stationId) {
-        if (sections.get(sections.size() - 1).getDownStation().getId() != stationId) {
+        if (!getLastStation().compare(stationId)) {
             throw new IllegalArgumentException();
         }
 

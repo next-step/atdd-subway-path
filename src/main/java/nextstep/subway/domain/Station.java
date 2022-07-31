@@ -24,6 +24,10 @@ public class Station {
         this.name = name;
     }
 
+    public boolean compare(Long stationId) {
+        return this.id == stationId;
+    }
+
     public Long getId() {
         return id;
     }
