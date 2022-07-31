@@ -6,8 +6,6 @@ import nextstep.subway.exception.SubwayException;
 import javax.persistence.*;
 import java.util.*;
 
-import static java.util.Objects.nonNull;
-
 @Entity
 public class Line {
     @Id
@@ -64,6 +62,13 @@ public class Line {
         validateAllStationsAlreadyExist(newSection);
         validateAllStationsDoesNotExist(newSection);
 
+        addMiddleSectionWhenSameUpStation(newSection);
+        addMiddleSectionWhenSameDownStation(newSection);
+
+        sections.add(newSection);
+    }
+
+    private void addMiddleSectionWhenSameUpStation(Section newSection) {
         Optional<Section> addingFrontSection = sections.stream()
                 .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
                 .findAny();
@@ -73,7 +78,9 @@ public class Line {
             validateSameDistanceBothSections(section, newSection);
             section.updateUpStationToDownStationOf(newSection);
         }
+    }
 
+    private void addMiddleSectionWhenSameDownStation(Section newSection) {
         Optional<Section> addingBehindSection = sections.stream()
                 .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
                 .findAny();
@@ -83,8 +90,6 @@ public class Line {
             validateSameDistanceBothSections(section, newSection);
             section.updateDownStationToUpStationOf(newSection);
         }
-
-        sections.add(newSection);
     }
 
     private void validateSameDistanceBothSections(Section section, Section newSection) {
@@ -125,10 +130,10 @@ public class Line {
         boolean isLast = false;
         Station nextUpStation = firstSection.getDownStation();
         while (!isLast) {
-            Section nextSection = getNextSectionOf(nextUpStation);
-            if (nonNull(nextSection)) {
-                stations.add(nextSection.getUpStation());
-                nextUpStation = nextSection.getDownStation();
+            Optional<Section> behindSection = getBehindSectionOf(nextUpStation);
+            if (behindSection.isPresent()) {
+                stations.add(behindSection.get().getUpStation());
+                nextUpStation = behindSection.get().getDownStation();
             } else {
                 isLast = true;
             }
@@ -145,10 +150,10 @@ public class Line {
         boolean isFirst = false;
         Station firstStation = firstSection.getUpStation();
         while (!isFirst) {
-            Section frontSection = getFrontSectionOf(firstStation);
-            if (nonNull(frontSection)) {
-                firstStation = frontSection.getUpStation();
-                firstSection = frontSection;
+            Optional<Section> frontSection = getFrontSectionOf(firstStation);
+            if (frontSection.isPresent()) {
+                firstStation = frontSection.get().getUpStation();
+                firstSection = frontSection.get();
             } else {
                 isFirst = true;
             }
@@ -156,19 +161,18 @@ public class Line {
         return firstSection;
     }
 
-    private Section getFrontSectionOf(Station frontStation) {
+    private Optional<Section> getFrontSectionOf(Station frontStation) {
         return sections.stream()
                 .filter(section -> section.getDownStation().equals(frontStation))
-                .findFirst()
-                .orElse(null);
+                .findAny();
     }
 
-    private Section getNextSectionOf(Station nextUpStation) {
+    private Optional<Section> getBehindSectionOf(Station nextUpStation) {
         return sections.stream()
                 .filter(section -> section.getUpStation().equals(nextUpStation))
-                .findFirst()
-                .orElse(null);
+                .findAny();
     }
+
 
     public void removeSection(Station lastStation) {
         validateOnlyOneSection();
