@@ -4,10 +4,7 @@ import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,7 +85,7 @@ public class LineService {
         }
 
         //순서대로 삽입하기
-        List<Section> sortedSections = line.getSections();
+        List<Section> sortedSections = line.getSections(SectionComparator.SectionSort.ASC);
 
 
         List<Station> stations = sortedSections.stream()
