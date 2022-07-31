@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 @Entity
 public class Line {
     @Id
@@ -92,11 +95,56 @@ public class Line {
             return Collections.emptyList();
         }
 
-        List<Station> stations = sections.stream()
-                .map(Section::getUpStation)
-                .collect(Collectors.toList());
-        stations.add(lastSection().getDownStation());
+        List<Station> stations = new ArrayList<>();
+        Section firstSection = getFirstSection();
+        stations.add(firstSection.getUpStation());
+
+        boolean isLast = false;
+        Station nextUpStation = firstSection.getDownStation();
+        while (!isLast) {
+            Section nextSection = getNextSectionOf(nextUpStation);
+            if (nonNull(nextSection)) {
+                stations.add(nextSection.getUpStation());
+                nextUpStation = nextSection.getDownStation();
+            } else {
+                isLast = true;
+            }
+        }
+
+        stations.add(nextUpStation);
+
         return stations;
+    }
+
+    private Section getFirstSection() {
+        Section firstSection = sections.get(0);
+
+        boolean isFirst = false;
+        Station firstStation = firstSection.getUpStation();
+        while (!isFirst) {
+            Section frontSection = getFrontSectionOf(firstStation);
+            if (nonNull(frontSection)) {
+                firstStation = frontSection.getUpStation();
+                firstSection = frontSection;
+            } else {
+                isFirst = true;
+            }
+        }
+        return firstSection;
+    }
+
+    private Section getFrontSectionOf(Station frontStation) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(frontStation))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Section getNextSectionOf(Station nextUpStation) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(nextUpStation))
+                .findFirst()
+                .orElse(null);
     }
 
     public void removeSection(Station lastStation) {
