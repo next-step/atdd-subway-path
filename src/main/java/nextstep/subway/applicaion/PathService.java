@@ -30,15 +30,19 @@ public class PathService {
     }
 
     public PathResponse findPath(Long source, Long target) {
-        if (Objects.equals(source, target)) {
-            throw new SourceAndTargetSameException("구간 조회 시 출발역과 도착역이 같을 수 없습니다.");
-        }
+        validate(source, target);
         List<Line> lines = lineRepository.findAll();
         List<Section> sections = allSectionsFrom(lines);
         GraphPath<Station, DefaultWeightedEdge> path = shortestPath(source, target, sections);
         List<Station> stations = path.getVertexList();
         int distance = (int) path.getWeight();
         return new PathResponse(toStationResponses(stations), distance);
+    }
+
+    private void validate(Long source, Long target) {
+        if (Objects.equals(source, target)) {
+            throw new SourceAndTargetSameException("구간 조회 시 출발역과 도착역이 같을 수 없습니다.");
+        }
     }
 
     private List<Section> allSectionsFrom(List<Line> lines) {
