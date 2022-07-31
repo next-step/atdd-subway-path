@@ -59,8 +59,8 @@ public class Section {
         this.distance = distance - newSection.distance;
     }
 
-    public boolean sameDistanceWith(Section newSection) {
-        return this.distance == newSection.distance;
+    public boolean sameOrBiggerThen(Section section) {
+        return this.distance >= section.distance;
     }
 
     @Override
@@ -78,5 +78,4 @@ public class Section {
     public int hashCode() {
         return Objects.hash(getLine(), getUpStation(), getDownStation(), getDistance());
     }
-
 }

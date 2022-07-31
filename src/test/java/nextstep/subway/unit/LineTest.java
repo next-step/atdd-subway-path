@@ -3,6 +3,8 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.ExceptionMessage;
+import nextstep.subway.exception.SubwayException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -133,8 +135,8 @@ class LineTest {
 
         // when, then
         assertThatThrownBy(() -> line.removeSection(section.getDownStation()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("한 개의 구간만이 존재합니다.");
+                .isInstanceOf(SubwayException.class)
+                .hasMessage(ExceptionMessage.ONLY_ONE_SECTION.msg());
 
     }
 }

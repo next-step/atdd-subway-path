@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.ExceptionMessage;
+import nextstep.subway.exception.SubwayException;
+
 import javax.persistence.*;
 import java.util.*;
 
@@ -68,16 +71,16 @@ public class Line {
 
         if (addingSection.isPresent()) {
             Section section = addingSection.get();
-            valifateSameDistanceBothSections(section, newSection);
+            validateSameDistanceBothSections(section, newSection);
             section.updateUpStationToDownStationOf(newSection);
         }
 
         sections.add(newSection);
     }
 
-    private void valifateSameDistanceBothSections(Section section, Section newSection) {
-        if (section.sameDistanceWith(newSection)) {
-            throw new IllegalArgumentException();
+    private void validateSameDistanceBothSections(Section section, Section newSection) {
+        if (newSection.sameOrBiggerThen(section)) {
+            throw new SubwayException(ExceptionMessage.TOO_LONG_DISTANCE_OF_SECTION);
         }
     }
 
@@ -87,7 +90,7 @@ public class Line {
         List<Station> stations = getStations();
 
         if (stations.containsAll(Arrays.asList(upStation, downStation))) {
-            throw new IllegalArgumentException();
+            throw new SubwayException(ExceptionMessage.ALREADY_EXIST_STATIONS);
         }
     }
 
@@ -97,7 +100,7 @@ public class Line {
         List<Station> stations = getStations();
 
         if (!stations.contains(upStation) && !stations.contains(downStation)) {
-            throw new IllegalArgumentException();
+            throw new SubwayException(ExceptionMessage.DOES_NOT_EXIST_STATIONS);
         }
     }
 
@@ -166,13 +169,13 @@ public class Line {
 
     private void validateOnlyOneSection() {
         if (sections.size() == 1) {
-            throw new IllegalArgumentException("한 개의 구간만이 존재합니다.");
+            throw new SubwayException(ExceptionMessage.ONLY_ONE_SECTION);
         }
     }
 
     private void validateIsLast(Station lastStation) {
         if (!lastSection().getDownStation().equals(lastStation)) {
-            throw new IllegalArgumentException("구간을 삭제할 수 없습니다.");
+            throw new SubwayException(ExceptionMessage.CANNOT_DELETE_SECTION);
         }
     }
 

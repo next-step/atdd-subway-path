@@ -2,6 +2,7 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.exception.ExceptionMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -96,9 +97,11 @@ class SectionAcceptanceTest extends AcceptanceTest {
         // when
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 10));
+        String message = response.jsonPath().get("msg");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(message).isEqualTo(ExceptionMessage.TOO_LONG_DISTANCE_OF_SECTION.msg());
     }
 
     /**
@@ -110,9 +113,11 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void addLineSectionFailCauseSectionAlreadyExist() {
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 6));
+        String message = response.jsonPath().get("msg");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(message).isEqualTo(ExceptionMessage.ALREADY_EXIST_STATIONS.msg());
     }
 
     /**
@@ -126,9 +131,11 @@ class SectionAcceptanceTest extends AcceptanceTest {
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         Long 양재시민의숲 = 지하철역_생성_요청("양재시민의숲").jsonPath().getLong("id");
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재시민의숲, 정자역, 6)); // distance 6
+        String message = response.jsonPath().get("msg");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(message).isEqualTo(ExceptionMessage.DOES_NOT_EXIST_STATIONS.msg());
     }
 
     /**
