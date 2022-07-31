@@ -59,7 +59,7 @@ class LineSectionTest {
     @DisplayName("구간 추가 정상 동작")
     void add() {
         //when
-        addSection(line,station2,station5,30);
+        addSection(line,station2,station5,40);
         addSection(line,station1,station2,10);
         addSection(line,station2,station3,10);
         addSection(line,station4,station5,10);
