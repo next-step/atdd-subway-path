@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import nextstep.subway.applicaion.dto.CommonResponse;
 import nextstep.subway.exception.code.CommonCode;
 import nextstep.subway.exception.code.ResponseCode;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -35,6 +36,11 @@ public class GlobalExceptionHandler {
         List<String> fieldErrorMessage = getFieldErrorMessage(e.getFieldErrors());
         CommonResponse<Object> response = new CommonResponse<>(CommonCode.PARAM_INVALID, fieldErrorMessage);
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Void> handleIllegalArgsException(DataIntegrityViolationException e) {
+        return ResponseEntity.badRequest().build();
     }
 
     /**
