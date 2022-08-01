@@ -29,14 +29,9 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
 
-        Line line = request.toEntity();
-
-        if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
-            Station upStation = stationService.findById(request.getUpStationId());
-            Station downStation = stationService.findById(request.getDownStationId());
-            line.addSection(upStation, downStation, request.getDistance());
-        }
-
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+        Line line = Line.makeLine(request.getName(), request.getColor(), upStation, downStation, request.getDistance());
         Line saveLine = lineRepository.save(line);
         return createLineResponse(saveLine);
     }
@@ -48,7 +43,9 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        LineResponse lineResponse = createLineResponse(line);
+        return lineResponse;
     }
 
     @Transactional
@@ -69,11 +66,11 @@ public class LineService {
     }
 
     @Transactional
-    public void addSection(Long lineId, SectionRequest sectionRequest) {
+    public boolean addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = findLineById(lineId);
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        line.addSection(upStation, downStation, sectionRequest.getDistance());
+        return line.addSection(upStation, downStation, sectionRequest.getDistance());
     }
 
     private LineResponse createLineResponse(Line line) {
