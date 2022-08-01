@@ -1,6 +1,6 @@
 package nextstep.subway.exception;
 
-public class SourceAndTargetNotLinkedException extends RuntimeException {
+public class SourceAndTargetNotLinkedException extends BadRequestException {
     public SourceAndTargetNotLinkedException(String message) {
         super(message);
     }

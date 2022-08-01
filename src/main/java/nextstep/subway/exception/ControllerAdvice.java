@@ -8,65 +8,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ControllerAdvice {
-
-    @ExceptionHandler(value = InSectionDistanceException.class)
-    public ResponseEntity<ErrorResponse> inSectionDistanceException(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorResponse(e.getMessage()));
-    }
-
-    @ExceptionHandler(value = SectionAllStationsAlreadyExistException.class)
-    public ResponseEntity<ErrorResponse> alreadyExistSectionException(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorResponse(e.getMessage()));
-    }
-
-    @ExceptionHandler(value = NewlySectionUpStationAndDownStationNotExist.class)
-    public ResponseEntity<ErrorResponse> newlySectionUpStationAndDownStationNotExist(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorResponse(e.getMessage()));
-    }
-
-    @ExceptionHandler(value = SectionNotExistException.class)
-    public ResponseEntity<ErrorResponse> sectionNotExistException(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorResponse(e.getMessage()));
-    }
-
-    @ExceptionHandler(value = DeleteSectionException.class)
-    public ResponseEntity<ErrorResponse> deleteSectionException(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorResponse(e.getMessage()));
-    }
-
-    @ExceptionHandler(value = StationNotExistException.class)
-    public ResponseEntity<ErrorResponse> stationNotExistException(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorResponse(e.getMessage()));
-    }
-
-    @ExceptionHandler(value = SourceAndTargetSameException.class)
-    public ResponseEntity<ErrorResponse> sourceAndTargetSameException(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorResponse(e.getMessage()));
-    }
-
-    @ExceptionHandler(value = SourceAndTargetNotLinkedException.class)
-    public ResponseEntity<ErrorResponse> sourceAndTargetNotLinkedException(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorResponse(e.getMessage()));
-    }
-
-    @ExceptionHandler(value = NotRegisteredInAllSectionsException.class)
-    public ResponseEntity<ErrorResponse> notRegisteredInAllSectionsException(RuntimeException e) {
+    @ExceptionHandler(value = BadRequestException.class)
+    public ResponseEntity<ErrorResponse> badRequestException(BadRequestException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorResponse(e.getMessage()));
