@@ -174,18 +174,18 @@ public class Line {
     }
 
 
-    public void removeSection(Station lastStation) {
+    public void removeSection(Station station) {
         validateOnlyOneSection();
         sections.remove(sections.size() - 1);
+    }
+
+    public void removeSection2(Station station) {
+        validateOnlyOneSection();
     }
 
     private void validateOnlyOneSection() {
         if (sections.size() == 1) {
             throw new SubwayException(ExceptionMessage.ONLY_ONE_SECTION);
         }
-    }
-
-    private Section lastSection() {
-        return sections.get(sections.size() - 1);
     }
 }
