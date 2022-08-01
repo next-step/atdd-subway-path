@@ -276,11 +276,11 @@ public class LineServiceTest {
     void removeSectionToMiddleSection() {
 
         // given
-        final Station 강남역 = StationTestFixtures.지하철역_생성("강남역");
-        final Station 시청역 = StationTestFixtures.지하철역_생성("시청역");
-        final Station 구로디지털단지역 = StationTestFixtures.지하철역_생성("구로디지털단지역");
+        final Station 강남역 = 지하철역_저장("강남역");
+        final Station 시청역 = 지하철역_저장("시청역");
+        final Station 구로디지털단지역 = 지하철역_저장("구로디지털단지역");
 
-        final Line 신분당선 = LineTestFixtures.노선_생성("신분당선", "green", 강남역, 시청역, 10);
+        final Line 신분당선 = 노선_저장("신분당선", "green", 강남역, 시청역, 10);
         신분당선.addSection(강남역, 구로디지털단지역, 4);
 
         // when
@@ -299,10 +299,10 @@ public class LineServiceTest {
     void throwsExceptionRemoveSectionIfSectionCountOne() {
 
         // given
-        final Station 강남역 = StationTestFixtures.지하철역_생성("강남역");
-        final Station 시청역 = StationTestFixtures.지하철역_생성("시청역");
+        final Station 강남역 = 지하철역_저장("강남역");
+        final Station 시청역 = 지하철역_저장("시청역");
 
-        final Line 신분당선 = LineTestFixtures.노선_생성("신분당선", "green", 강남역, 시청역, 10);
+        final Line 신분당선 = 노선_저장("신분당선", "green", 강남역, 시청역, 10);
 
         // then
         assertThatThrownBy(() -> lineService.removeSection(신분당선.getId(), 강남역.getId()))
@@ -314,12 +314,12 @@ public class LineServiceTest {
     void throwsExceptionRemoveSectionIfHasNotSection() {
 
         // given
-        final Station 강남역 = StationTestFixtures.지하철역_생성("강남역");
-        final Station 시청역 = StationTestFixtures.지하철역_생성("시청역");
-        final Station 구로디지털단지역 = StationTestFixtures.지하철역_생성("구로디지털단지역");
-        final Station 선릉역 = StationTestFixtures.지하철역_생성("선릉역");
+        final Station 강남역 = 지하철역_저장("강남역");
+        final Station 시청역 = 지하철역_저장("시청역");
+        final Station 구로디지털단지역 = 지하철역_저장("구로디지털단지역");
+        final Station 선릉역 = 지하철역_저장("선릉역");
 
-        final Line 신분당선 = LineTestFixtures.노선_생성("신분당선", "green", 강남역, 시청역, 10);
+        final Line 신분당선 = 노선_저장("신분당선", "green", 강남역, 시청역, 10);
         신분당선.addSection(구로디지털단지역, 강남역, 5);
 
         // then

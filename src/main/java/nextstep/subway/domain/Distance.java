@@ -28,7 +28,12 @@ public class Distance {
         return value;
     }
 
-    public Distance subtract(int distance) {
-        return new Distance(this.value - distance);
+    public Distance subtract(Distance otherDistance) {
+        return new Distance(this.value - otherDistance.getValue());
     }
+
+    public Distance plus(Distance otherDistance) {
+        return new Distance(this.value + otherDistance.getValue());
+    }
+
 }

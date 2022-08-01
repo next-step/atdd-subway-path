@@ -208,14 +208,14 @@ class LineTest {
         final Line 신분당선 = LineTestFixtures.노선_생성("신분당선", "green", 강남역, 시청역, 첫번째_구간_거리);
         final int 두번째_구간_거리 = 5;
 
-        신분당선.addSection(강남역, 구로디지털단지역, 두번째_구간_거리);
+        신분당선.addSection(시청역, 구로디지털단지역, 두번째_구간_거리);
 
         // when
-        boolean isRemoved = 신분당선.removeSection(구로디지털단지역);
+        boolean isRemoved = 신분당선.removeSection(시청역);
 
         // then
         assertThat(isRemoved).isTrue();
-        assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(15);
+        assertThat(신분당선.getSections().get(0).getDistance().getValue()).isEqualTo(15);
     }
 
     @DisplayName("지하철 노선의 구간이 1개일 때 구간 제거 시 예외")

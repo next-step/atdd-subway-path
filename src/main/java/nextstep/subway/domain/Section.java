@@ -31,10 +31,14 @@ public class Section {
     }
 
     protected Section(Line line, Station upStation, Station downStation, int distance) {
+        this(line, upStation, downStation, new Distance(distance));
+    }
+
+    protected Section(Line line, Station upStation, Station downStation, Distance distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = new Distance(distance);
+        this.distance = distance;
     }
 
     public Long getId() {
@@ -82,7 +86,7 @@ public class Section {
     }
 
     public Section divide(Line line, Station upStation, Station downStation, int distance) {
-        this.distance = this.distance.subtract(distance);
+        this.distance = this.distance.subtract(new Distance(distance));
         if(this.upStation.equals(upStation)) {
             this.upStation = downStation;
             return new Section(line, upStation, downStation, distance);
@@ -104,5 +108,9 @@ public class Section {
         return Objects.hash(line, upStation, downStation);
     }
 
+
+    public Section combine(Section nextSection) {
+        return new Section(this.line, this.upStation, nextSection.downStation, this.distance.plus(nextSection.distance));
+    }
 
 }
