@@ -17,17 +17,17 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DisplayName("지하철 노선 Unit Test")
 class LineTest {
 
-    private Line line;
-    private Station upStation;
-    private Station downStation;
-    private Section section;
+    private Line 신분당선;
+    private Station 강남역;
+    private Station 양재역;
+    private Section 최초_구간;
 
     @BeforeEach
     void init() {
-        line = new Line("신분당선", "빨강");
-        upStation = new Station("강남역");
-        downStation = new Station("양재역");
-        section = new Section(line, upStation, downStation, 10);
+        신분당선 = new Line("신분당선", "빨강");
+        강남역 = new Station("강남역");
+        양재역 = new Station("양재역");
+        최초_구간 = new Section(신분당선, 강남역, 양재역, 10);
     }
 
     /**
@@ -39,16 +39,16 @@ class LineTest {
     @Test
     void addLineSectionNextToDown() {
         // given
-        line.addSection(section);
+        신분당선.addSection(최초_구간);
 
         // when
-        Section newSection = section(line, "양재역", "양재시민의숲", 8);
-        line.addSection(newSection);
-        List<Station> stations = line.getStations();
+        Section newSection = section(신분당선, "양재역", "양재시민의숲", 8);
+        신분당선.addSection(newSection);
+        List<Station> stations = 신분당선.getStations();
 
         // then
-        assertThat(line.getSections()).contains(newSection);
-        assertThat(stations).containsExactly(upStation, newSection.getUpStation(), newSection.getDownStation());
+        assertThat(신분당선.getSections()).contains(newSection);
+        assertThat(stations).containsExactly(강남역, newSection.getUpStation(), newSection.getDownStation());
     }
 
     /**
@@ -60,16 +60,16 @@ class LineTest {
     @Test
     void addSectionBetweenUpAndDown() {
         // given
-        line.addSection(section);
+        신분당선.addSection(최초_구간);
 
         // when
-        Section newSection = section(line, "강남역", "양재시민의숲", 8);
-        line.addSection(newSection);
-        List<Station> stations = line.getStations();
+        Section newSection = section(신분당선, "강남역", "양재시민의숲", 8);
+        신분당선.addSection(newSection);
+        List<Station> stations = 신분당선.getStations();
 
         // then
-        assertThat(line.getSections()).contains(newSection);
-        assertThat(stations).containsExactly(newSection.getUpStation(), newSection.getDownStation(), downStation);
+        assertThat(신분당선.getSections()).contains(newSection);
+        assertThat(stations).containsExactly(newSection.getUpStation(), newSection.getDownStation(), 양재역);
     }
 
     /**
@@ -81,39 +81,88 @@ class LineTest {
     @Test
     void addSectionFrontOfUp() {
         // given
-        line.addSection(section);
+        신분당선.addSection(최초_구간);
 
         // when
-        Section newSection = section(line, "양재시민의숲", "강남역", 8);
-        line.addSection(newSection);
-        List<Station> stations = line.getStations();
+        Section newSection = section(신분당선, "양재시민의숲", "강남역", 8);
+        신분당선.addSection(newSection);
+        List<Station> stations = 신분당선.getStations();
 
         // then
-        assertThat(line.getSections()).contains(newSection);
-        assertThat(stations).containsExactly(newSection.getUpStation(), upStation, downStation);
+        assertThat(신분당선.getSections()).contains(newSection);
+        assertThat(stations).containsExactly(newSection.getUpStation(), 강남역, 양재역);
     }
 
     /**
      * given 초기화된(첫 구간 들어간) line 에 section 을 추가하고
-     * when line 에서 section 을 삭제하면
+     * when line 에서 마지막 section(station) 을 삭제하면
      * then line 에 처음에 추가한 section 하나만 남아있게 된다.
      */
-    @DisplayName("지하철 노선 구간 삭제")
+    @DisplayName("지하철 노선 구간 삭제 - 맨 뒤")
     @Test
-    void removeSection() {
+    void removeSectionLast() {
         // given
-        line.addSection(section);
+        신분당선.addSection(최초_구간);
 
-        Section newSection = section(line, "양재역", "양재시민의숲", 8);
-        line.addSection(newSection);
+        Section newSection = section(신분당선, "양재역", "양재시민의숲", 8);
+        신분당선.addSection(newSection);
 
-        assertThat(line.getSections()).contains(newSection);
+        assertThat(신분당선.getSections()).contains(newSection);
 
         // when
-        line.removeSection(newSection.getDownStation());
+        신분당선.removeSection(new Station("양재시민의숲"));
 
         // then
-        assertThat(line.getSections()).containsOnly(section);
+        assertThat(신분당선.getSections())
+                .containsOnly(section(신분당선,"강남역", "양재역", 10));
+    }
+
+    /**
+     * given 초기화된(첫 구간 들어간) line 에 section 을 추가하고
+     * when line 에서 첫 section(station) 을 삭제하면
+     * then line 에 후에 추가한 section 하나만 남아있게 된다.
+     */
+    @DisplayName("지하철 노선 구간 삭제 - 맨 앞")
+    @Test
+    void removeSectionFirst() {
+        // given
+        신분당선.addSection(최초_구간);
+
+        Section newSection = section(신분당선, "양재역", "양재시민의숲", 8);
+        신분당선.addSection(newSection);
+
+        assertThat(신분당선.getSections()).contains(newSection);
+
+        // when
+        신분당선.removeSection(new Station("강남역"));
+
+        // then
+        assertThat(신분당선.getSections())
+                .containsOnly(section(신분당선, "양재역", "양재시민의숲", 8));
+    }
+
+    /**
+     * given 초기화된(첫 구간 들어간) line 에 section 을 추가하고
+     * when line 에서 중간 section(station) 을 삭제하면
+     * then line 에 첫 역과 끝 역을 포함한 section 하나만 남아있게 된다.
+     */
+    @DisplayName("지하철 노선 구간 삭제 - 중간")
+    @Test
+    void removeSectionMiddle() {
+        // given
+        신분당선.addSection(최초_구간);
+
+        Section newSection = section(신분당선, "양재역", "양재시민의숲", 8);
+        신분당선.addSection(newSection);
+
+        assertThat(신분당선.getSections()).contains(newSection);
+
+        // when
+        신분당선.removeSection(new Station("양재역"));
+
+        // then
+        assertThat(신분당선.getSections())
+                .containsOnly(section(신분당선, "강남역","양재시민의숲", 18));
     }
 
     private Section section(Line line, String upStationName, String downStationName, int distance) {
@@ -131,12 +180,30 @@ class LineTest {
     @Test
     void removeSectionFailCauseFinalSection() {
         // given
-        line.addSection(section);
+        신분당선.addSection(최초_구간);
 
         // when, then
-        assertThatThrownBy(() -> line.removeSection(section.getDownStation()))
+        assertThatThrownBy(() -> 신분당선.removeSection(최초_구간.getDownStation()))
                 .isInstanceOf(SubwayException.class)
                 .hasMessage(ExceptionMessage.ONLY_ONE_SECTION.msg());
+    }
 
+    /**
+     * given line 을 초기화 하고(2개 이상의 구간을 추가하고)
+     * when  노선에 포함되지 않은 역을 삭제하면
+     * then "역이 노선에 존재하지 않습니다." 예외가 발생한다.
+     */
+    @DisplayName("지하철 노선 구간 삭제 실패 - 노선에 없는 역일 경우")
+    @Test
+    void removeSectionFailCauseNotExist() {
+        // given
+        신분당선.addSection(최초_구간);
+        Section newSection = section(신분당선, "양재역", "양재시민의숲", 8);
+        신분당선.addSection(newSection);
+
+        // when, then
+        assertThatThrownBy(() -> 신분당선.removeSection(new Station("정자역")))
+                .isInstanceOf(SubwayException.class)
+                .hasMessage(ExceptionMessage.DOES_NOT_EXIST_STATION.msg());
     }
 }

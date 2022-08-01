@@ -88,7 +88,7 @@ public class Line {
         if (addingBehindSection.isPresent()) {
             Section section = addingBehindSection.get();
             validateSameDistanceBothSections(section, newSection);
-            section.updateDownStationToUpStationOf(newSection);
+            section.updateDownStationToUpStationWhenAdd(newSection);
         }
     }
 
@@ -161,23 +161,19 @@ public class Line {
         return firstSection;
     }
 
-    private Optional<Section> getFrontSectionOf(Station frontStation) {
-        return sections.stream()
-                .filter(section -> section.getDownStation().equals(frontStation))
-                .findAny();
-    }
-
-    private Optional<Section> getBehindSectionOf(Station nextUpStation) {
-        return sections.stream()
-                .filter(section -> section.getUpStation().equals(nextUpStation))
-                .findAny();
-    }
-
-
-    public void removeSection(Station lastStation) {
+    public void removeSection(Station station) {
         validateOnlyOneSection();
-        validateIsLast(lastStation);
-        sections.remove(sections.size() - 1);
+        validateIsExist(station);
+
+        Optional<Section> upSection = getFrontSectionOf(station);
+        Optional<Section> downSection = getBehindSectionOf(station);
+
+        if (upSection.isPresent() && downSection.isPresent()) {
+            upSection.get().updateDownStationToUpStationWhenRemove(downSection.get());
+            sections.remove(downSection.get());
+        } else if (upSection.isPresent()) {
+            sections.remove(upSection.get());
+        } else downSection.ifPresent(section -> sections.remove(section));
     }
 
     private void validateOnlyOneSection() {
@@ -186,13 +182,22 @@ public class Line {
         }
     }
 
-    private void validateIsLast(Station lastStation) {
-        if (!lastSection().getDownStation().equals(lastStation)) {
-            throw new SubwayException(ExceptionMessage.CANNOT_DELETE_SECTION);
+    private void validateIsExist(Station station) {
+        List<Station> stations = getStations();
+        if (!stations.contains(station)) {
+            throw new SubwayException(ExceptionMessage.DOES_NOT_EXIST_STATION);
         }
     }
 
-    private Section lastSection() {
-        return sections.get(sections.size() - 1);
+    private Optional<Section> getFrontSectionOf(Station station) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findAny();
+    }
+
+    private Optional<Section> getBehindSectionOf(Station station) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findAny();
     }
 }
