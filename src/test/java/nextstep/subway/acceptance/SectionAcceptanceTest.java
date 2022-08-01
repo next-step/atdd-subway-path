@@ -183,7 +183,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선의 첫 구간(첫 역) 제거를 요청 하면
      * Then 노선에 구간이 제거된다
      */
-    @DisplayName("지하철 노선에 구간을 제거")
+    @DisplayName("지하철 노선에 구간을 제거 - 맨 앞")
     @Test
     void removeFirstOfLineSection() {
         // given
@@ -205,7 +205,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선의 마지막 구간(마지막 역) 제거를 요청 하면
      * Then 노선에 구간이 제거된다
      */
-    @DisplayName("지하철 노선에 구간을 제거")
+    @DisplayName("지하철 노선에 구간을 제거 - 맨 뒤")
     @Test
     void removeEndOfLineSection() {
         // given
@@ -227,7 +227,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선의 중간 구간(중간 역) 제거를 요청 하면
      * Then 노선에 구간이 제거된다
      */
-    @DisplayName("지하철 노선에 구간을 제거")
+    @DisplayName("지하철 노선에 구간을 제거 - 중간")
     @Test
     void removeMiddleOfLineSection() {
         // given
