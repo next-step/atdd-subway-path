@@ -53,11 +53,8 @@ public class Section {
         return this.downStation;
     }
 
-    /**
-     * @return 무조건 upStation, downStation 순서로 내려준다.
-     */
-    public List<Station> getStations() {
-        return List.of(getUpStation(), getDownStation());
+    public List<Station> getStationsAsc() {
+        return List.of(this.upStation, this.downStation);
     }
 
     public boolean hasStation(Station station) {
@@ -82,27 +79,27 @@ public class Section {
 
     public void addStationBetweenExistsStations(Section section, boolean isUpStationExists) {
         // 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
-        if (section.getDistance() >= this.getDistance()) {
+        if (section.distance >= this.distance) {
             throw new DistanceException();
         }
 
-        this.setDistance(this.getDistance() - section.getDistance());
+        this.distance -= section.distance;
         if (isUpStationExists) {
-            this.setUpStation(section.getDownStation());
+            this.upStation = section.downStation;
         } else {
-            this.setDownStation(section.getUpStation());
+            this.downStation = section.upStation;
         }
     }
 
     public void merge(Section otherSection, Station deleteStation) {
-        Station otherStation = otherSection.getStations().stream().filter(s -> !s.isEqualTo(deleteStation)).findAny().orElseThrow(IllegalArgumentException::new);
+        Station otherStation = otherSection.getStationsAsc().stream().filter(s -> !s.isEqualTo(deleteStation)).findAny().orElseThrow(IllegalArgumentException::new);
 
         if (this.upStation.isEqualTo(deleteStation)) {
             this.upStation = otherStation;
         } else {
             this.downStation = otherStation;
         }
-        this.setDistance(this.distance + otherSection.distance);
+        this.distance = this.distance + otherSection.distance;
     }
 
     public boolean compareValues(Section other) {

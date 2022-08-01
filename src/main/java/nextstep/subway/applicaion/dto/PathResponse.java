@@ -1,0 +1,26 @@
+package nextstep.subway.applicaion.dto;
+
+import java.util.List;
+
+public class PathResponse {
+
+    private List<StationResponse> stations;
+
+    private Long distance;
+
+    public PathResponse() {
+    }
+
+    public PathResponse(List<StationResponse> stations, Long distance) {
+        this.stations = stations;
+        this.distance = distance;
+    }
+
+    public List<StationResponse> getStations() {
+        return stations;
+    }
+
+    public Long getDistance() {
+        return distance;
+    }
+}
