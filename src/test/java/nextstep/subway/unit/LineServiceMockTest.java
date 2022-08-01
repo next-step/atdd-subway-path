@@ -19,15 +19,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import javax.swing.text.html.Option;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.InstanceOfAssertFactories.FILE;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -169,7 +164,7 @@ public class LineServiceMockTest {
         assertThatThrownBy(() -> lineService.addSection(신분당선.getId(), 구간_생성_요청));
     }
 
-    @DisplayName("지하철 노선의 구간 가장 상위 구간에 구간을 등록할 경우")
+    @DisplayName("지하철 노선의 Top Section에 구간을 등록할 경우")
     @Test
     void addSectionToTopSection() {
 
@@ -193,7 +188,7 @@ public class LineServiceMockTest {
         assertThat(신분당선.stations()).containsExactly(구로디지털단지역, 강남역, 시청역);
     }
 
-    @DisplayName("지하철 노선의 구간 가장 하위 구간에 구간을 등록할 경우")
+    @DisplayName("지하철 노선의 Down Section에 구간을 등록할 경우")
     @Test
     void addSectionToDownSection() {
 
@@ -329,6 +324,7 @@ public class LineServiceMockTest {
         //then
         assertThat(isRemoved).isTrue();
         assertThat(신분당선.stations()).containsExactly(강남역, 시청역);
+        assertThat(신분당선.sectionSize()).isEqualTo(1);
     }
 
     @DisplayName("지하철 노선의 중간 구간 제거하기")

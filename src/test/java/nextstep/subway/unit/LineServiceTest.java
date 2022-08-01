@@ -61,7 +61,6 @@ public class LineServiceTest {
         assertThat(신분당선.sectionSize()).isEqualTo(2);
     }
 
-
     @DisplayName("지하철 노선 사이에 구간 등록 시 기존 구간의 거리보다 클 경우")
     @Test
     void throwsExceptionIfAddSectionExistSectionGreatorThanSectionDistance() {
@@ -327,4 +326,5 @@ public class LineServiceTest {
         assertThatThrownBy(() -> lineService.removeSection(신분당선.getId(), 선릉역.getId()))
                 .isInstanceOf(IllegalStateException.class);
     }
+
 }

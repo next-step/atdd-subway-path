@@ -27,8 +27,10 @@ public class Sections {
         while(findSection != null) {
             firstSection = findSection;
             findSection = matchSection(firstSection, filter);
+            if(firstSection.equals(findSection)) {
+                break;
+            }
         }
-
         return firstSection;
     }
 
@@ -40,25 +42,24 @@ public class Sections {
         }
         return null;
     }
-
-    public Optional<Section> matchSectionFromUpStation(Station station) {
+    public boolean addSectionToMiddleSection(Line line, Station upStation, Station downStation, int distance, Predicate<Section> filter) {
         for(Section section : this.sections)
         {
-            if (section.upStationMatchFromStation(station)) {
-                return Optional.ofNullable(section);
+            if(filter.test(section)) {
+                return this.sections.add(section.divide(line, upStation, downStation, distance));
             }
         }
-        return Optional.empty();
+        return false;
     }
 
-    public Optional<Section> matchSectionFromDownStation(Station station) {
-        for(Section section : this.sections)
-        {
-            if (section.downStationMatchFromStation(station)) {
-                return Optional.ofNullable(section);
-            }
-        }
-        return Optional.empty();
+    public boolean addSectionToMiddleSectionMatchUpStation(Line line, Station upStation, Station downStation, int distance) {
+        return addSectionToMiddleSection(line, upStation, downStation, distance,
+                section -> section.upStationMatchFromStation(upStation));
+    }
+
+    public boolean addSectionToMiddleSectionMatchDownStation(Line line, Station upStation, Station downStation, int distance) {
+        return addSectionToMiddleSection(line, upStation, downStation, distance,
+                section -> section.downStationMatchFromStation(downStation));
     }
 
     public Section findTopSection() {
@@ -84,14 +85,9 @@ public class Sections {
         // 구간 사이에 들어갈 케이스
         validateEqualsSection(new Section(line, upStation, downStation, distance));
 
-        Section upSection = matchSectionFromUpStation(upStation).orElse(null);
-        if(Objects.nonNull(upSection)) {
-            return this.sections.add(upSection.divide(line, upStation, downStation, distance));
-        }
-
-        Section downSection = matchSectionFromDownStation(downStation).orElse(null);
-        if(Objects.nonNull(downSection)) {
-            return this.sections.add(downSection.divide(line, upStation, downStation, distance));
+        if(addSectionToMiddleSectionMatchUpStation(line, upStation, downStation, distance) ||
+                addSectionToMiddleSectionMatchDownStation(line, upStation, downStation, distance)) {
+            return true;
         }
 
         if(addSectionToTopSection(line, upStation, downStation, distance) ||
@@ -99,16 +95,12 @@ public class Sections {
             return true;
         }
 
-        //일치하지 않은 구간이 있을경우
         throw new IllegalStateException();
     }
 
     private void validateEqualsSection(Section otherSection) {
-        for(Section section : sections)
-        {
-            if(section.equals(otherSection)) {
-                throw new IllegalStateException();
-            }
+        if(this.sections.stream().anyMatch(s -> s.equals(otherSection))) {
+            throw new IllegalStateException();
         }
     }
 
@@ -147,12 +139,9 @@ public class Sections {
 
     public List<Station> stations() {
 
-        //1) 가장 상행 종점을 찾는다.
-        //2) 상행 종점의 하행역과 다음구간의 상행역을 찾는다.
         List<Station> stations = new ArrayList<>();
         Section topSection = findTopSection();
 
-        // 상행 종점의 상행역을 추가한다.
         stations.add(topSection.getUpStation());
 
         while(topSection != null) {
