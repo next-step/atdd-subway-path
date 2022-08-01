@@ -25,7 +25,8 @@ public class SectionService {
 
     public void deleteSection(Long lineId, Long stationId) {
         Line line = findLine(lineId);
-        line.removeSection(stationId);
+        Station station = stationService.findById(stationId);
+        line.removeSection(station);
     }
 
     private Line findLine(final Long lineId) {

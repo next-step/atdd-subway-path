@@ -47,20 +47,12 @@ public class Section {
         this.distance = distance;
     }
 
-    public void minus(Section section){
-        if (this.equals(section)){
-            return;
-        }
-        if(distance <= section.distance){
-            throw new CustomException(CommonCode.PARAM_INVALID);
-        }
-        if (downStation.equals(section.downStation)){
-            downStation = section.upStation;
-        }
-        if (upStation.equals(section.upStation)){
-            upStation = section.downStation;
-        }
-        distance -= section.getDistance();
+    public boolean hasSameUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean hasSameDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     public List<Station> getAllStation() {
@@ -89,5 +81,9 @@ public class Section {
 
     public void setLine(final Line line) {
         this.line = line;
+    }
+
+    public boolean hasStation(final Station station) {
+        return downStation.equals(station) || upStation.equals(station);
     }
 }

@@ -6,6 +6,8 @@ import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.CustomException;
 import nextstep.subway.exception.code.CommonCode;
+import nextstep.subway.exception.code.ResponseCode;
+import nextstep.subway.exception.code.SectionCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -50,11 +52,8 @@ class SectionsTest {
             sections.add(new Section(line, 구성역, 정자역, 3));
 
             // then
-            assertAll(
-                () -> assertThat(sections.size()).isEqualTo(3),
-                () -> assertThat(sections.getStationNames()).containsExactly("기흥역", "신갈역", "구성역", "정자역"),
-                () -> assertThat(getDistances()).containsExactly(10, 6, 3)
-                     );
+            지하철역_순서_고려하여_포함_여부확인("기흥역", "신갈역", "구성역", "정자역");
+            assertThat(getDistances()).containsExactly(10, 6, 3);
         }
 
         @Test
@@ -66,11 +65,8 @@ class SectionsTest {
             sections.add(new Section(line, 구성역, 기흥역, 3));
 
             // then
-            assertAll(
-                () -> assertThat(line.getSections().size()).isEqualTo(3),
-                () -> assertThat(line.getSections().getStationNames()).containsExactly("구성역", "기흥역", "신갈역", "정자역"),
-                () -> assertThat(getDistances()).containsExactly(3, 10, 9)
-                     );
+            지하철역_순서_고려하여_포함_여부확인("구성역", "기흥역", "신갈역", "정자역");
+            assertThat(getDistances()).containsExactly(3, 10, 9);
         }
 
         @Test
@@ -82,11 +78,8 @@ class SectionsTest {
             sections.add(new Section(line, 정자역, 구성역, 3));
 
             // then
-            assertAll(
-                () -> assertThat(line.getSections().size()).isEqualTo(3),
-                () -> assertThat(line.getSections().getStationNames()).containsExactly("기흥역", "신갈역", "정자역", "구성역"),
-                () -> assertThat(getDistances()).containsExactly(10, 9, 3)
-                     );
+            지하철역_순서_고려하여_포함_여부확인("기흥역", "신갈역", "정자역", "구성역");
+            assertThat(getDistances()).containsExactly(10, 9, 3);
         }
 
 
@@ -102,7 +95,7 @@ class SectionsTest {
             });
 
             // then
-            assertThat(exception.getResponseCode()).isEqualTo(CommonCode.PARAM_INVALID);
+            에러코드_확인(exception, CommonCode.PARAM_INVALID);
         }
 
         @Test
@@ -113,7 +106,7 @@ class SectionsTest {
             });
 
             // then
-            assertThat(exception.getResponseCode()).isEqualTo(CommonCode.PARAM_INVALID);
+            에러코드_확인(exception, CommonCode.PARAM_INVALID);
         }
 
         @Test
@@ -127,7 +120,70 @@ class SectionsTest {
             });
 
             // then
-            assertThat(exception.getResponseCode()).isEqualTo(CommonCode.PARAM_INVALID);
+            에러코드_확인(exception, CommonCode.PARAM_INVALID);
+        }
+    }
+
+    @Nested
+    class RemoveSection {
+        @Test
+        void 상행_종점역_제거() {
+            // when
+            sections.removeSection(기흥역);
+
+            // then
+            지하철역_순서_고려하여_포함_여부확인("신갈역", "정자역");
+            assertThat(getDistances()).containsExactly(9);
+        }
+
+        @Test
+        void 하행_종점역_제거() {
+            // when
+            sections.removeSection(정자역);
+
+            // then
+            지하철역_순서_고려하여_포함_여부확인("기흥역", "신갈역");
+            assertThat(getDistances()).containsExactly(10);
+        }
+
+        @Test
+        void 중간역_제거() {
+            // when
+            sections.removeSection(신갈역);
+
+            // then
+            지하철역_순서_고려하여_포함_여부확인("기흥역", "정자역");
+            assertThat(getDistances()).containsExactly(19);
+        }
+
+        @Test
+        void 구간이_하나인_노선에서_마지막구간_제거() {
+            // given
+            Line 에버라인 = new Line(21L, "에버라인", "yellow");
+            Section section = new Section(에버라인, 기흥역, 신갈역, 10);
+            에버라인.addSection(section);
+
+            // when
+            CustomException exception = assertThrows(CustomException.class, () -> {
+                에버라인.getSections().removeSection(신갈역);
+            });
+
+            // then
+            에러코드_확인(exception, SectionCode.SECTION_REMOVE_INVALID);
+        }
+
+        @Test
+        void 등록되어있지않는_역제거() {
+            // given
+            Station 삼가역 = new Station(135L, "삼가역");
+
+            // when
+            CustomException exception = assertThrows(CustomException.class, () -> {
+                line.getSections().removeSection(삼가역);
+            });
+
+            // then
+            에러코드_확인(exception, CommonCode.PARAM_INVALID);
         }
     }
 
@@ -171,7 +227,7 @@ class SectionsTest {
     @Test
     void removeSection() {
         // when
-        sections.removeSection(정자역.getId());
+        sections.removeSection(정자역);
 
         // then
         assertThat(line.getSections().getStationNames()).doesNotContain("정자역");
@@ -203,5 +259,16 @@ class SectionsTest {
             .stream()
             .map(Section::getDistance)
             .collect(Collectors.toList());
+    }
+
+    private void 지하철역_순서_고려하여_포함_여부확인(String... names) {
+        assertAll(
+            () -> assertThat(sections.size()).isEqualTo(names.length - 1),
+            () -> assertThat(sections.getStationNames()).containsExactly(names)
+                 );
+    }
+
+    private void 에러코드_확인(final CustomException exception, final ResponseCode responseCode) {
+        assertThat(exception.getResponseCode()).isEqualTo(responseCode);
     }
 }
