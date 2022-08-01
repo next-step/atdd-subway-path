@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class LineTest {
     private static final Long ONE_ID = 1L;
@@ -64,5 +66,22 @@ class LineTest {
 
         // then
         assertThat(일호선.getSections()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("구간 삭제 실패한다.")
+    void failToRemoveSection() {
+        // given
+        일호선.addSection(신도림, 가산디지털단지, DISTANCE_DEFAULT);
+        일호선.addSection(가산디지털단지, 독산, DISTANCE_DEFAULT);
+
+        // when(then)
+        assertAll(() -> {
+            assertThatThrownBy(() -> 일호선.removeSection(신도림.getId())).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> 일호선.removeSection(가산디지털단지.getId())).isInstanceOf(IllegalArgumentException.class);
+
+            일호선.removeSection(독산.getId());
+            assertThat(일호선.getSections()).hasSize(1);
+        });
     }
 }
