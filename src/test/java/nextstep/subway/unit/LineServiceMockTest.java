@@ -14,13 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,6 +33,7 @@ public class LineServiceMockTest {
     private final TestObjectFactory testObjectFactory = new TestObjectFactory();
 
     @Test
+    @DisplayName("단위 - 구간 생성")
     void addSection() {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
@@ -43,8 +41,8 @@ public class LineServiceMockTest {
         Station 양재시민의숲역 = testObjectFactory.역생성("양재시민의숲역");
         Station 청계산입구역 = testObjectFactory.역생성("청계산입구역");
         Line 분당선 = testObjectFactory.노선생성("분당선");
-
         분당선.addSection(new Section(분당선, 양재역, 양재시민의숲역, 10));
+        SectionRequest sectionRequest =  new SectionRequest(양재시민의숲역.getId(), 청계산입구역.getId(), 10);
 
         when(stationService.findById(양재시민의숲역.getId())).thenReturn(양재시민의숲역);
         when(stationService.findById(청계산입구역.getId())).thenReturn(청계산입구역);
@@ -52,12 +50,12 @@ public class LineServiceMockTest {
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(분당선.getId(), new SectionRequest(양재시민의숲역.getId(), 청계산입구역.getId(), 10));
+        lineService.addSection(분당선.getId(), sectionRequest);
 
         // then
         // line.findLineById 메서드를 통해 검증
         Line line = lineRepository.findById(분당선.getId()).get();
-        assertThat(line.getSections().size()).isEqualTo(2);
+        assertThat(line.getSections()).hasSize(2);
         assertThat(line.getStations()).contains(양재역, 양재시민의숲역, 청계산입구역);
     }
 }
