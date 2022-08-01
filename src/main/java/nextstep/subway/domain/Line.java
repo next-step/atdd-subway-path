@@ -176,19 +176,12 @@ public class Line {
 
     public void removeSection(Station lastStation) {
         validateOnlyOneSection();
-        validateIsLast(lastStation);
         sections.remove(sections.size() - 1);
     }
 
     private void validateOnlyOneSection() {
         if (sections.size() == 1) {
             throw new SubwayException(ExceptionMessage.ONLY_ONE_SECTION);
-        }
-    }
-
-    private void validateIsLast(Station lastStation) {
-        if (!lastSection().getDownStation().equals(lastStation)) {
-            throw new SubwayException(ExceptionMessage.CANNOT_DELETE_SECTION);
         }
     }
 
