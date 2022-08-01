@@ -68,26 +68,26 @@ public class Sections {
                 .orElseThrow();
     }
 
-    public void removeSection(Long stationId) {
+    public void removeSection(Long removeStationId) {
         if (sections.size() < 2) {
             throw new CannotDeleteSectionException("구간이 둘 이상이어야 역을 제거할 수 있습니다.");
         }
 
-        if (!isExistingStation(stationId)) {
+        if (!isExistingStation(removeStationId)) {
             throw new CannotDeleteSectionException("등록되어 있지 않은 역을 제거할 수 없습니다.");
         }
 
-        if (isFirstStation(stationId)) {
+        if (isFirstStation(removeStationId)) {
             sections.remove(firstSection());
             return;
         }
 
-        if (isLastStation(stationId)) {
+        if (isLastStation(removeStationId)) {
             sections.remove(lastSection());
             return;
         }
 
-        combineRemovedSections(stationId);
+        removeMiddleStation(removeStationId);
     }
 
     private boolean isExistingStation(Long stationId) {
@@ -106,13 +106,9 @@ public class Sections {
         return lastStationId.equals(stationId);
     }
 
-    private void combineRemovedSections(Long stationId) {
-        List<Long> orderedStationIds = getOrderedStationIds();
-        int stationIndex = orderedStationIds.indexOf(stationId);
-        Long upStationIdOfFirstRemovedSection = orderedStationIds.get(stationIndex - 1);
-
-        Section firstRemovedSection = findByUpStationId(upStationIdOfFirstRemovedSection);
-        Section secondRemovedSection = findByUpStationId(stationId);
+    private void removeMiddleStation(Long removedStationId) {
+        Section firstRemovedSection = findByDownStationId(removedStationId);
+        Section secondRemovedSection = findByUpStationId(removedStationId);
         Section combinedSection = firstRemovedSection.combine(secondRemovedSection);
 
         sections.remove(firstRemovedSection);
@@ -141,6 +137,13 @@ public class Sections {
     private Section findByUpStationId(Long stationId) {
         return sections.stream()
                 .filter(s -> s.matchUpStation(stationId))
+                .findAny()
+                .orElseThrow();
+    }
+
+    private Section findByDownStationId(Long stationId) {
+        return sections.stream()
+                .filter(s -> s.matchDownStation(stationId))
                 .findAny()
                 .orElseThrow();
     }
