@@ -19,9 +19,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
     private Long 강남역;
     private Long 양재역;
 
-    /**
-     * Setup: 지하철역 2개, 지하철 노선 1개를 생성한다
-     */
     @BeforeEach
     public void setUp() {
         super.setUp();

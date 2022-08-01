@@ -28,11 +28,13 @@ class PathAcceptanceTest extends AcceptanceTest {
 
     /** GIVEN
      *
-     * 교대역    ---    *2호선* ---   강남역
+     *  참고: 점선 하나가 거리 1을 의미합니다.
+     *
+     * 교대역    ---    <2호선> ---   강남역
      *   |                           |
-     * *3호선*                     *신분당선*
+     * <3호선>                     <신분당선>
      *   |                           |
-     * 남부터미널역  --- *3호선* ----   양재
+     * 남부터미널역  --- <3호선> ----   양재
      */
     @BeforeEach
     public void setUp() {
@@ -93,7 +95,7 @@ class PathAcceptanceTest extends AcceptanceTest {
     private void 경로를_조회할_수_없다(Long source, Long target) {
         var response = 경로_조회_요청(source, target);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isIn(HttpStatus.BAD_REQUEST.value(), HttpStatus.NOT_FOUND.value());
     }
 
     private void 경로_조회_정보가_일치한다(ExtractableResponse<Response> response, int distance, Long... pathStationIds) {
@@ -107,11 +109,11 @@ class PathAcceptanceTest extends AcceptanceTest {
     private Long 지하철역을_생성했다가_제거한다(String name) {
         var createResponse = 지하철역_생성_요청(name);
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Long 제거된역 = createResponse.jsonPath().getLong("id");
 
-        Long 제거역 = createResponse.jsonPath().getLong("id");
-        var response = 지하철역_삭제_요청(제거역);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        var deleteResponse = 지하철역_삭제_요청(제거된역);
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
-        return 제거역;
+        return 제거된역;
     }
 }

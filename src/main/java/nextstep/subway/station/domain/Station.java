@@ -1,6 +1,5 @@
 package nextstep.subway.station.domain;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import javax.persistence.Entity;

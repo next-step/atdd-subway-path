@@ -1,7 +1,5 @@
 package nextstep.subway.line.acceptance;
 
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -90,7 +88,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private void 노선목록에_노선들이_존재한다(String... names) {
-        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
+        var response = 지하철_노선_목록_조회_요청();
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("name", String.class)).contains(names);

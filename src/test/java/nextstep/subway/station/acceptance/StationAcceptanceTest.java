@@ -1,7 +1,5 @@
 package nextstep.subway.station.acceptance;
 
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -90,7 +88,7 @@ class StationAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철역_제거에_실패한다(Long stationId) {
-        ExtractableResponse<Response> response = 지하철역_삭제_요청(stationId);
+        var response = 지하철역_삭제_요청(stationId);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
