@@ -133,10 +133,11 @@ class LineTest {
         assertThat(line.getSections()).contains(newSection);
 
         // when
-        line.removeSection2(newSection.getDownStation());
+        line.removeSection2(new Station("양재시민의숲"));
 
         // then
-        assertThat(line.getSections()).containsOnly(section);
+        assertThat(line.getSections())
+                .containsOnly(new Section(line, new Station("강남역"), new Station("양재역"), 10));
     }
 
     /**
@@ -156,10 +157,11 @@ class LineTest {
         assertThat(line.getSections()).contains(newSection);
 
         // when
-        line.removeSection2(section.getUpStation());
+        line.removeSection2(new Station("강남역"));
 
         // then
-        assertThat(line.getSections()).containsOnly(section);
+        assertThat(line.getSections())
+                .containsOnly(new Section(line, new Station("양재역"), new Station("양재시민의숲"), 8));
     }
 
     /**
@@ -179,10 +181,11 @@ class LineTest {
         assertThat(line.getSections()).contains(newSection);
 
         // when
-        line.removeSection2(newSection.getUpStation());
+        line.removeSection2(new Station("양재역"));
 
         // then
-        assertThat(line.getSections()).containsOnly(section);
+        assertThat(line.getSections())
+                .containsOnly(new Section(line, new Station("강남역"), new Station("양재시민의숲"), 18));
     }
 
     private Section section(Line line, String upStationName, String downStationName, int distance) {
