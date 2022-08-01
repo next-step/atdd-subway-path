@@ -31,6 +31,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
+
     @InjectMocks
     private LineService lineService;
 
@@ -85,7 +86,7 @@ public class LineServiceMockTest {
 
         List<LineResponse> 노선목록 = lineService.showLines();
         List<LineResponse> 비교값 = List.of(createLineResponse("1호선", "bg-blue-600", List.of()),
-                createLineResponse("2호선", "bg-green-600", List.of()) );
+            createLineResponse("2호선", "bg-green-600", List.of()));
 
         assertThat(노선목록).isEqualTo(비교값);
     }
@@ -136,10 +137,9 @@ public class LineServiceMockTest {
         given(lineRepository.findById(1L)).willReturn(Optional.of(이호선));
         given(stationService.findById(2L)).willReturn(역삼역);
 
-
         assertThatExceptionOfType(SectionException.class).isThrownBy(() -> {
-            lineService.deleteSection(1L, 2L);
-        })
+                lineService.deleteSection(1L, 2L);
+            })
             .withMessage("구간이 하나일때는 삭제할 수 없습니다.");
     }
 
@@ -214,7 +214,7 @@ public class LineServiceMockTest {
 
         assertAll(() -> {
             assertThat(이호선.getStations()).hasSize(3);
-            assertThat(이호선.getStations()).containsExactly(new Station[] {강남역, 역삼역, 선릉역});
+            assertThat(이호선.getStations()).containsExactly(new Station[]{강남역, 역삼역, 선릉역});
         });
     }
 
@@ -231,7 +231,7 @@ public class LineServiceMockTest {
 
         assertAll(() -> {
             assertThat(이호선.getStations()).hasSize(3);
-            assertThat(이호선.getStations()).containsExactly(new Station[] {강남역, 역삼역, 선릉역});
+            assertThat(이호선.getStations()).containsExactly(new Station[]{강남역, 역삼역, 선릉역});
         });
     }
 
@@ -248,7 +248,7 @@ public class LineServiceMockTest {
 
         assertAll(() -> {
             assertThat(이호선.getStations()).hasSize(3);
-            assertThat(이호선.getStations()).containsExactly(new Station[] {강남역, 역삼역, 선릉역});
+            assertThat(이호선.getStations()).containsExactly(new Station[]{강남역, 역삼역, 선릉역});
         });
     }
 
@@ -265,7 +265,7 @@ public class LineServiceMockTest {
 
         assertAll(() -> {
             assertThat(이호선.getStations()).hasSize(3);
-            assertThat(이호선.getStations()).containsExactly(new Station[] {강남역, 역삼역, 선릉역});
+            assertThat(이호선.getStations()).containsExactly(new Station[]{강남역, 역삼역, 선릉역});
         });
     }
 

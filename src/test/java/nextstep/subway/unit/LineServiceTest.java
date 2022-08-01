@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 public class LineServiceTest {
+
     @Autowired
     private StationRepository stationRepository;
     @Autowired
@@ -78,8 +79,10 @@ public class LineServiceTest {
     @DisplayName("지하철 구간목록 조회합니다.")
     void showSection() {
         List<LineResponse> 비교값 = List.of(
-            LineResponse.builder().id(일호선.getId()).name(일호선.getName()).color(일호선.getColor()).stations(List.of()).build(),
-            LineResponse.builder().id(이호선.getId()).name(이호선.getName()).color(이호선.getColor()).stations(List.of()).build()
+            LineResponse.builder().id(일호선.getId()).name(일호선.getName()).color(일호선.getColor())
+                .stations(List.of()).build(),
+            LineResponse.builder().id(이호선.getId()).name(이호선.getName()).color(이호선.getColor())
+                .stations(List.of()).build()
         );
 
         List<LineResponse> 노선목록 = lineService.showLines();
@@ -108,7 +111,8 @@ public class LineServiceTest {
     @Test
     @DisplayName("지하철 노선 수정합니다")
     void updateSection() {
-        lineService.updateLine(이호선.getId(), new LineRequest("1호선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 6));
+        lineService.updateLine(이호선.getId(),
+            new LineRequest("1호선", "bg-red-600", 강남역.getId(), 역삼역.getId(), 6));
 
         assertAll(() -> {
             assertThat(이호선.getName()).isEqualTo("1호선");
@@ -178,8 +182,8 @@ public class LineServiceTest {
         lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 선릉역.getId(), 4));
 
         assertThatExceptionOfType(SectionException.class).isThrownBy(() -> {
-            lineService.deleteSection(이호선.getId(), 삼성역.getId());
-        })
+                lineService.deleteSection(이호선.getId(), 삼성역.getId());
+            })
             .withMessage("존재하지 않는 지하철역이라 삭제할 수가 없습니다.");
     }
 
@@ -237,8 +241,8 @@ public class LineServiceTest {
         lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 선릉역.getId(), 10));
 
         assertThatExceptionOfType(SectionException.class).isThrownBy(() -> {
-            lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 선릉역.getId(), 10));
-        })
+                lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 선릉역.getId(), 10));
+            })
             .withMessage("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
     }
 
@@ -273,7 +277,7 @@ public class LineServiceTest {
 
         assertAll(() -> {
             assertThat(이호선.getStations()).hasSize(4);
-            assertThat(이호선.getStations()).containsExactly(강남역,역삼역,선릉역,삼성역);
+            assertThat(이호선.getStations()).containsExactly(강남역, 역삼역, 선릉역, 삼성역);
         });
     }
 

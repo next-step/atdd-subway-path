@@ -82,8 +82,8 @@ public class SectionsTest {
         구간.addSection(역삼_선릉_구간);
 
         assertThatExceptionOfType(SectionException.class).isThrownBy(() -> {
-            구간.removeStation(삼성역);
-        })
+                구간.removeStation(삼성역);
+            })
             .withMessage("존재하지 않는 지하철역이라 삭제할 수가 없습니다.");
     }
 

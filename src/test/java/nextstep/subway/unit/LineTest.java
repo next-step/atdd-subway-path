@@ -63,8 +63,8 @@ class LineTest {
         이호선.addSection(강남역_역삼역_구간);
 
         assertThatExceptionOfType(SectionException.class).isThrownBy(() -> {
-            이호선.removeStation(역삼역);
-        })
+                이호선.removeStation(역삼역);
+            })
             .withMessage("구간이 하나일때는 삭제할 수 없습니다.");
     }
 
