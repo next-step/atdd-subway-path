@@ -3,12 +3,10 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import org.aspectj.weaver.Lint;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("지하철 구간 Unit Test")
 class SectionTest {
