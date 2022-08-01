@@ -90,7 +90,7 @@ public class LineService {
         List<Station> stations = line.getStations();
 
         return stations.stream()
-                .map(it -> stationService.createStationResponse(it))
+                .map(stationService::createStationResponse)
                 .collect(Collectors.toList());
     }
 
