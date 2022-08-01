@@ -98,29 +98,6 @@ class LineTest {
      * when line 에서 마지막 section(station) 을 삭제하면
      * then line 에 처음에 추가한 section 하나만 남아있게 된다.
      */
-    @DisplayName("지하철 노선 구간 삭제")
-    @Test
-    void removeSectionLast() {
-        // given
-        line.addSection(section);
-
-        Section newSection = section(line, "양재역", "양재시민의숲", 8);
-        line.addSection(newSection);
-
-        assertThat(line.getSections()).contains(newSection);
-
-        // when
-        line.removeSection(newSection.getDownStation());
-
-        // then
-        assertThat(line.getSections()).containsOnly(section);
-    }
-
-    /**
-     * given 초기화된(첫 구간 들어간) line 에 section 을 추가하고
-     * when line 에서 마지막 section(station) 을 삭제하면
-     * then line 에 처음에 추가한 section 하나만 남아있게 된다.
-     */
     @DisplayName("지하철 노선 구간 삭제 - 맨 뒤")
     @Test
     void removeSectionLast2() {
@@ -133,7 +110,7 @@ class LineTest {
         assertThat(line.getSections()).contains(newSection);
 
         // when
-        line.removeSection2(new Station("양재시민의숲"));
+        line.removeSection(new Station("양재시민의숲"));
 
         // then
         assertThat(line.getSections())
@@ -157,7 +134,7 @@ class LineTest {
         assertThat(line.getSections()).contains(newSection);
 
         // when
-        line.removeSection2(new Station("강남역"));
+        line.removeSection(new Station("강남역"));
 
         // then
         assertThat(line.getSections())
@@ -181,7 +158,7 @@ class LineTest {
         assertThat(line.getSections()).contains(newSection);
 
         // when
-        line.removeSection2(new Station("양재역"));
+        line.removeSection(new Station("양재역"));
 
         // then
         assertThat(line.getSections())

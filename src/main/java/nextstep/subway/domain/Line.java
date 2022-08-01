@@ -161,44 +161,19 @@ public class Line {
         return firstSection;
     }
 
-    private Optional<Section> getFrontSectionOf(Station frontStation) {
-        return sections.stream()
-                .filter(section -> section.getDownStation().equals(frontStation))
-                .findAny();
-    }
-
-    private Optional<Section> getBehindSectionOf(Station nextUpStation) {
-        return sections.stream()
-                .filter(section -> section.getUpStation().equals(nextUpStation))
-                .findAny();
-    }
-
-
     public void removeSection(Station station) {
         validateOnlyOneSection();
-        sections.remove(sections.size() - 1);
-    }
+        validateIsExist(station);
 
-    public void removeSection2(Station station) {
-        validateOnlyOneSection();
-        //    1. 요청 온 노선에 해당 지하철역이 있는지 확인
-        validateNotExist(station);
-        //    2. 해당 역이 포함된 앞,뒤 구간을 조회
-        Optional<Section> upSection = sections.stream()
-                .filter(section -> section.getDownStation().equals(station))
-                .findAny();
+        Optional<Section> upSection = getFrontSectionOf(station);
+        Optional<Section> downSection = getBehindSectionOf(station);
 
-        Optional<Section> downSection = sections.stream()
-                .filter(section -> section.getUpStation().equals(station))
-                .findAny();
-
-        //    3. 앞 구간의 하행역을 뒤 구간의 하행역으로 변경, 4. 유관 구간을 삭제
         if (upSection.isPresent() && downSection.isPresent()) {
             upSection.get().updateDownStationToUpStationWhenRemove(downSection.get());
             sections.remove(downSection.get());
-        } else if (upSection.isPresent()) { // 맨 뒤에 있는 경우
+        } else if (upSection.isPresent()) {
             sections.remove(upSection.get());
-        } else downSection.ifPresent(section -> sections.remove(section));  // 맨 앞에 있는 경우
+        } else downSection.ifPresent(section -> sections.remove(section));
     }
 
     private void validateOnlyOneSection() {
@@ -207,10 +182,22 @@ public class Line {
         }
     }
 
-    private void validateNotExist(Station station) {
+    private void validateIsExist(Station station) {
         List<Station> stations = getStations();
         if (!stations.contains(station)) {
             throw new SubwayException(ExceptionMessage.DOES_NOT_EXIST_STATION);
         }
+    }
+
+    private Optional<Section> getFrontSectionOf(Station station) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findAny();
+    }
+
+    private Optional<Section> getBehindSectionOf(Station station) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findAny();
     }
 }
