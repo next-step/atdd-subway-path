@@ -1,8 +1,11 @@
 package nextstep.subway.domain;
 
+import lombok.Getter;
+
 import javax.persistence.*;
 import java.util.List;
 
+@Getter
 @Entity
 public class Section {
     @Id
@@ -34,27 +37,24 @@ public class Section {
         this.distance = distance;
     }
 
-    public Long getId() {
-        return id;
+    public boolean isSameUpDownStation(Section newSection) {
+        return upStation.equals(newSection.getUpStation()) || downStation.equals(newSection.getDownStation());
     }
 
-    public Line getLine() {
-        return line;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
+    public void minusDistance(int newDistance) {
+        this.distance -= newDistance;
     }
 
     public List<Station> getRelatedStation() {
         return List.of(upStation, downStation);
+    }
+
+    public void modifyBetweenSection(Section newSection) {
+        if(this.upStation.equals(newSection.getUpStation())){
+            this.upStation = newSection.getDownStation();
+        }
+        if(this.downStation.equals(newSection.getDownStation())){
+            this.downStation = newSection.getUpStation();
+        }
     }
 }

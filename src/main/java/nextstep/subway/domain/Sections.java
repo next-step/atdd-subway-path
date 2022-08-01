@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.exceptions.DataNotFoundException;
 import nextstep.subway.applicaion.exceptions.InvalidStationParameterException;
+import nextstep.subway.applicaion.exceptions.SectionNotEnoughException;
 import nextstep.subway.enums.exceptions.ErrorCode;
 
 import javax.persistence.CascadeType;
@@ -21,8 +22,22 @@ public class Sections {
     public Sections() {
     }
 
-    public void add(Section section) {
-        sections.add(section);
+    public void add(Section newSection) {
+        if (this.sections.isEmpty()) {
+            throw new SectionNotEnoughException(ErrorCode.NOT_ENOUGH_SECTION);
+        }
+
+        Section alreadyRegisterSection = getBetweenSection(newSection);
+        alreadyRegisterSection.modifyBetweenSection(newSection);
+        alreadyRegisterSection.minusDistance(newSection.getDistance());
+        sections.add(newSection);
+    }
+
+    private Section getBetweenSection(Section newSection) {
+        return this.sections.stream()
+                .filter(section -> section.isSameUpDownStation(newSection))
+                .findFirst()
+                .orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_FOUND_STATION));
     }
 
     public List<Station> getStation() {

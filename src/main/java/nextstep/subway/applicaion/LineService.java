@@ -3,6 +3,7 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.request.LineRequest;
 import nextstep.subway.applicaion.dto.response.LineResponse;
 import nextstep.subway.applicaion.dto.request.SectionRequest;
+import nextstep.subway.applicaion.dto.response.SectionResponse;
 import nextstep.subway.applicaion.dto.response.StationResponse;
 import nextstep.subway.applicaion.exceptions.DataNotFoundException;
 import nextstep.subway.applicaion.exceptions.InvalidStationParameterException;
@@ -116,5 +117,12 @@ public class LineService {
     private Line getLine(Long lineId) {
         return lineRepository.findById(lineId)
                              .orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_FOUND_LINE));
+    }
+
+    public List<SectionResponse> getSections(Long lineId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_FOUND_LINE));
+        return SectionResponse.of(line.getSections());
+
     }
 }
