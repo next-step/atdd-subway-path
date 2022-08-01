@@ -16,6 +16,7 @@ import java.util.Map;
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
+import static nextstep.subway.acceptance.CommonSteps.*;
 
 @DisplayName("지하철 구간 관리 기능")
 class SectionAcceptanceTest extends AcceptanceTest {
@@ -51,7 +52,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        반환_상태_확인(response, HttpStatus.OK);
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
     }
 
@@ -68,7 +70,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        반환_상태_확인(response, HttpStatus.OK);
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역, 양재역);
     }
 
@@ -85,7 +88,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        반환_상태_확인(response, HttpStatus.OK);
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역, 양재역);
     }
 
@@ -102,7 +106,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        반환_상태_확인(response, HttpStatus.OK);
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(정자역, 강남역, 양재역);
     }
 
@@ -119,8 +123,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
         String message = response.jsonPath().get("msg");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(message).isEqualTo(ExceptionMessage.TOO_LONG_DISTANCE_OF_SECTION.msg());
+        반환_상태_확인(response, HttpStatus.BAD_REQUEST);
+        잘못된_요청_메시지_확인(message, ExceptionMessage.TOO_LONG_DISTANCE_OF_SECTION);
     }
 
     /**
@@ -136,8 +140,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
         String message = response.jsonPath().get("msg");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(message).isEqualTo(ExceptionMessage.TOO_LONG_DISTANCE_OF_SECTION.msg());
+        반환_상태_확인(response, HttpStatus.BAD_REQUEST);
+        잘못된_요청_메시지_확인(message, ExceptionMessage.TOO_LONG_DISTANCE_OF_SECTION);
     }
 
     /**
@@ -152,8 +156,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
         String message = response.jsonPath().get("msg");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(message).isEqualTo(ExceptionMessage.ALREADY_EXIST_STATIONS.msg());
+        반환_상태_확인(response, HttpStatus.BAD_REQUEST);
+        잘못된_요청_메시지_확인(message, ExceptionMessage.ALREADY_EXIST_STATIONS);
     }
 
     /**
@@ -170,8 +174,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
         String message = response.jsonPath().get("msg");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(message).isEqualTo(ExceptionMessage.DOES_NOT_EXIST_STATIONS.msg());
+        반환_상태_확인(response, HttpStatus.BAD_REQUEST);
+        잘못된_요청_메시지_확인(message, ExceptionMessage.DOES_NOT_EXIST_STATIONS);
     }
 
     /**
@@ -191,7 +195,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        반환_상태_확인(response, HttpStatus.OK);
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
