@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import nextstep.subway.exception.PathException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -23,12 +24,8 @@ public class PathFinder {
 
     public List<Station> getShortesPath(Station startStation, Station finishStation) {
         GraphPath graphPath = dijkstraShortestPath.getPath(startStation, finishStation);
-        if (ObjectUtils.isEmpty(graphPath)) {
-            throw new RuntimeException("에러가 발생하였습니다.");
-        }
-
-        if (graphPath.getEdgeList().isEmpty()) {
-            throw new RuntimeException("갈수 없는 구조입니다.");
+        if (ObjectUtils.isEmpty(graphPath) || graphPath.getEdgeList().isEmpty()) {
+            throw new PathException("연결될 수 없는 구조입니다.");
         }
 
         return graphPath.getVertexList();

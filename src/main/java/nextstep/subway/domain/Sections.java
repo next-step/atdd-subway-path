@@ -21,7 +21,7 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void addSection(Section insertSection) {
-        if(!sections.isEmpty()) {
+        if (!sections.isEmpty()) {
             isExistSection(insertSection);
             isExitsUpStationOrDownStation(insertSection);
 
@@ -34,7 +34,7 @@ public class Sections {
         List<Section> sortSectionList = new ArrayList<>();
         Station findStation = findFirstUpStation();
 
-        while(sortSectionList.size() != sections.size()) {
+        while (sortSectionList.size() != sections.size()) {
             Section nextSection = findNextLineStation(findStation);
             sortSectionList.add(nextSection);
             findStation = nextSection.getDownStation();
@@ -43,29 +43,32 @@ public class Sections {
         return sortSectionList;
     }
 
-    private boolean isPassCondition(List<Section> sortSectionList, Section insertSection) {
-        return sortSectionList.get(0).getUpStation().equals(insertSection.getDownStation())
-            || sortSectionList.get(getLastIndexSections()).getDownStation().equals(insertSection.getUpStation());
-    }
-
     private void addSectionProcess(Section insertSection) {
         List<Section> sortSectionList = getSortSectionList();
 
-        if(isPassCondition(sortSectionList, insertSection)) {
+        if (isPassCondition(sortSectionList, insertSection)) {
             return;
         }
 
-        for(int i = 0 ; i < sortSectionList.size() ; i++) {
+        for (int i = 0; i < sortSectionList.size(); i++) {
             Section section = sortSectionList.get(i);
 
-            if(section.isDownStationConnection(insertSection)) {
-                section.changeDownStation(insertSection.getUpStation(), insertSection.getDistance());
+            if (section.isDownStationConnection(insertSection)) {
+                section.changeDownStation(insertSection.getUpStation(),
+                    insertSection.getDistance());
             }
 
             if (section.isUpStationConnection(insertSection)) {
-                section.changeUpStation(insertSection.getDownStation(), insertSection.getDistance());
+                section.changeUpStation(insertSection.getDownStation(),
+                    insertSection.getDistance());
             }
         }
+    }
+
+    private boolean isPassCondition(List<Section> sortSectionList, Section insertSection) {
+        return sortSectionList.get(0).getUpStation().equals(insertSection.getDownStation())
+            || sortSectionList.get(getLastIndexSections()).getDownStation()
+            .equals(insertSection.getUpStation());
     }
 
     private void isExistSection(Section addSection) {
@@ -131,24 +134,31 @@ public class Sections {
     private void removeProcess(Station removeStation) {
         List<Section> sortSectionList = getSortSectionList();
 
-        for(int i = 0 ; i < sortSectionList.size() ; i++) {
-            if(i == 0 && sortSectionList.get(i).getUpStation().equals(removeStation)
-                || i == getLastIndexSections() && sortSectionList.get(i).getDownStation().equals(removeStation)) {
+        for (int i = 0; i < sortSectionList.size(); i++) {
+            if (isFirstIndexOrLastIndex(sortSectionList, removeStation, i)) {
                 Section section = findNextLineStation(sortSectionList.get(i).getUpStation());
                 sections.remove(section);
                 break;
             }
 
-            if(sortSectionList.get(i).getDownStation().equals(removeStation)) {
-                Section nextSection = sortSectionList.get(i+1);
-                findNextLineStation(sortSectionList.get(i).getUpStation()).removeUpdateStation(nextSection.getDownStation(), nextSection.getDistance());
+            if (sortSectionList.get(i).getDownStation().equals(removeStation)) {
+                Section nextSection = sortSectionList.get(i + 1);
+                findNextLineStation(sortSectionList.get(i).getUpStation()).removeUpdateStation(
+                    nextSection.getDownStation(), nextSection.getDistance());
                 sections.remove(nextSection);
             }
         }
     }
 
+    private boolean isFirstIndexOrLastIndex(List<Section> sortSectionList, Station removeStation,
+        int index) {
+        return index == 0 && sortSectionList.get(index).getUpStation().equals(removeStation)
+            || index == getLastIndexSections() && sortSectionList.get(index).getDownStation()
+            .equals(removeStation);
+    }
+
     private void isRemoveable() {
-        if(sections.size() == 1) {
+        if (sections.size() == 1) {
             throw new SectionException("구간이 하나일때는 삭제할 수 없습니다.");
         }
     }
