@@ -25,4 +25,8 @@ public class FakeStationFactory {
     public static Station 역삼역() {
         return new Station(6L, "역삼역");
     }
+
+    public static Station 왕십리역() {
+        return new Station(7L, "왕십리역");
+    }
 }

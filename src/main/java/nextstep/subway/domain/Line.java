@@ -48,5 +48,9 @@ public class Line {
         return sections.findConnectedStations();
     }
 
+    public List<Section> findAllSections() {
+        return sections.getValues();
+    }
+
 
 }

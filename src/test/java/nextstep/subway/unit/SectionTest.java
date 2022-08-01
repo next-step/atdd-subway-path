@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
+import nextstep.subway.enums.SubwayErrorMessage;
 import nextstep.subway.fake.FakeLineFactory;
 import nextstep.subway.fake.FakeStationFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,8 +11,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class SectionTest{
+class SectionTest{
 
     protected Line 분당선;
     protected Section 선릉_영통_거리10_구간;
@@ -56,12 +58,16 @@ public class SectionTest{
     @Test
     @DisplayName("구간 등록 실패 테스트 - 기존 구간보다 거리가 긴 구간을 등록한다")
     void sectionChangeFailedTest() {
+        //given
         Sections sections = 분당선.getSections();
-        sections.add(선릉_영통_거리10_구간);
-
-        선릉_영통_거리10_구간.changeSectionConditionBy(신촌_영통_거리7_구간);
+        sections.add(영통_신촌_거리7_구간);
 
         //then
-        assertThat(선릉_영통_거리10_구간.getDownStation()).isEqualTo(신촌_영통_거리7_구간.getUpStation());
+        assertThatThrownBy(
+                () -> 영통_신촌_거리7_구간.changeSectionConditionBy(영통_구의_거리10_구간)
+        ).isInstanceOf(IllegalArgumentException.class)
+         .hasMessage(SubwayErrorMessage.INVALID_DISTANCE.getMessage());
     }
+
+
 }

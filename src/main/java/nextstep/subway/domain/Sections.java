@@ -4,13 +4,17 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.enums.SubwayErrorMessage;
 import nextstep.subway.exception.SubwayException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -23,7 +27,7 @@ public class Sections {
     @OrderColumn
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> values = new ArrayList<>();
-    private static int MIN_SIZE = 1;
+    private static final int MIN_SIZE = 1;
 
     public void add(Section section) {
         if (values.isEmpty()) {
@@ -121,19 +125,19 @@ public class Sections {
 
     private void ensureCanRemove(Station station) {
         if (values.size() <= MIN_SIZE) {
-            throw new IllegalArgumentException("두개 이상의 구간이 등록되어야 제거가 가능합니다.");
+            throw new IllegalArgumentException(SubwayErrorMessage.MUST_BE_REGISTERED_TWO_SECTION.getMessage());
         }
-        if(!hasStation(s -> s.equals(station))) {
-            throw new IllegalArgumentException("등록되지 않은 역은 제거할 수 없습니다.");
+        if(notExistStationOfSection(s -> s.equals(station))) {
+            throw new IllegalArgumentException(SubwayErrorMessage.NOT_EXIST_STATION_OF_SECTION.getMessage());
         }
     }
 
     private void ensureCanAddition(Section section) {
         if (existAllStation(section)) {
-            throw new IllegalArgumentException("상행역과 하행역이 모두 등록 되어있는 구간은 등록할 수 없습니다.");
+            throw new IllegalArgumentException(SubwayErrorMessage.EXIST_SECTION.getMessage());
         }
-        if (!hasStation(containsStationOfSection(section))) {
-            throw new IllegalArgumentException("상행역이나 하행역 중 하나는 등록된 구간에 포함되어야 합니다.");
+        if (notExistStationOfSection(containsStationOfSection(section))) {
+            throw new IllegalArgumentException(SubwayErrorMessage.NOT_EXIST_STATION_OF_SECTION.getMessage());
         }
     }
 
@@ -141,8 +145,8 @@ public class Sections {
         return s -> s.equals(section.getUpStation()) || s.equals(section.getDownStation());
     }
 
-    private boolean hasStation(Predicate<Station> isMach) {
-        return findAllStations().stream().anyMatch(isMach);
+    private boolean notExistStationOfSection(Predicate<Station> isMach) {
+        return findAllStations().stream().noneMatch(isMach);
     }
 
     private List<Station> findAllStations() {

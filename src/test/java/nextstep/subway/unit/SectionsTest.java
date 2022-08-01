@@ -1,12 +1,9 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Sections;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
+import nextstep.subway.enums.SubwayErrorMessage;
 import nextstep.subway.fake.FakeLineFactory;
 import nextstep.subway.fake.FakeStationFactory;
-import nextstep.subway.fake.SubwayExceptionMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +13,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SectionsTest {
+class SectionsTest {
 
     private Line 분당선;
     private Section 선릉_영통_거리10_구간;
@@ -85,7 +82,7 @@ public class SectionsTest {
         assertThatThrownBy(
                 () -> sections.add(영통_신촌_거리7_구간)
         ).isInstanceOf(IllegalArgumentException.class)
-         .hasMessage(SubwayExceptionMessage.기존_거리보다_길거나_같은_구간을_등록할_경우());
+         .hasMessage(SubwayErrorMessage.INVALID_DISTANCE.getMessage());
     }
 
     @Test
@@ -99,7 +96,8 @@ public class SectionsTest {
         sections.add(신촌_영통_거리7_구간);
 
         //then
-        assertThat(선릉_영통_거리10_구간.getDistance()).isEqualTo(3);
+        Distance distance = 선릉_영통_거리10_구간.getDistance();
+        assertThat(distance.getValue()).isEqualTo(3);
         assertThat(sections.findConnectedStations()).containsExactly(
                 FakeStationFactory.선릉역(),
                 FakeStationFactory.신촌역(),
@@ -179,7 +177,7 @@ public class SectionsTest {
         //then
         assertThatThrownBy(() -> sections.add(영통_구의_거리10_구간))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(SubwayExceptionMessage.아무런_역도_포함되지_않은_경우());
+                .hasMessage(SubwayErrorMessage.NOT_EXIST_STATION_OF_SECTION.getMessage());
     }
 
     @Test
@@ -205,7 +203,7 @@ public class SectionsTest {
         sections.remove(영통_강남_거리7_구간.getDownStation());
 
         //then 구간이 삭제되었는지 확인한다.
-        int distance = sections.findSectionWithSameStation(영통_강남_거리7_구간).getDistance();
+        Distance newDistance = sections.findSectionWithSameStation(영통_강남_거리7_구간).getDistance();
         assertThat(sections.findConnectedStations())
                 .containsExactly(
                         선릉_영통_거리10_구간.getUpStation(),
@@ -213,7 +211,7 @@ public class SectionsTest {
                         강남_역삼_거리5_구간.getDownStation()
 
                 );
-        assertThat(distance).isEqualTo(12);
+        assertThat(newDistance.getValue()).isEqualTo(12);
     }
 
     @Test
@@ -241,7 +239,7 @@ public class SectionsTest {
         //then 삭제가 실패했을 때 IllegalArgumentException 발생 여부를 확인한다.
         assertThatThrownBy(() -> sections.remove(영통_구의_거리10_구간.getDownStation()))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("두개 이상의 구간이 등록되어야 제거가 가능합니다.");
+                .hasMessage(SubwayErrorMessage.MUST_BE_REGISTERED_TWO_SECTION.getMessage());
     }
 
     @DisplayName("지하철 구간 삭제 실패 테스트 - 등록되지 않은역은 제거할 수 없다.")
@@ -255,7 +253,7 @@ public class SectionsTest {
         //then 삭제가 실패했을 때 IllegalArgumentException 발생 여부를 확인한다.
         assertThatThrownBy(() -> sections.remove(신촌_영통_거리7_구간.getUpStation()))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("등록되지 않은 역은 제거할 수 없습니다.");
+                .hasMessage(SubwayErrorMessage.NOT_EXIST_STATION_OF_SECTION.getMessage());
     }
 
 
