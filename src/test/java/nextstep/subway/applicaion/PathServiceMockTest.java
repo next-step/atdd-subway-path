@@ -90,6 +90,7 @@ class PathServiceMockTest {
     void findPathSourceAndTargetSameException() {
         //given
         Long source = 1L;
+        when(stationRepository.findById(source)).thenReturn(Optional.of(교대역));
 
         //when, then
         assertThatThrownBy(() -> pathService.findPath(source, source))
