@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,9 +73,6 @@ public class LineService {
         }
 
         List<Long> orderedStationIds = line.getOrderedStationIds();
-        List<StationResponse> responses = stationService.findByIds(orderedStationIds);
-
-        responses.sort(Comparator.comparing(it -> orderedStationIds.indexOf(it.getId())));
-        return responses;
+        return stationService.findByIds(orderedStationIds);
     }
 }
