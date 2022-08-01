@@ -11,14 +11,15 @@ import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.exception.PathException;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class PathService {
 
-    private StationRepository stationRepository;
-    private LineRepository lineRepository;
+    private final StationRepository stationRepository;
+    private final LineRepository lineRepository;
 
     public PathResponse getPath(PathRequest pathRequest) {
         Station startStation = getStation(pathRequest.getSource());
@@ -40,7 +41,7 @@ public class PathService {
 
     private Station getStation(long stationId) {
         return stationRepository.findById(stationId)
-            .orElseThrow(() -> new RuntimeException("지하철역이 존재하지 않습니다."));
+            .orElseThrow(() -> new PathException("지하철역이 존재하지 않습니다."));
     }
 
     private List<StationResponse> createStationResponse(List<Station> stationList) {
