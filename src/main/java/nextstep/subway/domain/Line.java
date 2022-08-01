@@ -88,7 +88,7 @@ public class Line {
         if (addingBehindSection.isPresent()) {
             Section section = addingBehindSection.get();
             validateSameDistanceBothSections(section, newSection);
-            section.updateDownStationToUpStationOf(newSection);
+            section.updateDownStationToUpStationWhenAdd(newSection);
         }
     }
 
@@ -194,7 +194,7 @@ public class Line {
 
         //    3. 앞 구간의 하행역을 뒤 구간의 하행역으로 변경, 4. 유관 구간을 삭제
         if (upSection.isPresent() && downSection.isPresent()) {
-            upSection.get().updateDownStationToUpStationOf(downSection.get());
+            upSection.get().updateDownStationToUpStationWhenRemove(downSection.get());
             sections.remove(downSection.get());
         } else if (upSection.isPresent()) { // 맨 뒤에 있는 경우
             sections.remove(upSection.get());

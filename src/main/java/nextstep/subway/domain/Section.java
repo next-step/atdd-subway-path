@@ -59,9 +59,14 @@ public class Section {
         this.distance = distance - newSection.distance;
     }
 
-    public void updateDownStationToUpStationOf(Section newSection) {
+    public void updateDownStationToUpStationWhenAdd(Section newSection) {
         this.downStation = newSection.upStation;
         this.distance = distance - newSection.distance;
+    }
+
+    public void updateDownStationToUpStationWhenRemove(Section newSection) {
+        this.downStation = newSection.downStation;
+        this.distance = distance + newSection.distance;
     }
 
     public boolean sameOrBiggerThen(Section section) {
