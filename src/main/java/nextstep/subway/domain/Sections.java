@@ -8,10 +8,7 @@ import nextstep.subway.enums.exceptions.ErrorCode;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -23,13 +20,11 @@ public class Sections {
     }
 
     public void add(Section newSection) {
-        if (this.sections.isEmpty()) {
-            throw new SectionNotEnoughException(ErrorCode.NOT_ENOUGH_SECTION);
+        if (!this.sections.isEmpty()) {
+            Section alreadyRegisterSection = getBetweenSection(newSection);
+            alreadyRegisterSection.modifyBetweenSection(newSection);
+            alreadyRegisterSection.minusDistance(newSection.getDistance());
         }
-
-        Section alreadyRegisterSection = getBetweenSection(newSection);
-        alreadyRegisterSection.modifyBetweenSection(newSection);
-        alreadyRegisterSection.minusDistance(newSection.getDistance());
         sections.add(newSection);
     }
 
@@ -49,7 +44,45 @@ public class Sections {
     }
 
     public List<Section> getSections() {
-        return sections;
+        List<Section> sectionsSortList = new ArrayList<>();
+        if(sections.isEmpty()){
+            return Collections.emptyList();
+        }
+        Section firstSection = getFirstSection();
+        sectionsSortList.add(firstSection);
+
+//        sectionsSortList.addAll(sectionsSortList.stream().takeWhile(section -> Objects.nonNull(getNextSection(section))).collect(Collectors.toList()));
+
+        for(int i = 0; i < sections.size(); i++ ){
+            Section nextSection = getNextSection(sectionsSortList.get(i));
+            if(Objects.isNull(nextSection)){
+                break;
+            }
+            sectionsSortList.add(nextSection);
+        }
+        return sectionsSortList;
+    }
+
+    public Section getFirstSection(){
+        if(sections.isEmpty()){
+            throw new DataNotFoundException(ErrorCode.NOT_ENOUGH_SECTION);
+        }
+        return sections.stream()
+                .filter(section -> isFirstSection(section))
+                .findFirst()
+                .orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_ENOUGH_SECTION));
+    }
+
+    public Boolean isFirstSection(Section section){
+        return sections.stream()
+                .noneMatch(currentSection -> section.getUpStation().equals(currentSection.getDownStation()));
+    }
+
+    public Section getNextSection(Section section){
+        return sections.stream()
+                .filter(thisSection -> section.getDownStation().equals(thisSection.getUpStation()))
+                .findFirst()
+                .orElse(null);
     }
 
     public Station getLastStation() {
