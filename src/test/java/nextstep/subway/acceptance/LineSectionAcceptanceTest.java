@@ -76,10 +76,32 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         Assertions.assertAll(() -> {
             assertThat(response.jsonPath().getList("distance")).containsExactly(4,6);
             assertThat(response.jsonPath().getList("upStation.name")).containsExactly("강남역", "강남역_양재역_사이역");
+            assertThat(response.jsonPath().getList("downStation.name")).containsExactly("강남역_양재역_사이역", "양재역");
         });
-
-
     }
+
+    /**
+     * given : 지하철 노선에 구간을 등록
+     * when : 새로운 역(B)을 상행 종점으로 구간을 등록한다.
+     * then : A - C 일 때 B - A 구간을 등록하면 B - A - C가 된다.
+     */
+    @DisplayName("새로운 역을 상행 종점으로 등록하기")
+    @Test
+    void addNewStationLineOnTheTop() {
+        // given : 강남역 - 양재역
+
+        // when
+        long 신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역, "5"));
+        ExtractableResponse<Response> response = 특정_구간_조회(신분당선);
+
+        Assertions.assertAll(() -> {
+            assertThat(response.jsonPath().getList("distance")).containsExactly(5, 10);
+            assertThat(response.jsonPath().getList("upStation.name")).containsExactly("신논현역", "강남역");
+            assertThat(response.jsonPath().getList("downStation.name")).containsExactly("강남역", "양재역");
+        });
+    }
+
 
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고

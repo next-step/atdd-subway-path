@@ -22,8 +22,10 @@ public class Sections {
     public void add(Section newSection) {
         if (!this.sections.isEmpty()) {
             Section alreadyRegisterSection = getBetweenSection(newSection);
-            alreadyRegisterSection.modifyBetweenSection(newSection);
-            alreadyRegisterSection.minusDistance(newSection.getDistance());
+            if (Objects.nonNull(alreadyRegisterSection)) {
+                alreadyRegisterSection.modifyBetweenSection(newSection);
+                alreadyRegisterSection.minusDistance(newSection.getDistance());
+            }
         }
         sections.add(newSection);
     }
@@ -32,7 +34,7 @@ public class Sections {
         return this.sections.stream()
                 .filter(section -> section.isSameUpDownStation(newSection))
                 .findFirst()
-                .orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_FOUND_STATION));
+                .orElse(null);
     }
 
     public List<Station> getStation() {
