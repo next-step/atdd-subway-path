@@ -1,7 +1,9 @@
 package nextstep.subway.unit.domain;
 
 
+import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.ShortestPathResult;
+import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Section;
@@ -30,6 +32,7 @@ class PathFinderTest {
     private Line 신분당선;
     private Line 삼호선;
     private List<Line> lines;
+    private PathFinder pathFinder;
 
     /**
      * 교대역    --- *2호선* ---   강남역
@@ -40,6 +43,8 @@ class PathFinderTest {
      */
     @BeforeEach
     public void setUp() {
+        pathFinder = new PathFinder();
+
         교대역 = new Station(11L, "교대역");
         강남역 = new Station(12L, "강남역");
         양재역 = new Station(13L, "양재역");
@@ -61,14 +66,10 @@ class PathFinderTest {
     @Test
     void 최소경로_조회() {
         // when
-        ShortestPathResult shortestPath = PathFinder.calShortestPath(lines, 교대역, 양재역);
+        ShortestPathResult shortestPath = pathFinder.calShortestPath(lines, 교대역, 양재역);
 
         // then
-        List<String> stationNames = shortestPath.getStations().stream()
-                                                .map(Station::getName)
-                                                .collect(Collectors.toList());
-        assertThat(stationNames.size()).isEqualTo(3);
-        assertThat(stationNames).containsExactly("교대역", "남부터미널역", "양재역");
+        최소경로_순서_고려하여_검증(shortestPath, "교대역", "남부터미널역", "양재역");
         assertThat(shortestPath.getDistance()).isEqualTo(5);
     }
 
@@ -76,7 +77,7 @@ class PathFinderTest {
     void 출발역과_도착역이_같은_경우() {
         // when
         CustomException exception = assertThrows(CustomException.class, () -> {
-            PathFinder.calShortestPath(lines, 교대역, 교대역);
+            pathFinder.calShortestPath(lines, 교대역, 교대역);
         });
 
         // then
@@ -94,7 +95,7 @@ class PathFinderTest {
 
         // when
         CustomException exception = assertThrows(CustomException.class, () -> {
-            PathFinder.calShortestPath(lines, 교대역, 기흥역);
+            pathFinder.calShortestPath(lines, 교대역, 기흥역);
         });
 
         // then
@@ -104,5 +105,17 @@ class PathFinderTest {
 
     private void 에러코드_확인(final CustomException exception, final ResponseCode responseCode) {
         assertThat(exception.getResponseCode()).isEqualTo(responseCode);
+    }
+
+    private List<String> getStationNames(final ShortestPathResult shortestPath) {
+        return shortestPath.getStations().stream()
+                           .map(Station::getName)
+                           .collect(Collectors.toList());
+    }
+
+    private void 최소경로_순서_고려하여_검증(final ShortestPathResult shortestPath, String... path) {
+        List<String> stationNames = getStationNames(shortestPath);
+        assertThat(stationNames.size()).isEqualTo(path.length);
+        assertThat(stationNames).containsExactly(path);
     }
 }

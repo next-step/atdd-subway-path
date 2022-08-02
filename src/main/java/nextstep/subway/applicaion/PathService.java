@@ -19,13 +19,14 @@ import java.util.List;
 public class PathService {
     private final StationRepository stationRepository;
     private final LineRepository lineRepository;
+    private final PathFinder pathFinder;
 
     public PathResponse getShortestPath(final Long source, final Long target) {
         Station sourceStation = findStation(source);
         Station targetStation = findStation(target);
         List<Line> lines = lineRepository.findAll();
 
-        ShortestPathResult shortestPath = PathFinder.calShortestPath(lines, sourceStation, targetStation);
+        ShortestPathResult shortestPath = pathFinder.calShortestPath(lines, sourceStation, targetStation);
         return PathResponse.of(shortestPath);
     }
 

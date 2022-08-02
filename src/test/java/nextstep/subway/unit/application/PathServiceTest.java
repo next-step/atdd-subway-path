@@ -72,11 +72,7 @@ public class PathServiceTest {
         PathResponse response = pathService.getShortestPath(교대역.getId(), 양재역.getId());
 
         // then
-        List<String> stationNames = response.getStations().stream()
-                                                .map(StationResponse::getName)
-                                                .collect(Collectors.toList());
-        assertThat(response.getStations().size()).isEqualTo(3);
-        assertThat(stationNames).containsExactly("교대역", "남부터미널역", "양재역");
+        최소경로_순서_고려하여_검증(response, "교대역", "남부터미널역", "양재역");
         assertThat(response.getDistance()).isEqualTo(5);
     }
 
@@ -118,5 +114,16 @@ public class PathServiceTest {
 
     private Line createLine(String name, String color){
         return lineRepository.save(new Line(name, color));
+    }
+
+    private List<String> getStationNames(final PathResponse response) {
+        return response.getStations().stream()
+                       .map(StationResponse::getName)
+                       .collect(Collectors.toList());
+    }
+
+    private void 최소경로_순서_고려하여_검증(final PathResponse response, String... path) {
+        assertThat(response.getStations().size()).isEqualTo(path.length);
+        assertThat(getStationNames(response)).containsExactly(path);
     }
 }

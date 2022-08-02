@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import nextstep.subway.applicaion.dto.ShortestPathResult;
 import nextstep.subway.exception.CustomException;
 import nextstep.subway.exception.code.CommonCode;
@@ -10,12 +8,13 @@ import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Component
 public class PathFinder {
-    public static ShortestPathResult calShortestPath(final List<Line> lines, final Station source, final Station target) {
+    public ShortestPathResult calShortestPath(final List<Line> lines, final Station source, final Station target) {
         checkSameStation(source, target);
 
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = createWeightedGragh(lines);
@@ -24,13 +23,13 @@ public class PathFinder {
         return new ShortestPathResult((int) shortestPath.getWeight(), shortestPath.getVertexList());
     }
 
-    private static void checkSameStation(final Station source, final Station target) {
+    private void checkSameStation(final Station source, final Station target) {
         if (source.equals(target)) {
             throw new CustomException(CommonCode.PARAM_INVALID);
         }
     }
 
-    private static WeightedMultigraph<Station, DefaultWeightedEdge> createWeightedGragh(final List<Line> lines) {
+    private WeightedMultigraph<Station, DefaultWeightedEdge> createWeightedGragh(final List<Line> lines) {
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         for (Line line : lines) {
             for (Section section : line.getSections().getSections()) {
@@ -42,7 +41,7 @@ public class PathFinder {
         return graph;
     }
 
-    private static GraphPath<Station, DefaultWeightedEdge> createShortestPath(final Station source,
+    private GraphPath<Station, DefaultWeightedEdge> createShortestPath(final Station source,
                                                                               final Station target,
                                                                               final WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
