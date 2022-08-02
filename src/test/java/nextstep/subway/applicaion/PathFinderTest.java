@@ -11,23 +11,13 @@ import nextstep.subway.applicaion.path.PathFinder;
 import nextstep.subway.applicaion.path.exception.IllegalSourceTargetException;
 import nextstep.subway.applicaion.path.exception.PathNotFoundException;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-@DataJpaTest
 class PathFinderTest {
-
-    @Autowired
-    private LineRepository lineRepository;
-    @Autowired
-    private StationRepository stationRepository;
 
     private Station 교대역;
     private Station 강남역;
@@ -119,11 +109,10 @@ class PathFinderTest {
     }
 
     private Line createLine(String name, String color) {
-        var line = new Line(name, color);
-        return lineRepository.save(line);
+        return new Line(name, color);
     }
 
     private Station createStation(String name) {
-        return stationRepository.save(new Station(name));
+        return new Station(name);
     }
 }
