@@ -98,6 +98,17 @@ public class Sections {
     }
 
     public void remove(Station station) {
+        validateRemove(station);
         sections.remove(station);
+    }
+
+    private void validateRemove(Station station) {
+        if (notContainsStation(station)) {
+            throw new IllegalArgumentException("등록되어있지 않은 구간입니다.");
+        }
+    }
+
+    private boolean notContainsStation(Station station) {
+        return !getStations().contains(station);
     }
 }

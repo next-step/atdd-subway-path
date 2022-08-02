@@ -205,7 +205,11 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             @DisplayName("등록되지 않은 구간을 제거하면 예외 발생")
             @Test
             void 미등록_구간_제거_예외 () {
+                // when
+                ExtractableResponse<Response> 구간_제거 = 지하철_노선에_지하철_구간_제거_요청(신분당선, 삼성역);
 
+                // then
+                assertThat(구간_제거.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
             }
 
             /**
@@ -219,10 +223,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
                 Long 판교역 = 123L;
 
                 // when
-                ExtractableResponse<Response> 구간_생성 = 지하철_노선에_지하철_구간_제거_요청(신분당선, 판교역);
+                ExtractableResponse<Response> 구간_제거 = 지하철_노선에_지하철_구간_제거_요청(신분당선, 판교역);
 
                 // then
-                assertThat(구간_생성.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                assertThat(구간_제거.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
             }
         }
 
