@@ -29,11 +29,11 @@ public class Distance {
     }
 
     public Distance subtract(Distance otherDistance) {
-        return new Distance(this.value - otherDistance.getValue());
+        return new Distance(this.getValue() - otherDistance.getValue());
     }
 
     public Distance plus(Distance otherDistance) {
-        return new Distance(this.value + otherDistance.getValue());
+        return new Distance(this.getValue() + otherDistance.getValue());
     }
 
 }

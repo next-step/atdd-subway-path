@@ -141,12 +141,12 @@ public class Sections {
         //중간 구간 제거
         Section nextSection = topSection;
         while(nextSection != null) {
-            topSection = nextSection;
-            nextSection = findNextSection(topSection.getDownStation());
-            if(topSection.downStationMatchFromStation(station)) {
+            Section prevSection = nextSection;
+            nextSection = findNextSection(prevSection.getDownStation());
+            if(prevSection.downStationMatchFromStation(station)) {
                 //두 구간을 제거 후 합친 구간을 추가
-                Section combineSection = topSection.combine(nextSection);
-                this.sections.removeAll(Arrays.asList(topSection, nextSection));
+                Section combineSection = prevSection.combine(nextSection);
+                this.sections.removeAll(Arrays.asList(prevSection, nextSection));
                 return this.sections.add(combineSection);
             }
         }
@@ -155,7 +155,9 @@ public class Sections {
     }
 
     public Section findNextSection(Station station) {
-        return this.sections.stream().filter(s -> s.upStationMatchFromDownStation(station)).findFirst()
+        return this.sections.stream()
+                .filter(s -> s.upStationMatchFromDownStation(station))
+                .findFirst()
                 .orElse(null);
     }
 
