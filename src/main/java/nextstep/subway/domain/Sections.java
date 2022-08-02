@@ -32,20 +32,20 @@ public class Sections {
             return;
         }
 
-        validNotExistStation(section);
-        validExistAllStation(section);
+        checkNotExistStation(section);
+        checkExistAllStation(section);
 
         addSectionIfNotBetween(section);
         addSectionIfBetween(section);
     }
 
-    private void validNotExistStation(final Section section) {
+    private void checkNotExistStation(final Section section) {
         if (!hasStation(section.getDownStation()) && !hasStation(section.getUpStation())) {
             throw new CustomException(CommonCode.PARAM_INVALID);
         }
     }
 
-    private void validExistAllStation(final Section section) {
+    private void checkExistAllStation(final Section section) {
         if (hasStation(section.getDownStation()) && hasStation(section.getUpStation())) {
             throw new CustomException(CommonCode.PARAM_INVALID);
         }
@@ -80,20 +80,20 @@ public class Sections {
     }
 
     public void removeSection(final Station station) {
-        validInvalidRemoveSize();
-        validStationExist(station);
+        checkInvalidRemoveSize();
+        checkStationExist(station);
 
         removeIfNotBetween(station);
         removeIfBetween(station);
     }
 
-    private void validStationExist(final Station station) {
+    private void checkStationExist(final Station station) {
         if(!hasStation(station)){
             throw new CustomException(CommonCode.PARAM_INVALID);
         }
     }
 
-    private void validInvalidRemoveSize() {
+    private void checkInvalidRemoveSize() {
         if (size() <= INVALID_REMOVE_SIZE) {
             throw new CustomException(SectionCode.SECTION_REMOVE_INVALID);
         }
