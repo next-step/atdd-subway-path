@@ -59,8 +59,10 @@ class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("두 역 사이의 최단경로 조회")
     @Test
     void shortestPath() {
+        // when
         var response = 최단경로_조회_요청(교대역, 양재역);
 
+        // then
         경로와_거리_검증(response, List.of(교대역, 남부터미널역, 양재역), 5);
     }
 
@@ -72,12 +74,15 @@ class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("이어지지 않은 역 사이의 경로 조회 실패")
     @Test
     void findingPathFailsWhenStationsAreNotConnected() {
+        // given
         var 신도림역 = 지하철역_생성_요청("신도림역").jsonPath().getLong("id");
         var 구로역 = 지하철역_생성_요청("구로역").jsonPath().getLong("id");
         지하철_노선_생성_요청("1호선", "blue", 신도림역, 구로역, 2);
 
+        // when
         var response = 최단경로_조회_요청(교대역, 구로역);
 
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
@@ -88,8 +93,10 @@ class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("동일한 출발역과 도착역에 대해 경로 조회 실패")
     @Test
     void findingPathFailsWhenSourceAndTargetStationsAreEquals(){
+        // when
         var response = 최단경로_조회_요청(교대역, 교대역);
 
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -100,9 +107,11 @@ class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("존재하지 않는 역에 대한 경로 조회 실패")
     @Test
     void findingPathFailsWhenSourceOrTargetStationAreNotExist(){
+        // when
         var 존재하지_않는_역 = 9876L;
         var response = 최단경로_조회_요청(교대역, 존재하지_않는_역);
 
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
