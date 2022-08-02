@@ -31,7 +31,7 @@ public class SectionTest {
         역삼역 = new Station(2L, "역삼역");
         선릉역 = new Station(3L, "선릉역");
         서울역 = new Station(4L, "서울역");
-        삼성역 = new Station(5L ,"삼성역");
+        삼성역 = new Station(5L, "삼성역");
     }
 
     @Test
@@ -97,8 +97,8 @@ public class SectionTest {
         Section 강남_역삼_구간 = new Section(이호선, 강남역, 역삼역, 6);
 
         assertThatExceptionOfType(SectionException.class).isThrownBy(() -> {
-            강남_역삼_구간.changeUpStation(선릉역, 10);
-        })
+                강남_역삼_구간.changeUpStation(선릉역, 10);
+            })
             .withMessage("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
     }
 
