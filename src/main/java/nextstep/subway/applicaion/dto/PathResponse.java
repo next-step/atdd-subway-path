@@ -1,19 +1,17 @@
 package nextstep.subway.applicaion.dto;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class PathResponse {
-    private int distance;
-    private List<StationResponse> stations;
-
-    public PathResponse(final int distance, final List<StationResponse> stations) {
-        this.distance = distance;
-        this.stations = stations;
-    }
+    private final int distance;
+    private final List<StationResponse> stations;
 
     public static PathResponse of(ShortestPathResult path) {
         return new PathResponse(path.getDistance(), createStationResponses(path));

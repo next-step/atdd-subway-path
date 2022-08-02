@@ -9,7 +9,6 @@ import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.exception.CustomException;
-import nextstep.subway.exception.code.CommonCode;
 import nextstep.subway.exception.code.StationCode;
 import org.springframework.stereotype.Service;
 
@@ -24,15 +23,9 @@ public class PathService {
     public PathResponse getShortestPath(final Long source, final Long target) {
         Station sourceStation = findStation(source);
         Station targetStation = findStation(target);
-
         List<Line> lines = lineRepository.findAll();
 
         ShortestPathResult shortestPath = PathFinder.calShortestPath(lines, sourceStation, targetStation);
-
-        if (shortestPath.getStations().isEmpty()){
-            throw new CustomException(CommonCode.PARAM_INVALID);
-        }
-
         return PathResponse.of(shortestPath);
     }
 
