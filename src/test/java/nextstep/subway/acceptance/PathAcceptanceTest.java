@@ -78,7 +78,7 @@ class PathAcceptanceTest extends AcceptanceTest {
 
         var response = 최단경로_조회_요청(교대역, 구로역);
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     /**

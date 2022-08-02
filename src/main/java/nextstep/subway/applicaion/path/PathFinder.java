@@ -1,7 +1,9 @@
-package nextstep.subway.applicaion;
+package nextstep.subway.applicaion.path;
 
 import java.util.List;
 import java.util.Objects;
+import nextstep.subway.applicaion.path.exception.IllegalSourceTargetException;
+import nextstep.subway.applicaion.path.exception.PathNotFoundException;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -25,11 +27,11 @@ public class PathFinder {
 
     public Path solve(Station source, Station target) {
         if (Objects.equals(source, target)) {
-            throw new IllegalArgumentException();
+            throw new IllegalSourceTargetException();
         }
         var path = new DijkstraShortestPath(graph).getPath(source, target);
         if (path == null) {
-            throw new IllegalStateException("출발역과 도착역 사이의 경로가 없습니다.");
+            throw new PathNotFoundException();
         }
         return new Path(path.getVertexList(), (int) path.getWeight());
     }

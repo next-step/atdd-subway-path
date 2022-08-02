@@ -1,5 +1,7 @@
 package nextstep.subway.ui;
 
+import nextstep.subway.applicaion.path.exception.PathException;
+import nextstep.subway.applicaion.path.exception.PathNotFoundException;
 import nextstep.subway.domain.exception.DomainException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -26,5 +28,15 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(value = IllegalArgumentException.class)
     public ResponseEntity<Void> handleIllegalArgumentException() {
         return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(value = PathException.class)
+    public ResponseEntity<Void> handlePathException() {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(value = PathNotFoundException.class)
+    public ResponseEntity<Void> handlePathNotFoundException() {
+        return ResponseEntity.notFound().build();
     }
 }

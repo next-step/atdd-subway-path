@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
+import nextstep.subway.applicaion.path.PathFinder;
+import nextstep.subway.applicaion.path.exception.IllegalSourceTargetException;
+import nextstep.subway.applicaion.path.exception.PathNotFoundException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
@@ -74,14 +77,14 @@ class PathFinderTest {
         sectionList.add(new Section(일호선, 신도림, 구로, 10));
         var pathFinder = new PathFinder(sectionList);
 
-        assertThrows(IllegalStateException.class, () -> pathFinder.solve(교대역, 신도림));
+        assertThrows(PathNotFoundException.class, () -> pathFinder.solve(교대역, 신도림));
     }
 
     @DisplayName("동일 역에 대하여 경로탐색 실패")
     @Test
     void findPathFailsForSameStations() {
         var pathFinder = new PathFinder(sectionList);
-        assertThrows(IllegalArgumentException.class, () -> pathFinder.solve(교대역, 교대역));
+        assertThrows(IllegalSourceTargetException.class, () -> pathFinder.solve(교대역, 교대역));
     }
 
     private Line createLine(String name, String color) {
