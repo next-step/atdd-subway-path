@@ -1,6 +1,5 @@
 package nextstep.subway.acceptance;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.acceptance.support.AcceptanceTest;
@@ -68,6 +67,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
             // then
             최단경로_순서_확인(response, "교대역", "남부터미널역", "양재역");
+            assertThat(response.jsonPath().getInt("distance")).isEqualTo(5);
         }
 
         /**
@@ -92,12 +92,14 @@ public class PathAcceptanceTest extends AcceptanceTest {
         void 출발역과_도착역이_연결_되어있지않는경우() {
             // given
             Long 기흥역 = 지하철역_생성_요청후_식별자_반환("기흥역");
+            Long 신갈역 = 지하철역_생성_요청후_식별자_반환("신갈역");
+            지하철_노선_생성_요청후_식별자_반환(createLineCreateParams("에버라인", "orange", 기흥역, 신갈역, 5));
 
             // when
             final ExtractableResponse<Response> response = 최단경로_조회_요청(양재역, 기흥역);
 
             // then
-            에러발생_확인(1001, response);
+            에러발생_확인(5000, response);
         }
 
         /**
@@ -110,7 +112,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
             final ExtractableResponse<Response> response = 최단경로_조회_요청(999L, 9999L);
 
             // then
-            에러발생_확인(1001, response);
+            에러발생_확인(3000, response);
         }
     }
 
