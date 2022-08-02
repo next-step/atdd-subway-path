@@ -9,6 +9,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,9 +21,9 @@ public class PathService {
 
     public PathResponse findShortestPath(Long source, Long target) {
         var sourceStation = stationRepository.findById(source)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(StationNotFoundException::new);
         var targetStation = stationRepository.findById(target)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(StationNotFoundException::new);
 
         var path = new PathFinder(getAllSections()).solve(sourceStation, targetStation);
 
