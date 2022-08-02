@@ -4,8 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.ArrayList;
+import java.util.List;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,8 +20,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 @DataJpaTest
 class PathFinderTest {
 
-    private PathFinder pathFinder;
-
     @Autowired
     private LineRepository lineRepository;
     @Autowired
@@ -28,11 +29,10 @@ class PathFinderTest {
     private Station 강남역;
     private Station 양재역;
     private Station 남부터미널역;
+    private List<Section> sectionList;
 
     @BeforeEach
     void setUp() {
-        pathFinder = new PathFinder(lineRepository, stationRepository);
-
         var 이호선 = createLine("2호선", "green");
         var 삼호선 = createLine("3호선", "orange");
         var 신분당선 = createLine("신분당선", "red");
@@ -42,15 +42,20 @@ class PathFinderTest {
         양재역 = createStation("양재역");
         남부터미널역 = createStation("남부터미널역");
 
-        이호선.addSection(교대역, 강남역, 10);
-        신분당선.addSection(강남역, 양재역, 10);
-        삼호선.addSection(교대역, 남부터미널역, 2);
-        삼호선.addSection(남부터미널역, 양재역, 3);
+        sectionList = new ArrayList<>();
+        sectionList.add(new Section(이호선, 교대역, 강남역, 10));
+        sectionList.add(new Section(신분당선, 강남역, 양재역, 10));
+        sectionList.add(new Section(삼호선, 교대역, 남부터미널역, 2));
+        sectionList.add(new Section(삼호선, 남부터미널역, 양재역, 3));
+
+
     }
 
     @DisplayName("역간 최단경로 탐색")
     @Test
     void findShortestPath() {
+        var pathFinder = new PathFinder(sectionList);
+
         var path = pathFinder.solve(교대역, 양재역);
 
         assertAll(
@@ -65,7 +70,9 @@ class PathFinderTest {
         var 일호선 = createLine("일호선", "blue");
         var 신도림 = createStation("신도림");
         var 구로 = createStation("구로");
-        일호선.addSection(신도림, 구로, 10);
+
+        sectionList.add(new Section(일호선, 신도림, 구로, 10));
+        var pathFinder = new PathFinder(sectionList);
 
         assertThrows(IllegalStateException.class, () -> pathFinder.solve(교대역, 신도림));
     }
@@ -73,6 +80,7 @@ class PathFinderTest {
     @DisplayName("동일 역에 대하여 경로탐색 실패")
     @Test
     void findPathFailsForSameStations() {
+        var pathFinder = new PathFinder(sectionList);
         assertThrows(IllegalArgumentException.class, () -> pathFinder.solve(교대역, 교대역));
     }
 
