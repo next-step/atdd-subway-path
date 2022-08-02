@@ -118,7 +118,7 @@ class PathAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 존재하지 않는 역에 대하여 경로를 존재하면
+     * When 존재하지 않는 역에 대하여 경로를 조회하면
      * Then 경로 조회가 실패한다
      */
     @DisplayName("존재하지 않는 역에 대한 경로 조회 실패")
