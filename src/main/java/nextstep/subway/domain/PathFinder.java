@@ -17,8 +17,7 @@ public class PathFinder {
     public ShortestPathResult calShortestPath(final List<Line> lines, final Station source, final Station target) {
         checkSameStation(source, target);
 
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = createWeightedGragh(lines);
-        GraphPath<Station, DefaultWeightedEdge> shortestPath = createShortestPath(source, target, graph);
+        GraphPath<Station, DefaultWeightedEdge> shortestPath = createShortestPath(source, target, lines);
 
         return new ShortestPathResult((int) shortestPath.getWeight(), shortestPath.getVertexList());
     }
@@ -27,6 +26,18 @@ public class PathFinder {
         if (source.equals(target)) {
             throw new CustomException(CommonCode.PARAM_INVALID);
         }
+    }
+
+    private GraphPath<Station, DefaultWeightedEdge> createShortestPath(final Station source,
+                                                                       final Station target,
+                                                                       final List<Line> lines) {
+        WeightedMultigraph<Station, DefaultWeightedEdge> graph = createWeightedGragh(lines);
+        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
+        GraphPath<Station, DefaultWeightedEdge> shortestPath = dijkstraShortestPath.getPath(source, target);
+        if (shortestPath == null) {
+            throw new CustomException(PathCode.NOT_LINKED);
+        }
+        return shortestPath;
     }
 
     private WeightedMultigraph<Station, DefaultWeightedEdge> createWeightedGragh(final List<Line> lines) {
@@ -39,16 +50,5 @@ public class PathFinder {
             }
         }
         return graph;
-    }
-
-    private GraphPath<Station, DefaultWeightedEdge> createShortestPath(final Station source,
-                                                                              final Station target,
-                                                                              final WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
-        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
-        GraphPath<Station, DefaultWeightedEdge> shortestPath = dijkstraShortestPath.getPath(source, target);
-        if (shortestPath == null) {
-            throw new CustomException(PathCode.NOT_LINKED);
-        }
-        return shortestPath;
     }
 }
