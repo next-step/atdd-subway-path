@@ -6,19 +6,19 @@ public class ToBeAddedSection {
 
     private Section section;
 
-    private SectionLocation location;
+    private AddSectionLocation location;
 
     private int index;
 
-    public ToBeAddedSection(SectionLocation location) {
+    public ToBeAddedSection(AddSectionLocation location) {
         this(null, location, -1);
     }
 
-    public ToBeAddedSection(SectionLocation location, int index) {
+    public ToBeAddedSection(AddSectionLocation location, int index) {
         this(null, location, index);
     }
 
-    public ToBeAddedSection(Section section, SectionLocation location, int index) {
+    public ToBeAddedSection(Section section, AddSectionLocation location, int index) {
         this.section = section;
         this.location = location;
         this.index = index;
@@ -28,7 +28,7 @@ public class ToBeAddedSection {
         return section;
     }
 
-    public SectionLocation getLocation() {
+    public AddSectionLocation getLocation() {
         return location;
     }
 

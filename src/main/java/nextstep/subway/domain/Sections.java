@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.domain.vo.SectionLocation;
+import nextstep.subway.domain.vo.AddSectionLocation;
+import nextstep.subway.domain.vo.DeleteSectionLocation;
 import nextstep.subway.domain.vo.ToBeAddedSection;
 import nextstep.subway.exception.DeleteSectionException;
 import nextstep.subway.exception.NewlySectionUpStationAndDownStationNotExist;
@@ -63,17 +64,17 @@ public class Sections {
         for (int i = 0; i < sections.size(); i++) {
             Section section = sections.get(i);
             if (section.hasSameUpStation(newlySection)) {
-                return new ToBeAddedSection(section, SectionLocation.BETWEEN_BACK, i);
+                return new ToBeAddedSection(section, AddSectionLocation.BETWEEN_BACK, i);
             }
             if (section.hasSameDownStation(newlySection)) {
-                return new ToBeAddedSection(section, SectionLocation.BETWEEN_FRONT, i);
+                return new ToBeAddedSection(section, AddSectionLocation.BETWEEN_FRONT, i);
             }
         }
-        return new ToBeAddedSection(SectionLocation.NOT_BETWEEN);
+        return new ToBeAddedSection(AddSectionLocation.NOT_BETWEEN);
     }
 
     private void addNewlySectionIfNotBetween(Section newlySection, ToBeAddedSection toBeAddedSection) {
-        if (SectionLocation.NOT_BETWEEN != toBeAddedSection.getLocation()) {
+        if (AddSectionLocation.NOT_BETWEEN != toBeAddedSection.getLocation()) {
             return;
         }
         sections.add(newlySection);
@@ -81,7 +82,7 @@ public class Sections {
 
     private void addNewlySectionIfBetween(Section newlySection, ToBeAddedSection toBeAddedSection) {
 
-        SectionLocation location = toBeAddedSection.getLocation();
+        AddSectionLocation location = toBeAddedSection.getLocation();
         if (!isBetweenLocation(location)) {
             return;
         }
@@ -94,15 +95,15 @@ public class Sections {
         updateSectionToNew(newlySection, toBeAddedSection.getIndex());
     }
 
-    private boolean isBetweenLocation(SectionLocation location) {
-        return SectionLocation.BETWEEN_FRONT == location || SectionLocation.BETWEEN_BACK == location;
+    private boolean isBetweenLocation(AddSectionLocation location) {
+        return AddSectionLocation.BETWEEN_FRONT == location || AddSectionLocation.BETWEEN_BACK == location;
     }
 
-    private Section betweenSection(Section newlySection, SectionLocation location, Section section, int newDistance) {
-        if (SectionLocation.BETWEEN_FRONT == location) {
+    private Section betweenSection(Section newlySection, AddSectionLocation location, Section section, int newDistance) {
+        if (AddSectionLocation.BETWEEN_FRONT == location) {
             return betweenUpSection(newlySection, section, newDistance);
         }
-        if (SectionLocation.BETWEEN_BACK == location) {
+        if (AddSectionLocation.BETWEEN_BACK == location) {
             return betweenDownSection(newlySection, section, newDistance);
         }
         return null;
@@ -190,17 +191,24 @@ public class Sections {
 
     public void delete(Station station) {
         validateDelete();
-
         Section firstSection = firstSection();
         Section lastSection = lastSection();
+        DeleteSectionLocation location = deleteSectionLocation(station, firstSection, lastSection);
+        delete(location, station, firstSection, lastSection);
+    }
 
-        if (deletableBetweenSection(station, firstSection, lastSection)) {
-            deleteBetweenSection(station);
+    private void delete(DeleteSectionLocation location, Station station, Section firstSection, Section lastSection) {
+        if (location == DeleteSectionLocation.FIRST) {
+            sections.remove(firstSection);
             return;
         }
 
-        deleteIfFirstSectionDeletable(firstSection, station);
-        deleteIfLastSectionDeletable(lastSection, station);
+        if (location == DeleteSectionLocation.LAST) {
+            sections.remove(lastSection);
+            return;
+        }
+
+        deleteBetweenSection(station);
     }
 
     private void validateDelete() {
@@ -214,24 +222,6 @@ public class Sections {
         return sections.size() == 1;
     }
 
-    private boolean deletableBetweenSection(Station station, Section firstSection, Section lastSection) {
-        return !firstSection.hasSameUpStation(station) && !lastSection.hasSameDownStation(station);
-    }
-
-    private void deleteIfFirstSectionDeletable(Section firstSection, Station station) {
-        if (!firstSection.hasSameUpStation(station)) {
-            return;
-        }
-        sections.remove(firstSection);
-    }
-
-    private void deleteIfLastSectionDeletable(Section lastSection, Station station) {
-        if (!lastSection.hasSameDownStation(station)) {
-            return;
-        }
-        sections.remove(lastSection);
-    }
-
     private Section lastSection() {
         Section section = sections.get(0);
         while (true) {
@@ -242,6 +232,27 @@ public class Sections {
             section = nextSection.get();
         }
         return section;
+    }
+
+    private DeleteSectionLocation deleteSectionLocation(Station station, Section firstSection, Section lastSection) {
+        if (!stationIsFirstOrLast(station, firstSection, lastSection)) {
+            return DeleteSectionLocation.BETWEEN;
+        }
+
+        if (firstSection.hasSameUpStation(station)) {
+            return DeleteSectionLocation.FIRST;
+        }
+
+        if (lastSection.hasSameDownStation(station)) {
+            return DeleteSectionLocation.LAST;
+        }
+
+        throw new IllegalStateException("역을 제거할 수 있는 구간의 위치를 찾을 수 없습니다.");
+    }
+
+
+    private boolean stationIsFirstOrLast(Station station, Section firstSection, Section lastSection) {
+        return firstSection.hasSameUpStation(station) || lastSection.hasSameDownStation(station);
     }
 
     private void deleteBetweenSection(Station station) {

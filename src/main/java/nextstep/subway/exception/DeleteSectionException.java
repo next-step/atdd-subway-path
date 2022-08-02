@@ -1,6 +1,6 @@
 package nextstep.subway.exception;
 
-public class DeleteSectionException extends RuntimeException {
+public class DeleteSectionException extends BadRequestException {
     public DeleteSectionException(String message) {
         super(message);
     }
