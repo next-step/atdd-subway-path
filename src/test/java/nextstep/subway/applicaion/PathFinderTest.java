@@ -31,6 +31,7 @@ class PathFinderTest {
     private Station 교대역;
     private Station 강남역;
     private Station 양재역;
+    private Station 양재시민의숲역;
     private Station 남부터미널역;
     private List<Section> sectionList;
 
@@ -43,15 +44,15 @@ class PathFinderTest {
         교대역 = createStation("교대역");
         강남역 = createStation("강남역");
         양재역 = createStation("양재역");
+        양재시민의숲역 = createStation("양재시민의숲역");
         남부터미널역 = createStation("남부터미널역");
 
         sectionList = new ArrayList<>();
         sectionList.add(new Section(이호선, 교대역, 강남역, 10));
         sectionList.add(new Section(신분당선, 강남역, 양재역, 10));
+        sectionList.add(new Section(신분당선, 양재역, 양재시민의숲역, 10));
         sectionList.add(new Section(삼호선, 교대역, 남부터미널역, 2));
         sectionList.add(new Section(삼호선, 남부터미널역, 양재역, 3));
-
-
     }
 
     @DisplayName("역간 최단경로 탐색")
@@ -64,6 +65,19 @@ class PathFinderTest {
         assertAll(
                 () -> assertThat(path.getDistance()).isEqualTo(5),
                 () -> assertThat(path.getStations()).containsExactly(교대역, 남부터미널역, 양재역)
+        );
+    }
+
+    @DisplayName("역간 최단경로 탐색 (환승구간 존재)")
+    @Test
+    void findShortestPathWithTransfer() {
+        var pathFinder = new PathFinder(sectionList);
+
+        var path = pathFinder.solve(교대역, 양재시민의숲역);
+
+        assertAll(
+                () -> assertThat(path.getDistance()).isEqualTo(15),
+                () -> assertThat(path.getStations()).containsExactly(교대역, 남부터미널역, 양재역, 양재시민의숲역)
         );
     }
 
