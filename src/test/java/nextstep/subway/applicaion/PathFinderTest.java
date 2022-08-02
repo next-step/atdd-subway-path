@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import nextstep.subway.applicaion.path.PathFinder;
 import nextstep.subway.applicaion.path.exception.IllegalSourceTargetException;
@@ -78,6 +79,22 @@ class PathFinderTest {
         assertAll(
                 () -> assertThat(path.getDistance()).isEqualTo(15),
                 () -> assertThat(path.getStations()).containsExactly(교대역, 남부터미널역, 양재역, 양재시민의숲역)
+        );
+    }
+
+    @DisplayName("출발역 <-> 도착역 교체시 최단경로 동일")
+    @Test
+    void reversedShortestPath() {
+        var pathFinder = new PathFinder(sectionList);
+
+        var forwardPath = pathFinder.solve(교대역, 양재시민의숲역);
+        var reversedPath = pathFinder.solve(양재시민의숲역, 교대역);
+
+        var reversedStations = new ArrayList<>(reversedPath.getStations());
+        Collections.reverse(reversedStations);
+        assertAll(
+                () -> assertThat(forwardPath.getDistance()).isEqualTo(reversedPath.getDistance()),
+                () -> assertThat(forwardPath.getStations()).containsExactlyElementsOf(reversedStations)
         );
     }
 
