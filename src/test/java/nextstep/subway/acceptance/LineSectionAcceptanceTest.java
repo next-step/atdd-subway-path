@@ -147,6 +147,82 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     }
 
+    @Nested
+    class 구간_제거 {
+
+        @Nested
+        class 성공 {
+            /**
+             * given 노선에 구간을 등록하고
+             * when 중간에 있는 역을 제거하면
+             * then 위치와 상관 없이 제거된다.
+             */
+            @DisplayName("중간에 있는 역을 삭제")
+            @Test
+            void 중간_역_삭제 () {
+
+            }
+
+            /**
+             * given 노선에 구간을 등록하고
+             * when 상행 종점을 제거하면
+             * then 제거된다.
+             */
+            @DisplayName("상행 종점 제거")
+            @Test
+            void 상행_종점_제거 () {
+
+            }
+
+            /**
+             * given 노선에 구간을 등록하고
+             * when 하행 종점을 제거하면
+             * then 제거된다.
+             */
+            @DisplayName("하행 종점 제거")
+            @Test
+            void 하행_종점_제거 () {
+
+            }
+        }
+
+        @Nested
+        class 실패 {
+            /**
+             * when 구간이 하나인 노선에서 역을 제거하면
+             * then 예외가 발생한다.
+             */
+            @DisplayName("구간이 하나인 노선의 역을 제거하면 예외 발생")
+            @Test
+            void 마지막_구간_제거_예외 () {
+
+            }
+
+            /**
+             * given 구간을 등록하고
+             * when 등록되어있지 않은 구간을 제거하면
+             * then 예외가 발생한다.
+             */
+            @DisplayName("등록되지 않은 구간을 제거하면 예외 발생")
+            @Test
+            void 미등록_구간_제거_예외 () {
+
+            }
+
+            /**
+             * given 구간을 등록하고
+             * when 존재하지 않은 역을 제거하면
+             * then 예외가 발생한다.
+             */
+            @DisplayName("존재하지 않은 역을 제거하면 예외 발생")
+            @Test
+            void 미등록_역_제거_예외 () {
+
+            }
+        }
+
+    }
+
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
