@@ -99,4 +99,8 @@ public class LineService {
         return lineRepository.findById(lineId)
                 .orElseThrow(IllegalArgumentException::new);
     }
+
+    public List<Line> findAll() {
+        return lineRepository.findAll();
+    }
 }

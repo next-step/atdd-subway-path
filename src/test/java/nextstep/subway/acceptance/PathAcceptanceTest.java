@@ -85,7 +85,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("이어지지 않은 경로를 조회")
     @Test
-    void InternalErrorFindPathIfNotConnectedStations() {
+    void InternalErrorFindRoutesIfNotConnectedRoute() {
 
         // given
         final Long 구로역 = 지하철역_생성_요청("구로역").jsonPath().getLong("id");
@@ -125,6 +125,5 @@ public class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 경로_조회_요청_응답 = 경로_조회_요청(교대역, 구로디지털단지역);
         assertThat(경로_조회_요청_응답.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
-
 }
 
