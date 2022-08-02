@@ -2,7 +2,6 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.line.domain.exception.CannotAddSectionException;
 import nextstep.subway.line.domain.exception.CannotDeleteSectionException;
-import nextstep.subway.line.domain.exception.CannotSubtractSectionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -57,28 +56,9 @@ class SectionsTest {
         assertThat(sections.getSections()).extracting("distance").contains(3, 4);
     }
 
-    @DisplayName("기존 구간 사이에 추가할 구간의 길이가 기존 구간의 길이보다 크거나 같을 수 없다.")
-    @Test
-    void 구간_추가_예외1() {
-        // given
-        int distance = 6;
-
-        Sections sections = new Sections();
-        sections.add(new Section(LINE, 1L, 3L, distance));
-
-        // when + then
-        assertThatThrownBy(() -> sections.add(new Section(LINE, 1L, 2L, distance)))
-                .isInstanceOf(CannotSubtractSectionException.class)
-                .hasMessage("빼려는 구간의 길이가 기존 구간의 길이보다 크거나 같을 수 없습니다.");
-
-        assertThatThrownBy(() -> sections.add(new Section(LINE, 2L, 3L, distance)))
-                .isInstanceOf(CannotSubtractSectionException.class)
-                .hasMessage("빼려는 구간의 길이가 기존 구간의 길이보다 크거나 같을 수 없습니다.");
-    }
-
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
     @Test
-    void 구간_추가_예외2() {
+    void 구간_추가_예외1() {
         // given
         Sections sections = new Sections();
         sections.add(new Section(LINE, 1L, 2L, 6));
@@ -91,7 +71,7 @@ class SectionsTest {
 
     @DisplayName("노선에 구간이 존재할 때 추가하려는 구간의 상행역과 하행역 둘 중 하나도 노선에 포함되어있지 않으면 추가할 수 없다.")
     @Test
-    void 구간_추가_예외3() {
+    void 구간_추가_예외2() {
         // given
         Sections sections = new Sections();
         sections.add(new Section(LINE, 1L, 2L, 6));
@@ -113,12 +93,19 @@ class SectionsTest {
         sections.add(new Section(LINE, 3L, 4L, 1));
         sections.add(new Section(LINE, 4L, 5L, 1));
 
-        sections.removeSection(1L); // (2 > 3 > 4 > 5)
-        sections.removeSection(5L); // (2 > 3 > 4)
+        // when
+        sections.removeSection(1L);
 
-        // then
+        // then (2 > 3 > 4 > 5)
+        assertThat(sections.getOrderedStationIds()).containsExactly(2L, 3L, 4L, 5L);
+        assertThat(sections.getSections()).extracting("distance").contains(1, 1, 1);
+
+        // when
+        sections.removeSection(5L);
+
+        // then (2 > 3 > 4)
         assertThat(sections.getOrderedStationIds()).containsExactly(2L, 3L, 4L);
-        assertThat(sections.getSections()).extracting("distance").contains(1, 1);
+        assertThat(sections.getSections()).extracting("distance").contains(1, 1, 1);
     }
 
     @DisplayName("지하철 노선에 구간이 둘 이상 있을 때 구간을 제거하면 구간이 재배치 되고 길이가 수정된다.")
@@ -132,13 +119,26 @@ class SectionsTest {
         sections.add(new Section(LINE, 3L, 4L, 1));
         sections.add(new Section(LINE, 4L, 5L, 1));
 
-        sections.removeSection(1L); // (2 > 3 > 4 > 5)
-        sections.removeSection(5L); // (2 > 3 > 4)
-        sections.removeSection(3L); // (2 >> 4)
+        // when
+        sections.removeSection(2L);
 
-        // then
-        assertThat(sections.getOrderedStationIds()).containsExactly(2L, 4L);
-        assertThat(sections.getSections()).extracting("distance").contains(2);
+        // then (1 >> 3 > 4 > 5)
+        assertThat(sections.getOrderedStationIds()).containsExactly(1L, 3L, 4L, 5L);
+        assertThat(sections.getSections()).extracting("distance").contains(2, 1, 1);
+
+        // when
+        sections.removeSection(4L);
+
+        // then (1 >> 3 >> 5)
+        assertThat(sections.getOrderedStationIds()).containsExactly(1L, 3L, 5L);
+        assertThat(sections.getSections()).extracting("distance").contains(2, 2);
+
+        // when
+        sections.removeSection(3L);
+
+        // then (1 >>>> 5)
+        assertThat(sections.getOrderedStationIds()).containsExactly(1L, 5L);
+        assertThat(sections.getSections()).extracting("distance").contains(4);
     }
 
     @DisplayName("지하철 노선에서 구간이 하나면 제거할 수 없다")

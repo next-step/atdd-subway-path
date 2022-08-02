@@ -11,6 +11,7 @@ import nextstep.subway.station.domain.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +37,7 @@ public class StationService {
     public List<StationResponse> findByIds(List<Long> ids) {
         return stationRepository.findByIdIn(ids).stream()
                 .map(this::createStationResponse)
+                .sorted(Comparator.comparing(it -> ids.indexOf(it.getId())))
                 .collect(Collectors.toList());
     }
 

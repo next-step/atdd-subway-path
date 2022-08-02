@@ -48,6 +48,24 @@ class SectionServiceMockTest {
         assertThat(line.isEmpty()).isFalse();
     }
 
+    @Test
+    void 구간_제거() {
+        // given
+        Long lineId = 1L;
+
+        Line line = new Line("신분당선", "red");
+        line.addSection(1L, 2L, 6);
+        line.addSection(2L, 3L, 6);
+
+        when(lineRepository.findById(lineId)).thenReturn(Optional.of(line));
+
+        // when
+        sectionService.deleteSection(lineId, 2L);
+
+        // then
+        assertThat(line.getOrderedStationIds()).containsExactly(1L, 3L);
+    }
+
     @DisplayName("지하철 노선에서 구간이 하나면 제거할 수 없다")
     @Test
     void 구간_제거_예외1() {

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.stream.Stream;
 
@@ -40,7 +41,7 @@ class SectionTest {
     @DisplayName("상행역, 하행역중 하나도 겹치지 않는 구간끼리는 뺄 수 없다.")
     @ParameterizedTest
     @MethodSource("provideArgumentsForSubTract_Exception")
-    void subtract_Exception(Section longSection, Section shortSection) {
+    void subtract_Exception1(Section longSection, Section shortSection) {
         assertThatThrownBy(() -> longSection.subtract(shortSection))
                 .isInstanceOf(CannotSubtractSectionException.class)
                 .hasMessage("상행역이나 하행역이 겹치는 구간끼리만 뺄 수 있습니다.");
@@ -52,6 +53,18 @@ class SectionTest {
                         new Section(LINE, 2L, 3L, 3)),
                 Arguments.of(new Section(LINE, 1L, 2L, 5),
                         new Section(LINE, 3L, 4L, 2)));
+    }
+
+    @DisplayName("빼려는 구간의 길이가 기존 구간의 길이보다 크거나 같을 수 없다.")
+    @ParameterizedTest
+    @ValueSource(ints = {3, 4})
+    void subtract_Exception2(int subtractingDistance) {
+        Section subtractedSection = new Section(LINE, 1L, 2L, 3);
+        Section subtractingSection = new Section(LINE, 1L, 3L, subtractingDistance);
+
+        assertThatThrownBy(() -> subtractedSection.subtract(subtractingSection))
+                .isInstanceOf(CannotSubtractSectionException.class)
+                .hasMessage("빼려는 구간의 길이가 기존 구간의 길이보다 크거나 같을 수 없습니다.");
     }
 
     @DisplayName("두 구간을 합칠 수 있다.")
@@ -75,7 +88,7 @@ class SectionTest {
 
         assertThatThrownBy(() -> section.combine(anotherSection))
                 .isInstanceOf(CannotCombineSectionException.class)
-                .hasMessage("하행역과 상행역이 이어져 있는 구간끼리만 합칠 수 있습니다.");
+                .hasMessage("현재 구간의 하행역이 합치려는 구간의 상행역과 이어져있지 않습니다.");
     }
 
     @DisplayName("두 구간의 상행역이나 하행역중 하나가 똑같은지 알 수 있다.")
