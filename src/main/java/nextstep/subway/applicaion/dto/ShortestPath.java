@@ -8,7 +8,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @Getter
-public class ShortestPathResult {
+public class ShortestPath {
     private final int distance;
     private final List<Station> stations;
 }

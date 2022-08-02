@@ -13,11 +13,11 @@ public class PathResponse {
     private final int distance;
     private final List<StationResponse> stations;
 
-    public static PathResponse of(ShortestPathResult path) {
+    public static PathResponse of(ShortestPath path) {
         return new PathResponse(path.getDistance(), createStationResponses(path));
     }
 
-    private static List<StationResponse> createStationResponses(ShortestPathResult path) {
+    private static List<StationResponse> createStationResponses(ShortestPath path) {
         return path.getStations().stream()
                    .map(StationResponse::of)
                    .collect(Collectors.toList());

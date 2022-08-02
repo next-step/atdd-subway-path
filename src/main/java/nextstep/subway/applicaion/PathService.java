@@ -2,7 +2,7 @@ package nextstep.subway.applicaion;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.applicaion.dto.PathResponse;
-import nextstep.subway.applicaion.dto.ShortestPathResult;
+import nextstep.subway.applicaion.dto.ShortestPath;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.PathFinder;
@@ -26,7 +26,7 @@ public class PathService {
         Station targetStation = findStation(target);
         List<Line> lines = lineRepository.findAll();
 
-        ShortestPathResult shortestPath = pathFinder.calShortestPath(lines, sourceStation, targetStation);
+        ShortestPath shortestPath = pathFinder.calShortestPath(lines, sourceStation, targetStation);
         return PathResponse.of(shortestPath);
     }
 

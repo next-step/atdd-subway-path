@@ -2,7 +2,7 @@ package nextstep.subway.unit.application;
 
 import nextstep.subway.applicaion.PathService;
 import nextstep.subway.applicaion.dto.PathResponse;
-import nextstep.subway.applicaion.dto.ShortestPathResult;
+import nextstep.subway.applicaion.dto.ShortestPath;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -74,11 +74,11 @@ class PathServiceMockTest {
     @Test
     void 최소경로_조회() {
         // given
-        final ShortestPathResult shortestPathResult = new ShortestPathResult(5, List.of(교대역, 남부터미널역, 양재역));
+        final ShortestPath shortestPath = new ShortestPath(5, List.of(교대역, 남부터미널역, 양재역));
         given(stationRepository.findById(교대역.getId())).willReturn(Optional.ofNullable(교대역));
         given(stationRepository.findById(양재역.getId())).willReturn(Optional.ofNullable(양재역));
         given(lineRepository.findAll()).willReturn(List.of(이호선, 신분당선, 삼호선));
-        given(pathFinder.calShortestPath(lines, 교대역, 양재역)).willReturn(shortestPathResult);
+        given(pathFinder.calShortestPath(lines, 교대역, 양재역)).willReturn(shortestPath);
 
         // when
         PathResponse response = pathService.getShortestPath(교대역.getId(), 양재역.getId());

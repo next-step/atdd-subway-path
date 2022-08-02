@@ -1,12 +1,9 @@
 package nextstep.subway.unit.domain;
 
 
-import nextstep.subway.applicaion.dto.PathResponse;
-import nextstep.subway.applicaion.dto.ShortestPathResult;
-import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.applicaion.dto.ShortestPath;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.PathFinder;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.CustomException;
 import nextstep.subway.exception.code.CommonCode;
@@ -66,7 +63,7 @@ class PathFinderTest {
     @Test
     void 최소경로_조회() {
         // when
-        ShortestPathResult shortestPath = pathFinder.calShortestPath(lines, 교대역, 양재역);
+        ShortestPath shortestPath = pathFinder.calShortestPath(lines, 교대역, 양재역);
 
         // then
         최소경로_순서_고려하여_검증(shortestPath, "교대역", "남부터미널역", "양재역");
@@ -107,13 +104,13 @@ class PathFinderTest {
         assertThat(exception.getResponseCode()).isEqualTo(responseCode);
     }
 
-    private List<String> getStationNames(final ShortestPathResult shortestPath) {
+    private List<String> getStationNames(final ShortestPath shortestPath) {
         return shortestPath.getStations().stream()
                            .map(Station::getName)
                            .collect(Collectors.toList());
     }
 
-    private void 최소경로_순서_고려하여_검증(final ShortestPathResult shortestPath, String... path) {
+    private void 최소경로_순서_고려하여_검증(final ShortestPath shortestPath, String... path) {
         List<String> stationNames = getStationNames(shortestPath);
         assertThat(stationNames.size()).isEqualTo(path.length);
         assertThat(stationNames).containsExactly(path);

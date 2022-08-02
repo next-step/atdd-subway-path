@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.applicaion.dto.ShortestPathResult;
+import nextstep.subway.applicaion.dto.ShortestPath;
 import nextstep.subway.exception.CustomException;
 import nextstep.subway.exception.code.CommonCode;
 import nextstep.subway.exception.code.PathCode;
@@ -14,12 +14,12 @@ import java.util.List;
 
 @Component
 public class PathFinder {
-    public ShortestPathResult calShortestPath(final List<Line> lines, final Station source, final Station target) {
+    public ShortestPath calShortestPath(final List<Line> lines, final Station source, final Station target) {
         checkSameStation(source, target);
 
         GraphPath<Station, DefaultWeightedEdge> shortestPath = createShortestPath(source, target, lines);
 
-        return new ShortestPathResult((int) shortestPath.getWeight(), shortestPath.getVertexList());
+        return new ShortestPath((int) shortestPath.getWeight(), shortestPath.getVertexList());
     }
 
     private void checkSameStation(final Station source, final Station target) {
