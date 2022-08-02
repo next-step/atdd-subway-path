@@ -99,7 +99,32 @@ public class Sections {
 
     public void remove(Station station) {
         validateRemove(station);
-        sections.remove(station);
+        removeSection(station);
+    }
+
+    public void removeSection(Station station) {
+        Section upSection = getUpSection(station);
+        Section downSection = getDownSection(station);
+        int newDistance = upSection.getDistance() + downSection.getDistance();
+
+        sections.add(new Section(upSection.getLine(), upSection.getUpStation(), downSection.getDownStation(), newDistance));
+
+        sections.remove(upSection);
+        sections.remove(downSection);
+    }
+
+    private Section getDownSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst()
+                .get();
+    }
+
+    private Section getUpSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findFirst()
+                .get();
     }
 
     private void validateRemove(Station station) {
