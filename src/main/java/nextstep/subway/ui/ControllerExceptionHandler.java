@@ -18,4 +18,9 @@ public class ControllerExceptionHandler {
     public ResponseEntity<Void> handleBadRequest(IllegalArgumentException e) {
         return ResponseEntity.badRequest().build();
     }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Void> handleBadRequest(IllegalStateException e) {
+        return ResponseEntity.badRequest().build();
+    }
 }

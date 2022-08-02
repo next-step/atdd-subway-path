@@ -103,9 +103,17 @@ public class Sections {
     }
 
     private void validateRemove(Station station) {
+        if (isLastSection()) {
+            throw new IllegalStateException("마지막 구간은 삭제할 수 없습니다.");
+        }
+
         if (notContainsStation(station)) {
             throw new IllegalArgumentException("등록되어있지 않은 구간입니다.");
         }
+    }
+
+    private boolean isLastSection() {
+        return getSections().size() == 1;
     }
 
     private boolean notContainsStation(Station station) {

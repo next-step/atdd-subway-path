@@ -195,7 +195,11 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             @DisplayName("구간이 하나인 노선의 역을 제거하면 예외 발생")
             @Test
             void 마지막_구간_제거_예외 () {
+                // when
+                ExtractableResponse<Response> 구간_제거 = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
 
+                // then
+                assertThat(구간_제거.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
             }
 
             /**
