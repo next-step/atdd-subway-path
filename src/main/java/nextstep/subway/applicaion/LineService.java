@@ -103,11 +103,11 @@ public class LineService {
     }
 
     @Transactional
-    public void deleteSection(Long lineId, Long stationId) {
+    public LineResponse deleteSection(Long lineId, Long stationId) {
         Line line = findLine(lineId);
         Station station = stationService.findById(stationId);
 
-        line.validateRemoveSection(station);
-        line.removeSection(line.getLastSection());
+        line.removeSection(station);
+        return createLineResponse(line);
     }
 }

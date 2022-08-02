@@ -199,7 +199,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             }
 
             /**
-             * given 구간을 등록하고
              * when 등록되어있지 않은 구간을 제거하면
              * then 예외가 발생한다.
              */
@@ -210,14 +209,20 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             }
 
             /**
-             * given 구간을 등록하고
              * when 존재하지 않은 역을 제거하면
              * then 예외가 발생한다.
              */
             @DisplayName("존재하지 않은 역을 제거하면 예외 발생")
             @Test
             void 미등록_역_제거_예외 () {
+                // given
+                Long 판교역 = 123L;
 
+                // when
+                ExtractableResponse<Response> 구간_생성 = 지하철_노선에_지하철_구간_제거_요청(신분당선, 판교역);
+
+                // then
+                assertThat(구간_생성.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
             }
         }
 

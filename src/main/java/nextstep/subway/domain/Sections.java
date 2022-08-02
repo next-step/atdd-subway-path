@@ -97,7 +97,7 @@ public class Sections {
         return getStations().contains(section.getUpStation()) && getStations().contains(section.getDownStation());
     }
 
-    public void remove(Section section) {
-        sections.remove(section);
+    public void remove(Station station) {
+        sections.remove(station);
     }
 }

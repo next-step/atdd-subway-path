@@ -45,13 +45,7 @@ public class Line {
         return sections.getStations();
     }
 
-    public void removeSection(Section section) {
-        this.sections.remove(section);
-    }
-
-    public void validateRemoveSection(Station station) {
-        if (!getLastSection().getDownStation().equals(station)) {
-            throw new IllegalArgumentException("마지막 구간만 삭제할 수 있습니다.");
-        }
+    public void removeSection(Station station) {
+        this.sections.remove(station);
     }
 }
