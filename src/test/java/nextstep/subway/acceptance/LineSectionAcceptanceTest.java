@@ -179,7 +179,15 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             @DisplayName("상행 종점 제거")
             @Test
             void 상행_종점_제거 () {
+                // given
+                지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 삼성역));
 
+                // when
+                ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+                // then
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(양재역, 삼성역);
             }
 
             /**
@@ -190,7 +198,15 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             @DisplayName("하행 종점 제거")
             @Test
             void 하행_종점_제거 () {
+                // given
+                지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 삼성역));
 
+                // when
+                ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 삼성역);
+
+                // then
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
             }
         }
 

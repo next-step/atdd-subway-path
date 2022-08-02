@@ -103,14 +103,20 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
-        Section upSection = getUpSection(station);
-        Section downSection = getDownSection(station);
-        int newDistance = upSection.getDistance() + downSection.getDistance();
+        if (getUpTerminal().equals(station)) {
+            sections.remove(getDownSection(station));
+        } else if (getDownTerminal().equals(station)) {
+            sections.remove(getUpSection(station));
+        } else {
+            Section upSection = getUpSection(station);
+            Section downSection = getDownSection(station);
+            int newDistance = upSection.getDistance() + downSection.getDistance();
 
-        sections.add(new Section(upSection.getLine(), upSection.getUpStation(), downSection.getDownStation(), newDistance));
+            sections.add(new Section(upSection.getLine(), upSection.getUpStation(), downSection.getDownStation(), newDistance));
 
-        sections.remove(upSection);
-        sections.remove(downSection);
+            sections.remove(upSection);
+            sections.remove(downSection);
+        }
     }
 
     private Section getDownSection(Station station) {
