@@ -160,7 +160,7 @@ class LineSectionTest {
         addSection(line,station2,station3,10);
 
         //when
-        line.getLineSection().remove(station1.getName());
+        line.getLineSection().remove(station1.getId());
 
         //then
         List<Station> stations = line.getLineSection().getStations();
@@ -183,7 +183,7 @@ class LineSectionTest {
         addSection(line,station2,station3,10);
 
         //when
-        line.getLineSection().remove(station3.getName());
+        line.getLineSection().remove(station3.getId());
 
         //then
         List<Station> stations = line.getLineSection().getStations();
@@ -206,7 +206,7 @@ class LineSectionTest {
         addSection(line,station2,station3,10);
 
         //when
-        line.getLineSection().remove(station2.getName());
+        line.getLineSection().remove(station2.getId());
 
         //then
         List<Station> stations = line.getLineSection().getStations();
