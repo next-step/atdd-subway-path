@@ -62,7 +62,6 @@ class LineServiceMockTest {
                     line.setId(lineId);
                     return line;
                 });
-        when(stationService.createStationResponse(any(Station.class))).thenCallRealMethod();
 
         var distance = 10;
         var lineRequest = new LineRequest("신분당선", "red", 광교역.getId(), 광교중앙역.getId(), distance);
@@ -93,7 +92,6 @@ class LineServiceMockTest {
         // given
         var line = createLine(1L, "신분당선", "red", 광교역, 광교중앙역, 10);
         when(lineRepository.findAll()).thenReturn(List.of(line));
-        when(stationService.createStationResponse(any(Station.class))).thenCallRealMethod();
 
         // when
         var lineResponses = sut.showLines();
@@ -120,7 +118,6 @@ class LineServiceMockTest {
         var line = createLine(1L, "신분당선", "red", 광교역, 광교중앙역, 10);
         when(lineRepository.findById(line.getId()))
                 .thenReturn(Optional.of(line));
-        when(stationService.createStationResponse(any(Station.class))).thenCallRealMethod();
 
         // when
         var lineResponse = sut.findById(line.getId());
