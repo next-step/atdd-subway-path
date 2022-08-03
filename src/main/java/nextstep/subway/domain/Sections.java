@@ -3,14 +3,10 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import static java.util.stream.Collectors.toList;
 
 @Embeddable
 public class Sections {
@@ -27,7 +23,7 @@ public class Sections {
         while(findSection != null) {
             firstSection = findSection;
             findSection = matchSection(firstSection, filter);
-            if(firstSection == findSection) {
+            if(firstSection.equals(findSection)) {
                 break;
             }
         }
@@ -42,7 +38,6 @@ public class Sections {
         }
         return null;
     }
-
     public boolean addSectionToMiddleSection(Line line, Station upStation, Station downStation, int distance, Predicate<Section> filter) {
         for(Section section : this.sections)
         {
@@ -83,6 +78,7 @@ public class Sections {
 
     public boolean addSection(Line line, Station upStation, Station downStation, int distance) {
 
+        // 구간 사이에 들어갈 케이스
         validateEqualsSection(new Section(line, upStation, downStation, distance));
 
         if(addSectionToMiddleSectionMatchUpStation(line, upStation, downStation, distance) ||
@@ -104,6 +100,12 @@ public class Sections {
         }
     }
 
+    private void throwsExceptionSectionCountOne() {
+        if(this.sections.size() == 1) {
+            throw new IllegalStateException();
+        }
+    }
+
     private boolean addSectionToTopSection(Line line, Station upStation, Station downStation, int distance) {
         final Section topSection = findTopSection();
         if(topSection.upStationMatchFromDownStation(downStation)) {
@@ -121,20 +123,42 @@ public class Sections {
     }
 
     public boolean removeSection(Station station) {
-        if (!this.sections.get(this.sections.size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
+
+        throwsExceptionSectionCountOne();
+
+        //상행 구간 제거
+        Section topSection = findTopSection();
+        if(topSection.upStationMatchFromStation(station)) {
+            return this.sections.remove(topSection);
         }
-        return this.sections.remove(this.sections.get(this.sections.size() - 1));
+
+        //하행 구간 제거
+        Section downSection = findDownSection();
+        if(downSection.downStationMatchFromStation(station)) {
+            return this.sections.remove(downSection);
+        }
+
+        //중간 구간 제거
+        Section nextSection = topSection;
+        while(nextSection != null) {
+            Section prevSection = nextSection;
+            nextSection = findNextSection(prevSection.getDownStation());
+            if(prevSection.downStationMatchFromStation(station)) {
+                //두 구간을 제거 후 합친 구간을 추가
+                Section combineSection = prevSection.combine(nextSection);
+                this.sections.removeAll(Arrays.asList(prevSection, nextSection));
+                return this.sections.add(combineSection);
+            }
+        }
+
+        throw new IllegalStateException();
     }
 
     public Section findNextSection(Station station) {
-        for(Section section : this.sections)
-        {
-            if(section.upStationMatchFromDownStation(station)) {
-                return section;
-            }
-        }
-        return null;
+        return this.sections.stream()
+                .filter(s -> s.upStationMatchFromDownStation(station))
+                .findFirst()
+                .orElse(null);
     }
 
     public List<Station> stations() {

@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -52,7 +53,7 @@ public class LineServiceMockTest {
         lineService = new LineService(lineRepository, stationService);
     }
 
-    @DisplayName("지하철 노선의 구간 사이에 구간 등록하기")
+    @DisplayName("지하철 노선의 기존 구간 사이에 새로운 구간 등록")
     @Test
     void addSection() {
 
@@ -78,7 +79,7 @@ public class LineServiceMockTest {
         assertThat(반환된_신분당선.sectionSize()).isEqualTo(2);
     }
 
-    @DisplayName("지하철 노선 사이에 구간 등록 시 기존 구간의 거리보다 클 경우")
+    @DisplayName("지하철 노선의 기존 구간 사이에 새롭게 등록할 구간의 거리가 클 경우")
     @Test
     void throwsExceptionIfAddSectionExistSectionGreatorThanSectionDistance() {
 
@@ -99,7 +100,7 @@ public class LineServiceMockTest {
                 .isInstanceOf(IllegalStateException.class);
     }
 
-    @DisplayName("지하철 노선 사이에 구간 등록 시 기존 구간의 거리와 동일할 경우")
+    @DisplayName("지하철 노선의 기존 구간 사이에 새롭게 등록될 구간의 거리가 동일할 경우")
     @Test
     void throwsExceptionIfAddSectionExistSectionEqualsThanSectionDistance() {
 
@@ -120,7 +121,7 @@ public class LineServiceMockTest {
         assertThatThrownBy(() -> lineService.addSection(신분당선.getId(), 구간_생성_요청));
     }
 
-    @DisplayName("지하철 노선 사이에 구간 등록 시 구간의 거리가 0 혹은 음수일경우")
+    @DisplayName("지하철 노선의 기존 구간 사이에 새롭게 등록될 구간의 거리가 0 혹은 음수일경우")
     @Test
     void throwsExceptionIfAddSectionDistanceZeroOrNegative() {
 
@@ -143,7 +144,7 @@ public class LineServiceMockTest {
 
     }
 
-    @DisplayName("지하철 노선의 구간과 등록할 구간이 같을경우")
+    @DisplayName("지하철 노선에 새롭게 등록하려는 구간이 존재할 경우")
     @Test
     void throwsExceptionIfEqualsAddSection() {
 
@@ -163,31 +164,7 @@ public class LineServiceMockTest {
         assertThatThrownBy(() -> lineService.addSection(신분당선.getId(), 구간_생성_요청));
     }
 
-    @DisplayName("지하철 노선의 Top Section에 구간을 등록할 경우")
-    @Test
-    void addSectionToTopSection() {
-
-        // given
-        final Station 강남역 = 지하철역_생성("강남역", 1L);
-        final Station 시청역 = 지하철역_생성("시청역", 2L);
-        final Station 구로디지털단지역 = 지하철역_생성("구로디지털단지역", 3L);
-
-        final Line 신분당선 = 노선_생성("신분당선", "green", 강남역, 시청역, 10, 1L);
-        final SectionRequest 구간_생성_요청 = LineTestFixtures.구간요청_생성(구로디지털단지역.getId(), 강남역.getId(), 5);
-
-        when(stationService.findById(3L)).thenReturn(구로디지털단지역);
-        when(stationService.findById(1L)).thenReturn(강남역);
-        when(lineRepository.findById(anyLong())).thenReturn(Optional.ofNullable(신분당선));
-
-        // when
-        boolean isAdded = lineService.addSection(신분당선.getId(), 구간_생성_요청);
-
-        // then
-        assertThat(isAdded).isTrue();
-        assertThat(신분당선.stations()).containsExactly(구로디지털단지역, 강남역, 시청역);
-    }
-
-    @DisplayName("지하철 노선의 Down Section에 구간을 등록할 경우")
+    @DisplayName("지하철 노선의 Down Section에 구간을 등록")
     @Test
     void addSectionToDownSection() {
 
@@ -211,7 +188,31 @@ public class LineServiceMockTest {
         assertThat(신분당선.stations()).containsExactly(강남역, 시청역, 선릉역);
     }
 
-    @DisplayName("지하철 노선의 구간 중 일치하지 않은 상행, 하행을 가진 구간을 등록할 경우")
+    @DisplayName("지하철 노선의 Top Section에 구간을 등록")
+    @Test
+    void addSectionToTopSection() {
+
+        // given
+        final Station 강남역 = 지하철역_생성("강남역", 1L);
+        final Station 시청역 = 지하철역_생성("시청역", 2L);
+        final Station 구로디지털단지역 = 지하철역_생성("구로디지털단지역", 3L);
+
+        final Line 신분당선 = 노선_생성("신분당선", "green", 강남역, 시청역, 10, 1L);
+        final SectionRequest 구간_생성_요청 = LineTestFixtures.구간요청_생성(구로디지털단지역.getId(), 강남역.getId(), 5);
+
+        when(stationService.findById(3L)).thenReturn(구로디지털단지역);
+        when(stationService.findById(1L)).thenReturn(강남역);
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.ofNullable(신분당선));
+
+        // when
+        boolean isAdded = lineService.addSection(신분당선.getId(), 구간_생성_요청);
+
+        // then
+        assertThat(isAdded).isTrue();
+        assertThat(신분당선.stations()).containsExactly(구로디지털단지역, 강남역, 시청역);
+    }
+
+    @DisplayName("지하철 노선 구간에 일치하지 않은 상행, 하행을 가진 구간을 등록")
     @Test
     void throwsExceptionIfNotHasStations() {
 
@@ -271,9 +272,32 @@ public class LineServiceMockTest {
 //                .collect(toList())).containsExactly(구로디지털단지역.getName(), 강남역.getName(), 시청역.getName(), 선릉역.getName());
 //    }
 
-    @DisplayName("구간 제거하기")
+    @DisplayName("지하철 노선의 상행 구간 제거")
     @Test
-    void removeSection() {
+    void removeSectionToTopSection() {
+
+        // given
+        final Station 강남역 = 지하철역_생성("강남역", 1L);
+        final Station 시청역 = 지하철역_생성("시청역", 2L);
+        final Station 구로디지털단지역 = 지하철역_생성("구로디지털단지역", 3L);
+
+        final Line 신분당선 = 노선_생성("신분당선", "green", 강남역, 시청역, 10, 1L);
+        신분당선.addSection(구로디지털단지역, 강남역, 5);
+
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.ofNullable(신분당선));
+        when(stationService.findById(구로디지털단지역.getId())).thenReturn(구로디지털단지역);
+
+        // when
+        boolean isRemoved = lineService.removeSection(신분당선.getId(), 구로디지털단지역.getId());
+
+        // then
+        assertThat(isRemoved).isTrue();
+        assertThat(신분당선.stations()).containsExactly(강남역, 시청역);
+    }
+
+    @DisplayName("지하철 노선의 하행 구간 제거")
+    @Test
+    void removeSectionToDownSection() {
 
         // given
         final Station 강남역 = 지하철역_생성("강남역", 1L);
@@ -292,12 +316,80 @@ public class LineServiceMockTest {
         lineService.addSection(신분당선.getId(), 두번째_구간_요청);
 
         when(lineRepository.findById(anyLong())).thenReturn(Optional.ofNullable(신분당선));
-        when(stationService.findById(anyLong())).thenReturn(구로디지털단지역);
+        when(stationService.findById(구로디지털단지역.getId())).thenReturn(구로디지털단지역);
 
         //when
-        lineService.removeSection(신분당선.getId(), 구로디지털단지역.getId());
+        boolean isRemoved = lineService.removeSection(신분당선.getId(), 구로디지털단지역.getId());
 
         //then
+        assertThat(isRemoved).isTrue();
+        assertThat(신분당선.stations()).containsExactly(강남역, 시청역);
         assertThat(신분당선.sectionSize()).isEqualTo(1);
     }
+
+    @DisplayName("지하철 노선의 중간 구간 제거")
+    @Test
+    void removeSectionToMiddleSection() {
+
+        // given
+        final Station 강남역 = 지하철역_생성("강남역", 1L);
+        final Station 시청역 = 지하철역_생성("시청역", 2L);
+        final Station 구로디지털단지역 = 지하철역_생성("구로디지털단지역", 3L);
+
+        final Line 신분당선 = 노선_생성("신분당선", "green", 강남역, 시청역, 10, 1L);
+        신분당선.addSection(강남역, 구로디지털단지역, 5);
+
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.ofNullable(신분당선));
+        when(stationService.findById(구로디지털단지역.getId())).thenReturn(구로디지털단지역);
+
+        // when
+        boolean isRemoved = lineService.removeSection(신분당선.getId(), 구로디지털단지역.getId());
+
+        // then
+        assertThat(isRemoved).isTrue();
+        assertThat(신분당선.stations()).containsExactly(강남역, 시청역);
+    }
+
+    @DisplayName("지하철 노선의 구간이 1개일 때 제거 오류")
+    @Test
+    void throwsExceptionRemoveSectionIfSectionCountOne() {
+
+        // given
+        final Station 강남역 = 지하철역_생성("강남역", 1L);
+        final Station 시청역 = 지하철역_생성("시청역", 2L);
+
+        final Line 신분당선 = 노선_생성("신분당선", "green", 강남역, 시청역, 10, 1L);
+
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.ofNullable(신분당선));
+        when(stationService.findById(강남역.getId())).thenReturn(강남역);
+
+        // then
+        assertThatThrownBy(() -> lineService.removeSection(신분당선.getId(), 강남역.getId()))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @DisplayName("제거하려는 구간이 지하철 노선에 존재하지 않을경우 오류")
+    @Test
+    void throwsExceptionRemoveSectionIfHasNotSection() {
+
+        // given
+        final Station 강남역 = 지하철역_생성("강남역", 1L);
+        final Station 시청역 = 지하철역_생성("시청역", 2L);
+        final Station 구로디지털단지역 = 지하철역_생성("구로디지털단지역", 3L);
+        final Station 선릉역 = 지하철역_생성("선릉역", 4L);
+
+        final Line 신분당선 = 노선_생성("신분당선", "green", 강남역, 시청역, 10, 1L);
+
+        신분당선.addSection(강남역, 구로디지털단지역, 4);
+
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.ofNullable(신분당선));
+        when(stationService.findById(선릉역.getId())).thenReturn(선릉역);
+
+        // then
+        assertThatThrownBy(() -> lineService.removeSection(신분당선.getId(), 선릉역.getId()))
+                .isInstanceOf(IllegalStateException.class);
+
+    }
+
 }
+
