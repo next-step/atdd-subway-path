@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
+import static nextstep.subway.acceptance.PathSteps.최단_경로_조회_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 경로 조회 기능")
@@ -55,13 +56,6 @@ public class PathAcceptanceTest extends AcceptanceTest {
         // when & // then
         var 존재하지않는_도착역 = 최단_경로_조회_요청(pathAcceptanceFixture.신논현역, pathAcceptanceFixture.신논현역 + 1);
         assertThat(존재하지않는_도착역.statusCode()).isEqualTo(500);
-    }
-
-    private ExtractableResponse<Response> 최단_경로_조회_요청(Long source, Long target) {
-        return RestAssured
-                .given().log().all()
-                .when().get(String.format("/paths?source=%d&target=%d", source, target))
-                .then().log().all().extract();
     }
 
 }
