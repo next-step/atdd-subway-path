@@ -117,6 +117,16 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("상하행역 모두 존재하지 않는 경우 등록 실패")
     @Test
     void failToAddSectionIfNoStationsExists() {
+        // given
+        Long 신규_추가역1 = 지하철역_생성_요청("신규_추가역1").jsonPath().getLong("id");
+        Long 신규_추가역2 = 지하철역_생성_요청("신규_추가역2").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신규_추가역1, 신규_추가역2));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("신규 구간의 역과 일치하는 역이 존재하지 않습니다.");
     }
 
     /**
