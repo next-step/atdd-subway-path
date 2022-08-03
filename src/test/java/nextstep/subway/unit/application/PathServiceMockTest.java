@@ -2,11 +2,10 @@ package nextstep.subway.unit.application;
 
 import nextstep.subway.applicaion.PathService;
 import nextstep.subway.applicaion.dto.PathResponse;
-import nextstep.subway.applicaion.dto.ShortestPath;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.PathFinder;
+import nextstep.subway.domain.SubwayMap;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,8 +29,6 @@ class PathServiceMockTest {
     private LineRepository lineRepository;
     @Mock
     private StationRepository stationRepository;
-    @Mock
-    private PathFinder pathFinder;
     @InjectMocks
     private PathService pathService;
 
@@ -43,6 +40,7 @@ class PathServiceMockTest {
     private Line 신분당선;
     private Line 삼호선;
     private List<Line> lines;
+    private SubwayMap subwayMap;
 
     /**
      * 교대역    --- *2호선* ---   강남역
@@ -69,16 +67,16 @@ class PathServiceMockTest {
 
         lines = new ArrayList<>();
         lines.addAll(List.of(이호선, 신분당선, 삼호선));
+
+        subwayMap = new SubwayMap(lines);
     }
 
     @Test
     void 최소경로_조회() {
         // given
-        final ShortestPath shortestPath = new ShortestPath(5, List.of(교대역, 남부터미널역, 양재역));
         given(stationRepository.findById(교대역.getId())).willReturn(Optional.ofNullable(교대역));
         given(stationRepository.findById(양재역.getId())).willReturn(Optional.ofNullable(양재역));
         given(lineRepository.findAll()).willReturn(List.of(이호선, 신분당선, 삼호선));
-        given(pathFinder.calShortestPath(lines, 교대역, 양재역)).willReturn(shortestPath);
 
         // when
         PathResponse response = pathService.getShortestPath(교대역.getId(), 양재역.getId());

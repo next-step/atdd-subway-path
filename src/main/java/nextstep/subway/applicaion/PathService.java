@@ -5,9 +5,9 @@ import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.ShortestPath;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.SubwayMap;
 import nextstep.subway.exception.CustomException;
 import nextstep.subway.exception.code.StationCode;
 import org.springframework.stereotype.Service;
@@ -19,14 +19,14 @@ import java.util.List;
 public class PathService {
     private final StationRepository stationRepository;
     private final LineRepository lineRepository;
-    private final PathFinder pathFinder;
 
     public PathResponse getShortestPath(final Long source, final Long target) {
         Station sourceStation = findStation(source);
         Station targetStation = findStation(target);
         List<Line> lines = lineRepository.findAll();
 
-        ShortestPath shortestPath = pathFinder.calShortestPath(lines, sourceStation, targetStation);
+        SubwayMap subwayMap = new SubwayMap(lines);
+        ShortestPath shortestPath = subwayMap.getShortestPath(sourceStation, targetStation);
         return PathResponse.of(shortestPath);
     }
 

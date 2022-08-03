@@ -3,7 +3,7 @@ package nextstep.subway.unit.domain;
 
 import nextstep.subway.applicaion.dto.ShortestPath;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.PathFinder;
+import nextstep.subway.domain.SubwayMap;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.CustomException;
 import nextstep.subway.exception.code.CommonCode;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class PathFinderTest {
+class SubwayMapTest {
 
     private Station 교대역;
     private Station 강남역;
@@ -29,7 +29,7 @@ class PathFinderTest {
     private Line 신분당선;
     private Line 삼호선;
     private List<Line> lines;
-    private PathFinder pathFinder;
+    private SubwayMap subwayMap;
 
     /**
      * 교대역    --- *2호선* ---   강남역
@@ -40,8 +40,6 @@ class PathFinderTest {
      */
     @BeforeEach
     public void setUp() {
-        pathFinder = new PathFinder();
-
         교대역 = new Station(11L, "교대역");
         강남역 = new Station(12L, "강남역");
         양재역 = new Station(13L, "양재역");
@@ -58,12 +56,14 @@ class PathFinderTest {
 
         lines = new ArrayList<>();
         lines.addAll(List.of(이호선, 신분당선, 삼호선));
+
+        subwayMap = new SubwayMap(lines);
     }
 
     @Test
     void 최소경로_조회() {
         // when
-        ShortestPath shortestPath = pathFinder.calShortestPath(lines, 교대역, 양재역);
+        ShortestPath shortestPath = subwayMap.getShortestPath(교대역, 양재역);
 
         // then
         최소경로_순서_고려하여_검증(shortestPath, "교대역", "남부터미널역", "양재역");
@@ -74,7 +74,7 @@ class PathFinderTest {
     void 출발역과_도착역이_같은_경우() {
         // when
         CustomException exception = assertThrows(CustomException.class, () -> {
-            pathFinder.calShortestPath(lines, 교대역, 교대역);
+            subwayMap.getShortestPath(교대역, 교대역);
         });
 
         // then
@@ -89,10 +89,11 @@ class PathFinderTest {
         Line 에버라인 = new Line("에버라인", "green");
         에버라인.addSection(기흥역, 신갈역, 10);
         lines.add(에버라인);
+        SubwayMap newSbwayMap = new SubwayMap(lines);
 
         // when
         CustomException exception = assertThrows(CustomException.class, () -> {
-            pathFinder.calShortestPath(lines, 교대역, 기흥역);
+            newSbwayMap.getShortestPath(교대역, 기흥역);
         });
 
         // then
