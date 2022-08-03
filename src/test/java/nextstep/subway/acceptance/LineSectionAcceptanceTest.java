@@ -106,6 +106,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("신규 구간의 역이 이미 존재합니다.");
     }
 
     /**

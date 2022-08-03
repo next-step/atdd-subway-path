@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.AllStationsOfSectionExistException;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -32,7 +34,7 @@ public class Sections {
                 .filter(it -> it.hasDuplicateSection(section.getUpStation(), section.getDownStation()))
                 .findFirst()
                 .ifPresent(it -> {
-                    throw new IllegalArgumentException();
+                    throw new AllStationsOfSectionExistException("신규 구간의 역이 이미 존재합니다.");
                 });
     }
 
