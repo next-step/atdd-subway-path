@@ -10,6 +10,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -30,6 +31,7 @@ public class Sections {
         checkIfNoStationOfSectionExists(section);
         checkIfDistanceOfSectionIsInvalid(section);
 
+        rearrangeSectionWithUpStation(section);
         sections.add(section);
     }
 
@@ -67,6 +69,17 @@ public class Sections {
                 .flatMap(List::stream)
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    private void rearrangeSectionWithUpStation(Section section) {
+        sections.stream()
+                .filter(it -> it.isSameUpStation(section.getUpStation()))
+                .findFirst()
+                .ifPresent(it -> {
+                    // 신규 구간의 하행역을 추가하고 기존 구간을 삭제한다.
+                    sections.add(new Section(section.getLine(), section.getDownStation(), it.getDownStation(), it.getDistance() - section.getDistance()));
+                    sections.remove(it);
+                });
     }
 
     public Station getLastStation() {

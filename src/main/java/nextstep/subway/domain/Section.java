@@ -39,6 +39,10 @@ public class Section {
                 || (this.upStation == downStation && this.downStation == upStation);
     }
 
+    public boolean isSameUpStation(Station station) {
+        return this.upStation == station;
+    }
+
     public List<Station> getStations() {
         return List.of(upStation, downStation);
     }
