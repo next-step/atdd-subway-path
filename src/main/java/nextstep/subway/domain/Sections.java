@@ -50,7 +50,7 @@ public class Sections {
     }
 
     private void checkIfDistanceOfSectionIsInvalid(Section section) {
-        getSections().stream()
+        sections.stream()
                 .filter(it -> {
                     return (it.getUpStation().equals(section.getUpStation()) && it.getDistance() <= section.getDistance())
                             || (it.getDownStation().equals(section.getDownStation()) && it.getDistance() <= section.getDistance());
