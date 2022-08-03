@@ -172,7 +172,7 @@ class LineSectionTest {
         assertThat(sections).hasSize(1);
         assertThat(sections.get(0).getUpStation().getName()).isEqualTo(염창역);
         assertThat(sections.get(0).getDownStation().getName()).isEqualTo(당산역);
-        assertThat(sections.get(0).getDistance()).isEqualTo(20);
+        assertThat(sections.get(0).getDistance()).isEqualTo(10);
     }
 
     @Test
@@ -195,7 +195,7 @@ class LineSectionTest {
         assertThat(sections).hasSize(1);
         assertThat(sections.get(0).getUpStation().getName()).isEqualTo(가양역);
         assertThat(sections.get(0).getDownStation().getName()).isEqualTo(염창역);
-        assertThat(sections.get(0).getDistance()).isEqualTo(20);
+        assertThat(sections.get(0).getDistance()).isEqualTo(10);
     }
 
     @Test
