@@ -17,7 +17,23 @@ public class Sections {
     }
 
     public void addSection(Section section) {
+        if (sections.isEmpty()) {
+            sections.add(section);
+            return;
+        }
+
+        checkDuplicateSection(section);
+
         sections.add(section);
+    }
+
+    private void checkDuplicateSection(Section section) {
+        sections.stream()
+                .filter(it -> it.hasDuplicateSection(section.getUpStation(), section.getDownStation()))
+                .findFirst()
+                .ifPresent(it -> {
+                    throw new IllegalArgumentException();
+                });
     }
 
     public List<Station> getStations() {
