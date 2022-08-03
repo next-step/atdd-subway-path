@@ -5,8 +5,6 @@ import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Path;
 import nextstep.subway.domain.Station;
-import org.jgrapht.GraphPath;
-import org.jgrapht.graph.DefaultWeightedEdge;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,11 +25,8 @@ public class PathService {
     }
 
     public PathResponse getPath(Long source, Long target) {
-        final Station upStation = stationService.findOptionalById(source)
-                .orElseThrow(() -> new IllegalArgumentException("출발역이 존재하지 않습니다."));
-
-        final Station downStation = stationService.findOptionalById(target)
-                .orElseThrow(() -> new IllegalArgumentException("도착역이 존재하지 않습니다."));
+        final Station upStation = stationService.findById(source, true);
+        final Station downStation = stationService.findById(target, false);
 
         final List<Line> lines = lineService.findAllByStationIdIn(Arrays.asList(source, target));
 
@@ -46,14 +41,5 @@ public class PathService {
         return stations.stream()
                 .map(stationService::createStationResponse)
                 .collect(Collectors.toList());
-    }
-
-    private void validatePathStation(Long source, Long target) {
-        stationService.findOptionalById(source)
-                .orElseThrow(() -> new IllegalArgumentException("출발역이 존재하지 않습니다."));
-
-        stationService.findOptionalById(target)
-                .orElseThrow(() -> new IllegalArgumentException("도착역이 존재하지 않습니다."));
-
     }
 }
