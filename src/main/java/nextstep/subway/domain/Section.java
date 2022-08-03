@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
 import lombok.Getter;
+import nextstep.subway.applicaion.exceptions.InvalidSectionParameterException;
+import nextstep.subway.enums.exceptions.ErrorCode;
 
 import javax.persistence.*;
 import java.util.List;
@@ -43,6 +45,12 @@ public class Section {
 
     public void minusDistance(int newDistance) {
         this.distance -= newDistance;
+    }
+
+    public void isSameDistance(int distance) {
+        if (distance >= this.distance) {
+            throw new InvalidSectionParameterException(ErrorCode.NOT_ENOUGH_DISTANCE);
+        }
     }
 
     public List<Station> getRelatedStation() {

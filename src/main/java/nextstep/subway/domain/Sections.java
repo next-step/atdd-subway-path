@@ -23,6 +23,7 @@ public class Sections {
         if (!this.sections.isEmpty()) {
             Section alreadyRegisterSection = getBetweenSection(newSection);
             if (Objects.nonNull(alreadyRegisterSection)) {
+                alreadyRegisterSection.isSameDistance(newSection.getDistance());
                 alreadyRegisterSection.modifyBetweenSection(newSection);
                 alreadyRegisterSection.minusDistance(newSection.getDistance());
             }

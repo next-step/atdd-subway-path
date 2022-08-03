@@ -3,10 +3,15 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.enums.exceptions.ErrorCode;
+import org.junit.jupiter.api.Assertions;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.assertj.core.api.Assertions.*;
 
 public class LineSteps {
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
@@ -63,5 +68,12 @@ public class LineSteps {
         return RestAssured.given().log().all()
                 .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then().log().all().extract();
+    }
+
+    public static void 상태_검증(ErrorCode errorCode, HttpStatus httpStatus, ExtractableResponse<Response> response) {
+        Assertions.assertAll(() -> {
+            assertThat(response.jsonPath().getString("message")).isEqualTo(errorCode.getMessage());
+            assertThat(response.statusCode()).isEqualTo(httpStatus.value());
+        });
     }
 }

@@ -2,6 +2,7 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.enums.exceptions.ErrorCode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -100,6 +101,19 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             assertThat(response.jsonPath().getList("upStation.name")).containsExactly("신논현역", "강남역");
             assertThat(response.jsonPath().getList("downStation.name")).containsExactly("강남역", "양재역");
         });
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존에 등록되어있는 역 사이 길이보다 크거나 같으면 Exception")
+    @Test
+    void notEnoughDistanceFailTest() {
+        //given : 강남역 - 양재역
+
+        //when
+        long 강남역_양재역_사이역 = 지하철역_생성_요청("강남역_양재역_사이역").jsonPath().getLong("id");
+
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 강남역_양재역_사이역, "100"));
+
+        상태_검증(ErrorCode.NOT_ENOUGH_DISTANCE, HttpStatus.BAD_REQUEST, response);
     }
 
     /**
