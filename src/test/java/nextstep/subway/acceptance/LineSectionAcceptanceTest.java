@@ -53,6 +53,66 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * Given 지하철역과 노선 생성(A-C)을 요청 하고
+     * When 해당 노선에 신규 구간(A-B)를 추가하는 경우
+     * Then A역을 기준으로 구간이 추가된다(A-B, B-C)
+     */
+    @DisplayName("역 사이에 새로운 역을 등록")
+    @Test
+    void addSectionToMiddleOfLine() {
+    }
+
+    /**
+     * Given 지하철역과 노선 생성(A-C)을 요청 하고
+     * When 해당 노선에 신규 구간(B-A)를 추가하는 경우
+     * Then 새로운 역(B)을 상행 종점으로 구간이 추가된다(B-A, A-C)
+     */
+    @DisplayName("새로운 역을 상행 종점으로 등록")
+    @Test
+    void addSectionToStartOfLine() {
+    }
+
+    /**
+     * Given 지하철역과 노선 생성(A-C)을 요청 하고
+     * When 해당 노선에 신규 구간(C-B)를 추가하는 경우
+     * Then 새로운 역(B)을 하행 종점으로 구간이 추가된다(A-C, C-B)
+     */
+    @DisplayName("새로운 역을 하행 종점으로 등록")
+    @Test
+    void addSectionToEndOfLine() {
+    }
+
+    /**
+     * Given 지하철역과 노선 생성(A-C)을 요청 하고
+     * When 해당 노선에 기존 길이보다 같거나 긴 신규 구간(A-B)를 추가하는 경우
+     * Then 예외가 발생한다
+     */
+    @DisplayName("기존 구간 길이보다 같거나 긴 경우 역 사이에 새로운 역 등록 실패")
+    @Test
+    void failToAddSectionToMiddleOfLine() {
+    }
+
+    /**
+     * Given 지하철역과 노선 생성(A-C)을 요청 하고
+     * When 해당 노선에 신규 구간(A-C)를 추가하는 경우
+     * Then 예외가 발생한다
+     */
+    @DisplayName("상하행역 모두 존재하는 경우 등록 실패")
+    @Test
+    void failToAddSectionIfAllStationsExist() {
+    }
+
+    /**
+     * Given 지하철역과 노선 생성(A-C)을 요청 하고
+     * When 해당 노선에 신규 구간(B-D)를 추가하는 경우
+     * Then 예외가 발생한다
+     */
+    @DisplayName("상하행역 모두 존재하지 않는 경우 등록 실패")
+    @Test
+    void failToAddSectionIfNoStationsExists() {
+    }
+
+    /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
      * Then 노선에 구간이 제거된다
