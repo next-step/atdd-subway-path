@@ -123,14 +123,14 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.getUpStation().equals(station))
                 .findFirst()
-                .get();
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     private Section getUpSection(Station station) {
         return sections.stream()
                 .filter(section -> section.getDownStation().equals(station))
                 .findFirst()
-                .get();
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     private void validateRemove(Station station) {
