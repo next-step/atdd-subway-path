@@ -11,7 +11,7 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 @Embeddable
 public class LineSection {
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public List<Station> getStations() {
@@ -129,13 +129,6 @@ public class LineSection {
             .findFirst()
             .orElseThrow();
     }
-
-    private boolean hasSectionByDownStationId(Long downStationId) {
-        List<Section> foundSections = sections.stream()
-            .filter(v -> v.getDownStation().getId().equals(downStationId))
-            .collect(Collectors.toList());
-        return !foundSections.isEmpty();
-    }
     private boolean findSectionByDownStation(Long downStationId) {
         List<Section> foundSections = sections.stream()
             .filter(v -> v.getDownStation().getId().equals(downStationId))
@@ -152,11 +145,58 @@ public class LineSection {
         return 0;
     }
 
-    public void remove(String stationName) {
-        sections.removeIf(v->v.getUpStation().getName().equals(stationName));
+    public void remove(Long stationId) {
+        if (hasUpStationId(stationId)) {
+            if (!isFirst(stationId)) {
+                Section leftSection = getSectionByDownStationId(stationId);
+                Section deleteSection = getSectionByUpStationId(stationId);
+                Station newStation = deleteSection.getDownStation();
+                leftSection.changeDistance(leftSection.getDistance() + deleteSection.getDistance());
+                leftSection.changeDownStation(newStation);
+            }
+            sections.removeIf(v->v.getUpStation().getId().equals(stationId));
+            return;
+        }
+        if (hasDownStationId(stationId)) {
+            sections.removeIf(v->v.getDownStation().getId().equals(stationId));
+            return;
+        }
+        throw new RuntimeException();
     }
-    public void removeLast() {
-        sections.remove(sections.size() - 1);
+
+    private boolean isFirst(Long stationId) {
+        return getStations().get(0).getId().equals(stationId);
+    }
+
+    private int getDistance(Long stationId) {
+        return sections.stream()
+            .filter(v -> v.getUpStation().getId().equals(stationId))
+            .findFirst()
+            .orElseThrow()
+            .getDistance();
+    }
+
+    private boolean hasUpStationId(Long stationId) {
+        return sections.stream()
+            .map(v -> v.getUpStation().getId())
+            .anyMatch(v -> v.equals(stationId));
+    }
+    private Section getSectionByUpStationId(Long stationId) {
+        return sections.stream()
+            .filter(v->v.getUpStation().getId().equals(stationId))
+            .findFirst()
+            .orElseThrow();
+    }
+    private boolean hasDownStationId(Long stationId) {
+        return sections.stream()
+            .map(v -> v.getDownStation().getId())
+            .anyMatch(v -> v.equals(stationId));
+    }
+    private Section getSectionByDownStationId(Long stationId) {
+        return sections.stream()
+            .filter(v->v.getDownStation().getId().equals(stationId))
+            .findFirst()
+            .orElseThrow();
     }
 
     public List<Section> getSections() {
