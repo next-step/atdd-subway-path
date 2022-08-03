@@ -6,6 +6,7 @@ import nextstep.subway.enums.exceptions.ErrorCode;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Entity
@@ -65,4 +66,14 @@ public class Section {
             this.downStation = newSection.getUpStation();
         }
     }
+
+    public Boolean isSameUpStation(Station upStation) {
+        return Objects.equals(this.upStation, upStation);
+    }
+
+    public Boolean isSameDownStation(Station downStation) {
+        return Objects.equals(this.downStation, downStation);
+    }
+
+
 }

@@ -116,6 +116,46 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         상태_검증(ErrorCode.NOT_ENOUGH_DISTANCE, HttpStatus.BAD_REQUEST, response);
     }
 
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 Exception")
+    @Test
+    void isSameUpDownStationFailTest() {
+        //given : 강남역 - 양재역
+
+        //when
+        long 신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역, "4"));
+
+        long 논현역 = 지하철역_생성_요청("논현역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(논현역, 신논현역, "3"));
+        특정_구간_조회(신분당선);
+
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(논현역, 양재역, "5"));
+//
+//        //then
+        상태_검증(ErrorCode.IS_SAME_UP_DOWN_STATION, HttpStatus.BAD_REQUEST, response);
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 Exception")
+    @Test
+    void notContainUpDownStationFailTest() {
+        //given : 강남역 - 양재역
+
+        //when
+        long 신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역, "4"));
+
+        long 논현역 = 지하철역_생성_요청("논현역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(논현역, 신논현역, "3"));
+        특정_구간_조회(신분당선);
+
+        long 신림역 = 지하철역_생성_요청("신림역").jsonPath().getLong("id");
+        long 당곡역 = 지하철역_생성_요청("당곡역").jsonPath().getLong("id");
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신림역, 당곡역, "10"));
+
+        //then
+        상태_검증(ErrorCode.IS_NOT_CONTAIN_STATION, HttpStatus.BAD_REQUEST, response);
+    }
+
     /**
      * given : 지하철 노선에 구간을 등록
      * when : 새로운 역(서울숲)을 하행 종점으로 구간을 등록한다.
