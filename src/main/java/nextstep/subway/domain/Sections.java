@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.AllStationsOfSectionExistException;
+import nextstep.subway.exception.InvalidDistanceOfSectionException;
 import nextstep.subway.exception.NonStationOfSectionExistsException;
 
 import javax.persistence.CascadeType;
@@ -27,6 +28,7 @@ public class Sections {
 
         checkDuplicateSection(section);
         checkIfNoStationOfSectionExists(section);
+        checkIfDistanceOfSectionIsInvalid(section);
 
         sections.add(section);
     }
@@ -45,6 +47,18 @@ public class Sections {
                 .filter(station -> station.equals(section.getUpStation()) || station.equals(section.getDownStation()))
                 .findFirst()
                 .orElseThrow(() -> new NonStationOfSectionExistsException("신규 구간의 역과 일치하는 역이 존재하지 않습니다."));
+    }
+
+    private void checkIfDistanceOfSectionIsInvalid(Section section) {
+        getSections().stream()
+                .filter(it -> {
+                    return (it.getUpStation().equals(section.getUpStation()) && it.getDistance() <= section.getDistance())
+                            || (it.getDownStation().equals(section.getDownStation()) && it.getDistance() <= section.getDistance());
+                })
+                .findFirst()
+                .ifPresent(it -> {
+                    throw new InvalidDistanceOfSectionException("구간 거리가 같거나 커 역 중간에 등록이 불가합니다.");
+                });
     }
 
     public List<Station> getStations() {

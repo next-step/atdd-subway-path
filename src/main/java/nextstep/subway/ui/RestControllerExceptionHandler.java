@@ -2,6 +2,7 @@ package nextstep.subway.ui;
 
 import nextstep.subway.applicaion.dto.ErrorResponse;
 import nextstep.subway.exception.AllStationsOfSectionExistException;
+import nextstep.subway.exception.InvalidDistanceOfSectionException;
 import nextstep.subway.exception.NonStationOfSectionExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,12 @@ public class RestControllerExceptionHandler {
 
     @ExceptionHandler(NonStationOfSectionExistsException.class)
     public ResponseEntity<ErrorResponse> handleNonStationOfSectionExistsException(NonStationOfSectionExistsException e){
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getErrorMessage());
+        return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.valueOf(errorResponse.getHttpStatusCode()));
+    }
+
+    @ExceptionHandler(InvalidDistanceOfSectionException.class)
+    public ResponseEntity<ErrorResponse> handleFailToAddSectionException(InvalidDistanceOfSectionException e){
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getErrorMessage());
         return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.valueOf(errorResponse.getHttpStatusCode()));
     }

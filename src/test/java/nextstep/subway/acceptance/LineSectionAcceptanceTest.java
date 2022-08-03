@@ -14,6 +14,7 @@ import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
@@ -91,6 +92,19 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존 구간 길이보다 같거나 긴 경우 역 사이에 새로운 역 등록 실패")
     @Test
     void failToAddSectionToMiddleOfLine() {
+        // given
+        Long 신규_추가역1 = 지하철역_생성_요청("신규_추가역1").jsonPath().getLong("id");
+
+        // when(then)
+        assertAll(() -> {
+            ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 신규_추가역1, 10));
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("구간 거리가 같거나 커 역 중간에 등록이 불가합니다.");
+
+            response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 신규_추가역1, 13));
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("구간 거리가 같거나 커 역 중간에 등록이 불가합니다.");
+        });
     }
 
     /**
@@ -161,11 +175,15 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         return lineCreateParams;
     }
 
-    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId) {
+    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");
-        params.put("distance", 6 + "");
+        params.put("distance", distance + "");
         return params;
+    }
+
+    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId) {
+        return createSectionCreateParams(upStationId, downStationId, 6);
     }
 }
