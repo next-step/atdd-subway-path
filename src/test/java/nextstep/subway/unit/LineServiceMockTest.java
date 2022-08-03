@@ -21,6 +21,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
+import static nextstep.subway.utils.LineTestFixtures.노선_생성_WITH_ID;
+import static nextstep.subway.utils.StationTestFixtures.지하철역_생성_WITH_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -58,15 +60,15 @@ public class LineServiceMockTest {
     void addSection() {
 
         // given
-        final Station 강남역 = 지하철역_생성("강남역", 1L);
+        final Station 강남역 = 지하철역_생성_WITH_ID("강남역", 1L);
 
-        final Station 시청역 = 지하철역_생성("시청역", 2L);
+        final Station 시청역 = 지하철역_생성_WITH_ID("시청역", 2L);
         when(stationService.findById(시청역.getId())).thenReturn(시청역);
 
-        final Station 구로디지털단지역 = 지하철역_생성("구로디지털단지역", 3L);
+        final Station 구로디지털단지역 = 지하철역_생성_WITH_ID("구로디지털단지역", 3L);
         when(stationService.findById(구로디지털단지역.getId())).thenReturn(구로디지털단지역);
 
-        final Line 신분당선 = 노선_생성("신분당선", "red", 강남역, 시청역, 10, 1L);
+        final Line 신분당선 = 노선_생성_WITH_ID("신분당선", "red", 강남역, 시청역, 10, 1L);
         when(lineRepository.findById(anyLong())).thenReturn(Optional.ofNullable(신분당선));
 
         SectionRequest 두번째_구간_요청 = LineTestFixtures.구간요청_생성(시청역.getId(), 구로디지털단지역.getId(), 10);
@@ -84,11 +86,11 @@ public class LineServiceMockTest {
     void throwsExceptionIfAddSectionExistSectionGreatorThanSectionDistance() {
 
         // given
-        final Station 강남역 = 지하철역_생성("강남역", 1L);
-        final Station 시청역 = 지하철역_생성("시청역", 2L);
-        final Station 구로디지털단지역 = 지하철역_생성("구로디지털단지역", 3L);
+        final Station 강남역 = 지하철역_생성_WITH_ID("강남역", 1L);
+        final Station 시청역 = 지하철역_생성_WITH_ID("시청역", 2L);
+        final Station 구로디지털단지역 = 지하철역_생성_WITH_ID("구로디지털단지역", 3L);
 
-        final Line 신분당선 = 노선_생성("신분당선", "red", 강남역, 시청역, 10, 1L);
+        final Line 신분당선 = 노선_생성_WITH_ID("신분당선", "red", 강남역, 시청역, 10, 1L);
         final SectionRequest 구간_생성_요청 = LineTestFixtures.구간요청_생성(강남역.getId(), 구로디지털단지역.getId(), 11);
 
         when(stationService.findById(1L)).thenReturn(강남역);
@@ -105,11 +107,11 @@ public class LineServiceMockTest {
     void throwsExceptionIfAddSectionExistSectionEqualsThanSectionDistance() {
 
         // given
-        final Station 강남역 = 지하철역_생성("강남역", 1L);
-        final Station 시청역 = 지하철역_생성("시청역", 2L);
-        final Station 구로디지털단지역 = 지하철역_생성("구로디지털단지역", 3L);
+        final Station 강남역 = 지하철역_생성_WITH_ID("강남역", 1L);
+        final Station 시청역 = 지하철역_생성_WITH_ID("시청역", 2L);
+        final Station 구로디지털단지역 = 지하철역_생성_WITH_ID("구로디지털단지역", 3L);
 
-        final Line 신분당선 = 노선_생성("신분당선", "red", 강남역, 시청역, 10, 1L);
+        final Line 신분당선 = 노선_생성_WITH_ID("신분당선", "red", 강남역, 시청역, 10, 1L);
 
         final SectionRequest 구간_생성_요청 = LineTestFixtures.구간요청_생성(강남역.getId(), 구로디지털단지역.getId(), 10);
 
@@ -126,11 +128,11 @@ public class LineServiceMockTest {
     void throwsExceptionIfAddSectionDistanceZeroOrNegative() {
 
         // given
-        final Station 강남역 = 지하철역_생성("강남역", 1L);
-        final Station 시청역 = 지하철역_생성("시청역", 2L);
-        final Station 구로디지털단지역 = 지하철역_생성("구로디지털단지역", 3L);
+        final Station 강남역 = 지하철역_생성_WITH_ID("강남역", 1L);
+        final Station 시청역 = 지하철역_생성_WITH_ID("시청역", 2L);
+        final Station 구로디지털단지역 = 지하철역_생성_WITH_ID("구로디지털단지역", 3L);
 
-        final Line 신분당선 = 노선_생성("신분당선", "green", 강남역, 시청역, 10, 1L);
+        final Line 신분당선 = 노선_생성_WITH_ID("신분당선", "green", 강남역, 시청역, 10, 1L);
 
         final SectionRequest 구간_생성_요청 = LineTestFixtures.구간요청_생성(강남역.getId(), 구로디지털단지역.getId(), 0);
 
@@ -149,10 +151,10 @@ public class LineServiceMockTest {
     void throwsExceptionIfEqualsAddSection() {
 
         // given
-        final Station 강남역 = 지하철역_생성("강남역", 1L);
-        final Station 시청역 = 지하철역_생성("시청역", 2L);
+        final Station 강남역 = 지하철역_생성_WITH_ID("강남역", 1L);
+        final Station 시청역 = 지하철역_생성_WITH_ID("시청역", 2L);
 
-        final Line 신분당선 = 노선_생성("신분당선", "green", 강남역, 시청역, 10, 1L);
+        final Line 신분당선 = 노선_생성_WITH_ID("신분당선", "green", 강남역, 시청역, 10, 1L);
 
         final SectionRequest 구간_생성_요청 = LineTestFixtures.구간요청_생성(강남역.getId(), 시청역.getId(), 6);
 
@@ -169,11 +171,11 @@ public class LineServiceMockTest {
     void addSectionToDownSection() {
 
         // given
-        final Station 강남역 = 지하철역_생성("강남역", 1L);
-        final Station 시청역 = 지하철역_생성("시청역", 2L);
-        final Station 선릉역 = 지하철역_생성("선릉역", 3L);
+        final Station 강남역 = 지하철역_생성_WITH_ID("강남역", 1L);
+        final Station 시청역 = 지하철역_생성_WITH_ID("시청역", 2L);
+        final Station 선릉역 = 지하철역_생성_WITH_ID("선릉역", 3L);
 
-        final Line 신분당선 = 노선_생성("신분당선", "green", 강남역, 시청역, 10, 1L);
+        final Line 신분당선 = 노선_생성_WITH_ID("신분당선", "green", 강남역, 시청역, 10, 1L);
         final SectionRequest 구간_생성_요청 = LineTestFixtures.구간요청_생성(시청역.getId(), 선릉역.getId(), 5);
 
         when(stationService.findById(2L)).thenReturn(시청역);
@@ -193,11 +195,11 @@ public class LineServiceMockTest {
     void addSectionToTopSection() {
 
         // given
-        final Station 강남역 = 지하철역_생성("강남역", 1L);
-        final Station 시청역 = 지하철역_생성("시청역", 2L);
-        final Station 구로디지털단지역 = 지하철역_생성("구로디지털단지역", 3L);
+        final Station 강남역 = 지하철역_생성_WITH_ID("강남역", 1L);
+        final Station 시청역 = 지하철역_생성_WITH_ID("시청역", 2L);
+        final Station 구로디지털단지역 = 지하철역_생성_WITH_ID("구로디지털단지역", 3L);
 
-        final Line 신분당선 = 노선_생성("신분당선", "green", 강남역, 시청역, 10, 1L);
+        final Line 신분당선 = 노선_생성_WITH_ID("신분당선", "green", 강남역, 시청역, 10, 1L);
         final SectionRequest 구간_생성_요청 = LineTestFixtures.구간요청_생성(구로디지털단지역.getId(), 강남역.getId(), 5);
 
         when(stationService.findById(3L)).thenReturn(구로디지털단지역);
@@ -217,12 +219,12 @@ public class LineServiceMockTest {
     void throwsExceptionIfNotHasStations() {
 
         // given
-        final Station 강남역 = 지하철역_생성("강남역", 1L);
-        final Station 시청역 = 지하철역_생성("시청역", 2L);
-        final Station 구로디지털단지역 = 지하철역_생성("구로디지털단지역", 3L);
-        final Station 선릉역 = 지하철역_생성("선릉역", 4L);
+        final Station 강남역 = 지하철역_생성_WITH_ID("강남역", 1L);
+        final Station 시청역 = 지하철역_생성_WITH_ID("시청역", 2L);
+        final Station 구로디지털단지역 = 지하철역_생성_WITH_ID("구로디지털단지역", 3L);
+        final Station 선릉역 = 지하철역_생성_WITH_ID("선릉역", 4L);
 
-        final Line 신분당선 = 노선_생성("신분당선", "green", 강남역, 시청역, 10, 1L);
+        final Line 신분당선 = 노선_생성_WITH_ID("신분당선", "green", 강남역, 시청역, 10, 1L);
 
         final SectionRequest 구간_생성_요청 = LineTestFixtures.구간요청_생성(구로디지털단지역.getId(), 선릉역.getId(), 5);
 
@@ -240,11 +242,11 @@ public class LineServiceMockTest {
 //    void getStations() {
 //
 //        // given
-//        final Station 강남역 = 지하철역_생성("강남역", 1L);
-//        final Station 시청역 = 지하철역_생성("시청역", 2L);
-//        final Station 구로디지털단지역 = 지하철역_생성("구로디지털단지역", 3L);
-//        final Station 선릉역 = 지하철역_생성("선릉역", 4L);
-//        final Line 신분당선 = 노선_생성("신분당선", "red", 강남역, 시청역, 10, 1L);
+//        final Station 강남역 = 지하철역_생성_WITH_ID()("강남역", 1L);
+//        final Station 시청역 = 지하철역_생성_WITH_ID()("시청역", 2L);
+//        final Station 구로디지털단지역 = 지하철역_생성_WITH_ID()("구로디지털단지역", 3L);
+//        final Station 선릉역 = 지하철역_생성_WITH_ID()("선릉역", 4L);
+//        final Line 신분당선 = 노선_생성_WITH_ID("신분당선", "red", 강남역, 시청역, 10, 1L);
 //        when(lineRepository.findById(anyLong())).thenReturn(Optional.ofNullable(신분당선));
 //
 //        when(stationService.findById(1L)).thenReturn(강남역);
@@ -277,11 +279,11 @@ public class LineServiceMockTest {
     void removeSectionToTopSection() {
 
         // given
-        final Station 강남역 = 지하철역_생성("강남역", 1L);
-        final Station 시청역 = 지하철역_생성("시청역", 2L);
-        final Station 구로디지털단지역 = 지하철역_생성("구로디지털단지역", 3L);
+        final Station 강남역 = 지하철역_생성_WITH_ID("강남역", 1L);
+        final Station 시청역 = 지하철역_생성_WITH_ID("시청역", 2L);
+        final Station 구로디지털단지역 = 지하철역_생성_WITH_ID("구로디지털단지역", 3L);
 
-        final Line 신분당선 = 노선_생성("신분당선", "green", 강남역, 시청역, 10, 1L);
+        final Line 신분당선 = 노선_생성_WITH_ID("신분당선", "green", 강남역, 시청역, 10, 1L);
         신분당선.addSection(구로디지털단지역, 강남역, 5);
 
         when(lineRepository.findById(anyLong())).thenReturn(Optional.ofNullable(신분당선));
@@ -300,15 +302,15 @@ public class LineServiceMockTest {
     void removeSectionToDownSection() {
 
         // given
-        final Station 강남역 = 지하철역_생성("강남역", 1L);
+        final Station 강남역 = 지하철역_생성_WITH_ID("강남역", 1L);
 
-        final Station 시청역 = 지하철역_생성("시청역", 2L);
+        final Station 시청역 = 지하철역_생성_WITH_ID("시청역", 2L);
         when(stationService.findById(시청역.getId())).thenReturn(시청역);
 
-        final Station 구로디지털단지역 = 지하철역_생성("구로디지털단지역", 3L);
+        final Station 구로디지털단지역 = 지하철역_생성_WITH_ID("구로디지털단지역", 3L);
         when(stationService.findById(구로디지털단지역.getId())).thenReturn(구로디지털단지역);
 
-        final Line 신분당선 = 노선_생성("신분당선", "red", 강남역, 시청역, 10, 1L);
+        final Line 신분당선 = 노선_생성_WITH_ID("신분당선", "red", 강남역, 시청역, 10, 1L);
         when(lineRepository.findById(anyLong())).thenReturn(Optional.ofNullable(신분당선));
 
         final SectionRequest 두번째_구간_요청 = LineTestFixtures.구간요청_생성(시청역.getId(), 구로디지털단지역.getId(), 5);
@@ -332,11 +334,11 @@ public class LineServiceMockTest {
     void removeSectionToMiddleSection() {
 
         // given
-        final Station 강남역 = 지하철역_생성("강남역", 1L);
-        final Station 시청역 = 지하철역_생성("시청역", 2L);
-        final Station 구로디지털단지역 = 지하철역_생성("구로디지털단지역", 3L);
+        final Station 강남역 = 지하철역_생성_WITH_ID("강남역", 1L);
+        final Station 시청역 = 지하철역_생성_WITH_ID("시청역", 2L);
+        final Station 구로디지털단지역 = 지하철역_생성_WITH_ID("구로디지털단지역", 3L);
 
-        final Line 신분당선 = 노선_생성("신분당선", "green", 강남역, 시청역, 10, 1L);
+        final Line 신분당선 = 노선_생성_WITH_ID("신분당선", "green", 강남역, 시청역, 10, 1L);
         신분당선.addSection(강남역, 구로디지털단지역, 5);
 
         when(lineRepository.findById(anyLong())).thenReturn(Optional.ofNullable(신분당선));
@@ -355,10 +357,10 @@ public class LineServiceMockTest {
     void throwsExceptionRemoveSectionIfSectionCountOne() {
 
         // given
-        final Station 강남역 = 지하철역_생성("강남역", 1L);
-        final Station 시청역 = 지하철역_생성("시청역", 2L);
+        final Station 강남역 = 지하철역_생성_WITH_ID("강남역", 1L);
+        final Station 시청역 = 지하철역_생성_WITH_ID("시청역", 2L);
 
-        final Line 신분당선 = 노선_생성("신분당선", "green", 강남역, 시청역, 10, 1L);
+        final Line 신분당선 = 노선_생성_WITH_ID("신분당선", "green", 강남역, 시청역, 10, 1L);
 
         when(lineRepository.findById(anyLong())).thenReturn(Optional.ofNullable(신분당선));
         when(stationService.findById(강남역.getId())).thenReturn(강남역);
@@ -367,29 +369,4 @@ public class LineServiceMockTest {
         assertThatThrownBy(() -> lineService.removeSection(신분당선.getId(), 강남역.getId()))
                 .isInstanceOf(IllegalStateException.class);
     }
-
-    @DisplayName("제거하려는 구간이 지하철 노선에 존재하지 않을경우 오류")
-    @Test
-    void throwsExceptionRemoveSectionIfHasNotSection() {
-
-        // given
-        final Station 강남역 = 지하철역_생성("강남역", 1L);
-        final Station 시청역 = 지하철역_생성("시청역", 2L);
-        final Station 구로디지털단지역 = 지하철역_생성("구로디지털단지역", 3L);
-        final Station 선릉역 = 지하철역_생성("선릉역", 4L);
-
-        final Line 신분당선 = 노선_생성("신분당선", "green", 강남역, 시청역, 10, 1L);
-
-        신분당선.addSection(강남역, 구로디지털단지역, 4);
-
-        when(lineRepository.findById(anyLong())).thenReturn(Optional.ofNullable(신분당선));
-        when(stationService.findById(선릉역.getId())).thenReturn(선릉역);
-
-        // then
-        assertThatThrownBy(() -> lineService.removeSection(신분당선.getId(), 선릉역.getId()))
-                .isInstanceOf(IllegalStateException.class);
-
-    }
-
 }
-

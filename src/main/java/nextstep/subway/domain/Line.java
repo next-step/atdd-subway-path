@@ -94,4 +94,7 @@ public class Line {
     }
 
 
+    public List<Section> sections() {
+        return this.sections.list();
+    }
 }
