@@ -37,6 +37,19 @@ public class LineServiceMockTest {
 
     private LineService lineService;
 
+    public Station 지하철역_생성(final String 지하철역이름, final Long 지하철역_아이디) {
+        final Station 지하철역 = StationTestFixtures.지하철역_생성("강남역");
+        ReflectionTestUtils.setField(지하철역, "id", 지하철역_아이디);
+        return 지하철역;
+    }
+
+    public Line 노선_생성(final String 노선명, final String 노선색, final Station 상행역, final Station 하행역,
+                      final int 거리, final Long 노선_아이디) {
+        Line 노선 = LineTestFixtures.노선_생성(노선명, 노선색, 상행역, 하행역, 거리);
+        ReflectionTestUtils.setField(노선, "id", 노선_아이디);
+        return 노선;
+    }
+
     @BeforeEach
     void setup() {
         lineService = new LineService(lineRepository, stationService);
@@ -356,29 +369,4 @@ public class LineServiceMockTest {
         assertThatThrownBy(() -> lineService.removeSection(신분당선.getId(), 강남역.getId()))
                 .isInstanceOf(IllegalStateException.class);
     }
-
-    @DisplayName("제거하려는 구간이 지하철 노선에 존재하지 않을경우 오류")
-    @Test
-    void throwsExceptionRemoveSectionIfHasNotSection() {
-
-        // given
-        final Station 강남역 = 지하철역_생성_WITH_ID("강남역", 1L);
-        final Station 시청역 = 지하철역_생성_WITH_ID("시청역", 2L);
-        final Station 구로디지털단지역 = 지하철역_생성_WITH_ID("구로디지털단지역", 3L);
-        final Station 선릉역 = 지하철역_생성_WITH_ID("선릉역", 4L);
-
-        final Line 신분당선 = 노선_생성_WITH_ID("신분당선", "green", 강남역, 시청역, 10, 1L);
-
-        신분당선.addSection(강남역, 구로디지털단지역, 4);
-
-        when(lineRepository.findById(anyLong())).thenReturn(Optional.ofNullable(신분당선));
-        when(stationService.findById(선릉역.getId())).thenReturn(선릉역);
-
-        // then
-        assertThatThrownBy(() -> lineService.removeSection(신분당선.getId(), 선릉역.getId()))
-                .isInstanceOf(IllegalStateException.class);
-
-    }
-
 }
-
