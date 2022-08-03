@@ -56,18 +56,21 @@ public class Sections {
             return Collections.emptyList();
         }
         Section firstSection = getFirstSection();
-        sectionsSortList.add(firstSection);
+        if (Objects.nonNull(firstSection)) {
+            sectionsSortList.add(firstSection);
 
 //        sectionsSortList.addAll(sectionsSortList.stream().takeWhile(section -> Objects.nonNull(getNextSection(section))).collect(Collectors.toList()));
 
-        for(int i = 0; i < sections.size(); i++ ){
-            Section nextSection = getNextSection(sectionsSortList.get(i));
-            if(Objects.isNull(nextSection)){
-                break;
+            for(int i = 0; i < sections.size(); i++ ){
+                Section nextSection = getNextSection(sectionsSortList.get(i));
+                if(Objects.isNull(nextSection)){
+                    break;
+                }
+                sectionsSortList.add(nextSection);
             }
-            sectionsSortList.add(nextSection);
+            return sectionsSortList;
         }
-        return sectionsSortList;
+        return sections;
     }
 
     public Section getFirstSection(){
@@ -77,7 +80,7 @@ public class Sections {
         return sections.stream()
                 .filter(section -> isFirstSection(section))
                 .findFirst()
-                .orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_ENOUGH_SECTION));
+                .orElse(null);
     }
 
     public Boolean isFirstSection(Section section){
