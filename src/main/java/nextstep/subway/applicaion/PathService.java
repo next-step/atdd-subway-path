@@ -35,10 +35,11 @@ public class PathService {
 
         final List<Line> lines = lineService.findAllByStationIdIn(Arrays.asList(source, target));
 
-        final GraphPath<Station, DefaultWeightedEdge> shortestPath = Path.of(lines).getShortestPath(upStation, downStation);
-        final List<StationResponse> stationResponses = createStationResponse(shortestPath.getVertexList());
+        final Path path = Path.of(lines, upStation, downStation);
+        final List<Station> stations = path.getShortestPath();
+        final List<StationResponse> stationResponses = createStationResponse(stations);
 
-        return new PathResponse(stationResponses, (int) shortestPath.getWeight());
+        return new PathResponse(stationResponses, path.getWeight());
     }
 
     private List<StationResponse> createStationResponse(List<Station> stations) {

@@ -36,15 +36,16 @@ public class PathTest {
         구호선.addSection(구호선_고속터미널역_신논현);
 
         // when
-        final Path path = Path.of(Arrays.asList(신분당선, 칠호선, 구호선));
-        var shortestPath = path.getShortestPath(고속터미널역, 신논현역);
+        final Path path = Path.of(Arrays.asList(신분당선, 칠호선, 구호선), 고속터미널역, 신논현역);
+        var shortestPath = path.getShortestPath();
 
         // then
-        assertThat(shortestPath.getVertexList()).containsSequence(고속터미널역, 반포역, 논현역, 신논현역);
+        assertThat(shortestPath).containsSequence(고속터미널역, 반포역, 논현역, 신논현역);
 
-        final double expectedDistance = 신분당선_논현역_신논현역.getDistance()
+        final int expectedDistance = 신분당선_논현역_신논현역.getDistance()
                 + 칠호선_고속터미널역_반포역.getDistance()
                 + 칠호선_반포역_논현역.getDistance();
-        assertThat(shortestPath.getWeight()).isEqualTo(expectedDistance);
+
+        assertThat(path.getWeight()).isEqualTo(expectedDistance);
     }
 }

@@ -11,24 +11,34 @@ import java.util.List;
 public class Path {
 
     private final List<Line> lines;
+    private final Station upStation;
+    private final Station downStation;
 
-    private final WeightedMultigraph<Station, DefaultWeightedEdge> graph;
+    private final GraphPath<Station, DefaultWeightedEdge> graphPath;
 
-    private Path(List<Line> lines) {
+    private Path(List<Line> lines, Station upStation, Station downStation) {
         this.lines = lines;
-        this.graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+        this.upStation = upStation;
+        this.downStation = downStation;
+        var graph = new WeightedMultigraph<Station, DefaultWeightedEdge>(DefaultWeightedEdge.class);
         addStation(graph);
         addSection(graph);
-    }
-
-    public static Path of(List<Line> lines) {
-        return new Path(lines);
-    }
-
-    public GraphPath<Station, DefaultWeightedEdge> getShortestPath(Station upStation, Station downStation) {
-        return new KShortestPaths<>(graph, 100).getPaths(upStation, downStation).stream()
+        this.graphPath = new KShortestPaths<>(graph, 100).getPaths(upStation, downStation).stream()
                 .min(Comparator.comparing(GraphPath::getWeight))
                 .orElseThrow(IllegalArgumentException::new);
+
+    }
+
+    public static Path of(List<Line> lines, Station upStation, Station downStation) {
+        return new Path(lines, upStation, downStation);
+    }
+
+    public List<Station> getShortestPath() {
+        return graphPath.getVertexList();
+    }
+
+    public int getWeight() {
+        return (int) graphPath.getWeight();
     }
 
     private void addSection(WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
@@ -42,5 +52,4 @@ public class Path {
                 .distinct()
                 .forEach(graph::addVertex);
     }
-
 }
