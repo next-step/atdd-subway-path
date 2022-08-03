@@ -80,6 +80,14 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("새로운 역을 상행 종점으로 등록")
     @Test
     void addSectionToStartOfLine() {
+        // when
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 강남역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(정자역, 강남역, 양재역);
     }
 
     /**

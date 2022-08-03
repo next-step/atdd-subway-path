@@ -31,6 +31,10 @@ public class Sections {
         checkIfNoStationOfSectionExists(section);
         checkIfDistanceOfSectionIsInvalid(section);
 
+        if (checkIfPositionToBeAddedIsFirst(section)) {
+            sections.add(section);
+            return;
+        }
         rearrangeSectionWithUpStation(section);
         sections.add(section);
     }
@@ -80,6 +84,14 @@ public class Sections {
                     sections.add(new Section(section.getLine(), section.getDownStation(), it.getDownStation(), it.getDistance() - section.getDistance()));
                     sections.remove(it);
                 });
+    }
+
+    private boolean checkIfPositionToBeAddedIsFirst(Section section) {
+        return getFirstStation().equals(section.getDownStation());
+    }
+
+    private Station getFirstStation() {
+        return sections.get(0).getUpStation();
     }
 
     public Station getLastStation() {
