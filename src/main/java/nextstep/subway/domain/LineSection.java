@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -35,7 +36,7 @@ public class LineSection {
         return sections.stream()
             .filter(v -> v.getUpStation().equals(upStation))
             .findFirst()
-            .orElseThrow();
+            .orElseThrow(NoSuchElementException::new);
     }
     private Section getNextSection(Section now) {
         for (Section section : sections) {
@@ -108,7 +109,7 @@ public class LineSection {
         return sections.stream()
             .filter(v -> v.getUpStation().getId().equals(upStationId))
             .findFirst()
-            .orElseThrow();
+            .orElseThrow(NoSuchElementException::new);
     }
     private boolean hasSectionByUpStationId(Long upStationId) {
         List<Section> foundSections = sections.stream()
@@ -127,7 +128,7 @@ public class LineSection {
         return sections.stream()
             .filter(v -> v.getDownStation().getId().equals(downStationId))
             .findFirst()
-            .orElseThrow();
+            .orElseThrow(NoSuchElementException::new);
     }
     private boolean findSectionByDownStation(Long downStationId) {
         List<Section> foundSections = sections.stream()
@@ -172,7 +173,7 @@ public class LineSection {
         return sections.stream()
             .filter(v -> v.getUpStation().getId().equals(stationId))
             .findFirst()
-            .orElseThrow()
+            .orElseThrow(NoSuchElementException::new)
             .getDistance();
     }
 
@@ -185,7 +186,7 @@ public class LineSection {
         return sections.stream()
             .filter(v->v.getUpStation().getId().equals(stationId))
             .findFirst()
-            .orElseThrow();
+            .orElseThrow(NoSuchElementException::new);
     }
     private boolean hasDownStationId(Long stationId) {
         return sections.stream()
@@ -196,7 +197,7 @@ public class LineSection {
         return sections.stream()
             .filter(v->v.getDownStation().getId().equals(stationId))
             .findFirst()
-            .orElseThrow();
+            .orElseThrow(NoSuchElementException::new);
     }
 
     public List<Section> getSections() {
