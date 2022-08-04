@@ -21,8 +21,8 @@ public class RestAssuredCRUD implements ApiCRUD {
     }
 
     @Override
-    public <T> ExtractableResponse<Response> read(String path, T pathVariable) {
-        return request(Method.GET, path, pathVariable);
+    public <T> ExtractableResponse<Response> read(String path, T... pathVariables) {
+        return request(Method.GET, path, pathVariables);
     }
 
     @Override
@@ -42,9 +42,9 @@ public class RestAssuredCRUD implements ApiCRUD {
                 .extract();
     }
 
-    private <T> ExtractableResponse<Response> request(Method method, String path, T pathVariable) {
+    private <T> ExtractableResponse<Response> request(Method method, String path, T... pathVariables) {
         return RestAssured.given().log().all()
-                .when().request(method, path, pathVariable)
+                .when().request(method, path, pathVariables)
                 .then().log().all()
                 .extract();
     }

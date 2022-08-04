@@ -9,7 +9,7 @@ public interface ApiCRUD {
 
     ExtractableResponse<Response> read(String path);
 
-    <T> ExtractableResponse<Response> read(String path, T pathVariable);
+    <T> ExtractableResponse<Response> read(String path, T... pathVariable);
 
     <T> ExtractableResponse<Response> update(String path, T jsonBody);
 

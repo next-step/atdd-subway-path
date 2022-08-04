@@ -2,6 +2,7 @@ package nextstep.subway.client;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import lombok.RequiredArgsConstructor;
 import nextstep.subway.client.dto.StationCreationRequest;
 import org.springframework.stereotype.Component;
 
@@ -9,16 +10,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class StationClient {
 
     private static final String STATIONS_PATH = "/stations";
     private static final String STATION_PATH = "/stations/{id}";
 
     private final ApiCRUD apiCRUD;
-
-    public StationClient(ApiCRUD apiCRUD) {
-        this.apiCRUD = apiCRUD;
-    }
 
     public ExtractableResponse<Response> createStation(String stationName) {
         StationCreationRequest stationRequest = new StationCreationRequest(stationName);
