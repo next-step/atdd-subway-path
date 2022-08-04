@@ -55,8 +55,6 @@ public class LineQueryServiceTest {
         Station 강남역 = 강남역();
         Station 역삼역 = 역삼역();
         Station 양재역 = 양재역();
-        이호선.addSection(강남역, 역삼역, TEN);
-        신분당선.addSection(강남역, 양재역, FIVE);
         stationRepository.saveAll(List.of(강남역, 역삼역, 양재역));
         lineRepository.saveAll(List.of(이호선, 신분당선));
     }

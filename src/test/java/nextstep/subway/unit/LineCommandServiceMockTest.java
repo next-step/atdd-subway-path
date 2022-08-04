@@ -65,7 +65,7 @@ public class LineCommandServiceMockTest {
     @DisplayName("지하철 노선 생성")
     void createLine() {
         // given
-        doReturn(이호선()).when(lineRepository)
+        doReturn(new Line(FIRST_ID, 이호선_이름, GREEN)).when(lineRepository)
                 .save(new Line(이호선_이름, GREEN));
         doReturn(강남역()).when(stationQueryService)
                 .findById(FIRST_ID);
@@ -148,7 +148,7 @@ public class LineCommandServiceMockTest {
     @DisplayName("지하철 노선에 구간 추가")
     void addSection() {
         // given
-        Line 이호선 = 이호선();
+        Line 이호선 = new Line(FIRST_ID, 이호선_이름, GREEN);
         Station 강남역 = 강남역();
         Station 역삼역 = 역삼역();
         doReturn(이호선).when(lineQueryService)
@@ -173,7 +173,6 @@ public class LineCommandServiceMockTest {
         Station 양재역 = 양재역();
         Station 강남역 = 강남역();
         Station 선릉역 = 선릉역();
-        이호선.addSection(강남역, 역삼역(), TEN);
         doReturn(양재역).when(stationQueryService)
                 .findById(양재역.getId());
         doReturn(선릉역).when(stationQueryService)
@@ -202,7 +201,6 @@ public class LineCommandServiceMockTest {
         Station 강남역 = 강남역();
         Station 역삼역 = 역삼역();
         Station 선릉역 = 선릉역();
-        이호선.addSection(강남역, 역삼역, TEN);
         이호선.addSection(역삼역, 선릉역, FIVE);
         doReturn(선릉역).when(stationQueryService)
                 .findById(선릉역.getId());
@@ -225,7 +223,6 @@ public class LineCommandServiceMockTest {
         Station 역삼역 = 역삼역();
         Station 선릉역 = 선릉역();
         Station 양재역 = 양재역();
-        이호선.addSection(강남역, 역삼역, TEN);
         이호선.addSection(역삼역, 선릉역, FIVE);
         doReturn(양재역).when(stationQueryService)
                 .findById(양재역.getId());
@@ -246,7 +243,6 @@ public class LineCommandServiceMockTest {
         Line 이호선 = 이호선();
         Station 강남역 = 강남역();
         Station 역삼역 = 역삼역();
-        이호선.addSection(강남역, 역삼역, TEN);
         doReturn(역삼역).when(stationQueryService)
                 .findById(역삼역.getId());
         doReturn(이호선).when(lineQueryService)

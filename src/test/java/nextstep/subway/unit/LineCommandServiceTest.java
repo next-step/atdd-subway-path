@@ -165,7 +165,6 @@ public class LineCommandServiceTest {
         Station 강남역 = 강남역();
         Station 역삼역 = 역삼역();
         Station 선릉역 = 선릉역();
-        이호선.addSection(강남역, 역삼역, TEN);
         saveAllStations(강남역, 역삼역, 양재역(), 선릉역);
         lineRepository.save(이호선);
 
@@ -186,7 +185,6 @@ public class LineCommandServiceTest {
         Line 이호선 = 이호선();
         Station 강남역 = 강남역();
         Station 역삼역 = 역삼역();
-        이호선.addSection(강남역, 역삼역, TEN);
         saveAllStations(강남역, 역삼역, 양재역(), 선릉역());
         lineRepository.save(이호선);
         SectionRegistrationRequest sectionRequest = new SectionRegistrationRequest(
@@ -210,7 +208,6 @@ public class LineCommandServiceTest {
         Line 이호선 = 이호선();
         Station 강남역 = 강남역();
         Station 역삼역 = 역삼역();
-        이호선.addSection(강남역, 역삼역, TEN);
         saveAllStations(강남역, 역삼역);
         lineRepository.save(이호선);
         SectionRegistrationRequest sectionRequest = new SectionRegistrationRequest(
@@ -237,7 +234,6 @@ public class LineCommandServiceTest {
         Station 강남역 = 강남역();
         Station 역삼역 = 역삼역();
         Station 선릉역 = 선릉역();
-        이호선.addSection(강남역, 역삼역, TEN);
         이호선.addSection(역삼역, 선릉역, FIVE);
         saveAllStations(강남역, 역삼역, 양재역(), 선릉역);
         lineRepository.save(이호선);
@@ -261,7 +257,6 @@ public class LineCommandServiceTest {
         Station 역삼역 = 역삼역();
         Station 선릉역 = 선릉역();
         Station 양재역 = 양재역();
-        이호선.addSection(강남역, 역삼역, TEN);
         이호선.addSection(역삼역, 선릉역, FIVE);
         saveAllStations(강남역, 역삼역, 양재역, 선릉역);
         lineRepository.save(이호선);
@@ -282,7 +277,6 @@ public class LineCommandServiceTest {
         Line 이호선 = 이호선();
         Station 강남역 = 강남역();
         Station 역삼역 = 역삼역();
-        이호선.addSection(강남역, 역삼역, TEN);
         saveAllStations(강남역, 역삼역);
         lineRepository.save(이호선);
 

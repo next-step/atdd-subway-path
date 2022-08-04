@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Lines;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,10 @@ public class LineQueryService {
                 .stream()
                 .map(LineResponse::from)
                 .collect(Collectors.toList());
+    }
+
+    public Lines findLines() {
+        return new Lines(lineRepository.findAll());
     }
 
     public LineResponse findLine(Long lineId) {
