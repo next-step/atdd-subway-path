@@ -62,6 +62,10 @@ public class Sections {
         return stations;
     }
 
+    public List<Section> getSections() {
+        return sections;
+    }
+
     private void addSection(Section section) {
         if (addIfNextToHead(section)
                 || addIfInFrontOfHead(section)
