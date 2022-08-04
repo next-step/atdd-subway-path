@@ -97,7 +97,57 @@ public class Sections {
         return getStations().contains(section.getUpStation()) && getStations().contains(section.getDownStation());
     }
 
-    public void remove(Section section) {
-        sections.remove(section);
+    public void remove(Station station) {
+        validateRemove(station);
+        removeSection(station);
+    }
+
+    public void removeSection(Station station) {
+        if (getUpTerminal().equals(station)) {
+            sections.remove(getDownSection(station));
+        } else if (getDownTerminal().equals(station)) {
+            sections.remove(getUpSection(station));
+        } else {
+            Section upSection = getUpSection(station);
+            Section downSection = getDownSection(station);
+            int newDistance = upSection.getDistance() + downSection.getDistance();
+
+            sections.add(new Section(upSection.getLine(), upSection.getUpStation(), downSection.getDownStation(), newDistance));
+
+            sections.remove(upSection);
+            sections.remove(downSection);
+        }
+    }
+
+    private Section getDownSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Section getUpSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private void validateRemove(Station station) {
+        if (isLastSection()) {
+            throw new IllegalStateException("마지막 구간은 삭제할 수 없습니다.");
+        }
+
+        if (notContainsStation(station)) {
+            throw new IllegalArgumentException("등록되어있지 않은 구간입니다.");
+        }
+    }
+
+    private boolean isLastSection() {
+        return getSections().size() == 1;
+    }
+
+    private boolean notContainsStation(Station station) {
+        return !getStations().contains(station);
     }
 }

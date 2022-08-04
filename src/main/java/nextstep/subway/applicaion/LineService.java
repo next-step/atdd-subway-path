@@ -107,7 +107,6 @@ public class LineService {
         Line line = findLine(lineId);
         Station station = stationService.findById(stationId);
 
-        line.validateRemoveSection(station);
-        line.removeSection(line.getLastSection());
+        line.removeSection(station);
     }
 }
