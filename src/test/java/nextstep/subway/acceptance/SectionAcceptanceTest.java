@@ -9,13 +9,12 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import static nextstep.subway.acceptance.support.LineSteps.createLineCreateParams;
 import static nextstep.subway.acceptance.support.LineSteps.지하철_노선_생성_요청후_식별자_반환;
 import static nextstep.subway.acceptance.support.LineSteps.지하철_노선_조회_요청;
-import static nextstep.subway.acceptance.support.LineSteps.지하철_노선에_지하철_구간_생성_요청;
-import static nextstep.subway.acceptance.support.LineSteps.지하철_노선에_지하철_구간_제거_요청;
+import static nextstep.subway.acceptance.support.SectionsSteps.createSectionCreateParams;
+import static nextstep.subway.acceptance.support.SectionsSteps.지하철_노선에_지하철_구간_생성_요청;
+import static nextstep.subway.acceptance.support.SectionsSteps.지하철_노선에_지하철_구간_제거_요청;
 import static nextstep.subway.acceptance.support.StationSteps.지하철역_생성_요청후_식별자_반환;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -84,7 +83,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     @Nested
-    class RemoveSection {
+    class 구간제거 {
         /**
          * Given 지하철 노선에 새로운 구간을 생성하고
          * When 종점을 제거하면
@@ -156,24 +155,5 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(stationId);
-    }
-
-    private Map<String, String> createLineCreateParams(String name, Long upStationId, Long downStationId, int distance) {
-        Map<String, String> lineCreateParams;
-        lineCreateParams = new HashMap<>();
-        lineCreateParams.put("name", name);
-        lineCreateParams.put("color", "bg-red-600");
-        lineCreateParams.put("upStationId", upStationId + "");
-        lineCreateParams.put("downStationId", downStationId + "");
-        lineCreateParams.put("distance", distance + "");
-        return lineCreateParams;
-    }
-
-    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", upStationId + "");
-        params.put("downStationId", downStationId + "");
-        params.put("distance", distance + "");
-        return params;
     }
 }

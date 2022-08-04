@@ -2,8 +2,6 @@ package nextstep.subway.domain;
 
 import lombok.Builder;
 import lombok.Getter;
-import nextstep.subway.exception.CustomException;
-import nextstep.subway.exception.code.CommonCode;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;

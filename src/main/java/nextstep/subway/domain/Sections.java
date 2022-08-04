@@ -32,20 +32,20 @@ public class Sections {
             return;
         }
 
-        validNotExistStation(section);
-        validExistAllStation(section);
+        checkNotExistStation(section);
+        checkExistAllStation(section);
 
         addSectionIfNotBetween(section);
         addSectionIfBetween(section);
     }
 
-    private void validNotExistStation(final Section section) {
+    private void checkNotExistStation(final Section section) {
         if (!hasStation(section.getDownStation()) && !hasStation(section.getUpStation())) {
             throw new CustomException(CommonCode.PARAM_INVALID);
         }
     }
 
-    private void validExistAllStation(final Section section) {
+    private void checkExistAllStation(final Section section) {
         if (hasStation(section.getDownStation()) && hasStation(section.getUpStation())) {
             throw new CustomException(CommonCode.PARAM_INVALID);
         }
@@ -80,20 +80,20 @@ public class Sections {
     }
 
     public void removeSection(final Station station) {
-        validInvalidRemoveSize();
-        validStationExist(station);
+        checkInvalidRemoveSize();
+        checkStationExist(station);
 
         removeIfNotBetween(station);
         removeIfBetween(station);
     }
 
-    private void validStationExist(final Station station) {
-        if(!hasStation(station)){
+    private void checkStationExist(final Station station) {
+        if (!hasStation(station)) {
             throw new CustomException(CommonCode.PARAM_INVALID);
         }
     }
 
-    private void validInvalidRemoveSize() {
+    private void checkInvalidRemoveSize() {
         if (size() <= INVALID_REMOVE_SIZE) {
             throw new CustomException(SectionCode.SECTION_REMOVE_INVALID);
         }
@@ -101,12 +101,12 @@ public class Sections {
 
     private void removeIfNotBetween(final Station station) {
         Optional<Section> upEndSection = getUpEndSection();
-        if(upEndSection.isPresent() && station.equals(upEndSection.get().getUpStation())){
+        if (upEndSection.isPresent() && station.equals(upEndSection.get().getUpStation())) {
             sections.remove(upEndSection.get());
         }
 
         Optional<Section> downEndSection = getDownEndSection();
-        if(downEndSection.isPresent() && station.equals(downEndSection.get().getDownStation())){
+        if (downEndSection.isPresent() && station.equals(downEndSection.get().getDownStation())) {
             sections.remove(downEndSection.get());
         }
     }
@@ -115,12 +115,15 @@ public class Sections {
         Optional<Section> beforeSection = getSectionHasSameDownStation(station);
         Optional<Section> afterSection = getSectionHasSameUpStation(station);
 
-        if (afterSection.isEmpty() || beforeSection.isEmpty()){
+        if (afterSection.isEmpty() || beforeSection.isEmpty()) {
             return;
         }
 
         int newDistance = afterSection.get().getDistance() + beforeSection.get().getDistance();
-        sections.add(new Section(beforeSection.get().getLine(), beforeSection.get().getUpStation(), afterSection.get().getDownStation(), newDistance));
+        sections.add(new Section(beforeSection.get().getLine(),
+                                 beforeSection.get().getUpStation(),
+                                 afterSection.get().getDownStation(),
+                                 newDistance));
         sections.remove(beforeSection.get());
         sections.remove(afterSection.get());
     }
@@ -149,11 +152,11 @@ public class Sections {
         return new ArrayList<>(stations).get(0);
     }
 
-    public Optional<Section> getUpEndSection(){
+    public Optional<Section> getUpEndSection() {
         return getSectionHasSameUpStation(getUpEndStation());
     }
 
-    public Optional<Section> getDownEndSection(){
+    public Optional<Section> getDownEndSection() {
         return getSectionHasSameDownStation(getDownEndStation());
     }
 
