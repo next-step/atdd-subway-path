@@ -69,11 +69,4 @@ public class LineSteps {
                 .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then().log().all().extract();
     }
-
-    public static void 상태_검증(ErrorCode errorCode, HttpStatus httpStatus, ExtractableResponse<Response> response) {
-        Assertions.assertAll(() -> {
-            assertThat(response.jsonPath().getString("message")).isEqualTo(errorCode.getMessage());
-            assertThat(response.statusCode()).isEqualTo(httpStatus.value());
-        });
-    }
 }
