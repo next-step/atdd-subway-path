@@ -39,12 +39,10 @@ public class LineSection {
             .orElseThrow(NoSuchElementException::new);
     }
     private Section getNextSection(Section now) {
-        for (Section section : sections) {
-            if (now.getDownStation().equals(section.getUpStation())) {
-                return section;
-            }
-        }
-        return null;
+        return sections.stream()
+            .filter(v->v.getUpStation().equals(now.getDownStation()))
+            .findFirst()
+            .orElseThrow(NoSuchElementException::new);
     }
 
     private boolean hasNextSection(Section now) {
