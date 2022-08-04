@@ -18,6 +18,12 @@ public class Line {
         this.sections = new Sections();
     }
 
+    public Line(String name, String color) {
+        this.name = name;
+        this.color = color;
+        this.sections = new Sections();
+    }
+
     public Line(Long id, String name, String color) {
         this.id = id;
         this.name = name;
@@ -51,6 +57,10 @@ public class Line {
 
     public List<Section> getSections() {
         return sections.getOrderedSections();
+    }
+
+    public List<Station> getStations() {
+        return sections.getStations();
     }
 
     public void addSection(Section section) {
@@ -98,5 +108,10 @@ public class Line {
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
                 '}';
+    }
+
+    public boolean containsStationIds(List<Long> stationIds) {
+        return stationIds.stream()
+                .anyMatch(stationId -> sections.containsStation(stationId));
     }
 }

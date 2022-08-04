@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 public class Section {
@@ -71,6 +73,10 @@ public class Section {
 
     public int plusDistance(Section section) {
         return distance + section.getDistance();
+    }
+
+    public List<Station> getAllStations() {
+        return Arrays.asList(upStation, downStation);
     }
 
     @Override

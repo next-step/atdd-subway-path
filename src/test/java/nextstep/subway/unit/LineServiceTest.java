@@ -3,12 +3,17 @@ package nextstep.subway.unit;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
+import nextstep.subway.utils.LineFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+
+import static nextstep.subway.utils.SectionFixture.구간생성;
+import static nextstep.subway.utils.StationFixture.역생성;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -29,7 +34,7 @@ public class LineServiceTest {
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         final Station 강남역 = createStation("강남역");
         final Station 역삼역 = createStation("역삼역");
-        final Line line = createLine(1L, "2호선", "bg-green");
+        final Line line = createLineNumber2();
 
         // when
         // lineService.addSection 호출
@@ -51,7 +56,7 @@ public class LineServiceTest {
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         final Station 강남역 = createStation("강남역");
         final Station 역삼역 = createStation("역삼역");
-        final Line line = createLine(1L, "2호선", "bg-green");
+        final Line line = createLineNumber2();
 
         // when
         // lineService.addSection 호출
@@ -76,12 +81,11 @@ public class LineServiceTest {
                         new Section(line, 강남역, 역삼역, sectionRequest.getDistance()));
     }
 
-    private Line createLine(Long id, String name, String color) {
-        return lineRepository.save(new Line(id, name, color));
+    private Line createLineNumber2() {
+        return lineRepository.save(LineFixture.라인_생성_2호선());
     }
-
     private Station createStation(String name) {
-        return stationRepository.save(new Station(name));
+        return stationRepository.save(역생성(name));
     }
 
     @DisplayName("지하철 구간에 마지막 역으로 구간 제거 요청")
@@ -91,9 +95,9 @@ public class LineServiceTest {
         final Station 강남역 = createStation("강남역");
         final Station 역삼역 = createStation("역삼역");
         final Station 선릉역 = createStation("선릉역");
-        final Line line = createLine(1L, "2호선", "bg-green");
-        final Section 강남_역삼_구간 = new Section(line, 강남역, 역삼역, 3);
-        final Section 역삼_선릉_구간 = new Section(line, 역삼역, 선릉역, 2);
+        final Line line = createLineNumber2();
+        final Section 강남_역삼_구간 = 구간생성(line, 강남역, 역삼역, 3);
+        final Section 역삼_선릉_구간 = 구간생성(line, 역삼역, 선릉역, 2);
         line.addSection(강남_역삼_구간);
         line.addSection(역삼_선릉_구간);
 
@@ -111,9 +115,9 @@ public class LineServiceTest {
         final Station 강남역 = createStation("강남역");
         final Station 역삼역 = createStation("역삼역");
         final Station 선릉역 = createStation("선릉역");
-        final Line line = createLine(1L, "2호선", "bg-green");
-        final Section 강남_역삼_구간 = new Section(line, 강남역, 역삼역, 3);
-        final Section 역삼_선릉_구간 = new Section(line, 역삼역, 선릉역, 2);
+        final Line line = createLineNumber2();
+        final Section 강남_역삼_구간 = 구간생성(line, 강남역, 역삼역, 3);
+        final Section 역삼_선릉_구간 = 구간생성(line, 역삼역, 선릉역, 2);
         line.addSection(강남_역삼_구간);
         line.addSection(역삼_선릉_구간);
 
@@ -132,9 +136,9 @@ public class LineServiceTest {
         final Station 강남역 = createStation("강남역");
         final Station 역삼역 = createStation("역삼역");
         final Station 선릉역 = createStation("선릉역");
-        final Line line = createLine(1L, "2호선", "bg-green");
-        final Section 강남_역삼_구간 = new Section(line, 강남역, 역삼역, 3);
-        final Section 역삼_선릉_구간 = new Section(line, 역삼역, 선릉역, 2);
+        final Line line = createLineNumber2();
+        final Section 강남_역삼_구간 = 구간생성(line, 강남역, 역삼역, 3);
+        final Section 역삼_선릉_구간 = 구간생성(line, 역삼역, 선릉역, 2);
         line.addSection(강남_역삼_구간);
         line.addSection(역삼_선릉_구간);
 
@@ -142,7 +146,7 @@ public class LineServiceTest {
         lineService.deleteSection(line.getId(), 역삼역.getId());
 
         // then
-        final Section 강남_선릉_구간 = new Section(line, 강남역, 선릉역, 강남_역삼_구간.getDistance() + 역삼_선릉_구간.getDistance());
+        final Section 강남_선릉_구간 = 구간생성(line, 강남역, 선릉역, 강남_역삼_구간.getDistance() + 역삼_선릉_구간.getDistance());
         assertThat(line.getSections()).contains(강남_선릉_구간);
     }
 
@@ -152,8 +156,8 @@ public class LineServiceTest {
         // given
         final Station 강남역 = createStation("강남역");
         final Station 역삼역 = createStation("역삼역");
-        final Line line = createLine(1L, "2호선", "bg-green");
-        final Section 강남_역삼_구간 = new Section(line, 강남역, 역삼역, 3);
+        final Line line = createLineNumber2();
+        final Section 강남_역삼_구간 = 구간생성(line, 강남역, 역삼역, 3);
         line.addSection(강남_역삼_구간);
 
         // when && then
@@ -170,9 +174,9 @@ public class LineServiceTest {
         final Station 강남역 = createStation("강남역");
         final Station 역삼역 = createStation("역삼역");
         final Station 선릉역 = createStation("선릉역");
-        final Line line = createLine(1L, "2호선", "bg-green");
-        final Section 강남_역삼_구간 = new Section(line, 강남역, 역삼역, 3);
-        final Section 역삼_선릉_구간 = new Section(line, 역삼역, 선릉역, 2);
+        final Line line = createLineNumber2();
+        final Section 강남_역삼_구간 = 구간생성(line, 강남역, 역삼역, 3);
+        final Section 역삼_선릉_구간 = 구간생성(line, 역삼역, 선릉역, 2);
         line.addSection(강남_역삼_구간);
         line.addSection(역삼_선릉_구간);
 
@@ -181,6 +185,34 @@ public class LineServiceTest {
         assertThatThrownBy(() -> lineService.deleteSection(line.getId(), 판교역.getId()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("노선에 등록되어있지 않은 역은 제거 할 수 없습니다.");
+    }
+
+    @DisplayName("역 ID를 구간의 상행종점역 또는 하행종점역으로 포함하고 있는 라인을 찾을 수 있다")
+    @Test
+    void findAllLineByStationIdIn() {
+        // given
+        var 이호선 = lineRepository.save(LineFixture.라인_생성_2호선());
+        var 칠호선 = lineRepository.save(LineFixture.라인_생성_7호선());
+        var 구호선 = lineRepository.save(LineFixture.라인_생성_9호선());
+        var 신분당선 = lineRepository.save(LineFixture.라인_생성_신분당선());
+
+        var 강남역 = createStation("강남역");
+        var 역삼역 = createStation("역삼역");
+        var 선릉역 = createStation("선릉역");
+
+        이호선.addSection(구간생성(이호선, 강남역, 역삼역, 3));
+        이호선.addSection(구간생성(이호선, 역삼역, 선릉역, 2));
+
+        칠호선.addSection(구간생성(칠호선, 역삼역, 선릉역, 2));
+        구호선.addSection(구간생성(구호선, 역삼역, 선릉역, 2));
+        신분당선.addSection(구간생성(신분당선, 역삼역, 선릉역, 2));
+
+        // when
+        var lines = lineService.findAllByStationIdIn(Collections.singletonList(강남역.getId()));
+
+        // then
+        assertThat(lines).hasSize(1);
+        assertThat(lines.get(0)).isEqualTo(이호선);
     }
 
 }
