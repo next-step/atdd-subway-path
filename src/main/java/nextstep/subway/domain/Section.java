@@ -34,6 +34,15 @@ public class Section {
         this.distance = distance;
     }
 
+    public boolean hasDuplicateSection(Station upStation, Station downStation) {
+        return (this.upStation == upStation && this.downStation == downStation)
+                || (this.upStation == downStation && this.downStation == upStation);
+    }
+
+    public boolean isSameUpStation(Station station) {
+        return this.upStation == station;
+    }
+
     public List<Station> getStations() {
         return List.of(upStation, downStation);
     }
