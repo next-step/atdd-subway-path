@@ -126,7 +126,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("message")).isEqualTo("최소 1개 이상의 구간이 존재해야합니다.");
     }
 
     /**
@@ -144,11 +145,11 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         Long 가양역 = 지하철역_생성_요청("가양역").jsonPath().getLong("id");
 
         // when
-        지하철_노선에_지하철_구간_제거_요청(신분당선, 가양역);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 가양역);
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("message")).isEqualTo("노선에 등록되지 않은 역입니다.");
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
