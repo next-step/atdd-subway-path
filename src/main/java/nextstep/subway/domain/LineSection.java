@@ -218,8 +218,11 @@ public class LineSection {
         return sections.isEmpty();
     }
     public void checkDeleteArgument(Station station) {
-        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException("올바르지 않은 입력값입니다.");
+        if (getSections().size()<=1) {
+            throw new IllegalArgumentException("최소 1개 이상의 구간이 존재해야합니다.");
+        }
+        if (!getStations().contains(station)) {
+            throw new IllegalArgumentException("노선에 등록되지 않은 역입니다.");
         }
     }
     public void checkAddArgument(SectionRequest sectionRequest) {

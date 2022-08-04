@@ -70,7 +70,7 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-//        line.getLineSection().checkDeleteArgument(station);
+        line.getLineSection().checkDeleteArgument(station);
         line.getLineSection().remove(stationId);
     }
 }
