@@ -152,6 +152,75 @@ class LineSectionTest {
             .hasMessage("기존 구간보다 작은 길이의 구간을 입력해주세요. distance="+10);
     }
 
+    @Test
+    @DisplayName("상행 종점역 삭제 정상 동작")
+    void removeSection1() {
+        //given
+        addSection(line,station1,station2,10);
+        addSection(line,station2,station3,10);
+
+        //when
+        line.getLineSection().remove(station1.getId());
+
+        //then
+        List<Station> stations = line.getLineSection().getStations();
+        assertThat(stations).hasSize(2);
+        assertThat(stations.get(0).getName()).isEqualTo(염창역);
+        assertThat(stations.get(1).getName()).isEqualTo(당산역);
+
+        List<Section> sections = line.getLineSection().getSections();
+        assertThat(sections).hasSize(1);
+        assertThat(sections.get(0).getUpStation().getName()).isEqualTo(염창역);
+        assertThat(sections.get(0).getDownStation().getName()).isEqualTo(당산역);
+        assertThat(sections.get(0).getDistance()).isEqualTo(10);
+    }
+
+    @Test
+    @DisplayName("하행 종점역 삭제 정상 동작")
+    void removeSection2() {
+        //given
+        addSection(line,station1,station2,10);
+        addSection(line,station2,station3,10);
+
+        //when
+        line.getLineSection().remove(station3.getId());
+
+        //then
+        List<Station> stations = line.getLineSection().getStations();
+        assertThat(stations).hasSize(2);
+        assertThat(stations.get(0).getName()).isEqualTo(가양역);
+        assertThat(stations.get(1).getName()).isEqualTo(염창역);
+
+        List<Section> sections = line.getLineSection().getSections();
+        assertThat(sections).hasSize(1);
+        assertThat(sections.get(0).getUpStation().getName()).isEqualTo(가양역);
+        assertThat(sections.get(0).getDownStation().getName()).isEqualTo(염창역);
+        assertThat(sections.get(0).getDistance()).isEqualTo(10);
+    }
+
+    @Test
+    @DisplayName("중간역 삭제 정상 동작")
+    void removeSection3() {
+        //given
+        addSection(line,station1,station2,10);
+        addSection(line,station2,station3,10);
+
+        //when
+        line.getLineSection().remove(station2.getId());
+
+        //then
+        List<Station> stations = line.getLineSection().getStations();
+        assertThat(stations).hasSize(2);
+        assertThat(stations.get(0).getName()).isEqualTo(가양역);
+        assertThat(stations.get(1).getName()).isEqualTo(당산역);
+
+        List<Section> sections = line.getLineSection().getSections();
+        assertThat(sections).hasSize(1);
+        assertThat(sections.get(0).getUpStation().getName()).isEqualTo(가양역);
+        assertThat(sections.get(0).getDownStation().getName()).isEqualTo(당산역);
+        assertThat(sections.get(0).getDistance()).isEqualTo(20);
+    }
+
 
     private Line createLine() {
         return new Line(구호선,YELLOW);

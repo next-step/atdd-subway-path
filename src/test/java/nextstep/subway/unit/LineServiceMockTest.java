@@ -170,9 +170,9 @@ public class LineServiceMockTest {
     @DisplayName("구간 삭제 정상동작")
     void deleteSection() {
         // given
-        Station upStation = new Station(염창역);
-        Station downStation = new Station(당산역);
-        Station endStation = new Station("여의도역");
+        Station upStation = new Station(1L,염창역);
+        Station downStation = new Station(2L,당산역);
+        Station endStation = new Station(3L,"여의도역");
         given(stationService.findById(3L)).willReturn(endStation);
 
         Line line = new Line(구호선,YELLOW);

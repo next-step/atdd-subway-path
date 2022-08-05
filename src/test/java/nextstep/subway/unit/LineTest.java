@@ -64,7 +64,7 @@ class LineTest {
         addSection(line,station2,station3,10);
 
         //when
-        line.getLineSection().remove(염창역);
+        line.getLineSection().remove(station1.getId());
         List<String> stationNames = getStationNames(line);
 
         //then

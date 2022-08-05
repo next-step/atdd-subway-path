@@ -71,6 +71,6 @@ public class LineService {
         Station station = stationService.findById(stationId);
 
         line.getLineSection().checkDeleteArgument(station);
-        line.getLineSection().removeLast();
+        line.getLineSection().remove(stationId);
     }
 }

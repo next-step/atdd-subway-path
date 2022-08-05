@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -11,7 +12,7 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 @Embeddable
 public class LineSection {
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public List<Station> getStations() {
@@ -35,15 +36,13 @@ public class LineSection {
         return sections.stream()
             .filter(v -> v.getUpStation().equals(upStation))
             .findFirst()
-            .orElseThrow();
+            .orElseThrow(NoSuchElementException::new);
     }
     private Section getNextSection(Section now) {
-        for (Section section : sections) {
-            if (now.getDownStation().equals(section.getUpStation())) {
-                return section;
-            }
-        }
-        return null;
+        return sections.stream()
+            .filter(v->v.getUpStation().equals(now.getDownStation()))
+            .findFirst()
+            .orElseThrow(NoSuchElementException::new);
     }
 
     private boolean hasNextSection(Section now) {
@@ -108,7 +107,7 @@ public class LineSection {
         return sections.stream()
             .filter(v -> v.getUpStation().getId().equals(upStationId))
             .findFirst()
-            .orElseThrow();
+            .orElseThrow(NoSuchElementException::new);
     }
     private boolean hasSectionByUpStationId(Long upStationId) {
         List<Section> foundSections = sections.stream()
@@ -127,14 +126,7 @@ public class LineSection {
         return sections.stream()
             .filter(v -> v.getDownStation().getId().equals(downStationId))
             .findFirst()
-            .orElseThrow();
-    }
-
-    private boolean hasSectionByDownStationId(Long downStationId) {
-        List<Section> foundSections = sections.stream()
-            .filter(v -> v.getDownStation().getId().equals(downStationId))
-            .collect(Collectors.toList());
-        return !foundSections.isEmpty();
+            .orElseThrow(NoSuchElementException::new);
     }
     private boolean findSectionByDownStation(Long downStationId) {
         List<Section> foundSections = sections.stream()
@@ -152,11 +144,58 @@ public class LineSection {
         return 0;
     }
 
-    public void remove(String stationName) {
-        sections.removeIf(v->v.getUpStation().getName().equals(stationName));
+    public void remove(Long stationId) {
+        if (hasUpStationId(stationId)) {
+            if (!isFirst(stationId)) {
+                Section leftSection = getSectionByDownStationId(stationId);
+                Section deleteSection = getSectionByUpStationId(stationId);
+                Station newStation = deleteSection.getDownStation();
+                leftSection.changeDistance(leftSection.getDistance() + deleteSection.getDistance());
+                leftSection.changeDownStation(newStation);
+            }
+            sections.removeIf(v->v.getUpStation().getId().equals(stationId));
+            return;
+        }
+        if (hasDownStationId(stationId)) {
+            sections.removeIf(v->v.getDownStation().getId().equals(stationId));
+            return;
+        }
+        throw new RuntimeException();
     }
-    public void removeLast() {
-        sections.remove(sections.size() - 1);
+
+    private boolean isFirst(Long stationId) {
+        return getStations().get(0).getId().equals(stationId);
+    }
+
+    private int getDistance(Long stationId) {
+        return sections.stream()
+            .filter(v -> v.getUpStation().getId().equals(stationId))
+            .findFirst()
+            .orElseThrow(NoSuchElementException::new)
+            .getDistance();
+    }
+
+    private boolean hasUpStationId(Long stationId) {
+        return sections.stream()
+            .map(v -> v.getUpStation().getId())
+            .anyMatch(v -> v.equals(stationId));
+    }
+    private Section getSectionByUpStationId(Long stationId) {
+        return sections.stream()
+            .filter(v->v.getUpStation().getId().equals(stationId))
+            .findFirst()
+            .orElseThrow(NoSuchElementException::new);
+    }
+    private boolean hasDownStationId(Long stationId) {
+        return sections.stream()
+            .map(v -> v.getDownStation().getId())
+            .anyMatch(v -> v.equals(stationId));
+    }
+    private Section getSectionByDownStationId(Long stationId) {
+        return sections.stream()
+            .filter(v->v.getDownStation().getId().equals(stationId))
+            .findFirst()
+            .orElseThrow(NoSuchElementException::new);
     }
 
     public List<Section> getSections() {
@@ -178,8 +217,11 @@ public class LineSection {
         return sections.isEmpty();
     }
     public void checkDeleteArgument(Station station) {
-        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException("올바르지 않은 입력값입니다.");
+        if (getSections().size()<=1) {
+            throw new IllegalArgumentException("최소 1개 이상의 구간이 존재해야합니다.");
+        }
+        if (!getStations().contains(station)) {
+            throw new IllegalArgumentException("노선에 등록되지 않은 역입니다.");
         }
     }
     public void checkAddArgument(SectionRequest sectionRequest) {
