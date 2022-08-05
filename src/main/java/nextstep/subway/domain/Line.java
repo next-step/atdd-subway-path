@@ -50,4 +50,12 @@ public class Line {
     public List<Section> getSections() {
         return sections;
     }
+
+    public void addSection(Section section) {
+        this.sections.add(section);
+    }
+
+    public void removeSection(Section section) {
+        this.sections.remove(section);
+    }
 }
