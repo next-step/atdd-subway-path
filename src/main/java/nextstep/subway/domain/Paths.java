@@ -14,12 +14,10 @@ import java.util.Optional;
 @AllArgsConstructor
 public class Paths {
 
-    private WeightedMultigraph<Station, DefaultWeightedEdge> paths;
     private DijkstraShortestPath shortestPath;
     private Lines lines;
 
     private Paths(WeightedMultigraph<Station, DefaultWeightedEdge> paths, Lines lines) {
-        this.paths = paths;
         this.shortestPath = new DijkstraShortestPath(paths);
         this.lines = lines;
     }
@@ -44,9 +42,10 @@ public class Paths {
         }
         Station sourceStation = lines.getStation(source);
         Station targetStation = lines.getStation(target);
-        GraphPath path = Optional.ofNullable(shortestPath.getPath(sourceStation, targetStation))
+
+        return Optional.ofNullable(shortestPath.getPath(sourceStation, targetStation))
+                .map(Path::new)
                 .orElseThrow(NoPathException::new);
-        return new Path(path);
     }
 
 }
