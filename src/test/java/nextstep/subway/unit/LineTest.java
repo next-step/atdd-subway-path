@@ -52,7 +52,6 @@ class LineTest {
         // given
         int expectedSize = 3;
         Line line = 이호선();
-        line.addSection(강남역(), 역삼역(), TEN);
 
         // when
         line.addSection(역삼역(), 선릉역(), TEN);
@@ -68,7 +67,6 @@ class LineTest {
         // given
         int expectedSize = 3;
         Line line = 이호선();
-        line.addSection(강남역(), 역삼역(), TEN);
 
         // when
         line.addSection(선릉역(), 역삼역(), FIVE);
@@ -84,7 +82,6 @@ class LineTest {
         // given
         int expectedSize = 3;
         Line line = 이호선();
-        line.addSection(강남역(), 역삼역(), TEN);
 
         // when
         line.addSection(강남역(), 선릉역(), FIVE);
@@ -100,7 +97,6 @@ class LineTest {
         // given
         int expectedSize = 3;
         Line line = 이호선();
-        line.addSection(강남역(), 역삼역(), TEN);
 
         // when
         line.addSection(선릉역(), 강남역(), TEN);
@@ -115,7 +111,6 @@ class LineTest {
     void addSectionInFrontOfTailWithInvalidDistance() {
         // given
         Line line = 이호선();
-        line.addSection(강남역(), 역삼역(), TEN);
 
         // when
         Executable executable = () -> line.addSection(선릉역(), 역삼역(), TEN);
@@ -129,7 +124,6 @@ class LineTest {
     void addSectionNextToHeadWithInvalidDistance() {
         // given
         Line line = 이호선();
-        line.addSection(강남역(), 역삼역(), TEN);
 
         // when
         Executable executable = () -> line.addSection(강남역(), 선릉역(), TEN);
@@ -143,7 +137,6 @@ class LineTest {
     void addSectionWithDuplicatedStations() {
         // given
         Line line = 이호선();
-        line.addSection(강남역(), 역삼역(), TEN);
 
         // when
         Executable executable = () -> line.addSection(역삼역(), 강남역(), TEN);
@@ -157,7 +150,6 @@ class LineTest {
     void addSectionWithInvalidStations() {
         // given
         Line line = 이호선();
-        line.addSection(강남역(), 역삼역(), TEN);
 
         // when
         Executable executable = () -> line.addSection(선릉역(), 양재역(), TEN);
@@ -172,7 +164,6 @@ class LineTest {
         // given
         int expectedSize = 2;
         Line line = 이호선();
-        line.addSection(강남역(), 역삼역(), TEN);
         line.addSection(역삼역(), 선릉역(), FIVE);
 
         // when
@@ -189,7 +180,6 @@ class LineTest {
         // given
         int expectedSize = 2;
         Line line = 이호선();
-        line.addSection(강남역(), 역삼역(), TEN);
         line.addSection(역삼역(), 선릉역(), FIVE);
 
         // when
@@ -207,7 +197,6 @@ class LineTest {
         int expectedSize = 3;
         Line line = 이호선();
         line.addSection(양재역(), 강남역(), TEN);
-        line.addSection(강남역(), 역삼역(), TEN);
         line.addSection(역삼역(), 선릉역(), FIVE);
 
         // when
@@ -223,7 +212,6 @@ class LineTest {
     void removeSectionWithNonExistStation() {
         // given
         Line line = 이호선();
-        line.addSection(강남역(), 역삼역(), TEN);
 
         // when
         Executable executable = () -> line.removeSection(선릉역());
@@ -237,7 +225,6 @@ class LineTest {
     void removeSingleSection() {
         // given
         Line line = 이호선();
-        line.addSection(강남역(), 역삼역(), TEN);
 
         // when
         Executable executable = () -> line.removeSection(역삼역());

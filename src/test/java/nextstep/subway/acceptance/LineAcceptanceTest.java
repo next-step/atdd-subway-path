@@ -507,7 +507,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     /**
      * Given 지하철 노선을 생성하고 구간을 추가한 후
      * When 지하철 노선에 구간에 존재하지 않는 역을 삭제하면
-     * Then Then 오류(NoSuchElementException) 객체를 반환한다
+     * Then 오류(NoSuchElementException) 객체를 반환한다
      */
     @DisplayName("지하철 노선에 구간 제거 실패 - 구간에 존재하지 않는 역 제거")
     @Test
@@ -530,7 +530,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     /**
      * Given 지하철 노선을 생성하고 구간을 추가한 후
      * When 지하철 노선에 하행 종점역이 아닌 다른 역을 삭제하면
-     * Then Then 오류(SectionRemovalException) 객체를 반환한다
+     * Then 오류(SectionRemovalException) 객체를 반환한다
      */
     @DisplayName("지하철 노선에 구간 제거 실패 - 구간이 1개인 경우")
     @Test

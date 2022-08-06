@@ -49,8 +49,6 @@ public class LineQueryServiceMockTest {
         int expectedSize = 2;
         Line 이호선 = 이호선();
         Line 신분당선 = 신분당선();
-        이호선.addSection(강남역(), 역삼역(), TEN);
-        신분당선.addSection(강남역(), 양재역(), FIVE);
         doReturn(List.of(이호선, 신분당선)).when(lineRepository)
                 .findAll();
 
@@ -74,7 +72,6 @@ public class LineQueryServiceMockTest {
         // given
         int expectedSize = 2;
         Line 이호선 = 이호선();
-        이호선.addSection(강남역(), 역삼역(), TEN);
         doReturn(Optional.ofNullable(이호선)).when(lineRepository)
                 .findById(이호선.getId());
 
@@ -96,7 +93,6 @@ public class LineQueryServiceMockTest {
         Line 이호선 = 이호선();
         Station 강남역 = 강남역();
         Station 역삼역 = 역삼역();
-        이호선.addSection(강남역, 역삼역, TEN);
         doReturn(Optional.ofNullable(이호선)).when(lineRepository)
                 .findById(이호선.getId());
 

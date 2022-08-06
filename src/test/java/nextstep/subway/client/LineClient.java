@@ -2,12 +2,14 @@ package nextstep.subway.client;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import lombok.RequiredArgsConstructor;
 import nextstep.subway.client.dto.LineCreationRequest;
 import nextstep.subway.client.dto.LineModificationRequest;
 import nextstep.subway.client.dto.SectionRegistrationRequest;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class LineClient {
 
     private static final String LINES_PATH = "/lines";
@@ -15,10 +17,6 @@ public class LineClient {
     private static final String SECTIONS_PATH = "/lines/{id}/sections";
 
     private final ApiCRUD apiCRUD;
-
-    public LineClient(ApiCRUD apiCRUD) {
-        this.apiCRUD = apiCRUD;
-    }
 
     public ExtractableResponse<Response> createLine(LineCreationRequest lineRequest) {
         return apiCRUD.create(LINES_PATH, lineRequest);

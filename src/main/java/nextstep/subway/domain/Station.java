@@ -34,4 +34,8 @@ public class Station {
         return name;
     }
 
+    public boolean isEqualTo(Long id) {
+        return this.id.equals(id);
+    }
+
 }

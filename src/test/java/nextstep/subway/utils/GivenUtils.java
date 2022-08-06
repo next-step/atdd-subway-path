@@ -36,6 +36,7 @@ public class GivenUtils {
     public static final String 양재역_이름 = "양재역";
     public static final String 선릉역_이름 = "선릉역";
     public static final String 교대역_이름 = "교대역";
+    public static final String 남부터미널역_이름 = "남부터미널역";
     public static final List<String> 이호선역_이름들 = List.of(강남역_이름, 역삼역_이름);
     public static final List<String> 신분당선역_이름들 = List.of(강남역_이름, 양재역_이름);
 
@@ -60,11 +61,15 @@ public class GivenUtils {
     }
 
     public static Line 이호선() {
-        return new Line(FIRST_ID, 이호선_이름, GREEN);
+        Line line = new Line(FIRST_ID, 이호선_이름, GREEN);
+        line.addSection(강남역(), 역삼역(), TEN);
+        return line;
     }
 
     public static Line 신분당선() {
-        return new Line(SECOND_ID, 신분당선_이름, RED);
+        Line line = new Line(SECOND_ID, 신분당선_이름, RED);
+        line.addSection(강남역(), 양재역(), FIVE);
+        return line;
     }
 
     public static Line 분당선() {
@@ -103,6 +108,33 @@ public class GivenUtils {
 
     public ExtractableResponse<Response> 강남역_생성() {
         return stationClient.createStation(강남역_이름);
+    }
+
+    public ExtractableResponse<Response> 교대역_생성() {
+        return stationClient.createStation(교대역_이름);
+    }
+
+    public ExtractableResponse<Response> 양재역_생성() {
+        return stationClient.createStation(양재역_이름);
+    }
+
+    public ExtractableResponse<Response> 남부터미널역_생성() {
+        return stationClient.createStation(남부터미널역_이름);
+    }
+
+    public ExtractableResponse<Response> 지하철_생성(
+            String name,
+            String color,
+            Long upStationId,
+            Long downStationId,
+            int distance) {
+        return lineClient.createLine(new nextstep.subway.client.dto.LineCreationRequest(
+                name,
+                color,
+                upStationId,
+                downStationId,
+                distance
+        ));
     }
 
     public nextstep.subway.client.dto.LineCreationRequest 이호선_생성_요청() {

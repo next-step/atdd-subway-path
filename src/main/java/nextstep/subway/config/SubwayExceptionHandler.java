@@ -1,6 +1,7 @@
 package nextstep.subway.config;
 
 import nextstep.subway.exception.InvalidDistanceBetweenStationsException;
+import nextstep.subway.exception.NoPathException;
 import nextstep.subway.exception.SectionRegistrationException;
 import nextstep.subway.exception.SectionRemovalException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -52,6 +53,20 @@ public class SubwayExceptionHandler {
     @ExceptionHandler({NoSuchElementException.class})
     public ResponseEntity<ErrorResponse> noSuchElementException(NoSuchElementException e) {
         final ErrorResponse errorResponse = new ErrorResponse(NoSuchElementException.class.getName(), e.getMessage());
+        return ResponseEntity.badRequest()
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler({IllegalArgumentException.class})
+    public ResponseEntity<ErrorResponse> illegalArgumentException(IllegalArgumentException e) {
+        final ErrorResponse errorResponse = new ErrorResponse(IllegalArgumentException.class.getName(), e.getMessage());
+        return ResponseEntity.badRequest()
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler({NoPathException.class})
+    public ResponseEntity<ErrorResponse> noPathException(NoPathException e) {
+        final ErrorResponse errorResponse = new ErrorResponse(NoPathException.class.getName(), e.getMessage());
         return ResponseEntity.badRequest()
                 .body(errorResponse);
     }

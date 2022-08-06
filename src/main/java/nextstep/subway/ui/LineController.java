@@ -3,7 +3,6 @@ package nextstep.subway.ui;
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.applicaion.LineCommandService;
 import nextstep.subway.applicaion.LineQueryService;
-import nextstep.subway.applicaion.StationQueryService;
 import nextstep.subway.applicaion.dto.LineCreationRequest;
 import nextstep.subway.applicaion.dto.LineModificationRequest;
 import nextstep.subway.applicaion.dto.LineResponse;

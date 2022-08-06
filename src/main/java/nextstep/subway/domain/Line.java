@@ -68,4 +68,8 @@ public class Line {
         return sections.getStations();
     }
 
+    public List<Section> getSections() {
+        return sections.getSections();
+    }
+
 }
