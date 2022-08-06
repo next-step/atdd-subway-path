@@ -78,24 +78,8 @@ public class LineService {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                createStationResponses(line)
+                line.createStationResponses()
         );
-    }
-
-    private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, line.getSections().get(0).getUpStation());
-
-        return stations.stream()
-                .map(it -> stationService.createStationResponse(it))
-                .collect(Collectors.toList());
     }
 
     @Transactional

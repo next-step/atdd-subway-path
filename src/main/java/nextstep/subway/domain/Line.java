@@ -1,8 +1,12 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.applicaion.dto.StationResponse;
+
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -72,6 +76,24 @@ public class Line {
 
         return stations;
     }
+
+
+    public List<StationResponse> createStationResponses() {
+        if (getSections().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Station> stations = getSections().stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+
+        stations.add(0, getSections().get(0).getUpStation());
+
+        return stations.stream()
+                .map(Station::createStationResponse)
+                .collect(Collectors.toList());
+    }
+
 
 
 }
