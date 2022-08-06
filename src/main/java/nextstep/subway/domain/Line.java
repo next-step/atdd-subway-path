@@ -55,6 +55,13 @@ public class Line {
         sections.add(section);
     }
 
+    public void removeSection() {
+        int lastSectionIndex = sections.size() - 1;
+        if (lastSectionIndex > 0) {
+            sections.remove(lastSectionIndex);
+        }
+    }
+
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
 
@@ -65,4 +72,6 @@ public class Line {
 
         return stations;
     }
+
+
 }

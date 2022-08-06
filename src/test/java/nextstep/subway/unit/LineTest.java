@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LineTest {
 
     Line 일호선_생성() {
-        Line line = 일호선_생성();
+        Line line = new Line();
 
         Station 구로역 = new Station("구로역");
         Station 신도림역 = new Station("신도림역");
@@ -43,9 +43,22 @@ class LineTest {
 
     @Test
     void removeSection() {
-        Line line = new Line("1호선", "blue");
+        // given
+        Line line = 일호선_생성();
 
+        Station 신도림역 = new Station("신도림역");
+        Station 영등포역 = new Station("영등포역");
 
+        line.addSection(new Section(line, 신도림역, 영등포역, 15));
+
+        // when
+        line.removeSection();
+
+        // then
+        List<Station> stations = line.getStations();
+        assertThat(stations.stream().map(Station::getName)
+                .collect(Collectors.toList()))
+                .contains("구로역", "신도림역");
 
     }
 }
