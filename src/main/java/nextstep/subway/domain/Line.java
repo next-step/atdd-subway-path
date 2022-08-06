@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 
 import javax.persistence.*;
@@ -93,6 +94,16 @@ public class Line {
                 .map(Station::createStationResponse)
                 .collect(Collectors.toList());
     }
+
+    public LineResponse createLineResponse() {
+        return new LineResponse(
+                getId(),
+                getName(),
+                getColor(),
+                createStationResponses()
+        );
+    }
+
 
 
 
