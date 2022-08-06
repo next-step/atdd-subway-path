@@ -7,7 +7,7 @@
   - 구간 단위 테스트 (LineTest)
   - 구간 서비스 단위 테스트 with Mock (LineServiceMockTest)
   - 구간 서비스 단위 테스트 without Mock (LineServiceTest)
-- [ ] 단위 테스트 기반으로 비즈니스 로직 리팩터링
+- [x] 단위 테스트 기반으로 비즈니스 로직 리팩터링
 
 ### 참고
 - 기존 기능에 대한 단위 테스트 코드 작성
