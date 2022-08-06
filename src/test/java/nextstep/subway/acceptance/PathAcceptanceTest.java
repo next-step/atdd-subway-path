@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,13 +21,15 @@ public class PathAcceptanceTest extends AcceptanceTest {
     Long 강남역;
     Long 역삼역;
     Long 신논현역;
+    Long 논현역;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
         강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
         역삼역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
-        신논현역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+        신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
+        논현역 = 지하철역_생성_요청("논현역").jsonPath().getLong("id");
     }
 
     /**
@@ -45,6 +48,38 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.jsonPath().getInt("distance")).isEqualTo(20);
         assertThat(response.jsonPath().getList("paths.id", Long.class)).containsExactly(역삼역, 강남역, 신논현역);
+    }
+
+    /**
+     * Given 출발역과 도착역이 같은 경로를 설정하고 
+     * When 경로 조회를 요청하면
+     * Then 경로 조회 응답에 실패한다.
+     */
+    @DisplayName("출발역과 도착역이 같을 때 경로 조회 오류")
+    @Test
+    void samePath() {
+
+        지하철_노선_생성_요청(createLineCreateParams(강남역, 역삼역)).jsonPath().getLong("id");
+        지하철_노선_생성_요청(createLineCreateParams(논현역, 신논현역)).jsonPath().getLong("id");
+
+        ExtractableResponse<Response> response = 지하철_경로_조회_요청(역삼역, 신논현역);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 연결되지 않은 노선을 생성하고 
+     * When 경로 조회를 요청하면
+     * Then 경로 조회에 실패한다.
+     */
+    @DisplayName("출발역과 도착역의 연결이 되어 있지 않은 경우")
+    @Test
+    void notConnectPath() {
+
+        지하철_노선_생성_요청(createLineCreateParams(강남역, 역삼역)).jsonPath().getLong("id");
+        지하철_노선_생성_요청(createLineCreateParams(논현역, 신논현역)).jsonPath().getLong("id");
+
+        ExtractableResponse<Response> response = 지하철_경로_조회_요청(역삼역, 신논현역);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {

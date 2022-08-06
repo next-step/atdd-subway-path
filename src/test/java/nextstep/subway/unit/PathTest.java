@@ -10,8 +10,9 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class PathFinderTest {
+class PathTest {
 
     Line 신분당선;
     Station 신논현역;
@@ -45,6 +46,30 @@ class PathFinderTest {
 
         assertThat(pathFinder.paths(역삼역, 신논현역).getPaths()).containsExactly(역삼역, 강남역, 신논현역);
         assertThat(pathFinder.paths(역삼역, 신논현역).getDistance()).isEqualTo(8);
+    }
+
+    @DisplayName("지하철 경로 조회 시 출발역과 도착역이 같을 경우 예외 발생")
+    @Test
+    void 출발역_도착역_같을경우_오류() {
+        Line 이호선 = Line.of("신분당선", "RED");
+        신분당선.addSection(강남역, 양재역, 5);
+        이호선.addSection(역삼역, 강남역, 3);
+        PathFinder pathFinder = new PathFinder(List.of(신분당선, 이호선));
+        assertThatThrownBy(() -> {
+            pathFinder.paths(역삼역, 신논현역).getPaths();
+        }).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("출발역과 도착역의 연결이 되어 있지 않은 경우")
+    @Test
+    void 출발역_도착역_같을경우() {
+        Line 이호선 = Line.of("신분당선", "RED");
+        신분당선.addSection(강남역, 양재역, 5);
+        이호선.addSection(역삼역, 강남역, 3);
+        PathFinder pathFinder = new PathFinder(List.of(신분당선, 이호선));
+        assertThatThrownBy(() -> {
+            pathFinder.paths(역삼역, 신논현역).getPaths();
+        }).isInstanceOf(IllegalArgumentException.class);
     }
     
 }

@@ -26,9 +26,19 @@ public class PathFinder {
         return new PathFinder(노선목록);
     }
 
-    public PathResponse paths(Station startStation, Station endStation) {
-        GraphPath<Station, DefaultWeightedEdge> paths = subwayGraph.getPath(startStation, endStation);
+    public PathResponse paths(Station source, Station target) {
+        validSearchPath(source, target);
+        GraphPath<Station, DefaultWeightedEdge> paths = subwayGraph.getPath(source, target);
+        if (paths == null) {
+            throw new IllegalArgumentException();
+        }
         return new PathResponse(paths.getVertexList(), (int) paths.getWeight());
+    }
+
+    private void validSearchPath(Station source, Station target) {
+        if (source.equals(target)) {
+            throw new IllegalArgumentException("출발역과 도착역이 같을 수 없습니다.");
+        }
     }
 
     private WeightedMultigraph<Station, DefaultWeightedEdge> createSubwayGraph(List<Line> lines) {
