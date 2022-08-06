@@ -4,12 +4,16 @@ import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
+import nextstep.subway.applicaion.dto.LineUpdateRequest;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.NotFoundException;
+import nextstep.subway.exception.advice.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -36,6 +40,7 @@ public class LineServiceMockTest {
         lineService = new LineService(lineRepository, stationService);
     }
 
+    @DisplayName("노선 생성")
     @Test
     void saveLine() {
         // given
@@ -53,6 +58,7 @@ public class LineServiceMockTest {
         assertThat(노선_생성_응답.getId()).isEqualTo(이호선.getId());
     }
 
+    @DisplayName("노선 목록 가져오기")
     @Test
     void showLines() {
         // given
@@ -66,6 +72,7 @@ public class LineServiceMockTest {
         assertThat(노선_목록_응답).hasSize(1);
     }
 
+    @DisplayName("ID 를 통해 노선 정보 가져오기")
     @Test
     void findById() {
         // given
@@ -79,6 +86,7 @@ public class LineServiceMockTest {
         assertThat(노선_조회_응답.getId()).isEqualTo(이호선.getId());
     }
 
+    @DisplayName("노선 수정")
     @Test
     void updateLine() {
         // given
@@ -86,13 +94,14 @@ public class LineServiceMockTest {
         when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
 
         // when
-        lineService.updateLine(이호선.getId(), new LineRequest("8호선", null));
+        lineService.updateLine(이호선.getId(), new LineUpdateRequest("8호선", null));
 
         // then
         final LineResponse 노선_조회_응답 = lineService.findById(이호선.getId());
         assertThat(노선_조회_응답.getName()).isEqualTo("8호선");
     }
 
+    @DisplayName("노선 삭제")
     @Test
     void deleteLine() {
         // given
@@ -104,9 +113,10 @@ public class LineServiceMockTest {
         // then
         assertThatThrownBy(() -> {
             lineService.findById(이호선.getId());
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(NotFoundException.class);
     }
 
+    @DisplayName("구간 추가")
     @Test
     void addSection() {
         // given
@@ -128,6 +138,7 @@ public class LineServiceMockTest {
         assertThat(노선_응답.getId()).isEqualTo(이호선.getId());
     }
 
+    @DisplayName("구간 삭제")
     @Test
     void deleteSection() {
         // given
@@ -144,6 +155,23 @@ public class LineServiceMockTest {
         // then
         final List<Section> 노선_구간들 = 이호선.getSections();
         assertThat(노선_구간들).hasSize(0);
+    }
+
+    @DisplayName("노선의 하행종점역이 아닌 역을 삭제하려고 할 때 에러 발생")
+    @Test
+    void deleteSectionWithNonLastStation() {
+        // given
+        final Station 강남역 = 강남역();
+        final Station 역삼역 = 역삼역();
+        final Line 이호선 = 이호선();
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
+        when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
+        when(stationService.findById(any())).thenReturn(강남역);
+
+        // when
+        assertThatThrownBy(() -> {
+            lineService.deleteSection(이호선.getId(), 강남역.getId());
+        }).isInstanceOf(ValidationException.class);
     }
 
     private Station 강남역() {

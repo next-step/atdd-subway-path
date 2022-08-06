@@ -1,9 +1,11 @@
 package nextstep.subway.unit;
 
+import nextstep.subway.applicaion.dto.service.LineUpdateDto;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -25,6 +27,18 @@ class LineTest {
         이호선 = new Line("2호선", "green");
     }
 
+    @DisplayName("지하철 노선 수정")
+    @Test
+    void update() {
+        // when
+        이호선.update(new LineUpdateDto("신분당선", "red"));
+        
+        // then
+        assertThat(이호선.getName()).isEqualTo("신분당선");
+        assertThat(이호선.getColor()).isEqualTo("red");
+    }
+
+    @DisplayName("구간 추가")
     @Test
     void addSection() {
         // Given
@@ -38,6 +52,7 @@ class LineTest {
         assertThat(이호선_구간_리스트).hasSize(2);
     }
 
+    @DisplayName("구간 목록 가져오기")
     @Test
     void getStations() {
         // Given
@@ -50,6 +65,7 @@ class LineTest {
         assertThat(이호선_구간_리스트).hasSize(1);
     }
 
+    @DisplayName("구간 삭제")
     @Test
     void removeSection() {
         // Given

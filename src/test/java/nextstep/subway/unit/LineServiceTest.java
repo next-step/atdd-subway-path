@@ -3,12 +3,14 @@ package nextstep.subway.unit;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
+import nextstep.subway.applicaion.dto.LineUpdateRequest;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
+import nextstep.subway.exception.advice.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.NotExtensible;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -40,19 +43,7 @@ public class LineServiceTest {
         이호선 = 이호선_생성();
     }
 
-    @Nested
-    class saveTest {
-        @Test
-        void saveLine() {
-            // when
-            final LineResponse 노선_생성_응답 = lineService.saveLine(new LineRequest("2호선", "green", 강남역.getId(), 역삼역.getId(), 10));
-
-            // then
-            final List<LineResponse> 노선_목록_응답 = lineService.showLines();
-            assertThat(노선_목록_응답).hasSize(2);
-        }
-    }
-
+    @DisplayName("지하철 노선 목록 가져오기")
     @Test
     void showLines() {
         // when
@@ -62,6 +53,7 @@ public class LineServiceTest {
         assertThat(노선_목록_응답).hasSize(1);
     }
 
+    @DisplayName("ID 를 통해 지하철 노선 가져오기")
     @Test
     void findById() {
         // when
@@ -71,15 +63,17 @@ public class LineServiceTest {
         assertThat(노선_정보_응답.getId()).isEqualTo(이호선.getId());
     }
 
+    @DisplayName("지하철 노선 정보 수정")
     @Test
     void updateLine() {
         // when
-        lineService.updateLine(이호선.getId(), new LineRequest("8호선", null));
+        lineService.updateLine(이호선.getId(), new LineUpdateRequest("8호선", null));
 
         // then
         assertThat(이호선.getName()).isEqualTo("8호선");
     }
 
+    @DisplayName("지하철 노선 삭제")
     @Test
     void deleteLine() {
         // when
@@ -90,6 +84,7 @@ public class LineServiceTest {
         assertThat(노선_목록_응답).hasSize(0);
     }
 
+    @DisplayName("지하철 노선에 구간 추가")
     @Test
     void addSection() {
         // when
@@ -102,6 +97,7 @@ public class LineServiceTest {
         assertThat(노선_구간들).hasSize(1);
     }
 
+    @DisplayName("지하철 노선에서 구간 제거")
     @Test
     void deleteSection() {
         // given
@@ -113,6 +109,32 @@ public class LineServiceTest {
         // then
         final List<Section> 노선_구간들 = 이호선.getSections();
         assertThat(노선_구간들).hasSize(0);
+    }
+
+    @DisplayName("지하철 노선에서 하행종점역이 아닌 역을 제거하려고 할 때 에러 발생")
+    @Test
+    void deleteSectionWithNonLastStation() {
+        // given
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
+
+        // when
+        assertThatThrownBy(() -> {
+            lineService.deleteSection(이호선.getId(), 강남역.getId());
+        }).isInstanceOf(ValidationException.class);
+    }
+
+    @Nested
+    class saveTest {
+        @DisplayName("노선 생성")
+        @Test
+        void saveLine() {
+            // when
+            lineService.saveLine(new LineRequest("2호선", "green", 강남역.getId(), 역삼역.getId(), 10));
+
+            // then
+            final List<LineResponse> 노선_목록_응답 = lineService.showLines();
+            assertThat(노선_목록_응답).hasSize(2);
+        }
     }
 
     private Line 이호선_생성() {
