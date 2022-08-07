@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.applicaion.dto.service.LineUpdateDto;
+import nextstep.subway.exception.advice.ValidationException;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +19,12 @@ public class Line {
     private List<Section> sections = new ArrayList<>();
 
     public Line() {
+    }
+
+    public Line(Long id, String name, String color) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
     }
 
     public Line(String name, String color) {
@@ -49,5 +58,33 @@ public class Line {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public Section getLastSection() {
+        return this.getSections().get(this.getSections().size() - 1);
+    }
+
+    public void addSection(Section section) {
+        this.sections.add(section);
+    }
+
+    public void update(LineUpdateDto lineUpdateDto) {
+        if (lineUpdateDto.getName() != null) {
+            this.name = lineUpdateDto.getName();
+        }
+
+        if (lineUpdateDto.getColor() != null) {
+            this.color = lineUpdateDto.getColor();
+        }
+    }
+
+    public void removeSection(Section section) {
+        this.sections.remove(section);
+    }
+
+    public void validateBeforeRemoveSection(Station station) {
+        if (!this.getSections().get(this.getSections().size() - 1).getDownStation().equals(station)) {
+            throw new ValidationException("삭제하려는 역이 하행종점역이 아닙니다.");
+        }
     }
 }
