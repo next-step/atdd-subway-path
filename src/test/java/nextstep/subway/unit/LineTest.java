@@ -30,7 +30,7 @@ class LineTest {
     }
 
     @Test
-    void removeSection() {
+    void removeStation() {
         Line 분당선 = new Line("분당선", "red");
         Station 양재역 = new Station("양재역");
         Station 양재시민의숲역 = new Station("양재시민의숲역");
@@ -38,12 +38,12 @@ class LineTest {
         분당선.addSection(new Section(분당선, 양재역, 양재시민의숲역, 10));
         분당선.addSection(new Section(분당선, 양재시민의숲역, 청계산입구역, 10));
 
-        분당선.removeSection();
-        assertThat(분당선.getSections().size()).isEqualTo(1);
+        분당선.removeStation(양재시민의숲역);
+        assertThat(분당선.getStations()).containsExactly(양재역, 청계산입구역);
     }
 
     @Test
-    void addMiddleNextSection() {
+    void addSectionAtMiddleNext() {
         Line 분당선 = new Line("분당선", "red");
         Station 양재역 = new Station("양재역");
         Station 양재시민의숲역 = new Station("양재시민의숲역");
@@ -60,7 +60,7 @@ class LineTest {
     }
 
     @Test
-    void addMiddlePrevSection() {
+    void addSectionAtMiddlePrev() {
         Line 분당선 = new Line("분당선", "red");
         Station 양재역 = new Station("양재역");
         Station 양재시민의숲역 = new Station("양재시민의숲역");

@@ -54,23 +54,25 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        if (getSections().size() > 0) {
+        List<Section> sections = getSections();
+
+        if (sections.size() > 0) {
             checkOneStationExistsInLine(section);
 
-            getSections().stream().filter(it -> it.getDownStation() == section.getDownStation()).findFirst()
+            sections.stream().filter(it -> it.getDownStation() == section.getDownStation()).findFirst()
                     .ifPresent(it -> {
                                 it.checkDistanceDividable(section);
                                 it.setPrevSection(section);
                             }
                     );
-            getSections().stream().filter(it -> it.getUpStation() == section.getUpStation()).findFirst()
+            sections.stream().filter(it -> it.getUpStation() == section.getUpStation()).findFirst()
                     .ifPresent(it -> {
                         it.checkDistanceDividable(section);
                         it.setNextSection(section);
                     });
         }
 
-        getSections().add(section);
+        sections.add(section);
     }
 
     private void checkOneStationExistsInLine(Section section) {
@@ -108,11 +110,26 @@ public class Line {
         return getStationsByRecursive(nextSection, res);
     }
 
-    public boolean isLastStation(Station station) {
-        return getSections().get(getSections().size() - 1).getDownStation().equals(station);
+    public void removeStation(Station station) {
+        Section target = getSections().stream().filter(it -> it.getUpStation() == station).findFirst().orElse(null);
+        Section prev = getSections().stream().filter(it -> it.getDownStation() == station).findFirst().orElse(null);
+
+        if (isLastStation(target)) {
+            sections.remove(prev);
+            return;
+        }
+
+        sections.remove(target);
+        prev.setDownStation(target.getDownStation());
     }
 
-    public void removeSection() {
-        getSections().remove(getSections().size() - 1);
+    private boolean isLastStation(Section target) {
+        return target == null;
+    }
+
+    public void checkHasMoreThanOneSection() {
+        if (sections.size() <= 1) {
+            throw new IllegalArgumentException();
+        }
     }
 }
