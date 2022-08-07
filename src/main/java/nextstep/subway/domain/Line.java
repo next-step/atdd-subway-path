@@ -2,7 +2,9 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Entity
@@ -53,18 +55,34 @@ public class Line {
     }
 
     public void addSection(Section section) {
+        getSections().stream().filter(it -> it.getDownStation() == section.getDownStation()).findFirst()
+                .ifPresent(it -> it.setPrevSection(section));
+        getSections().stream().filter(it -> it.getUpStation() == section.getUpStation()).findFirst()
+                .ifPresent(it -> it.setNextSection(section));
         getSections().add(section);
     }
 
     public List<Station> getStations() {
         List<Section> sections = getSections();
-        List<Station> stations = sections.stream()
-                .map(Section::getUpStation)
-                .collect(Collectors.toList());
+        Map<Station, List<Section>> map = sections.stream().collect(Collectors.groupingBy(Section::getUpStation));
+        Section first = map.entrySet().stream()
+                .filter(it -> it.getValue().size() == 1)
+                .findFirst().orElseThrow()
+                .getValue().get(0);
+        return getStationsByRecursive(first, new ArrayList<>(Collections.singletonList(first.getUpStation())));
+    }
 
-        stations.add(sections.get(sections.size() - 1).getDownStation());
+    private Section getNextSection(Section section) {
+        return sections.stream().filter(it -> section.getDownStation() == it.getUpStation()).findFirst().orElse(null);
+    }
 
-        return stations;
+    private List<Station> getStationsByRecursive(Section target, List<Station> res) {
+        if (target == null) {
+            return res;
+        }
+        res.add(target.getDownStation());
+        Section nextSection = getNextSection(target);
+        return getStationsByRecursive(nextSection, res);
     }
 
     public boolean isLastStation(Station station) {

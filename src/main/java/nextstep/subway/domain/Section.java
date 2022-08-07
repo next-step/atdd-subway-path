@@ -52,4 +52,12 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public void setNextSection(Section added) {
+        upStation = added.downStation;
+    }
+
+    public void setPrevSection(Section added) {
+        downStation = added.upStation;
+    }
 }
