@@ -6,6 +6,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,6 +28,7 @@ public class LineServiceTest {
     @Autowired
     private LineService lineService;
 
+    @DisplayName("지하철 노선에 구간 추가")
     @Test
     void addSection() {
         // given

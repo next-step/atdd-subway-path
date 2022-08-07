@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -23,6 +24,7 @@ class LineTest {
         return line;
     }
 
+    @DisplayName("지하철 노선에 구간 추가")
     @Test
     void addSection() {
         Line line = 일호선_생성();
@@ -31,6 +33,7 @@ class LineTest {
 
     }
 
+    @DisplayName("지하철 노선에 등록된 역 목록 조회")
     @Test
     void getStations() {
         Line line = 일호선_생성();
@@ -42,6 +45,7 @@ class LineTest {
                 .contains("구로역", "신도림역");
     }
 
+    @DisplayName("지하철 노선에서 구간 제거")
     @Test
     void removeSection() {
         // given
