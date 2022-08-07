@@ -11,10 +11,7 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void remove() {
-        int lastSectionIndex = sections.size() - 1;
-        if (lastSectionIndex > 0) {
-            sections.remove(lastSectionIndex);
-        }
+        sections.remove(sections.size() - 1);
     }
 
     public List<Station> getStations() {
