@@ -21,6 +21,7 @@ import static nextstep.subway.unit.LineServiceMockTest.SubwayInfo.신도림역;
 import static nextstep.subway.unit.LineServiceMockTest.SubwayInfo.신도림역_영등포역_거리;
 import static nextstep.subway.unit.LineServiceMockTest.SubwayInfo.영등포역;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 
@@ -114,7 +115,27 @@ public class LineServiceMockTest {
         assertThat(line.getSections().count()).isEqualTo(1);
     }
 
-    public static class SubwayInfo {
+    @DisplayName("지하철 노선에서 구간 제거 실패")
+    @Test
+    void removeSectionFail() {
+        // given
+        Line 일호선 = new Line(1L, "1호선", "blue");
+
+        when(stationService.findById(구로역.getId())).thenReturn(구로역);
+        when(stationService.findById(신도림역.getId())).thenReturn(신도림역);
+        when(stationService.findById(영등포역.getId())).thenReturn(영등포역);
+
+        when(lineRepository.findById(일호선.getId())).thenReturn(Optional.of(일호선));
+
+        // when
+        lineService.addSection(일호선.getId(), new SectionRequest(구로역.getId(), 신도림역.getId(), 구로역_신도림역_거리));
+
+        // then
+        assertThatThrownBy(() -> lineService.deleteSection(일호선.getId(), 영등포역.getId())).isInstanceOf(IllegalArgumentException.class);
+    }
+
+
+        public static class SubwayInfo {
         public static Station 구로역 = new Station(1L, "구로역");
         public static Station 신도림역 = new Station(2L, "신도림역");
         public static Station 영등포역 = new Station(3L, "영등포역");
