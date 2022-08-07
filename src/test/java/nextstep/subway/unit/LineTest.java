@@ -5,11 +5,13 @@ import nextstep.subway.domain.section.Section;
 import nextstep.subway.domain.section.Sections;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.Stations;
+import nextstep.subway.exception.advice.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
 
@@ -74,12 +76,13 @@ class LineTest {
         이호선.addSection(강남역_역삼역_구간);
 
         // when
-        final Section 강남역_삼성역_구간 = new Section(이호선, 강남역, 삼성역, 10);
+        final Section 강남역_삼성역_구간 = new Section(이호선, 강남역, 삼성역, 8);
         이호선.addSection(강남역_삼성역_구간);
 
         // then
         assertThat(이호선.getSections().getList()).hasSize(2);
         assertThat(이호선.getStations().getList()).containsExactly(강남역, 삼성역, 역삼역);
+        assertThat(강남역_역삼역_구간.getDistance()).isEqualTo(10 - 강남역_삼성역_구간.getDistance());
     }
 
     @DisplayName("노선의 상행 종점역으로 새로운 구간 추가")
@@ -96,6 +99,54 @@ class LineTest {
         // then
         assertThat(이호선.getSections().getList()).hasSize(2);
         assertThat(이호선.getStations().getList()).containsExactly(삼성역, 강남역, 역삼역);
+    }
+
+    @DisplayName("역 사이에 구간을 추가할 때 기존 역 사이 길이보다 크거나 같을 경우, 에러 발생")
+    @Test
+    void addSectionWithInvalidDistance() {
+        // given
+        final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
+        이호선.addSection(강남역_역삼역_구간);
+
+        // when
+        final Section 강남역_삼성역_구간 = new Section(이호선, 강남역, 삼성역, 10);
+        assertThatThrownBy(() -> {
+            이호선.addSection(강남역_삼성역_구간);
+        }).isInstanceOf(ValidationException.class);
+
+        final Section 다른_강남역_삼성역_구간 = new Section(이호선, 강남역, 삼성역, 15);
+        assertThatThrownBy(() -> {
+            이호선.addSection(다른_강남역_삼성역_구간);
+        }).isInstanceOf(ValidationException.class);
+    }
+
+    @DisplayName("상행역, 하행역이 모두 등록되어 있는 구간 추가 시, 에러 발생")
+    @Test
+    void addSectionWithExistsUpStationAndDownStation() {
+        // given
+        final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
+        이호선.addSection(강남역_역삼역_구간);
+
+        // when
+        final Section 같은_강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 8);
+        assertThatThrownBy(() -> {
+            이호선.addSection(같은_강남역_역삼역_구간);
+        }).isInstanceOf(ValidationException.class);
+    }
+
+    @DisplayName("상행역, 하행역이 모두 등록되어있지 않은 구간 추가 시, 에러 발생")
+    @Test
+    void addSectionWithNonExistsUpStationAndDownStation() {
+        // given
+        final Station 잠실역 = new Station("잠실역");
+        final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
+        이호선.addSection(강남역_역삼역_구간);
+
+        // when
+        final Section 삼성역_잠실역_구간 = new Section(이호선, 삼성역, 잠실역, 8);
+        assertThatThrownBy(() -> {
+            이호선.addSection(삼성역_잠실역_구간);
+        }).isInstanceOf(ValidationException.class);
     }
 
     @DisplayName("구간 목록 가져오기")
