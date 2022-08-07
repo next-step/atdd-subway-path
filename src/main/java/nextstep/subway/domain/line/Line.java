@@ -117,6 +117,9 @@ public class Line {
             return;
         }
 
+        validateUpStationAndDownStationInSection(section.getUpStation(), section.getDownStation());
+        validateSectionIsAlreadyExists(section);
+
         // 특정 구간 다음으로 추가해야하는지 검색
         final Section existsSection = this.sections.stream()
                 .filter(it ->
@@ -127,10 +130,35 @@ public class Line {
 
         // 역과 역 사이에 구간할 시, 이미 존재하는 구간의 upStation 을 추가하려는 구간의 downStation 을 바라보도록 변경
         if (existsSection != null && existsSection.getUpStation().equals(section.getUpStation())) {
+            validateSectionDistance(existsSection, section);
             existsSection.setUpStation(section.getDownStation());
+            existsSection.setDistance(existsSection.getDistance() - section.getDistance());
         }
         // 상행종점역 또는 하행좀점역으로 구간 추가
         this.sections.add(section);
+    }
+
+    private void validateUpStationAndDownStationInSection(Station upStation, Station downStation) {
+        final Stations stations = this.getStations();
+        if (stations.getList().stream()
+                .noneMatch(it -> it.getName().equals(upStation.getName()) ||
+                        it.getName().equals(downStation.getName()))) {
+            throw new ValidationException("상행역 또는 하행역에 대한 구간이 존재하지 않습니다.");
+        }
+    }
+
+    private void validateSectionIsAlreadyExists(Section section) {
+        if (this.sections.stream()
+                .anyMatch(it -> it.getUpStation().equals(section.getUpStation()) &&
+                        it.getDownStation().equals(section.getDownStation()))) {
+            throw new ValidationException("이미 등록되어있는 구간입니다.");
+        }
+    }
+
+    private void validateSectionDistance(Section existsSection, Section newSection) {
+        if (existsSection.getDistance() <= newSection.getDistance()) {
+            throw new ValidationException("기존의 구간의 길이보다 새로운 구간의 길이가 같거나 클 수 없습니다.");
+        }
     }
 
     public void update(String name, String color) {
