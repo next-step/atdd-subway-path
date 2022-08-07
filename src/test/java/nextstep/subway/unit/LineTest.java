@@ -59,5 +59,6 @@ class LineTest {
         assertThat(stations.stream().map(Station::getName)
                 .collect(Collectors.toList()))
                 .contains("구로역", "신도림역");
+
     }
 }
