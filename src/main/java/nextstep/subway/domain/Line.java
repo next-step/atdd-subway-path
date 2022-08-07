@@ -1,12 +1,10 @@
 package nextstep.subway.domain;
 
-import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,8 +15,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -52,7 +50,7 @@ public class Line {
         this.color = color;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return sections;
     }
 
@@ -61,22 +59,21 @@ public class Line {
     }
 
     public void removeSection() {
-        int lastSectionIndex = sections.size() - 1;
-        if (lastSectionIndex > 0) {
-            sections.remove(lastSectionIndex);
-        }
+        sections.remove();
     }
 
     public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
-
-        stations.add(sections.get(0).getUpStation());
-        for (Section section: sections) {
-            stations.add(section.getDownStation());
-        }
-
-        return stations;
+        return sections.getStations();
     }
+
+    public Station getFirstUpStation() {
+        return sections.getFirstUpStation();
+    }
+
+    public Station getLastDownStation() {
+        return sections.getLastDownStation();
+    }
+
 
 
 }

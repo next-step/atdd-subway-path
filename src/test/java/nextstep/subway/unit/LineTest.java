@@ -27,7 +27,8 @@ class LineTest {
     void addSection() {
         Line line = 일호선_생성();
 
-        assertThat(line.getSections().size()).isEqualTo(1);
+        assertThat(line.getSections().count()).isEqualTo(1);
+
     }
 
     @Test
