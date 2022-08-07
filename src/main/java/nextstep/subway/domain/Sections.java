@@ -11,7 +11,12 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void remove() {
-        sections.remove(sections.size() - 1);
+        int lastSectionIndex = sections.size() - 1;
+        if (lastSectionIndex > 0) {
+            sections.remove(lastSectionIndex);
+            return;
+        }
+        throw new IllegalArgumentException("구간이 2개 이상인 경우에만 삭제가 가능합니다.");
     }
 
     public List<Station> getStations() {
