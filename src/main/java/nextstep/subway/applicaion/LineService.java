@@ -1,15 +1,15 @@
 package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.*;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.line.LineRepository;
+import nextstep.subway.domain.section.Section;
+import nextstep.subway.domain.station.Station;
+import nextstep.subway.domain.station.Stations;
 import nextstep.subway.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,16 +74,9 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().getList().isEmpty()) {
-            return Collections.emptyList();
-        }
+        final Stations stations = line.getStations();
 
-        List<Station> stations = line.getSections().getList().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-        stations.add(0, line.getSections().getList().get(0).getUpStation());
-
-        return stations.stream()
+        return stations.getList().stream()
                 .map(it -> stationService.createStationResponse(it))
                 .collect(Collectors.toList());
     }
