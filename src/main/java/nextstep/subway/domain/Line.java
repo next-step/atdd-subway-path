@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.applicaion.dto.service.LineUpdateDto;
 import nextstep.subway.exception.advice.ValidationException;
 
 import javax.persistence.*;
@@ -56,34 +55,35 @@ public class Line {
         this.color = color;
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public Sections getSections() {
+        return new Sections(sections);
     }
 
     public Section getLastSection() {
-        return this.getSections().get(this.getSections().size() - 1);
+        return this.getSections().getList().get(this.getSections().getList().size() - 1);
+    }
     }
 
     public void addSection(Section section) {
         this.sections.add(section);
     }
 
-    public void update(LineUpdateDto lineUpdateDto) {
-        if (lineUpdateDto.getName() != null) {
-            this.name = lineUpdateDto.getName();
+    public void update(String name, String color) {
+        if (name != null) {
+            this.name = name;
         }
-
-        if (lineUpdateDto.getColor() != null) {
-            this.color = lineUpdateDto.getColor();
+        if (color != null) {
+            this.color = color;
         }
     }
 
-    public void removeSection(Section section) {
-        this.sections.remove(section);
+    public void removeSectionWithValidateStation(Station station) {
+        validateBeforeRemoveSection(station);
+        this.sections.remove(this.getLastSection());
     }
 
-    public void validateBeforeRemoveSection(Station station) {
-        if (!this.getSections().get(this.getSections().size() - 1).getDownStation().equals(station)) {
+    private void validateBeforeRemoveSection(Station station) {
+        if (!this.getLastSection().getDownStation().equals(station)) {
             throw new ValidationException("삭제하려는 역이 하행종점역이 아닙니다.");
         }
     }

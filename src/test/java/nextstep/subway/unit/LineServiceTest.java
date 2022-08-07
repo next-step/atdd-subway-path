@@ -93,8 +93,8 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        final List<Section> 노선_구간들 = 이호선.getSections();
-        assertThat(노선_구간들).hasSize(1);
+        final Sections 노선_구간들 = 이호선.getSections();
+        assertThat(노선_구간들.getList()).hasSize(1);
     }
 
     @DisplayName("지하철 노선에서 구간 제거")
@@ -107,8 +107,8 @@ public class LineServiceTest {
         lineService.deleteSection(이호선.getId(), 역삼역.getId());
 
         // then
-        final List<Section> 노선_구간들 = 이호선.getSections();
-        assertThat(노선_구간들).hasSize(0);
+        final Sections 노선_구간들 = 이호선.getSections();
+        assertThat(노선_구간들.getList()).hasSize(0);
     }
 
     @DisplayName("지하철 노선에서 하행종점역이 아닌 역을 제거하려고 할 때 에러 발생")

@@ -101,7 +101,7 @@ public class LineServiceMockTest {
         assertThat(노선_조회_응답.getName()).isEqualTo("8호선");
     }
 
-    @DisplayName("노선 삭제")
+    @DisplayName("노선 삭제 후, 삭제된 노선 조회 실패")
     @Test
     void deleteLine() {
         // given
@@ -151,10 +151,12 @@ public class LineServiceMockTest {
 
         // when
         lineService.deleteSection(이호선.getId(), 역삼역.getId());
+        when(lineRepository.findById(any())).thenReturn(Optional.empty());
 
         // then
-        final List<Section> 노선_구간들 = 이호선.getSections();
-        assertThat(노선_구간들).hasSize(0);
+        assertThatThrownBy(() -> {
+            lineService.findById(이호선.getId());
+        }).isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("노선의 하행종점역이 아닌 역을 삭제하려고 할 때 에러 발생")
