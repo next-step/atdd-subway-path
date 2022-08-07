@@ -1,9 +1,10 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Sections;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.section.Section;
+import nextstep.subway.domain.section.Sections;
+import nextstep.subway.domain.station.Station;
+import nextstep.subway.domain.station.Stations;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -52,9 +53,41 @@ class LineTest {
         assertThat(이호선_구간_리스트.getList()).hasSize(2);
     }
 
+    @DisplayName("노선의 역과 역 사이에 새로운 구간 추가")
+    @Test
+    void addSectionBetweenStations() {
+        // given
+        final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
+        이호선.addSection(강남역_역삼역_구간);
+
+        // when
+        final Section 강남역_삼성역_구간 = new Section(이호선, 강남역, 삼성역, 10);
+        이호선.addSection(강남역_삼성역_구간);
+
+        // then
+        assertThat(이호선.getSections().getList()).hasSize(2);
+        assertThat(이호선.getStations().getList()).containsExactly(강남역, 삼성역, 역삼역);
+    }
+
+    @DisplayName("노선의 상행 종점역으로 새로운 구간 추가")
+    @Test
+    void addSectionWithUpStation() {
+        // given
+        final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
+        이호선.addSection(강남역_역삼역_구간);
+
+        // when
+        final Section 삼성역_강남역_구간 = new Section(이호선, 삼성역, 강남역, 10);
+        이호선.addSection(삼성역_강남역_구간);
+
+        // then
+        assertThat(이호선.getSections().getList()).hasSize(2);
+        assertThat(이호선.getStations().getList()).containsExactly(삼성역, 강남역, 역삼역);
+    }
+
     @DisplayName("구간 목록 가져오기")
     @Test
-    void getStations() {
+    void getSections() {
         // Given
         final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
         이호선.addSection(강남역_역삼역_구간);
