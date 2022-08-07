@@ -125,8 +125,8 @@ class LineTest {
         final Section 이호선_마지막_구간 = 이호선.getLastSection();
 
         // then
-        assertThat(이호선_마지막_구간.getUpStation().getName()).isEqualTo("역삼역");
-        assertThat(이호선_마지막_구간.getDownStation().getName()).isEqualTo("삼성역");
+        assertThat(이호선_마지막_구간.getUpStation()).isEqualTo(역삼역);
+        assertThat(이호선_마지막_구간.getDownStation()).isEqualTo(삼성역);
     }
 
     @DisplayName("구간 삭제")
