@@ -46,10 +46,16 @@ public class Sections {
     }
 
     public List<Station> getStation() {
-        return sections.stream()
+        return getSections().stream()
                 .map(Section::getRelatedStation)
                 .flatMap(Collection::stream)
                 .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public List<Integer> getStationDistance() {
+        return getSections().stream()
+                .map(Section::getDistance)
                 .collect(Collectors.toList());
     }
 
