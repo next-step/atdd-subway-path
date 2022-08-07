@@ -21,16 +21,19 @@ public class Sections {
     }
 
     public void add(Section newSection) {
-        if (!this.sections.isEmpty()) {
-            checkExistsAlreadyRegisterUpDownSection(newSection);
-            checkExistsNotContainStation(newSection);
+        if (this.sections.isEmpty()) {
+            sections.add(newSection);
+            return;
+        }
 
-            Section alreadyRegisterSection = getBetweenSection(newSection);
-            if (Objects.nonNull(alreadyRegisterSection)) {
-                alreadyRegisterSection.isSameDistance(newSection.getDistance());
-                alreadyRegisterSection.modifyBetweenSection(newSection);
-                alreadyRegisterSection.minusDistance(newSection.getDistance());
-            }
+        checkExistsAlreadyRegisterUpDownSection(newSection);
+        checkExistsNotContainStation(newSection);
+
+        Section alreadyRegisterSection = getBetweenSection(newSection);
+        if (Objects.nonNull(alreadyRegisterSection)) {
+            alreadyRegisterSection.isSameDistance(newSection.getDistance());
+            alreadyRegisterSection.modifyBetweenSection(newSection);
+            alreadyRegisterSection.minusDistance(newSection.getDistance());
         }
         sections.add(newSection);
     }
@@ -58,8 +61,6 @@ public class Sections {
         Section firstSection = getFirstSection();
         if (Objects.nonNull(firstSection)) {
             sectionsSortList.add(firstSection);
-
-//        sectionsSortList.addAll(sectionsSortList.stream().takeWhile(section -> Objects.nonNull(getNextSection(section))).collect(Collectors.toList()));
 
             for(int i = 0; i < sections.size(); i++ ){
                 Section nextSection = getNextSection(sectionsSortList.get(i));
