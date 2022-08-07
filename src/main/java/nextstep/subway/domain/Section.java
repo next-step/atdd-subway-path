@@ -55,9 +55,17 @@ public class Section {
 
     public void setNextSection(Section added) {
         upStation = added.downStation;
+        distance -= added.distance;
     }
 
     public void setPrevSection(Section added) {
         downStation = added.upStation;
+        distance -= added.distance;
+    }
+
+    public void checkDistanceDividable(Section added) {
+        if(distance <= added.distance) {
+            throw new IllegalArgumentException();
+        }
     }
 }

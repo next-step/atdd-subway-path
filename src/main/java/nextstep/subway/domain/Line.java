@@ -4,7 +4,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Entity
@@ -55,21 +54,45 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        getSections().stream().filter(it -> it.getDownStation() == section.getDownStation()).findFirst()
-                .ifPresent(it -> it.setPrevSection(section));
-        getSections().stream().filter(it -> it.getUpStation() == section.getUpStation()).findFirst()
-                .ifPresent(it -> it.setNextSection(section));
+        if (getSections().size() > 0) {
+            checkOneStationExistsInLine(section);
+
+            getSections().stream().filter(it -> it.getDownStation() == section.getDownStation()).findFirst()
+                    .ifPresent(it -> {
+                                it.checkDistanceDividable(section);
+                                it.setPrevSection(section);
+                            }
+                    );
+            getSections().stream().filter(it -> it.getUpStation() == section.getUpStation()).findFirst()
+                    .ifPresent(it -> {
+                        it.checkDistanceDividable(section);
+                        it.setNextSection(section);
+                    });
+        }
+
         getSections().add(section);
     }
 
+    private void checkOneStationExistsInLine(Section section) {
+        List<Station> stations = getStations().stream().filter(it -> it == section.getUpStation() || it == section.getDownStation()).collect(Collectors.toList());
+        if (stations.size() != 1) {
+            throw new IllegalArgumentException();
+        }
+    }
+
     public List<Station> getStations() {
-        List<Section> sections = getSections();
-        Map<Station, List<Section>> map = sections.stream().collect(Collectors.groupingBy(Section::getUpStation));
-        Section first = map.entrySet().stream()
-                .filter(it -> it.getValue().size() == 1)
-                .findFirst().orElseThrow()
-                .getValue().get(0);
-        return getStationsByRecursive(first, new ArrayList<>(Collections.singletonList(first.getUpStation())));
+        Section firstSection = getFirstSection(getSections());
+        return getStationsByRecursive(firstSection, new ArrayList<>(Collections.singletonList(firstSection.getUpStation())));
+    }
+
+    private Section getFirstSection(List<Section> sections) {
+        List<Station> upStations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
+        List<Station> downStations = sections.stream().map(Section::getDownStation).collect(Collectors.toList());
+
+        upStations.removeAll(downStations);
+
+        Station firstStation = upStations.get(0);
+        return sections.stream().filter(it -> it.getUpStation() == firstStation).findFirst().get();
     }
 
     private Section getNextSection(Section section) {

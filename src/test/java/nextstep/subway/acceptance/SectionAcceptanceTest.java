@@ -105,10 +105,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 5));
-        Long 미금역 = 지하철역_생성_요청("미금역").jsonPath().getLong("id");
+        Long 판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
 
         //when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 미금역, 5));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(판교역, 정자역, 5));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
