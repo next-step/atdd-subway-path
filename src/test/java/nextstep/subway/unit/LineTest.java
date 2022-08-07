@@ -26,20 +26,33 @@ class LineTest {
         이호선 = new Line("2호선", "green");
     }
 
+    @DisplayName("노선에 연결되어있는 정렬된 지하철 노선 목록 조회")
+    @Test
+    void getStations() {
+        // given
+        이호선.addSection(new Section(이호선, 강남역, 삼성역, 10));
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 9));
+
+        // when
+        final Stations 이호선_역_목록 = 이호선.getStations();
+
+        // then
+        assertThat(이호선_역_목록.getList()).containsExactly(강남역, 역삼역, 삼성역);
+    }
+
     @DisplayName("지하철 노선 수정")
     @Test
     void update() {
         // when
         이호선.update("신분당선", "red");
-
         // then
         assertThat(이호선.getName()).isEqualTo("신분당선");
         assertThat(이호선.getColor()).isEqualTo("red");
     }
 
-    @DisplayName("구간 추가")
+    @DisplayName("노선의 하행 종점역으로 새로운 구간 추가")
     @Test
-    void addSection() {
+    void addSectionWithDownStation() {
         // Given
         final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
         이호선.addSection(강남역_역삼역_구간);
