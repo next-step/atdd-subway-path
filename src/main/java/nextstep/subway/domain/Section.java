@@ -1,8 +1,14 @@
 package nextstep.subway.domain;
 
+import lombok.Getter;
+import nextstep.subway.applicaion.exceptions.InvalidSectionParameterException;
+import nextstep.subway.enums.exceptions.ErrorCode;
+
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
+@Getter
 @Entity
 public class Section {
     @Id
@@ -34,27 +40,40 @@ public class Section {
         this.distance = distance;
     }
 
-    public Long getId() {
-        return id;
+    public boolean isSameUpDownStation(Section newSection) {
+        return upStation.equals(newSection.getUpStation()) || downStation.equals(newSection.getDownStation());
     }
 
-    public Line getLine() {
-        return line;
+    public void minusDistance(int newDistance) {
+        this.distance -= newDistance;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
+    public void isSameDistance(int distance) {
+        if (distance >= this.distance) {
+            throw new InvalidSectionParameterException(ErrorCode.NOT_ENOUGH_DISTANCE);
+        }
     }
 
     public List<Station> getRelatedStation() {
         return List.of(upStation, downStation);
     }
+
+    public void modifyBetweenSection(Section newSection) {
+        if(this.upStation.equals(newSection.getUpStation())){
+            this.upStation = newSection.getDownStation();
+        }
+        if(this.downStation.equals(newSection.getDownStation())){
+            this.downStation = newSection.getUpStation();
+        }
+    }
+
+    public Boolean isSameUpStation(Station upStation) {
+        return Objects.equals(this.upStation, upStation);
+    }
+
+    public Boolean isSameDownStation(Station downStation) {
+        return Objects.equals(this.downStation, downStation);
+    }
+
+
 }

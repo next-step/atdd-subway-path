@@ -3,6 +3,7 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.request.LineRequest;
 import nextstep.subway.applicaion.dto.response.LineResponse;
 import nextstep.subway.applicaion.dto.request.SectionRequest;
+import nextstep.subway.applicaion.dto.response.SectionResponse;
 import nextstep.subway.applicaion.dto.response.StationResponse;
 import nextstep.subway.applicaion.exceptions.DataNotFoundException;
 import nextstep.subway.applicaion.exceptions.InvalidStationParameterException;
@@ -35,7 +36,7 @@ public class LineService {
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = getStation(request.getUpStationId());
             Station downStation = getStation(request.getDownStationId());
-            line.getSections().add(new Section(line, upStation, downStation, request.getDistance()));
+            line.addSection(upStation, downStation, request.getDistance());
         }
         return createLineResponse(line);
     }
@@ -116,5 +117,12 @@ public class LineService {
     private Line getLine(Long lineId) {
         return lineRepository.findById(lineId)
                              .orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_FOUND_LINE));
+    }
+
+    public List<SectionResponse> getSections(Long lineId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new DataNotFoundException(ErrorCode.NOT_FOUND_LINE));
+        return SectionResponse.of(line.getSections());
+
     }
 }
