@@ -62,7 +62,6 @@ public class Line {
     public Section getLastSection() {
         return this.getSections().getList().get(this.getSections().getList().size() - 1);
     }
-    }
 
     public void addSection(Section section) {
         this.sections.add(section);
