@@ -1,4 +1,4 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.section;
 import java.util.List;
 
 public class Sections {
