@@ -10,11 +10,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
 
     Line 일호선_생성() {
-        Line line = new Line();
+        Line line = new Line("1호선", "blue");
 
         Station 구로역 = new Station("구로역");
         Station 신도림역 = new Station("신도림역");
@@ -27,19 +28,23 @@ class LineTest {
     @DisplayName("지하철 노선에 구간 추가")
     @Test
     void addSection() {
+        // given
         Line line = 일호선_생성();
 
+        // then
         assertThat(line.getSections().count()).isEqualTo(1);
-
     }
 
     @DisplayName("지하철 노선에 등록된 역 목록 조회")
     @Test
     void getStations() {
+        // given
         Line line = 일호선_생성();
 
+        // when
         List<Station> stations = line.getStations();
 
+        // then
         assertThat(stations.stream().map(Station::getName)
                 .collect(Collectors.toList()))
                 .contains("구로역", "신도림역");
@@ -65,5 +70,15 @@ class LineTest {
                 .collect(Collectors.toList()))
                 .contains("구로역", "신도림역");
 
+    }
+
+    @DisplayName("지하철 노선에서 구간 제거 실패")
+    @Test
+    void removeSectionFail() {
+        // given
+        Line line = 일호선_생성();   // 1호선에 구로역-신도림역 구간 1개 존재
+
+        // then
+        assertThatThrownBy(line::removeSection).isInstanceOf(IllegalArgumentException.class);
     }
 }
