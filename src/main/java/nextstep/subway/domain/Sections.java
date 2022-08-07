@@ -54,22 +54,22 @@ public class Sections {
     }
 
     public List<Section> getSections() {
-        List<Section> sectionsSortList = new ArrayList<>();
+        List<Section> sortSections = new ArrayList<>();
         if(sections.isEmpty()){
             return Collections.emptyList();
         }
         Section firstSection = getFirstSection();
         if (Objects.nonNull(firstSection)) {
-            sectionsSortList.add(firstSection);
+            sortSections.add(firstSection);
 
             for(int i = 0; i < sections.size(); i++ ){
-                Section nextSection = getNextSection(sectionsSortList.get(i));
+                Section nextSection = getNextSection(sortSections.get(i));
                 if(Objects.isNull(nextSection)){
                     break;
                 }
-                sectionsSortList.add(nextSection);
+                sortSections.add(nextSection);
             }
-            return sectionsSortList;
+            return sortSections;
         }
         return sections;
     }
