@@ -112,6 +112,23 @@ class LineTest {
         assertThat(이호선_구간_리스트.getList()).hasSize(1);
     }
 
+    @DisplayName("마지막 구간 가져오기")
+    @Test
+    void getLastSection() {
+        // given
+        final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
+        이호선.addSection(강남역_역삼역_구간);
+        final Section 역삼역_삼성역_구간 = new Section(이호선, 역삼역, 삼성역, 10);
+        이호선.addSection(역삼역_삼성역_구간);
+
+        // when
+        final Section 이호선_마지막_구간 = 이호선.getLastSection();
+
+        // then
+        assertThat(이호선_마지막_구간.getUpStation().getName()).isEqualTo("역삼역");
+        assertThat(이호선_마지막_구간.getDownStation().getName()).isEqualTo("삼성역");
+    }
+
     @DisplayName("구간 삭제")
     @Test
     void removeSection() {
