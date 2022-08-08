@@ -20,8 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.unit.LineServiceTest.SubwayInfo.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -70,8 +70,6 @@ public class LineServiceTest {
         // line.getSections 메서드를 통해 검증
         assertThat(일호선.getSections().count()).isEqualTo(2);
     }
-
-
 
     @DisplayName("지하철 노선에 등록된 역 목록 조회")
     @Test
@@ -123,13 +121,18 @@ public class LineServiceTest {
     @Test
     void deleteLine() {
         // given
-
+        Line 일호선 = new Line("1호선", "blue");
+        lineRepository.save(일호선);
 
         // when
+        lineService.deleteLine(일호선.getId());
+
+        // then
+        assertThatThrownBy(() -> lineService.findLineById(일호선.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
-
-        public class SubwayInfo {
+    public class SubwayInfo {
         public final Station 구로역 = new Station("구로역");
         public final Station 신도림역 = new Station("신도림역");
         public final Station 영등포역 = new Station("영등포역");
