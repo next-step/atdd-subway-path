@@ -134,9 +134,15 @@ public class LineServiceMockTest {
     @Test
     void deleteLine() {
         // given
-
+        Line 일호선 = new Line(1L, "1호선", "blue");
+        when(lineRepository.findById(일호선.getId())).thenReturn(Optional.empty());
 
         // when
+        lineService.deleteLine(일호선.getId());
+
+        // then
+        assertThatThrownBy(() -> lineService.findLineById(일호선.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("지하철 노선에서 구간 제거")
