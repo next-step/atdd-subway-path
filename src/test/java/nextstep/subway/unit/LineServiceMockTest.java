@@ -134,7 +134,7 @@ public class LineServiceMockTest {
     @Test
     void deleteLine() {
         // given
-        
+
 
         // when
     }

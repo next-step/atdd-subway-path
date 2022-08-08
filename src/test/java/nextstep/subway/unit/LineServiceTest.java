@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
+import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -70,6 +71,8 @@ public class LineServiceTest {
         assertThat(일호선.getSections().count()).isEqualTo(2);
     }
 
+
+
     @DisplayName("지하철 노선에 등록된 역 목록 조회")
     @Test
     void getStations() {
@@ -88,8 +91,45 @@ public class LineServiceTest {
         assertThat(stationNames).contains("구로역", "신도림역", "영등포역");
     }
 
+    @DisplayName("지하철 노선 생성")
+    @Test
+    void saveLine() {
+        Line 일호선 = new Line("1호선", "blue");
+        lineRepository.save(일호선);
 
-    public class SubwayInfo {
+        Line line = lineRepository.findById(일호선.getId()).orElseThrow(IllegalArgumentException::new);
+
+        assertThat(line.getName()).isEqualTo("1호선");
+        assertThat(line.getColor()).isEqualTo("blue");
+    }
+
+    @DisplayName("지하철 노선 수정")
+    @Test
+    void updateLine() {
+        // given
+        Line 일호선 = new Line("1호선", "blue");
+        lineRepository.save(일호선);
+
+        // when
+        lineService.updateLine(일호선.getId(), new LineRequest("신구로선", "deep-blue"));
+
+        // then
+        Line line = lineRepository.findById(일호선.getId()).orElseThrow(IllegalArgumentException::new);
+        assertThat(line.getName()).isEqualTo("신구로선");
+        assertThat(line.getColor()).isEqualTo("deep-blue");
+    }
+
+    @DisplayName("지하철 노선 삭제")
+    @Test
+    void deleteLine() {
+        // given
+
+
+        // when
+    }
+
+
+        public class SubwayInfo {
         public final Station 구로역 = new Station("구로역");
         public final Station 신도림역 = new Station("신도림역");
         public final Station 영등포역 = new Station("영등포역");
