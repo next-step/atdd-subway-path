@@ -87,13 +87,7 @@ public class LineService {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, line.getSections().get(0).getUpStation());
-
-        return stations.stream()
+        return line.getStations().stream()
                 .map(it -> stationService.createStationResponse(it))
                 .collect(Collectors.toList());
     }
@@ -103,10 +97,14 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
+        if (!line.getLastDownStation().equals(station)) {
             throw new IllegalArgumentException();
         }
 
-        line.getSections().remove(line.getSections().size() - 1);
+        line.getSections().remove();
+    }
+
+    public Line findLineById(long id) {
+        return lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
     }
 }
