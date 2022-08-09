@@ -15,12 +15,10 @@ import java.util.List;
 public class PathService {
     private final StationService stationService;
     private final LineRepository lineRepository;
-    private final PathFinder pathFinder;
 
-    public PathService(StationService stationService, LineRepository lineRepository, PathFinder pathFinder) {
+    public PathService(StationService stationService, LineRepository lineRepository) {
         this.stationService = stationService;
         this.lineRepository = lineRepository;
-        this.pathFinder = pathFinder;
     }
 
     public PathResponse findShortestPath(Long sourceId, Long targetId) {
