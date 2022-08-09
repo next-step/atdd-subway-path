@@ -39,7 +39,7 @@ class LineTest {
         분당선.addSection(new Section(분당선, 양재시민의숲역, 청계산입구역, 10));
 
         분당선.removeStation(양재시민의숲역);
-        assertThat(분당선.getStations()).containsExactly(양재역, 청계산입구역);
+        지하철_역이_나열된다(분당선, 양재역, 청계산입구역);
     }
 
     @Test
@@ -51,12 +51,13 @@ class LineTest {
         Station 판교역 = new Station("판교역");
         분당선.addSection(new Section(분당선, 양재역, 양재시민의숲역, 10));
 
-        분당선.addSection(new Section(분당선, 양재시민의숲역, 판교역, 5));
+        Section 짧아질_구간 = new Section(분당선, 양재시민의숲역, 판교역, 5);
+        분당선.addSection(짧아질_구간);
         분당선.addSection(new Section(분당선, 양재시민의숲역, 청계산입구역, 3));
 
         assertThat(분당선.getSections()).hasSize(3);
-        assertThat(분당선.getStations()).containsExactly(양재역, 양재시민의숲역, 청계산입구역, 판교역);
-        assertThat(분당선.getSections().stream().filter(it -> it.getUpStation() == 청계산입구역 && it.getDownStation() == 판교역).findFirst().get().getDistance()).isEqualTo(5-3);
+        지하철_역이_나열된다(분당선, 양재역, 양재시민의숲역, 청계산입구역, 판교역);
+        구간의_거리를_확인한다(짧아질_구간, 5-3);
     }
 
     @Test
@@ -72,6 +73,14 @@ class LineTest {
         분당선.addSection(new Section(분당선, 양재시민의숲역, 청계산입구역, 3));
 
         assertThat(분당선.getSections()).hasSize(3);
-        assertThat(분당선.getStations()).containsExactly(강남역, 양재역, 양재시민의숲역, 청계산입구역);
+        지하철_역이_나열된다(분당선, 강남역, 양재역, 양재시민의숲역, 청계산입구역);
+    }
+
+    private void 구간의_거리를_확인한다(Section section, Integer distance) {
+        assertThat(section.getDistance()).isEqualTo(distance);
+    }
+
+    private void 지하철_역이_나열된다(Line line, Station... stations) {
+        assertThat(line.getStations()).containsExactly(stations);
     }
 }
