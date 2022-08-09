@@ -59,13 +59,13 @@ public class Line {
         if (sections.size() > 0) {
             checkOneStationExistsInLine(section);
 
-            sections.stream().filter(it -> it.getDownStation() == section.getDownStation()).findFirst()
+            sections.stream().filter(it -> isPrevSection(it, section)).findFirst()
                     .ifPresent(it -> {
                                 it.checkDistanceDividable(section);
                                 it.setPrevSection(section);
                             }
                     );
-            sections.stream().filter(it -> it.getUpStation() == section.getUpStation()).findFirst()
+            sections.stream().filter(it -> isNextSection(it, section)).findFirst()
                     .ifPresent(it -> {
                         it.checkDistanceDividable(section);
                         it.setNextSection(section);
@@ -73,6 +73,14 @@ public class Line {
         }
 
         sections.add(section);
+    }
+
+    private boolean isPrevSection(Section it, Section target) {
+        return it.getDownStation() == target.getDownStation();
+    }
+
+    private boolean isNextSection(Section it, Section target) {
+        return it.getUpStation() == target.getUpStation();
     }
 
     private void checkOneStationExistsInLine(Section section) {
