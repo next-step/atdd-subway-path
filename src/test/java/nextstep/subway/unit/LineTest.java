@@ -5,6 +5,8 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.Test;
 
+import static nextstep.subway.acceptance.LineAssertion.구간의_거리를_확인한다;
+import static nextstep.subway.acceptance.LineAssertion.지하철_역이_나열된다;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LineTest {
@@ -74,13 +76,5 @@ class LineTest {
 
         assertThat(분당선.getSections()).hasSize(3);
         지하철_역이_나열된다(분당선, 강남역, 양재역, 양재시민의숲역, 청계산입구역);
-    }
-
-    private void 구간의_거리를_확인한다(Section section, Integer distance) {
-        assertThat(section.getDistance()).isEqualTo(distance);
-    }
-
-    private void 지하철_역이_나열된다(Line line, Station... stations) {
-        assertThat(line.getStations()).containsExactly(stations);
     }
 }
