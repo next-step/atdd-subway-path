@@ -18,10 +18,10 @@ class LineTest {
         Line line = new Line("1호선", "blue");
 
         Station 구일역 = new Station("구일역");
-        Station 신도림역 = new Station("신도림역");
-        final int 구일역_신도림역_거리 = 7;
+        Station 영등포역 = new Station("영등포역");
+        final int 구일역_영등포역_거리 = 13;
 
-        line.addSection(new Section(line, 구일역, 신도림역, 구일역_신도림역_거리));
+        line.addSection(new Section(line, 구일역, 영등포역, 구일역_영등포역_거리));
 
         return line;
     }
@@ -34,23 +34,35 @@ class LineTest {
         return new Section(line, 구일역, 구로역, 구일역_구로역_거리);
     }
 
+    Section 구로역_신도림역_구간생성(Line line, int distance) {
+        Station 구로역 = new Station("구로역");
+        Station 신도림역 = new Station("신도림역");
+        int 구로역_신도림역_거리 = distance;
+
+        return new Section(line, 구로역, 신도림역, 구로역_신도림역_거리);
+    }
+
+
+
+
     @DisplayName("지하철 노선에 구간 추가")
     @Test
     void addSection() {
         // given
         Line 일호선 = 일호선_생성();
+        Section 구일역_구로역_구간 = 구일역_구로역_구간생성(일호선, 6);
+        Section 구로역_신도림역_구간 = 구로역_신도림역_구간생성(일호선, 3);
 
-        Section 구일역_구로역_구간 = 구일역_구로역_구간생성(일호선, 4);
-
+        // when
         일호선.addSection(구일역_구로역_구간);
+        일호선.addSection(구로역_신도림역_구간);
 
         // then
         List<Station> stations = 일호선.getStations();
-        일호선.getSections();
 
         assertThat(stations.stream().map(Station::getName)
                 .collect(Collectors.toList()))
-                .containsExactly("구일역", "구로역", "신도림역");
+                .containsExactly("구일역", "구로역", "신도림역", "영등포역");
     }
 
     @DisplayName("지하철 노선에 구간 추가 실패(매칭되는 기존 구간보다 거리가 더 긺)")
