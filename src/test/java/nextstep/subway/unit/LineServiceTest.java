@@ -11,7 +11,7 @@ import nextstep.subway.domain.section.Section;
 import nextstep.subway.domain.section.Sections;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRepository;
-import nextstep.subway.exception.advice.ValidationException;
+import nextstep.subway.error.exception.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -21,12 +21,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Transactional
@@ -132,7 +129,7 @@ public class LineServiceTest {
         // when
         assertThatThrownBy(() -> {
             lineService.deleteSection(이호선.getId(), 역삼역.getId());
-        }).isInstanceOf(ValidationException.class);
+        }).isInstanceOf(BusinessException.class);
     }
 
     @DisplayName("노선의 마지막 구간을 삭제하려고 할 때 에러 발생")
@@ -144,7 +141,15 @@ public class LineServiceTest {
         // when
         assertThatThrownBy(() -> {
             lineService.deleteSection(이호선.getId(), 역삼역.getId());
-        }).isInstanceOf(ValidationException.class);
+        }).isInstanceOf(BusinessException.class);
+    }
+
+    private Line 이호선_생성() {
+        return lineRepository.save(new Line(1L, "2호선", "green"));
+    }
+
+    private Station 역_생성(Station station) {
+        return stationRepository.save(station);
     }
 
     @Nested
@@ -159,13 +164,5 @@ public class LineServiceTest {
             final List<LineResponse> 노선_목록_응답 = lineService.showLines();
             assertThat(노선_목록_응답).hasSize(2);
         }
-    }
-
-    private Line 이호선_생성() {
-        return lineRepository.save(new Line(1L, "2호선", "green"));
-    }
-
-    private Station 역_생성(Station station) {
-        return stationRepository.save(station);
     }
 }

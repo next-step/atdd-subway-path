@@ -4,7 +4,8 @@ import nextstep.subway.domain.section.Section;
 import nextstep.subway.domain.section.Sections;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.Stations;
-import nextstep.subway.exception.advice.ValidationException;
+import nextstep.subway.error.exception.BusinessException;
+import nextstep.subway.error.exception.ErrorCode;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -128,7 +129,7 @@ public class Line {
         if (stations.getList().stream()
                 .noneMatch(it -> it.getName().equals(upStation.getName()) ||
                         it.getName().equals(downStation.getName()))) {
-            throw new ValidationException("상행역 또는 하행역에 대한 구간이 존재하지 않습니다.");
+            throw new BusinessException(ErrorCode.SECTION_NOT_FOUND_ABOUT_UP_AND_DOWN_STATION);
         }
     }
 
@@ -136,13 +137,13 @@ public class Line {
         if (this.sections.getList().stream()
                 .anyMatch(it -> it.getUpStation().equals(section.getUpStation()) &&
                         it.getDownStation().equals(section.getDownStation()))) {
-            throw new ValidationException("이미 등록되어있는 구간입니다.");
+            throw new BusinessException(ErrorCode.SECTION_ALREADY_EXISTS);
         }
     }
 
     private void validateSectionDistance(Section existsSection, Section newSection) {
         if (existsSection.getDistance() <= newSection.getDistance()) {
-            throw new ValidationException("기존의 구간의 길이보다 새로운 구간의 길이가 같거나 클 수 없습니다.");
+            throw new BusinessException(ErrorCode.INVALID_SECTION_DISTANCE);
         }
     }
 
@@ -155,10 +156,10 @@ public class Line {
 
     private void validateBeforeRemoveSection(Station station) {
         if (this.getSections().getList().size() < 2) {
-            throw new ValidationException("노선의 마지막 구간은 삭제할 수 없습니다");
+            throw new BusinessException(ErrorCode.CANNOT_REMOVE_SECTION_IF_IS_NOT_DOWN_STATION);
         }
         if (!this.sections.getLastSection().getDownStation().equals(station)) {
-            throw new ValidationException("삭제하려는 역이 하행종점역이 아닙니다.");
+            throw new BusinessException(ErrorCode.CANNOT_REMOVE_LAST_SECTION);
         }
     }
 }

@@ -2,6 +2,7 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.error.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -71,6 +72,60 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * 새로운 지하철역(정자역) 을 생성하고
+     * When 지하철 노선에 역과 역 사이의 구간보다 크거나 같은 길이의 새로운 구간 추가를 요청하면
+     * Then 구간을 추가할 수 없다는 에러가 발생한다
+     */
+    @DisplayName("[Error] 지하철 노선에 역과 역 사이의 구간보다 크거나 같은 길이의 구간을 등록")
+    @Test
+    void addLineSectionWithInvalidDistance() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+
+        // when
+        final ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 10));
+
+        // then
+        요청이_정상적으로_처리되었는지_확인(지하철_노선에_지하철_구간_생성_응답, HttpStatus.BAD_REQUEST);
+        에러메시지_확인(지하철_노선에_지하철_구간_생성_응답, ErrorCode.INVALID_SECTION_DISTANCE);
+    }
+
+    /**
+     * When 지하철 노선에 이미 등록되어있는 상행역과 하행역에 대한 새로운 구간 추가를 요청하면
+     * Then 구간을 추가할 수 없다는 에러가 발생한다
+     */
+    @DisplayName("[Error] 지하철 노선에 상행역, 하행역이 모두 등록되어있는 구간을 등록")
+    @Test
+    void addLineSectionWithExistsUpStationAndDownStation() {
+        // when
+        final ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역));
+
+        // then
+        요청이_정상적으로_처리되었는지_확인(지하철_노선에_지하철_구간_생성_응답, HttpStatus.BAD_REQUEST);
+        에러메시지_확인(지하철_노선에_지하철_구간_생성_응답, ErrorCode.SECTION_ALREADY_EXISTS);
+    }
+
+    /**
+     * Given 새로운 지하철역(정자역, 미금역)을 생성하고
+     * When 지하철 노선에 상행역, 하행역이 모두 등록되어있지 않은 새로운 구간 추가를 요청하면
+     * Then 구간을 추가할 수 없다는 에러가 발생한다
+     */
+    @DisplayName("[Error] 지하철 노선에 상행역, 하행역이 모두 존재하지 않는 구간을 등록")
+    @Test
+    void addLineSectionWithNonExistsUpStationAndDownStation() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        final Long 미금역 = 지하철역_생성_요청("미금역").jsonPath().getLong("id");
+
+        // when
+        final ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 미금역));
+
+        // then
+        요청이_정상적으로_처리되었는지_확인(지하철_노선에_지하철_구간_생성_응답, HttpStatus.BAD_REQUEST);
+        에러메시지_확인(지하철_노선에_지하철_구간_생성_응답, ErrorCode.SECTION_NOT_FOUND_ABOUT_UP_AND_DOWN_STATION);
+    }
+
+    /**
      * When 지하철 노선에 상행 종점으로 새로운 구간 추가를 요청하면
      * Then 노선의 맨 처음에 새로운 구간이 추가된다
      */
@@ -108,6 +163,21 @@ class SectionAcceptanceTest extends AcceptanceTest {
         지하철역_순서를_검증(response, List.of(강남역, 양재역));
     }
 
+    /**
+     * When 지하철 노선의 마지막 남은 구간에 대한 제거를 요청하면
+     * Then 구간을 제거할 수 없다는 에러가 발생한다
+     */
+    @DisplayName("[Error] 지하철 노선에 구간이 하나 남았을 때, 마지막 구간을 제거")
+    @Test
+    void removeLastLineSection() {
+        // when
+        final ExtractableResponse<Response> 지하철_노선에_지하철_구간_제거_응답 = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        요청이_정상적으로_처리되었는지_확인(지하철_노선에_지하철_구간_제거_응답, HttpStatus.BAD_REQUEST);
+        에러메시지_확인(지하철_노선에_지하철_구간_제거_응답, ErrorCode.CANNOT_REMOVE_SECTION_IF_IS_NOT_DOWN_STATION);
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
@@ -124,6 +194,14 @@ class SectionAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");
         params.put("distance", 6 + "");
+        return params;
+    }
+
+    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, Integer distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", upStationId + "");
+        params.put("downStationId", downStationId + "");
+        params.put("distance", distance + "");
         return params;
     }
 

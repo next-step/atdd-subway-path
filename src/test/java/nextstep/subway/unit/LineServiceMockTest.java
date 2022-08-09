@@ -10,8 +10,8 @@ import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.domain.section.Section;
 import nextstep.subway.domain.station.Station;
-import nextstep.subway.exception.NotFoundException;
-import nextstep.subway.exception.advice.ValidationException;
+import nextstep.subway.error.exception.BusinessException;
+import nextstep.subway.error.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -177,7 +177,7 @@ public class LineServiceMockTest {
         // when
         assertThatThrownBy(() -> {
             lineService.deleteSection(이호선.getId(), 역삼역.getId());
-        }).isInstanceOf(ValidationException.class);
+        }).isInstanceOf(BusinessException.class);
     }
 
     @DisplayName("노선의 마지막 구간을 삭제하려고 할 때 에러 발생")
@@ -194,7 +194,7 @@ public class LineServiceMockTest {
         // when
         assertThatThrownBy(() -> {
             lineService.deleteSection(이호선.getId(), 역삼역.getId());
-        }).isInstanceOf(ValidationException.class);
+        }).isInstanceOf(BusinessException.class);
     }
 
     private Station 강남역() {

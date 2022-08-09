@@ -6,7 +6,8 @@ import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.domain.section.Section;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.Stations;
-import nextstep.subway.exception.NotFoundException;
+import nextstep.subway.error.exception.ErrorCode;
+import nextstep.subway.error.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,12 +43,12 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        return createLineResponse(lineRepository.findById(id).orElseThrow(() -> new NotFoundException("노선 정보를 찾을 수 없습니다.")));
+        return createLineResponse(lineRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.LINE_NOT_FOUND)));
     }
 
     @Transactional
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundException("노선 정보를 찾을 수 없습니다."));
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.LINE_NOT_FOUND));
         line.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
     }
 
@@ -60,7 +61,7 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundException("노선 정보를 찾을 수 없습니다."));
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundException(ErrorCode.LINE_NOT_FOUND));
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
@@ -83,7 +84,7 @@ public class LineService {
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundException("노선 정보를 찾을 수 없습니다."));
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundException(ErrorCode.LINE_NOT_FOUND));
         Station station = stationService.findById(stationId);
         line.removeSection(station);
     }

@@ -3,6 +3,7 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.error.exception.ErrorCode;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,5 +31,9 @@ public class AcceptanceTest {
 
     void 요청이_정상적으로_처리되었는지_확인(ExtractableResponse<Response> response, HttpStatus httpStatus) {
         assertThat(response.statusCode()).isEqualTo(httpStatus.value());
+    }
+
+    void 에러메시지_확인(ExtractableResponse<Response> response, ErrorCode errorCode) {
+        assertThat(response.body().jsonPath().getString("message")).isEqualTo(errorCode.getMessage());
     }
 }

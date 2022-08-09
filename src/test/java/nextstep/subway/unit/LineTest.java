@@ -5,7 +5,7 @@ import nextstep.subway.domain.section.Section;
 import nextstep.subway.domain.section.Sections;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.Stations;
-import nextstep.subway.exception.advice.ValidationException;
+import nextstep.subway.error.exception.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -112,12 +112,12 @@ class LineTest {
         final Section 강남역_삼성역_구간 = new Section(이호선, 강남역, 삼성역, 10);
         assertThatThrownBy(() -> {
             이호선.addSection(강남역_삼성역_구간);
-        }).isInstanceOf(ValidationException.class);
+        }).isInstanceOf(BusinessException.class);
 
         final Section 다른_강남역_삼성역_구간 = new Section(이호선, 강남역, 삼성역, 15);
         assertThatThrownBy(() -> {
             이호선.addSection(다른_강남역_삼성역_구간);
-        }).isInstanceOf(ValidationException.class);
+        }).isInstanceOf(BusinessException.class);
     }
 
     @DisplayName("상행역, 하행역이 모두 등록되어 있는 구간 추가 시, 에러 발생")
@@ -131,7 +131,7 @@ class LineTest {
         final Section 같은_강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 8);
         assertThatThrownBy(() -> {
             이호선.addSection(같은_강남역_역삼역_구간);
-        }).isInstanceOf(ValidationException.class);
+        }).isInstanceOf(BusinessException.class);
     }
 
     @DisplayName("상행역, 하행역이 모두 등록되어있지 않은 구간 추가 시, 에러 발생")
@@ -146,7 +146,7 @@ class LineTest {
         final Section 삼성역_잠실역_구간 = new Section(이호선, 삼성역, 잠실역, 8);
         assertThatThrownBy(() -> {
             이호선.addSection(삼성역_잠실역_구간);
-        }).isInstanceOf(ValidationException.class);
+        }).isInstanceOf(BusinessException.class);
     }
 
     @DisplayName("구간 목록 가져오기")
@@ -207,6 +207,6 @@ class LineTest {
         // When
         assertThatThrownBy(() -> {
             이호선.removeSection(역삼역);
-        }).isInstanceOf(ValidationException.class);
+        }).isInstanceOf(BusinessException.class);
     }
 }
