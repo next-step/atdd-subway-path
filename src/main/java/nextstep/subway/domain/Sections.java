@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.NonExistentSectionException;
 import nextstep.subway.exception.SectionException;
 
 import javax.persistence.CascadeType;
@@ -115,7 +116,7 @@ public class Sections {
         Section section = sections.stream()
                 .filter(it -> it.isUpStation(upStation))
                 .findAny()
-                .orElseThrow();
+                .orElseThrow(NonExistentSectionException::new);
 
         checkAvailableDistance(distance, section);
         sections.add(new Section(line, upStation, downStation, distance));
