@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
@@ -48,8 +49,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+        요청이_정상적으로_처리되었는지_확인(response, HttpStatus.OK);
+        지하철역_순서를_검증(response, List.of(강남역, 양재역, 정자역));
     }
 
     /**
@@ -65,8 +66,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역, 양재역);
+        요청이_정상적으로_처리되었는지_확인(response, HttpStatus.OK);
+        지하철역_순서를_검증(response, List.of(강남역, 정자역, 양재역));
     }
 
     /**
@@ -82,8 +83,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(정자역, 강남역, 양재역);
+        요청이_정상적으로_처리되었는지_확인(response, HttpStatus.OK);
+        지하철역_순서를_검증(response, List.of(정자역, 강남역, 양재역));
     }
 
     /**
@@ -103,8 +104,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+        요청이_정상적으로_처리되었는지_확인(response, HttpStatus.OK);
+        지하철역_순서를_검증(response, List.of(강남역, 양재역));
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
@@ -124,5 +125,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
         params.put("downStationId", downStationId + "");
         params.put("distance", 6 + "");
         return params;
+    }
+
+    private void 지하철역_순서를_검증(ExtractableResponse<Response> response, List<Long> stationIdList) {
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsAnyElementsOf(stationIdList);
     }
 }
