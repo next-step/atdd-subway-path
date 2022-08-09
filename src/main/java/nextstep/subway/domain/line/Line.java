@@ -39,36 +39,20 @@ public class Line {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getColor() {
         return color;
     }
 
-    public void setColor(String color) {
-        this.color = color;
-    }
-
     public Sections getSections() {
-        return new Sections(sections);
-    }
-
-    public Section getLastSection() {
-        return this.getSections().getList().get(this.getSections().getList().size() - 1);
+        return sections;
     }
 
     public Stations getStations() {
-        if (this.sections.size() == 0) {
+        if (this.sections.getList().isEmpty()) {
             return new Stations(Collections.emptyList());
         }
 
