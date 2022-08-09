@@ -185,13 +185,28 @@ class LineTest {
     void removeSection() {
         // Given
         final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
+        final Section 역삼역_삼성역_구간 = new Section(이호선, 역삼역, 삼성역, 10);
         이호선.addSection(강남역_역삼역_구간);
+        이호선.addSection(역삼역_삼성역_구간);
 
         // When
-        이호선.removeSectionWithValidateStation(역삼역);
+        이호선.removeSection(삼성역);
 
         // Then
         final Sections 이호선_구간_리스트 = 이호선.getSections();
-        assertThat(이호선_구간_리스트.getList()).hasSize(0);
+        assertThat(이호선_구간_리스트.getList()).hasSize(1);
+    }
+
+    @DisplayName("마지막 구간을 삭제하려고 할 경우, 에러 발생")
+    @Test
+    void removeSectionWithLastSection() {
+        // Given
+        final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
+        이호선.addSection(강남역_역삼역_구간);
+
+        // When
+        assertThatThrownBy(() -> {
+            이호선.removeSection(역삼역);
+        }).isInstanceOf(ValidationException.class);
     }
 }

@@ -21,9 +21,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Transactional
@@ -39,12 +42,14 @@ public class LineServiceTest {
 
     private Station 강남역;
     private Station 역삼역;
+    private Station 삼성역;
     private Line 이호선;
 
     @BeforeEach
     void setUp() {
         강남역 = 역_생성(new Station("강남역"));
         역삼역 = 역_생성(new Station("역삼역"));
+        삼성역 = 역_생성(new Station("삼성역"));
         이호선 = 이호선_생성();
     }
 
@@ -107,13 +112,14 @@ public class LineServiceTest {
     void deleteSection() {
         // given
         이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
+        이호선.addSection(new Section(이호선, 역삼역, 삼성역, 10));
 
         // when
-        lineService.deleteSection(이호선.getId(), 역삼역.getId());
+        lineService.deleteSection(이호선.getId(), 삼성역.getId());
 
         // then
         final Sections 노선_구간들 = 이호선.getSections();
-        assertThat(노선_구간들.getList()).hasSize(0);
+        assertThat(노선_구간들.getList()).hasSize(1);
     }
 
     @DisplayName("지하철 노선에서 하행종점역이 아닌 역을 제거하려고 할 때 에러 발생")
@@ -121,10 +127,23 @@ public class LineServiceTest {
     void deleteSectionWithNonLastStation() {
         // given
         이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
+        이호선.addSection(new Section(이호선, 역삼역, 삼성역, 10));
 
         // when
         assertThatThrownBy(() -> {
-            lineService.deleteSection(이호선.getId(), 강남역.getId());
+            lineService.deleteSection(이호선.getId(), 역삼역.getId());
+        }).isInstanceOf(ValidationException.class);
+    }
+
+    @DisplayName("노선의 마지막 구간을 삭제하려고 할 때 에러 발생")
+    @Test
+    void deleteSectionWithLastSection() {
+        // given
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
+
+        // when
+        assertThatThrownBy(() -> {
+            lineService.deleteSection(이호선.getId(), 역삼역.getId());
         }).isInstanceOf(ValidationException.class);
     }
 

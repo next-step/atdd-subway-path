@@ -144,13 +144,15 @@ public class LineServiceMockTest {
         // given
         final Station 강남역 = 강남역();
         final Station 역삼역 = 역삼역();
+        final Station 삼성역 = 삼성역();
         final Line 이호선 = 이호선();
         이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
+        이호선.addSection(new Section(이호선, 역삼역, 삼성역, 10));
         when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
-        when(stationService.findById(any())).thenReturn(역삼역);
+        when(stationService.findById(any())).thenReturn(삼성역);
 
         // when
-        lineService.deleteSection(이호선.getId(), 역삼역.getId());
+        lineService.deleteSection(이호선.getId(), 삼성역.getId());
         when(lineRepository.findById(any())).thenReturn(Optional.empty());
 
         // then
@@ -161,18 +163,37 @@ public class LineServiceMockTest {
 
     @DisplayName("노선의 하행종점역이 아닌 역을 삭제하려고 할 때 에러 발생")
     @Test
-    void deleteSectionWithNonLastStation() {
+    void deleteSectionWithNonLastDownStation() {
+        // given
+        final Station 강남역 = 강남역();
+        final Station 역삼역 = 역삼역();
+        final Station 삼성역 = 삼성역();
+        final Line 이호선 = 이호선();
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
+        이호선.addSection(new Section(이호선, 역삼역, 삼성역, 10));
+        when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
+        when(stationService.findById(any())).thenReturn(강남역);
+
+        // when
+        assertThatThrownBy(() -> {
+            lineService.deleteSection(이호선.getId(), 역삼역.getId());
+        }).isInstanceOf(ValidationException.class);
+    }
+
+    @DisplayName("노선의 마지막 구간을 삭제하려고 할 때 에러 발생")
+    @Test
+    void deleteSectionWithLastSection() {
         // given
         final Station 강남역 = 강남역();
         final Station 역삼역 = 역삼역();
         final Line 이호선 = 이호선();
         이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
         when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
-        when(stationService.findById(any())).thenReturn(강남역);
+        when(stationService.findById(any())).thenReturn(역삼역);
 
         // when
         assertThatThrownBy(() -> {
-            lineService.deleteSection(이호선.getId(), 강남역.getId());
+            lineService.deleteSection(이호선.getId(), 역삼역.getId());
         }).isInstanceOf(ValidationException.class);
     }
 
@@ -182,6 +203,10 @@ public class LineServiceMockTest {
 
     private Station 역삼역() {
         return new Station(2L, "역삼역");
+    }
+
+    private Station 삼성역() {
+        return new Station(3L, "삼성역");
     }
 
     private Line 이호선() {
