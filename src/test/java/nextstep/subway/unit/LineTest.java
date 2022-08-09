@@ -173,7 +173,7 @@ class LineTest {
         이호선.addSection(역삼역_삼성역_구간);
 
         // when
-        final Section 이호선_마지막_구간 = 이호선.getLastSection();
+        final Section 이호선_마지막_구간 = 이호선.getSections().getLastSection();
 
         // then
         assertThat(이호선_마지막_구간.getUpStation()).isEqualTo(역삼역);

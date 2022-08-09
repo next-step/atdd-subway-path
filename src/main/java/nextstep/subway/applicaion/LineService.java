@@ -85,6 +85,6 @@ public class LineService {
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundException("노선 정보를 찾을 수 없습니다."));
         Station station = stationService.findById(stationId);
-        line.removeSectionWithValidateStation(station);
+        line.removeSection(station);
     }
 }

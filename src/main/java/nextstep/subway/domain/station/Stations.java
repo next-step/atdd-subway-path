@@ -2,6 +2,7 @@ package nextstep.subway.domain.station;
 
 import nextstep.subway.domain.section.Section;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Stations {
@@ -16,12 +17,12 @@ public class Stations {
         return stations;
     }
 
+    public void add(Station station) {
+        this.stations.add(station);
+    }
+
     public void add(Section section) {
         this.stations.add(section.getUpStation());
         this.stations.add(section.getDownStation());
-    }
-
-    public void add(Station station) {
-        this.stations.add(station);
     }
 }
