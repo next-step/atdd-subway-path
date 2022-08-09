@@ -66,8 +66,8 @@ public class Line {
         return sections;
     }
 
-    public void addSection(Section section) {
-        sections.add(section);
+    public void addSection(Section newSection) {
+        sections.add(newSection);
     }
 
     public void removeSection() {

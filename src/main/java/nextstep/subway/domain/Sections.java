@@ -30,8 +30,31 @@ public class Sections {
         return stations;
     }
 
-    public void add(Section section) {
-        sections.add(section);
+    public void add(Section newSection) {
+        if (sections.isEmpty()) {
+            sections.add(newSection);
+            return;
+        }
+
+        // 같은 구간이면 안 됨
+        if (isSameSection(newSection)) {
+            throw new IllegalArgumentException("이미 존재하는 구간입니다.");
+        }
+        // 예외처리가 들어갈 부분 (종점 요구사항에 대한)
+
+        // 새로 추가하려는 구간의 상행역과 매칭되는 기존 구간을 찾는다
+        Section existedSection = findSectionMatchingUpStation(newSection.getUpStation());
+
+        // 추가하려는 구간이 거리가 더 짧은지 체크
+        if (newSection.getDistance() >= existedSection.getDistance()) {
+            throw new IllegalArgumentException("기존 구간보다 거리가 더 긴 구간은 등록할 수 없습니다.");
+        }
+
+        // 새로 구간 추가
+        sections.add(newSection);
+
+        // 기존 구간의 상행역은 새로 추가한 구간의 하행역으로 업데이트
+        existedSection.updateUpStation(newSection.getDownStation());
     }
 
     public int count() {
@@ -48,5 +71,16 @@ public class Sections {
 
     public boolean isEmpty() {
         return sections.isEmpty();
+    }
+
+
+    public boolean isSameSection(Section newSection) {
+        return sections.stream().anyMatch((section) ->
+                section.getUpStation().equals(newSection.getUpStation()) &&
+                section.getDownStation().equals(newSection.getDownStation()));
+    }
+
+    public Section findSectionMatchingUpStation(Station upStation) {
+        return sections.stream().filter((section) -> section.getUpStation().equals(upStation)).findFirst().orElse(null);
     }
 }
