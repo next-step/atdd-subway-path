@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import nextstep.subway.applicaion.dto.ErrorResponse;
-import nextstep.subway.ui.SubwayException;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
