@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ErrorCode {
 
+    // Entity
+    LINE_NOT_FOUND("노선 정보를 찾을 수 없습니다."),
+
     // Subway
     SECTION_NOT_FOUND_ABOUT_UP_AND_DOWN_STATION("상행역 또는 하행역에 대한 구간이 존재하지 않습니다."),
     SECTION_ALREADY_EXISTS("이미 등록되어있는 구간입니다."),
