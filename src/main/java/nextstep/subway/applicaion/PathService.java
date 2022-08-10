@@ -6,6 +6,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -38,8 +39,13 @@ public class PathService {
     }
 
     private PathResponse createPathResponse(Station start, Station end, DijkstraShortestPath pathGenerator) {
-        List<Station> shortestPath = pathGenerator.getPath(start, end).getVertexList();
-        List<StationResponse> responses = shortestPath.stream().map(stationService::createStationResponse).collect(Collectors.toList());
+        GraphPath<Station, Station> shortestPath = pathGenerator.getPath(start, end);
+
+        if(shortestPath == null) {
+            throw new IllegalArgumentException("경로가 존재하지 않습니다.");
+        }
+
+        List<StationResponse> responses = shortestPath.getVertexList().stream().map(stationService::createStationResponse).collect(Collectors.toList());
         return new PathResponse(responses, (int) pathGenerator.getPathWeight(start, end));
     }
 
