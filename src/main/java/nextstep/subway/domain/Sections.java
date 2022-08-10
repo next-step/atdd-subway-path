@@ -12,13 +12,46 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public void remove() {
-        int lastSectionIndex = sections.size() - 1;
-        if (lastSectionIndex > 0) {
-            sections.remove(lastSectionIndex);
+    public void add(Section newSection) {
+        if (sections.isEmpty()) {
+            sections.add(newSection);
             return;
         }
-        throw new IllegalArgumentException("구간이 2개 이상인 경우에만 삭제가 가능합니다.");
+
+        if (isAlreadyRegistered(newSection)) {
+            throw new BadRequestException("이미 노선에 등록된 구간입니다.");
+        }
+
+        if (notFoundUpAndDownStations(newSection)) {
+            throw new IllegalArgumentException("추가하려는 구간의 상행역 및 하행역이 기존 구간에 존재하지 않습니다.");
+        }
+
+        // 하행 종점역을 포함하고 있는 기존 구간
+        Section sectionWithLastDownStation = getSectionWithLastDownStation();
+        // 새로운 역을 하행 종점으로 등록할 경우
+        if (sectionWithLastDownStation.getDownStation().equals(newSection.getUpStation())) {
+            sections.add(newSection);
+            return;
+        }
+
+        // 새로 추가하려는 구간의 상행역과 매칭되는 기존 구간을 찾는다
+        Section existedSection = findSectionMatchingUpStation(newSection.getUpStation());
+        // 매칭되는 기존 구간이 없을 시 새로운 역을 상행 종점으로 등록한다고 판단
+        if (existedSection == null) {
+            Section sectionWithLastUpStation = getSectionWithLastUpStation();
+            if (sectionWithLastUpStation.getUpStation().equals(newSection.getDownStation())) {
+                sections.add(newSection);
+                return;
+            }
+        }
+
+        // 추가하려는 구간이 매칭된 기존 구간보다 거리가 더 짧은지 체크
+        if (newSection.getDistance() >= existedSection.getDistance()) {
+            throw new IllegalArgumentException("기존 구간보다 거리가 더 긴 구간은 등록할 수 없습니다.");
+        }
+        sections.add(newSection);
+        // 기존 구간의 상행역은 새로 추가한 구간의 하행역으로 업데이트 및 거리 재조정
+        existedSection.updateUpStation(newSection.getDownStation(), existedSection.getDistance() - newSection.getDistance());
     }
 
     public List<Station> getStations() {
@@ -32,6 +65,15 @@ public class Sections {
         addExtraStations(stations, sectionWithLastUpStation);
 
         return stations;
+    }
+
+    public void remove() {
+        int lastSectionIndex = sections.size() - 1;
+        if (lastSectionIndex > 0) {
+            sections.remove(lastSectionIndex);
+            return;
+        }
+        throw new IllegalArgumentException("구간이 2개 이상인 경우에만 삭제가 가능합니다.");
     }
 
     // 상행종점역이 포함된 구간 조회
@@ -82,49 +124,6 @@ public class Sections {
         // 하행종점역이 아닌 경우 상행역 추가 후 메서드 재실행
         stations.add(nextSection.getUpStation());
         addExtraStations(stations, nextSection);
-    }
-
-    public void add(Section newSection) {
-        if (sections.isEmpty()) {
-            sections.add(newSection);
-            return;
-        }
-
-        if (isAlreadyRegistered(newSection)) {
-            throw new BadRequestException("이미 노선에 등록된 구간입니다.");
-        }
-
-        if (notFoundUpAndDownStations(newSection)) {
-            throw new IllegalArgumentException("추가하려는 구간의 상행역 및 하행역이 기존 구간에 존재하지 않습니다.");
-        }
-
-        Section sectionWithLastDownStation = getSectionWithLastDownStation();
-        if (sectionWithLastDownStation.getDownStation().equals(newSection.getUpStation())) {
-            sections.add(newSection);
-            return;
-        }
-        // 새로 추가하려는 구간의 상행역과 매칭되는 기존 구간을 찾는다
-        Section existedSection = findSectionMatchingUpStation(newSection.getUpStation());
-
-        // 새로운 역을 상행 종점으로 등록할 경우
-        if (existedSection == null) {
-            Section sectionWithLastUpStation = getSectionWithLastUpStation();
-            if (sectionWithLastUpStation.getUpStation().equals(newSection.getDownStation())) {
-                sections.add(newSection);
-                return;
-            }
-        }
-
-        // 추가하려는 구간이 기존 매칭되는 구간보다 거리가 더 짧은지 체크
-        if (newSection.getDistance() >= existedSection.getDistance()) {
-            throw new IllegalArgumentException("기존 구간보다 거리가 더 긴 구간은 등록할 수 없습니다.");
-        }
-        // 새로 구간 추가
-        sections.add(newSection);
-
-        int updatedDistance = existedSection.getDistance() - newSection.getDistance();
-        // 기존 구간의 상행역은 새로 추가한 구간의 하행역으로 업데이트 및 거리 재조정
-        existedSection.updateUpStation(newSection.getDownStation(), updatedDistance);
     }
 
     public int count() {
