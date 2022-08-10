@@ -1,6 +1,7 @@
 package nextstep.subway.utils;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -19,5 +20,16 @@ public class TestObjectFactory {
         Line line = new Line(name, "red");
         ReflectionTestUtils.setField(line, "id", idCounter.getAndAdd(1));
         return line;
+    }
+
+    public Section 구간생성(Line line, Station upstation, Station downStation, Integer distance) {
+        Section section = new Section();
+        ReflectionTestUtils.setField(section, "id", idCounter.getAndAdd(1));
+        ReflectionTestUtils.setField(section, "line", line);
+        ReflectionTestUtils.setField(section, "upStation", upstation);
+        ReflectionTestUtils.setField(section, "downStation", downStation);
+        ReflectionTestUtils.setField(section, "distance", distance);
+
+        return section;
     }
 }
