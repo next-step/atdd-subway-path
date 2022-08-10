@@ -46,7 +46,7 @@ class LineTest {
     }
 
 
-    @DisplayName("지하철 노선에 구간 추가(A-C 사이에 B역을 추가)")
+    @DisplayName("지하철 노선에 구간 추가(A역-C역 사이에 B역을 추가)")
     @Test
     void addSection() {
         // given

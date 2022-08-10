@@ -27,6 +27,7 @@ public class Sections {
         // 상행종점역이 포함된 구간 조회
         Section sectionWithLastUpStation = getSectionWithLastUpStation();
 
+        // 상행종점역 추가 후 하행종점역까지 구간 찾아가면서 지하철역 목록에 추가
         stations.add(sectionWithLastUpStation.getUpStation());
         addExtraStations(stations, sectionWithLastUpStation);
 
@@ -69,7 +70,7 @@ public class Sections {
 
     // 하행종점역까지 남아있는 역을 목록에 추가
     public void addExtraStations(List<Station> stations, Section section) {
-        Section nextSection = sections.stream().filter((sectionToCompare) -> sectionToCompare.getUpStation().equals(section.getDownStation()))
+        Section nextSection = sections.stream().filter((comparisonSection) -> comparisonSection.getUpStation().equals(section.getDownStation()))
                 .findFirst().orElse(null);
 
         // 하행종점역인 경우 하행역 추가 후 메서드 종료
