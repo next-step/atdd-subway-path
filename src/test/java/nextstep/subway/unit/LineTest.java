@@ -130,10 +130,9 @@ class LineTest {
         // given
         Line 일호선 = 일호선_생성(new Station("신도림역"), new Station("영등포역"), 7);
         Section 구일역_구로역_구간 = 구일역_구로역_구간생성(일호선, 5);
-        일호선.addSection(구일역_구로역_구간);
 
         // then
-        assertThatThrownBy(() -> 일호선.addSection(구일역_구로역_구간)).hasMessageContaining("추가하려는 구간의 상행역, 하행역이 기존 구간에 존재하지 않습니다.");
+        assertThatThrownBy(() -> 일호선.addSection(구일역_구로역_구간)).hasMessageContaining("기존 구간에 존재하지 않습니다");
     }
 
     @DisplayName("지하철 노선에서 구간 제거")
