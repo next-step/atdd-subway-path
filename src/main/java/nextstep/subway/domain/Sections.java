@@ -22,12 +22,40 @@ public class Sections {
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
 
-        stations.add(sections.get(0).getUpStation());
-        for (Section section: sections) {
-            stations.add(section.getDownStation());
+        Section sectionWithLastUpStation = null;
+        for (Section section : sections) {
+            int count = 0;
+            for (Section sectionToCompare : sections) {
+                if (sectionToCompare.getDownStation().equals(section.getUpStation())) {
+                    count++;
+                    break;
+                }
+            }
+            if (count == 0) {
+                sectionWithLastUpStation = section;
+                break;
+            }
         }
 
+        stations.add(sectionWithLastUpStation.getUpStation());
+        addStations(stations, sectionWithLastUpStation);
+
         return stations;
+    }
+
+    public void addStations(List<Station> stations, Section section) {
+        Section nextSection = sections.stream().filter((sectionToCompare) -> sectionToCompare.getUpStation().equals(section.getDownStation()))
+                .findFirst().orElse(null);
+
+        // 하행종점역인 경우 하행역 추가 후 메서드 종료
+        if (nextSection == null) {
+            stations.add(section.getDownStation());
+            return;
+        }
+
+        // 하행종점역이 아닌 경우 상행역 추가 후 메서드 재실행
+        stations.add(nextSection.getUpStation());
+        addStations(stations, nextSection);
     }
 
     public void add(Section newSection) {
