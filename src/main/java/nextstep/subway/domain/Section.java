@@ -68,4 +68,8 @@ public class Section {
             throw new IllegalArgumentException();
         }
     }
+
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
 }

@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -99,10 +100,11 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        if (!line.isLastStation(station)) {
-            throw new IllegalArgumentException();
+        line.checkHasMoreThanOneSection();
+        if (station == null || !line.getStations().contains(station)) {
+            throw new NoSuchElementException();
         }
 
-        line.removeSection();
+        line.removeStation(station);
     }
 }
