@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.applicaion.exception.BadRequestException;
+
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
@@ -88,11 +90,11 @@ public class Sections {
         }
 
         if (isAlreadyRegistered(newSection)) {
-            throw new IllegalArgumentException("이미 노선에 등록된 구간입니다.");
+            throw new BadRequestException("이미 노선에 등록된 구간입니다.");
         }
 
         if (notFoundUpAndDownStations(newSection)) {
-            throw new IllegalArgumentException("추가하려는 구간의 상행역, 하행역이 기존 구간에 존재하지 않습니다.");
+            throw new IllegalArgumentException("추가하려는 구간의 상행역 및 하행역이 기존 구간에 존재하지 않습니다.");
         }
 
         Section sectionWithLastDownStation = getSectionWithLastDownStation();
