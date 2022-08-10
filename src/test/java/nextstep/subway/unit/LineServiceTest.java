@@ -5,8 +5,13 @@ import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.LineUpdateRequest;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.domain.*;
-import nextstep.subway.exception.advice.ValidationException;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.line.LineRepository;
+import nextstep.subway.domain.section.Section;
+import nextstep.subway.domain.section.Sections;
+import nextstep.subway.domain.station.Station;
+import nextstep.subway.domain.station.StationRepository;
+import nextstep.subway.error.exception.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -34,12 +39,14 @@ public class LineServiceTest {
 
     private Station 강남역;
     private Station 역삼역;
+    private Station 삼성역;
     private Line 이호선;
 
     @BeforeEach
     void setUp() {
         강남역 = 역_생성(new Station("강남역"));
         역삼역 = 역_생성(new Station("역삼역"));
+        삼성역 = 역_생성(new Station("삼성역"));
         이호선 = 이호선_생성();
     }
 
@@ -93,8 +100,8 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        final List<Section> 노선_구간들 = 이호선.getSections();
-        assertThat(노선_구간들).hasSize(1);
+        final Sections 노선_구간들 = 이호선.getSections();
+        assertThat(노선_구간들.getList()).hasSize(1);
     }
 
     @DisplayName("지하철 노선에서 구간 제거")
@@ -102,13 +109,14 @@ public class LineServiceTest {
     void deleteSection() {
         // given
         이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
+        이호선.addSection(new Section(이호선, 역삼역, 삼성역, 10));
 
         // when
-        lineService.deleteSection(이호선.getId(), 역삼역.getId());
+        lineService.deleteSection(이호선.getId(), 삼성역.getId());
 
         // then
-        final List<Section> 노선_구간들 = 이호선.getSections();
-        assertThat(노선_구간들).hasSize(0);
+        final Sections 노선_구간들 = 이호선.getSections();
+        assertThat(노선_구간들.getList()).hasSize(1);
     }
 
     @DisplayName("지하철 노선에서 하행종점역이 아닌 역을 제거하려고 할 때 에러 발생")
@@ -116,11 +124,32 @@ public class LineServiceTest {
     void deleteSectionWithNonLastStation() {
         // given
         이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
+        이호선.addSection(new Section(이호선, 역삼역, 삼성역, 10));
 
         // when
         assertThatThrownBy(() -> {
-            lineService.deleteSection(이호선.getId(), 강남역.getId());
-        }).isInstanceOf(ValidationException.class);
+            lineService.deleteSection(이호선.getId(), 역삼역.getId());
+        }).isInstanceOf(BusinessException.class);
+    }
+
+    @DisplayName("노선의 마지막 구간을 삭제하려고 할 때 에러 발생")
+    @Test
+    void deleteSectionWithLastSection() {
+        // given
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
+
+        // when
+        assertThatThrownBy(() -> {
+            lineService.deleteSection(이호선.getId(), 역삼역.getId());
+        }).isInstanceOf(BusinessException.class);
+    }
+
+    private Line 이호선_생성() {
+        return lineRepository.save(new Line(1L, "2호선", "green"));
+    }
+
+    private Station 역_생성(Station station) {
+        return stationRepository.save(station);
     }
 
     @Nested
@@ -135,13 +164,5 @@ public class LineServiceTest {
             final List<LineResponse> 노선_목록_응답 = lineService.showLines();
             assertThat(노선_목록_응답).hasSize(2);
         }
-    }
-
-    private Line 이호선_생성() {
-        return lineRepository.save(new Line(1L, "2호선", "green"));
-    }
-
-    private Station 역_생성(Station station) {
-        return stationRepository.save(station);
     }
 }

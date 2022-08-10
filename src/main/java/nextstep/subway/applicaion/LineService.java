@@ -1,16 +1,16 @@
 package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.*;
-import nextstep.subway.applicaion.dto.service.LineUpdateDto;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
-import nextstep.subway.exception.NotFoundException;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.line.LineRepository;
+import nextstep.subway.domain.section.Section;
+import nextstep.subway.domain.station.Station;
+import nextstep.subway.domain.station.Stations;
+import nextstep.subway.error.exception.ErrorCode;
+import nextstep.subway.error.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,13 +43,13 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        return createLineResponse(lineRepository.findById(id).orElseThrow(() -> new NotFoundException("노선 정보를 찾을 수 없습니다.")));
+        return createLineResponse(lineRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.LINE_NOT_FOUND)));
     }
 
     @Transactional
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundException("노선 정보를 찾을 수 없습니다."));
-        line.update(new LineUpdateDto(lineUpdateRequest.getName(), lineUpdateRequest.getColor()));
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.LINE_NOT_FOUND));
+        line.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
     }
 
     @Transactional
@@ -61,7 +61,7 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundException("노선 정보를 찾을 수 없습니다."));
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundException(ErrorCode.LINE_NOT_FOUND));
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
@@ -75,26 +75,17 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
-            return Collections.emptyList();
-        }
+        final Stations stations = line.getStations();
 
-        List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-        stations.add(0, line.getSections().get(0).getUpStation());
-
-        return stations.stream()
+        return stations.getList().stream()
                 .map(it -> stationService.createStationResponse(it))
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundException("노선 정보를 찾을 수 없습니다."));
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundException(ErrorCode.LINE_NOT_FOUND));
         Station station = stationService.findById(stationId);
-
-        line.validateBeforeRemoveSection(station);
-        line.removeSection(line.getLastSection());
+        line.removeSection(station);
     }
 }

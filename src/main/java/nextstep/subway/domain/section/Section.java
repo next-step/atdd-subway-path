@@ -1,4 +1,7 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.section;
+
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.station.Station;
 
 import javax.persistence.*;
 
@@ -23,7 +26,6 @@ public class Section {
     private int distance;
 
     public Section() {
-
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
@@ -31,14 +33,6 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Line getLine() {
-        return line;
     }
 
     public Station getUpStation() {
@@ -51,5 +45,17 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public void update(Station upStation, Station downStation, Integer distance) {
+        if (upStation != null) {
+            this.upStation = upStation;
+        }
+        if (downStation != null) {
+            this.downStation = downStation;
+        }
+        if (distance != null) {
+            this.distance = distance;
+        }
     }
 }
