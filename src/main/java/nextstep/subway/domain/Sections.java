@@ -91,8 +91,11 @@ public class Sections {
             throw new IllegalArgumentException("이미 노선에 등록된 구간입니다.");
         }
 
-        Section sectionWithLastDownStation = getSectionWithLastDownStation();
+        if (notFoundUpAndDownStations(newSection)) {
+            throw new IllegalArgumentException("추가하려는 구간의 상행역, 하행역이 기존 구간에 존재하지 않습니다.");
+        }
 
+        Section sectionWithLastDownStation = getSectionWithLastDownStation();
         if (sectionWithLastDownStation.getDownStation().equals(newSection.getUpStation())) {
             sections.add(newSection);
             return;
@@ -108,6 +111,7 @@ public class Sections {
                 return;
             }
         }
+
         // 추가하려는 구간이 기존 매칭되는 구간보다 거리가 더 짧은지 체크
         if (newSection.getDistance() >= existedSection.getDistance()) {
             throw new IllegalArgumentException("기존 구간보다 거리가 더 긴 구간은 등록할 수 없습니다.");
@@ -136,12 +140,6 @@ public class Sections {
         return sections.isEmpty();
     }
 
-    public boolean isSameSection(Section newSection) {
-        return sections.stream().anyMatch((section) ->
-                section.getUpStation().equals(newSection.getUpStation()) &&
-                section.getDownStation().equals(newSection.getDownStation()));
-    }
-
     public boolean isAlreadyRegistered(Section newSection) {
         List<Station> newSectionUpAndDownStation = new ArrayList<>();
         newSectionUpAndDownStation.add(newSection.getUpStation());
@@ -150,6 +148,10 @@ public class Sections {
         return getStations().containsAll(newSectionUpAndDownStation);
     }
 
+    private boolean notFoundUpAndDownStations(Section newSection) {
+        return getStations().stream().noneMatch((station) -> station.equals(newSection.getDownStation()) ||
+                                                            station.equals(newSection.getUpStation()));
+    }
 
     public Section findSectionMatchingUpStation(Station upStation) {
         return sections.stream().filter((section) -> section.getUpStation().equals(upStation)).findFirst().orElse(null);
