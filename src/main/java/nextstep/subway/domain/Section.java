@@ -58,4 +58,9 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public void updateUpStation(Station newSectiondownStation, int updatedDistance) {
+        this.upStation = newSectiondownStation;
+        this.distance = updatedDistance;
+    }
 }

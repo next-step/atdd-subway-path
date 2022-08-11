@@ -7,6 +7,10 @@ public class LineRequest {
     private Long downStationId;
     private int distance;
 
+    public LineRequest() {
+
+    }
+
     public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
         this.name = name;
         this.color = color;
