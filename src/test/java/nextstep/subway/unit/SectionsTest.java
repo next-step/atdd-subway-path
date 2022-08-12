@@ -200,7 +200,7 @@ public class SectionsTest {
         assertThat(처음_구간).isEqualTo(강남역_삼성역_구간);
     }
 
-    @DisplayName("특정 구간의 이전 구간 가져오기")
+    @DisplayName("추가하려는 구간의 이전 구간 가져오기")
     @Test
     void getPreviousSectionAboutNewSection() {
         // given
