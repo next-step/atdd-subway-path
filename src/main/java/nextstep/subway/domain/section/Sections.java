@@ -32,7 +32,7 @@ public class Sections {
         this.validateSectionIsAlreadyExists(section);
 
         // 특정 구간 다음으로 추가해야하는지 검색
-        final Section previousSection = this.getPreviousSection(section);
+        final Section previousSection = this.getPreviousSectionAboutNewSection(section);
 
         // 역과 역 사이에 구간할 시, 이미 존재하는 구간의 upStation 을 추가하려는 구간의 downStation 을 바라보도록 변경
         if (previousSection != null && previousSection.getUpStation().equals(section.getUpStation())) {
@@ -65,18 +65,19 @@ public class Sections {
         return getFirstSection(section);
     }
 
-    public Section getPreviousSection(Section section) {
+    public Section getPreviousSectionAboutNewSection(Section section) {
         return this.sections.stream()
-                .filter(it -> it.getDownStation().equals(section.getUpStation()))
+                .filter(it -> it.getDownStation().equals(section.getUpStation()) ||
+                        it.getUpStation().equals(section.getUpStation()))
                 .findFirst()
-                .orElseThrow(() -> new BusinessException(ErrorCode.PREVIOUS_SECTION_NOT_FOUND));
+                .orElse(null);
     }
 
     public Section getNextSection(Section section) {
         return this.sections.stream()
                 .filter(it -> it.getUpStation().equals(section.getDownStation()))
                 .findFirst()
-                .orElseThrow(() -> new BusinessException(ErrorCode.NEXT_SECTION_NOT_FOUND));
+                .orElse(null);
     }
 
     private Section getFirstSection(Section section) {

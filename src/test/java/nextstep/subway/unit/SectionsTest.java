@@ -202,7 +202,7 @@ public class SectionsTest {
 
     @DisplayName("특정 구간의 이전 구간 가져오기")
     @Test
-    void getPreviousSection() {
+    void getPreviousSectionAboutNewSection() {
         // given
         final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
         final Section 역삼역_삼성역_구간 = new Section(이호선, 역삼역, 삼성역, 8);
@@ -210,23 +210,10 @@ public class SectionsTest {
         이호선.getSections().add(역삼역_삼성역_구간);
 
         // when
-        final Section 역삼역_삼성역_구간의_이전_구간 = 이호선.getSections().getPreviousSection(역삼역_삼성역_구간);
+        final Section 역삼역_삼성역_구간의_이전_구간 = 이호선.getSections().getPreviousSectionAboutNewSection(역삼역_삼성역_구간);
 
         // then
         assertThat(역삼역_삼성역_구간의_이전_구간).isEqualTo(강남역_역삼역_구간);
-    }
-
-    @DisplayName("[Error] 특정 구간의 이전 구간 가져올 때. 이전 구간이 없음")
-    @Test
-    void getPreviousSectionWithoutPreviousSection() {
-        // given
-        final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
-        이호선.getSections().add(강남역_역삼역_구간);
-
-        // when
-        assertThatThrownBy(() -> {
-            이호선.getSections().getPreviousSection(강남역_역삼역_구간);
-        }).isInstanceOf(BusinessException.class);
     }
 
     @DisplayName("특정 구간의 다음 구간 가져오기")
@@ -253,8 +240,9 @@ public class SectionsTest {
         이호선.getSections().add(강남역_역삼역_구간);
 
         // when
-        assertThatThrownBy(() -> {
-            이호선.getSections().getNextSection(강남역_역삼역_구간);
-        }).isInstanceOf(BusinessException.class);
+        final Section 다음_구간 = 이호선.getSections().getNextSection(강남역_역삼역_구간);
+
+        // then
+        assertThat(다음_구간).isNull();
     }
 }
