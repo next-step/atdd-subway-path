@@ -146,8 +146,8 @@ public class LineServiceMockTest {
         final Station 역삼역 = 역삼역();
         final Station 삼성역 = 삼성역();
         final Line 이호선 = 이호선();
-        이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
-        이호선.addSection(new Section(이호선, 역삼역, 삼성역, 10));
+        이호선.getSections().add(new Section(이호선, 강남역, 역삼역, 10));
+        이호선.getSections().add(new Section(이호선, 역삼역, 삼성역, 10));
         when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
         when(stationService.findById(any())).thenReturn(삼성역);
 
@@ -169,8 +169,8 @@ public class LineServiceMockTest {
         final Station 역삼역 = 역삼역();
         final Station 삼성역 = 삼성역();
         final Line 이호선 = 이호선();
-        이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
-        이호선.addSection(new Section(이호선, 역삼역, 삼성역, 10));
+        이호선.getSections().add(new Section(이호선, 강남역, 역삼역, 10));
+        이호선.getSections().add(new Section(이호선, 역삼역, 삼성역, 10));
         when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
         when(stationService.findById(any())).thenReturn(강남역);
 
@@ -187,7 +187,7 @@ public class LineServiceMockTest {
         final Station 강남역 = 강남역();
         final Station 역삼역 = 역삼역();
         final Line 이호선 = 이호선();
-        이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
+        이호선.getSections().add(new Section(이호선, 강남역, 역삼역, 10));
         when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
         when(stationService.findById(any())).thenReturn(역삼역);
 

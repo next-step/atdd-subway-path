@@ -32,8 +32,8 @@ class LineTest {
     @Test
     void getStations() {
         // given
-        이호선.addSection(new Section(이호선, 강남역, 삼성역, 10));
-        이호선.addSection(new Section(이호선, 강남역, 역삼역, 9));
+        이호선.getSections().add(new Section(이호선, 강남역, 삼성역, 10));
+        이호선.getSections().add(new Section(이호선, 강남역, 역삼역, 9));
 
         // when
         final Stations 이호선_역_목록 = 이호선.getStations();
