@@ -123,9 +123,9 @@ public class SectionsTest {
         }).isInstanceOf(BusinessException.class);
     }
 
-    @DisplayName("구간 제거")
+    @DisplayName("하행 종점역 구간 제거")
     @Test
-    void removeSection() {
+    void removeSectionWithDownStation() {
         // Given
         final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
         final Section 역삼역_삼성역_구간 = new Section(이호선, 역삼역, 삼성역, 10);
@@ -140,9 +140,9 @@ public class SectionsTest {
         assertThat(이호선.getStations().getList()).containsExactly(강남역, 역삼역);
     }
 
-    @DisplayName("[Error] 역과 역 사이에 있는 구간을 삭제")
+    @DisplayName("상행 종점역 구간 제거")
     @Test
-    void removeSectionWithBetweenStations() {
+    void removeSectionWithUpStation() {
         // Given
         final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
         final Section 역삼역_삼성역_구간 = new Section(이호선, 역삼역, 삼성역, 10);
@@ -150,8 +150,43 @@ public class SectionsTest {
         이호선.getSections().add(역삼역_삼성역_구간);
 
         // When
+        이호선.getSections().remove(강남역);
+
+        // Then
+        assertThat(이호선.getSections().size()).isEqualTo(1);
+        assertThat(이호선.getStations().getList()).containsExactly(역삼역, 삼성역);
+    }
+
+    @DisplayName("역과 역 사이의 구간 제거")
+    @Test
+    void removeSectionBetweenStations() {
+        // Given
+        final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
+        final Section 역삼역_삼성역_구간 = new Section(이호선, 역삼역, 삼성역, 10);
+        이호선.getSections().add(강남역_역삼역_구간);
+        이호선.getSections().add(역삼역_삼성역_구간);
+
+        // When
+        이호선.getSections().remove(역삼역);
+
+        // Then
+        assertThat(이호선.getSections().size()).isEqualTo(1);
+        assertThat(이호선.getStations().getList()).containsExactly(강남역, 삼성역);
+    }
+
+    @DisplayName("[Error] 노선에 존재하지 않는 역에 한 구간을 제거")
+    @Test
+    void removeSectionAboutNonExistsStationInLine() {
+        // Given
+        final Station 잠실역 = new Station("잠실역");
+        final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
+        final Section 역삼역_삼성역_구간 = new Section(이호선, 역삼역, 삼성역, 10);
+        이호선.getSections().add(강남역_역삼역_구간);
+        이호선.getSections().add(역삼역_삼성역_구간);
+
+        // When
         assertThatThrownBy(() -> {
-            이호선.getSections().remove(역삼역);
+            이호선.getSections().remove(잠실역);
         }).isInstanceOf(BusinessException.class);
     }
 
@@ -210,10 +245,39 @@ public class SectionsTest {
         이호선.getSections().add(역삼역_삼성역_구간);
 
         // when
-        final Section 역삼역_삼성역_구간의_이전_구간 = 이호선.getSections().getPreviousSectionAboutNewSection(역삼역_삼성역_구간);
+        final Section 역삼역_삼성역_구간의_이전_구간 = 이호선.getSections().getPreviousSectionAboutNewSection(강남역_역삼역_구간);
 
         // then
         assertThat(역삼역_삼성역_구간의_이전_구간).isEqualTo(강남역_역삼역_구간);
+    }
+
+    @DisplayName("특정 구간의 이전 구간 가져오기")
+    @Test
+    void getPreviousSection() {
+        // given
+        final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
+        final Section 역삼역_삼성역_구간 = new Section(이호선, 역삼역, 삼성역, 8);
+        이호선.getSections().add(강남역_역삼역_구간);
+        이호선.getSections().add(역삼역_삼성역_구간);
+
+        // when
+        final Section 역삼역_삼성역_구간의_이전_구간 = 이호선.getSections().getPreviousSection(역삼역_삼성역_구간);
+
+        // then
+        assertThat(역삼역_삼성역_구간의_이전_구간).isEqualTo(강남역_역삼역_구간);
+    }
+
+    @DisplayName("[Error] 특정 구간의 이전 구간 가져올 때, 이전 구간이 없음")
+    @Test
+    void getPreviousSectionWithoutPreviousSection() {
+        // given
+        final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
+        이호선.getSections().add(강남역_역삼역_구간);
+
+        // when
+        assertThatThrownBy(() -> {
+            이호선.getSections().getPreviousSection(강남역_역삼역_구간);
+        }).isInstanceOf(BusinessException.class);
     }
 
     @DisplayName("특정 구간의 다음 구간 가져오기")
