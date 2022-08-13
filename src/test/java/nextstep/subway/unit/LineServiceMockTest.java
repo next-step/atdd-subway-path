@@ -9,6 +9,7 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.domain.section.Section;
+import nextstep.subway.domain.section.Sections;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.error.exception.BusinessException;
 import nextstep.subway.error.exception.NotFoundException;
@@ -138,9 +139,9 @@ public class LineServiceMockTest {
         assertThat(노선_응답.getId()).isEqualTo(이호선.getId());
     }
 
-    @DisplayName("구간 삭제")
+    @DisplayName("하행 종점역 구간 삭제")
     @Test
-    void deleteSection() {
+    void deleteSectionWithDownStation() {
         // given
         final Station 강남역 = 역_생성(1L, "강남역");
         final Station 역삼역 = 역_생성(2L, "역삼역");
@@ -153,17 +154,15 @@ public class LineServiceMockTest {
 
         // when
         lineService.deleteSection(이호선.getId(), 삼성역.getId());
-        when(lineRepository.findById(any())).thenReturn(Optional.empty());
 
         // then
-        assertThatThrownBy(() -> {
-            lineService.findById(이호선.getId());
-        }).isInstanceOf(NotFoundException.class);
+        final Sections 노선_구간들 = 이호선.getSections();
+        assertThat(노선_구간들.size()).isEqualTo(1);
     }
 
-    @DisplayName("노선의 하행종점역이 아닌 역을 삭제하려고 할 때 에러 발생")
+    @DisplayName("상행 종점역 구간 삭제")
     @Test
-    void deleteSectionWithNonLastDownStation() {
+    void deleteSectionWithUpStation() {
         // given
         final Station 강남역 = 역_생성(1L, "강남역");
         final Station 역삼역 = 역_생성(2L, "역삼역");
@@ -172,12 +171,35 @@ public class LineServiceMockTest {
         이호선.getSections().add(new Section(이호선, 강남역, 역삼역, 10));
         이호선.getSections().add(new Section(이호선, 역삼역, 삼성역, 10));
         when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
-        when(stationService.findById(any())).thenReturn(강남역);
+        when(stationService.findById(any())).thenReturn(삼성역);
 
         // when
-        assertThatThrownBy(() -> {
-            lineService.deleteSection(이호선.getId(), 역삼역.getId());
-        }).isInstanceOf(BusinessException.class);
+        lineService.deleteSection(이호선.getId(), 강남역.getId());
+
+        // then
+        final Sections 노선_구간들 = 이호선.getSections();
+        assertThat(노선_구간들.size()).isEqualTo(1);
+    }
+
+    @DisplayName("역과 역 사이 구간 삭제")
+    @Test
+    void deleteSectionBetweenStations() {
+        // given
+        final Station 강남역 = 역_생성(1L, "강남역");
+        final Station 역삼역 = 역_생성(2L, "역삼역");
+        final Station 삼성역 = 역_생성(3L, "삼성역");
+        final Line 이호선 = 이호선();
+        이호선.getSections().add(new Section(이호선, 강남역, 역삼역, 10));
+        이호선.getSections().add(new Section(이호선, 역삼역, 삼성역, 10));
+        when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
+        when(stationService.findById(any())).thenReturn(삼성역);
+
+        // when
+        lineService.deleteSection(이호선.getId(), 역삼역.getId());
+
+        // then
+        final Sections 노선_구간들 = 이호선.getSections();
+        assertThat(노선_구간들.size()).isEqualTo(1);
     }
 
     @DisplayName("노선의 마지막 구간을 삭제하려고 할 때 에러 발생")
