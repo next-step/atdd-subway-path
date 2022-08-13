@@ -28,7 +28,7 @@ public class Sections {
             return;
         }
 
-        validateIsUpStationAndDownStationInSection(section.getUpStation(), section.getDownStation());
+        validateIsUpStationAndDownStationInSections(section.getUpStation(), section.getDownStation());
         this.validateSectionIsAlreadyExists(section);
 
         // 특정 구간 다음으로 추가해야하는지 검색
@@ -43,8 +43,19 @@ public class Sections {
 
     public void remove(Station station) {
         validateSectionSizeBeforeRemove(this);
-        validateRemoveSectionIsLastSection(this, station);
-        this.sections.remove(this.getLastSection());
+        validateIsStationsInSections(station);
+
+        if (isDownStation(this, station)) {
+            this.sections.remove(this.getLastSection());
+            return;
+        } else if (isUpStation(this, station)) {
+            this.sections.remove(this.getFirstSection());
+            return;
+        }
+        final Section currentSection = getSectionWithUpStation(station);
+        final Section previousSection = getPreviousSection(currentSection);
+        previousSection.update(null, currentSection.getDownStation(), previousSection.getDistance() + currentSection.getDistance());
+        this.sections.remove(currentSection);
     }
 
     public Integer size() {
@@ -71,6 +82,13 @@ public class Sections {
                         it.getUpStation().equals(section.getUpStation()))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public Section getPreviousSection(Section section) {
+        return this.sections.stream()
+                .filter(it -> it.getDownStation().equals(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(() -> new BusinessException(ErrorCode.PREVIOUS_SECTION_NOT_FOUND));
     }
 
     public Section getNextSection(Section section) {
@@ -104,6 +122,13 @@ public class Sections {
         }
     }
 
+    private Section getSectionWithUpStation(Station station) {
+        return this.sections.stream()
+                .filter(it -> it.getUpStation().equals(station))
+                .findFirst()
+                .orElseThrow(() -> new BusinessException(ErrorCode.STATION_NOT_FOUND_IN_SECTION));
+    }
+
     private void updatePreviousSectionBeforeAddNewSection(Section previousSection, Section newSection) {
         validateSectionDistance(previousSection, newSection);
         previousSection.update(
@@ -113,15 +138,18 @@ public class Sections {
         );
     }
 
-    private void validateIsUpStationAndDownStationInSection(Station upStation, Station downStation) {
+    private void validateIsUpStationAndDownStationInSections(Station upStation, Station downStation) {
         if (this.sections.stream()
                 .noneMatch(it -> validateIsStationInSection(it, upStation) || validateIsStationInSection(it, downStation))) {
             throw new BusinessException(ErrorCode.SECTION_NOT_FOUND_ABOUT_UP_AND_DOWN_STATION);
         }
     }
 
-    private Boolean validateIsStationInSection(Section section, Station station) {
-        return section.getUpStation().equals(station) || section.getDownStation().equals(station);
+    private void validateIsStationsInSections(Station station) {
+        if (this.sections.stream()
+                .noneMatch(it -> it.getUpStation().equals(station) || it.getDownStation().equals(station))) {
+            throw new BusinessException(ErrorCode.STATION_NOT_FOUND_IN_SECTION);
+        }
     }
 
     private void validateSectionIsAlreadyExists(Section section) {

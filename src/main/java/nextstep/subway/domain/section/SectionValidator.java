@@ -8,12 +8,6 @@ public class SectionValidator {
 
     private final static int MINIMUM_SECTION_SIZE = 2;
 
-    public static void validateRemoveSectionIsLastSection(Sections sections, Station station) {
-        if (!sections.getLastSection().getDownStation().equals(station)) {
-            throw new BusinessException(ErrorCode.CANNOT_REMOVE_SECTION_IF_IS_NOT_DOWN_STATION);
-        }
-    }
-
     public static void validateSectionSizeBeforeRemove(Sections sections) {
         if (sections.size() < MINIMUM_SECTION_SIZE) {
             throw new BusinessException(ErrorCode.CANNOT_REMOVE_LAST_SECTION);
@@ -24,5 +18,17 @@ public class SectionValidator {
         if (existsSection.getDistance() <= newSection.getDistance()) {
             throw new BusinessException(ErrorCode.INVALID_SECTION_DISTANCE);
         }
+    }
+
+    public static Boolean isDownStation(Sections sections, Station station) {
+        return sections.getLastSection().getDownStation().equals(station);
+    }
+
+    public static Boolean isUpStation(Sections sections, Station station) {
+        return sections.getFirstSection().getUpStation().equals(station);
+    }
+
+    public static Boolean validateIsStationInSection(Section section, Station station) {
+        return section.getUpStation().equals(station) || section.getDownStation().equals(station);
     }
 }
