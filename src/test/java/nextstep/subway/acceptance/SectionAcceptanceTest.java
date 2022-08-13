@@ -238,7 +238,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         요청이_정상적으로_처리되었는지_확인(지하철_노선에_지하철_구간_제거_응답, HttpStatus.BAD_REQUEST);
-        에러메시지_확인(지하철_노선에_지하철_구간_제거_응답, ErrorCode.CANNOT_REMOVE_LAST_SECTION);
+        에러메시지_확인(지하철_노선에_지하철_구간_제거_응답, ErrorCode.STATION_NOT_FOUND_IN_SECTION);
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
