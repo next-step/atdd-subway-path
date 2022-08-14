@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.applicaion.exception.BadRequestException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
@@ -19,7 +18,7 @@ public class Sections {
         }
 
         if (isAlreadyRegistered(newSection)) {
-            throw new BadRequestException("이미 노선에 등록된 구간입니다.");
+            throw new IllegalArgumentException("이미 노선에 등록된 구간입니다.");
         }
 
         if (notFoundUpAndDownStations(newSection)) {
