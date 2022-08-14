@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.util.List;
 
 @Entity
 public class Section {
@@ -63,4 +64,17 @@ public class Section {
         this.upStation = newSectiondownStation;
         this.distance = updatedDistance;
     }
+
+    // 상행종점역이 포함된 구간인지 여부
+    public boolean isSectionWithLastUpStation(List<Section> sections) {
+        return sections.stream()
+                .noneMatch((section -> section.getDownStation().equals(upStation)));
+    }
+
+    // 하행종점역이 포함된 구간인지 여부
+    public boolean isSectionWithLastDownStation(List<Section> sections) {
+        return sections.stream()
+                .noneMatch((section -> section.getUpStation().equals(downStation)));
+    }
+
 }
