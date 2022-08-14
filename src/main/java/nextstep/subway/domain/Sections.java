@@ -91,16 +91,12 @@ public class Sections {
         if (sections.size() == 1) {
             return sections.get(0);
         }
-        Section sectionWithLastUpStation = null;
         for (Section section : sections) {
-            boolean isSectionWithLastUpStation = sections.stream()
-                    .noneMatch((comparisonSection) -> comparisonSection.getDownStation().equals(section.getUpStation()));
-            if (isSectionWithLastUpStation) {
-                sectionWithLastUpStation = section;
-                break;
+            if (section.isSectionWithLastUpStation(sections)) {
+                return section;
             }
         }
-        return sectionWithLastUpStation;
+        throw new RuntimeException("알 수 없는 오류가 발생하였습니다.");
     }
 
     // 하행종점역이 포함된 구간 조회
@@ -108,16 +104,12 @@ public class Sections {
         if (sections.size() == 1) {
             return sections.get(0);
         }
-        Section sectionWithLastDownStation = null;
         for (Section section : sections) {
-            boolean isSectionWithLastDownStation = sections.stream()
-                    .noneMatch((comparisonSection) -> comparisonSection.getUpStation().equals(section.getDownStation()));
-            if (isSectionWithLastDownStation) {
-                sectionWithLastDownStation = section;
-                break;
+            if (section.isSectionWithLastDownStation(sections)) {
+                return section;
             }
         }
-        return sectionWithLastDownStation;
+        throw new RuntimeException("알 수 없는 오류가 발생하였습니다.");
     }
 
     // 하행종점역까지 남아있는 역을 목록에 추가
@@ -162,7 +154,7 @@ public class Sections {
 
     private boolean notFoundUpAndDownStations(Section newSection) {
         return getStations().stream().noneMatch((station) -> station.equals(newSection.getDownStation()) ||
-                                                            station.equals(newSection.getUpStation()));
+                station.equals(newSection.getUpStation()));
     }
 
     public Section findSectionMatchingUpStation(Station upStation) {
