@@ -153,7 +153,30 @@ class LineTest {
                 .contains("구일역", "구로역");
     }
 
-    @DisplayName("지하철 노선에서 구간 제거 실패")
+
+    @DisplayName("지하철 노선에서 중간역 제거")
+    @Test
+    void removeMiddleStation() {
+        // given
+        Station 구일역 = new Station("구일역");
+        Station 구로역 = new Station("구로역");
+
+        Line 일호선 = 일호선_생성(구일역, 구로역, 10);
+        Section 구로역_신도림역_구간 = 구로역_신도림역_구간생성(일호선, 7);
+        일호선.addSection(구로역_신도림역_구간);
+
+        // when
+        일호선.removeSection(구로역);
+
+        // then
+        List<Station> stations = 일호선.getStations();
+        assertThat(stations.stream().map(Station::getName)
+                .collect(Collectors.toList()))
+                .contains("구일역", "신도림역");
+    }
+
+
+        @DisplayName("지하철 노선에서 구간 제거 실패")
     @Test
     void removeSectionFail() {
         // given
