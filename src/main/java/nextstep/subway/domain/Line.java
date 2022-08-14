@@ -70,8 +70,8 @@ public class Line {
         sections.add(newSection);
     }
 
-    public void removeSection() {
-        sections.remove();
+    public void removeSection(Station station) {
+        sections.remove(station);
     }
 
     public List<Station> getStations() {

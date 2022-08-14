@@ -60,9 +60,14 @@ public class Section {
         return distance;
     }
 
-    public void updateUpStation(Station newSectiondownStation, int updatedDistance) {
-        this.upStation = newSectiondownStation;
-        this.distance = updatedDistance;
+    public void updateUpStation(Station station, int distance) {
+        this.upStation = station;
+        this.distance = distance;
+    }
+
+    public void updateDownStation(Station station, int distance) {
+        this.downStation = station;
+        this.distance = distance;
     }
 
     // 상행종점역이 포함된 구간인지 여부

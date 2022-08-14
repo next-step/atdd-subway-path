@@ -77,13 +77,16 @@ public class Sections {
         return stations;
     }
 
-    public void remove() {
-        int lastSectionIndex = sections.size() - 1;
-        if (lastSectionIndex > 0) {
-            sections.remove(lastSectionIndex);
-            return;
-        }
-        throw new IllegalArgumentException("구간이 2개 이상인 경우에만 삭제가 가능합니다.");
+    public void remove(Station station) {
+        Section sectionMatchingUpStation = findSectionMatchingUpStation(station);
+        Section sectionMatchingDownStation = findSectionMatchingDownStation(station);
+
+        Station newDownStation = sectionMatchingUpStation.getDownStation();
+        int newDistance = sectionMatchingUpStation.getDistance() + sectionMatchingDownStation.getDistance();
+
+        sections.remove(sectionMatchingUpStation);
+
+        sectionMatchingDownStation.updateDownStation(newDownStation, newDistance);
     }
 
     // 상행종점역이 포함된 구간 조회
@@ -161,6 +164,15 @@ public class Sections {
     public Section findSectionMatchingUpStation(Station station) {
         return sections.stream()
                 .filter((section) -> section.getUpStation().equals(station))
-                .findFirst().orElse(null);
+                .findFirst()
+                .orElse(null);
     }
+
+    private Section findSectionMatchingDownStation(Station station) {
+        return sections.stream()
+                .filter((section) -> section.getDownStation().equals(station))
+                .findFirst()
+                .orElse(null);
+    }
+
 }
