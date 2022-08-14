@@ -4,6 +4,9 @@ import nextstep.subway.applicaion.dto.StationRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.ui.SubwayErrorCode;
+import nextstep.subway.ui.SubwayException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +41,6 @@ public class StationService {
 
     public Station findStation(Long id) {
         return stationRepository.findById(id)
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(() -> new SubwayException(SubwayErrorCode.INVALID_STATION));
     }
 }

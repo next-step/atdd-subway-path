@@ -8,6 +8,8 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.ui.SubwayErrorCode;
+import nextstep.subway.ui.SubwayException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,20 +27,19 @@ public class LineService {
 	@Transactional
 	public LineResponse save(LineRequest request) {
 		Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-		if (hasSection(request)) {
-			addSection(line, request);
-		}
+		addSection(line,
+			new SectionRequest(request.getUpStationId(), request.getDownStationId(), request.getDistance()));
 		return LineResponse.from(line);
-	}
-
-	private boolean hasSection(LineRequest request) {
-		return request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0;
 	}
 
 	public List<LineResponse> findAllById() {
 		return lineRepository.findAll().stream()
 			.map(LineResponse::from)
 			.collect(Collectors.toList());
+	}
+
+	public List<Line> findAll() {
+		return lineRepository.findAll();
 	}
 
 	public LineResponse findById(Long id) {
@@ -63,9 +64,16 @@ public class LineService {
 	}
 
 	private void addSection(Line line, SectionRequest sectionRequest) {
+		if (!sectionAddable(sectionRequest)) {
+			return;
+		}
 		Station upStation = stationService.findStation(sectionRequest.getUpStationId());
 		Station downStation = stationService.findStation(sectionRequest.getDownStationId());
 		line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+	}
+
+	private boolean sectionAddable(SectionRequest request) {
+		return request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0;
 	}
 
 	@Transactional
@@ -78,6 +86,6 @@ public class LineService {
 
 	private Line findLine(Long id) {
 		return lineRepository.findById(id)
-			.orElseThrow(IllegalArgumentException::new);
+			.orElseThrow(() -> new SubwayException(SubwayErrorCode.INVALID_LINE));
 	}
 }

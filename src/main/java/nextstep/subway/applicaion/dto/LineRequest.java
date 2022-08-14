@@ -5,9 +5,12 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class LineRequest extends SectionRequest{
+public class LineRequest {
     private String name;
     private String color;
+    protected Long upStationId;
+    protected Long downStationId;
+    protected int distance;
 
     public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
         this.name = name;

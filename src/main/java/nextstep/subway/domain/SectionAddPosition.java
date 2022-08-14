@@ -1,34 +1,22 @@
 package nextstep.subway.domain;
 
 import java.util.Arrays;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 
 import nextstep.subway.ui.SubwayErrorCode;
 import nextstep.subway.ui.SubwayException;
 
 public enum SectionAddPosition {
-	FIRST((Sections sections, Section section) -> !sections.isEmpty() && sections.firstStation() == section.getDownStation(),
-		(Sections sections, Section section) -> sections.addById(0, section)),
+	FIRST(isFirst(), addFirst()),
+	LAST(isLast(), addLast()),
+	MIDDLE(isMiddle(), addMiddle());
 
-	LAST((Sections sections, Section section) -> sections.isEmpty() || sections.lastStation() == section.getUpStation(),
-		Sections::addToLast),
+	private final BiFunction<Sections, Section, Boolean> position;
+	private final BiConsumer<Sections, Section> action;
 
-	MIDDLE((Sections sections, Section section) -> sections.contains(section.getUpStation()) || sections.contains(section.getDownStation()),
-		(Sections sections, Section section) -> {
-		int index = IntStream.range(0, sections.size())
-			.filter(i -> sections.getDownStationById(i).equals(section.getUpStation()))
-			.findFirst()
-			.orElse(0);
-		if (sections.getDistanceById(index) <= section.getDistance()) {
-			throw new SubwayException(SubwayErrorCode.INVALID_DISTANCE);
-		}
-		sections.getSections().add(index, section);
-	});
-
-	private final AddStationFunction action;
-	private final FindPositionFunction position;
-
-	SectionAddPosition(FindPositionFunction position, AddStationFunction action) {
+	SectionAddPosition(BiFunction<Sections, Section, Boolean> position, BiConsumer<Sections, Section> action) {
 		this.action = action;
 		this.position = position;
 	}
@@ -65,20 +53,46 @@ public enum SectionAddPosition {
 	}
 
 	public void add(Sections sections, Section section) {
-		this.action.add(sections, section);
-	}
-
-	@FunctionalInterface
-	public interface AddStationFunction {
-		void add(Sections sections, Section section);
+		this.action.accept(sections, section);
 	}
 
 	private boolean find(Sections sections, Section section) {
-		return this.position.find(sections, section);
+		return this.position.apply(sections, section);
 	}
 
-	@FunctionalInterface
-	public interface FindPositionFunction {
-		boolean find(Sections sections, Section section);
+	private static BiFunction<Sections, Section, Boolean> isFirst() {
+		return (Sections sections, Section section) -> !sections.isEmpty()
+			&& sections.firstStation() == section.getDownStation();
+	}
+
+	private static BiConsumer<Sections, Section> addFirst() {
+		return (Sections sections, Section section) -> sections.addById(0, section);
+	}
+
+	private static BiFunction<Sections, Section, Boolean> isLast() {
+		return (Sections sections, Section section) -> sections.isEmpty()
+			|| sections.lastStation() == section.getUpStation();
+	}
+
+	private static BiConsumer<Sections, Section> addLast() {
+		return Sections::addToLast;
+	}
+
+	private static BiFunction<Sections, Section, Boolean> isMiddle() {
+		return (Sections sections, Section section) -> sections.contains(section.getUpStation()) || sections.contains(
+			section.getDownStation());
+	}
+
+	private static BiConsumer<Sections, Section> addMiddle() {
+		return (Sections sections, Section section) -> {
+			int index = IntStream.range(0, sections.size())
+				.filter(i -> sections.getDownStationById(i).equals(section.getUpStation()))
+				.findFirst()
+				.orElse(0);
+			if (sections.getDistanceById(index) <= section.getDistance()) {
+				throw new SubwayException(SubwayErrorCode.INVALID_DISTANCE);
+			}
+			sections.getSections().add(index, section);
+		};
 	}
 }
