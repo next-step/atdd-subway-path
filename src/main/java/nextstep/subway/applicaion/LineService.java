@@ -101,7 +101,7 @@ public class LineService {
             throw new IllegalArgumentException();
         }
 
-        line.getSections().remove();
+        line.getSections().remove(station);
     }
 
     public Line findLineById(long id) {
