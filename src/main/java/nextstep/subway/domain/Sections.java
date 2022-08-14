@@ -91,12 +91,16 @@ public class Sections {
         if (sections.size() == 1) {
             return sections.get(0);
         }
+        Section sectionWithLastUpStation = null;
         for (Section section : sections) {
-            if (section.isSectionWithLastUpStation(sections)) {
-                return section;
+            boolean isSectionWithLastUpStation = sections.stream()
+                    .noneMatch((comparisonSection) -> comparisonSection.getDownStation().equals(section.getUpStation()));
+            if (isSectionWithLastUpStation) {
+                sectionWithLastUpStation = section;
+                break;
             }
         }
-        throw new RuntimeException("알 수 없는 오류가 발생하였습니다.");
+        return sectionWithLastUpStation;
     }
 
     // 하행종점역이 포함된 구간 조회
@@ -104,12 +108,16 @@ public class Sections {
         if (sections.size() == 1) {
             return sections.get(0);
         }
+        Section sectionWithLastDownStation = null;
         for (Section section : sections) {
-            if (section.isSectionWithLastDownStation(sections)) {
-                return section;
+            boolean isSectionWithLastDownStation = sections.stream()
+                    .noneMatch((comparisonSection) -> comparisonSection.getUpStation().equals(section.getDownStation()));
+            if (isSectionWithLastDownStation) {
+                sectionWithLastDownStation = section;
+                break;
             }
         }
-        throw new RuntimeException("알 수 없는 오류가 발생하였습니다.");
+        return sectionWithLastDownStation;
     }
 
     // 하행종점역까지 남아있는 역을 목록에 추가
