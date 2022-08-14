@@ -78,15 +78,37 @@ public class Sections {
     }
 
     public void remove(Station station) {
+        if (!isValidStation(station)) {
+            throw new IllegalArgumentException("해당 노선에 존재하지 않는 역은 제거할 수 없습니다.");
+        }
+
         Section sectionMatchingUpStation = findSectionMatchingUpStation(station);
         Section sectionMatchingDownStation = findSectionMatchingDownStation(station);
 
+        // 제거하려는 역이 하행종점역인 경우
+        if (sectionMatchingUpStation == null) {
+            sections.remove(sectionMatchingDownStation);
+            return;
+        }
+
+        // 제거하려는 역이 상행종점역인 경우
+        if (sectionMatchingDownStation == null) {
+            sections.remove(sectionMatchingUpStation);
+            return;
+        }
+
+        // 제거하려는 역이 상행종점역과 하행종점역 사이에 있는 경우
         Station newDownStation = sectionMatchingUpStation.getDownStation();
         int newDistance = sectionMatchingUpStation.getDistance() + sectionMatchingDownStation.getDistance();
 
         sections.remove(sectionMatchingUpStation);
 
+        // 역 삭제 후 구간 재배치
         sectionMatchingDownStation.updateDownStation(newDownStation, newDistance);
+    }
+
+    private boolean isValidStation(Station station) {
+        return getStations().contains(station);
     }
 
     // 상행종점역이 포함된 구간 조회
