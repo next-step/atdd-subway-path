@@ -97,10 +97,6 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        if (!line.getLastDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-
         line.getSections().remove(station);
     }
 
