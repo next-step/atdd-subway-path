@@ -27,6 +27,15 @@ class PathAcceptanceTest extends AcceptanceTest {
 
     private Long 고속터미널역;
 
+
+    /**
+     *        /신분당선/
+     *          |
+     * /구호선/ - 강남역 - 신논현역 - 고속터미널역
+     *           |
+     *          양재역
+     */
+
     /**
      * Given 지하철역과 노선 생성을 요청 하고
      */
@@ -68,7 +77,7 @@ class PathAcceptanceTest extends AcceptanceTest {
      * When 독립된 노선과 기존 노선간 경로를 요청하명
      * Then 400에러가 발생한다.
      */
-    @DisplayName("노선 요청시 경로가 존재하지 않음")
+    @DisplayName("독립된 노선 요청시 실패")
     @Test
     void fail_noPathExists() {
         // given
@@ -83,6 +92,25 @@ class PathAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 존재하지 않는 역을 요청하면
+     * Then 400에러가 발생한다.
+     */
+    @DisplayName("존재하지 않는 역 경로 요청시 실패")
+    @Test
+    void fail_noStationExists() {
+        // given
+        Long 대림역 = 지하철역_생성_요청("대림역").jsonPath().getLong("id");
+        Long 존재하지_않는_역 = 9999L;
+
+
+        // when
+        ExtractableResponse<Response> response = 경로_조회(대림역, 존재하지_않는_역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {

@@ -11,9 +11,7 @@ import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +44,10 @@ public class LineService {
 
     public LineResponse findById(Long id) {
         return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+    }
+
+    public List<Line> findAll(){
+        return lineRepository.findAll();
     }
 
     @Transactional
@@ -91,7 +93,7 @@ public class LineService {
         List<Station> stations = line.getStations();
 
         return stations.stream()
-                .map(stationService::createStationResponse)
+                .map(StationResponse::createStationResponse)
                 .collect(Collectors.toList());
     }
 
@@ -106,5 +108,11 @@ public class LineService {
         }
 
         line.removeStation(station);
+    }
+
+    public Set<Station> getAllStations(List<Line> lines) {
+        Set<Station> stations = new HashSet<>();
+        lines.forEach(line -> stations.addAll(line.getStations()));
+        return stations;
     }
 }
