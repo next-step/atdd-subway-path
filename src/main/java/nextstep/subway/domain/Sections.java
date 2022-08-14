@@ -82,6 +82,10 @@ public class Sections {
             throw new IllegalArgumentException("해당 노선에 존재하지 않는 역은 제거할 수 없습니다.");
         }
 
+        if (sections.size() <= 1) {
+            throw new IllegalArgumentException("구간이 2개 이상 존재하는 노선에서만 역을 제거할 수 있습니다.");
+        }
+
         Section sectionMatchingUpStation = findSectionMatchingUpStation(station);
         Section sectionMatchingDownStation = findSectionMatchingDownStation(station);
 
