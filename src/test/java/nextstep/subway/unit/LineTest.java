@@ -2,6 +2,7 @@ package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -151,9 +152,13 @@ class LineTest {
 
         // then
         List<Station> stations = 일호선.getStations();
+        Sections sections = 일호선.getSections();
+        Section section = sections.findSection("구일역", "신도림역");
+
         assertThat(stations.stream().map(Station::getName)
                 .collect(Collectors.toList()))
                 .contains("구일역", "신도림역");
+        assertThat(section.getDistance()).isEqualTo(17);
     }
 
     @DisplayName("지하철 노선에서 하행종점역 제거")
