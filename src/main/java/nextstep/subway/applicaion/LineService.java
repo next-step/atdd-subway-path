@@ -114,5 +114,5 @@ public class LineService {
         Set<Station> stations = new HashSet<>();
         lines.forEach(line -> stations.addAll(line.getStations()));
         return stations;
-    }
 }
+
