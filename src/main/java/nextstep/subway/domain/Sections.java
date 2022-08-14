@@ -152,12 +152,15 @@ public class Sections {
         return getStations().containsAll(newSectionUpAndDownStation);
     }
 
-    private boolean notFoundUpAndDownStations(Section newSection) {
-        return getStations().stream().noneMatch((station) -> station.equals(newSection.getDownStation()) ||
-                station.equals(newSection.getUpStation()));
+    private boolean notFoundUpAndDownStations(Section section) {
+        return getStations().stream()
+                .noneMatch((station) -> station.equals(section.getDownStation())
+                                    || station.equals(section.getUpStation()));
     }
 
-    public Section findSectionMatchingUpStation(Station upStation) {
-        return sections.stream().filter((section) -> section.getUpStation().equals(upStation)).findFirst().orElse(null);
+    public Section findSectionMatchingUpStation(Station station) {
+        return sections.stream()
+                .filter((section) -> section.getUpStation().equals(station))
+                .findFirst().orElse(null);
     }
 }
