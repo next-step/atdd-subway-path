@@ -1,8 +1,5 @@
-package nextstep.subway.domain.station;
+package nextstep.subway.domain;
 
-import nextstep.subway.domain.section.Section;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class Stations {

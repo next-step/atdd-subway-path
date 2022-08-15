@@ -1,6 +1,5 @@
-package nextstep.subway.domain.station;
+package nextstep.subway.domain;
 
-import nextstep.subway.domain.station.Station;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StationRepository extends JpaRepository<Station, Long> {

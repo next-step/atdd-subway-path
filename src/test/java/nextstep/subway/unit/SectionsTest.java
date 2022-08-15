@@ -1,8 +1,8 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.domain.line.Line;
-import nextstep.subway.domain.section.Section;
-import nextstep.subway.domain.station.Station;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
 import nextstep.subway.error.exception.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,14 +31,13 @@ public class SectionsTest {
     void addSectionWithDownStation() {
         // given
         final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
-        이호선.getSections().add(강남역_역삼역_구간);
+        이호선.addSection(강남역_역삼역_구간);
 
         // when
         final Section 역삼역_삼성역_구간 = new Section(이호선, 역삼역, 삼성역, 10);
-        이호선.getSections().add(역삼역_삼성역_구간);
+        이호선.addSection(역삼역_삼성역_구간);
 
         // then
-        assertThat(이호선.getSections().size()).isEqualTo(2);
         assertThat(이호선.getStations().getList()).containsExactly(강남역, 역삼역, 삼성역);
     }
 
@@ -47,14 +46,13 @@ public class SectionsTest {
     void addSectionBetweenStations() {
         // given
         final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
-        이호선.getSections().add(강남역_역삼역_구간);
+        이호선.addSection(강남역_역삼역_구간);
 
         // when
         final Section 역삼역_삼성역_구간 = new Section(이호선, 강남역, 삼성역, 8);
-        이호선.getSections().add(역삼역_삼성역_구간);
+        이호선.addSection(역삼역_삼성역_구간);
 
         // then
-        assertThat(이호선.getSections().size()).isEqualTo(2);
         assertThat(이호선.getStations().getList()).containsExactly(강남역, 삼성역, 역삼역);
         assertThat(강남역_역삼역_구간.getDistance()).isEqualTo(10 - 역삼역_삼성역_구간.getDistance());
     }
@@ -64,14 +62,13 @@ public class SectionsTest {
     void addSectionWithUpStation() {
         // given
         final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
-        이호선.getSections().add(강남역_역삼역_구간);
+        이호선.addSection(강남역_역삼역_구간);
 
         // when
         final Section 역삼역_삼성역_구간 = new Section(이호선, 삼성역, 강남역, 10);
-        이호선.getSections().add(역삼역_삼성역_구간);
+        이호선.addSection(역삼역_삼성역_구간);
 
         // then
-        assertThat(이호선.getSections().size()).isEqualTo(2);
         assertThat(이호선.getStations().getList()).containsExactly(삼성역, 강남역, 역삼역);
     }
 
@@ -80,17 +77,17 @@ public class SectionsTest {
     void addSectionWithInvalidDistance() {
         // given
         final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
-        이호선.getSections().add(강남역_역삼역_구간);
+        이호선.addSection(강남역_역삼역_구간);
 
         // when
         final Section 강남역_삼성역_구간 = new Section(이호선, 강남역, 삼성역, 10);
         assertThatThrownBy(() -> {
-            이호선.getSections().add(강남역_삼성역_구간);
+            이호선.addSection(강남역_삼성역_구간);
         }).isInstanceOf(BusinessException.class);
 
         final Section 다른_강남역_삼성역_구간 = new Section(이호선, 강남역, 삼성역, 15);
         assertThatThrownBy(() -> {
-            이호선.getSections().add(다른_강남역_삼성역_구간);
+            이호선.addSection(다른_강남역_삼성역_구간);
         }).isInstanceOf(BusinessException.class);
     }
 
@@ -99,12 +96,12 @@ public class SectionsTest {
     void addSectionWithExistsUpStationAndDownStation() {
         // given
         final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
-        이호선.getSections().add(강남역_역삼역_구간);
+        이호선.addSection(강남역_역삼역_구간);
 
         // when
         final Section 같은_강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 8);
         assertThatThrownBy(() -> {
-            이호선.getSections().add(같은_강남역_역삼역_구간);
+            이호선.addSection(같은_강남역_역삼역_구간);
         }).isInstanceOf(BusinessException.class);
     }
 
@@ -114,12 +111,12 @@ public class SectionsTest {
         // given
         final Station 잠실역 = new Station("잠실역");
         final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
-        이호선.getSections().add(강남역_역삼역_구간);
+        이호선.addSection(강남역_역삼역_구간);
 
         // when
         final Section 삼성역_잠실역_구간 = new Section(이호선, 삼성역, 잠실역, 8);
         assertThatThrownBy(() -> {
-            이호선.getSections().add(삼성역_잠실역_구간);
+            이호선.addSection(삼성역_잠실역_구간);
         }).isInstanceOf(BusinessException.class);
     }
 
@@ -129,14 +126,13 @@ public class SectionsTest {
         // Given
         final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
         final Section 역삼역_삼성역_구간 = new Section(이호선, 역삼역, 삼성역, 10);
-        이호선.getSections().add(강남역_역삼역_구간);
-        이호선.getSections().add(역삼역_삼성역_구간);
+        이호선.addSection(강남역_역삼역_구간);
+        이호선.addSection(역삼역_삼성역_구간);
 
         // When
-        이호선.getSections().remove(삼성역);
+        이호선.removeSection(삼성역);
 
         // Then
-        assertThat(이호선.getSections().size()).isEqualTo(1);
         assertThat(이호선.getStations().getList()).containsExactly(강남역, 역삼역);
     }
 
@@ -146,14 +142,13 @@ public class SectionsTest {
         // Given
         final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
         final Section 역삼역_삼성역_구간 = new Section(이호선, 역삼역, 삼성역, 10);
-        이호선.getSections().add(강남역_역삼역_구간);
-        이호선.getSections().add(역삼역_삼성역_구간);
+        이호선.addSection(강남역_역삼역_구간);
+        이호선.addSection(역삼역_삼성역_구간);
 
         // When
-        이호선.getSections().remove(강남역);
+        이호선.removeSection(강남역);
 
         // Then
-        assertThat(이호선.getSections().size()).isEqualTo(1);
         assertThat(이호선.getStations().getList()).containsExactly(역삼역, 삼성역);
     }
 
@@ -163,14 +158,13 @@ public class SectionsTest {
         // Given
         final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
         final Section 역삼역_삼성역_구간 = new Section(이호선, 역삼역, 삼성역, 10);
-        이호선.getSections().add(강남역_역삼역_구간);
-        이호선.getSections().add(역삼역_삼성역_구간);
+        이호선.addSection(강남역_역삼역_구간);
+        이호선.addSection(역삼역_삼성역_구간);
 
         // When
-        이호선.getSections().remove(역삼역);
+        이호선.removeSection(역삼역);
 
         // Then
-        assertThat(이호선.getSections().size()).isEqualTo(1);
         assertThat(이호선.getStations().getList()).containsExactly(강남역, 삼성역);
     }
 
@@ -181,12 +175,12 @@ public class SectionsTest {
         final Station 잠실역 = new Station("잠실역");
         final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
         final Section 역삼역_삼성역_구간 = new Section(이호선, 역삼역, 삼성역, 10);
-        이호선.getSections().add(강남역_역삼역_구간);
-        이호선.getSections().add(역삼역_삼성역_구간);
+        이호선.addSection(강남역_역삼역_구간);
+        이호선.addSection(역삼역_삼성역_구간);
 
         // When
         assertThatThrownBy(() -> {
-            이호선.getSections().remove(잠실역);
+            이호선.removeSection(잠실역);
         }).isInstanceOf(BusinessException.class);
     }
 
@@ -195,118 +189,11 @@ public class SectionsTest {
     void removeSectionWithLastSection() {
         // Given
         final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
-        이호선.getSections().add(강남역_역삼역_구간);
+        이호선.addSection(강남역_역삼역_구간);
 
         // When
         assertThatThrownBy(() -> {
-            이호선.getSections().remove(역삼역);
+            이호선.removeSection(역삼역);
         }).isInstanceOf(BusinessException.class);
-    }
-
-    @DisplayName("정렬된 구간 목록에서 마지막 구간 가져오기")
-    @Test
-    void getLastSection() {
-        // given
-        final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
-        final Section 강남역_삼성역_구간 = new Section(이호선, 강남역, 삼성역, 8);
-        이호선.getSections().add(강남역_역삼역_구간);
-        이호선.getSections().add(강남역_삼성역_구간);
-
-        // when
-        final Section 마지막_구간 = 이호선.getSections().getLastSection();
-
-        // then
-        assertThat(마지막_구간).isEqualTo(강남역_역삼역_구간);
-    }
-
-    @DisplayName("정렬된 구간 목록에서 처음 구간 가져오기")
-    @Test
-    void getFirstSection() {
-        // given
-        final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
-        final Section 강남역_삼성역_구간 = new Section(이호선, 강남역, 삼성역, 8);
-        이호선.getSections().add(강남역_역삼역_구간);
-        이호선.getSections().add(강남역_삼성역_구간);
-
-        // when
-        final Section 처음_구간 = 이호선.getSections().getFirstSection();
-
-        // then
-        assertThat(처음_구간).isEqualTo(강남역_삼성역_구간);
-    }
-
-    @DisplayName("추가하려는 구간의 이전 구간 가져오기")
-    @Test
-    void getPreviousSectionAboutNewSection() {
-        // given
-        final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
-        final Section 역삼역_삼성역_구간 = new Section(이호선, 역삼역, 삼성역, 8);
-        이호선.getSections().add(강남역_역삼역_구간);
-        이호선.getSections().add(역삼역_삼성역_구간);
-
-        // when
-        final Section 역삼역_삼성역_구간의_이전_구간 = 이호선.getSections().getPreviousSectionAboutNewSection(강남역_역삼역_구간);
-
-        // then
-        assertThat(역삼역_삼성역_구간의_이전_구간).isEqualTo(강남역_역삼역_구간);
-    }
-
-    @DisplayName("특정 구간의 이전 구간 가져오기")
-    @Test
-    void getPreviousSection() {
-        // given
-        final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
-        final Section 역삼역_삼성역_구간 = new Section(이호선, 역삼역, 삼성역, 8);
-        이호선.getSections().add(강남역_역삼역_구간);
-        이호선.getSections().add(역삼역_삼성역_구간);
-
-        // when
-        final Section 역삼역_삼성역_구간의_이전_구간 = 이호선.getSections().getPreviousSection(역삼역_삼성역_구간);
-
-        // then
-        assertThat(역삼역_삼성역_구간의_이전_구간).isEqualTo(강남역_역삼역_구간);
-    }
-
-    @DisplayName("[Error] 특정 구간의 이전 구간 가져올 때, 이전 구간이 없음")
-    @Test
-    void getPreviousSectionWithoutPreviousSection() {
-        // given
-        final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
-        이호선.getSections().add(강남역_역삼역_구간);
-
-        // when
-        assertThatThrownBy(() -> {
-            이호선.getSections().getPreviousSection(강남역_역삼역_구간);
-        }).isInstanceOf(BusinessException.class);
-    }
-
-    @DisplayName("특정 구간의 다음 구간 가져오기")
-    @Test
-    void getNextSection() {
-        // given
-        final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
-        final Section 역삼역_삼성역_구간 = new Section(이호선, 역삼역, 삼성역, 8);
-        이호선.getSections().add(강남역_역삼역_구간);
-        이호선.getSections().add(역삼역_삼성역_구간);
-
-        // when
-        final Section 강남역_역삼역_구간의_다음_구간 = 이호선.getSections().getNextSection(강남역_역삼역_구간);
-
-        // then
-        assertThat(강남역_역삼역_구간의_다음_구간).isEqualTo(역삼역_삼성역_구간);
-    }
-
-    @DisplayName("특정 구간의 다음 구간 가져올 때, 다음 구간이 없음")
-    @Test
-    void getNextSectionWithoutNextSection() {
-        // given
-        final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
-        이호선.getSections().add(강남역_역삼역_구간);
-
-        // when
-        final Section 다음_구간 = 이호선.getSections().getNextSection(강남역_역삼역_구간);
-
-        // then
-        assertThat(다음_구간).isNull();
     }
 }

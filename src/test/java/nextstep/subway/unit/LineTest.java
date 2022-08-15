@@ -1,16 +1,14 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.domain.line.Line;
-import nextstep.subway.domain.section.Section;
-import nextstep.subway.domain.station.Station;
-import nextstep.subway.domain.station.Stations;
-import nextstep.subway.error.exception.BusinessException;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.Stations;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
 
@@ -31,8 +29,8 @@ class LineTest {
     @Test
     void getStations() {
         // given
-        이호선.getSections().add(new Section(이호선, 강남역, 삼성역, 10));
-        이호선.getSections().add(new Section(이호선, 강남역, 역삼역, 9));
+        이호선.addSection(new Section(이호선, 강남역, 삼성역, 10));
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 9));
 
         // when
         final Stations 이호선_역_목록 = 이호선.getStations();

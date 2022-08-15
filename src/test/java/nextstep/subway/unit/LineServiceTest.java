@@ -5,12 +5,7 @@ import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.LineUpdateRequest;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.domain.line.Line;
-import nextstep.subway.domain.line.LineRepository;
-import nextstep.subway.domain.section.Section;
-import nextstep.subway.domain.section.Sections;
-import nextstep.subway.domain.station.Station;
-import nextstep.subway.domain.station.StationRepository;
+import nextstep.subway.domain.*;
 import nextstep.subway.error.exception.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -100,60 +95,56 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        final Sections 노선_구간들 = 이호선.getSections();
-        assertThat(노선_구간들.size()).isEqualTo(1);
+        assertThat(이호선.getStations().getList()).containsExactly(강남역, 역삼역);
     }
 
     @DisplayName("지하철 노선에서 하행 종점역 구간 제거")
     @Test
     void deleteSectionWithDownStation() {
         // given
-        이호선.getSections().add(new Section(이호선, 강남역, 역삼역, 10));
-        이호선.getSections().add(new Section(이호선, 역삼역, 삼성역, 10));
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
+        이호선.addSection(new Section(이호선, 역삼역, 삼성역, 10));
 
         // when
         lineService.deleteSection(이호선.getId(), 삼성역.getId());
 
         // then
-        final Sections 노선_구간들 = 이호선.getSections();
-        assertThat(노선_구간들.size()).isEqualTo(1);
+        assertThat(이호선.getStations().getList()).containsExactly(강남역, 역삼역);
     }
 
     @DisplayName("지하철 노선에서 상행 종점역 구간 제거")
     @Test
     void deleteSectionWithUpStation() {
         // given
-        이호선.getSections().add(new Section(이호선, 강남역, 역삼역, 10));
-        이호선.getSections().add(new Section(이호선, 역삼역, 삼성역, 10));
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
+        이호선.addSection(new Section(이호선, 역삼역, 삼성역, 10));
 
         // when
         lineService.deleteSection(이호선.getId(), 강남역.getId());
 
         // then
-        final Sections 노선_구간들 = 이호선.getSections();
-        assertThat(노선_구간들.size()).isEqualTo(1);
+        assertThat(이호선.getStations().getList()).containsExactly(역삼역, 삼성역);
     }
 
     @DisplayName("지하철 노선에서 역과 역 사이 구간 제거")
     @Test
     void deleteSectionBetweenStations() {
         // given
-        이호선.getSections().add(new Section(이호선, 강남역, 역삼역, 10));
-        이호선.getSections().add(new Section(이호선, 역삼역, 삼성역, 10));
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
+        이호선.addSection(new Section(이호선, 역삼역, 삼성역, 10));
 
         // when
         lineService.deleteSection(이호선.getId(), 역삼역.getId());
 
         // then
-        final Sections 노선_구간들 = 이호선.getSections();
-        assertThat(노선_구간들.size()).isEqualTo(1);
+        assertThat(이호선.getStations().getList()).containsExactly(강남역, 삼성역);
     }
 
     @DisplayName("노선의 마지막 구간을 삭제하려고 할 때 에러 발생")
     @Test
     void deleteSectionWithLastSection() {
         // given
-        이호선.getSections().add(new Section(이호선, 강남역, 역삼역, 10));
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
 
         // when
         assertThatThrownBy(() -> {

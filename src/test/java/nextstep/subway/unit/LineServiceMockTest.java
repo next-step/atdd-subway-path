@@ -6,11 +6,10 @@ import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.LineUpdateRequest;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.domain.line.Line;
-import nextstep.subway.domain.line.LineRepository;
-import nextstep.subway.domain.section.Section;
-import nextstep.subway.domain.section.Sections;
-import nextstep.subway.domain.station.Station;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
 import nextstep.subway.error.exception.BusinessException;
 import nextstep.subway.error.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -147,8 +146,8 @@ public class LineServiceMockTest {
         final Station 역삼역 = 역_생성(2L, "역삼역");
         final Station 삼성역 = 역_생성(3L, "삼성역");
         final Line 이호선 = 이호선();
-        이호선.getSections().add(new Section(이호선, 강남역, 역삼역, 10));
-        이호선.getSections().add(new Section(이호선, 역삼역, 삼성역, 10));
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
+        이호선.addSection(new Section(이호선, 역삼역, 삼성역, 10));
         when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
         when(stationService.findById(any())).thenReturn(삼성역);
 
@@ -156,8 +155,7 @@ public class LineServiceMockTest {
         lineService.deleteSection(이호선.getId(), 삼성역.getId());
 
         // then
-        final Sections 노선_구간들 = 이호선.getSections();
-        assertThat(노선_구간들.size()).isEqualTo(1);
+        assertThat(이호선.getStations().getList()).containsExactly(강남역, 역삼역);
     }
 
     @DisplayName("상행 종점역 구간 삭제")
@@ -168,17 +166,16 @@ public class LineServiceMockTest {
         final Station 역삼역 = 역_생성(2L, "역삼역");
         final Station 삼성역 = 역_생성(3L, "삼성역");
         final Line 이호선 = 이호선();
-        이호선.getSections().add(new Section(이호선, 강남역, 역삼역, 10));
-        이호선.getSections().add(new Section(이호선, 역삼역, 삼성역, 10));
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
+        이호선.addSection(new Section(이호선, 역삼역, 삼성역, 10));
         when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
-        when(stationService.findById(any())).thenReturn(삼성역);
+        when(stationService.findById(any())).thenReturn(강남역);
 
         // when
         lineService.deleteSection(이호선.getId(), 강남역.getId());
 
         // then
-        final Sections 노선_구간들 = 이호선.getSections();
-        assertThat(노선_구간들.size()).isEqualTo(1);
+        assertThat(이호선.getStations().getList()).containsExactly(역삼역, 삼성역);
     }
 
     @DisplayName("역과 역 사이 구간 삭제")
@@ -189,17 +186,16 @@ public class LineServiceMockTest {
         final Station 역삼역 = 역_생성(2L, "역삼역");
         final Station 삼성역 = 역_생성(3L, "삼성역");
         final Line 이호선 = 이호선();
-        이호선.getSections().add(new Section(이호선, 강남역, 역삼역, 10));
-        이호선.getSections().add(new Section(이호선, 역삼역, 삼성역, 10));
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
+        이호선.addSection(new Section(이호선, 역삼역, 삼성역, 10));
         when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
-        when(stationService.findById(any())).thenReturn(삼성역);
+        when(stationService.findById(any())).thenReturn(역삼역);
 
         // when
         lineService.deleteSection(이호선.getId(), 역삼역.getId());
 
         // then
-        final Sections 노선_구간들 = 이호선.getSections();
-        assertThat(노선_구간들.size()).isEqualTo(1);
+        assertThat(이호선.getStations().getList()).containsExactly(강남역, 삼성역);
     }
 
     @DisplayName("노선의 마지막 구간을 삭제하려고 할 때 에러 발생")
@@ -209,7 +205,7 @@ public class LineServiceMockTest {
         final Station 강남역 = 역_생성(1L, "강남역");
         final Station 역삼역 = 역_생성(2L, "역삼역");
         final Line 이호선 = 이호선();
-        이호선.getSections().add(new Section(이호선, 강남역, 역삼역, 10));
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
         when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
         when(stationService.findById(any())).thenReturn(역삼역);
 

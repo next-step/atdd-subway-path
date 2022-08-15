@@ -1,4 +1,4 @@
-package nextstep.subway.domain.station;
+package nextstep.subway.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
