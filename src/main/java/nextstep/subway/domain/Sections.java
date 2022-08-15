@@ -42,8 +42,7 @@ public class Sections {
     }
 
     void remove(Station station) {
-        validateSectionSizeBeforeRemove(this);
-        validateIsStationsInSections(station);
+        this.validateRemoveStation(station);
 
         if (isDownStation(this, station)) {
             this.sections.remove(this.getLastSection());
@@ -158,17 +157,18 @@ public class Sections {
         previousSection.updateDistance(previousSection.getDistance() - newSection.getDistance());
     }
 
+    private void validateRemoveStation(Station station) {
+        validateSectionSizeBeforeRemove(this);
+        if (this.sections.stream()
+                .noneMatch(it -> it.getUpStation().equals(station) || it.getDownStation().equals(station))) {
+            throw new BusinessException(ErrorCode.STATION_NOT_FOUND_IN_SECTION);
+        }
+    }
+
     private void validateIsUpStationAndDownStationInSections(Station upStation, Station downStation) {
         if (this.sections.stream()
                 .noneMatch(it -> validateIsStationInSection(it, upStation) || validateIsStationInSection(it, downStation))) {
             throw new BusinessException(ErrorCode.SECTION_NOT_FOUND_ABOUT_UP_AND_DOWN_STATION);
-        }
-    }
-
-    private void validateIsStationsInSections(Station station) {
-        if (this.sections.stream()
-                .noneMatch(it -> it.getUpStation().equals(station) || it.getDownStation().equals(station))) {
-            throw new BusinessException(ErrorCode.STATION_NOT_FOUND_IN_SECTION);
         }
     }
 
