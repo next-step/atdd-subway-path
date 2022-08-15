@@ -11,11 +11,13 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public Section findSection(String upStationName, String downStationName) {
+    public Section findSection(Station upStation, Station downStaion) {
         return sections.stream()
-                .filter((section -> section.getUpStation().getName().equals(upStationName)
-                        && section.getDownStation().getName().equals(downStationName)))
+                .filter((section) -> section.getUpStation().equals(upStation)
+                                    && section.getDownStation().equals(downStaion))
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("해당 상행역과 하행역으로 조회되는 구간이 없습니다."));
+
+
     }
 
     public void add(Section newSection) {

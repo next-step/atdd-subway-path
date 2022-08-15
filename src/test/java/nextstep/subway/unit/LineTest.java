@@ -142,6 +142,7 @@ class LineTest {
         // given
         Station 구일역 = new Station("구일역");
         Station 구로역 = new Station("구로역");
+        Station 신도림역 = new Station("신도림역");
 
         Line 일호선 = 일호선_생성(구일역, 구로역, 10);
         Section 구로역_신도림역_구간 = 구로역_신도림역_구간생성(일호선, 7);
@@ -153,7 +154,7 @@ class LineTest {
         // then
         List<Station> stations = 일호선.getStations();
         Sections sections = 일호선.getSections();
-        Section section = sections.findSection("구일역", "신도림역");
+        Section section = sections.findSection(구일역, 신도림역);
 
         assertThat(stations.stream().map(Station::getName)
                 .collect(Collectors.toList()))
