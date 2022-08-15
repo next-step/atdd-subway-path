@@ -44,6 +44,18 @@ public class Section {
         return distance;
     }
 
+    public void updateUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void updateDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
+    public void updateDistance(Integer distance) {
+        this.distance = distance;
+    }
+
     public void update(Station upStation, Station downStation, Integer distance) {
         if (upStation != null) {
             this.upStation = upStation;
