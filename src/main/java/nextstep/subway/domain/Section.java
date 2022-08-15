@@ -87,4 +87,13 @@ public class Section {
         return this.getUpStation().equals(upStation)
                 && this.getDownStation().equals(downStation);
     }
+
+    public boolean matchUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean matchDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
 }
