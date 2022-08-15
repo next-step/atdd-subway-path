@@ -88,33 +88,19 @@ public class Sections {
     public void remove(Station station) {
         removeValidationCheck(station);
 
-        Section sectionWithLastUpStation = findSectionWithLastUpStation();
+        Section sectionWithLastUpStation = getExistedSectionWithLastUpStation();
         if (sectionWithLastUpStation.matchUpStation(station)) {
             sections.remove(sectionWithLastUpStation);
             return;
         }
 
-        Section sectionWithLastDownStation = findSectionWithLastDownStation();
+        Section sectionWithLastDownStation = getExistedSectionWithLastDownStation();
         if (sectionWithLastDownStation.matchDownStation(station)) {
             sections.remove(sectionWithLastDownStation);
             return;
         }
 
         removeMiddleStation(station);
-    }
-
-    private Section findSectionWithLastDownStation() {
-        return sections.stream()
-                .filter((section) -> section.isSectionWithLastDownStation(sections))
-                .findFirst()
-                .orElseThrow(NotFoundSectionException::new);
-    }
-
-    private Section findSectionWithLastUpStation() {
-        return sections.stream()
-                .filter((section) -> section.isSectionWithLastUpStation(sections))
-                .findFirst()
-                .orElseThrow(NotFoundSectionException::new);
     }
 
     private void removeMiddleStation(Station station) {
@@ -140,28 +126,23 @@ public class Sections {
 
     // 상행종점역이 포함된 구간 조회
     private Section getExistedSectionWithLastUpStation() {
-        if (sections.size() == 1) {
-            return sections.get(0);
+        return findExistedSectionWithLastUpStation(0);
+    }
+
+    private Section findExistedSectionWithLastUpStation(int index) {
+        Section section = sections.get(index);
+        if (section.isSectionWithLastUpStation(sections)) {
+            return section;
         }
-        for (Section section : sections) {
-            if (section.isSectionWithLastUpStation(sections)) {
-                return section;
-            }
-        }
-        throw new RuntimeException("알 수 없는 오류가 발생하였습니다.");
+        return findExistedSectionWithLastUpStation(index + 1);
     }
 
     // 하행종점역이 포함된 구간 조회
     private Section getExistedSectionWithLastDownStation() {
-        if (sections.size() == 1) {
-            return sections.get(0);
-        }
-        for (Section section : sections) {
-            if (section.isSectionWithLastDownStation(sections)) {
-                return section;
-            }
-        }
-        throw new RuntimeException("알 수 없는 오류가 발생하였습니다.");
+        return sections.stream()
+                .filter((section) -> section.isSectionWithLastDownStation(sections))
+                .findFirst()
+                .orElseThrow(NotFoundSectionException::new);
     }
 
     // 하행종점역까지 남아있는 역을 목록에 추가
