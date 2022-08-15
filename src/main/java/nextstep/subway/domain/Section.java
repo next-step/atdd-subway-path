@@ -82,4 +82,9 @@ public class Section {
                 .noneMatch((section -> section.getUpStation().equals(downStation)));
     }
 
+
+    public boolean matchStations(Station upStation, Station downStation) {
+        return this.getUpStation().equals(upStation)
+                && this.getDownStation().equals(downStation);
+    }
 }

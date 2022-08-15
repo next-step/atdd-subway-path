@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
@@ -11,13 +10,11 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public Section findSection(Station upStation, Station downStaion) {
+    public Section findSection(Station upStation, Station downStation) {
         return sections.stream()
-                .filter((section) -> section.getUpStation().equals(upStation)
-                                    && section.getDownStation().equals(downStaion))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("해당 상행역과 하행역으로 조회되는 구간이 없습니다."));
-
-
+                .filter((section) -> section.matchStations(upStation, downStation))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 상행역과 하행역으로 조회되는 구간이 없습니다."));
     }
 
     public void add(Section newSection) {
