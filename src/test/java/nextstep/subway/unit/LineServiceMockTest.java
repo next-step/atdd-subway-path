@@ -35,18 +35,24 @@ public class LineServiceMockTest {
     private StationService stationService;
     private LineService lineService;
 
+    private Line 이호선;
+    private Station 강남역;
+    private Station 역삼역;
+    private Station 삼성역;
+
     @BeforeEach
     void setUp() {
         lineService = new LineService(lineRepository, stationService);
+        이호선 = 이호선();
+        강남역 = 역_생성(1L, "강남역");
+        역삼역 = 역_생성(2L, "역삼역");
+        삼성역 = 역_생성(3L, "삼성역");
     }
 
     @DisplayName("노선 생성")
     @Test
     void saveLine() {
         // given
-        final Line 이호선 = 이호선();
-        final Station 강남역 = 역_생성(1L, "강남역");
-        final Station 역삼역 = 역_생성(2L, "역삼역");
         when(lineRepository.save(any())).thenReturn(이호선);
         when(stationService.findById(강남역.getId())).thenReturn(강남역);
         when(stationService.findById(역삼역.getId())).thenReturn(역삼역);
@@ -62,7 +68,6 @@ public class LineServiceMockTest {
     @Test
     void showLines() {
         // given
-        final Line 이호선 = 이호선();
         when(lineRepository.findAll()).thenReturn(List.of(이호선));
 
         // when
@@ -76,7 +81,6 @@ public class LineServiceMockTest {
     @Test
     void findById() {
         // given
-        final Line 이호선 = 이호선();
         when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
 
         // when
@@ -90,7 +94,6 @@ public class LineServiceMockTest {
     @Test
     void updateLine() {
         // given
-        final Line 이호선 = 이호선();
         when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
 
         // when
@@ -104,9 +107,6 @@ public class LineServiceMockTest {
     @DisplayName("노선 삭제 후, 삭제된 노선 조회 실패")
     @Test
     void deleteLine() {
-        // given
-        final Line 이호선 = 이호선();
-
         // when
         lineService.deleteLine(이호선.getId());
 
@@ -121,9 +121,6 @@ public class LineServiceMockTest {
     void addSection() {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
-        final Station 강남역 = 역_생성(1L, "강남역");
-        final Station 역삼역 = 역_생성(2L, "역삼역");
-        final Line 이호선 = 이호선();
         when(stationService.findById(강남역.getId())).thenReturn(강남역);
         when(stationService.findById(역삼역.getId())).thenReturn(역삼역);
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
@@ -142,10 +139,6 @@ public class LineServiceMockTest {
     @Test
     void deleteSectionWithDownStation() {
         // given
-        final Station 강남역 = 역_생성(1L, "강남역");
-        final Station 역삼역 = 역_생성(2L, "역삼역");
-        final Station 삼성역 = 역_생성(3L, "삼성역");
-        final Line 이호선 = 이호선();
         이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
         이호선.addSection(new Section(이호선, 역삼역, 삼성역, 10));
         when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
@@ -162,10 +155,6 @@ public class LineServiceMockTest {
     @Test
     void deleteSectionWithUpStation() {
         // given
-        final Station 강남역 = 역_생성(1L, "강남역");
-        final Station 역삼역 = 역_생성(2L, "역삼역");
-        final Station 삼성역 = 역_생성(3L, "삼성역");
-        final Line 이호선 = 이호선();
         이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
         이호선.addSection(new Section(이호선, 역삼역, 삼성역, 10));
         when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
@@ -182,10 +171,6 @@ public class LineServiceMockTest {
     @Test
     void deleteSectionBetweenStations() {
         // given
-        final Station 강남역 = 역_생성(1L, "강남역");
-        final Station 역삼역 = 역_생성(2L, "역삼역");
-        final Station 삼성역 = 역_생성(3L, "삼성역");
-        final Line 이호선 = 이호선();
         이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
         이호선.addSection(new Section(이호선, 역삼역, 삼성역, 10));
         when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
@@ -202,9 +187,6 @@ public class LineServiceMockTest {
     @Test
     void deleteSectionWithLastSection() {
         // given
-        final Station 강남역 = 역_생성(1L, "강남역");
-        final Station 역삼역 = 역_생성(2L, "역삼역");
-        final Line 이호선 = 이호선();
         이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
         when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
         when(stationService.findById(any())).thenReturn(역삼역);
