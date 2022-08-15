@@ -48,7 +48,8 @@ public class Sections {
         if (isDownStation(this, station)) {
             this.sections.remove(this.getLastSection());
             return;
-        } else if (isUpStation(this, station)) {
+        }
+        if (isUpStation(this, station)) {
             this.sections.remove(this.getFirstSection());
             return;
         }
