@@ -48,6 +48,11 @@ public class PathFinder {
     public PathResponse findPath(Station source, Station target) {
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
         GraphPath<Station, DefaultWeightedEdge> graphPath = dijkstraShortestPath.getPath(source, target);
+
+        if (graphPath == null) {
+            throw new IllegalArgumentException("경로를 찾을 수 없습니다.");
+        }
+
         return new PathResponse(graphPath.getVertexList(), (int) graphPath.getWeight());
     }
 }
