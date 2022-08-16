@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.applicaion.exception.BadRequestException;
+import nextstep.subway.exception.NotFoundSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
@@ -12,40 +12,37 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
+    public Section findSection(Station upStation, Station downStation) {
+        return sections.stream()
+                .filter((section) -> section.matchStations(upStation, downStation))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 상행역과 하행역으로 조회되는 구간이 없습니다."));
+    }
+
     public void add(Section newSection) {
         if (sections.isEmpty()) {
             sections.add(newSection);
             return;
         }
 
-        if (isAlreadyRegistered(newSection)) {
-            throw new BadRequestException("이미 노선에 등록된 구간입니다.");
-        }
+        isValidSection(newSection);
 
-        if (notFoundUpAndDownStations(newSection)) {
-            throw new IllegalArgumentException("추가하려는 구간의 상행역 및 하행역이 기존 구간에 존재하지 않습니다.");
-        }
-
-        // 하행 종점역을 포함하고 있는 기존 구간
-        Section sectionWithLastDownStation = getSectionWithLastDownStation();
-        // 새로운 역을 하행 종점으로 등록할 경우
-        if (sectionWithLastDownStation.getDownStation().equals(newSection.getUpStation())) {
+        if (isNewLastDownStation(newSection)) {
             sections.add(newSection);
             return;
         }
 
-        // 새로 추가하려는 구간의 상행역과 매칭되는 기존 구간을 찾는다
-        Section existedSection = findSectionMatchingUpStation(newSection.getUpStation());
-        // 매칭되는 기존 구간이 없을 시 새로운 역을 상행 종점으로 등록한다고 판단
-        if (existedSection == null) {
-            Section sectionWithLastUpStation = getSectionWithLastUpStation();
-            if (sectionWithLastUpStation.getUpStation().equals(newSection.getDownStation())) {
-                sections.add(newSection);
-                return;
-            }
+        if (isNewLastUpStation(newSection)) {
+            sections.add(newSection);
+            return;
         }
 
-        // 추가하려는 구간이 매칭된 기존 구간보다 거리가 더 짧은지 체크
+        addNewStationInExistedSection(newSection);
+    }
+
+    // 새로운 역을 기존 구간의 중간에 추가
+    private void addNewStationInExistedSection(Section newSection) {
+        Section existedSection = findSectionMatchingUpStation(newSection.getUpStation());
         if (newSection.getDistance() >= existedSection.getDistance()) {
             throw new IllegalArgumentException("기존 구간보다 거리가 더 긴 구간은 등록할 수 없습니다.");
         }
@@ -54,11 +51,32 @@ public class Sections {
         existedSection.updateUpStation(newSection.getDownStation(), existedSection.getDistance() - newSection.getDistance());
     }
 
+    // 새로운 역을 하행 종점으로 등록하는 경우
+    private boolean isNewLastDownStation(Section newSection) {
+        return getExistedSectionWithLastDownStation().getDownStation().equals(newSection.getUpStation());
+    }
+
+    // 새로운 역을 상행 종점으로 등록하는 경우
+    private boolean isNewLastUpStation(Section newSection) {
+        return getExistedSectionWithLastUpStation().getUpStation().equals(newSection.getDownStation());
+    }
+
+    // 새로 추가하려는 구간 유효성 검사
+    private void isValidSection(Section newSection) {
+        if (isAlreadyRegistered(newSection)) {
+            throw new IllegalArgumentException("이미 노선에 등록된 구간입니다.");
+        }
+
+        if (notFoundUpAndDownStations(newSection)) {
+            throw new IllegalArgumentException("추가하려는 구간의 상행역 및 하행역이 기존 구간에 존재하지 않습니다.");
+        }
+    }
+
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
 
         // 상행종점역이 포함된 구간 조회
-        Section sectionWithLastUpStation = getSectionWithLastUpStation();
+        Section sectionWithLastUpStation = getExistedSectionWithLastUpStation();
 
         // 상행종점역 추가 후 하행종점역까지 구간 찾아가면서 지하철역 목록에 추가
         stations.add(sectionWithLastUpStation.getUpStation());
@@ -67,47 +85,64 @@ public class Sections {
         return stations;
     }
 
-    public void remove() {
-        int lastSectionIndex = sections.size() - 1;
-        if (lastSectionIndex > 0) {
-            sections.remove(lastSectionIndex);
+    public void remove(Station station) {
+        removeValidationCheck(station);
+
+        Section sectionWithLastUpStation = getExistedSectionWithLastUpStation();
+        if (sectionWithLastUpStation.matchUpStation(station)) {
+            sections.remove(sectionWithLastUpStation);
             return;
         }
-        throw new IllegalArgumentException("구간이 2개 이상인 경우에만 삭제가 가능합니다.");
+
+        Section sectionWithLastDownStation = getExistedSectionWithLastDownStation();
+        if (sectionWithLastDownStation.matchDownStation(station)) {
+            sections.remove(sectionWithLastDownStation);
+            return;
+        }
+
+        removeMiddleStation(station);
+    }
+
+    private void removeMiddleStation(Station station) {
+        Section sectionMatchingUpStation = findSectionMatchingUpStation(station);
+        Section sectionMatchingDownStation = findSectionMatchingDownStation(station);
+
+        Station newDownStation = sectionMatchingUpStation.getDownStation();
+        int newDistance = sectionMatchingUpStation.getDistance() + sectionMatchingDownStation.getDistance();
+
+        sections.remove(sectionMatchingUpStation);
+        // 역 삭제 후 구간 재배치
+        sectionMatchingDownStation.updateDownStation(newDownStation, newDistance);
+    }
+
+    private void removeValidationCheck(Station station) {
+        if (!getStations().contains(station)) {
+            throw new IllegalArgumentException("해당 노선에 존재하지 않는 역은 제거할 수 없습니다.");
+        }
+        if (sections.size() <= 1) {
+            throw new IllegalArgumentException("구간이 2개 이상 존재하는 노선에서만 역을 제거할 수 있습니다.");
+        }
     }
 
     // 상행종점역이 포함된 구간 조회
-    private Section getSectionWithLastUpStation() {
-        if (sections.size() == 1) {
-            return sections.get(0);
+    private Section getExistedSectionWithLastUpStation() {
+        return findExistedSectionWithLastUpStation(0);
+    }
+
+    private Section findExistedSectionWithLastUpStation(int index) {
+        Section section = sections.get(index);
+        if (section.isSectionWithLastUpStation(sections)) {
+            return section;
         }
-        Section sectionWithLastUpStation = null;
-        for (Section section : sections) {
-            boolean isSectionWithLastUpStation = sections.stream()
-                    .noneMatch((comparisonSection) -> comparisonSection.getDownStation().equals(section.getUpStation()));
-            if (isSectionWithLastUpStation) {
-                sectionWithLastUpStation = section;
-                break;
-            }
-        }
-        return sectionWithLastUpStation;
+        return findExistedSectionWithLastUpStation(index + 1);
     }
 
     // 하행종점역이 포함된 구간 조회
-    private Section getSectionWithLastDownStation() {
-        if (sections.size() == 1) {
-            return sections.get(0);
-        }
-        Section sectionWithLastDownStation = null;
-        for (Section section : sections) {
-            boolean isSectionWithLastDownStation = sections.stream()
-                    .noneMatch((comparisonSection) -> comparisonSection.getUpStation().equals(section.getDownStation()));
-            if (isSectionWithLastDownStation) {
-                sectionWithLastDownStation = section;
-                break;
-            }
-        }
-        return sectionWithLastDownStation;
+    private Section getExistedSectionWithLastDownStation() {
+        return sections.stream()
+                .filter((section) -> section.isSectionWithLastDownStation(sections))
+                .findFirst()
+                .orElseThrow(NotFoundSectionException::new);
     }
 
     // 하행종점역까지 남아있는 역을 목록에 추가
@@ -150,12 +185,24 @@ public class Sections {
         return getStations().containsAll(newSectionUpAndDownStation);
     }
 
-    private boolean notFoundUpAndDownStations(Section newSection) {
-        return getStations().stream().noneMatch((station) -> station.equals(newSection.getDownStation()) ||
-                                                            station.equals(newSection.getUpStation()));
+    private boolean notFoundUpAndDownStations(Section section) {
+        return getStations().stream()
+                .noneMatch((station) -> station.equals(section.getDownStation())
+                                    || station.equals(section.getUpStation()));
     }
 
-    public Section findSectionMatchingUpStation(Station upStation) {
-        return sections.stream().filter((section) -> section.getUpStation().equals(upStation)).findFirst().orElse(null);
+    public Section findSectionMatchingUpStation(Station station) {
+        return sections.stream()
+                .filter((section) -> section.getUpStation().equals(station))
+                .findFirst()
+                .orElse(null);
     }
+
+    private Section findSectionMatchingDownStation(Station station) {
+        return sections.stream()
+                .filter((section) -> section.getDownStation().equals(station))
+                .findFirst()
+                .orElse(null);
+    }
+
 }

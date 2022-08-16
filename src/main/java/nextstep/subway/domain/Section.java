@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.util.List;
 
 @Entity
 public class Section {
@@ -59,8 +60,58 @@ public class Section {
         return distance;
     }
 
-    public void updateUpStation(Station newSectiondownStation, int updatedDistance) {
-        this.upStation = newSectiondownStation;
-        this.distance = updatedDistance;
+    public void updateUpStation(Station station, int distance) {
+        this.upStation = station;
+        this.distance = distance;
     }
+
+    public void updateDownStation(Station station, int distance) {
+        this.downStation = station;
+        this.distance = distance;
+    }
+
+    /**
+     * @param sections 구간목록
+     * @return 해당 구간이 상행종점역을 포함하는 구간인지 여부
+     */
+    public boolean isSectionWithLastUpStation(List<Section> sections) {
+        return sections.stream()
+                .noneMatch((section -> section.getDownStation().equals(upStation)));
+    }
+
+    /**
+     * @param sections 구간목록
+     * @return 하행종점역을 포함하는 구간인지 여부
+     */
+    public boolean isSectionWithLastDownStation(List<Section> sections) {
+        return sections.stream()
+                .noneMatch((section -> section.getUpStation().equals(downStation)));
+    }
+
+    /**
+     * @param upStation 상행역
+     * @param downStation 하행역
+     * @return 상행역·하행역에 매칭되는 구간인지 여부
+     */
+    public boolean matchStations(Station upStation, Station downStation) {
+        return this.getUpStation().equals(upStation)
+                && this.getDownStation().equals(downStation);
+    }
+
+    /**
+     * @param station 지하철역
+     * @return 지하철역이 해당 구간의 상행역과 일치하는지 여부
+     */
+    public boolean matchUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    /**
+     * @param station 지하철역
+     * @return 지하철역이 해당 구간의 하행역과 일치하는지 여부
+     */
+    public boolean matchDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
 }
