@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -71,7 +72,7 @@ class PathServiceTest {
 
         // then 경로에 있는 역 목록과 거리를 응답한다.
         List<Long> stationIds = response.getStations().stream()
-                .map(Station::getId)
+                .map(StationResponse::getId)
                 .collect(Collectors.toList());
 
         assertAll(

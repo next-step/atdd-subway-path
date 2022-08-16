@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.applicaion.dto.PathResponse;
+import nextstep.subway.applicaion.dto.StationResponse;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -53,6 +54,9 @@ public class PathFinder {
             throw new IllegalArgumentException("경로를 찾을 수 없습니다.");
         }
 
-        return new PathResponse(graphPath.getVertexList(), (int) graphPath.getWeight());
+        List<StationResponse> stationResponses = graphPath.getVertexList().stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
+        return new PathResponse(stationResponses, (int) graphPath.getWeight());
     }
 }
