@@ -6,6 +6,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class Sections {
 
@@ -137,10 +138,21 @@ public class Sections {
         return findExistedSectionWithLastUpStation(index + 1);
     }
 
+
+    // 상행종점역이 포함된 구간 조회
+    private Section getExistedSectionWithLastUpStation2() {
+        return getLastStation((section) -> section.isSectionWithLastDownStation(sections));
+    }
+
     // 하행종점역이 포함된 구간 조회
     private Section getExistedSectionWithLastDownStation() {
+        return getLastStation((section) -> section.isSectionWithLastDownStation(sections));
+
+    }
+
+    private Section getLastStation(Predicate<Section> lastStationCheck) {
         return sections.stream()
-                .filter((section) -> section.isSectionWithLastDownStation(sections))
+                .filter(lastStationCheck)
                 .findFirst()
                 .orElseThrow(NotFoundSectionException::new);
     }
