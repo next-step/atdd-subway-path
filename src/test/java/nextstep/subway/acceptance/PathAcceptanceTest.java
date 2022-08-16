@@ -26,7 +26,10 @@ class PathAcceptanceTest extends AcceptanceTest {
     private Long 삼호선;
 
     /**
-     * 교대역    --- *2호선* ---   강남역 |                        | *3호선*                   *신분당선* |                        |
+     * 교대역    --- *2호선* ---   강남역
+     * |                        |
+     * *3호선*                   *신분당선*
+     * |                        |
      * 남부터미널역  --- *3호선* ---   양재
      */
     @BeforeEach
@@ -46,7 +49,8 @@ class PathAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 출발역과 도착역이 같은 호선으로 조회하면 Then 경로에 있는 역 목록과 거리를 정상 조회한다.
+     * When 출발역과 도착역이 같은 호선으로 조회하면
+     * Then 경로에 있는 역 목록과 거리를 정상 조회한다.
      */
     @DisplayName("출발역과 도착역이 같은 호선으로 경로를 조회한다.")
     @Test
@@ -63,7 +67,8 @@ class PathAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 출발역과 다른 호선을 도착역으로 경로를 조회하면 Then 경로에 있는 역 목록과 거리를 정상 조회한다.
+     * When 출발역과 다른 호선을 도착역으로 경로를 조회하면
+     * Then 경로에 있는 역 목록과 거리를 정상 조회한다.
      */
     @DisplayName("출발역과 도착역이 다른 호선으로 경로를 조회한다.")
     @Test
