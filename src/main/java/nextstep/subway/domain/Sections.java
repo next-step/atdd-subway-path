@@ -59,6 +59,10 @@ public class Sections {
         this.sections.remove(currentSection);
     }
 
+    List<Section> getSections() {
+        return this.sections;
+    }
+
     Stations getStations() {
         if (this.sections.isEmpty()) {
             return new Stations(Collections.emptyList());
