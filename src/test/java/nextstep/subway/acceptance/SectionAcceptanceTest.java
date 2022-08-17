@@ -33,7 +33,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
         양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
 
-        Map<String, String> lineCreateParams = createLineCreateParams(강남역, 양재역);
+        Map<String, Object> lineCreateParams = createLineCreateParams(강남역, 양재역);
         신분당선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
     }
 
@@ -241,8 +241,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
         에러메시지_확인(지하철_노선에_지하철_구간_제거_응답, ErrorCode.STATION_NOT_FOUND_IN_SECTION);
     }
 
-    private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
-        Map<String, String> lineCreateParams;
+    private Map<String, Object> createLineCreateParams(Long upStationId, Long downStationId) {
+        Map<String, Object> lineCreateParams;
         lineCreateParams = new HashMap<>();
         lineCreateParams.put("name", "신분당선");
         lineCreateParams.put("color", "bg-red-600");
