@@ -217,4 +217,7 @@ public class Sections {
                 .orElse(null);
     }
 
+    public List<Section> getSections() {
+        return sections;
+    }
 }
