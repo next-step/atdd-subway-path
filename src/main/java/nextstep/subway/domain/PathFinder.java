@@ -20,30 +20,24 @@ public class PathFinder {
     }
 
     private void init() {
-        createVertex();
-        createEdge();
+        lines.forEach(line -> {
+            createVertex(line);
+            createEdge(line);
+        });
     }
 
-    private void createVertex() {
-        List<Station> stations = lines.stream()
-                .flatMap(line -> line.getStations().stream())
-                .distinct()
-                .collect(Collectors.toList());
-
-        for (Station station : stations) {
-            graph.addVertex(station);
-        }
+    private void createVertex(Line line) {
+        line.getSections().getSections().forEach(section -> {
+            graph.addVertex(section.getUpStation());
+            graph.addVertex(section.getDownStation());
+        });
     }
 
-    private void createEdge() {
-        List<Section> sections = lines.stream()
-                .flatMap(line -> line.getSections().getSections().stream())
-                .collect(Collectors.toList());
-
-        for (Section section : sections) {
-            graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()),
-                    section.getDistance());
-        }
+    private void createEdge(Line line) {
+        line.getSections().getSections().forEach(section ->
+                graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()),
+                        section.getDistance())
+        );
     }
 
     public PathResponse findPath(Station source, Station target) {

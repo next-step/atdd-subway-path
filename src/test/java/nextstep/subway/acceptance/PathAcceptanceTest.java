@@ -42,7 +42,7 @@ class PathAcceptanceTest extends AcceptanceTest {
         남부터미널역 = 지하철역_생성_요청("남부터미널역").jsonPath().getLong("id");
 
         이호선 = 지하철_노선_생성_요청("2호선", "green", 교대역, 강남역, 10);
-        신분당선 = 지하철_노선_생성_요청("신분당선", "red", 강남역, 양재역, 10);
+        신분당선 = 지하철_노선_생성_요청("신분당선", "red", 강남역, 양재역, 100);
         삼호선 = 지하철_노선_생성_요청("3호선", "orange", 교대역, 남부터미널역, 2);
 
         지하철_노선에_지하철_구간_생성_요청(삼호선, createSectionCreateParams(남부터미널역, 양재역, 3));
@@ -86,6 +86,25 @@ class PathAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * When 같은 호선이지만 역 사이가 먼 경로를 조회하면
+     * Then 환승을 하더라도 최단 거리의 경로를 정상 조회한다.
+     */
+    @DisplayName("같은 호선이지만 환승을 포함한 최단 거리의 경로를 조회한다.")
+    @Test
+    void shortestPathFindSuccess() {
+        // when
+        ExtractableResponse<Response> response = 경로_조회_요청(강남역, 양재역);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 교대역,
+                        남부터미널역, 양재역),
+                () -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(15)
+        );
+    }
+
+    /**
      * When 출발역과 도착역이 같은 경우
      * Then 경로조회에 실패한다.
      */
@@ -101,8 +120,7 @@ class PathAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 연결되지 않은 지하철 노선을 추가하고
-     * When 연결되지 않은 역끼리 경로를 조회하면
-     * Then 경로조회에 실패한다.
+     * When 연결되지 않은 역끼리 경로를 조회하면 Then 경로조회에 실패한다.
      */
     @DisplayName("출발역과 도착역이 연결되지 않은 경우 경로 조회에 실패한다.")
     @Test
