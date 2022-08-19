@@ -48,8 +48,11 @@ public class PathSearch {
      * @param sections
      */
     private void addSections(Sections sections) {
-        sections.getSections()
-                .forEach(section -> graph.setEdgeWeight(graph.addEdge(section.getUpStation().getName(), section.getDownStation().getName()), section.getDistance()));
+        for (Section section : sections.getSections()) {
+            String upStation = section.getUpStation().getName();
+            String downStation = section.getDownStation().getName();
+            graph.setEdgeWeight(graph.addEdge(upStation, downStation), section.getDistance());
+        }
     }
 
     /**
