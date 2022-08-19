@@ -41,7 +41,10 @@ class PathServiceTest {
     private PathService pathService;
 
     /**
-     * 교대역    --- *2호선* ---   강남역 |                        | *3호선*                   *신분당선* |                        |
+     * 교대역    --- *2호선* ---   강남역
+     * |                        |
+     * *3호선*                   *신분당선*
+     * |                        |
      * 남부터미널역  --- *3호선* ---   양재역
      */
     @BeforeEach
@@ -62,15 +65,16 @@ class PathServiceTest {
     }
 
     /**
-     * When 출발역과 도착역에 대한 경로를 조회하면 Then 경로에 있는 역 목록과 거리를 응답한다.
+     * When 출발역과 도착역에 대한 경로를 조회하면
+     * Then 경로에 있는 역 목록과 거리를 응답한다.
      */
     @DisplayName("서로 다른 연결된 역 두개의 경로를 조회한다.")
     @Test
     void pathSearchSuccess() {
-        // when 출발역과 도착역에 대한 경로를 조회한다.
+        // when
         PathResponse response = pathService.findPath(교대역, 양재역);
 
-        // then 경로에 있는 역 목록과 거리를 응답한다.
+        // then
         List<Long> stationIds = response.getStations().stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
@@ -82,40 +86,43 @@ class PathServiceTest {
     }
 
     /**
-     * When 출발역과 도착역을 동일한 역으로 경로를 조회하면 Then 경로 조회에 실패한다.
+     * When 출발역과 도착역을 동일한 역으로 경로를 조회하면
+     * Then 경로 조회에 실패한다.
      */
     @DisplayName("출발역과 도착역이 같은 경우 경로 조회를 실패한다.")
     @Test
     void sameStartAndEndStationFindLineFail() {
-        // when & then 출발역과 도착역이 같은 경우 경로 조회에 실패한다.
+        // when & then
         assertThatThrownBy(() -> pathService.findPath(교대역, 교대역))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     /**
-     * Given 서로 연결되어있지 않는 지하철 노선을 추가하고 When 연결되지 않은 역끼리 경로를 조회하면 Then 경로 조회에 실패한다.
+     * Given 서로 연결되어있지 않는 지하철 노선을 추가하고
+     * When 연결되지 않은 역끼리 경로를 조회하면 Then 경로 조회에 실패한다.
      */
     @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우 경로 조회는 실패한다.")
     @Test
     void startAndEndStationIsNotLinkFindLineFail() {
-        // given 연결되지 않은 지하철 노선 추가한다.
+        // given
         Long 신논현역 = stationRepository.save(new Station("신논현역")).getId();
         Long 언주역 = stationRepository.save(new Station("언주역")).getId();
         Long 구호선 = lineRepository.save(new Line("9호선", "brown")).getId();
         lineService.addSection(구호선, new SectionRequest(신논현역, 언주역, 10));
 
-        // when & then 출발역과 도착역이 연결이 되어 있지 않은 경우 경로 조회는 실패한다.
+        // when & then
         assertThatThrownBy(() -> pathService.findPath(신논현역, 교대역))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     /**
-     * When 존재하지 않는 역의 경로를 조회하면 Then 경로 조회에 실패한다.
+     * When 존재하지 않는 역의 경로를 조회하면
+     * Then 경로 조회에 실패한다.
      */
     @DisplayName("출발역 또는 도착역이 존재하지 않는 경우 경로 조회에 실패한다.")
     @Test
     void startOrEndStationNotExistFindLineFail() {
-        // when & then 출발역 또는 도착역이 존재하지 않는 경우 경로 조회에 실패한다.
+        // when & then
         assertThatThrownBy(() -> pathService.findPath(교대역, 99L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
