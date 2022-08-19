@@ -135,7 +135,7 @@ class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 경로_조회_요청(신논현역, 교대역);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        경로조회를_실패했는지_검증(response);
     }
 
     /**
@@ -149,6 +149,10 @@ class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 경로_조회_요청(교대역, 99L);
 
         // then
+        경로조회를_실패했는지_검증(response);
+    }
+
+    private void 경로조회를_실패했는지_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }
