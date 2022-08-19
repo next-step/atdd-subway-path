@@ -55,10 +55,10 @@ class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("출발역과 도착역이 같은 호선으로 경로를 조회한다.")
     @Test
     void startAndEndStationSameLineFindSuccess() {
-        // when 2호선 라인의 역 경로 조회를 요청한다.
+        // when
         ExtractableResponse<Response> response = 경로_조회_요청(교대역, 강남역);
 
-        // then 2호선 라인의 역 목록과 거리를 정상 조회한다.
+        // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(교대역, 강남역),
@@ -73,10 +73,10 @@ class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("출발역과 도착역이 다른 호선으로 경로를 조회한다.")
     @Test
     void startAndEndStationNotSameLineFindSuccess() {
-        // when 다른 호선으로 환승을 하도록 경로 조회한다.
+        // when
         ExtractableResponse<Response> response = 경로_조회_요청(교대역, 양재역);
 
-        // then 경로 내에 포함되는 역 목록과 거리를 정상조회한다.
+        // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(교대역, 남부터미널역,
@@ -111,29 +111,30 @@ class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("출발역과 도착역이 같은 경우 경로 조회에 실패한다.")
     @Test
     void sameStartAndEndStationFindLineFail() {
-        // when 출발역과 도착역이 같도록 조회한다.
+        // when
         ExtractableResponse<Response> response = 경로_조회_요청(교대역, 교대역);
 
-        // then 경로 조회결과 실패한다.
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     /**
      * Given 연결되지 않은 지하철 노선을 추가하고
-     * When 연결되지 않은 역끼리 경로를 조회하면 Then 경로조회에 실패한다.
+     * When 연결되지 않은 역끼리 경로를 조회하면
+     * Then 경로조회에 실패한다.
      */
     @DisplayName("출발역과 도착역이 연결되지 않은 경우 경로 조회에 실패한다.")
     @Test
     void startAndEndStationIsNotLinkFindLineFail() {
-        // given 연결되지 않은 지하철 노선 추가 생성한다.
+        // given
         Long 신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
         Long 언주역 = 지하철역_생성_요청("언주역").jsonPath().getLong("id");
         지하철_노선_생성_요청("9호선", "brown", 신논현역, 언주역, 10);
 
-        // when 연결되지 않은 역의 경로를 조회한다
+        // when
         ExtractableResponse<Response> response = 경로_조회_요청(신논현역, 교대역);
 
-        // then 경로조회에 실패한다.
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
@@ -144,10 +145,10 @@ class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("존재하지 않는 출발역이나 도착역을 조회하는 경우 조회 실패한다.")
     @Test
     void startOrEndStationNotExistFindLineFail() {
-        // when 존재하지 않는 역으로 경로 조회한다.
+        // when
         ExtractableResponse<Response> response = 경로_조회_요청(교대역, 99L);
 
-        // then 경로조회에 실패한다.
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }
