@@ -7,12 +7,16 @@ import org.jgrapht.alg.shortestpath.KShortestPaths;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 public class PathSearch {
 
     private WeightedMultigraph<String, DefaultWeightedEdge> graph;
+    private List<Line> lines = new ArrayList<>();
+
 
     public PathSearch() {
         graph = new WeightedMultigraph(DefaultWeightedEdge.class);
@@ -26,6 +30,7 @@ public class PathSearch {
         for (Line line : lines) {
             addStations(line.getStations());
             addSections(line.getSections());
+            this.lines.add(line);
         }
     }
 
@@ -58,21 +63,56 @@ public class PathSearch {
     /**
      *
      * @param
-     * @param
      * @return
      */
     public Double getShortestPathDistance(Station departure, Station destination) {
-        // 예외처리 필요 (교재 예외상황 예시 참고)
+        stationsValidationCheck(departure, destination);
 
         List<GraphPath> paths = new KShortestPaths(graph, 100).getPaths(departure.getName(), destination.getName());
         return paths.stream()
-                                    .min(Comparator.comparingDouble(GraphPath::getWeight))
-                                    .get()
-                                    .getWeight();
+                        .min(Comparator.comparingDouble(GraphPath::getWeight))
+                        .get()
+                        .getWeight();
     }
 
+    /**
+     *
+     * @param
+     * @return
+     */
     public List<String> getShortestPath(Station departure, Station destination) {
+        stationsValidationCheck(departure, destination);
+
         return new DijkstraShortestPath(graph).getPath(departure.getName(), destination.getName()).getVertexList();
+    }
+
+    private void stationsValidationCheck(Station departure, Station destination) {
+        if (departure.equals(destination)) {
+            throw new IllegalArgumentException("출발역과 도착역이 같을 수 없습니다.");
+        }
+
+        Set<String> stationsRegistered = graph.vertexSet();
+        if (!stationsRegistered.containsAll(List.of(departure.getName(), destination.getName()))) {
+            throw new IllegalArgumentException("경로 찾기에 존재하지 않는 역이 포함되어 있습니다. 출발역과 도착역을 확인해주세요");
+        }
+
+        if (!checkStationsLinked(departure, destination)) {
+            throw new IllegalArgumentException("출발역과 도착역이 연결되어 있지 않습니다.");
+        }
+    }
+
+    private boolean checkStationsLinked(Station departure, Station destination) {
+        Line departureLine = getLineByStation(departure);
+        Line destinationLine = getLineByStation(destination);
+
+        return departureLine.getStations().stream()
+                .anyMatch(station -> destinationLine.getStations().contains(station));
+    }
+
+    private Line getLineByStation(Station station) {
+        return lines.stream()
+                .filter(line -> line.getStations().contains(station))
+                .findFirst().orElseThrow(IllegalArgumentException::new);
     }
 
 }
