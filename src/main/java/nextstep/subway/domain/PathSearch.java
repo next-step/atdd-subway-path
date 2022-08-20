@@ -61,18 +61,18 @@ public class PathSearch {
      * @param
      * @return
      */
-    public PathResponse findShortestPath(Station departure, Station destination) {
+    public Double getShortestPathDistance(Station departure, Station destination) {
         // 예외처리 필요 (교재 예외상황 예시 참고)
-        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-        List<String> shortestPath = dijkstraShortestPath.getPath(departure.getName(), destination.getName()).getVertexList();
+
         List<GraphPath> paths = new KShortestPaths(graph, 100).getPaths(departure.getName(), destination.getName());
-
-        GraphPath graphPath = paths.stream().min(Comparator.comparingDouble(GraphPath::getWeight)).get();
-
-        return new PathResponse(shortestPath, paths, graphPath.getWeight());
+        return paths.stream()
+                                    .min(Comparator.comparingDouble(GraphPath::getWeight))
+                                    .get()
+                                    .getWeight();
     }
 
-
-
+    public List<String> getShortestPath(Station departure, Station destination) {
+        return new DijkstraShortestPath(graph).getPath(departure.getName(), destination.getName()).getVertexList();
+    }
 
 }
