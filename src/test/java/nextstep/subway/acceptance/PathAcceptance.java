@@ -58,8 +58,8 @@ class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_최단거리_경로_조회_요청(교대역, 양재역);
 
         // then
-        assertThat(response.jsonPath().getInt("distance")).isEqualTo(6);
-        assertThat(response.jsonPath().getList("stations.id")).containsExactly(교대역, 남부터미널역, 양재역);
+        assertThat(response.jsonPath().getDouble("distance")).isEqualTo(9);
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(교대역, 남부터미널역, 양재역);
     }
 
     private Map<String, String> createLineCreateParams(String name, String color, Long upStationId, Long downStationId, int distance) {

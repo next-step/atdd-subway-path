@@ -125,17 +125,13 @@ public class PathTest {
         // given
         강남라인_세팅();
         // when
-        PathResponse response = pathSearch.findShortestPath(교대역, 양재역);
+        List<String> shortestPath = pathSearch.getShortestPath(교대역, 양재역);
+        Double distance = pathSearch.getShortestPathDistance(교대역, 양재역);
+
 
         // then
-        assertThat(response.getShortestPath().size()).isEqualTo(3);
-        assertThat(response.getPaths()).hasSize(2);
-        response.getPaths().stream()
-                .forEach(it -> {
-                    assertThat(it.getVertexList()).startsWith(교대역.getName());
-                    assertThat(it.getVertexList()).endsWith(양재역.getName());
-                });
-        assertThat(response.getDistance()).isEqualTo(교대역_강남역_거리 + 강남역_양재역_거리);
+        assertThat(shortestPath.size()).isEqualTo(3);
+        assertThat(distance).isEqualTo(교대역_강남역_거리 + 강남역_양재역_거리);
     }
 
     @DisplayName("출발역-도착역 사이 최단경로 조회(강서라인)")
@@ -143,12 +139,12 @@ public class PathTest {
     void findShortestPathGangSeo() {
         강서라인_세팅();
         // when
-        PathResponse 온수출발_오류도착 = pathSearch.findShortestPath(온수역, 오류동역);
-        PathResponse 온수출발_구로디지털단지도착 = pathSearch.findShortestPath(온수역, 구로디지털단지역);
+        Double 온수출발_오류도착_최단거리 = pathSearch.getShortestPathDistance(온수역, 오류동역);
+        Double 온수출발_구로디지털단지도착_최단거리 = pathSearch.getShortestPathDistance(온수역, 구로디지털단지역);
 
         // then
-        assertThat(온수출발_오류도착.getDistance()).isEqualTo(2);
-        assertThat(온수출발_구로디지털단지도착.getDistance()).isEqualTo(24);
+        assertThat(온수출발_오류도착_최단거리).isEqualTo(2);
+        assertThat(온수출발_구로디지털단지도착_최단거리).isEqualTo(24);
 
     }
 

@@ -1,27 +1,27 @@
 package nextstep.subway.applicaion.dto;
 
-import org.jgrapht.GraphPath;
+import nextstep.subway.domain.Station;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PathResponse {
 
-    private List<String> shortestPath;
-    private List<GraphPath> paths;
     private Double distance;
+    private List<StationResponse> stations;
 
-    public PathResponse(List<String> shortestPath, List<GraphPath> paths, Double distance) {
-        this.shortestPath = shortestPath;
-        this.paths = paths;
+    public PathResponse(List<Station> stations, Double distance) {
+        createStationResponses(stations);
         this.distance = distance;
     }
 
-    public List<GraphPath> getPaths() {
-        return paths;
+    public void createStationResponses(List<Station> stations) {
+        this.stations = stations.stream().map((station) -> new StationResponse(station.getId(), station.getName()))
+                .collect(Collectors.toList());
     }
 
-    public List<String> getShortestPath() {
-        return shortestPath;
+    public List<StationResponse> getStations() {
+        return stations;
     }
 
     public Double getDistance() {

@@ -3,10 +3,7 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.domain.Station;
-import org.springframework.http.MediaType;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class PathSteps {
