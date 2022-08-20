@@ -141,16 +141,16 @@ public class Sections {
 
     // 상행종점역이 포함된 구간 조회
     private Section getExistedSectionWithLastUpStation2() {
-        return getLastStation((section) -> section.isSectionWithLastDownStation(sections));
+        return getSectionWithLastStation((section) -> section.isSectionWithLastDownStation(sections));
     }
 
     // 하행종점역이 포함된 구간 조회
     private Section getExistedSectionWithLastDownStation() {
-        return getLastStation((section) -> section.isSectionWithLastDownStation(sections));
+        return getSectionWithLastStation((section) -> section.isSectionWithLastDownStation(sections));
 
     }
 
-    private Section getLastStation(Predicate<Section> lastStationCheck) {
+    private Section getSectionWithLastStation(Predicate<Section> lastStationCheck) {
         return sections.stream()
                 .filter(lastStationCheck)
                 .findFirst()
