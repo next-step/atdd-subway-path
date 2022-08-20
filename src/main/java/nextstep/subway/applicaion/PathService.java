@@ -26,11 +26,11 @@ public class PathService {
     }
 
     public void registerPaths() {
-        List<Line> allLinesReigsterd = lineRepository.findAll();
-        if (allLinesReigsterd.isEmpty()) {
+        List<Line> LinesRegistered = lineRepository.findAll();
+        if (LinesRegistered.isEmpty()) {
             throw new RuntimeException();   // TODO - 등록된 노선이 없다는 예외처리
         }
-        pathSearch.addPaths(allLinesReigsterd);
+        pathSearch.addPaths(LinesRegistered);
     }
 
     public PathResponse showPaths(Long source, Long target) {
