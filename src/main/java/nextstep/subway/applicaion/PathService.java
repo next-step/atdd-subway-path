@@ -25,7 +25,7 @@ public class PathService {
         this.stationService = stationService;
     }
 
-    public void registerPaths() {
+    private void registerPaths() {
         List<Line> LinesRegistered = lineRepository.findAll();
         if (LinesRegistered.isEmpty()) {
             throw new NotFoundLineException();
@@ -33,6 +33,11 @@ public class PathService {
         pathSearch.addPaths(LinesRegistered);
     }
 
+    /**
+     * 출발역과 도착역까지의 최단경로 정보를 조회한다.
+     * @param source 출발역 id
+     * @param target 도착역 id
+     */
     public PathResponse showPaths(Long source, Long target) {
         registerPaths();
 

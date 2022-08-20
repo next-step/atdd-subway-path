@@ -23,21 +23,17 @@ public class PathSearch {
     }
 
     /**
-     *
-     * @param lines
+     * 지하철 경로 찾기에 필요한 노선, 역, 구간을 등록한다
+     * @param lines 노선목록
      */
     public void addPaths(List<Line> lines) {
         for (Line line : lines) {
+            this.lines.add(line);
             addStations(line.getStations());
             addSections(line.getSections());
-            this.lines.add(line);
         }
     }
 
-    /**
-     *
-     * @param stations
-     */
     private void addStations(List<Station> stations) {
         stations.forEach(station -> addStation(station));
     }
@@ -48,10 +44,6 @@ public class PathSearch {
         }
     }
 
-    /**
-     *
-     * @param sections
-     */
     private void addSections(Sections sections) {
         for (Section section : sections.getSections()) {
             String upStation = section.getUpStation().getName();
@@ -61,9 +53,9 @@ public class PathSearch {
     }
 
     /**
-     *
-     * @param
-     * @return
+     * 출발역에서 도착역까지 최단경로의 거리를 반환한다.
+     * @param departure 출발역
+     * @param destination 도착역
      */
     public Double getShortestPathDistance(Station departure, Station destination) {
         stationsValidationCheck(departure, destination);
@@ -76,9 +68,9 @@ public class PathSearch {
     }
 
     /**
-     *
-     * @param
-     * @return
+     * 출발역에서 도착역까지 최단경로의 역 목록을 반환한다.
+     * @param departure 출발역
+     * @param destination 도착역
      */
     public List<String> getShortestPath(Station departure, Station destination) {
         stationsValidationCheck(departure, destination);
