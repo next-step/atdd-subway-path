@@ -6,7 +6,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.PathSearch;
 import nextstep.subway.domain.Station;
-import org.springframework.http.ResponseEntity;
+import nextstep.subway.exception.NotFoundLineException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +28,7 @@ public class PathService {
     public void registerPaths() {
         List<Line> LinesRegistered = lineRepository.findAll();
         if (LinesRegistered.isEmpty()) {
-            throw new RuntimeException();   // TODO - 등록된 노선이 없다는 예외처리
+            throw new NotFoundLineException();
         }
         pathSearch.addPaths(LinesRegistered);
     }
