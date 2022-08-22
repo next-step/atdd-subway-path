@@ -71,8 +71,8 @@ public class Section {
     }
 
     /**
+     * 해당 구간이 상행종점역을 포함하는 구간인지 여부 확인
      * @param sections 구간목록
-     * @return 해당 구간이 상행종점역을 포함하는 구간인지 여부
      */
     public boolean isSectionWithLastUpStation(List<Section> sections) {
         return sections.stream()
@@ -80,8 +80,8 @@ public class Section {
     }
 
     /**
+     * 하행종점역을 포함하는 구간인지 여부 확인
      * @param sections 구간목록
-     * @return 하행종점역을 포함하는 구간인지 여부
      */
     public boolean isSectionWithLastDownStation(List<Section> sections) {
         return sections.stream()
@@ -89,9 +89,9 @@ public class Section {
     }
 
     /**
+     * 상행역·하행역에 매칭되는 구간인지 여부 확인
      * @param upStation 상행역
      * @param downStation 하행역
-     * @return 상행역·하행역에 매칭되는 구간인지 여부
      */
     public boolean matchStations(Station upStation, Station downStation) {
         return this.getUpStation().equals(upStation)
@@ -99,16 +99,16 @@ public class Section {
     }
 
     /**
+     * 지하철역이 해당 구간의 상행역과 일치하는지 여부 확인
      * @param station 지하철역
-     * @return 지하철역이 해당 구간의 상행역과 일치하는지 여부
      */
     public boolean matchUpStation(Station station) {
         return upStation.equals(station);
     }
 
     /**
+     * 지하철역이 해당 구간의 하행역과 일치하는지 여부 확인
      * @param station 지하철역
-     * @return 지하철역이 해당 구간의 하행역과 일치하는지 여부
      */
     public boolean matchDownStation(Station station) {
         return downStation.equals(station);
