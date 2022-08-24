@@ -51,7 +51,7 @@ class PathTest {
     @DisplayName("지하철 경로 조회 시 출발역과 도착역이 같을 경우 예외 발생")
     @Test
     void 출발역_도착역_같을경우_오류() {
-        Line 이호선 = Line.of("신분당선", "RED");
+        Line 이호선 = Line.of("이호선", "RED");
         신분당선.addSection(강남역, 양재역, 5);
         이호선.addSection(역삼역, 강남역, 3);
         PathFinder pathFinder = new PathFinder(List.of(신분당선, 이호선));
