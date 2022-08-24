@@ -27,7 +27,6 @@ public class PathService {
         Station target = stationRepository.findById(targetId).orElseThrow(IllegalArgumentException::new);
 
         PathFinder pathFinder = PathFinder.of(lineRepository.findAll());
-        pathFinder.paths(source, target);
 
         return pathFinder.paths(source, target);
     }
