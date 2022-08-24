@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Path;
 import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,10 +43,11 @@ class PathTest {
         신분당선.addSection(강남역, 신논현역, 5);
         이호선.addSection(역삼역, 강남역, 3);
 
-        PathFinder pathFinder = new PathFinder(List.of(신분당선, 이호선));
+        Path path = new PathFinder(List.of(신분당선, 이호선))
+                .paths(역삼역, 신논현역);
 
-        assertThat(pathFinder.paths(역삼역, 신논현역).getStations()).containsExactly(역삼역, 강남역, 신논현역);
-        assertThat(pathFinder.paths(역삼역, 신논현역).getDistance()).isEqualTo(8);
+        assertThat(path.getStations()).containsExactly(역삼역, 강남역, 신논현역);
+        assertThat(path.getDistance()).isEqualTo(8);
     }
 
     @DisplayName("지하철 경로 조회 시 출발역과 도착역이 같을 경우 예외 발생")
