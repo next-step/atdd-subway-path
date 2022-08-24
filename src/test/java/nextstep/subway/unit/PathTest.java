@@ -44,7 +44,7 @@ class PathTest {
 
         PathFinder pathFinder = new PathFinder(List.of(신분당선, 이호선));
 
-        assertThat(pathFinder.paths(역삼역, 신논현역).getPaths()).containsExactly(역삼역, 강남역, 신논현역);
+        assertThat(pathFinder.paths(역삼역, 신논현역).getStations()).containsExactly(역삼역, 강남역, 신논현역);
         assertThat(pathFinder.paths(역삼역, 신논현역).getDistance()).isEqualTo(8);
     }
 
@@ -56,7 +56,7 @@ class PathTest {
         이호선.addSection(역삼역, 강남역, 3);
         PathFinder pathFinder = new PathFinder(List.of(신분당선, 이호선));
         assertThatThrownBy(() -> {
-            pathFinder.paths(역삼역, 신논현역).getPaths();
+            pathFinder.paths(역삼역, 신논현역);
         }).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -68,7 +68,7 @@ class PathTest {
         이호선.addSection(역삼역, 강남역, 3);
         PathFinder pathFinder = new PathFinder(List.of(신분당선, 이호선));
         assertThatThrownBy(() -> {
-            pathFinder.paths(역삼역, 신논현역).getPaths();
+            pathFinder.paths(역삼역, 신논현역);
         }).isInstanceOf(IllegalArgumentException.class);
     }
     

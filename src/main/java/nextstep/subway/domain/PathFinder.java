@@ -1,7 +1,7 @@
 package nextstep.subway.domain;
 
 import lombok.Getter;
-import nextstep.subway.applicaion.dto.PathResponse;
+import lombok.NoArgsConstructor;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -9,14 +9,11 @@ import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.List;
 
+@NoArgsConstructor
 @Getter
 public class PathFinder {
 
     DijkstraShortestPath<Station, DefaultWeightedEdge> subwayGraph;
-
-    public PathFinder() {
-
-    }
 
     public PathFinder(List<Line> 노선목록) {
         this.subwayGraph = new DijkstraShortestPath<>(createSubwayGraph(노선목록));
@@ -26,13 +23,13 @@ public class PathFinder {
         return new PathFinder(노선목록);
     }
 
-    public PathResponse paths(Station source, Station target) {
+    public Path paths(Station source, Station target) {
         validSearchPath(source, target);
         GraphPath<Station, DefaultWeightedEdge> paths = subwayGraph.getPath(source, target);
         if (paths == null) {
             throw new IllegalArgumentException();
         }
-        return new PathResponse(paths.getVertexList(), (int) paths.getWeight());
+        return new Path(paths.getVertexList(), (int) paths.getWeight());
     }
 
     private void validSearchPath(Station source, Station target) {

@@ -28,7 +28,7 @@ public class PathService {
 
         PathFinder pathFinder = PathFinder.of(lineRepository.findAll());
 
-        return pathFinder.paths(source, target);
+        return new PathResponse(pathFinder.paths(source, target));
     }
 
 }
