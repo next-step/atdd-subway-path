@@ -62,7 +62,7 @@ class PathTest {
 
     @DisplayName("출발역과 도착역의 연결이 되어 있지 않은 경우")
     @Test
-    void 출발역_도착역_같을경우() {
+    void 출발역_도착역_미연결() {
         Line 이호선 = Line.of("신분당선", "RED");
         신분당선.addSection(강남역, 양재역, 5);
         이호선.addSection(역삼역, 강남역, 3);
