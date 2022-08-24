@@ -15,12 +15,12 @@ public class PathFinder {
 
     DijkstraShortestPath<Station, DefaultWeightedEdge> subwayGraph;
 
-    public PathFinder(List<Line> 노선목록) {
-        this.subwayGraph = new DijkstraShortestPath<>(createSubwayGraph(노선목록));
+    public PathFinder(List<Line> lines) {
+        this.subwayGraph = new DijkstraShortestPath<>(createSubwayGraph(lines));
     }
 
-    public static PathFinder of(List<Line> 노선목록) {
-        return new PathFinder(노선목록);
+    public static PathFinder of(List<Line> lines) {
+        return new PathFinder(lines);
     }
 
     public Path paths(Station source, Station target) {
