@@ -13,7 +13,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class PathTest {
+class PathFinderTest {
 
     Line 신분당선;
     Station 신논현역;
