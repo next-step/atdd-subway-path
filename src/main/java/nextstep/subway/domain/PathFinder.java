@@ -15,7 +15,7 @@ public class PathFinder {
 
     DijkstraShortestPath<Station, DefaultWeightedEdge> subwayGraph;
 
-    public PathFinder(List<Line> lines) {
+    private PathFinder(List<Line> lines) {
         this.subwayGraph = new DijkstraShortestPath<>(createSubwayGraph(lines));
     }
 

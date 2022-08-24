@@ -55,7 +55,7 @@ class PathFinderTest {
     @Test
     void paths() {
 
-        Path path = new PathFinder(List.of(신분당선, 이호선, 팔호선)).paths(역삼역, 신논현역);
+        Path path = PathFinder.of(List.of(신분당선, 이호선, 팔호선)).paths(역삼역, 신논현역);
 
         assertAll(() -> assertThat(path.getStations()).containsExactly(역삼역, 강남역, 신논현역),
                 () -> assertThat(path.getDistance()).isEqualTo(8)
@@ -67,7 +67,7 @@ class PathFinderTest {
     @Test
     void 출발역_도착역_같을경우_오류() {
 
-        PathFinder pathFinder = new PathFinder(List.of(신분당선, 이호선, 팔호선));
+        PathFinder pathFinder = PathFinder.of(List.of(신분당선, 이호선, 팔호선));
 
         assertThatThrownBy(() -> {pathFinder.paths(역삼역, 역삼역);}).isInstanceOf(IllegalArgumentException.class);
 
@@ -77,7 +77,7 @@ class PathFinderTest {
     @Test
     void 출발역_도착역_미연결() {
 
-        PathFinder pathFinder = new PathFinder(List.of(신분당선, 이호선, 팔호선));
+        PathFinder pathFinder = PathFinder.of(List.of(신분당선, 이호선, 팔호선));
 
         assertThatThrownBy(() -> {pathFinder.paths(신논현역, 장지역);}).isInstanceOf(IllegalArgumentException.class);
 
