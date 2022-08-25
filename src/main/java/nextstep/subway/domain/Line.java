@@ -60,6 +60,10 @@ public class Line {
         return this.sections.getSections();
     }
 
+    public Integer getTotalDistance() {
+        return this.sections.getTotalDistance();
+    }
+
     public void addSection(Section section) {
         this.sections.add(section);
     }

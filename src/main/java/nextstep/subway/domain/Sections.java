@@ -87,6 +87,12 @@ public class Sections {
         return this.sections.size();
     }
 
+    Integer getTotalDistance() {
+        return this.sections.stream()
+                .mapToInt(Section::getDistance)
+                .sum();
+    }
+
     private Section getFirstSection() {
         final Section section = this.sections.stream()
                 .findFirst()
