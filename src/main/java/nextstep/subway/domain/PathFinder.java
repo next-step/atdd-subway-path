@@ -23,11 +23,11 @@ public class PathFinder {
         init(lines);
     }
 
-    public GraphPath findPath(Station source, Station target) {
+    public Path findPath(Station source, Station target) {
         validateSourceAndTarget(source, target);
         final GraphPath shortestPath = findShortestPath(source, target);
         validateIsDisconnect(shortestPath);
-        return shortestPath;
+        return new Path(shortestPath);
     }
 
     private void init(List<Line> lines) {

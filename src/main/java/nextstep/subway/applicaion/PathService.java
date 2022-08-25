@@ -3,7 +3,6 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.domain.*;
 import nextstep.subway.error.exception.BusinessException;
-import org.jgrapht.GraphPath;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,9 +25,9 @@ public class PathService {
         final Station targetStation = getStation(targetStationId);
         final List<Line> lines = lineRepository.findAll();
         final PathFinder pathFinder = new PathFinder(lines);
-        final GraphPath path = pathFinder.findPath(sourceStation, targetStation);
+        final Path path = pathFinder.findPath(sourceStation, targetStation);
 
-        return new PathResponse(path.getVertexList(), (int) path.getWeight());
+        return new PathResponse(path.getVertexList(), path.getWeight());
     }
 
     private Station getStation(Long stationId) {
