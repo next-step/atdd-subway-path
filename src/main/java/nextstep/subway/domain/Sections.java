@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.error.exception.BusinessException;
-import nextstep.subway.error.exception.ErrorCode;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -12,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static nextstep.subway.domain.SectionValidator.*;
+import static nextstep.subway.error.exception.ErrorCode.*;
 
 @Embeddable
 public class Sections {
@@ -28,15 +28,12 @@ public class Sections {
             return;
         }
 
-        validateIsUpStationAndDownStationInSections(section.getUpStation(), section.getDownStation());
-        this.validateSectionIsAlreadyExists(section);
-
-        // 특정 구간 다음으로 추가해야하는지 검색
-        final Optional<Section> previousSection = this.getPreviousSectionAboutNewSection(section);
+        this.validateAddSection(section);
 
         // 역과 역 사이에 구간할 시, 이미 존재하는 구간의 upStation 을 추가하려는 구간의 downStation 을 바라보도록 변경
-        if (previousSection.isPresent() && previousSection.get().getUpStation().equals(section.getUpStation())) {
-            updatePreviousSectionBeforeAddNewSection(previousSection.get(), section);
+        if (this.isNewStationBetweenStations(section)) {
+            final Section previousSection = this.getPreviousSectionAboutNewSection(section);
+            updatePreviousSectionBeforeAddNewSection(previousSection, section);
         }
         this.sections.add(section);
     }
@@ -44,11 +41,11 @@ public class Sections {
     void remove(Station station) {
         this.validateRemoveStation(station);
 
-        if (isDownStation(this, station)) {
+        if (isDownStation(station)) {
             this.sections.remove(this.getLastSection());
             return;
         }
-        if (isUpStation(this, station)) {
+        if (isUpStation(station)) {
             this.sections.remove(this.getFirstSection());
             return;
         }
@@ -93,7 +90,7 @@ public class Sections {
     private Section getFirstSection() {
         final Section section = this.sections.stream()
                 .findFirst()
-                .orElseThrow(() -> new BusinessException(ErrorCode.SECTION_LIST_IS_EMPTY));
+                .orElseThrow(() -> new BusinessException(SECTION_LIST_IS_EMPTY));
         return getFirstSection(section);
     }
 
@@ -112,22 +109,37 @@ public class Sections {
     private Section getLastSection() {
         final Section section = this.sections.stream()
                 .findFirst()
-                .orElseThrow(() -> new BusinessException(ErrorCode.SECTION_LIST_IS_EMPTY));
+                .orElseThrow(() -> new BusinessException(SECTION_LIST_IS_EMPTY));
         return getLastSection(section);
+    }
+
+    private Station getFirstStation() {
+        return this.getFirstSection().getUpStation();
+    }
+
+    private Station getLastStation() {
+        return this.getLastSection().getDownStation();
+    }
+
+    private Boolean isPreviousSectionExistsAboutNewSection(Section section) {
+        return this.sections.stream()
+                .anyMatch(it -> it.getDownStation().equals(section.getUpStation()) ||
+                        it.getUpStation().equals(section.getUpStation()));
+    }
+
+    private Section getPreviousSectionAboutNewSection(Section section) {
+        return this.sections.stream()
+                .filter(it -> it.getDownStation().equals(section.getUpStation()) ||
+                        it.getUpStation().equals(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(() -> new BusinessException(PREVIOUS_SECTION_NOT_FOUND));
     }
 
     private Section getPreviousSection(Section section) {
         return this.sections.stream()
                 .filter(it -> it.getDownStation().equals(section.getUpStation()))
                 .findFirst()
-                .orElseThrow(() -> new BusinessException(ErrorCode.PREVIOUS_SECTION_NOT_FOUND));
-    }
-
-    private Optional<Section> getPreviousSectionAboutNewSection(Section section) {
-        return this.sections.stream()
-                .filter(it -> it.getDownStation().equals(section.getUpStation()) ||
-                        it.getUpStation().equals(section.getUpStation()))
-                .findFirst();
+                .orElseThrow(() -> new BusinessException(PREVIOUS_SECTION_NOT_FOUND));
     }
 
     private Optional<Section> getNextSection(Section section) {
@@ -152,7 +164,7 @@ public class Sections {
         return this.sections.stream()
                 .filter(it -> it.getUpStation().equals(station))
                 .findFirst()
-                .orElseThrow(() -> new BusinessException(ErrorCode.STATION_NOT_FOUND_IN_SECTION));
+                .orElseThrow(() -> new BusinessException(STATION_NOT_FOUND_IN_SECTION));
     }
 
     private void updatePreviousSectionBeforeAddNewSection(Section previousSection, Section newSection) {
@@ -165,14 +177,19 @@ public class Sections {
         validateSectionSizeBeforeRemove(this);
         if (this.sections.stream()
                 .noneMatch(it -> it.getUpStation().equals(station) || it.getDownStation().equals(station))) {
-            throw new BusinessException(ErrorCode.STATION_NOT_FOUND_IN_SECTION);
+            throw new BusinessException(STATION_NOT_FOUND_IN_SECTION);
         }
+    }
+
+    private void validateAddSection(Section section) {
+        validateIsUpStationAndDownStationInSections(section.getUpStation(), section.getDownStation());
+        validateSectionIsAlreadyExists(section);
     }
 
     private void validateIsUpStationAndDownStationInSections(Station upStation, Station downStation) {
         if (this.sections.stream()
                 .noneMatch(it -> validateIsStationInSection(it, upStation) || validateIsStationInSection(it, downStation))) {
-            throw new BusinessException(ErrorCode.SECTION_NOT_FOUND_ABOUT_UP_AND_DOWN_STATION);
+            throw new BusinessException(SECTION_NOT_FOUND_ABOUT_UP_AND_DOWN_STATION);
         }
     }
 
@@ -180,15 +197,20 @@ public class Sections {
         if (this.sections.stream()
                 .anyMatch(it -> it.getUpStation().equals(section.getUpStation()) &&
                         it.getDownStation().equals(section.getDownStation()))) {
-            throw new BusinessException(ErrorCode.SECTION_ALREADY_EXISTS);
+            throw new BusinessException(SECTION_ALREADY_EXISTS);
         }
     }
 
-    private Boolean isDownStation(Sections sections, Station station) {
-        return sections.getLastSection().getDownStation().equals(station);
+    private boolean isDownStation(Station station) {
+        return this.getLastStation().equals(station);
     }
 
-    private Boolean isUpStation(Sections sections, Station station) {
-        return sections.getFirstSection().getUpStation().equals(station);
+    private boolean isUpStation(Station station) {
+        return this.getFirstStation().equals(station);
+    }
+
+    private boolean isNewStationBetweenStations(Section section) {
+        return this.isPreviousSectionExistsAboutNewSection(section) &&
+                this.getPreviousSectionAboutNewSection(section).isEqualToUpStation(section.getUpStation());
     }
 }
