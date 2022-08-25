@@ -29,11 +29,13 @@ public class SectionTest {
         final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
 
         // when
-        강남역_역삼역_구간.update(역삼역, 강남역, 3);
+        final Section 수정된_강남역_역삼역_구간 = 강남역_역삼역_구간.updateUpStation(역삼역)
+                .updateDownStation(강남역)
+                .updateDistance(3);
 
         // then
-        assertThat(강남역_역삼역_구간.getUpStation()).isEqualTo(역삼역);
-        assertThat(강남역_역삼역_구간.getDownStation()).isEqualTo(강남역);
-        assertThat(강남역_역삼역_구간.getDistance()).isEqualTo(3);
+        assertThat(수정된_강남역_역삼역_구간.getUpStation()).isEqualTo(역삼역);
+        assertThat(수정된_강남역_역삼역_구간.getDownStation()).isEqualTo(강남역);
+        assertThat(수정된_강남역_역삼역_구간.getDistance()).isEqualTo(3);
     }
 }

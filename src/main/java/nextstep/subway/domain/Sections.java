@@ -50,9 +50,7 @@ public class Sections {
             return;
         }
         final Section currentSection = getSectionWithUpStation(station);
-        final Section previousSection = getPreviousSection(currentSection);
-        previousSection.updateDownStation(currentSection.getDownStation());
-        previousSection.updateDistance(previousSection.getDistance() + currentSection.getDistance());
+        updatePreviousSectionBeforeRemoveSectionBetweenStations(currentSection);
         this.sections.remove(currentSection);
     }
 
@@ -175,8 +173,18 @@ public class Sections {
 
     private void updatePreviousSectionBeforeAddNewSection(Section previousSection, Section newSection) {
         validateSectionDistance(previousSection, newSection);
-        previousSection.updateUpStation(newSection.getDownStation());
-        previousSection.updateDistance(previousSection.getDistance() - newSection.getDistance());
+        final Section updatedPreviousSection = previousSection.updateUpStation(newSection.getDownStation())
+                .updateDistance(previousSection.getDistance() - newSection.getDistance());
+        this.sections.remove(previousSection);
+        this.sections.add(updatedPreviousSection);
+    }
+
+    private void updatePreviousSectionBeforeRemoveSectionBetweenStations(Section removeSection) {
+        final Section previousSection = getPreviousSection(removeSection);
+        final Section updatedPreviousSection = previousSection.updateDownStation(removeSection.getDownStation())
+                .updateDistance(previousSection.getDistance() + removeSection.getDistance());
+        this.sections.remove(previousSection);
+        this.sections.add(updatedPreviousSection);
     }
 
     private void validateRemoveStation(Station station) {

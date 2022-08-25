@@ -1,11 +1,7 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.PathFinder;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
 import nextstep.subway.error.exception.BusinessException;
-import org.jgrapht.GraphPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,7 +42,7 @@ public class PathFinderTest {
     @Test
     void findPath() {
         // when
-        final GraphPath path = pathFinder.findPath(교대역, 양재역);
+        final Path path = pathFinder.findPath(교대역, 양재역);
 
         // then
         assertThat(path.getVertexList()).containsExactly(교대역, 남부터미널역, 양재역);

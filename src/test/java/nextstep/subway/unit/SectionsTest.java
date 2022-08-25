@@ -49,12 +49,12 @@ public class SectionsTest {
         이호선.addSection(강남역_역삼역_구간);
 
         // when
-        final Section 역삼역_삼성역_구간 = new Section(이호선, 강남역, 삼성역, 8);
-        이호선.addSection(역삼역_삼성역_구간);
+        final Section 강남역_삼성역_구간 = new Section(이호선, 강남역, 삼성역, 8);
+        이호선.addSection(강남역_삼성역_구간);
 
         // then
         assertThat(이호선.getStations().getList()).containsExactly(강남역, 삼성역, 역삼역);
-        assertThat(강남역_역삼역_구간.getDistance()).isEqualTo(10 - 역삼역_삼성역_구간.getDistance());
+        assertThat(이호선.getTotalDistance()).isEqualTo(10);
     }
 
     @DisplayName("상행 종점역으로 구간 등록")

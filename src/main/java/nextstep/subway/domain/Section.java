@@ -25,6 +25,14 @@ public class Section {
     public Section() {
     }
 
+    public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
+        this.id = id;
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
@@ -44,27 +52,23 @@ public class Section {
         return distance;
     }
 
-    public void updateUpStation(Station upStation) {
-        this.upStation = upStation;
+    public Section updateUpStation(Station upStation) {
+        return new Section(this.id, this.line, upStation, this.downStation, this.distance);
     }
 
-    public void updateDownStation(Station downStation) {
-        this.downStation = downStation;
+    public Section updateDownStation(Station downStation) {
+        return new Section(this.id, this.line, this.upStation, downStation, this.distance);
     }
 
-    public void updateDistance(Integer distance) {
-        this.distance = distance;
+    public Section updateDistance(Integer distance) {
+        return new Section(this.id, this.line, this.upStation, this.downStation, distance);
     }
 
-    public void update(Station upStation, Station downStation, Integer distance) {
-        if (upStation != null) {
-            this.upStation = upStation;
-        }
-        if (downStation != null) {
-            this.downStation = downStation;
-        }
-        if (distance != null) {
-            this.distance = distance;
-        }
+    public Section update(Station upStation, Station downStation, Integer distance) {
+        return new Section(this.id, this.line, upStation, downStation, distance);
+    }
+
+    public Boolean isEqualToUpStation(Station station) {
+        return this.upStation.equals(station);
     }
 }
