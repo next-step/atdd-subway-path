@@ -1,4 +1,4 @@
-package nextstep.subway.domain;
+package subway;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
