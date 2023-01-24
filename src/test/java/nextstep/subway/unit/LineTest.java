@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("호선 객체 테스트")
 class LineTest {
@@ -33,7 +34,7 @@ class LineTest {
 
         line.addSection(section);
 
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(line.getSections()).hasSize(1),
                 () -> assertThat(line.getSections().get(0).getLine().getLineInfo()).isEqualTo(new LineInfo("2호선", "green")),
                 () -> assertThat(line.getSections().get(0).getUpStation().getName()).isEqualTo("강남역"),
@@ -53,5 +54,7 @@ class LineTest {
         line.addSection(section);
 
         line.removeSection(downStation);
+
+        assertThat(line.getSections()).isEmpty();
     }
 }
