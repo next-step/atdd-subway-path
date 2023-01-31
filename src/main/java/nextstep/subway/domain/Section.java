@@ -1,9 +1,15 @@
 package nextstep.subway.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Optional;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class Section {
     @Id
@@ -24,11 +30,6 @@ public class Section {
 
     private int distance;
 
-    public Section() {
-
-    }
-
-    @Builder
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
@@ -54,5 +55,39 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public Long getDownStationId() {
+        return Optional.ofNullable(downStation)
+                .orElseThrow(() -> new IllegalStateException("하행역이 없습니다."))
+                .getId();
+    }
+
+    public Long getUpStationId() {
+        return Optional.ofNullable(upStation)
+                .orElseThrow(() -> new IllegalStateException("상행역이 없습니다."))
+                .getId();
+    }
+
+    public void changeLine(Line newLine) {
+        if (line != null && line.equals(newLine)) {
+            return;
+        }
+
+        if (line != null) {
+            line.remove(this);
+        }
+
+        newLine.addSection(this);
+        line = newLine;
+    }
+
+    public void removeLine() {
+        if (line == null) {
+            return;
+        }
+
+        line.remove(this);
+        line = null;
     }
 }
