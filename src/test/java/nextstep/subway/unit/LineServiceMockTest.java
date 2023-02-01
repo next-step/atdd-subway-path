@@ -33,12 +33,6 @@ public class LineServiceMockTest {
         Station upStation = new Station("상행역");
         Station downStation = new Station("하행역");
 
-        Section section = Section.builder()
-                .upStation(upStation)
-                .downStation(downStation)
-                .distance(1)
-                .build();
-
         when(lineRepository.findById(any())).thenReturn(Optional.of(line));
         when(stationService.findById(1L)).thenReturn(upStation);
         when(stationService.findById(2L)).thenReturn(downStation);
