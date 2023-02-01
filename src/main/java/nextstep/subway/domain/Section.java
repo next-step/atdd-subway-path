@@ -2,11 +2,13 @@ package nextstep.subway.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Optional;
 
+@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,33 +31,6 @@ public class Section {
     private Station downStation;
 
     private int distance;
-
-    public Section(Line line, Station upStation, Station downStation, int distance) {
-        this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Line getLine() {
-        return line;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
 
     public Long getDownStationId() {
         return Optional.ofNullable(downStation)

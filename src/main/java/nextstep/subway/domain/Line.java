@@ -17,7 +17,7 @@ public class Line {
     private String color;
 
     @Embedded
-    private Sections sections = new Sections();
+    private final Sections sections = new Sections();
 
     public Line(String name, String color) {
         this.name = name;
