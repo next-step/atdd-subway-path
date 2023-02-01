@@ -65,15 +65,15 @@ public class Line {
         sections.remove(section);
     }
 
-    public void removeSectionByStationId(Long stationId) {
-        sections.removeByStationId(stationId);
-    }
-
     public Section getLastSection() {
-        return sections.last();
+        return sections.getLast();
     }
 
     public int getSectionsSize() {
         return sections.size();
+    }
+
+    public void removeSection(Station station) {
+        sections.remove(station);
     }
 }

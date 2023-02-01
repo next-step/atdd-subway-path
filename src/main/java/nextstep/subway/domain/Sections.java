@@ -83,13 +83,24 @@ public class Sections implements Iterable<Section> {
             return;
         }
 
-        validateRemove(section.getDownStationId());
+        validateRemove(section.getDownStation());
         values.remove(section);
         section.removeLine();
     }
 
-    public void validateRemove(Long downStationId) {
-        if (!last().getDownStationId().equals(downStationId)) {
+    public void remove(Station station) {
+        validateRemove(station);
+
+        Section section = values.stream()
+                .filter(s -> s.getDownStation().equals(station))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("삭제 할 역이 없습니다."));
+
+        values.remove(section);
+    }
+
+    public void validateRemove(Station station) {
+        if (!getLast().getDownStation().equals(station)) {
             throw new IllegalArgumentException(IS_NOT_LAST_SECTION_DOWN_STATION);
         }
 
@@ -98,21 +109,12 @@ public class Sections implements Iterable<Section> {
         }
     }
 
-    public void removeByStationId(Long downStationId) {
-        validateRemove(downStationId);
-
-        values.stream()
-                .filter(section -> section.getDownStationId().equals(downStationId))
-                .findAny()
-                .ifPresent(this::remove);
-    }
-
     private void validateForAdd(Section newSection) {
         if (values.isEmpty() || values.contains(newSection)) {
             return;
         }
 
-        Long lastSectionDownStationId = this.last().getDownStationId();
+        Long lastSectionDownStationId = this.getLast().getDownStationId();
         Long newSectionUpStationId = newSection.getUpStationId();
         Long newSectionDownStationId = newSection.getDownStationId();
 
@@ -137,7 +139,7 @@ public class Sections implements Iterable<Section> {
         }
 
         List<Station> upStations = upStations();
-        upStations.add(last().getDownStation());
+        upStations.add(getLast().getDownStation());
         return upStations;
     }
 
@@ -147,7 +149,7 @@ public class Sections implements Iterable<Section> {
                 .collect(Collectors.toList());
     }
 
-    public Section last() {
+    public Section getLast() {
         return values.get(values.size() - 1);
     }
 

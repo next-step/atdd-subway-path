@@ -50,7 +50,7 @@ class SectionsTest {
     }
 
     @Test
-    void 노선_구간_삭제_하행역Id로_삭제한다() {
+    void 노선_마지막_구간_삭제() {
         //given
         long lastDownStationId = 3L;
         Section section1 = createSection(1L, 2L);
@@ -58,7 +58,7 @@ class SectionsTest {
         Sections sections = Sections.from(section1, section2);
 
         //when
-        sections.removeByStationId(lastDownStationId);
+        sections.remove(section2);
 
         //then
         assertThat(sections.size()).isEqualTo(1);
