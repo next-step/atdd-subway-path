@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 
@@ -42,8 +43,13 @@ public class Line {
     }
 
     public void update(String name, String color) {
-        this.name = name;
-        this.color = color;
+
+        if (StringUtils.hasText(name)) {
+            this.name = name;
+        }
+        if (StringUtils.hasText(color)) {
+            this.color = color;
+        }
     }
 
     public void addSection(Section section) {
