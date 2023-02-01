@@ -25,6 +25,10 @@ public class Line {
         this.color = color;
     }
 
+    public static Line of(String name, String color) {
+        return new Line(name, color);
+    }
+
     @Deprecated
     public void setName(String name) {
         this.name = name;
