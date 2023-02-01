@@ -72,6 +72,6 @@ public class LineService {
             throw new IllegalArgumentException();
         }
 
-        line.getSections().remove(line.getSections().size() - 1);
+        line.getSections().remove(line.getLastSection());
     }
 }

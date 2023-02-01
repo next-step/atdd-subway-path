@@ -8,7 +8,7 @@ public class SectionFixture {
     private SectionFixture() {
     }
 
-    public static Section createSectionFixTrue(Long upStationId, Long downStationId) {
+    public static Section createSection(Long upStationId, Long downStationId) {
         return Section.builder()
                 .id(0L)
                 .upStation(new Station(upStationId, "역2"))
@@ -17,7 +17,7 @@ public class SectionFixture {
                 .build();
     }
 
-    public static Section createSectionFixTrue(Long lineId, Long upStationId, Long downStationId) {
+    public static Section createSection(Long lineId, Long upStationId, Long downStationId) {
         return Section.builder()
                 .id(lineId)
                 .upStation(new Station(upStationId, "역2"))

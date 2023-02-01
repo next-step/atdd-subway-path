@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Entity
@@ -17,8 +15,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line(String name, String color) {
         this.name = name;
@@ -61,15 +59,15 @@ public class Line {
         sections.remove(section);
     }
 
-//    public void removeSectionByStationId(Long stationId) {
-//        //sections.removeByStationId(stationId);
-//    }
+    public void removeSectionByStationId(Long stationId) {
+        sections.removeByStationId(stationId);
+    }
 
-//    public Section getLastSection() {
-//        //return sections.last();
-//    }
+    public Section getLastSection() {
+        return sections.last();
+    }
 
-    public int sectionsSize() {
+    public int getSectionsSize() {
         return sections.size();
     }
 }

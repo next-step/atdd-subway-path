@@ -23,12 +23,12 @@ public class StationResponse {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
+        List<Station> stations = line.getSections().getStations();
 
-        stations.add(0, line.getSections().get(0).getUpStation());
+        return StationResponse.from(stations);
+    }
 
+    private static List<StationResponse> from(List<Station> stations) {
         return stations.stream()
                 .map(StationResponse::from)
                 .collect(Collectors.toList());

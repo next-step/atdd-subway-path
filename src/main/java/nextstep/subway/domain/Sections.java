@@ -122,7 +122,7 @@ public class Sections implements Iterable<Section> {
                     , newSectionUpStationId));
         }
 
-        boolean isSavedSectionStation = allStations()
+        boolean isSavedSectionStation = getStations()
                 .stream()
                 .anyMatch(station -> station.getId().equals(newSectionDownStationId));
 
@@ -131,7 +131,7 @@ public class Sections implements Iterable<Section> {
         }
     }
 
-    public List<Station> allStations() {
+    public List<Station> getStations() {
         if (values.isEmpty()) {
             return new ArrayList<>();
         }
