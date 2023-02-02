@@ -6,6 +6,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Transactional
@@ -52,5 +56,22 @@ class LineServiceTest {
 
         // then
         assertThat(분당선.getSections()).hasSize(1);
+    }
+
+    @DisplayName("지하철 구간을 제거한다.")
+    @Test
+    void deleteSection() {
+        // given
+        stationRepository.save(수서역);
+        stationRepository.save(복정역);
+        lineRepository.save(분당선);
+
+        lineService.addSection(분당선.getId(), new SectionRequest(수서역.getId(), 복정역.getId(), 5));
+
+        // when
+        lineService.deleteSection(분당선.getId(), 복정역.getId());
+
+        // then
+        assertThat(분당선.getSections()).isEmpty();
     }
 }
