@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -138,5 +139,21 @@ class LineServiceMockTest {
 
         // then
         assertThat(response).hasSize(1);
+    }
+
+    @DisplayName("식별자로 지하철 노선을 조회한다.")
+    @Test
+    void findById() {
+        // given
+        when(lineRepository.findById(분당선.getId())).thenReturn(Optional.of(분당선));
+
+        // when
+        LineResponse response = lineService.findById(분당선.getId());
+
+        // then
+        assertAll(
+            () -> assertThat(response.getName()).isEqualTo("분당선"),
+            () -> assertThat(response.getColor()).isEqualTo("yellow")
+        );
     }
 }
