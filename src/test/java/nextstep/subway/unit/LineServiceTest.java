@@ -1,12 +1,15 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
+import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import org.assertj.core.api.AssertionsForInterfaceTypes;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +21,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -36,15 +41,21 @@ class LineServiceTest {
     private Line 분당선;
     private Station 수서역;
     private Station 복정역;
+    private Station 판교역;
+    private Station 광교역;
 
     @BeforeEach
     void setup() {
         분당선 = new Line( "분당선", "yellow");
         수서역 = new Station( "수서역");
         복정역 = new Station( "복정역");
+        판교역 = new Station( "판교역");
+        광교역 = new Station( "광교역");
 
         stationRepository.save(수서역);
         stationRepository.save(복정역);
+        stationRepository.save(판교역);
+        stationRepository.save(광교역);
         lineRepository.save(분당선);
     }
 
@@ -80,5 +91,19 @@ class LineServiceTest {
         // then
         assertThatThrownBy(() -> lineService.deleteSection(분당선.getId(), 수서역.getId()))
             .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("새로운 지하철 노선을 등록한다.")
+    @Test
+    void saveLine() {
+        // when
+        LineResponse response = lineService.saveLine(new LineRequest("신분당선", "red", 판교역.getId(), 광교역.getId(), 20));
+
+        // then
+        assertAll(
+            () -> assertThat(response.getName()).isEqualTo("신분당선"),
+            () -> assertThat(response.getColor()).isEqualTo("red"),
+            () -> assertThat(response.getStations()).hasSize(2)
+        );
     }
 }
