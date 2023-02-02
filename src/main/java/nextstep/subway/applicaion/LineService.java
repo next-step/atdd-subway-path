@@ -40,10 +40,6 @@ public class LineService {
     }
 
     private void addSectionToLine(Line line, Long upStationId, Long downStationId, int distance) {
-        if (upStationId.equals(downStationId)) {
-            throw new IllegalArgumentException();
-        }
-
         Station upStation = stationService.findById(upStationId);
         Station downStation = stationService.findById(downStationId);
         line.addSection(new Section(line, upStation, downStation, distance));

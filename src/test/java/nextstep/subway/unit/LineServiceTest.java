@@ -3,8 +3,10 @@ package nextstep.subway.unit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -61,6 +63,17 @@ class LineServiceTest {
 
         // then
         assertThat(분당선.getSections()).hasSize(1);
+    }
+
+    @DisplayName("지하철 구간 등록 시, 상행역과 하행역이 같으면 예외가 발생한다.")
+    @Test
+    void identicalStations() {
+        // given
+        SectionRequest request = new SectionRequest(수서역.getId(), 수서역.getId(), 5);
+
+        // when & then
+        assertThatThrownBy(() -> lineService.addSection(분당선.getId(), request))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("지하철 구간을 제거한다.")

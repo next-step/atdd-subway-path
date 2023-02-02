@@ -32,6 +32,9 @@ public class Line {
     }
 
     public void addSection(Section section) {
+        if (section.hasIdenticalStations()) {
+            throw new IllegalArgumentException();
+        }
         sections.add(section);
     }
 
