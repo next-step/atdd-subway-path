@@ -86,6 +86,22 @@ class LineServiceMockTest {
         assertThat(분당선.getSections()).isEmpty();
     }
 
+    @DisplayName("지하철 구간 제거 시, 전달한 역이 하행 종점역이 아니라면 예외가 발생한다.")
+    @Test
+    void cannotDeleteSection() {
+        // given
+        when(lineRepository.findById(분당선.getId())).thenReturn(Optional.of(분당선));
+        when(stationService.findById(수서역.getId())).thenReturn(수서역);
+        when(stationService.findById(복정역.getId())).thenReturn(복정역);
+
+        // when
+        lineService.addSection(분당선.getId(), new SectionRequest(수서역.getId(), 복정역.getId(), 5));
+
+        // then
+        assertThatThrownBy(() -> lineService.deleteSection(분당선.getId(), 수서역.getId()))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
     @DisplayName("새로운 지하철 노선을 등록한다.")
     @Test
     void saveLine() {
