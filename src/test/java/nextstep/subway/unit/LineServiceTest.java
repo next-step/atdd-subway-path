@@ -151,4 +151,12 @@ class LineServiceTest {
             () -> assertThat(response.getColor()).isEqualTo("yellow")
         );
     }
+
+    @DisplayName("지하철 노선 조회 시, 식별자에 해당하는 노선이 없으면 예외가 발생한다")
+    @Test
+    void lineNotFound() {
+        // when & then
+        assertThatThrownBy(() -> lineService.findById(999L))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
 }
