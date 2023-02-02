@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -41,16 +42,15 @@ class LineServiceTest {
         분당선 = new Line( "분당선", "yellow");
         수서역 = new Station( "수서역");
         복정역 = new Station( "복정역");
+
+        stationRepository.save(수서역);
+        stationRepository.save(복정역);
+        lineRepository.save(분당선);
     }
 
     @DisplayName("새로운 지하철 구간을 추가한다.")
     @Test
     void addSection() {
-        // given
-        stationRepository.save(수서역);
-        stationRepository.save(복정역);
-        lineRepository.save(분당선);
-
         // when
         lineService.addSection(분당선.getId(), new SectionRequest(수서역.getId(), 복정역.getId(), 5));
 
@@ -62,10 +62,6 @@ class LineServiceTest {
     @Test
     void deleteSection() {
         // given
-        stationRepository.save(수서역);
-        stationRepository.save(복정역);
-        lineRepository.save(분당선);
-
         lineService.addSection(분당선.getId(), new SectionRequest(수서역.getId(), 복정역.getId(), 5));
 
         // when
@@ -73,5 +69,16 @@ class LineServiceTest {
 
         // then
         assertThat(분당선.getSections()).isEmpty();
+    }
+
+    @DisplayName("지하철 구간 제거 시, 전달한 역이 하행 종점역이 아니라면 예외가 발생한다.")
+    @Test
+    void cannotDeleteSection() {
+        // when
+        lineService.addSection(분당선.getId(), new SectionRequest(수서역.getId(), 복정역.getId(), 5));
+
+        // then
+        assertThatThrownBy(() -> lineService.deleteSection(분당선.getId(), 수서역.getId()))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 }
