@@ -1,5 +1,22 @@
 package nextstep.subway.unit;
 
+import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.LineRequest;
@@ -8,23 +25,6 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class LineServiceMockTest {
@@ -133,6 +133,18 @@ class LineServiceMockTest {
 
         // then
         assertThat(신분당선.getStations()).hasSize(2);
+    }
+
+    @DisplayName("지하철 노선 등록 시, 상행역과 하행역이 동일하면 예외가 발생한다.")
+    @Test
+    void identicalStations() {
+        // given
+        when(lineRepository.save(any(Line.class))).thenReturn(신분당선);
+
+        // when & then
+        LineRequest request = new LineRequest(신분당선.getName(), 신분당선.getColor(), 판교역.getId(), 판교역.getId(), 10);
+        assertThatThrownBy(() -> lineService.saveLine(request))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
