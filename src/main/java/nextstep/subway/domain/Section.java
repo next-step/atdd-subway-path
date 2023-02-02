@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -26,7 +27,8 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     public Section() {
 
@@ -36,7 +38,7 @@ public class Section {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public boolean hasIdenticalStations() {
@@ -60,6 +62,6 @@ public class Section {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.value();
     }
 }

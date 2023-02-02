@@ -10,6 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -67,6 +69,22 @@ class LineServiceMockTest {
         when(stationService.findById(수서역.getId())).thenReturn(수서역);
 
         SectionRequest request = new SectionRequest(수서역.getId(), 수서역.getId(), 5);
+
+        // when & then
+        assertThatThrownBy(() -> lineService.addSection(분당선.getId(), request))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("지하철 구간 등록 시, 구간의 길이는 최소 1 이상이어야 한다.")
+    @ValueSource(ints = {-1, 0})
+    @ParameterizedTest
+    void invalidDistance(int distance) {
+        // given
+        when(lineRepository.findById(분당선.getId())).thenReturn(Optional.of(분당선));
+        when(stationService.findById(수서역.getId())).thenReturn(수서역);
+        when(stationService.findById(복정역.getId())).thenReturn(복정역);
+
+        SectionRequest request = new SectionRequest(수서역.getId(), 복정역.getId(), distance);
 
         // when & then
         assertThatThrownBy(() -> lineService.addSection(분당선.getId(), request))

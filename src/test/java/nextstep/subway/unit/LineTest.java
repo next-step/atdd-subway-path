@@ -7,6 +7,9 @@ import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.data.repository.query.Param;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -36,6 +39,26 @@ class LineTest {
 
         // then
         assertThat(분당선.getSections()).containsExactly(section);
+    }
+
+    @DisplayName("지하철 구간 등록 시, 상행역과 하행역이 같으면 예외가 발생한다.")
+    @Test
+    void identicalStations() {
+        // given
+        Section section = new Section(분당선, 수서역, 수서역, 5);
+
+        // when & then
+        assertThatThrownBy(() -> 분당선.addSection(section))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("지하철 구간 등록 시, 구간의 길이는 최소 1 이상이어야 한다.")
+    @ValueSource(ints = {-1, 0})
+    @ParameterizedTest
+    void invalidDistance(int distance) {
+        // when & then
+        assertThatThrownBy(() -> 분당선.addSection(new Section(분당선, 수서역, 복정역, distance)))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("지하철 노선에 등록된 구간을 제거한다.")
