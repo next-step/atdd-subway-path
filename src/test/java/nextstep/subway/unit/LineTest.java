@@ -1,18 +1,17 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.data.repository.query.Param;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
 
 
 class LineTest {
@@ -33,8 +32,10 @@ class LineTest {
     @DisplayName("새로운 지하철 구간을 등록한다.")
     @Test
     void addSection() {
-        // when
+        // given
         Section section = new Section(분당선, 수서역, 복정역, 5);
+
+        // when
         분당선.addSection(section);
 
         // then
