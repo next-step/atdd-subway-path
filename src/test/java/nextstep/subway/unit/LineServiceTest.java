@@ -8,6 +8,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -135,5 +137,18 @@ class LineServiceTest {
 
         // then
         assertThat(response).hasSize(1);
+    }
+
+    @DisplayName("식별자로 지하철 노선을 조회한다.")
+    @Test
+    void findById() {
+        // when
+        LineResponse response = lineService.findById(분당선.getId());
+
+        // then
+        assertAll(
+            () -> assertThat(response.getName()).isEqualTo("분당선"),
+            () -> assertThat(response.getColor()).isEqualTo("yellow")
+        );
     }
 }
