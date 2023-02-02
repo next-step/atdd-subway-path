@@ -27,12 +27,22 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-        if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
-            Station upStation = stationService.findById(request.getUpStationId());
-            Station downStation = stationService.findById(request.getDownStationId());
-            line.getSections().add(new Section(line, upStation, downStation, request.getDistance()));
+
+        Long upStationId = request.getUpStationId();
+        Long downStationId = request.getDownStationId();
+        int distance = request.getDistance();
+
+        if (upStationId != null && downStationId != null && distance != 0) {
+            addSectionToLine(line, upStationId, downStationId, distance);
         }
+
         return new LineResponse(line);
+    }
+
+    private void addSectionToLine(Line line, Long upStationId, Long downStationId, int distance) {
+        Station upStation = stationService.findById(upStationId);
+        Station downStation = stationService.findById(downStationId);
+        line.addSection(new Section(line, upStation, downStation, distance));
     }
 
     public List<LineResponse> showLines() {
@@ -67,10 +77,14 @@ public class LineService {
 
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
-        Station upStation = stationService.findById(sectionRequest.getUpStationId());
-        Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
-        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        Line line = lineRepository.findById(lineId)
+            .orElseThrow(IllegalArgumentException::new);
+
+        Long upStationId = sectionRequest.getUpStationId();
+        Long downStationId = sectionRequest.getDownStationId();
+        int distance = sectionRequest.getDistance();
+
+        addSectionToLine(line, upStationId, downStationId, distance);
     }
 
     @Transactional
