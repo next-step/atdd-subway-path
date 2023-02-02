@@ -82,6 +82,21 @@ class LineServiceMockTest {
         assertThat(신분당선.getStations()).hasSize(2);
     }
 
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        when(lineRepository.findById(신분당선.getId())).thenReturn(Optional.of(신분당선));
+
+        // when
+        lineService.updateLine(신분당선.getId(), new LineRequest("구분당선", "blue", 판교역.getId(), 광교역.getId(), 20));
+
+        // then
+        LineResponse response = lineService.findById(신분당선.getId());
+        assertThat(response.getName()).isEqualTo("구분당선");
+        assertThat(response.getColor()).isEqualTo("blue");
+    }
+
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void showLines() {
