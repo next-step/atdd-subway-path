@@ -42,6 +42,7 @@ class LineServiceTest {
     private Line 분당선;
     private Station 수서역;
     private Station 복정역;
+    private Station 가천대역;
     private Station 판교역;
     private Station 광교역;
 
@@ -50,11 +51,13 @@ class LineServiceTest {
         분당선 = new Line( "분당선", "yellow");
         수서역 = new Station( "수서역");
         복정역 = new Station( "복정역");
+        가천대역 = new Station( "가천대역");
         판교역 = new Station( "판교역");
         광교역 = new Station( "광교역");
 
         stationRepository.save(수서역);
         stationRepository.save(복정역);
+        stationRepository.save(가천대역);
         stationRepository.save(판교역);
         stationRepository.save(광교역);
         lineRepository.save(분당선);
@@ -75,22 +78,35 @@ class LineServiceTest {
     void deleteSection() {
         // given
         lineService.addSection(분당선.getId(), new SectionRequest(수서역.getId(), 복정역.getId(), 5));
+        lineService.addSection(분당선.getId(), new SectionRequest(복정역.getId(), 가천대역.getId(), 5));
 
         // when
-        lineService.deleteSection(분당선.getId(), 복정역.getId());
+        lineService.deleteSection(분당선.getId(), 가천대역.getId());
 
         // then
-        assertThat(분당선.getSections()).isEmpty();
+        assertThat(분당선.getSections()).hasSize(1);
+    }
+
+    @DisplayName("지하철 구간 제거 시, 노선에 등록된 구간이 하나라면 예외가 발생한다.")
+    @Test
+    void cannotDeleteSectionWhenSingleSection() {
+        // given
+        lineService.addSection(분당선.getId(), new SectionRequest(수서역.getId(), 복정역.getId(), 5));
+
+        // when & then
+        assertThatThrownBy(() -> lineService.deleteSection(분당선.getId(), 복정역.getId()))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("지하철 구간 제거 시, 전달한 역이 하행 종점역이 아니라면 예외가 발생한다.")
     @Test
-    void cannotDeleteSection() {
-        // when
+    void cannotDeleteSectionWhenNonDownStation() {
+        // given
         lineService.addSection(분당선.getId(), new SectionRequest(수서역.getId(), 복정역.getId(), 5));
+        lineService.addSection(분당선.getId(), new SectionRequest(복정역.getId(), 가천대역.getId(), 5));
 
-        // then
-        assertThatThrownBy(() -> lineService.deleteSection(분당선.getId(), 수서역.getId()))
+        // when & then
+        assertThatThrownBy(() -> lineService.deleteSection(분당선.getId(), 복정역.getId()))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
