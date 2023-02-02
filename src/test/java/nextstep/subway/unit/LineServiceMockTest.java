@@ -64,8 +64,7 @@ class LineServiceMockTest {
         lineService.addSection(분당선.getId(), new SectionRequest(수서역.getId(), 복정역.getId(), 5));
 
         // then
-        LineResponse response = lineService.findById(분당선.getId());
-        assertThat(response.getStations()).hasSize(2);
+        assertThat(분당선.getSections()).hasSize(1);
     }
 
     @DisplayName("지하철 구간을 제거한다.")
@@ -110,9 +109,8 @@ class LineServiceMockTest {
         lineService.updateLine(신분당선.getId(), new LineRequest("구분당선", "blue", 판교역.getId(), 광교역.getId(), 20));
 
         // then
-        LineResponse response = lineService.findById(신분당선.getId());
-        assertThat(response.getName()).isEqualTo("구분당선");
-        assertThat(response.getColor()).isEqualTo("blue");
+        assertThat(신분당선.getName()).isEqualTo("구분당선");
+        assertThat(신분당선.getColor()).isEqualTo("blue");
     }
 
     @DisplayName("지하철 노선을 제거한다.")
