@@ -54,6 +54,89 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 상행 좀점 추가 요청을 하면
+     * Then 노선에 새로운 구간이 추가된다
+     */
+    @DisplayName("지하철 노선에 새로운 상행 종점을 등록")
+    @Test
+    void addLineSection2() {
+        // when
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 강남역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(정자역, 강남역, 양재역);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 구간 사이에 새로운 역을 추가 요청 하면
+     * Then 노선에 새로운 구간이 추가된다
+     */
+    @DisplayName("지하철 노선에 새로운 상행 종점을 등록")
+    @Test
+    void addLineSection3() {
+        // when
+
+        // then
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 기존 구간보다 거리가 더 먼 구간을 추가 하면
+     * Then 구간 추가가 실패한다
+     */
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @Test
+    void addLineSection3_2() {
+        // when
+
+        // then
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 하행 종점 추가 요청 하면
+     * Then 노선에 새로운 구간이 추가된다
+     */
+    @DisplayName("지하철 노선에 새로운 하행 종점을 등록")
+    @Test
+    void addLineSection4() {
+        // when
+
+        // then
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 이미 상행역과 하행역이 노선에 등록된 구간을 추가 요청하면
+     * Then 추가에 실패한다
+     */
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void addLineSection4_2() {
+        // when
+
+        // then
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 상행역과 하행역 둘 중 하나도 포함되어있지 않은 구간을 추가 요청 하면
+     * Then 추가에 실패한다
+     */
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void addLineSection5() {
+        // when
+
+        // then
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
      * Then 노선에 구간이 제거된다
      */
