@@ -9,20 +9,23 @@ public class SectionFixture {
     }
 
     public static Section createSection(Long upStationId, Long downStationId) {
-        return Section.builder()
-                .id(0L)
-                .upStation(new Station(upStationId, "역2"))
-                .downStation(new Station(downStationId, "역1"))
-                .distance(10)
-                .build();
+        return createSection(upStationId, downStationId, 10);
+    }
+
+    public static Section createSection(Long upStationId, Long downStationId, int distance) {
+        return createSection(0L, upStationId, downStationId, distance);
     }
 
     public static Section createSection(Long lineId, Long upStationId, Long downStationId) {
+        return createSection(lineId, upStationId, downStationId, 10);
+    }
+
+    public static Section createSection(Long lineId, Long upStationId, Long downStationId, int distance) {
         return Section.builder()
                 .id(lineId)
                 .upStation(new Station(upStationId, "역2"))
                 .downStation(new Station(downStationId, "역1"))
-                .distance(10)
+                .distance(distance)
                 .build();
     }
 }

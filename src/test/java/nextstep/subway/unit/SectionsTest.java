@@ -28,14 +28,27 @@ class SectionsTest {
     }
 
     @Test
-    void 기존_구간의_하행역과_추가하는_상행역이_다르면_추가_실패() {
+    void 기존_구간_사이에_역이_추가_된다() {
         //given
-        Section section1 = createSection(1L, 2L);
-        Section section2 = createSection(3L, 4L);
-        Sections sections = Sections.from(section1);
+        Section 구간1 = createSection(1L, 3L, 10);
+        Section 구간2 = createSection(1L, 2L, 5);
+        Sections 구간들 = Sections.from(구간1);
+        int 새구간1거리 = 구간1.getDistance() - 구간2.getDistance();
+        int 새구간2거리 = 구간2.getDistance();
 
-        //when then
-        assertThatIllegalArgumentException().isThrownBy(() -> sections.add(section2));
+        //when
+        구간들.add(구간2);
+
+        //then
+        assertThat(구간들.size()).isEqualTo(2);
+
+        assertThat(구간들.get(0).getUpStationId()).isEqualTo(1L);
+        assertThat(구간들.get(0).getDownStationId()).isEqualTo(2L);
+        assertThat(구간들.get(0).getDistance()).isEqualTo(새구간1거리);
+
+        assertThat(구간들.get(1).getUpStationId()).isEqualTo(2L);
+        assertThat(구간들.get(1).getDownStationId()).isEqualTo(3L);
+        assertThat(구간들.get(1).getDistance()).isEqualTo(새구간2거리);
     }
 
     @Test

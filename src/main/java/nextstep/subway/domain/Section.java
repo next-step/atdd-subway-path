@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.tool.schema.extract.spi.TableInformation;
 
 import javax.persistence.*;
 import java.util.Optional;
@@ -64,5 +65,18 @@ public class Section {
 
         line.remove(this);
         line = null;
+    }
+
+    public void changeDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public void changeDownStationToUpStation() {
+        this.upStation = this.downStation;
+        this.downStation = null;
+    }
+
+    public void changeDownStation(Station downStation) {
+        this.downStation = downStation;
     }
 }

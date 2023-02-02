@@ -7,10 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -58,9 +55,35 @@ public class Sections implements Iterable<Section> {
         return values.size();
     }
 
-    public void add(Section section) {
-        validateForAdd(section);
-        values.add(section);
+    public void add(Section newSection) {
+        validateForAdd(newSection);
+
+        Optional<Section> optionalSection = values.stream()
+                .filter(s -> s.getUpStation().getId().equals(newSection.getUpStationId()))
+                .findAny();
+
+        if (optionalSection.isPresent()) {
+            Section oldSection = optionalSection.get();
+
+            int oldDis = oldSection.getDistance();
+            int newDIs = newSection.getDistance();
+
+            Station oldSectionDownStation = oldSection.getDownStation();
+            Station newSectionDownStation = newSection.getDownStation();
+
+            oldSection.changeDistance(oldDis - newDIs);
+            oldSection.changeDownStation(newSectionDownStation);
+
+            newSection.changeDownStationToUpStation();
+            newSection.changeDownStation(oldSectionDownStation);
+
+            values.remove(oldSection);
+            values.add(oldSection);
+            values.add(newSection);
+            return;
+        }
+
+        values.add(newSection);
     }
 
     public void add(Line line, Station upStation, Station downStation, int distance) {
@@ -118,12 +141,16 @@ public class Sections implements Iterable<Section> {
         Long newSectionUpStationId = newSection.getUpStationId();
         Long newSectionDownStationId = newSection.getDownStationId();
 
-        if (!lastSectionDownStationId.equals(newSectionUpStationId)) {
-            throw new IllegalArgumentException(String.format("마지막 구간의 하행역과 추가하려는 구간의 상행역이 다릅니다. 하행역 id:%d, 상행역 id:%d"
-                    , lastSectionDownStationId
-                    , newSectionUpStationId));
-        }
+//        if (!lastSectionDownStationId.equals(newSectionUpStationId)) {
+//            throw new IllegalArgumentException(String.format("마지막 구간의 하행역과 추가하려는 구간의 상행역이 다릅니다. 하행역 id:%d, 상행역 id:%d"
+//                    , lastSectionDownStationId
+//                    , newSectionUpStationId));
+//        }
 
+        validateSavedStation(newSectionDownStationId);
+    }
+
+    private void validateSavedStation(Long newSectionDownStationId) {
         boolean isSavedSectionStation = getStations()
                 .stream()
                 .anyMatch(station -> station.getId().equals(newSectionDownStationId));
