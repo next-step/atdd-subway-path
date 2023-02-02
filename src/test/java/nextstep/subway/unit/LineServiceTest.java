@@ -8,6 +8,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,9 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Transactional
@@ -120,5 +125,15 @@ class LineServiceTest {
 
         // then
         assertThat(lineService.showLines()).isEmpty();
+    }
+
+    @DisplayName("지하철 노선 목록을 조회한다.")
+    @Test
+    void showLines() {
+        // when
+        List<LineResponse> response = lineService.showLines();
+
+        // then
+        assertThat(response).hasSize(1);
     }
 }
