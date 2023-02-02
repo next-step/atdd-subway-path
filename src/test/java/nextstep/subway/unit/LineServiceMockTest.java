@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -95,6 +96,20 @@ class LineServiceMockTest {
         LineResponse response = lineService.findById(신분당선.getId());
         assertThat(response.getName()).isEqualTo("구분당선");
         assertThat(response.getColor()).isEqualTo("blue");
+    }
+
+    @DisplayName("지하철 노선을 제거한다.")
+    @Test
+    void deleteLine() {
+        // given
+        doNothing().when(lineRepository).deleteById(신분당선.getId());
+        when(lineRepository.findAll()).thenReturn(Collections.emptyList());
+
+        // when
+        lineService.deleteLine(신분당선.getId());
+
+        // then
+        assertThat(lineRepository.findAll()).isEmpty();
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
