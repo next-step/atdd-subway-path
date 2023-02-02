@@ -36,6 +36,17 @@ public class Line {
         return stations;
     }
 
+    public void removeSection(Station station) {
+        if (!getLastStation().equals(station)) {
+            throw new IllegalArgumentException();
+        }
+        sections.remove(sections.size() - 1);
+    }
+
+    public Station getLastStation() {
+        return sections.get(sections.size() - 1).getDownStation();
+    }
+
     public Long getId() {
         return id;
     }
