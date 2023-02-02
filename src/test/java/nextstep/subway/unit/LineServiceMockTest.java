@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
@@ -155,5 +156,16 @@ class LineServiceMockTest {
             () -> assertThat(response.getName()).isEqualTo("분당선"),
             () -> assertThat(response.getColor()).isEqualTo("yellow")
         );
+    }
+
+    @DisplayName("지하철 노선 조회 시, 식별자에 해당하는 노선이 없으면 예외가 발생한다")
+    @Test
+    void lineNotFound() {
+        // when
+        when(lineRepository.findById(999L)).thenThrow(IllegalArgumentException.class);
+
+        // then
+        assertThatThrownBy(() -> lineService.findById(999L))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 }
