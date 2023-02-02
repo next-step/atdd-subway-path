@@ -48,10 +48,14 @@ public class Line {
     }
 
     public void removeSection(Station station) {
-        if (!getLastStation().equals(station)) {
+        if (!isLastStation(station)) {
             throw new IllegalArgumentException();
         }
         sections.remove(sections.size() - 1);
+    }
+
+    private boolean isLastStation(Station station) {
+        return getLastStation().equals(station);
     }
 
     public Station getLastStation() {
