@@ -8,6 +8,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.assertj.core.api.AssertionsForInterfaceTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -105,5 +106,16 @@ class LineServiceTest {
             () -> assertThat(response.getColor()).isEqualTo("red"),
             () -> assertThat(response.getStations()).hasSize(2)
         );
+    }
+
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // when
+        lineService.updateLine(분당선.getId(), new LineRequest("당분선", "purple", 수서역.getId(), 복정역.getId(), 5));
+
+        // then
+        assertThat(분당선.getName()).isEqualTo("당분선");
+        assertThat(분당선.getColor()).isEqualTo("purple");
     }
 }
