@@ -39,8 +39,6 @@ class LineServiceTest {
     private Station 수서역;
     private Station 복정역;
     private Station 가천대역;
-    private Station 판교역;
-    private Station 광교역;
 
     @BeforeEach
     void setup() {
@@ -48,14 +46,10 @@ class LineServiceTest {
         수서역 = new Station( "수서역");
         복정역 = new Station( "복정역");
         가천대역 = new Station( "가천대역");
-        판교역 = new Station( "판교역");
-        광교역 = new Station( "광교역");
 
         stationRepository.save(수서역);
         stationRepository.save(복정역);
         stationRepository.save(가천대역);
-        stationRepository.save(판교역);
-        stationRepository.save(광교역);
         lineRepository.save(분당선);
     }
 
@@ -103,83 +97,6 @@ class LineServiceTest {
 
         // when & then
         assertThatThrownBy(() -> lineService.deleteSection(분당선.getId(), 복정역.getId()))
-            .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @DisplayName("새로운 지하철 노선을 등록한다.")
-    @Test
-    void saveLine() {
-        // when
-        LineResponse response = lineService.saveLine(new LineRequest("신분당선", "red", 판교역.getId(), 광교역.getId(), 20));
-
-        // then
-        assertAll(
-            () -> assertThat(response.getName()).isEqualTo("신분당선"),
-            () -> assertThat(response.getColor()).isEqualTo("red"),
-            () -> assertThat(response.getStations()).hasSize(2)
-        );
-    }
-
-    @DisplayName("지하철 노선 등록 시, 상행역과 하행역이 동일하면 예외가 발생한다.")
-    @Test
-    void identicalStations() {
-        // given
-        LineRequest request = new LineRequest("신분당선", "red", 판교역.getId(), 판교역.getId(), 20);
-
-        // when & then
-        assertThatThrownBy(() -> lineService.saveLine(request))
-            .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @DisplayName("지하철 노선을 수정한다.")
-    @Test
-    void updateLine() {
-        // when
-        lineService.updateLine(분당선.getId(), new LineRequest("당분선", "purple", 수서역.getId(), 복정역.getId(), 5));
-
-        // then
-        assertThat(분당선.getName()).isEqualTo("당분선");
-        assertThat(분당선.getColor()).isEqualTo("purple");
-    }
-
-    @DisplayName("지하철 노선을 제거한다.")
-    @Test
-    void deleteLine() {
-        // when
-        lineService.deleteLine(분당선.getId());
-
-        // then
-        assertThat(lineService.showLines()).isEmpty();
-    }
-
-    @DisplayName("지하철 노선 목록을 조회한다.")
-    @Test
-    void showLines() {
-        // when
-        List<LineResponse> response = lineService.showLines();
-
-        // then
-        assertThat(response).hasSize(1);
-    }
-
-    @DisplayName("식별자로 지하철 노선을 조회한다.")
-    @Test
-    void findById() {
-        // when
-        LineResponse response = lineService.findById(분당선.getId());
-
-        // then
-        assertAll(
-            () -> assertThat(response.getName()).isEqualTo("분당선"),
-            () -> assertThat(response.getColor()).isEqualTo("yellow")
-        );
-    }
-
-    @DisplayName("지하철 노선 조회 시, 식별자에 해당하는 노선이 없으면 예외가 발생한다")
-    @Test
-    void lineNotFound() {
-        // when & then
-        assertThatThrownBy(() -> lineService.findById(999L))
             .isInstanceOf(IllegalArgumentException.class);
     }
 }

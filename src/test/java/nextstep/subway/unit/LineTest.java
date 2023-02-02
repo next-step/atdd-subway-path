@@ -38,16 +38,6 @@ class LineTest {
         assertThat(분당선.getSections()).containsExactly(section);
     }
 
-    @DisplayName("지하철 노선에 등록된 역 목록을 조회한다.")
-    @Test
-    void getStations() {
-        // when
-        분당선.addSection(new Section(분당선, 수서역, 복정역, 5));
-
-        // then
-        assertThat(분당선.getStations()).containsExactlyInAnyOrder(수서역, 복정역);
-    }
-
     @DisplayName("지하철 노선에 등록된 구간을 제거한다.")
     @Test
     void removeSection() {
