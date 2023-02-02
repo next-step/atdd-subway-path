@@ -68,6 +68,23 @@ class LineServiceMockTest {
         assertThat(response.getStations()).hasSize(2);
     }
 
+    @DisplayName("지하철 구간을 제거한다.")
+    @Test
+    void deleteSection() {
+        // given
+        when(lineRepository.findById(분당선.getId())).thenReturn(Optional.of(분당선));
+        when(stationService.findById(수서역.getId())).thenReturn(수서역);
+        when(stationService.findById(복정역.getId())).thenReturn(복정역);
+
+        lineService.addSection(분당선.getId(), new SectionRequest(수서역.getId(), 복정역.getId(), 5));
+
+        // when
+        lineService.deleteSection(분당선.getId(), 복정역.getId());
+
+        // then
+        assertThat(분당선.getSections()).isEmpty();
+    }
+
     @DisplayName("새로운 지하철 노선을 등록한다.")
     @Test
     void saveLine() {
