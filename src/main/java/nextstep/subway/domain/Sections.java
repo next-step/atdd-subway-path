@@ -10,6 +10,7 @@ import javax.persistence.OneToMany;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @EqualsAndHashCode
@@ -137,27 +138,21 @@ public class Sections implements Iterable<Section> {
             return;
         }
 
-        Long lastSectionDownStationId = this.getLast().getDownStationId();
-        Long newSectionUpStationId = newSection.getUpStationId();
-        Long newSectionDownStationId = newSection.getDownStationId();
-
-//        if (!lastSectionDownStationId.equals(newSectionUpStationId)) {
-//            throw new IllegalArgumentException(String.format("마지막 구간의 하행역과 추가하려는 구간의 상행역이 다릅니다. 하행역 id:%d, 상행역 id:%d"
-//                    , lastSectionDownStationId
-//                    , newSectionUpStationId));
-//        }
-
-        validateSavedStation(newSectionDownStationId);
+        validateSavedStation(newSection);
     }
 
-    private void validateSavedStation(Long newSectionDownStationId) {
-        boolean isSavedSectionStation = getStations()
-                .stream()
-                .anyMatch(station -> station.getId().equals(newSectionDownStationId));
+    private void validateSavedStation(Section section) {
+        List<Long> ids = getStationIds();
+        if (ids.contains(section.getUpStationId()) && ids.contains(section.getDownStationId())) {
+            throw new IllegalArgumentException("이미 노선에 등록된 역 입니다. id:" + section);
 
-        if (isSavedSectionStation) {
-            throw new IllegalArgumentException("이미 노선에 등록된 역 입니다. id:" + newSectionDownStationId);
         }
+    }
+
+    private List<Long> getStationIds() {
+        return getStations().stream()
+                .map(Station::getId)
+                .collect(Collectors.toList());
     }
 
     public List<Station> getStations() {

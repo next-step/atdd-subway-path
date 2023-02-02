@@ -55,7 +55,7 @@ class SectionsTest {
     void 구간에_이미_등록된_역을_추가하면_실패() {
         //given
         Section section1 = createSection(1L, 2L);
-        Section section2 = createSection(2L, 1L);
+        Section section2 = createSection(1L, 2L);
         Sections sections = Sections.from(section1);
 
         //when then
