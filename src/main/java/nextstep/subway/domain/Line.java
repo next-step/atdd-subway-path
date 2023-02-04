@@ -50,8 +50,19 @@ public class Line {
         return sections;
     }
 
-    protected void addSections(Section section) {
+    public void addSections(Section section) {
+        if(sections.isEmpty()){
+            sections.addSection(section); return;
+        }
+        if(!sections.equalsLastStation(section.getUpStation())){
+            throw new IllegalArgumentException("구간을 추가할 수 없습니다.");
+        }
+        if(sections.contains(section.getDownStation())){
+            throw new IllegalArgumentException("하행역이 이미 노선에 포함되어 있습니다.");
+        }
+
         sections.addSection(section);
+
     }
 
     public boolean isEmptySections() {

@@ -31,7 +31,6 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-        this.line.addSections(this);
     }
 
     public Long getId() {

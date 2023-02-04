@@ -41,4 +41,12 @@ public class Sections {
     public void removeLast() {
         sections.remove(sections.size()-1);
     }
+
+    public int size(){
+        return sections.size();
+    }
+
+    public boolean contains(Station station){
+        return getStations().contains(station);
+    }
 }
