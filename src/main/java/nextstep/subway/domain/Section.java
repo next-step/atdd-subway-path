@@ -26,6 +26,12 @@ public class Section {
 
     }
 
+    public Section(Station upStation, Station downStation, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
@@ -51,5 +57,9 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
     }
 }
