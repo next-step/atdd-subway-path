@@ -64,4 +64,19 @@ class LineTest {
                 .extracting(Station::getName)
                 .containsExactlyInAnyOrder("수원역", "매탄권선역");
     }
+
+    @Test
+    void updateLine() {
+        //given
+        Line 분당선 = 노선_생성("분당선", "yellow");
+        //then
+        assertThat(분당선.getName()).isEqualTo("분당선");
+        assertThat(분당선.getColor()).isEqualTo("yellow");
+
+        //when
+        분당선.updateLine(노선_생성("신분당선", "red"));
+        //then
+        assertThat(분당선.getName()).isEqualTo("신분당선");
+        assertThat(분당선.getColor()).isEqualTo("red");
+    }
 }

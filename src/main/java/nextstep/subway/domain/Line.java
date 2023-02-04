@@ -1,7 +1,9 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Entity
@@ -15,7 +17,7 @@ public class Line {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color) {
@@ -32,24 +34,12 @@ public class Line {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 
     public List<Section> getSections() {
@@ -61,17 +51,21 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        Set<String> stations = new HashSet<>();
-        return sections.stream()
-                .map(section -> List.of(section.getUpStation(), section.getDownStation()))
-                .flatMap(Collection::stream)
-                .filter(station -> {
-                    if (stations.contains(station.getName())) {
-                        return false;
-                    }
-                    stations.add(station.getName());
-                    return true;
-                }).collect(Collectors.toUnmodifiableList());
+        if (this.sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Station> stations = this.sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+        stations.add(0, sections.get(0).getUpStation());
+        return stations;
+    }
+
+    public void removeSection(Station station) {
+        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
+            throw new IllegalArgumentException();
+        }
+        this.sections.remove(this.sections.size() - 1);
     }
 
     public void removeSection(String stationName) {
@@ -80,5 +74,10 @@ public class Line {
                         || section.getUpStation().getName().equals(stationName))
                 .findFirst()
                 .ifPresent(section -> sections.remove(section));
+    }
+
+    public void updateLine(Line line) {
+        this.name = line.getName();
+        this.color = line.getColor();
     }
 }

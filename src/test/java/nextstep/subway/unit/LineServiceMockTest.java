@@ -1,5 +1,6 @@
 package nextstep.subway.unit;
 
+import nextstep.subway.applicaion.LineSectionService;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.SectionRequest;
@@ -31,7 +32,7 @@ public class LineServiceMockTest {
 
     @BeforeEach
     void setUp() {
-        lineService = new LineService(lineRepository, stationService);
+        lineService = new LineService(lineRepository, new LineSectionService(stationService));
     }
 
     @Test
