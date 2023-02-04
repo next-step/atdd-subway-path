@@ -1,9 +1,6 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Sections;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,13 +15,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("노선 객체 테스트")
 class LineTest {
 
-    private static final String 신분당선 = "신분당선";
     private static final String 이호선 = "2호선";
     private static final String 빨간색 = "bg-red-600";
     private static final Station 강남역 = new Station(1L, "강남역");
     private static final Station 양재역 = new Station(2L, "양재역");
     private static final Station 몽촌토성역 = new Station(3L, "몽촌토성역");
     private static final String 녹색 = "bg-green-600";
+    private static final String 신분당선 = "신분당선";
 
     @DisplayName("노선을 생성한다.")
     @Test
@@ -68,7 +65,7 @@ class LineTest {
     void removeSection() {
         final Section 첫번째_구간 = new Section(1L, 강남역, 양재역, 10);
         final Section 두번째_구간 = new Section(2L, 양재역, 몽촌토성역, 10);
-        final Line 이호선 = new Line(1L, "2호선", "bg-red-600", new Sections(Arrays.asList(첫번째_구간, 두번째_구간)));
+        final Line 이호선 = new Line(1L, "2호선", "bg-red-600", new Sections(List.of(첫번째_구간, 두번째_구간)));
 
         이호선.removeSection(몽촌토성역);
 
@@ -83,5 +80,9 @@ class LineTest {
                 .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    private Distance 거리(final Integer distance) {
+        return new Distance(distance);
     }
 }

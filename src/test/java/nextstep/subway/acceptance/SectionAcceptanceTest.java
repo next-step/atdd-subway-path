@@ -16,8 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리 기능")
 class SectionAcceptanceTest extends AcceptanceTest {
-    private Long 신분당선;
 
+    private Long 신분당선;
     private Long 강남역;
     private Long 양재역;
 
@@ -74,8 +74,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private Map<String, Object> createLineCreateParams(final String name, final String color, final Long upStationId, final Long downStationId, final Integer distance) {
-        Map<String, Object> lineCreateParams;
-        lineCreateParams = new HashMap<>();
+        Map<String, Object> lineCreateParams = new HashMap<>();
         lineCreateParams.put("name", name);
         lineCreateParams.put("color", color);
         lineCreateParams.put("upStationId", upStationId);
