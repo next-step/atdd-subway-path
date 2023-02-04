@@ -43,8 +43,12 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findById(Long id) {
+    public LineResponse getById(Long id) {
         return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+    }
+
+    public Line findById(Long id) {
+        return lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
     }
 
     @Transactional
