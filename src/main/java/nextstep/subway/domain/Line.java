@@ -1,8 +1,8 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -49,5 +49,31 @@ public class Line {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public List<Station> getStations() {
+        Set<String> stations = new HashSet<>();
+        return sections.stream()
+                .map(section -> List.of(section.getUpStation(), section.getDownStation()))
+                .flatMap(Collection::stream)
+                .filter(station -> {
+                    if (stations.contains(station.getName())) {
+                        return false;
+                    }
+                    stations.add(station.getName());
+                    return true;
+                }).collect(Collectors.toUnmodifiableList());
+    }
+
+    public void removeSection(String stationName) {
+        sections.stream()
+                .filter(section -> section.getDownStation().getName().equals(stationName)
+                        || section.getUpStation().getName().equals(stationName))
+                .findFirst()
+                .ifPresent(section -> sections.remove(section));
     }
 }
