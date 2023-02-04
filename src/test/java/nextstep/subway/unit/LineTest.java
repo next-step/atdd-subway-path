@@ -1,59 +1,87 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineInfo;
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("호선 객체 테스트")
+@DisplayName("노선 객체 테스트")
 class LineTest {
 
-    private Line line;
-    private Station upStation;
-    private Station downStation;
-    private Section section;
+    private static final String 신분당선 = "신분당선";
+    private static final String 이호선 = "2호선";
+    private static final String 빨간색 = "bg-red-600";
+    private static final Station 강남역 = new Station(1L, "강남역");
+    private static final Station 양재역 = new Station(2L, "양재역");
+    private static final Station 몽촌토성역 = new Station(3L, "몽촌토성역");
+    private static final String 녹색 = "bg-green-600";
 
-    @BeforeEach
-    void setUp() {
-        line = new Line(new LineInfo("2호선", "green"));
-        upStation = new Station("강남역");
-        downStation = new Station("잠실역");
-        section = new Section(line, upStation, downStation, 10);
+    @DisplayName("노선을 생성한다.")
+    @Test
+    void createLine() {
+        final Section 첫번째_구간 = new Section(강남역, 양재역, 10);
+        final Line 노선_신분당선 = new Line(1L, 신분당선, 빨간색, new Sections(List.of(첫번째_구간)));
+
+        assertThat(노선_신분당선).isEqualTo(new Line(1L, 신분당선, 빨간색, new Sections(List.of(첫번째_구간))));
     }
 
-    @DisplayName("호선의 구간을 생성한다.")
+    @DisplayName("노선 정보를 수정한다.")
     @Test
-    void addSection() {
-
-        line.addSection(section);
+    void updateLine() {
+        final Section 첫번째_구간 = new Section(강남역, 양재역, 10);
+        final Line 노선_신분당선 = new Line(1L, 신분당선, 빨간색, new Sections(List.of(첫번째_구간)));
+        노선_신분당선.updateLine(이호선, 녹색);
 
         assertAll(
-                () -> assertThat(line.getSections()).hasSize(1),
-                () -> assertThat(line.getSections().get(0).getLine().getLineInfo()).isEqualTo(new LineInfo("2호선", "green")),
-                () -> assertThat(line.getSections().get(0).getUpStation().getName()).isEqualTo("강남역"),
-                () -> assertThat(line.getSections().get(0).getDownStation().getName()).isEqualTo("잠실역"),
-                () -> assertThat(line.getSections().get(0).getDistance()).isEqualTo(10)
+                () -> assertThat(노선_신분당선.getId()).isEqualTo(1L),
+                () -> assertThat(노선_신분당선.getName()).isEqualTo(이호선),
+                () -> assertThat(노선_신분당선.getColor()).isEqualTo(녹색)
         );
     }
 
+    @DisplayName("노선의 구간을 추가한다.")
     @Test
-    void getStations() {
+    void addSection() {
+        final Section 첫번째_구간 = new Section(1L, 강남역, 양재역, 10);
+        final Line 노선_신분당선 = new Line(1L, 신분당선, 빨간색, new Sections(Arrays.asList(첫번째_구간)));
+        노선_신분당선.addSection(양재역, 몽촌토성역, 10);
+
+        final List<Station> 노선_구간_목록 = convertToStation(노선_신분당선.getSectionsList());
+        assertAll(
+                () -> assertThat(노선_구간_목록).hasSize(3),
+                () -> assertThat(노선_구간_목록).contains(강남역, 양재역, 몽촌토성역)
+        );
     }
 
-    @DisplayName("호선의 구간을 추가 후 제거한다.")
+    @DisplayName("노선 구간을 삭제한다.")
     @Test
     void removeSection() {
+        final Section 첫번째_구간 = new Section(1L, 강남역, 양재역, 10);
+        final Section 두번째_구간 = new Section(2L, 양재역, 몽촌토성역, 10);
+        final Line 이호선 = new Line(1L, "2호선", "bg-red-600", new Sections(Arrays.asList(첫번째_구간, 두번째_구간)));
 
-        line.addSection(section);
+        이호선.removeSection(몽촌토성역);
 
-        line.removeSection(downStation);
+        assertAll(
+                () -> assertThat(이호선.getSectionsList()).hasSize(1),
+                () -> assertThat(이호선.getSectionsList().get(0)).isEqualTo(첫번째_구간)
+        );
+    }
 
-        assertThat(line.getSections()).isEmpty();
+    private List<Station> convertToStation(final List<Section> sections) {
+        return sections.stream()
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .distinct()
+                .collect(Collectors.toList());
     }
 }
