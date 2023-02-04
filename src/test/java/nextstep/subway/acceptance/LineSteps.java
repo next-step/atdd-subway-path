@@ -42,7 +42,7 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, Object> params) {
         return RestAssured
                 .given().log().all()
                 .body(params)
@@ -51,7 +51,7 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청(Long lineId, Map<String, String> params) {
+    public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청(Long lineId, Map<String, Object> params) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
