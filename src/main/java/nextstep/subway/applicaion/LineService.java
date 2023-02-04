@@ -16,8 +16,8 @@ import static nextstep.subway.common.error.SubwayError.NO_FIND_LINE;
 @Service
 @Transactional(readOnly = true)
 public class LineService {
-    private LineRepository lineRepository;
-    private StationService stationService;
+    private final LineRepository lineRepository;
+    private final StationService stationService;
 
     public LineService(final LineRepository lineRepository, final StationService stationService) {
         this.lineRepository = lineRepository;

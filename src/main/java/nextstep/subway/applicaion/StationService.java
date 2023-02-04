@@ -13,14 +13,14 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class StationService {
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
-    public StationService(StationRepository stationRepository) {
+    public StationService(final StationRepository stationRepository) {
         this.stationRepository = stationRepository;
     }
 
     @Transactional
-    public StationResponse saveStation(StationRequest stationRequest) {
+    public StationResponse saveStation(final StationRequest stationRequest) {
         Station station = stationRepository.save(new Station(stationRequest.getName()));
         return StationResponse.createStationResponse(station);
     }
@@ -32,11 +32,11 @@ public class StationService {
     }
 
     @Transactional
-    public void deleteStationById(Long id) {
+    public void deleteStationById(final Long id) {
         stationRepository.deleteById(id);
     }
 
-    public Station findById(Long id) {
+    public Station findById(final Long id) {
         return stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
     }
 }

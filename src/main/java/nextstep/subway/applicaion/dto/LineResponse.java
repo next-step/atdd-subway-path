@@ -14,6 +14,8 @@ public class LineResponse {
     @JsonProperty("stations")
     private List<StationResponse> stationResponses;
 
+    private LineResponse() {}
+
     public LineResponse(final Long id, final String name, final String color, final List<StationResponse> stationResponses) {
         this.id = id;
         this.name = name;

@@ -22,6 +22,10 @@ public class Distance {
         this.distance = this.distance - distance;
     }
 
+    public void change(final Integer distance) {
+        this.distance = distance;
+    }
+
     public void validateGreaterThan(final Integer distance) {
         if (this.distance <= distance) {
             throw new DistanceGreaterThanException(NO_REGISTER_DISTANCE_GREATER_THAN.getMessage());
@@ -49,7 +53,4 @@ public class Distance {
         return Objects.hash(distance);
     }
 
-    public void change(final Integer distance) {
-        this.distance = distance;
-    }
 }

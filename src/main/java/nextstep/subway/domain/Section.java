@@ -26,24 +26,39 @@ public class Section {
 
     protected Section() {}
 
-    Section(final Long id, final Line line, final Station upStation, final Station downStation, final Integer distance) {
+    Section(final Long id, final Line line, final Station upStation, final Station downStation, final Distance distance) {
         this.id = id;
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = new Distance(distance);
+        this.distance = distance;
     }
 
     public Section(final Long id, final Station upStation, final Station downStation, final Integer distance) {
-        this(id, null, upStation, downStation, distance);
-    }
-
-    Section(final Line line, final Station upStation, final Station downStation, final Integer distance) {
-        this(null, line, upStation, downStation, distance);
+        this(id, null, upStation, downStation, new Distance(distance));
     }
 
     public Section(final Station upStation, final Station downStation, final Integer distance) {
-        this(null, null, upStation, downStation, distance);
+        this(null, null, upStation, downStation, new Distance(distance));
+    }
+
+    public Section(final Line line, final Station upStation, final Station downStation, final Distance distance) {
+        this(null, line, upStation, downStation, new Distance(distance.getDistance()));
+    }
+
+    Section(final Line line, final Station upStation, final Station downStation, final Integer distance) {
+        this(null, line, upStation, downStation, new Distance(distance));
+    }
+
+    public void changeSectionOfUpStation(final Station upStation, final Integer distance) {
+        this.downStation = this.upStation;
+        this.upStation = upStation;
+        this.distance.change(distance);
+    }
+
+    public void changeSectionOfMiddleStation(final Station downStation, final Integer distance) {
+        this.downStation = downStation;
+        this.distance.minus(distance);
     }
 
     void addLine(final Line line) {
@@ -60,23 +75,6 @@ public class Section {
 
     void validateDistanceGreaterThan(final Integer distance) {
         this.distance.validateGreaterThan(distance);
-    }
-
-    void minus(final Integer distance) {
-        this.distance.minus(distance);
-    }
-
-    void changeDownStation(final Station station) {
-        this.downStation = station;
-    }
-
-    void changeStation(final Station upStation) {
-        this.downStation = this.upStation;
-        this.upStation = upStation;
-    }
-
-    void changeDistance(final Integer distance) {
-        this.distance.change(distance);
     }
 
     public Station getUpStation() {
