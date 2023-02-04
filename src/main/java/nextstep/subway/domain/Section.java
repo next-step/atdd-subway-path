@@ -21,25 +21,62 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
-    public Section() {
+    protected Section() {}
 
-    }
-
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    Section(final Long id, final Line line, final Station upStation, final Station downStation, final Integer distance) {
+        this.id = id;
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
-    public Long getId() {
-        return id;
+    public Section(final Long id, final Station upStation, final Station downStation, final Integer distance) {
+        this(id, null, upStation, downStation, distance);
     }
 
-    public Line getLine() {
-        return line;
+    Section(final Line line, final Station upStation, final Station downStation, final Integer distance) {
+        this(null, line, upStation, downStation, distance);
+    }
+
+    public Section(final Station upStation, final Station downStation, final Integer distance) {
+        this(null, null, upStation, downStation, distance);
+    }
+
+    void addLine(final Line line) {
+        this.line = line;
+    }
+
+    boolean matchUpStation(final Station station) {
+        return this.upStation.equals(station);
+    }
+
+    boolean matchDownStation(final Station station) {
+        return this.downStation.equals(station);
+    }
+
+    void validateDistanceGreaterThan(final Integer distance) {
+        this.distance.validateGreaterThan(distance);
+    }
+
+    void minus(final Integer distance) {
+        this.distance.minus(distance);
+    }
+
+    void changeDownStation(final Station station) {
+        this.downStation = station;
+    }
+
+    void changeStation(final Station upStation) {
+        this.downStation = this.upStation;
+        this.upStation = upStation;
+    }
+
+    void changeDistance(final Integer distance) {
+        this.distance.change(distance);
     }
 
     public Station getUpStation() {
@@ -50,7 +87,7 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
