@@ -39,36 +39,64 @@ public class Sections {
         }
     }
 
-    private void add(final Line line, final Station upStation, final Station downStation, final Integer distance) {
-        for (Section section : this.sections) {
-            if (section.matchUpStation(upStation)) {
-                validateGreaterDistance(section, distance);
-                final Section addSection = new Section(line, downStation, section.getDownStation(), distance);
-                section.minus(distance);
-                section.changeDownStation(downStation);
-                this.sections.add(addSection);
-                return ;
-            }
-            if (section.matchDownStation(upStation)) {
-                final Section addSection = new Section(line, upStation, downStation, distance);
-                this.sections.add(addSection);
-                return ;
-            }
-            if (section.matchUpStation(downStation)) {
-                final Section addSection = new Section(line, downStation, section.getDownStation(), section.getDistance().getDistance());
-                this.sections.add(addSection);
-                section.changeStation(upStation);
-                section.changeDistance(distance);
-                return ;
-            }
-        }
-    }
-
     public void removeSection(final Station station) {
         validateOnlyOneSection();
         final Section lastSection = findLastSection();
         validateMatchLastStation(lastSection, station);
         this.sections.remove(lastSection);
+    }
+
+    public Section findByIndex(final int index) {
+        return this.sections.get(index);
+    }
+
+    public boolean isEmpty() {
+        return CollectionUtils.isEmpty(this.sections);
+    }
+
+    public void remove(final int index) {
+        this.sections.remove(index);
+    }
+
+    public void addLine(final Line line) {
+        for (Section section : this.sections) {
+            section.addLine(line);
+        }
+    }
+
+    private void add(final Line line, final Station upStation, final Station downStation, final Integer distance) {
+        for (Section section : this.sections) {
+            if (section.matchUpStation(upStation)) {
+                addMiddleSection(line, downStation, distance, section);
+                return ;
+            }
+            if (section.matchDownStation(upStation)) {
+                addDownSection(line, upStation, downStation, distance);
+                return ;
+            }
+            if (section.matchUpStation(downStation)) {
+                addUpSection(line, upStation, downStation, distance, section);
+                return ;
+            }
+        }
+    }
+
+    private void addUpSection(final Line line, final Station upStation, final Station downStation, final Integer distance, final Section section) {
+        final Section addSection = new Section(line, downStation, section.getDownStation(), section.getDistance());
+        this.sections.add(addSection);
+        section.changeSectionOfUpStation(upStation, distance);
+    }
+
+    private void addDownSection(final Line line, final Station upStation, final Station downStation, final Integer distance) {
+        final Section addSection = new Section(line, upStation, downStation, distance);
+        this.sections.add(addSection);
+    }
+
+    private void addMiddleSection(final Line line, final Station downStation, final Integer distance, final Section section) {
+        validateGreaterDistance(section, distance);
+        final Section addSection = new Section(line, downStation, section.getDownStation(), distance);
+        section.changeSectionOfMiddleStation(downStation, distance);
+        this.sections.add(addSection);
     }
 
     private void validateAddStation(final List<Station> stations, final Station upStation, final Station downStation) {
@@ -133,24 +161,6 @@ public class Sections {
             throw new NoLastSectionException(NO_LAST_SECTION.getMessage());
         }
         return this.sections.get(this.sections.size() -1);
-    }
-
-    public Section findByIndex(final int index) {
-        return this.sections.get(index);
-    }
-
-    public boolean isEmpty() {
-        return CollectionUtils.isEmpty(this.sections);
-    }
-
-    public void remove(final int index) {
-        this.sections.remove(index);
-    }
-
-    public void addLine(final Line line) {
-        for (Section section : this.sections) {
-            section.addLine(line);
-        }
     }
 
     public List<Section> getSections() {
