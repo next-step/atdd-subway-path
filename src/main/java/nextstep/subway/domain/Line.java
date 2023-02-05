@@ -12,10 +12,10 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = new Sections();
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color) {
@@ -48,6 +48,10 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getList();
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        this.sections.addSection(this, upStation, downStation, distance);
     }
 }
