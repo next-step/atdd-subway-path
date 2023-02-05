@@ -30,11 +30,20 @@ public class Section {
 
     private int distance;
 
-    public Section() {
+    public static Section createFixture(Long id, Line line, Station upStation, Station downStation, int distance) {
+        return new Section(id, line, upStation, downStation, distance);
+    }
+
+    protected Section() {
 
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
+        this(null, line, upStation, downStation, distance);
+    }
+
+    public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
+        this.id = id;
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -59,6 +68,10 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public boolean isSameUpStation(Long stationId) {
+        return upStation.getId().equals(stationId);
     }
 
     public boolean isSameDownStation(Long stationId) {

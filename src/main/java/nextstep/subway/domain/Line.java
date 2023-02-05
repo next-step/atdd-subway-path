@@ -9,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import nextstep.subway.domain.sections.Sections;
+
 @Entity
 public class Line {
     @Id
@@ -18,7 +20,7 @@ public class Line {
     private String color;
 
     @Embedded
-    private final Sections sections = new Sections();
+    private final Sections sections = new Sections(this);
 
     protected Line() {
     }

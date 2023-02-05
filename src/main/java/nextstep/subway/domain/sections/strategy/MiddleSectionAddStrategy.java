@@ -1,0 +1,42 @@
+package nextstep.subway.domain.sections.strategy;
+
+import static java.util.stream.Collectors.*;
+
+import java.util.List;
+
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.sections.Sections;
+
+public class MiddleSectionAddStrategy implements SectionAddStrategy {
+    @Override
+    public boolean meetCondition(Sections sections, Section newSection) {
+        List<Section> matchedSections = getMatchedSections(sections, newSection);
+
+        if (matchedSections.isEmpty()) {
+            return false;
+        }
+
+        int sectionDistance = matchedSections.get(0).getDistance();
+        int newSectionDistance = newSection.getDistance();
+        return sectionDistance > newSectionDistance;
+    }
+
+    @Override
+    public ChangeableSections findChangeableSections(Sections sections, Section newSection) {
+        List<Section> matchedSections = getMatchedSections(sections, newSection);
+
+        Section deprecatedSection = matchedSections.get(0);
+        int sectionDistance = matchedSections.get(0).getDistance();
+        int newSectionDistance = newSection.getDistance();
+
+        Section subsequentSection = new Section(sections.getLine(), newSection.getDownStation(), deprecatedSection.getDownStation(), sectionDistance - newSectionDistance);
+
+        return new ChangeableSections(List.of(subsequentSection), List.of(deprecatedSection));
+    }
+
+    private List<Section> getMatchedSections(Sections sections, Section newSection) {
+        return sections.getValue().stream()
+            .filter(section -> section.isSameUpStation(newSection.getUpStation().getId()))
+            .collect(toList());
+    }
+}
