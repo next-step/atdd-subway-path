@@ -1,8 +1,15 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Line {
@@ -13,9 +20,9 @@ public class Line {
     private String color;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    private final List<Section> sections = new ArrayList<>();
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color) {
@@ -23,31 +30,57 @@ public class Line {
         this.color = color;
     }
 
-    public Long getId() {
-        return id;
+    public void addSection(Section section) {
+        sections.add(section);
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void updateLine(String name, String color) {
+        if (name != null) {
+            this.name = name;
+        }
+
+        if (color != null) {
+            this.color = color;
+        }
+    }
+
+    public void deleteLastSection() {
+        sections.remove(sections.size() - 1);
+    }
+
+    public boolean isDownMostStation(Station station) {
+        return sections.get(sections.size() - 1).getDownStation().equals(station);
+    }
+
+    public boolean canAddSection(Long upStationId, Long downStationId, int distance) {
+        return upStationId != null && downStationId != null && distance != 0;
+    }
+
+    public boolean isEmptySections() {
+        return sections.isEmpty();
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
     }
 
-    public void setColor(String color) {
-        this.color = color;
-    }
+    public List<Station> getStations() {
+        List<Station> stations = sections.stream()
+            .map(Section::getDownStation)
+            .collect(Collectors.toList());
 
-    public List<Section> getSections() {
-        return sections;
+        if (!stations.isEmpty()) {
+            stations.add(0, sections.get(0).getUpStation());
+        }
+        
+        return stations;
     }
 }

@@ -12,10 +12,19 @@ public class Station {
     private Long id;
     private String name;
 
-    public Station() {
+    public static Station createFixture(Long id, String name) {
+        return new Station(id, name);
+    }
+
+    protected Station() {
     }
 
     public Station(String name) {
+        this(null, name);
+    }
+
+    private Station(Long id, String name) {
+        this.id = id;
         this.name = name;
     }
 
