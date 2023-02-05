@@ -5,9 +5,12 @@ import static java.util.stream.Collectors.*;
 import java.util.List;
 
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.exception.CannotAddSectionException;
 import nextstep.subway.domain.sections.Sections;
 
 public class MiddleSectionAddStrategy implements SectionAddStrategy {
+    private static final String LONGER_DISTANCE_EXCEPTION_MESSAGE = "새로운 구간의 길이는 본 구간의 길이보다 짧아야 합니다.";
+
     @Override
     public boolean meetCondition(Sections sections, Section newSection) {
         List<Section> matchedSections = getMatchedSections(sections, newSection);
@@ -18,7 +21,12 @@ public class MiddleSectionAddStrategy implements SectionAddStrategy {
 
         int sectionDistance = matchedSections.get(0).getDistance();
         int newSectionDistance = newSection.getDistance();
-        return sectionDistance > newSectionDistance;
+
+        if (sectionDistance <= newSectionDistance) {
+            throw new CannotAddSectionException(LONGER_DISTANCE_EXCEPTION_MESSAGE);
+        }
+
+        return true;
     }
 
     @Override

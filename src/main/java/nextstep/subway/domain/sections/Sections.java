@@ -20,14 +20,16 @@ import nextstep.subway.domain.sections.strategy.SectionAddStrategies;
 
 @Embeddable
 public class Sections {
+    private static final String BOTH_STATIONS_REGISTERED_EXCEPTION_MESSAGE = "상/하행역이 이미 노선에 모두 등록되어 있습니다.";
+    private static final String NONE_OF_STATIONS_EXIST_IN_LINE_EXCEPTION_MESSAGE = "상/하행역 모두 노선에 존재하지 않습니다.";
+
+    private static final SectionAddStrategies sectionAddStrategies = new SectionAddStrategies();
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
     @Transient
     Line line;
-
-    @Transient
-    private static final SectionAddStrategies sectionAddStrategies = new SectionAddStrategies();
 
     protected Sections() {
 
@@ -67,11 +69,11 @@ public class Sections {
 
     private void validateAddSection(Section section) {
         if (hasStation(section.getUpStation()) && hasStation(section.getDownStation())) {
-            throw new CannotAddSectionException("상/하행역이 이미 노선에 모두 등록되어 있습니다.");
+            throw new CannotAddSectionException(BOTH_STATIONS_REGISTERED_EXCEPTION_MESSAGE);
         }
 
         if (!hasStation(section.getUpStation()) && !hasStation(section.getDownStation())) {
-            throw new CannotAddSectionException("상/하행역 모두 노선에 존재하지 않습니다.");
+            throw new CannotAddSectionException(NONE_OF_STATIONS_EXIST_IN_LINE_EXCEPTION_MESSAGE);
         }
     }
 
