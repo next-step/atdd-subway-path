@@ -23,6 +23,21 @@ class LineTest {
     }
 
     @Test
+    void createLine() {
+        Line line = new Line(LINE_NAME, LINE_COLOR);
+
+        assertThat(this.line).isEqualTo(line);
+    }
+
+    @Test
+    void updateLine() {
+        line.updateLine("새로운 노선", "새로운 색깔");
+
+        assertThat(line.getName()).isEqualTo("새로운 노선");
+        assertThat(line.getColor()).isEqualTo("새로운 색깔");
+    }
+
+    @Test
     void addSection() {
         line.addSection(new Section(line, Fixtures.판교역, Fixtures.정자역, 10));
         line.addSection(new Section(line, Fixtures.정자역, Fixtures.미금역, 10));
@@ -45,7 +60,7 @@ class LineTest {
         line.addSection(new Section(line, Fixtures.판교역, Fixtures.정자역, 10));
         line.addSection(new Section(line, Fixtures.정자역, Fixtures.미금역, 10));
 
-        line.deleteLastSection();
+        line.deleteSection(Fixtures.미금역.getId());
         List<Station> stations = line.getStations();
 
         assertThat(stations).hasSize(2);
