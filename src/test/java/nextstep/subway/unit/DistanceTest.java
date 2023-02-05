@@ -17,9 +17,9 @@ class DistanceTest {
     @DisplayName("기존 구간 거리에서 입력 받은 거리를 뺀 나머지를 구한다.")
     @Test
     void minusDistance() {
-        final Distance source = new Distance(10);
-        source.minus(4);
-        assertThat(source).isEqualTo(new Distance(6));
+        final Distance distance = new Distance(10);
+        distance.minus(4);
+        assertThat(distance).isEqualTo(new Distance(6));
     }
 
     @DisplayName("기존 구간 거리에서 입력 받은 거리가 크거나 같으면 익셉션 발생한다.")
@@ -27,7 +27,7 @@ class DistanceTest {
     @CsvSource(value = {"10,10", "10,11"})
     void validateDistance(final Integer source, final Integer target) {
         final Distance distance = new Distance(source);
-        assertThatThrownBy(() -> distance.validateGreaterThan(target))
+        assertThatThrownBy(() -> distance.minus(target))
                 .isInstanceOf(DistanceGreaterThanException.class)
                 .hasMessage(NO_REGISTER_DISTANCE_GREATER_THAN.getMessage());
     }
