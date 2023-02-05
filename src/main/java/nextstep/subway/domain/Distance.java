@@ -36,10 +36,6 @@ public class Distance {
         return distance;
     }
 
-    private void setDistance(Integer distance) {
-        this.distance = distance;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
