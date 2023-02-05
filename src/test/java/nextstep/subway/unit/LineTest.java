@@ -81,8 +81,4 @@ class LineTest {
                 .distinct()
                 .collect(Collectors.toList());
     }
-
-    private Distance 거리(final Integer distance) {
-        return new Distance(distance);
-    }
 }
