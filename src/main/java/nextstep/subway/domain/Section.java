@@ -26,16 +26,12 @@ public class Section {
 
     protected Section() {}
 
-    Section(final Long id, final Line line, final Station upStation, final Station downStation, final Distance distance) {
+    private Section(final Long id, final Line line, final Station upStation, final Station downStation, final Distance distance) {
         this.id = id;
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-    }
-
-    public Section(final Long id, final Station upStation, final Station downStation, final Integer distance) {
-        this(id, null, upStation, downStation, new Distance(distance));
     }
 
     public Section(final Station upStation, final Station downStation, final Integer distance) {
