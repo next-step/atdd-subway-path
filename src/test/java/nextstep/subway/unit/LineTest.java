@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import nextstep.subway.common.LineFixtures;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
 
 class LineTest {
 	@Test
@@ -27,7 +28,16 @@ class LineTest {
 	}
 
 	@Test
-	void getStations() {
+	void getStations() throws Exception {
+		// given
+		Line line = LineFixtures.LINE_4;
+		line.addSection(withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), 10);
+
+		// when
+		List<Station> stations = line.getStations();
+
+		// then
+		assertThat(stations).containsExactly(withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID));
 	}
 
 	@Test
