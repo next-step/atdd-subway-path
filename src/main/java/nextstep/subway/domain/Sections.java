@@ -43,6 +43,10 @@ public class Sections {
         return stations;
     }
 
+    public List<Section> getValue() {
+        return sections;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import nextstep.subway.domain.Line;
@@ -23,6 +24,7 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("노선을 생성한다.")
     void createLine() {
         Line line = new Line(LINE_NAME, LINE_COLOR);
 
@@ -30,6 +32,7 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("노선을 업데이트한다.")
     void updateLine() {
         line.updateLine("새로운 노선", "새로운 색깔");
 
@@ -38,6 +41,7 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("노선에 구간을 추가한다.")
     void addSection() {
         line.addSection(new Section(line, Fixtures.판교역, Fixtures.정자역, 10));
         line.addSection(new Section(line, Fixtures.정자역, Fixtures.미금역, 10));
@@ -49,6 +53,7 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("노선에 속한 역을 가져온다.")
     void getStations() {
         List<Station> stations = line.getStations();
 
@@ -56,6 +61,7 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("노선에서 구간을 제거한다gi")
     void removeSection() {
         line.addSection(new Section(line, Fixtures.판교역, Fixtures.정자역, 10));
         line.addSection(new Section(line, Fixtures.정자역, Fixtures.미금역, 10));
