@@ -73,10 +73,6 @@ public class Section {
         return this.downStation.equals(station);
     }
 
-    void validateDistanceGreaterThan(final Integer distance) {
-        this.distance.validateGreaterThan(distance);
-    }
-
     public Station getUpStation() {
         return upStation;
     }

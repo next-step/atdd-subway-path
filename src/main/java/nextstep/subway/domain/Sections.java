@@ -93,7 +93,6 @@ public class Sections {
     }
 
     private void addMiddleSection(final Line line, final Station downStation, final Integer distance, final Section section) {
-        validateGreaterDistance(section, distance);
         final Section addSection = new Section(line, downStation, section.getDownStation(), distance);
         section.changeSectionOfMiddleStation(downStation, distance);
         this.sections.add(addSection);
@@ -130,10 +129,6 @@ public class Sections {
         if (!resultOfUpStation && !resultOfDownStation) {
             throw new NoExistStationException(NO_REGISTER_NO_EXIST_STATION.getMessage());
         }
-    }
-
-    private void validateGreaterDistance(final Section findSection, final Integer distance) {
-        findSection.validateDistanceGreaterThan(distance);
     }
 
     private void validateOnlyOneSection() {

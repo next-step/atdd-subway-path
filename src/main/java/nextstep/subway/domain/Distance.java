@@ -19,6 +19,7 @@ public class Distance {
     }
 
     public void minus(final Integer distance) {
+        validateGreaterThan(distance);
         this.distance = this.distance - distance;
     }
 
@@ -26,7 +27,7 @@ public class Distance {
         this.distance = distance;
     }
 
-    public void validateGreaterThan(final Integer distance) {
+    private void validateGreaterThan(final Integer distance) {
         if (this.distance <= distance) {
             throw new DistanceGreaterThanException(NO_REGISTER_DISTANCE_GREATER_THAN.getMessage());
         }
