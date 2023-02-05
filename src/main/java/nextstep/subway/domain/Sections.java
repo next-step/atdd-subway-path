@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.common.error.SubwayError;
 import nextstep.subway.common.exception.*;
 import org.springframework.util.CollectionUtils;
 
@@ -50,17 +51,29 @@ public class Sections {
         return this.sections.get(index);
     }
 
-    public boolean isEmpty() {
-        return CollectionUtils.isEmpty(this.sections);
-    }
-
-    public void remove(final int index) {
+    public void remove(final Station downStation) {
+        validateSections();
+        final int index = this.sections.size() - 1;
+        validateMatchStation(downStation, index);
         this.sections.remove(index);
     }
 
     public void addLine(final Line line) {
         for (Section section : this.sections) {
             section.addLine(line);
+        }
+    }
+
+    private void validateMatchStation(final Station downStation, final int index) {
+        final Section section = findByIndex(index);
+        if (!section.getDownStation().equals(downStation)) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private void validateSections() {
+        if (this.sections.isEmpty()) {
+            throw new IllegalArgumentException();
         }
     }
 
@@ -103,7 +116,7 @@ public class Sections {
         validateAnyMatchStation(stations, upStation, downStation);
     }
 
-    private List<Station> convertToStations() {
+    public List<Station> convertToStations() {
         if (CollectionUtils.isEmpty(this.sections)) {
             return Collections.emptyList();
         }
@@ -119,7 +132,7 @@ public class Sections {
 
     private void validateMatchStation(final List<Station> stations, final Station upStation, final Station downStation) {
         if (stations.contains(upStation) && stations.contains(downStation)) {
-            throw new AlreadyExistException(NO_REGISTER_EXIST_STATION.getMessage());
+            throw new AlreadyExistException(NO_REGISTER_EXIST_STATION);
         }
     }
 
@@ -127,23 +140,23 @@ public class Sections {
         final boolean resultOfUpStation = stations.contains(upStation);
         final boolean resultOfDownStation = stations.contains(downStation);
         if (!resultOfUpStation && !resultOfDownStation) {
-            throw new NoExistStationException(NO_REGISTER_NO_EXIST_STATION.getMessage());
+            throw new NoExistStationException(NO_REGISTER_NO_EXIST_STATION);
         }
     }
 
     private void validateOnlyOneSection() {
         if (this.sections.size() == ONE_SECTION) {
-            throw new NoDeleteOneSectionException(NO_DELETE_ONE_SECTION.getMessage());
+            throw new NoDeleteOneSectionException(NO_DELETE_ONE_SECTION);
         }
     }
 
     private void validateMatchLastStation(final Section findSection, final Station upStation) {
-        validateMatchStation(findSection, upStation, NO_REGISTER_LAST_LINE_STATION.getMessage());
+        validateMatchStation(findSection, upStation, NO_REGISTER_LAST_LINE_STATION);
     }
 
-    private void validateMatchStation(final Section findSection, final Station upStation, final String message) {
+    private void validateMatchStation(final Section findSection, final Station upStation, final SubwayError subwayError) {
         if (canNotMatchDownStation(findSection, upStation)) {
-            throw new NoRegisterStationException(message);
+            throw new NoRegisterStationException(subwayError);
         }
     }
 
@@ -153,7 +166,7 @@ public class Sections {
 
     private Section findLastSection() {
         if (CollectionUtils.isEmpty(this.sections)) {
-            throw new NoLastSectionException(NO_LAST_SECTION.getMessage());
+            throw new NoLastSectionException(NO_LAST_SECTION);
         }
         return this.sections.get(this.sections.size() -1);
     }
