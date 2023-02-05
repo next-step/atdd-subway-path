@@ -12,7 +12,21 @@ public class LineRequest {
     private String color;
     private Long upStationId;
     private Long downStationId;
-    private int distance;
+    private Integer distance;
+
+    private LineRequest() {}
+
+    private LineRequest(final String name, final String color, final Long upStationId, final Long downStationId, final Integer distance) {
+        this.name = name;
+        this.color = color;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
+    }
+
+    public static LineRequest from(final String name, final String color) {
+        return new LineRequest(name, color, null, null, null);
+    }
 
     public Line toEntity() {
         return new Line(this.name, this.color);

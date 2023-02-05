@@ -81,7 +81,7 @@ public class LineService {
         line.removeSection(station);
     }
 
-    private Line findLine(final Long id) {
+    public Line findLine(final Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NoExistLineException(NO_FIND_LINE.getMessage()));
     }
