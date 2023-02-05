@@ -13,6 +13,7 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,10 +37,11 @@ class LineServiceMockTest {
     void showLines() {
         final Station 상행종점_강남역 = new Station(1L, "강남역");
         final Station 하행종점_잠실역 = new Station(2L, "잠실역");
-        final Line 이호선 = new Line(1L, "2호선", "bg-red-600", 상행종점_강남역, 하행종점_잠실역, 10);
+        final Line 이호선 = 노선_생성(1L, "2호선", "bg-red-600", 상행종점_강남역, 하행종점_잠실역, 10);
+
         final Station 상행종점_양재역 = new Station(3L, "양재역");
         final Station 하행종점_몽총토성역 = new Station(4L, "몽촌토성역");
-        final Line 신분당선 = new Line(2L, "신분당선", "bg-red-600", 상행종점_양재역, 하행종점_몽총토성역, 10);
+        final Line 신분당선 = 노선_생성(2L, "신분당선", "bg-red-600", 상행종점_양재역, 하행종점_몽총토성역, 10);
 
         when(lineRepository.findAll()).thenReturn(List.of(이호선, 신분당선));
 
@@ -54,7 +56,7 @@ class LineServiceMockTest {
         final Long 조회_노선 = 1L;
         final Station 상행종점_강남역 = new Station(1L, "강남역");
         final Station 하행종점_잠실역 = new Station(2L, "잠실역");
-        final Line 이호선 = new Line(1L, "2호선", "bg-red-600", 상행종점_강남역, 하행종점_잠실역, 10);
+        final Line 이호선 = 노선_생성(1L, "2호선", "bg-red-600", 상행종점_강남역, 하행종점_잠실역, 10);
 
         when(lineRepository.findById(1L)).thenReturn(Optional.of(이호선));
 
@@ -75,7 +77,7 @@ class LineServiceMockTest {
         final LineRequest 요청_수정_노선 = LineRequest.from("2호선", "bg-red-600");
         final Station 상행종점_강남역 = new Station(1L, "강남역");
         final Station 하행종점_잠실역 = new Station(2L, "잠실역");
-        final Line 이호선 = new Line(1L, "2호선", "bg-red-600", 상행종점_강남역, 하행종점_잠실역, 10);
+        final Line 이호선 = 노선_생성(1L, "2호선", "bg-red-600", 상행종점_강남역, 하행종점_잠실역, 10);
 
         when(lineRepository.findById(1L)).thenReturn(Optional.of(이호선));
 
@@ -97,5 +99,11 @@ class LineServiceMockTest {
 
         final InOrder inOrder = inOrder(lineRepository);
         inOrder.verify(lineRepository, times(1)).deleteById(anyLong());
+    }
+
+    private Line 노선_생성(final Long id, final String name, final String color, final Station upStation, Station downStation, final Integer distance) {
+        final Line 노선 = new Line(name, color, upStation, downStation, distance);
+        ReflectionTestUtils.setField(노선, "id", id);
+        return 노선;
     }
 }

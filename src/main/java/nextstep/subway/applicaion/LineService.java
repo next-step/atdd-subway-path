@@ -83,7 +83,7 @@ public class LineService {
 
     public Line findLine(final Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new NoExistLineException(NO_FIND_LINE.getMessage()));
+                .orElseThrow(() -> new NoExistLineException(NO_FIND_LINE));
     }
 
     private Line save(final Line line) {

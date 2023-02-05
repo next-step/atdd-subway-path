@@ -3,11 +3,10 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,16 +26,16 @@ class LineTest {
     @Test
     void createLine() {
         final Section 첫번째_구간 = new Section(강남역, 양재역, 10);
-        final Line 노선_신분당선 = new Line(1L, 신분당선, 빨간색, new Sections(List.of(첫번째_구간)));
+        final Line 노선_신분당선 = 노선_생성(1L, 신분당선, 빨간색, List.of(첫번째_구간));
 
-        assertThat(노선_신분당선).isEqualTo(new Line(1L, 신분당선, 빨간색, new Sections(List.of(첫번째_구간))));
+        assertThat(노선_신분당선).isEqualTo(노선_생성(1L, 신분당선, 빨간색, List.of(첫번째_구간)));
     }
 
     @DisplayName("노선 정보를 수정한다.")
     @Test
     void updateLine() {
         final Section 첫번째_구간 = new Section(강남역, 양재역, 10);
-        final Line 노선_신분당선 = new Line(1L, 신분당선, 빨간색, new Sections(List.of(첫번째_구간)));
+        final Line 노선_신분당선 = 노선_생성(1L, 신분당선, 빨간색, List.of(첫번째_구간));
         노선_신분당선.updateLine(이호선, 녹색);
 
         assertAll(
@@ -49,36 +48,46 @@ class LineTest {
     @DisplayName("노선의 구간을 추가한다.")
     @Test
     void addSection() {
-        final Section 첫번째_구간 = new Section(1L, 강남역, 양재역, 10);
-        final Line 노선_신분당선 = new Line(1L, 신분당선, 빨간색, new Sections(Arrays.asList(첫번째_구간)));
+        final Section 첫번째_구간 = 구간_생성(1L, 강남역, 양재역, 10);
+        final Line 노선_신분당선 = 노선_생성(1L, 신분당선, 빨간색, Arrays.asList(첫번째_구간));
         노선_신분당선.addSection(양재역, 몽촌토성역, 10);
 
-        final List<Station> 노선_구간_목록 = convertToStation(노선_신분당선.getSectionsList());
+        final List<Station> stations = 노선_신분당선.convertToStation();
         assertAll(
-                () -> assertThat(노선_구간_목록).hasSize(3),
-                () -> assertThat(노선_구간_목록).contains(강남역, 양재역, 몽촌토성역)
+                () -> assertThat(stations).hasSize(3),
+                () -> assertThat(stations).contains(강남역, 양재역, 몽촌토성역)
         );
     }
 
     @DisplayName("노선 구간을 삭제한다.")
     @Test
     void removeSection() {
-        final Section 첫번째_구간 = new Section(1L, 강남역, 양재역, 10);
-        final Section 두번째_구간 = new Section(2L, 양재역, 몽촌토성역, 10);
-        final Line 이호선 = new Line(1L, "2호선", "bg-red-600", new Sections(List.of(첫번째_구간, 두번째_구간)));
+        final Section 첫번째_구간 = 구간_생성(1L, 강남역, 양재역, 10);
+        final Section 두번째_구간 = 구간_생성(2L, 양재역, 몽촌토성역, 10);
+        final Line 이호선 = 노선_생성(1L, "2호선", "bg-red-600", List.of(첫번째_구간, 두번째_구간));
 
         이호선.removeSection(몽촌토성역);
 
+        final List<Station> stations = 이호선.convertToStation();
         assertAll(
-                () -> assertThat(이호선.getSectionsList()).hasSize(1),
-                () -> assertThat(이호선.getSectionsList().get(0)).isEqualTo(첫번째_구간)
+                () -> assertThat(stations).hasSize(2),
+                () -> assertThat(stations).containsExactly(강남역, 양재역)
         );
     }
 
-    private List<Station> convertToStation(final List<Section> sections) {
-        return sections.stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                .distinct()
-                .collect(Collectors.toList());
+    private Line 노선_생성(final Long id, final String name, final String color, final List<Section> sections) {
+        final Line 노선 = new Line(name, color, new Sections(sections));
+        reflectionById(id, 노선);
+        return 노선;
+    }
+
+    private Section 구간_생성(final Long id, final Station upStation, final Station downStation, final Integer distance) {
+        final Section 구간 = new Section(upStation, downStation, distance);
+        reflectionById(id, 구간);
+        return 구간;
+    }
+
+    private void reflectionById(final Long id, final Object object) {
+        ReflectionTestUtils.setField(object, "id", id);
     }
 }

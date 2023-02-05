@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -28,18 +30,17 @@ class LineSectionServiceTest {
     @Test
     void addSection() {
 
-        final Station saveUpStation = createStation("강남역");
-        final Station saveDownStation = createStation("잠실역");
+        final Station 강남역 = createStation("강남역");
+        final Station 잠실역 = createStation("잠실역");
         final Line saveLine = createLine("2호선", "green");
 
-        final SectionRequest sectionRequest = new SectionRequest(saveUpStation.getId(), saveDownStation.getId(), 10);
+        final SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 잠실역.getId(), 10);
         lineService.addSection(saveLine.getId(), sectionRequest);
 
+        final List<Station> stations = saveLine.convertToStation();
         assertAll(
-                () -> assertThat(saveLine.getSectionsList()).hasSize(1),
-                () -> assertThat(saveLine.getSectionsList().get(0).getUpStation().getName()).isEqualTo("강남역"),
-                () -> assertThat(saveLine.getSectionsList().get(0).getDownStation().getName()).isEqualTo("잠실역"),
-                () -> assertThat(saveLine.getSectionsList().get(0).getDistance()).isEqualTo(new Distance(10))
+                () -> assertThat(stations).hasSize(2),
+                () -> assertThat(stations).containsExactly(강남역, 잠실역)
         );
     }
 

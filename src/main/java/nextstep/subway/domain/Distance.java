@@ -29,7 +29,7 @@ public class Distance {
 
     private void validateGreaterThan(final Integer distance) {
         if (this.distance <= distance) {
-            throw new DistanceGreaterThanException(NO_REGISTER_DISTANCE_GREATER_THAN.getMessage());
+            throw new DistanceGreaterThanException(NO_REGISTER_DISTANCE_GREATER_THAN);
         }
     }
 

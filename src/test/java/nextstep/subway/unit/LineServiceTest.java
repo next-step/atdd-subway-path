@@ -49,11 +49,10 @@ class LineServiceTest {
         final SectionRequest sectionRequest = new SectionRequest(상행종점_강남역.getId(), 하행종점_잠실역.getId(), 10);
         lineService.addSection(노선_이호선.getId(), sectionRequest);
 
+        final List<Station> stations = 노선_이호선.convertToStation();
         assertAll(
-                () -> assertThat(노선_이호선.getSectionsList()).hasSize(1),
-                () -> assertThat(노선_이호선.getSectionsList().get(0).getUpStation().getName()).isEqualTo(강남역),
-                () -> assertThat(노선_이호선.getSectionsList().get(0).getDownStation().getName()).isEqualTo(잠실역),
-                () -> assertThat(노선_이호선.getSectionsList().get(0).getDistance()).isEqualTo(new Distance(10))
+                () -> assertThat(stations).hasSize(2),
+                () -> assertThat(stations).containsExactly(상행종점_강남역, 하행종점_잠실역)
         );
     }
 

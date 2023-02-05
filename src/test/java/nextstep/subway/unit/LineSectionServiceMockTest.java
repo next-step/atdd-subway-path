@@ -3,10 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.domain.Distance;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +11,9 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,11 +40,11 @@ class LineSectionServiceMockTest {
         final long 요청_호선 = 1L;
         final SectionRequest 요청_구간 = new SectionRequest(1L, 2L, 10);
         final Line line = new Line("2호선", "green");
-        final Station upStation = new Station("강남역");
-        final Station downStation = new Station("잠실역");
+        final Station 강남역 = 역_생성(1L, "강남역");
+        final Station 잠실역 = 역_생성(2L, "잠실역");
 
-        when(stationService.findById(anyLong())).thenReturn(upStation)
-                .thenReturn(downStation);
+        when(stationService.findById(anyLong())).thenReturn(강남역)
+                .thenReturn(잠실역);
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
 
         lineService.addSection(요청_호선, 요청_구간);
@@ -54,11 +53,16 @@ class LineSectionServiceMockTest {
         inOrder.verify(stationService, times(2)).findById(anyLong());
         inOrder.verify(lineRepository, times(1)).findById(anyLong());
 
+        final List<Station> stations = line.convertToStation();
         assertAll(
-                () -> assertThat(line.getSectionsList()).hasSize(1),
-                () -> assertThat(line.getSectionsList().get(0).getUpStation().getName()).isEqualTo("강남역"),
-                () -> assertThat(line.getSectionsList().get(0).getDownStation().getName()).isEqualTo("잠실역"),
-                () -> assertThat(line.getSectionsList().get(0).getDistance()).isEqualTo(new Distance(10))
+                () -> assertThat(stations).hasSize(2),
+                () -> assertThat(stations).containsExactly(강남역, 잠실역)
         );
+    }
+
+    private Station 역_생성(final Long id, final String name) {
+        final Station 역 = new Station(name);
+        ReflectionTestUtils.setField(역, "id", id);
+        return 역;
     }
 }
