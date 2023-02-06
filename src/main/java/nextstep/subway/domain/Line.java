@@ -1,8 +1,18 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
+import nextstep.subway.exception.EmptySectionException;
+import nextstep.subway.exception.CannotDeleteSectionException;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.Collection;
 
 @Entity
 public class Line {
@@ -49,5 +59,42 @@ public class Line {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public List<Station> getAllStations() {
+        return sections.stream()
+                .map(section -> List.of(section.getUpStation(), section.getDownStation()))
+                .flatMap(Collection::stream)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public Station getDownStation() {
+        Section lastSection = getLastSection();
+        return lastSection.getDownStation();
+    }
+
+    private Section getLastSection() {
+        int size = sections.size();
+        if (size < 1) {
+            throw new EmptySectionException("Line has no section.");
+        }
+        return sections.get(size - 1);
+    }
+
+    public static final int MIN_SECTION_SIZE_OF_LINE = 1;
+
+    public void removeSection(Station deleteStation) {
+        if (sections.size() == MIN_SECTION_SIZE_OF_LINE) {
+            throw new CannotDeleteSectionException("Line has only 1 section");
+        }
+        if (!getLastSection().isDownStation(deleteStation)) {
+            throw new CannotDeleteSectionException("Station that trying to delete is not downStation of this line.");
+        }
+        sections.remove(getLastSection());
     }
 }
