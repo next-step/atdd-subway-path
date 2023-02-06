@@ -15,6 +15,17 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void addSection(Section section){
+        if (sections.isEmpty()) {
+            sections.add(section);
+            return;
+        }
+        if (!equalsLastStation(section.getUpStation())) {
+            throw new IllegalArgumentException("구간을 추가할 수 없습니다.");
+        }
+        if (contains(section.getDownStation())) {
+            throw new IllegalArgumentException("하행역이 이미 노선에 포함되어 있습니다.");
+        }
+
         this.sections.add(section);
     }
 
@@ -27,19 +38,21 @@ public class Sections {
             return Collections.emptyList();
         }
 
-        List<Station> stations = sections.stream().map(Section::getDownStation)
-                .collect(Collectors.toList());
+        List<Station> stations = new ArrayList<>();
         stations.add(sections.get(0).getUpStation());
+        stations.addAll(sections.stream().map(Section::getDownStation)
+                .collect(Collectors.toList()));
+
 
         return Collections.unmodifiableList(stations);
     }
 
-    public boolean equalsLastStation(Station station) {
+    protected boolean equalsLastStation(Station station) {
         return sections.get(sections.size()-1).equalDownStation(station);
     }
 
-    public void removeLast() {
-        sections.remove(sections.size()-1);
+    public void remove(Station station) {
+        sections.remove(getStations().indexOf(station)-1);
     }
 
     public int size(){

@@ -37,6 +37,7 @@ public class StationService {
     }
 
     public StationResponse createStationResponse(Station station) {
+        System.out.println("station.getName() = " + station.getName());
         return new StationResponse(
                 station.getId(),
                 station.getName()

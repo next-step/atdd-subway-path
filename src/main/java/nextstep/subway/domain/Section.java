@@ -26,12 +26,13 @@ public class Section {
 
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
-        this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+    public Section(SectionBuilder builder) {
+        this.line = builder.line;
+        this.upStation = builder.upStation;
+        this.downStation = builder.downStation;
+        this.distance = builder.distance;
     }
+
 
     public Long getId() {
         return id;
@@ -53,12 +54,44 @@ public class Section {
         return distance;
     }
 
-    public boolean equalUpStation(Station station){
+    public boolean equalUpStation(Station station) {
         return this.upStation.equals(station);
     }
 
-    public boolean equalDownStation(Station station){
+    public boolean equalDownStation(Station station) {
         return this.downStation.equals(station);
     }
+
+    public static class SectionBuilder {
+        private Line line;
+        private Station upStation;
+        private Station downStation;
+        private int distance;
+
+        public SectionBuilder(Line line) {
+            this.line = line;
+        }
+
+        public SectionBuilder setUpStation(Station station) {
+            this.upStation = station;
+            return this;
+        }
+
+        public SectionBuilder setDownStation(Station station) {
+            this.downStation = station;
+            return this;
+        }
+
+        public SectionBuilder setDistance(int distance) {
+            this.distance = distance;
+            return this;
+        }
+
+        public Section build() {
+            return new Section(this);
+        }
+
+    }
+
 
 }

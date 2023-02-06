@@ -50,8 +50,8 @@ public class LineServiceTest {
         // line.getSections 메서드를 통해 검증
         assertAll(
                 () -> assertThat(사호선.getSections().isEmpty()).isFalse(),
-                () -> assertThat(사호선.getSections().contains(서울역)).isTrue(),
-                () -> assertThat(사호선.getSections().equalsLastStation(숙대입구역)).isTrue()
+                () -> assertThat(사호선.getAllStations()).contains(서울역),
+                () -> assertThat(사호선.getAllStations()).contains(숙대입구역)
         );
     }
 
@@ -76,8 +76,9 @@ public class LineServiceTest {
         // line.getSections 메서드를 통해 검증
         assertAll(
                 () -> assertThat(사호선.getSections().isEmpty()).isFalse(),
-                () -> assertThat(사호선.getSections().contains(서울역)).isTrue(),
-                () -> assertThat(사호선.getSections().equalsLastStation(숙대입구역)).isTrue()
+                () -> assertThat(사호선.getAllStations()).contains(서울역),
+                () -> assertThat(사호선.getAllStations()).contains(숙대입구역),
+                () -> assertThat(사호선.getAllStations()).doesNotContain(삼각지역)
         );
     }
 

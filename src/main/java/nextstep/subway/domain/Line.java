@@ -50,17 +50,7 @@ public class Line {
         return sections;
     }
 
-    public void addSections(Section section) {
-        if(sections.isEmpty()){
-            sections.addSection(section); return;
-        }
-        if(!sections.equalsLastStation(section.getUpStation())){
-            throw new IllegalArgumentException("구간을 추가할 수 없습니다.");
-        }
-        if(sections.contains(section.getDownStation())){
-            throw new IllegalArgumentException("하행역이 이미 노선에 포함되어 있습니다.");
-        }
-
+    public void addSection(Section section) {
         sections.addSection(section);
 
     }
@@ -73,11 +63,15 @@ public class Line {
         return sections.getStations();
     }
 
-    public boolean equalsLastStation(Station station) {
+    public boolean equalLastStations(Station station){
         return sections.equalsLastStation(station);
     }
 
-    public void removeLastSection() {
-        sections.removeLast();
+    public void removeLastSection(Station station) {
+
+        if (!sections.equalsLastStation(station)) {
+            throw new IllegalArgumentException();
+        }
+        sections.remove(station);
     }
 }
