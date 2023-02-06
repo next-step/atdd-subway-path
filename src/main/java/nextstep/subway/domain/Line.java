@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.exception.EmptySectionException;
 import nextstep.subway.exception.CannotDeleteSectionException;
 
@@ -11,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.Collection;
 
@@ -76,7 +78,26 @@ public class Line {
     }
 
     public void addSection(Section section) {
+        validateSection(section);
         sections.add(section);
+    }
+
+    private void validateSection(Section section) {
+        if (Objects.equals(section.getUpStation(), section.getDownStation())) {
+            throw new BadRequestException("UpStation and DownStation are same.");
+        }
+
+        if (sections.isEmpty()) {
+            sections.add(section);
+        }
+
+        if (sections.stream().anyMatch(it -> it.isDownStation(section.getDownStation()))) {
+            throw new BadRequestException("DownStation is already registered in section.");
+        }
+
+        if (!Objects.equals(getDownStation(), section.getUpStation())) {
+            throw new BadRequestException("UpStation must be downStation of this line.");
+        }
     }
 
     public Station getDownStation() {
