@@ -17,15 +17,9 @@ public class SectionRequest {
         return distance;
     }
 
-    public void setUpStationId(Long upStationId) {
+    public SectionRequest(Long upStationId, Long downStationId, int distance) {
         this.upStationId = upStationId;
-    }
-
-    public void setDownStationId(Long downStationId) {
         this.downStationId = downStationId;
-    }
-
-    public void setDistance(int distance) {
         this.distance = distance;
     }
 }

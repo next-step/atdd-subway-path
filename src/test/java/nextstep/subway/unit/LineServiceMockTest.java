@@ -85,10 +85,7 @@ class LineServiceMockTest {
     }
 
     private static void addSection(LineService lineService, Long lineId, Long upStationId, Long downStationId) {
-        SectionRequest sectionRequest = new SectionRequest();
-        sectionRequest.setUpStationId(upStationId);
-        sectionRequest.setDownStationId(downStationId);
-        sectionRequest.setDistance(10);
+        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, 10);
         lineService.addSection(lineId, sectionRequest);
     }
 }

@@ -83,11 +83,7 @@ public class LineServiceTest {
     }
 
     private void addSection(Line 사호선, Station 서울역, Station 숙대입구역) {
-        SectionRequest sectionRequest = new SectionRequest();
-        sectionRequest.setUpStationId(서울역.getId());
-        sectionRequest.setDownStationId(숙대입구역.getId());
-        sectionRequest.setDistance(10);
-
+        SectionRequest sectionRequest = new SectionRequest(서울역.getId(), 숙대입구역.getId(), 10);
         lineService.addSection(사호선.getId(), sectionRequest);
     }
 }
