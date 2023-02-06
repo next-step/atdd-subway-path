@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,13 +39,9 @@ public class Sections {
             return Collections.emptyList();
         }
 
-        List<Station> stations = new ArrayList<>();
-        stations.add(sections.get(0).getUpStation());
-        stations.addAll(sections.stream().map(Section::getDownStation)
-                .collect(Collectors.toList()));
-
-
-        return Collections.unmodifiableList(stations);
+        return sections.stream().map(Section::getStations)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     protected boolean equalsLastStation(Station station) {
