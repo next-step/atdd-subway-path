@@ -45,7 +45,7 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        return createLineResponse(lineRepository.findById(id).orElseThrow(() -> new LineNotFoundException(id)));
     }
 
     @Transactional
@@ -87,11 +87,7 @@ public class LineService {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, line.getSections().get(0).getUpStation());
+        List<Station> stations = line.getAllStations();
 
         return stations.stream()
                 .map(it -> stationService.createStationResponse(it))

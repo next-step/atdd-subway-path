@@ -101,7 +101,7 @@ class LineTest {
         assertThrows(
                 BadRequestException.class,
                 () -> 이호선.addSection(new Section(이호선, 강남역, 교대역, 5)),
-                "UpStation and DownStation are already registered in the line."
+                "Both stations are already registered."
         );
     }
 
