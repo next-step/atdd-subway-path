@@ -130,6 +130,23 @@ public class Sections {
         return stations;
     }
 
+    public List<Station> findAllStationsOrderBu() {
+        if (CollectionUtils.isEmpty(this.sections)) {
+            return Collections.emptyList();
+        }
+        return getStations();
+    }
+
+    private List<Station> getStations() {
+        final List<Station> stations = new ArrayList<>();
+        final List<Section> sections = getSections();
+        final Section firstSection = sections.get(0);
+        stations.add(firstSection.getUpStation());
+        Station downStation = firstSection.getDownStation();
+        addStations(stations, sections, downStation);
+        return stations;
+    }
+
     private void validateMatchStation(final List<Station> stations, final Station upStation, final Station downStation) {
         if (stations.contains(upStation) && stations.contains(downStation)) {
             throw new AlreadyExistException(NO_REGISTER_EXIST_STATION);
@@ -171,7 +188,18 @@ public class Sections {
         return this.sections.get(this.sections.size() -1);
     }
 
+    private void addStations(final List<Station> stations, final List<Section> sections, Station downStation) {
+        for(int index = 0; index < sections.size(); index++) {
+            if (sections.get(index).matchUpStation(downStation)) {
+                stations.add(sections.get(index).getUpStation());
+                downStation = sections.get(index).getDownStation();
+                index = 0;
+            }
+        }
+        stations.add(downStation);
+    }
+
     public List<Section> getSections() {
-        return sections;
+        return List.copyOf(sections);
     }
 }

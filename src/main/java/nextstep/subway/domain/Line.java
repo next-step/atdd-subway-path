@@ -50,7 +50,7 @@ public class Line {
     }
 
     public List<Station> convertToStation() {
-        return this.sections.convertToStations();
+        return this.sections.findAllStationsOrderBu();
     }
 
     public Long getId() {
