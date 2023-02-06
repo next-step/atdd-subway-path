@@ -24,6 +24,12 @@ public class Line {
         this.color = color;
     }
 
+    public Line(final Long id, final String name, final String color) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+    }
+
     public Long getId() {
         return id;
     }
@@ -50,6 +56,10 @@ public class Line {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void setSections(final List<Section> sections) {
+        this.sections = sections;
     }
 
     @Override
