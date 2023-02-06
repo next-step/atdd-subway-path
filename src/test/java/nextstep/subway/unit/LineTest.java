@@ -61,7 +61,7 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("노선에서 구간을 제거한다gi")
+    @DisplayName("노선에서 구간을 제거한다")
     void removeSection() {
         line.addSection(new Section(line, Fixtures.판교역, Fixtures.정자역, 10));
         line.addSection(new Section(line, Fixtures.정자역, Fixtures.미금역, 10));
