@@ -20,7 +20,7 @@ public class Line {
     private String color;
 
     @Embedded
-    private final Sections sections = new Sections(this);
+    private Sections sections;
 
     protected Line() {
     }
@@ -28,10 +28,11 @@ public class Line {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+        this.sections = new Sections(this);
     }
 
     public void addSection(Section section) {
-        sections.addSection(section);
+        sections.addSection(section, this);
     }
 
     public void updateLine(String name, String color) {

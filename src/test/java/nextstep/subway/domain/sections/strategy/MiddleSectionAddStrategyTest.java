@@ -13,6 +13,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.exception.CannotAddSectionException;
 import nextstep.subway.domain.sections.Sections;
 import nextstep.subway.unit.Fixtures;
 
@@ -25,8 +26,8 @@ class MiddleSectionAddStrategyTest {
     void setup() {
         line = new Line("신분당선", "bg-red");
         sections = new Sections(line);
-        sections.addSection(Section.createFixture(1L, line, Fixtures.판교역, Fixtures.정자역, 10));
-        sections.addSection(Section.createFixture(2L, line, Fixtures.정자역, Fixtures.미금역, 10));
+        sections.addSection(Section.createFixture(1L, line, Fixtures.판교역, Fixtures.정자역, 10), line);
+        sections.addSection(Section.createFixture(2L, line, Fixtures.정자역, Fixtures.미금역, 10), line);
     }
 
     @Test
@@ -42,7 +43,9 @@ class MiddleSectionAddStrategyTest {
     void distanceLongerThanLineSection(int distance) {
         Section newSection = Section.createFixture(3L, line, Fixtures.판교역, newStation, distance);
 
-        assertThat(new MiddleSectionAddStrategy().meetCondition(sections, newSection)).isFalse();
+        assertThatThrownBy(() -> new MiddleSectionAddStrategy().meetCondition(sections, newSection))
+            .isInstanceOf(CannotAddSectionException.class)
+            .hasMessageContaining("새로운 구간의 길이는 본 구간의 길이보다 짧아야 합니다");
     }
 
     @Test
@@ -58,10 +61,10 @@ class MiddleSectionAddStrategyTest {
     void findChangeableSections() {
         Section newSection = Section.createFixture(3L, line, Fixtures.판교역, newStation, 7);
 
-        ChangeableSections changeableSections = new MiddleSectionAddStrategy().findChangeableSections(sections, newSection);
+        ChangeableSections changeableSections = new MiddleSectionAddStrategy().findChangeableSections(sections, newSection, line);
         List<Section> additionalSections = changeableSections.getAdditionalSections();
         List<Section> deprecatedSections = changeableSections.getDeprecatedSections();
-        
+
         assertThat(additionalSections.get(0).getDistance()).isEqualTo(3);
         assertThat(deprecatedSections).isEqualTo(List.of(Section.createFixture(1L, line, Fixtures.판교역, Fixtures.정자역, 10)));
     }

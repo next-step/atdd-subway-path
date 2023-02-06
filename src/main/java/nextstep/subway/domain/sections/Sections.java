@@ -2,8 +2,11 @@ package nextstep.subway.domain.sections;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -39,14 +42,14 @@ public class Sections {
         this.line = line;
     }
 
-    public void addSection(Section section) {
+    public void addSection(Section section, Line line) {
         if (sections.isEmpty()) {
             sections.add(section);
             return;
         }
 
         validateAddSection(section);
-        ChangeableSections changeableSections = sectionAddStrategies.findChangeableSections(this, section);
+        ChangeableSections changeableSections = sectionAddStrategies.findChangeableSections(this, section, line);
         sections.add(section);
 
         changeableSections.getDeprecatedSections()
@@ -83,6 +86,29 @@ public class Sections {
     }
 
     public List<Station> getStations() {
+        List<Station> stations = getAllStations();
+
+        if (stations.isEmpty()) {
+            return List.of();
+        }
+
+        Station upmostStation = findUpmostStation(stations);
+
+        var ret = new ArrayList<>(Collections.singletonList(upmostStation));
+
+        Station upStation = upmostStation;
+        while ((upStation = findNextStation(upStation)) != null) {
+            ret.add(upStation);
+        }
+
+        return ret;
+    }
+
+    public List<Section> getValue() {
+        return Collections.unmodifiableList(sections);
+    }
+
+    private List<Station> getAllStations() {
         List<Station> stations = sections.stream()
             .map(Section::getDownStation)
             .collect(Collectors.toList());
@@ -94,12 +120,27 @@ public class Sections {
         return stations;
     }
 
-    public List<Section> getValue() {
-        return Collections.unmodifiableList(sections);
+    private Station findUpmostStation(List<Station> stations) {
+        Map<Station, Boolean> inDegreeMap = new HashMap<>();
+        sections.forEach(section -> {
+            Station downStation = section.getDownStation();
+            inDegreeMap.put(downStation, true);
+        });
+
+        Set<Station> stationsWithInDegree = inDegreeMap.keySet();
+
+        return stations.stream()
+            .filter(station -> !stationsWithInDegree.contains(station))
+            .findFirst()
+            .orElseThrow();
     }
 
-    public Line getLine() {
-        return line;
+    private Station findNextStation(Station station) {
+        return sections.stream()
+            .filter(section -> section.getUpStation().equals(station))
+            .map(Section::getDownStation)
+            .findFirst()
+            .orElse(null);
     }
 
     @Override

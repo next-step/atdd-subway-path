@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.*;
 
 import java.util.List;
 
+import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.exception.CannotAddSectionException;
 import nextstep.subway.domain.sections.Sections;
@@ -30,14 +31,14 @@ public class MiddleSectionAddStrategy implements SectionAddStrategy {
     }
 
     @Override
-    public ChangeableSections findChangeableSections(Sections sections, Section newSection) {
+    public ChangeableSections findChangeableSections(Sections sections, Section newSection, Line line) {
         List<Section> matchedSections = getMatchedSections(sections, newSection);
 
         Section deprecatedSection = matchedSections.get(0);
         int sectionDistance = matchedSections.get(0).getDistance();
         int newSectionDistance = newSection.getDistance();
 
-        Section subsequentSection = new Section(sections.getLine(), newSection.getDownStation(), deprecatedSection.getDownStation(), sectionDistance - newSectionDistance);
+        Section subsequentSection = new Section(line, newSection.getDownStation(), deprecatedSection.getDownStation(), sectionDistance - newSectionDistance);
 
         return new ChangeableSections(List.of(subsequentSection), List.of(deprecatedSection));
     }

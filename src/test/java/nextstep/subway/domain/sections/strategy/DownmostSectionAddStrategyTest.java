@@ -22,8 +22,8 @@ class DownmostSectionAddStrategyTest {
     void setup() {
         line = new Line("신분당선", "bg-red");
         sections = new Sections(line);
-        sections.addSection(Section.createFixture(1L, line, Fixtures.판교역, Fixtures.정자역, 10));
-        sections.addSection(Section.createFixture(2L, line, Fixtures.정자역, Fixtures.미금역, 10));
+        sections.addSection(Section.createFixture(1L, line, Fixtures.판교역, Fixtures.정자역, 10), line);
+        sections.addSection(Section.createFixture(2L, line, Fixtures.정자역, Fixtures.미금역, 10), line);
     }
 
     @Test
@@ -47,7 +47,7 @@ class DownmostSectionAddStrategyTest {
     void findChangeableSections() {
         Section newSection = Section.createFixture(3L, line, Fixtures.미금역, newStation, 15);
 
-        ChangeableSections changeableSections = new DownmostSectionAddStrategy().findChangeableSections(sections, newSection);
+        ChangeableSections changeableSections = new DownmostSectionAddStrategy().findChangeableSections(sections, newSection, line);
 
         assertThat(changeableSections.getAdditionalSections()).isEmpty();
         assertThat(changeableSections.getDeprecatedSections()).isEmpty();

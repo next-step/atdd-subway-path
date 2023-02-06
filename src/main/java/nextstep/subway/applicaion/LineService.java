@@ -65,6 +65,7 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        lineRepository.save(line);
     }
 
     private LineResponse createLineResponse(Line line) {
