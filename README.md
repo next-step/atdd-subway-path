@@ -6,6 +6,6 @@
 - [x] LineService의 비즈니스 로직을 도메인 클래스(Line)로 옮기기
 - [x] 구간 단위 테스트 작성
 - [ ] 구간 서비스 단위 테스트 with Mock
-- [ ] 구간 서비스 단위 테스트 without Mock
+- [x] 구간 서비스 단위 테스트 without Mock
 
 ### STEP 1
