@@ -19,6 +19,8 @@ class LineTest {
     private static final Station 강남역 = new Station(1L, "강남역");
     private static final Station 양재역 = new Station(2L, "양재역");
     private static final Station 몽촌토성역 = new Station(3L, "몽촌토성역");
+    private static final Station 검암역 = new Station(4L, "검암역");
+    private static final Station 압구정역 = new Station(5L, "압구정역");
     private static final String 녹색 = "bg-green-600";
     private static final String 신분당선 = "신분당선";
 
@@ -50,12 +52,14 @@ class LineTest {
     void addSection() {
         final Section 첫번째_구간 = 구간_생성(1L, 강남역, 양재역, 10);
         final Line 노선_신분당선 = 노선_생성(1L, 신분당선, 빨간색, Arrays.asList(첫번째_구간));
-        노선_신분당선.addSection(양재역, 몽촌토성역, 10);
+        노선_신분당선.addSection(양재역, 몽촌토성역, 8);
+        노선_신분당선.addSection(몽촌토성역, 검암역, 7);
+        노선_신분당선.addSection(압구정역, 강남역, 5);
 
         final List<Station> stations = 노선_신분당선.convertToStation();
         assertAll(
-                () -> assertThat(stations).hasSize(3),
-                () -> assertThat(stations).contains(강남역, 양재역, 몽촌토성역)
+                () -> assertThat(stations).hasSize(5),
+                () -> assertThat(stations).containsExactly(압구정역, 강남역, 양재역, 몽촌토성역, 검암역)
         );
     }
 
