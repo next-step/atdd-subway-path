@@ -74,8 +74,8 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Section section = new SectionBuilder(line)
-                .setDownStation(downStation)
                 .setUpStation(upStation)
+                .setDownStation(downStation)
                 .setDistance(10)
                 .build();
         line.addSection(section);
