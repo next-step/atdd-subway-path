@@ -30,8 +30,8 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    @Column(nullable = false)
-    private int order;
+    @Column(name = "order_seq")
+    private int orderSeq;
 
     private int distance;
 
@@ -89,7 +89,7 @@ public class Section {
         this.upStation = station;
     }
 
-    public void changeOrder(int order) {
-        this.order = order;
+    public void changeOrder(int orderSeq) {
+        this.orderSeq = orderSeq;
     }
 }

@@ -17,18 +17,18 @@ public class LineResponse {
     private String color;
     private List<StationResponse> stations;
 
+    public static List<LineResponse> from(List<Line> lines) {
+        return lines.stream()
+                .map(LineResponse::from)
+                .collect(Collectors.toList());
+    }
+
     public static LineResponse from(Line line) {
         return new LineResponse(
                 line.getId(),
                 line.getName(),
                 line.getColor(),
                 StationResponse.from(line));
-    }
-
-    public static List<LineResponse> from(List<Line> lines) {
-        return lines.stream()
-                .map(LineResponse::from)
-                .collect(Collectors.toList());
     }
 }
 

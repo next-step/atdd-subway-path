@@ -5,10 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.OneToMany;
-import javax.persistence.PostPersist;
+import javax.persistence.*;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -26,6 +23,7 @@ public class Sections implements Iterable<Section> {
     public static final String LINE_SECTION_IS_ONLY_ONE = "노선에 구간이 하나 입니다.";
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OrderBy("orderSeq ASC")
     private List<Section> values = new ArrayList<>();
 
     public static Sections from(Section... inputSections) {
@@ -199,11 +197,5 @@ public class Sections implements Iterable<Section> {
 
     public boolean hasStation(Station station) {
         return getStations().contains(station);
-    }
-
-    @PostPersist
-    private void sort() {
-        values.sort(Comparator.comparingInt(Section::getOrder));
-        log.debug("정렬실행 {}", values);
     }
 }

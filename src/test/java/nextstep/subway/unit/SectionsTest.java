@@ -168,7 +168,7 @@ class SectionsTest {
                 createSection(id3, id4));
 
         for (int i = 0; i < sections.size(); i++) {
-            assertThat(sections.get(i).getOrder()).isEqualTo(i);
+            assertThat(sections.get(i).getOrderSeq()).isEqualTo(i);
         }
     }
 }
