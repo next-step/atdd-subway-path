@@ -1,13 +1,15 @@
 package nextstep.subway.domain.sections;
 
+import static java.util.stream.Collectors.*;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -109,15 +111,11 @@ public class Sections {
     }
 
     private List<Station> getAllStations() {
-        List<Station> stations = sections.stream()
-            .map(Section::getDownStation)
-            .collect(Collectors.toList());
-
-        if (!stations.isEmpty()) {
-            stations.add(0, sections.get(0).getUpStation());
-        }
-
-        return stations;
+        return sections.stream()
+            .map(section -> List.of(section.getUpStation(), section.getDownStation()))
+            .flatMap(Collection::stream)
+            .distinct()
+            .collect(toList());
     }
 
     private Station findUpmostStation(List<Station> stations) {
