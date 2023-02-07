@@ -48,7 +48,7 @@ public class Line {
 
     public void addSection(Section newSection) {
         if (this.sections.size() == 0) {
-            this.sections.add(newSection);
+            this.sections.add(new Section(this, newSection.getUpStation(), newSection.getDownStation(), newSection.getDistance()));
             return;
         }
         this.sections.stream()

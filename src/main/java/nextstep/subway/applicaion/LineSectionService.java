@@ -20,7 +20,7 @@ public class LineSectionService {
     public void addSection(Line line, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        line.addSection(new Section(upStation, downStation, sectionRequest.getDistance()));
     }
 
     @Transactional
