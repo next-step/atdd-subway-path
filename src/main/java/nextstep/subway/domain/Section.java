@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -20,25 +21,52 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
-    public Section() {
+    protected Section() {}
 
-    }
-
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    private Section(final Long id, final Line line, final Station upStation, final Station downStation, final Distance distance) {
+        this.id = id;
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
-    public Long getId() {
-        return id;
+    public Section(final Station upStation, final Station downStation, final Integer distance) {
+        this(null, null, upStation, downStation, new Distance(distance));
     }
 
-    public Line getLine() {
-        return line;
+    public Section(final Line line, final Station upStation, final Station downStation, final Distance distance) {
+        this(null, line, upStation, downStation, new Distance(distance.getDistance()));
+    }
+
+    Section(final Line line, final Station upStation, final Station downStation, final Integer distance) {
+        this(null, line, upStation, downStation, new Distance(distance));
+    }
+
+    public void changeSectionOfUpStation(final Station upStation, final Integer distance) {
+        this.downStation = this.upStation;
+        this.upStation = upStation;
+        this.distance.change(distance);
+    }
+
+    public void changeSectionOfMiddleStation(final Station downStation, final Integer distance) {
+        this.downStation = downStation;
+        this.distance.minus(distance);
+    }
+
+    void addLine(final Line line) {
+        this.line = line;
+    }
+
+    boolean matchUpStation(final Station station) {
+        return this.upStation.equals(station);
+    }
+
+    boolean matchDownStation(final Station station) {
+        return this.downStation.equals(station);
     }
 
     public Station getUpStation() {
@@ -49,7 +77,20 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
+    public Distance getDistance() {
         return distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return Objects.equals(id, section.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
