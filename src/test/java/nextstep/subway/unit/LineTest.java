@@ -93,7 +93,7 @@ class LineTest {
 		line.addSection(withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(충무로, 충무로_ID), 5);
 		insertIdInSections(line.getSections());
 
-		assertThatThrownBy(() -> line.removeSection(withId(등록되지않은_역, 등록되지않은_역_ID)))
+		assertThatThrownBy(() -> line.removeSection(withId(서울역, 서울역_ID)))
 			.isInstanceOf(SectionRemoveException.class)
 			.hasMessage(SectionErrorCode.NOT_INCLUDE_STATION.getMessage());
 	}

@@ -44,7 +44,7 @@ public class LineServiceTest extends IntegrationUnitTest {
 		stationRepository.save(동대문);
 		stationRepository.save(동대문역사문화공원);
 		stationRepository.save(충무로);
-		stationRepository.save(등록되지않은_역);
+		stationRepository.save(서울역);
 
 		lineRepository.save(LINE_4());
 	}
@@ -62,11 +62,10 @@ public class LineServiceTest extends IntegrationUnitTest {
 		assertThat(line.getSections()).hasSize(2);
 	}
 
-	// TODO: 실패테스트 수정
 	@DisplayName("상행 하행 종점역중 등록되지 않은 역을 요청할 경우 예외가 발생한다")
 	@Test
 	void 상행_하행_종점역중_등록되지_않은_역을_요청할_경우_예외가_발생한다() {
-		SectionRequest 동대문역사문화공원_등록되지않은역 = 구간_추가_요청(동대문역사문화공원_ID, 등록되지않은_역_ID, 5);
+		SectionRequest 동대문역사문화공원_등록되지않은역 = 구간_추가_요청(동대문역사문화공원_ID, 등록되지않은역_ID, 5);
 
 		assertThatThrownBy(() -> lineService.addSection(LINE_4_ID, 동대문역사문화공원_등록되지않은역))
 			.isInstanceOf(StationNotFoundException.class)
@@ -147,7 +146,7 @@ public class LineServiceTest extends IntegrationUnitTest {
 		SectionRequest 동대문역사문화공원_충무로 = 구간_추가_요청(동대문역사문화공원_ID, 충무로_ID, 5);
 		lineService.addSection(LINE_4_ID, 동대문역사문화공원_충무로);
 
-		assertThatThrownBy(() -> lineService.deleteSection(LINE_4_ID, 등록되지않은_역_ID))
+		assertThatThrownBy(() -> lineService.deleteSection(LINE_4_ID, 서울역_ID))
 			.isInstanceOf(SectionRemoveException.class)
 			.hasMessage(SectionErrorCode.NOT_INCLUDE_STATION.getMessage());
 	}

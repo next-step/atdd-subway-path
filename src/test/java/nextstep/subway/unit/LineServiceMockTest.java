@@ -64,9 +64,9 @@ public class LineServiceMockTest {
 	@Test
 	void 상행_하행_종점역중_등록되지_않은_역을_요청할_경우_예외가_발생한다() throws Exception {
 		when(stationService.findById(동대문역사문화공원_ID)).thenReturn(withId(동대문역사문화공원, 동대문역사문화공원_ID));
-		when(stationService.findById(등록되지않은_역_ID))
+		when(stationService.findById(서울역_ID))
 			.thenThrow(new StationNotFoundException(StationErrorCode.NOT_FOUND_STATION));
-		SectionRequest 동대문역사문화공원_등록되지않은역 = 구간_추가_요청(동대문역사문화공원_ID, 등록되지않은_역_ID, 5);
+		SectionRequest 동대문역사문화공원_등록되지않은역 = 구간_추가_요청(동대문역사문화공원_ID, 서울역_ID, 5);
 
 		assertThatThrownBy(() -> lineService.addSection(LINE_4_ID, 동대문역사문화공원_등록되지않은역))
 			.isInstanceOf(StationNotFoundException.class)
@@ -160,9 +160,9 @@ public class LineServiceMockTest {
 		when(stationService.findById(충무로_ID)).thenReturn(withId(충무로, 충무로_ID));
 		lineService.addSection(LINE_4_ID, 구간_추가_요청(동대문역사문화공원_ID, 충무로_ID, 10));
 
-		when(stationService.findById(등록되지않은_역_ID)).thenReturn(withId(등록되지않은_역, 등록되지않은_역_ID));
+		when(stationService.findById(서울역_ID)).thenReturn(withId(서울역, 서울역_ID));
 
-		assertThatThrownBy(() -> lineService.deleteSection(LINE_4_ID, 등록되지않은_역_ID))
+		assertThatThrownBy(() -> lineService.deleteSection(LINE_4_ID, 서울역_ID))
 			.isInstanceOf(SectionRemoveException.class)
 			.hasMessage(SectionErrorCode.NOT_INCLUDE_STATION.getMessage());
 	}
