@@ -1,7 +1,10 @@
 package nextstep.subway.domain;
 
+import org.springframework.util.CollectionUtils;
+
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,10 +61,21 @@ public class Line {
     }
 
     public List<Station> getStations() {
+        if (CollectionUtils.isEmpty(sections)) {
+            return Collections.emptyList();
+        }
         LinkedList<Station> stations = sections.stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toCollection(LinkedList::new));
         stations.addFirst(sections.get(0).getUpStation());
         return stations;
+    }
+
+    public void removeSection(Station station) {
+        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
+            throw new IllegalArgumentException();
+        }
+
+        sections.remove(sections.size() - 1);
     }
 }
