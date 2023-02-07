@@ -69,7 +69,7 @@ class SectionAddActionTest {
 
         sectionAddAction.add(sections, newSection);
 
-        assertThat(sections.size()).isEqualTo(2);
+        assertThat(sections).hasSize(2);
         Section section1 = sections.get(0);
         assertStationId(stationId1, stationId2, section1);
         assertThat(section1.getDistance()).isEqualTo(4);
@@ -91,7 +91,7 @@ class SectionAddActionTest {
 
         sectionAddAction.add(sections, newSection);
 
-        assertThat(sections.size()).isEqualTo(2);
+        assertThat(sections).hasSize(2);
         assertStationId(stationId1, stationId2, sections.get(0));
         assertStationId(stationId2, stationId3, sections.get(1));
     }
@@ -108,7 +108,7 @@ class SectionAddActionTest {
 
         sectionAddAction.add(sections, newSection);
 
-        assertThat(sections.size()).isEqualTo(2);
+        assertThat(sections).hasSize(2);
         assertStationId(stationId1, stationId2, sections.get(0));
         assertStationId(stationId2, stationId3, sections.get(1));
     }
