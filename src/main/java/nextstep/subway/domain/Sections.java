@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
@@ -69,7 +68,7 @@ public class Sections implements Iterable<Section> {
             return;
         }
 
-        SectionAction action = SectionAction.of(values, newSection);
+        SectionAddAction action = SectionAddAction.of(values, newSection);
         action.add(values, newSection);
 
         updateOrder();

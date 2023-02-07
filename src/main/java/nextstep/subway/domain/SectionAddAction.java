@@ -9,19 +9,19 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 @AllArgsConstructor
-public enum SectionAction {
-    ADD_UP_STATION((sections, newSection) -> isAddUpStation(sections, newSection), (sections, newSection) -> addUpStation(sections,newSection)),
-    ADD_MIDDLE_STATION((sections, newSection) -> isAddMiddleStation(sections, newSection), (sections, newSection) -> addMiddleStation(sections, newSection)),
-    ADD_DOWN_STATION((sections, newSection) -> isAddDownStation(sections, newSection), (sections, newSection) -> addDownStation(sections, newSection));
+public enum SectionAddAction {
+    UP_STATION((sections, newSection) -> isAddUpStation(sections, newSection), (sections, newSection) -> addUpStation(sections,newSection)),
+    MIDDLE_STATION((sections, newSection) -> isAddMiddleStation(sections, newSection), (sections, newSection) -> addMiddleStation(sections, newSection)),
+    DOWN_STATION((sections, newSection) -> isAddDownStation(sections, newSection), (sections, newSection) -> addDownStation(sections, newSection));
 
     private final BiPredicate<List<Section>, Section> matchFunction;
     private final BiConsumer<List<Section>, Section> addFunction;
 
-    public static SectionAction of(List<Section> sections, Section newSection) {
+    public static SectionAddAction of(List<Section> sections, Section newSection) {
         return getSectionAction(sections, newSection);
     }
 
-    private static SectionAction getSectionAction(List<Section> sections, Section newSection) {
+    private static SectionAddAction getSectionAction(List<Section> sections, Section newSection) {
         validate(sections, newSection);
 
         return Arrays.stream(values())

@@ -1,8 +1,7 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Section;
-import nextstep.subway.domain.SectionAction;
-import nextstep.subway.domain.Sections;
+import nextstep.subway.domain.SectionAddAction;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -19,8 +18,8 @@ class SectionAddActionTest {
         List<Section> sections = new ArrayList(Arrays.asList(createSection(0L, 3L, 10)));
         Section newSection = createSection(0L, 2L, 1);
 
-        SectionAction sectionAction = SectionAction.of(sections, newSection);
-        assertThat(sectionAction).isEqualTo(SectionAction.ADD_MIDDLE_STATION);
+        SectionAddAction sectionAddAction = SectionAddAction.of(sections, newSection);
+        assertThat(sectionAddAction).isEqualTo(SectionAddAction.MIDDLE_STATION);
     }
 
     @Test
@@ -28,8 +27,8 @@ class SectionAddActionTest {
         List<Section> sections = new ArrayList(Arrays.asList(createSection(1L, 2L)));
         Section newSection = createSection(0L, 1L);
 
-        SectionAction sectionAction = SectionAction.of(sections, newSection);
-        assertThat(sectionAction).isEqualTo(SectionAction.ADD_UP_STATION);
+        SectionAddAction sectionAddAction = SectionAddAction.of(sections, newSection);
+        assertThat(sectionAddAction).isEqualTo(SectionAddAction.UP_STATION);
     }
 
     @Test
@@ -37,8 +36,8 @@ class SectionAddActionTest {
         List<Section> sections = new ArrayList(Arrays.asList(createSection(1L, 2L)));
         Section newSection = createSection(2L, 3L);
 
-        SectionAction sectionAction = SectionAction.of(sections, newSection);
-        assertThat(sectionAction).isEqualTo(SectionAction.ADD_DOWN_STATION);
+        SectionAddAction sectionAddAction = SectionAddAction.of(sections, newSection);
+        assertThat(sectionAddAction).isEqualTo(SectionAddAction.DOWN_STATION);
     }
 
     @Test
@@ -46,7 +45,7 @@ class SectionAddActionTest {
         List<Section> sections = new ArrayList(Arrays.asList(createSection(0L, 3L)));
         Section newSection = createSection(0L, 3L);
 
-        assertThatIllegalArgumentException().isThrownBy(() -> SectionAction.of(sections, newSection));
+        assertThatIllegalArgumentException().isThrownBy(() -> SectionAddAction.of(sections, newSection));
     }
 
     @Test
@@ -54,7 +53,7 @@ class SectionAddActionTest {
         List<Section> sections = new ArrayList(Arrays.asList(createSection(0L, 3L)));
         Section newSection = createSection(1L, 2L);
 
-        assertThatIllegalArgumentException().isThrownBy(() -> SectionAction.of(sections, newSection));
+        assertThatIllegalArgumentException().isThrownBy(() -> SectionAddAction.of(sections, newSection));
     }
 
     @Test
@@ -66,9 +65,9 @@ class SectionAddActionTest {
 
         List<Section> sections = new ArrayList(Arrays.asList(createSection(stationId1, stationId3, 7)));
         Section newSection = createSection(stationId1, stationId2, 4);
-        SectionAction sectionAction = SectionAction.of(sections, newSection);
+        SectionAddAction sectionAddAction = SectionAddAction.of(sections, newSection);
 
-        sectionAction.add(sections, newSection);
+        sectionAddAction.add(sections, newSection);
 
         assertThat(sections.size()).isEqualTo(2);
         Section section1 = sections.get(0);
@@ -88,9 +87,9 @@ class SectionAddActionTest {
 
         List<Section> sections = new ArrayList(Arrays.asList(createSection(stationId2, stationId3)));
         Section newSection = createSection(stationId1, stationId2);
-        SectionAction sectionAction = SectionAction.of(sections, newSection);
+        SectionAddAction sectionAddAction = SectionAddAction.of(sections, newSection);
 
-        sectionAction.add(sections, newSection);
+        sectionAddAction.add(sections, newSection);
 
         assertThat(sections.size()).isEqualTo(2);
         assertStationId(stationId1, stationId2, sections.get(0));
@@ -105,9 +104,9 @@ class SectionAddActionTest {
 
         List<Section> sections = new ArrayList(Arrays.asList(createSection(stationId1, stationId2)));
         Section newSection = createSection(stationId2, stationId3);
-        SectionAction sectionAction = SectionAction.of(sections, newSection);
+        SectionAddAction sectionAddAction = SectionAddAction.of(sections, newSection);
 
-        sectionAction.add(sections, newSection);
+        sectionAddAction.add(sections, newSection);
 
         assertThat(sections.size()).isEqualTo(2);
         assertStationId(stationId1, stationId2, sections.get(0));
