@@ -11,8 +11,13 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.domain.exception.LineErrorCode;
+import nextstep.subway.domain.exception.SubwayBadRequestException;
+
 @Embeddable
 public class Sections {
+
+	private static int INVALID_SECTION_DISTANCE = 0;
 
 	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
 	private final List<Section> sections = new ArrayList<>();
@@ -43,5 +48,13 @@ public class Sections {
 		return this.sections.stream()
 			.map(Section::getDownStation)
 			.collect(Collectors.toUnmodifiableSet());
+	}
+
+	public void createInitialLineSection(Station upStation, Station downStation, int distance, Line line) {
+		if (distance == INVALID_SECTION_DISTANCE) {
+			throw new SubwayBadRequestException(LineErrorCode.INVALID_SECTION_DISTANCE);
+		}
+
+		this.sections.add(new Section(line, upStation, downStation, distance));
 	}
 }

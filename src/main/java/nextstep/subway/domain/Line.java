@@ -12,6 +12,12 @@ public class Line {
     private String name;
     private String color;
 
+    @Column(name = "upStationId")
+    private Long upStationId;
+
+    @Column(name = "downStationId")
+    private Long downStationId;
+
     @Embedded
     private final Sections sections = new Sections();
 
@@ -21,6 +27,16 @@ public class Line {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this.name = name;
+        this.color = color;
+
+        this.upStationId = upStation.getId();
+        this.downStationId = downStation.getId();
+
+        this.sections.createInitialLineSection(upStation, downStation, distance, this);
     }
 
     public Long getId() {
@@ -37,6 +53,14 @@ public class Line {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Long getUpStationId() {
+        return upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
     }
 
     public String getColor() {
