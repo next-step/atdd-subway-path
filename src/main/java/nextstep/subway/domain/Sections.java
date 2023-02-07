@@ -73,82 +73,6 @@ public class Sections implements Iterable<Section> {
         return values.isEmpty() || values.contains(newSection); // 메서드 대시 변수로 할당하는게 좋을까?
     }
 
-    public void remove(Section section) {
-        if (!values.contains(section)) {
-            return;
-        }
-
-        validateRemove(section.getDownStation());
-        values.remove(section);
-        section.removeLine();
-    }
-
-    public void remove(Station station) {
-        validateRemove(station);
-
-        Section section = values.stream()
-                .filter(s -> s.getDownStation().equals(station))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("삭제 할 역이 없습니다."));
-
-        values.remove(section);
-    }
-
-    public void validateRemove(Station station) {
-        if (!getLast().getDownStation().equals(station)) {
-            throw new IllegalArgumentException(IS_NOT_LAST_SECTION_DOWN_STATION);
-        }
-
-        if (values.size() <= 1) {
-            throw new IllegalArgumentException(LINE_SECTION_IS_ONLY_ONE);
-        }
-    }
-
-    private void validateSavedStation(Section section) {
-        List<Long> ids = getStationIds();
-        if (ids.contains(section.getUpStationId()) && ids.contains(section.getDownStationId())) {
-            throw new IllegalArgumentException("이미 노선에 등록된 역 입니다. id:" + section);
-        }
-    }
-
-    private List<Long> getStationIds() {
-        return getStations().stream()
-                .map(Station::getId)
-                .collect(Collectors.toList());
-    }
-
-    public List<Station> getStations() {
-        if (values.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        List<Station> upStations = upStations();
-        upStations.add(getLast().getDownStation());
-        return upStations;
-    }
-
-    private List<Station> upStations() {
-        return values.stream()
-                .map(Section::getUpStation)
-                .collect(Collectors.toList());
-    }
-
-    public Section getLast() {
-        return values.get(values.size() - 1);
-    }
-
-    public boolean contains(Section section) {
-        return values.contains(section);
-    }
-
-    public boolean isEmpty() {
-        return values.isEmpty();
-    }
-
-    public boolean hasStation(Station station) {
-        return getStations().contains(station);
-    }
-
     public boolean isAddUpStation(Section newSection) {
         return values.stream()
                 .anyMatch(addUpStationPredicate(newSection));
@@ -189,10 +113,78 @@ public class Sections implements Iterable<Section> {
         oldSection.changeUpStation(newSection.getDownStation());
 
         values.set(values.indexOf(oldSection), oldSection);
-
     }
 
     public void addDownStation(Section newSection) {
         values.add(newSection);
+    }
+
+    public void remove(Section section) {
+        if (!values.contains(section)) {
+            return;
+        }
+
+        validateRemove(section.getDownStation());
+        values.remove(section);
+        section.removeLine();
+    }
+
+    public void remove(Station station) {
+        validateRemove(station);
+
+        Section section = values.stream()
+                .filter(s -> s.getDownStation().equals(station))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("삭제 할 역이 없습니다."));
+
+        values.remove(section);
+    }
+
+    public void validateRemove(Station station) {
+        if (!getLast().getDownStation().equals(station)) {
+            throw new IllegalArgumentException(IS_NOT_LAST_SECTION_DOWN_STATION);
+        }
+
+        if (values.size() <= 1) {
+            throw new IllegalArgumentException(LINE_SECTION_IS_ONLY_ONE);
+        }
+    }
+
+    private List<Long> getStationIds() {
+        return getStations().stream()
+                .map(Station::getId)
+                .collect(Collectors.toList());
+    }
+
+    public List<Station> getStations() {
+        if (values.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Station> upStations = upStations();
+        upStations.add(getLast().getDownStation());
+        return upStations;
+    }
+
+    private List<Station> upStations() {
+        return values.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+    }
+
+    public Section getLast() {
+        return values.get(values.size() - 1);
+    }
+
+    public boolean contains(Section section) {
+        return values.contains(section);
+    }
+
+    public boolean isEmpty() {
+        return values.isEmpty();
+    }
+
+    public boolean hasStation(Station station) {
+        return getStations().contains(station);
     }
 }
