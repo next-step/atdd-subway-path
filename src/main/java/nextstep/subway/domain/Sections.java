@@ -182,14 +182,14 @@ public class Sections implements Iterable<Section> {
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("구간을 찾을 수 없습니다."));
 
-        oldSection.minusDistacne(newSection.getDistance());
-
-        // 구간 분리를 어떻게 깔끔하게 할수 있을까?
-        oldSection.changeDownStation(newSection.getDownStation());
-        newSection.changeDownStationToUpStation();
-        newSection.changeDownStation(oldSection.getDownStation());
-
         values.add(values.indexOf(oldSection), newSection);
+
+
+        oldSection.minusDistacne(newSection.getDistance());
+        oldSection.changeUpStation(newSection.getDownStation());
+
+        values.set(values.indexOf(oldSection), oldSection);
+
     }
 
     public void addDownStation(Section newSection) {

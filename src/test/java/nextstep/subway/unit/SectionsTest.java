@@ -30,12 +30,22 @@ class SectionsTest {
     @Test
     void 기존_구간_사이에_역이_추가_된다() {
         //given
-        Sections sections = Sections.from(createSection(1L, 3L, 10));
-        Section newSection = createSection(1L, 2L, 3);
+        Sections sections = Sections.from(createSection(1L, 3L, 7));
+        Section newSection = createSection(1L, 2L, 4);
 
         sections.addMiddleStation(newSection);
 
         assertThat(sections.size()).isEqualTo(2);
+
+        Section section1 = sections.get(0);
+        assertThat(section1.getUpStationId()).isEqualTo(1L);
+        assertThat(section1.getDownStationId()).isEqualTo(2L);
+        assertThat(section1.getDistance()).isEqualTo(4);
+
+        Section section2 = sections.get(1);
+        assertThat(section2.getUpStationId()).isEqualTo(2L);
+        assertThat(section2.getDownStationId()).isEqualTo(3L);
+        assertThat(section2.getDistance()).isEqualTo(3);
     }
 
     @Test

@@ -70,15 +70,6 @@ public class Section {
         this.distance -= distance;
     }
 
-    public void changeDownStationToUpStation() {
-        this.upStation = this.downStation;
-        this.downStation = null;
-    }
-
-    public void changeDownStation(Station downStation) {
-        this.downStation = downStation;
-    }
-
     public boolean isDistanceGreaterThen(int distance) {
         return this.distance > distance;
     }
@@ -89,5 +80,9 @@ public class Section {
 
     public boolean isSameDownUpStation(Station station) {
         return this.downStation.equals(station);
+    }
+
+    public void changeUpStation(Station station) {
+        this.upStation = station;
     }
 }
