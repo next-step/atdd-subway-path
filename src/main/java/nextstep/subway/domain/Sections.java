@@ -70,8 +70,7 @@ public class Sections {
 		Section section = this.sections.stream()
 			.filter(it -> it.equalDownStation(station))
 			.findFirst()
-			.orElseThrow(IllegalArgumentException::new);
-
+			.orElseThrow(() -> new SectionRemoveException(SectionErrorCode.NOT_INCLUDE_STATION));
 
 		if (section.hasFinalDownStation(finalDownStationId)) {
 			sections.remove(section);

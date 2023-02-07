@@ -125,6 +125,18 @@ class SectionsTest {
 			.hasMessage(SectionErrorCode.INVALID_REMOVE_STATION.getMessage());
 	}
 
+	@DisplayName("구간제거시 제거할 지하철역이 노선에 포함되지않을경우 예외가 발생한다")
+	@Test
+	void 구간제거시_제거할_지하철역이_노선에_포함되지않을경우_예외가_발생한다() throws Exception {
+		sections.addSection(line, withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), 10);
+		sections.addSection(line, withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(충무로, 충무로_ID), 5);
+		insertIdInSections(sections.getList());
+
+		assertThatThrownBy(() -> sections.remove(withId(등록되지않은_역, 등록되지않은_역_ID), 충무로_ID))
+			.isInstanceOf(SectionRemoveException.class)
+			.hasMessage(SectionErrorCode.NOT_INCLUDE_STATION.getMessage());
+	}
+
 	private void insertIdInSections(List<Section> sections) {
 		for (int i = 1; i <= sections.size(); i++) {
 			Section section = sections.get(i - 1);

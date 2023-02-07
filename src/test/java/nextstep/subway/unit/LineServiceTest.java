@@ -44,6 +44,7 @@ public class LineServiceTest extends IntegrationUnitTest {
 		stationRepository.save(동대문);
 		stationRepository.save(동대문역사문화공원);
 		stationRepository.save(충무로);
+		stationRepository.save(등록되지않은_역);
 
 		lineRepository.save(LINE_4());
 	}
@@ -137,5 +138,16 @@ public class LineServiceTest extends IntegrationUnitTest {
 		assertThatThrownBy(() -> lineService.deleteSection(LINE_4_ID, 동대문역사문화공원_ID))
 			.isInstanceOf(SectionRemoveException.class)
 			.hasMessage(SectionErrorCode.INVALID_REMOVE_STATION.getMessage());
+	}
+
+	@DisplayName("구간제거시 제거할 지하철역이 노선에 포함되지않을경우 예외가 발생한다")
+	@Test
+	void 구간제거시_제거할_지하철역이_노선에_포함되지않을경우_예외가_발생한다() throws Exception {
+		SectionRequest 동대문역사문화공원_충무로 = 구간_추가_요청(동대문역사문화공원_ID, 충무로_ID, 5);
+		lineService.addSection(LINE_4_ID, 동대문역사문화공원_충무로);
+
+		assertThatThrownBy(() -> lineService.deleteSection(LINE_4_ID, 등록되지않은_역_ID))
+			.isInstanceOf(SectionRemoveException.class)
+			.hasMessage(SectionErrorCode.NOT_INCLUDE_STATION.getMessage());
 	}
 }
