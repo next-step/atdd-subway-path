@@ -12,6 +12,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LineTest {
 
     @Test
+    void update() {
+        // given
+        final Line line = new Line("2호선", "bg-green-600");
+
+        // when
+        line.update("신분당선", "bg-red-600");
+
+        // then
+        assertThat(line.getName()).isEqualTo("신분당선");
+        assertThat(line.getColor()).isEqualTo("bg-red-600");
+    }
+
+    @Test
     void addSection() {
         // given
         final Station 강남역 = new Station("강남역");
