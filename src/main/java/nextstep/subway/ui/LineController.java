@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
+import nextstep.subway.applicaion.dto.LineUpdateRequest;
 import nextstep.subway.applicaion.dto.SectionRequest;
 
 @RestController
@@ -47,8 +48,8 @@ public class LineController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-		lineService.updateLine(id, lineRequest);
+	public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineUpdateRequest updateRequest) {
+		lineService.updateLine(id, updateRequest);
 		return ResponseEntity.ok().build();
 	}
 

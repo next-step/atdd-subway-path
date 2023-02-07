@@ -4,6 +4,7 @@ import static nextstep.subway.common.LineFixtures.*;
 import static nextstep.subway.common.SectionFixtures.*;
 import static nextstep.subway.common.StationFixtures.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
+import nextstep.subway.applicaion.dto.LineUpdateRequest;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
@@ -163,5 +165,24 @@ public class LineServiceMockTest {
 		assertThatThrownBy(() -> lineService.deleteSection(LINE_4_ID, 등록되지않은_역_ID))
 			.isInstanceOf(SectionRemoveException.class)
 			.hasMessage(SectionErrorCode.NOT_INCLUDE_STATION.getMessage());
+	}
+
+	@Test
+	void 지하철노선_정보_수정에_성공한다() throws Exception {
+		// given
+		when(lineRepository.findById(LINE_4_ID))
+			.thenReturn(Optional.of(LINE_4()));
+		String name = "2호선";
+		String color = "green";
+
+		// when
+		lineService.updateLine(LINE_4_ID, new LineUpdateRequest(name, color));
+
+		// then
+		LineResponse lineResponse = lineService.findById(LINE_4_ID);
+		assertAll(
+			() -> assertThat(lineResponse.getName()).isEqualTo(name),
+			() -> assertThat(lineResponse.getColor()).isEqualTo(color)
+		);
 	}
 }

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
+import nextstep.subway.applicaion.dto.LineUpdateRequest;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.common.IntegrationUnitTest;
@@ -61,6 +62,7 @@ public class LineServiceTest extends IntegrationUnitTest {
 		assertThat(line.getSections()).hasSize(2);
 	}
 
+	// TODO: 실패테스트 수정
 	@DisplayName("상행 하행 종점역중 등록되지 않은 역을 요청할 경우 예외가 발생한다")
 	@Test
 	void 상행_하행_종점역중_등록되지_않은_역을_요청할_경우_예외가_발생한다() {
@@ -141,12 +143,29 @@ public class LineServiceTest extends IntegrationUnitTest {
 
 	@DisplayName("구간제거시 제거할 지하철역이 노선에 포함되지않을경우 예외가 발생한다")
 	@Test
-	void 구간제거시_제거할_지하철역이_노선에_포함되지않을경우_예외가_발생한다() throws Exception {
+	void 구간제거시_제거할_지하철역이_노선에_포함되지않을경우_예외가_발생한다() {
 		SectionRequest 동대문역사문화공원_충무로 = 구간_추가_요청(동대문역사문화공원_ID, 충무로_ID, 5);
 		lineService.addSection(LINE_4_ID, 동대문역사문화공원_충무로);
 
 		assertThatThrownBy(() -> lineService.deleteSection(LINE_4_ID, 등록되지않은_역_ID))
 			.isInstanceOf(SectionRemoveException.class)
 			.hasMessage(SectionErrorCode.NOT_INCLUDE_STATION.getMessage());
+	}
+
+	@Test
+	void 지하철노선_정보_수정에_성공한다() {
+		// given
+		String name = "2호선";
+		String color = "green";
+
+		// when
+		lineService.updateLine(LINE_4_ID, new LineUpdateRequest(name, color));
+
+		// then
+		LineResponse lineResponse = lineService.findById(LINE_4_ID);
+		assertAll(
+			() -> assertThat(lineResponse.getName()).isEqualTo(name),
+			() -> assertThat(lineResponse.getColor()).isEqualTo(color)
+		);
 	}
 }

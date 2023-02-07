@@ -98,6 +98,26 @@ class LineTest {
 			.hasMessage(SectionErrorCode.NOT_INCLUDE_STATION.getMessage());
 	}
 
+	@Test
+	void 지하철노선_정보_수정에_성공한다() throws Exception {
+		// given
+		Line line = LINE_4();
+		String name = "2호선";
+		String color = "green";
+
+		// when
+		line.updateInfo(
+			name,
+			color
+		);
+
+		// then
+		assertAll(
+			() -> assertThat(line.getName()).isEqualTo(name),
+			() -> assertThat(line.getColor()).isEqualTo(color)
+		);
+	}
+
 	private void insertIdInSections(List<Section> sections) {
 		for (int i = 1; i <= sections.size(); i++) {
 			Section section = sections.get(i - 1);
