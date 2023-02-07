@@ -31,6 +31,20 @@ class LineTest {
 
     @Test
     void getStations() {
+        // given
+        Line 신분당선 = new Line("신분당선", "bg-red-900");
+        int distance = 10;
+
+        Station 강남역 = new Station("강남역");
+        Station 양재역 = new Station("양재역");
+        Section section = new Section(신분당선, 강남역, 양재역, distance);
+        신분당선.getSections().add(section);
+
+        // when
+        List<Station> 신분당선_지하철 = 신분당선.getStations();
+
+        // then
+        assertThat(신분당선_지하철).containsExactlyElementsOf(List.of(강남역, 양재역));
     }
 
     @Test

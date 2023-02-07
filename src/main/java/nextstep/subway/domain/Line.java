@@ -2,7 +2,9 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -53,5 +55,13 @@ public class Line {
 
     public void addSection(Section section) {
         this.sections.add(section);
+    }
+
+    public List<Station> getStations() {
+        LinkedList<Station> stations = sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toCollection(LinkedList::new));
+        stations.addFirst(sections.get(0).getUpStation());
+        return stations;
     }
 }
