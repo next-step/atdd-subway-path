@@ -11,6 +11,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import nextstep.subway.applicaion.LineService;
@@ -23,6 +25,7 @@ import nextstep.subway.common.IntegrationUnitTest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.exception.InvalidLineUpdateException;
 import nextstep.subway.domain.exception.LineErrorCode;
 import nextstep.subway.domain.exception.SectionErrorCode;
 import nextstep.subway.domain.exception.SectionRemoveException;
@@ -166,5 +169,14 @@ public class LineServiceTest extends IntegrationUnitTest {
 			() -> assertThat(lineResponse.getName()).isEqualTo(name),
 			() -> assertThat(lineResponse.getColor()).isEqualTo(color)
 		);
+	}
+
+	@DisplayName("지하철노선 정보 수정시 이름이 null혹은 empty일경우 예외가 발생한다")
+	@ParameterizedTest
+	@NullAndEmptySource
+	void 지하철노선_정보_수정시_이름이_null혹은_empty일경우_예외가_발생한다(String name) {
+		assertThatThrownBy(() -> lineService.updateLine(LINE_4_ID, new LineUpdateRequest(name, "green")))
+			.isInstanceOf(InvalidLineUpdateException.class)
+			.hasMessage(LineErrorCode.INVALID_NAME_UPDATER_REQUEST.getMessage());
 	}
 }

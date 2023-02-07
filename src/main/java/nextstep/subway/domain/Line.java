@@ -9,6 +9,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import nextstep.subway.domain.exception.InvalidLineUpdateException;
+import nextstep.subway.domain.exception.LineErrorCode;
+
 @Entity
 public class Line {
 	@Id
@@ -83,7 +86,14 @@ public class Line {
 	}
 
 	public void updateInfo(String name, String color) {
+		validateName(name);
 		this.name = name;
 		this.color = color;
+	}
+
+	private void validateName(String name) {
+		if (name == null || name.isBlank()) {
+			throw new InvalidLineUpdateException(LineErrorCode.INVALID_NAME_UPDATER_REQUEST);
+		}
 	}
 }
