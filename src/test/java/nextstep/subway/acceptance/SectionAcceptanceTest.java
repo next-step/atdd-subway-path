@@ -119,7 +119,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
         // then
-        assertThat(response.body().asString()).isEqualTo("역 사이에 기존 역 사이 길이보다 크거나 같은 구간을 등록할 수 없습니다");
+        assertThat(response.body().asString()).isEqualTo("역 사이에 기존 역 사이 길이보다 크거나 같은 구간을 등록할 수 없습니다.");
     }
 
     /**
