@@ -88,13 +88,16 @@ public class LineService {
 		line.addSection(upStation, downStation, sectionRequest.getDistance());
 	}
 
-	private LineResponse createLineResponse(Line line) {
-		return new LineResponse(
-			line.getId(),
-			line.getName(),
-			line.getColor(),
-			createStationResponses(line)
-		);
+	@Transactional
+	public void deleteSection(Long lineId, Long stationId) {
+		Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+		Station station = stationService.findById(stationId);
+
+		if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
+			throw new IllegalArgumentException();
+		}
+
+		line.getSections().remove(line.getSections().size() - 1);
 	}
 
 	private List<StationResponse> createStationResponses(Line line) {
@@ -108,15 +111,12 @@ public class LineService {
 			.collect(Collectors.toList());
 	}
 
-	@Transactional
-	public void deleteSection(Long lineId, Long stationId) {
-		Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
-		Station station = stationService.findById(stationId);
-
-		if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-			throw new IllegalArgumentException();
-		}
-
-		line.getSections().remove(line.getSections().size() - 1);
+	private LineResponse createLineResponse(Line line) {
+		return new LineResponse(
+			line.getId(),
+			line.getName(),
+			line.getColor(),
+			createStationResponses(line)
+		);
 	}
 }
