@@ -152,4 +152,23 @@ class SectionsTest {
         assertThat(ids).hasSize(5);
         assertThat(ids).containsExactly(id0, id1, id2, id3, id4);
     }
+
+    @Test
+    void 순서_업데이트() {
+        long id0 = 0L;
+        long id1 = 1L;
+        long id2 = 2L;
+        long id3 = 3L;
+        long id4 = 4L;
+
+        Sections sections = Sections.from(
+                createSection(id1, id3, 10),
+                createSection(id1, id2, 3),
+                createSection(id0, id1),
+                createSection(id3, id4));
+
+        for (int i = 0; i < sections.size(); i++) {
+            assertThat(sections.get(i).getOrder()).isEqualTo(i);
+        }
+    }
 }

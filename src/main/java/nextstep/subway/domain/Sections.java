@@ -3,19 +3,19 @@ package nextstep.subway.domain;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Spliterator;
+import javax.persistence.PostPersist;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
+@Slf4j
 @EqualsAndHashCode
 @Embeddable
 @AllArgsConstructor
@@ -67,6 +67,15 @@ public class Sections implements Iterable<Section> {
 
         SectionAction action = SectionAction.of(this, newSection);
         action.add(this, newSection);
+
+        updateOrder();
+    }
+
+    private void updateOrder() {
+        for (int i = 0; i < values.size(); i++) {
+            Section section = values.get(i);
+            section.changeOrder(i);
+        }
     }
 
     private boolean forceAddCondition(Section newSection) {
@@ -161,19 +170,23 @@ public class Sections implements Iterable<Section> {
             return new ArrayList<>();
         }
 
-        List<Station> upStations = upStations();
+        List<Station> upStations = upStations(values);
         upStations.add(getLast().getDownStation());
         return upStations;
     }
 
-    private List<Station> upStations() {
-        return values.stream()
+    private List<Station> upStations(List<Section> list) {
+        return list.stream()
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
     }
 
     public Section getLast() {
-        return values.get(values.size() - 1);
+        return values.get(getLastIndex());
+    }
+
+    private int getLastIndex() {
+        return values.size() - 1;
     }
 
     public boolean contains(Section section) {
@@ -186,5 +199,11 @@ public class Sections implements Iterable<Section> {
 
     public boolean hasStation(Station station) {
         return getStations().contains(station);
+    }
+
+    @PostPersist
+    private void sort() {
+        values.sort(Comparator.comparingInt(Section::getOrder));
+        log.debug("정렬실행 {}", values);
     }
 }
