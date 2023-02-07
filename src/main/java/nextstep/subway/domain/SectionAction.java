@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import java.util.Arrays;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
-import java.util.function.Consumer;
 
 @AllArgsConstructor
 public enum SectionAction {
