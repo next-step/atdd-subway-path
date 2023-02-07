@@ -56,7 +56,7 @@ class LineTest {
         이호선.addSection(역삼역, 선릉역, 10);
 
         // when
-        이호선.removeSection(선릉역);
+        이호선.removeLastSection(선릉역);
 
         // then
         final List<Station> stations = 이호선.getStations();

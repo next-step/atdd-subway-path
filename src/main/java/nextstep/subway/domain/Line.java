@@ -88,7 +88,10 @@ public class Line {
         return stations;
     }
 
-    public void removeSection(final Station station) {
+    public void removeLastSection(final Station station) {
+        if (!this.getSections().get(this.getSections().size() - 1).getDownStation().equals(station)) {
+            throw new IllegalArgumentException();
+        }
         this.getSections().remove(this.getSections().size() - 1);
     }
 }
