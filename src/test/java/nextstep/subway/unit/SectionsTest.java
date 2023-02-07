@@ -149,8 +149,9 @@ class SectionsTest {
                 .map(Station::getId)
                 .collect(Collectors.toList());
 
-        assertThat(ids).hasSize(5);
-        assertThat(ids).containsExactly(id0, id1, id2, id3, id4);
+        assertThat(ids)
+                .hasSize(5)
+                .containsExactly(id0, id1, id2, id3, id4);
     }
 
     @Test

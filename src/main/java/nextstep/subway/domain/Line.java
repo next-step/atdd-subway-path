@@ -28,20 +28,6 @@ public class Line {
         return new Line(name, color);
     }
 
-    @Deprecated
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    @Deprecated
-    public void setColor(String color) {
-        this.color = color;
-    }
-
     public void update(String name, String color) {
 
         if (StringUtils.hasText(name)) {

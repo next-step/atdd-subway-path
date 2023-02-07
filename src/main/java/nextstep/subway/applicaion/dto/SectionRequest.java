@@ -7,6 +7,7 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 
 import java.util.function.Function;
+import java.util.function.LongFunction;
 
 
 @Getter
@@ -17,7 +18,7 @@ public class SectionRequest {
     private Long downStationId;
     private int distance;
 
-    public Section toEntity(Function<Long, Station> stationFindFunction) {
+    public Section toEntity(LongFunction<Station> stationFindFunction) {
         return Section.builder()
                 .upStation(stationFindFunction.apply(upStationId))
                 .downStation(stationFindFunction.apply(downStationId))

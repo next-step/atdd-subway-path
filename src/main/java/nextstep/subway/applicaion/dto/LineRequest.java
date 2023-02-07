@@ -8,6 +8,7 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 
 import java.util.function.Function;
+import java.util.function.LongFunction;
 
 @Getter
 @AllArgsConstructor
@@ -23,7 +24,7 @@ public class LineRequest {
         return new LineRequest(name, color, upStationId, downStationId, distance1);
     }
 
-    public Line toEntity(Function<Long, Station> findStationFunction) {
+    public Line toEntity(LongFunction<Station> findStationFunction) {
         Line line = Line.of(name, color);
 
         if (canCreateSection()) {
@@ -36,7 +37,7 @@ public class LineRequest {
         return this.getUpStationId() != null && this.getDownStationId() != null && this.getDistance() != 0;
     }
 
-    private Section toSection(Function<Long, Station> findStationFunction) {
+    private Section toSection(LongFunction<Station> findStationFunction) {
         Station upStation = findStationFunction.apply(upStationId);
         Station downStation = findStationFunction.apply(downStationId);
 

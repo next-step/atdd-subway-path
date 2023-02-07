@@ -16,8 +16,7 @@ public enum SectionAction {
     private final BiConsumer<Sections, Section> addFunction;
 
     public static SectionAction of(Sections sections, Section newSection) {
-        SectionAction sectionAction = getSectionAction(sections, newSection);
-        return sectionAction;
+        return getSectionAction(sections, newSection);
     }
 
     private static SectionAction getSectionAction(Sections sections, Section newSection) {

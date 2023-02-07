@@ -22,7 +22,7 @@ class LineResponseTest {
         LineResponse response = LineResponse.from(line);
         List<StationResponse> stations = response.getStations();
 
-        assertThat(stations.size()).isEqualTo(2);
+        assertThat(stations).hasSize(2);
         assertThat(stations.get(0).getId()).isEqualTo(upStationId);
         assertThat(stations.get(1).getId()).isEqualTo(downStationId);
     }

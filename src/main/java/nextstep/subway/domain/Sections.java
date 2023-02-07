@@ -163,12 +163,6 @@ public class Sections implements Iterable<Section> {
         }
     }
 
-    private List<Long> getStationIds() {
-        return getStations().stream()
-                .map(Station::getId)
-                .collect(Collectors.toList());
-    }
-
     public List<Station> getStations() {
         if (values.isEmpty()) {
             return new ArrayList<>();

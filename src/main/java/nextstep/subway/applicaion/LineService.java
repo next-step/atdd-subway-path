@@ -21,7 +21,7 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
-        Line line = lineRepository.save(request.toEntity(id -> stationService.findById(id)));
+        Line line = lineRepository.save(request.toEntity(stationService::findById));
         return LineResponse.from(line);
     }
 
@@ -48,7 +48,7 @@ public class LineService {
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
-        line.addSection(sectionRequest.toEntity(id -> stationService.findById(id)));
+        line.addSection(sectionRequest.toEntity(stationService::findById));
     }
 
     @Transactional
