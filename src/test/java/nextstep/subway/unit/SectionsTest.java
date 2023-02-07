@@ -30,25 +30,32 @@ class SectionsTest {
     @Test
     void 기존_구간_사이에_역이_추가_된다() {
         //given
-        Section 구간1 = createSection(1L, 3L, 10);
-        Section 구간2 = createSection(1L, 2L, 5);
-        Sections 구간들 = Sections.from(구간1);
-        int 새구간1거리 = 구간1.getDistance() - 구간2.getDistance();
-        int 새구간2거리 = 구간2.getDistance();
+        Sections sections = Sections.from(createSection(1L, 3L, 10));
+        Section newSection = createSection(1L, 2L, 3);
 
-        //when
-        구간들.add(구간2);
+        sections.addMiddleStation(newSection);
 
-        //then
-        assertThat(구간들.size()).isEqualTo(2);
+        assertThat(sections.size()).isEqualTo(2);
+    }
 
-        assertThat(구간들.get(0).getUpStationId()).isEqualTo(1L);
-        assertThat(구간들.get(0).getDownStationId()).isEqualTo(2L);
-        assertThat(구간들.get(0).getDistance()).isEqualTo(새구간1거리);
+    @Test
+    void 상행구간_추가() {
+        Sections sections = Sections.from(createSection(1L, 2L));
+        Section newSection = createSection(0L, 1L);
 
-        assertThat(구간들.get(1).getUpStationId()).isEqualTo(2L);
-        assertThat(구간들.get(1).getDownStationId()).isEqualTo(3L);
-        assertThat(구간들.get(1).getDistance()).isEqualTo(새구간2거리);
+        sections.addUpStation(newSection);
+
+        assertThat(sections.size()).isEqualTo(2);
+    }
+
+    @Test
+    void 하행구간_추가() {
+        Sections sections = Sections.from(createSection(1L, 2L));
+        Section newSection = createSection(2L, 3L);
+
+        sections.addDownStation(newSection);
+
+        assertThat(sections.size()).isEqualTo(2);
     }
 
     @Test

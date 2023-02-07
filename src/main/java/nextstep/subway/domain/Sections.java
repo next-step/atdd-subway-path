@@ -7,8 +7,12 @@ import lombok.NoArgsConstructor;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Spliterator;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
@@ -58,31 +62,7 @@ public class Sections implements Iterable<Section> {
     public void add(Section newSection) {
         validateForAdd(newSection);
 
-        Optional<Section> optionalSection = values.stream()
-                .filter(s -> s.getUpStation().getId().equals(newSection.getUpStationId()))
-                .findAny();
-
-        if (optionalSection.isPresent()) {
-            Section oldSection = optionalSection.get();
-
-            int oldDis = oldSection.getDistance();
-            int newDIs = newSection.getDistance();
-
-            Station oldSectionDownStation = oldSection.getDownStation();
-            Station newSectionDownStation = newSection.getDownStation();
-
-            oldSection.changeDistance(oldDis - newDIs);
-            oldSection.changeDownStation(newSectionDownStation);
-
-            newSection.changeDownStationToUpStation();
-            newSection.changeDownStation(oldSectionDownStation);
-
-            values.remove(oldSection);
-            values.add(oldSection);
-            values.add(newSection);
-            return;
-        }
-
+        // TODO 구현해야한다
         values.add(newSection);
     }
 
@@ -193,13 +173,20 @@ public class Sections implements Iterable<Section> {
 
     public boolean isAddUpStation(Section newSection) {
         return values.stream()
-                .anyMatch(s -> s.isSameUpStation(newSection.getDownStation()));
+                .anyMatch(addUpStationPredicate(newSection));
+    }
+
+    private Predicate<Section> addUpStationPredicate(Section newSection) {
+        return s -> s.isSameUpStation(newSection.getDownStation());
     }
 
     public boolean isAddMiddleStation(Section newSection) {
         return values.stream()
-                .filter(s -> s.isSameUpStation(newSection.getUpStation()))
-                .anyMatch(s -> s.isDistanceGreaterThen(newSection.getDistance()));
+                .anyMatch(addMiddlePredicate(newSection));
+    }
+
+    private Predicate<Section> addMiddlePredicate(Section newSection) {
+        return s -> s.isSameUpStation(newSection.getUpStation()) && s.isDistanceGreaterThen(newSection.getDistance());
     }
 
     public boolean isAddDownStation(Section newSection) {
@@ -208,14 +195,33 @@ public class Sections implements Iterable<Section> {
     }
 
     public void addUpStation(Section newSection) {
-
+        values.add(0, newSection);
     }
 
     public void addMiddleStation(Section newSection) {
+        Section oldSection = values.stream()
+                .filter(addMiddlePredicate(newSection))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("구간을 찾을 수 없습니다."));
 
+        int oldDis = oldSection.getDistance();
+        int newDIs = newSection.getDistance();
+
+        Station oldSectionDownStation = oldSection.getDownStation();
+        Station newSectionDownStation = newSection.getDownStation();
+
+        oldSection.changeDistance(oldDis - newDIs);
+        oldSection.changeDownStation(newSectionDownStation);
+
+        newSection.changeDownStationToUpStation();
+        newSection.changeDownStation(oldSectionDownStation);
+
+        values.remove(oldSection);
+        values.add(oldSection);
+        values.add(newSection);
     }
 
     public void addDownStation(Section newSection) {
-
+        values.add(newSection);
     }
 }
