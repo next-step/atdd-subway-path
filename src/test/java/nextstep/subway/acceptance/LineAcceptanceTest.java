@@ -16,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관리 기능")
 class LineAcceptanceTest extends AcceptanceTest {
+
     /**
      * When 지하철 노선을 생성하면
      * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
@@ -24,13 +25,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green");
+        ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성_요청("2호선", "green");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        ExtractableResponse<Response> listResponse = 지하철_노선_목록_조회_요청();
-
-        assertThat(listResponse.jsonPath().getList("name")).contains("2호선");
+        지하철_노선이_정상적으로_추가되었는지_확인(지하철_노선_생성_응답, "2호선");
     }
 
     /**
@@ -46,11 +44,10 @@ class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성_요청("3호선", "orange");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
+        ExtractableResponse<Response> 지하철_노선_목록_조회_응답 = 지하철_노선_목록_조회_요청();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("name")).contains("2호선", "3호선");
+        지하철_노선_목록에_노선이_존재하는지_확인(지하철_노선_목록_조회_응답, "2호선", "3호선");
     }
 
     /**
@@ -62,14 +59,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성_요청("2호선", "green");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
+        ExtractableResponse<Response> 지하철_노선_조회_응답 = 지하철_노선_조회_요청(지하철_노선_생성_응답);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getString("name")).isEqualTo("2호선");
+        조회한_지하철_노선의_정보가_맞는지_확인(지하철_노선_조회_응답, "2호선");
     }
 
     /**
@@ -81,22 +77,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성_요청("2호선", "green");
 
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("color", "red");
-        RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put(createResponse.header("location"))
-                .then().log().all().extract();
+        지하철_노선_수정_요청(지하철_노선_생성_응답, "red");
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getString("color")).isEqualTo("red");
+        지하철_노선이_정상적으로_수정되었는지_확인(지하철_노선_생성_응답, "red");
     }
 
     /**
@@ -108,15 +95,12 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성_요청("2호선", "green");
 
         // when
-        ExtractableResponse<Response> response = RestAssured
-                .given().log().all()
-                .when().delete(createResponse.header("location"))
-                .then().log().all().extract();
+        final ExtractableResponse<Response> 지하철_노선_삭제_응답 = 지하철_노선_삭제_요청(지하철_노선_생성_응답);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        지하철이_정상적으로_삭제되었는지_확인(지하철_노선_삭제_응답);
     }
 }
