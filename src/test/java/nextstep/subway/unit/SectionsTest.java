@@ -30,42 +30,61 @@ class SectionsTest {
     @Test
     void 기존_구간_사이에_역이_추가_된다() {
         //given
-        Sections sections = Sections.from(createSection(1L, 3L, 7));
-        Section newSection = createSection(1L, 2L, 4);
+        long stationId1 = 1L;
+        long stationId2 = 2L;
+        long stationId3 = 3L;
+
+        Sections sections = Sections.from(createSection(stationId1, stationId3, 7));
+        Section newSection = createSection(stationId1, stationId2, 4);
 
         sections.addMiddleStation(newSection);
 
         assertThat(sections.size()).isEqualTo(2);
 
         Section section1 = sections.get(0);
-        assertThat(section1.getUpStationId()).isEqualTo(1L);
-        assertThat(section1.getDownStationId()).isEqualTo(2L);
+        assertStationId(stationId1, stationId2, section1);
         assertThat(section1.getDistance()).isEqualTo(4);
 
         Section section2 = sections.get(1);
-        assertThat(section2.getUpStationId()).isEqualTo(2L);
-        assertThat(section2.getDownStationId()).isEqualTo(3L);
+        assertStationId(stationId2, stationId3, section2);
         assertThat(section2.getDistance()).isEqualTo(3);
     }
 
     @Test
     void 상행구간_추가() {
-        Sections sections = Sections.from(createSection(1L, 2L));
-        Section newSection = createSection(0L, 1L);
+        long stationId1 = 0L;
+        long stationId2 = 1L;
+        long stationId3 = 2L;
+
+        Sections sections = Sections.from(createSection(stationId2, stationId3));
+        Section newSection = createSection(stationId1, stationId2);
 
         sections.addUpStation(newSection);
 
         assertThat(sections.size()).isEqualTo(2);
+        assertStationId(stationId1, stationId2, sections.get(0));
+        assertStationId(stationId2, stationId3, sections.get(1));
     }
 
     @Test
     void 하행구간_추가() {
-        Sections sections = Sections.from(createSection(1L, 2L));
-        Section newSection = createSection(2L, 3L);
+        long stationId1 = 1L;
+        long stationId2 = 2L;
+        long stationId3 = 3L;
+
+        Sections sections = Sections.from(createSection(stationId1, stationId2));
+        Section newSection = createSection(stationId2, stationId3);
 
         sections.addDownStation(newSection);
 
         assertThat(sections.size()).isEqualTo(2);
+        assertStationId(stationId1, stationId2, sections.get(0));
+        assertStationId(stationId2, stationId3, sections.get(1));
+    }
+
+    private void assertStationId(long stationId1, long stationId2, Section section) {
+        assertThat(section.getUpStationId()).isEqualTo(stationId1);
+        assertThat(section.getDownStationId()).isEqualTo(stationId2);
     }
 
     @Test
