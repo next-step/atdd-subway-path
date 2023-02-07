@@ -87,6 +87,9 @@ public class Line {
 
 	public void updateInfo(String name, String color) {
 		validateName(name);
+		if (color == null || color.isBlank()) {
+			throw new InvalidLineUpdateException(LineErrorCode.INVALID_COLOR_UPDATE_REQUEST);
+		}
 		this.name = name;
 		this.color = color;
 	}

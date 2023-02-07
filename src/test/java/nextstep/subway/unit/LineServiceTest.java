@@ -179,4 +179,13 @@ public class LineServiceTest extends IntegrationUnitTest {
 			.isInstanceOf(InvalidLineUpdateException.class)
 			.hasMessage(LineErrorCode.INVALID_NAME_UPDATER_REQUEST.getMessage());
 	}
+
+	@DisplayName("지하철노선 정보 수정시 지하철색이 null혹은 empty일경우 예외가 발생한다")
+	@ParameterizedTest
+	@NullAndEmptySource
+	void 지하철노선_정보_수정시_지하철색이_null혹은_empty일경우_예외가_발생한다(String color) {
+		assertThatThrownBy(() -> lineService.updateLine(LINE_4_ID, new LineUpdateRequest("2호선", color)))
+			.isInstanceOf(InvalidLineUpdateException.class)
+			.hasMessage(LineErrorCode.INVALID_COLOR_UPDATE_REQUEST.getMessage());
+	}
 }
