@@ -66,8 +66,8 @@ public class Section {
         line = null;
     }
 
-    public void changeDistance(int distance) {
-        this.distance = distance;
+    public void minusDistacne(int distance) {
+        this.distance -= distance;
     }
 
     public void changeDownStationToUpStation() {
