@@ -60,25 +60,17 @@ public class Sections implements Iterable<Section> {
     }
 
     public void add(Section newSection) {
-        validateForAdd(newSection);
-
-        // TODO 구현해야한다
-        values.add(newSection);
-    }
-
-    public void add(Line line, Station upStation, Station downStation, int distance) {
-        Section section = Section.builder()
-                .upStation(upStation)
-                .downStation(downStation)
-                .distance(distance)
-                .build();
-
-        if (values.contains(section)) {
+        if (forceAddCondition(newSection)) {
+            values.add(newSection);
             return;
         }
 
-        add(section);
-        section.changeLine(line);
+        SectionAction action = SectionAction.of(this, newSection);
+        action.add(this, newSection);
+    }
+
+    private boolean forceAddCondition(Section newSection) {
+        return values.isEmpty() || values.contains(newSection); // 메서드 대시 변수로 할당하는게 좋을까?
     }
 
     public void remove(Section section) {
@@ -110,18 +102,6 @@ public class Sections implements Iterable<Section> {
         if (values.size() <= 1) {
             throw new IllegalArgumentException(LINE_SECTION_IS_ONLY_ONE);
         }
-    }
-
-    private void validateForAdd(Section newSection) {
-        if (passCondition(newSection)) {
-            return;
-        }
-
-        validateSavedStation(newSection);
-    }
-
-    private boolean passCondition(Section newSection) {
-        return values.isEmpty() || values.contains(newSection); // 메서드 대시 변수로 할당하는게 좋을까?
     }
 
     private void validateSavedStation(Section section) {
@@ -157,11 +137,9 @@ public class Sections implements Iterable<Section> {
         return values.get(values.size() - 1);
     }
 
-
     public boolean contains(Section section) {
         return values.contains(section);
     }
-
 
     public boolean isEmpty() {
         return values.isEmpty();

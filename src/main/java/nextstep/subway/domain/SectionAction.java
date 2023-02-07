@@ -42,4 +42,8 @@ public enum SectionAction {
             throw new IllegalArgumentException("상행 하행역이 모두 노선에 등록되어 있지 않으면 등록 불가");
         }
     }
+
+    public void add(Sections sections, Section newSection) {
+        this.addFunction.accept(sections, newSection);
+    }
 }
