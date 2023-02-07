@@ -85,7 +85,9 @@ public class Line {
         List<Station> stations = this.getSections().stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
-        stations.add(0, this.getSections().get(0).getUpStation());
+        if (!this.sections.isEmpty()) {
+            stations.add(0, this.getSections().get(0).getUpStation());
+        }
         return stations;
     }
 

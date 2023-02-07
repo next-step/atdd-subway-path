@@ -1,9 +1,10 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
-import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.applicaion.dto.UpdateLineRequest;
+import nextstep.subway.applicaion.dto.CreateLineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
-import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.AddSectionRequest;
 import nextstep.subway.domain.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +34,10 @@ public class LineServiceTest {
         // given
         final Station 강남역 = createStation("강남역");
         final Station 역삼역 = createStation("역삼역");
-        final LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 강남역.getId(), 역삼역.getId(), 10);
+        final CreateLineRequest createLineRequest = new CreateLineRequest("2호선", "bg-green-600", 강남역.getId(), 역삼역.getId(), 10);
 
         // when
-        lineService.saveLine(lineRequest);
+        lineService.saveLine(createLineRequest);
 
         // then
         final List<Line> lines = lineRepository.findAll();
@@ -85,10 +86,10 @@ public class LineServiceTest {
     void updateLine() {
         // given
         final Line line = createLine("2호선", "bg-green-600");
-        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", null, null, 10);
+        final UpdateLineRequest updateLineRequest = new UpdateLineRequest("신분당선", "bg-red-600");
 
         // when
-        lineService.updateLine(line.getId(), lineRequest);
+        lineService.updateLine(line.getId(), updateLineRequest);
 
         // then
         final LineResponse lineResponse = lineService.findById(line.getId());
@@ -118,7 +119,7 @@ public class LineServiceTest {
         final Line 이호선 = createLine("2호선", "bg-green-600");
 
         // when
-        lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 10));
+        lineService.addSection(이호선.getId(), new AddSectionRequest(강남역.getId(), 역삼역.getId(), 10));
 
         // then
         final List<Section> sections = 이호선.getSections();
@@ -132,8 +133,8 @@ public class LineServiceTest {
         final Station 역삼역 = createStation("역삼역");
         final Station 선릉역 = createStation("선릉역");
         final Line 이호선 = createLine("2호선", "bg-green-600");
-        lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 10));
-        lineService.addSection(이호선.getId(), new SectionRequest(역삼역.getId(), 선릉역.getId(), 10));
+        lineService.addSection(이호선.getId(), new AddSectionRequest(강남역.getId(), 역삼역.getId(), 10));
+        lineService.addSection(이호선.getId(), new AddSectionRequest(역삼역.getId(), 선릉역.getId(), 10));
 
         // when
         lineService.deleteSection(이호선.getId(), 선릉역.getId());

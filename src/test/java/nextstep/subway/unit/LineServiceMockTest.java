@@ -2,9 +2,10 @@ package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
-import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.applicaion.dto.UpdateLineRequest;
+import nextstep.subway.applicaion.dto.CreateLineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
-import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.AddSectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
@@ -44,11 +45,11 @@ public class LineServiceMockTest {
     @Test
     void saveLine() {
         // given
-        final LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
+        final CreateLineRequest createLineRequest = new CreateLineRequest("2호선", "bg-green-600");
         when(lineRepository.save(any())).thenReturn(이호선);
 
         // when
-        final LineResponse lineResponse = lineService.saveLine(lineRequest);
+        final LineResponse lineResponse = lineService.saveLine(createLineRequest);
 
         // then
         assertThat(lineResponse.getId()).isNotNull();
@@ -81,11 +82,11 @@ public class LineServiceMockTest {
     @Test
     void updateLine() {
         // given
-        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600");
+        final UpdateLineRequest updateLineRequest = new UpdateLineRequest("신분당선", "bg-red-600");
         when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
 
         // when
-        lineService.updateLine(이호선.getId(), lineRequest);
+        lineService.updateLine(이호선.getId(), updateLineRequest);
 
         // then
         final LineResponse lineResponse = lineService.findById(이호선.getId());
@@ -98,13 +99,13 @@ public class LineServiceMockTest {
         // given
         final Station 강남역 = new Station("강남역");
         final Station 역삼역 = new Station("역삼역");
-        final SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 역삼역.getId(), 10);
-        when(stationService.findById(sectionRequest.getUpStationId())).thenReturn(강남역);
-        when(stationService.findById(sectionRequest.getDownStationId())).thenReturn(역삼역);
+        final AddSectionRequest addSectionRequest = new AddSectionRequest(강남역.getId(), 역삼역.getId(), 10);
+        when(stationService.findById(addSectionRequest.getUpStationId())).thenReturn(강남역);
+        when(stationService.findById(addSectionRequest.getDownStationId())).thenReturn(역삼역);
         when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
 
         // when
-        lineService.addSection(이호선.getId(), sectionRequest);
+        lineService.addSection(이호선.getId(), addSectionRequest);
 
         // then
         // line.findLineById 메서드를 통해 검증
