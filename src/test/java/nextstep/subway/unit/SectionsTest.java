@@ -6,6 +6,7 @@ import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static nextstep.subway.fixture.SectionFixture.createSection;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -131,12 +132,24 @@ class SectionsTest {
 
     @Test
     void 역_조회() {
-        Section section1 = createSection(1L, 2L);
-        Section section2 = createSection(2L, 3L);
-        Sections sections = Sections.from(section1, section2);
+        long id0 = 0L;
+        long id1 = 1L;
+        long id2 = 2L;
+        long id3 = 3L;
+        long id4 = 4L;
 
-        List<Station> stations = sections.getStations();
+        Sections sections = Sections.from(
+                createSection(id1, id3, 10),
+                createSection(id1, id2, 3),
+                createSection(id0, id1),
+                createSection(id3, id4));
 
-        assertThat(stations).hasSize(3);
+        List<Long> ids = sections.getStations()
+                .stream()
+                .map(Station::getId)
+                .collect(Collectors.toList());
+
+        assertThat(ids).hasSize(5);
+        assertThat(ids).containsExactly(id0, id1, id2, id3, id4);
     }
 }
