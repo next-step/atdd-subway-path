@@ -52,6 +52,6 @@ public class Line {
     }
 
     public void addSection(Section section) {
-
+        this.sections.add(section);
     }
 }
