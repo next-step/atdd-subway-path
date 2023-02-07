@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.tool.schema.extract.spi.TableInformation;
 
 import javax.persistence.*;
 import java.util.Optional;
@@ -78,5 +77,17 @@ public class Section {
 
     public void changeDownStation(Station downStation) {
         this.downStation = downStation;
+    }
+
+    public boolean isDistanceGreaterThen(int distance) {
+        return this.distance > distance;
+    }
+
+    public boolean isSameUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean isSameDownUpStation(Station station) {
+        return this.downStation.equals(station);
     }
 }

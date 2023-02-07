@@ -10,7 +10,6 @@ import javax.persistence.OneToMany;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 @EqualsAndHashCode
@@ -134,18 +133,21 @@ public class Sections implements Iterable<Section> {
     }
 
     private void validateForAdd(Section newSection) {
-        if (values.isEmpty() || values.contains(newSection)) {
+        if (passCondition(newSection)) {
             return;
         }
 
         validateSavedStation(newSection);
     }
 
+    private boolean passCondition(Section newSection) {
+        return values.isEmpty() || values.contains(newSection); // 메서드 대시 변수로 할당하는게 좋을까?
+    }
+
     private void validateSavedStation(Section section) {
         List<Long> ids = getStationIds();
         if (ids.contains(section.getUpStationId()) && ids.contains(section.getDownStationId())) {
             throw new IllegalArgumentException("이미 노선에 등록된 역 입니다. id:" + section);
-
         }
     }
 
@@ -183,5 +185,37 @@ public class Sections implements Iterable<Section> {
 
     public boolean isEmpty() {
         return values.isEmpty();
+    }
+
+    public boolean hasStation(Station station) {
+        return getStations().contains(station);
+    }
+
+    public boolean isAddUpStation(Section newSection) {
+        return values.stream()
+                .anyMatch(s -> s.isSameUpStation(newSection.getDownStation()));
+    }
+
+    public boolean isAddMiddleStation(Section newSection) {
+        return values.stream()
+                .filter(s -> s.isSameUpStation(newSection.getUpStation()))
+                .anyMatch(s -> s.isDistanceGreaterThen(newSection.getDistance()));
+    }
+
+    public boolean isAddDownStation(Section newSection) {
+        return values.stream()
+                .anyMatch(s -> s.isSameDownUpStation(newSection.getUpStation()));
+    }
+
+    public void addUpStation(Section newSection) {
+
+    }
+
+    public void addMiddleStation(Section newSection) {
+
+    }
+
+    public void addDownStation(Section newSection) {
+
     }
 }
