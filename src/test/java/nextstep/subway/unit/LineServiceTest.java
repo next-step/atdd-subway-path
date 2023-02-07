@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -99,5 +100,21 @@ public class LineServiceTest extends IntegrationUnitTest {
 					충무로_ID
 				)
 		);
+	}
+
+	@DisplayName("구간이 한개 이상일때 마지막 구간 제거에 성공한다")
+	@Test
+	void 구간이_한개_이상일때_마지막_구간_제거에_성공한다() {
+		// given
+		SectionRequest 동대문역사문화공원_충무로 = 구간_추가_요청(동대문역사문화공원_ID, 충무로_ID, 5);
+		lineService.addSection(LINE_4_ID, 동대문역사문화공원_충무로);
+
+		// when
+		lineService.deleteSection(LINE_4_ID, 충무로_ID);
+
+		// then
+		LineResponse lineResponse = lineService.findById(LINE_4_ID);
+
+		assertThat(lineResponse.getStations()).hasSize(2);
 	}
 }

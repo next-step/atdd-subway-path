@@ -99,4 +99,24 @@ public class LineServiceMockTest {
 		// then
 		assertThat(stationResponses).hasSize(3);
 	}
+
+	@DisplayName("구간이 한개 이상일때 마지막 구간 제거에 성공한다")
+	@Test
+	void 구간이_한개_이상일때_마지막_구간_제거에_성공한다() throws Exception {
+		// given
+		when(lineRepository.findById(LINE_4_ID))
+			.thenReturn(Optional.of(LINE_4()));
+
+		when(stationService.findById(동대문역사문화공원_ID)).thenReturn(withId(동대문역사문화공원, 동대문역사문화공원_ID));
+		when(stationService.findById(충무로_ID)).thenReturn(withId(충무로, 충무로_ID));
+		lineService.addSection(LINE_4_ID, 구간_추가_요청(동대문역사문화공원_ID, 충무로_ID, 10));
+
+		// when
+		lineService.deleteSection(LINE_4_ID, 충무로_ID);
+
+		// then
+		LineResponse lineResponse = lineService.findById(LINE_4_ID);
+
+		assertThat(lineResponse.getStations()).hasSize(2);
+	}
 }

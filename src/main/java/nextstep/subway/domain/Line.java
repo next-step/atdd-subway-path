@@ -77,9 +77,15 @@ public class Line {
 
     public void addSection(Station upStation, Station downStation, int distance) {
         this.sections.addSection(this, upStation, downStation, distance);
+        this.downStationId = downStation.getId();
     }
 
     public List<Station> getStations() {
         return sections.getStations();
+    }
+
+    public void removeSection(Station station) {
+        Station newDownStation = this.sections.remove(station, downStationId);
+        this.downStationId = newDownStation.getId();
     }
 }

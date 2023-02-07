@@ -21,6 +21,10 @@ public class Station {
         this.name = name;
     }
 
+    public boolean equalId(Long id) {
+        return this.id != null && this.id.equals(id);
+    }
+
     public Long getId() {
         return id;
     }

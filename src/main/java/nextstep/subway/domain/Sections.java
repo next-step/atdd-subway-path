@@ -57,4 +57,20 @@ public class Sections {
 
 		this.sections.add(new Section(line, upStation, downStation, distance));
 	}
+
+	public Station remove(Station station, Long finalDownStationId) {
+
+		Section section = this.sections.stream()
+			.filter(it -> it.equalDownStation(station))
+			.findFirst()
+			.orElseThrow(IllegalArgumentException::new);
+
+
+		if (section.hasFinalDownStation(finalDownStationId)) {
+			sections.remove(section);
+			return section.getUpStation();
+		}
+
+		throw new IllegalStateException();
+	}
 }

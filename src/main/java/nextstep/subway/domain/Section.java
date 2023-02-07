@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import java.util.Objects;
+
 import javax.persistence.*;
 
 @Entity
@@ -32,6 +34,18 @@ public class Section {
         this.distance = distance;
     }
 
+    public boolean equalDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public boolean equalUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean hasFinalDownStation(Long finalDownStationId) {
+        return this.downStation.equalId(finalDownStationId);
+    }
+
     public Long getId() {
         return id;
     }
@@ -50,5 +64,20 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof Section))
+            return false;
+        Section section = (Section)o;
+        return Objects.equals(id, section.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
