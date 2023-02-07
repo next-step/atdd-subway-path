@@ -4,10 +4,7 @@ import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,11 +12,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.domain.Section.*;
+
 @Service
 @Transactional(readOnly = true)
 public class LineService {
-    private LineRepository lineRepository;
-    private StationService stationService;
+    private final LineRepository lineRepository;
+    private final StationService stationService;
 
     public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
@@ -32,7 +31,12 @@ public class LineService {
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.getSections().add(new Section(line, upStation, downStation, request.getDistance()));
+            Section section = new SectionBuilder(line)
+                    .setDownStation(downStation)
+                    .setUpStation(upStation)
+                    .setDistance(10)
+                    .build();
+            line.addSection(section);
         }
         return createLineResponse(line);
     }
@@ -69,8 +73,12 @@ public class LineService {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
-
-        line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        Section section = new SectionBuilder(line)
+                .setUpStation(upStation)
+                .setDownStation(downStation)
+                .setDistance(10)
+                .build();
+        line.addSection(section);
     }
 
     private LineResponse createLineResponse(Line line) {
@@ -83,18 +91,14 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
+        if (line.isEmptySections()) {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, line.getSections().get(0).getUpStation());
+        List<Station> stations = line.getAllStations();
 
         return stations.stream()
-                .map(it -> stationService.createStationResponse(it))
+                .map(stationService::createStationResponse)
                 .collect(Collectors.toList());
     }
 
@@ -103,10 +107,7 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
+        line.removeLastSection(station);
 
-        line.getSections().remove(line.getSections().size() - 1);
     }
 }

@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 public class Section {
@@ -26,20 +28,18 @@ public class Section {
 
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
-        this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+    public Section(SectionBuilder builder) {
+        this.line = builder.line;
+        this.upStation = builder.upStation;
+        this.downStation = builder.downStation;
+        this.distance = builder.distance;
     }
+
 
     public Long getId() {
         return id;
     }
 
-    public Line getLine() {
-        return line;
-    }
 
     public Station getUpStation() {
         return upStation;
@@ -49,7 +49,44 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
-        return distance;
+    public boolean equalDownStation(Station station) {
+        return this.downStation.equals(station);
     }
+
+    public List<Station> getStations(){
+        return Arrays.asList(upStation, downStation);
+    }
+
+    public static class SectionBuilder {
+        private Line line;
+        private Station upStation;
+        private Station downStation;
+        private int distance;
+
+        public SectionBuilder(Line line) {
+            this.line = line;
+        }
+
+        public SectionBuilder setUpStation(Station station) {
+            this.upStation = station;
+            return this;
+        }
+
+        public SectionBuilder setDownStation(Station station) {
+            this.downStation = station;
+            return this;
+        }
+
+        public SectionBuilder setDistance(int distance) {
+            this.distance = distance;
+            return this;
+        }
+
+        public Section build() {
+            return new Section(this);
+        }
+
+    }
+
+
 }
