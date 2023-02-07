@@ -24,6 +24,8 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.domain.exception.LineErrorCode;
+import nextstep.subway.domain.exception.SectionErrorCode;
+import nextstep.subway.domain.exception.SectionRemoveException;
 import nextstep.subway.domain.exception.StationErrorCode;
 import nextstep.subway.domain.exception.StationNotFoundException;
 import nextstep.subway.domain.exception.SubwayBadRequestException;
@@ -116,5 +118,13 @@ public class LineServiceTest extends IntegrationUnitTest {
 		LineResponse lineResponse = lineService.findById(LINE_4_ID);
 
 		assertThat(lineResponse.getStations()).hasSize(2);
+	}
+
+	@DisplayName("구간제거시 상행종점역과 하행종점역만 있을경우 예외가 발생한다")
+	@Test
+	void 구간제거시_상행종점역과_하행종점역만_있을경우_예외가_발생한다() {
+		assertThatThrownBy(() -> lineService.deleteSection(LINE_4_ID, 충무로_ID))
+			.isInstanceOf(SectionRemoveException.class)
+			.hasMessage(SectionErrorCode.SINGLE_SECTION.getMessage());
 	}
 }

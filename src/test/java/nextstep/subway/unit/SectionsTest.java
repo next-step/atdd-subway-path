@@ -1,5 +1,6 @@
 package nextstep.subway.unit;
 
+import static nextstep.subway.common.LineFixtures.*;
 import static nextstep.subway.common.StationFixtures.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,6 +21,8 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.exception.SectionErrorCode;
+import nextstep.subway.domain.exception.SectionRemoveException;
 
 @ExtendWith(MockitoExtension.class)
 class SectionsTest {
@@ -98,6 +101,18 @@ class SectionsTest {
 
 		// then
 		assertThat(sections.getList()).hasSize(1);
+	}
+
+	@DisplayName("구간제거시 상행종점역과 하행종점역만 있을경우 예외가 발생한다")
+	@Test
+	void 구간제거시_상행종점역과_하행종점역만_있을경우_예외가_발생한다() throws Exception {
+		Sections sections = new Sections();
+		sections.addSection(line, withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), 10);
+
+		assertThatThrownBy(() -> sections.remove(동대문역사문화공원, 동대문역사문화공원_ID))
+			.isInstanceOf(SectionRemoveException.class)
+			.hasMessage(SectionErrorCode.SINGLE_SECTION.getMessage());
+
 	}
 
 	private void insertIdInSections(List<Section> sections) {

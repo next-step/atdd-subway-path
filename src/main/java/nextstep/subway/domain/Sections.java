@@ -12,12 +12,16 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.domain.exception.LineErrorCode;
+import nextstep.subway.domain.exception.SectionErrorCode;
+import nextstep.subway.domain.exception.SectionRemoveException;
 import nextstep.subway.domain.exception.SubwayBadRequestException;
 
 @Embeddable
 public class Sections {
 
-	private static int INVALID_SECTION_DISTANCE = 0;
+	private static final int INVALID_SECTION_DISTANCE = 0;
+
+	private static final int SINGLE_SECTION_COUNT = 1;
 
 	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
 	private final List<Section> sections = new ArrayList<>();
@@ -59,6 +63,9 @@ public class Sections {
 	}
 
 	public Station remove(Station station, Long finalDownStationId) {
+		if (this.sections.size() == SINGLE_SECTION_COUNT) {
+			throw new SectionRemoveException(SectionErrorCode.SINGLE_SECTION);
+		}
 
 		Section section = this.sections.stream()
 			.filter(it -> it.equalDownStation(station))
