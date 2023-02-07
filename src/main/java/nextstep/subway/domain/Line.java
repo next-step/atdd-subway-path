@@ -56,16 +56,8 @@ public class Line {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 
     public List<Section> getSections() {
@@ -74,6 +66,15 @@ public class Line {
 
     public void setSections(final List<Section> sections) {
         this.sections = sections;
+    }
+
+    public void update(final String name, final String color) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (color != null) {
+            this.color = color;
+        }
     }
 
     public void addSection(final Station upStation, final Station downStation, final int distance) {
