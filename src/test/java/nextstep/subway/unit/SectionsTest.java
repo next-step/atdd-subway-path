@@ -89,7 +89,6 @@ class SectionsTest {
 	@Test
 	void 구간이_한개_이상일때_마지막_구간_제거에_성공한다() throws Exception {
 		// given
-		Sections sections = new Sections();
 		Long downStationId = 충무로_ID;
 
 		sections.addSection(line, withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), 10);
@@ -106,13 +105,24 @@ class SectionsTest {
 	@DisplayName("구간제거시 상행종점역과 하행종점역만 있을경우 예외가 발생한다")
 	@Test
 	void 구간제거시_상행종점역과_하행종점역만_있을경우_예외가_발생한다() throws Exception {
-		Sections sections = new Sections();
 		sections.addSection(line, withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), 10);
 
 		assertThatThrownBy(() -> sections.remove(동대문역사문화공원, 동대문역사문화공원_ID))
 			.isInstanceOf(SectionRemoveException.class)
 			.hasMessage(SectionErrorCode.SINGLE_SECTION.getMessage());
 
+	}
+
+	@DisplayName("구간제거시 제거할구간이 하행종점역이 아닐경우 예외가 발생한다")
+	@Test
+	void 구간제거시_제거할구간이_하행종점역이_아닐경우_예외가_발생한다() throws Exception {
+		sections.addSection(line, withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), 10);
+		sections.addSection(line, withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(충무로, 충무로_ID), 5);
+		insertIdInSections(sections.getList());
+
+		assertThatThrownBy(() -> sections.remove(동대문역사문화공원, 충무로_ID))
+			.isInstanceOf(SectionRemoveException.class)
+			.hasMessage(SectionErrorCode.INVALID_REMOVE_STATION.getMessage());
 	}
 
 	private void insertIdInSections(List<Section> sections) {

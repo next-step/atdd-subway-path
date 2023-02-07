@@ -132,4 +132,19 @@ public class LineServiceMockTest {
 			.isInstanceOf(SectionRemoveException.class)
 			.hasMessage(SectionErrorCode.SINGLE_SECTION.getMessage());
 	}
+
+	@DisplayName("구간제거시 제거할구간이 하행종점역이 아닐경우 예외가 발생한다")
+	@Test
+	void 구간제거시_제거할구간이_하행종점역이_아닐경우_예외가_발생한다() throws Exception {
+		when(lineRepository.findById(LINE_4_ID))
+			.thenReturn(Optional.of(LINE_4()));
+
+		when(stationService.findById(동대문역사문화공원_ID)).thenReturn(withId(동대문역사문화공원, 동대문역사문화공원_ID));
+		when(stationService.findById(충무로_ID)).thenReturn(withId(충무로, 충무로_ID));
+		lineService.addSection(LINE_4_ID, 구간_추가_요청(동대문역사문화공원_ID, 충무로_ID, 10));
+
+		assertThatThrownBy(() -> lineService.deleteSection(LINE_4_ID, 동대문역사문화공원_ID))
+			.isInstanceOf(SectionRemoveException.class)
+			.hasMessage(SectionErrorCode.INVALID_REMOVE_STATION.getMessage());
+	}
 }

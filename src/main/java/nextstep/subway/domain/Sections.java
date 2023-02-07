@@ -78,6 +78,6 @@ public class Sections {
 			return section.getUpStation();
 		}
 
-		throw new IllegalStateException();
+		throw new SectionRemoveException(SectionErrorCode.INVALID_REMOVE_STATION);
 	}
 }
