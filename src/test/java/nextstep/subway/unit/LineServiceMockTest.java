@@ -46,8 +46,9 @@ public class LineServiceMockTest {
 	@InjectMocks
 	private LineService lineService;
 
+	@DisplayName("노선 구간추가에 성공한다")
 	@Test
-	void addSection() throws Exception {
+	void 노선_구간추가에_성공한다() throws Exception {
 		// given
 		when(lineRepository.findById(LINE_4_ID))
 			.thenReturn(Optional.of(LINE_4()));
@@ -89,8 +90,9 @@ public class LineServiceMockTest {
 			.hasMessage(LineErrorCode.INVALID_SECTION_DISTANCE.getMessage());
 	}
 
+	@DisplayName("노선에 포함된 역조회에 성공한다")
 	@Test
-	void getStations() throws Exception {
+	void 노선에_포함된_역조회에_성공한다() throws Exception {
 		// given
 		when(lineRepository.findById(LINE_4_ID))
 			.thenReturn(Optional.of(LINE_4()));

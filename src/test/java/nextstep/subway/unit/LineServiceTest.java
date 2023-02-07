@@ -52,8 +52,9 @@ public class LineServiceTest extends IntegrationUnitTest {
 		lineRepository.save(LINE_4());
 	}
 
+	@DisplayName("노선 구간추가에 성공한다")
 	@Test
-	void addSection() {
+	void 노선_구간추가에_성공한다() {
 		// given
 		SectionRequest 동대문역사문화공원_충무로 = 구간_추가_요청(동대문역사문화공원_ID, 충무로_ID, 5);
 
@@ -85,8 +86,9 @@ public class LineServiceTest extends IntegrationUnitTest {
 			.hasMessage(LineErrorCode.INVALID_SECTION_DISTANCE.getMessage());
 	}
 
+	@DisplayName("노선에 포함된 역조회에 성공한다")
 	@Test
-	void getStations() {
+	void 노선에_포함된_역조회에_성공한다() {
 		// given
 		SectionRequest 동대문역사문화공원_충무로 = 구간_추가_요청(동대문역사문화공원_ID, 충무로_ID, 5);
 

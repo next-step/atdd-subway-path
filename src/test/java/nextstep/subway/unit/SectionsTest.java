@@ -36,9 +36,9 @@ class SectionsTest {
 		sections = new Sections();
 	}
 
-	@DisplayName("구간 추가에 성공한다")
+	@DisplayName("노선 구간 추가에 성공한다")
 	@Test
-	void addSection() {
+	void 노선_구간추가에_성공한다() {
 		// given
 		int distance = 10;
 
@@ -49,9 +49,9 @@ class SectionsTest {
 		assertThat(sections.getList()).hasSize(1);
 	}
 
-	@DisplayName("전체 역 조회에 성공한다")
+	@DisplayName("노선에 포함된 역조회에 성공한다")
 	@Test
-	void getStations() throws Exception {
+	void 노선에_포함된_역조회에_성공한다() throws Exception {
 		// given
 		sections.addSection(line, withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(충무로, 충무로_ID), 5);
 

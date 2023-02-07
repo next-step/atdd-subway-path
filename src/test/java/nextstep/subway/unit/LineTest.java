@@ -14,7 +14,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.util.ReflectionUtils;
 
-import nextstep.subway.applicaion.dto.LineUpdateRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
@@ -24,8 +23,10 @@ import nextstep.subway.domain.exception.SectionErrorCode;
 import nextstep.subway.domain.exception.SectionRemoveException;
 
 class LineTest {
+
+	@DisplayName("노선 구간추가에 성공한다")
 	@Test
-	void addSection() throws Exception {
+	void 노선_구간추가에_성공한다() throws Exception {
 		// given
 		Line line = LINE_4();
 		int distance = 10;
@@ -38,8 +39,9 @@ class LineTest {
 		assertThat(sections).hasSize(2);
 	}
 
+	@DisplayName("노선에 포함된 역들조회에 성공한다")
 	@Test
-	void getStations() throws Exception {
+	void 노선에_포함된_역조회에_성공한다() throws Exception {
 		// given
 		Line line = LINE_4();
 
