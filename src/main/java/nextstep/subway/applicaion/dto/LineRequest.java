@@ -7,7 +7,7 @@ public class LineRequest {
     private Long downStationId;
     private int distance;
 
-    public LineRequest() {
+    private LineRequest() {
     }
 
     public LineRequest(final String name, final String color) {
