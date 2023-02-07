@@ -69,8 +69,8 @@ public class Sections implements Iterable<Section> {
             return;
         }
 
-        SectionAction action = SectionAction.of(this, newSection);
-        action.add(this, newSection);
+        SectionAction action = SectionAction.of(values, newSection);
+        action.add(values, newSection);
 
         updateOrder();
     }
@@ -86,51 +86,7 @@ public class Sections implements Iterable<Section> {
         return values.isEmpty() || values.contains(newSection); // 메서드 대시 변수로 할당하는게 좋을까?
     }
 
-    public boolean isAddUpStation(Section newSection) {
-        return values.stream()
-                .anyMatch(addUpStationPredicate(newSection));
-    }
 
-    private Predicate<Section> addUpStationPredicate(Section newSection) {
-        return s -> s.isSameUpStation(newSection.getDownStation());
-    }
-
-    public boolean isAddMiddleStation(Section newSection) {
-        return values.stream()
-                .anyMatch(addMiddlePredicate(newSection));
-    }
-
-    private Predicate<Section> addMiddlePredicate(Section newSection) {
-        return s -> s.isSameUpStation(newSection.getUpStation()) && s.isDistanceGreaterThen(newSection.getDistance());
-    }
-
-    public boolean isAddDownStation(Section newSection) {
-        return values.stream()
-                .anyMatch(s -> s.isSameDownUpStation(newSection.getUpStation()));
-    }
-
-    public void addUpStation(Section newSection) {
-        values.add(0, newSection);
-    }
-
-    public void addMiddleStation(Section newSection) {
-        Section oldSection = values.stream()
-                .filter(addMiddlePredicate(newSection))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("구간을 찾을 수 없습니다."));
-
-        values.add(values.indexOf(oldSection), newSection);
-
-
-        oldSection.minusDistacne(newSection.getDistance());
-        oldSection.changeUpStation(newSection.getDownStation());
-
-        values.set(values.indexOf(oldSection), oldSection);
-    }
-
-    public void addDownStation(Section newSection) {
-        values.add(newSection);
-    }
 
     public void remove(Section section) {
         if (!values.contains(section)) {
@@ -193,9 +149,5 @@ public class Sections implements Iterable<Section> {
 
     public boolean isEmpty() {
         return values.isEmpty();
-    }
-
-    public boolean hasStation(Station station) {
-        return getStations().contains(station);
     }
 }
