@@ -119,35 +119,90 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 지하철 노선 기존 구간 역 사이에 새로운 역을 추가하면
-     * Then 노선에 새로운 구간이 추가된다
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 상행종점역을 구간 삭제 요청 하면
+     * Then 노선에 구간이 제거된다
      */
-    @DisplayName("지하철 노선에 구간을 등록")
+    @DisplayName("지하철 노선에 상행종점역 제거")
     @Test
-    void addMiddleSection() {
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 몽촌토성역, 4));
+    void removeLineUpStation() {
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 몽촌토성역, 4));
+
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
 
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 몽촌토성역, 양재역);
+        assertThat(response.jsonPath().getInt("distance")).isEqualTo(14);
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(양재역, 몽촌토성역);
     }
 
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
-     * When 지하철 노선의 마지막 구간 제거를 요청 하면
+     * When 중간역을 구간 삭제 요청 하면
      * Then 노선에 구간이 제거된다
      */
-    @DisplayName("지하철 노선에 구간을 제거")
+    @DisplayName("지하철 노선에 중간역 제거")
     @Test
-    void removeLineSection() {
-        final Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 4));
+    void removeLineMiddleStation() {
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 몽촌토성역, 4));
 
-        지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
 
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getInt("distance")).isEqualTo(14);
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 몽촌토성역);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 상행종점역을 구간 삭제 요청 하면
+     * Then 노선에 구간이 제거된다
+     */
+    @DisplayName("지하철 노선에 하행종점역 제거")
+    @Test
+    void removeLineDownStation() {
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 몽촌토성역, 4));
+
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 몽촌토성역);
+
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getInt("distance")).isEqualTo(14);
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+    }
+
+    /**
+     * When 구간이 하나인 노선에서 마지막 구간 제거 요청하면
+     * Then 구간 제거가 불가하다.
+     */
+    @DisplayName("노선이 하나인 경우 제거가 불가능하다")
+    @Test
+    void error_removeLineStation() {
+        final ExtractableResponse<Response> 지하철_구간_생성_응답 = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        final JsonPath jsonPathResponse = 지하철_구간_생성_응답.response().body().jsonPath();
+        assertAll(
+                () -> assertThat(지하철_구간_생성_응답.response().statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(jsonPathResponse.getString("message")).isEqualTo(NO_DELETE_ONE_SECTION.getMessage())
+        );
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 노선에 등록되지 않은 역을 제거 요청하면
+     * Then 등록되지 않는 역을 제거가 불가하다.
+     */
+    @DisplayName("등록되지 않는 역은 제거가 불가하다.")
+    @Test
+    void error_removeLineStation_2() {
+        final ExtractableResponse<Response> 지하철_구간_생성_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 몽촌토성역, 10));
+
+        final JsonPath jsonPathResponse = 지하철_구간_생성_응답.response().body().jsonPath();
+        assertAll(
+                () -> assertThat(지하철_구간_생성_응답.response().statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(jsonPathResponse.getString("message")).isEqualTo(NO_REGISTER_LINE_STATION.getMessage())
+        );
     }
 
     private Map<String, Object> createLineCreateParams(final String name, final String color, final Long upStationId, final Long downStationId, final Integer distance) {
