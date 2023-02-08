@@ -70,7 +70,8 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
-        line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        Section section = new Section(line, upStation, downStation, sectionRequest.getDistance());
+        line.addSection(section);
     }
 
     private LineResponse createLineResponse(Line line) {
