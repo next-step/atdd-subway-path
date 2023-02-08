@@ -1,10 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -14,8 +11,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = new Sections();
 
     protected Line() {
     }
@@ -43,122 +40,27 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.get();
     }
 
     public void addSection(Section newSection) {
-        if (this.sections.size() == 0) {
-            this.sections.add(new Section(this, newSection.getUpStation(), newSection.getDownStation(), newSection.getDistance()));
-            return;
-        }
-        this.sections.stream()
-                .filter(section ->
-                        getFinalUpStation().equals(newSection.getDownStation())
-                        || getFinalDownStation().equals(newSection.getUpStation())
-                        || section.getUpStation().equals(newSection.getUpStation())
-                        || section.getDownStation().equals(newSection.getDownStation()))
-                .findFirst()
-                .ifPresentOrElse(section -> {
-                    // 상행, 하행 중복된 구간을 추가하는 경우
-                    if (section.equals(newSection)) {
-                        throw new IllegalArgumentException("상행, 하행이 중복된 구간을 등록할 수 없습니다.");
-                    }
-                    // 상행 종점에 추가된 경우
-                    if (getFinalUpStation().equals(newSection.getDownStation())) {
-                        this.sections.add(new Section(this, newSection.getUpStation(), section.getUpStation(), newSection.getDistance()));
-                        this.sections.add(new Section(this, section.getUpStation(), section.getDownStation(), section.getDistance()));
-                    }
-                    // 하행 종점에 추가된 경우
-                    if (getFinalDownStation().equals(newSection.getUpStation())) {
-                        this.sections.add(new Section(this, section.getUpStation(), section.getDownStation(), section.getDistance()));
-                        this.sections.add(new Section(this, section.getDownStation(), newSection.getDownStation(), newSection.getDistance()));
-                    }
-                    // 상행에 추가한 경우
-                    if (section.getUpStation().equals(newSection.getUpStation())) {
-                        if (section.getDistance() <= newSection.getDistance()) {
-                            throw new IllegalArgumentException("기존 구간의 길이보다 긴 구간은 추가할 수 없습니다.");
-                        }
-                        this.sections.add(new Section(this, section.getUpStation(), newSection.getDownStation(), newSection.getDistance()));
-                        this.sections.add(new Section(this, newSection.getDownStation(), section.getDownStation(), section.getDistance() - newSection.getDistance()));
-                    }
-                    // 하행에 추가한 경우
-                    if (section.getDownStation().equals(newSection.getDownStation())) {
-                        if (section.getDistance() <= newSection.getDistance()) {
-                            throw new IllegalArgumentException("기존 구간의 길이보다 긴 구간은 추가할 수 없습니다.");
-                        }
-                        this.sections.add(new Section(this, section.getUpStation(), newSection.getUpStation(), section.getDistance() - newSection.getDistance()));
-                        this.sections.add(new Section(this, newSection.getUpStation(), section.getDownStation(), newSection.getDistance()));
-                    }
-                    this.sections.remove(section);
-                }, () -> {
-                    // 상,하행 둘다 존재하지 않는 역인 경우
-                    throw new IllegalArgumentException("노선에 존재하지 않는 구간은 추가할 수 없습니다.");
-                });
+        sections.add(this, newSection);
     }
 
     public List<Station> getStations() {
-        if (this.sections.isEmpty()) {
-            return Collections.emptyList();
-        }
-        Stations stations = Stations.of(getFinalUpStation());
-        while (!stations.isFinalDownStationEqualTo(getFinalDownStation())) {
-            // 상행역 -> 하행역
-            this.sections.stream()
-                    .filter(section -> stations.isFinalDownStationEqualTo(section.getUpStation()))
-                    .findFirst()
-                    .map(Section::getDownStation)
-                    .ifPresent(stations::add);
-        }
-        return stations.get();
-    }
-
-    private Station getFinalUpStation() {
-        return sections.stream()
-                .map(Section::getUpStation)
-                .filter(upStation -> !getDownStations().contains(upStation))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("상행 종점역이 존재하지 않습니다."));
-    }
-
-    private Station getFinalDownStation() {
-        return sections.stream()
-                .map(Section::getDownStation)
-                .filter(downStation -> !getUpStations().contains(downStation))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("하행 종점역이 존재하지 않습니다."));
-    }
-
-    public List<Station> getDownStations() {
-        return this.sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-    }
-
-    public List<Station> getUpStations() {
-        return this.sections.stream()
-                .map(Section::getUpStation)
-                .collect(Collectors.toList());
+        return sections.getStations();
     }
 
     public List<Integer> getSectionDistances() {
-        return sections.stream()
-                .map(Section::getDistance)
-                .collect(Collectors.toList());
+        return sections.getSectionDistances();
     }
 
     public void removeSection(Station station) {
-        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-        this.sections.remove(this.sections.size() - 1);
+        this.sections.removeSection(station);
     }
 
     public void removeSection(String stationName) {
-        sections.stream()
-                .filter(section -> section.getDownStation().getName().equals(stationName)
-                        || section.getUpStation().getName().equals(stationName))
-                .findFirst()
-                .ifPresent(section -> sections.remove(section));
+        this.sections.removeSection(stationName);
     }
 
     public void updateLine(Line line) {
