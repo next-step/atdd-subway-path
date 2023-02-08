@@ -21,6 +21,14 @@ public class StationFixtures {
 
 	public static final Station 서울역 = new Station("서울역");
 
+	public static final Long 숙대입구역_ID = 5L;
+
+	public static final Station 숙대입구역 = new Station("숙대입구역");
+
+	public static final Long 혜화역_ID = 6L;
+
+	public static final Station 혜화역 = new Station("혜화역");
+
 	public static final Long 등록되지않은역_ID = 50L;
 
 	public static Station withId(Station station, Long id) throws IllegalAccessException {

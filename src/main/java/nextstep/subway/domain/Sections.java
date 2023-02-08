@@ -46,14 +46,18 @@ public class Sections {
 			return;
 		}
 
-		// 우선 up 기준으로 뽑아서 비교 젤 헤피케이스
+		if (line.equalFinalUpStation(downStation)) {
+			this.sections.add(new Section(line, upStation, downStation, distance));
+			line.updateFinalUpStation(upStation);
+			return;
+		}
+
 		Optional<Section> includedUpStationSection = this.sections.stream()
 			.filter(it -> it.equalUpStation(upStation))
 			.findFirst();
 
-		// up기준에서 down station이 같지 않으면
 		if (includedUpStationSection.isPresent()) {
-			addBetweenExistingSection(
+			addSectionBetweenExistingSection(
 				line,
 				upStation,
 				downStation,
@@ -62,34 +66,23 @@ public class Sections {
 			);
 			return;
 		}
-	}
 
-	private boolean haveStations(Station upStation, Station downStation) {
-		List<Station> stations = getStations();
+		Optional<Section> includedDownStationSection = this.sections.stream()
+			.filter(it -> it.equalDownStation(downStation))
+			.findFirst();
 
-		return stations.contains(upStation) && stations.contains(downStation);
-	}
-
-	private void addBetweenExistingSection(
-		Line line,
-		Station upStation,
-		Station downStation,
-		int distance,
-		Section includedUpStationSection) {
-		if (!includedUpStationSection.isLonger(distance)) {
-			throw new SectionAddException(SectionErrorCode.MORE_LONGER_LENGTH);
+		if (includedDownStationSection.isPresent()) {
+			addSectionBetweenExistingSection(
+				line,
+				upStation,
+				downStation,
+				distance,
+				includedDownStationSection.get()
+			);
+			return;
 		}
 
-		this.sections.remove(includedUpStationSection);
-		this.sections.add(new Section(line, upStation, downStation, distance));
-		this.sections.add(
-			new Section(
-				line,
-				includedUpStationSection.getDownStation(),
-				downStation,
-				includedUpStationSection.getDistance() - distance
-			)
-		);
+		throw new SectionAddException(SectionErrorCode.NOT_FOUND_EXISTING_STATION);
 	}
 
 	public List<Section> getList() {
@@ -102,18 +95,6 @@ public class Sections {
 		stations.addAll(extractDownStations());
 
 		return List.copyOf(stations);
-	}
-
-	private Set<Station> extractUpStations() {
-		return this.sections.stream()
-			.map(Section::getUpStation)
-			.collect(Collectors.toUnmodifiableSet());
-	}
-
-	private Set<Station> extractDownStations() {
-		return this.sections.stream()
-			.map(Section::getDownStation)
-			.collect(Collectors.toUnmodifiableSet());
 	}
 
 	public void createInitialLineSection(Station upStation, Station downStation, int distance, Line line) {
@@ -140,5 +121,59 @@ public class Sections {
 		}
 
 		throw new SectionRemoveException(SectionErrorCode.INVALID_REMOVE_STATION);
+	}
+
+	private boolean haveStations(Station upStation, Station downStation) {
+		List<Station> stations = getStations();
+
+		return stations.contains(upStation) && stations.contains(downStation);
+	}
+
+	private void addSectionBetweenExistingSection(
+		Line line,
+		Station upStation,
+		Station downStation,
+		int distance,
+		Section includedSection) {
+		if (!includedSection.isLonger(distance)) {
+			throw new SectionAddException(SectionErrorCode.MORE_LONGER_LENGTH);
+		}
+
+		if (includedSection.equalUpStation(upStation)) {
+			this.sections.remove(includedSection);
+			this.sections.add(new Section(line, upStation, downStation, distance));
+			this.sections.add(
+				new Section(
+					line,
+					includedSection.getDownStation(),
+					downStation,
+					includedSection.getDistance() - distance
+				)
+			);
+			return;
+		}
+
+		this.sections.remove(includedSection);
+		this.sections.add(
+			new Section(
+				line,
+				includedSection.getUpStation(),
+				upStation,
+				includedSection.getDistance() - distance
+			)
+		);
+		this.sections.add(new Section(line, upStation, downStation, distance));
+	}
+
+	private Set<Station> extractUpStations() {
+		return this.sections.stream()
+			.map(Section::getUpStation)
+			.collect(Collectors.toUnmodifiableSet());
+	}
+
+	private Set<Station> extractDownStations() {
+		return this.sections.stream()
+			.map(Section::getDownStation)
+			.collect(Collectors.toUnmodifiableSet());
 	}
 }

@@ -106,6 +106,10 @@ public class Line {
 		this.upStationId = upStation.getId();
 	}
 
+	boolean equalFinalUpStation(Station downStation) {
+		return this.upStationId.equals(downStation.getId());
+	}
+
 	private void validateName(String name) {
 		if (name == null || name.isBlank()) {
 			throw new InvalidLineUpdateException(LineErrorCode.INVALID_NAME_UPDATER_REQUEST);
