@@ -85,6 +85,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
         params.put("color", "red");
         RestAssured
                 .given().log().all()
