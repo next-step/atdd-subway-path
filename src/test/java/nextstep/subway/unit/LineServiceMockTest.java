@@ -6,19 +6,16 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,6 +24,8 @@ public class LineServiceMockTest {
     private LineRepository lineRepository;
     @Mock
     private StationService stationService;
+    @InjectMocks
+    private LineService lineService;
 
     @Test
     void addSection() {
@@ -39,7 +38,6 @@ public class LineServiceMockTest {
         BDDMockito.given(lineRepository.findById(any()))
                 .willReturn(Optional.of(new Line("신분당선", "bg-red-500")));
 
-        LineService lineService = new LineService(lineRepository, stationService);
         SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10);
 
         // when

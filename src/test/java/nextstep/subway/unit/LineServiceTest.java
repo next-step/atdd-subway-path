@@ -2,7 +2,9 @@ package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.*;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -75,5 +79,43 @@ public class LineServiceTest {
             sa.assertThat(line.getName()).isEqualTo(업데이트된노선.getName());
             sa.assertThat(line.getColor()).isEqualTo(업데이트된노선.getColor());
         });
+    }
+
+    @Test
+    void saveLine() {
+        // given
+        강남역 = stationRepository.save(강남역);
+        양재역 = stationRepository.save(양재역);
+        LineRequest lineRequest = new LineRequest(신분당선.getName(), 신분당선.getColor(), 강남역.getId(), 양재역.getId(), distance);
+
+        // when
+        LineResponse lineResponse = lineService.saveLine(lineRequest);
+
+        // then
+        SoftAssertions.assertSoftly((sa) -> {
+            sa.assertThat(lineResponse.getName()).isEqualTo(신분당선.getName());
+            sa.assertThat(lineResponse.getColor()).isEqualTo(신분당선.getColor());
+            sa.assertThat(lineResponse.getStations()).usingRecursiveComparison().isEqualTo(List.of(StationResponse.from(강남역), StationResponse.from(양재역)));
+        });
+    }
+
+    @Test
+    void deleteSection() {
+        // given
+        강남역 = stationRepository.save(강남역);
+        양재역 = stationRepository.save(양재역);
+        Station 양재시민의숲역 = stationRepository.save(new Station("양재시민의숲역"));
+        LineRequest lineRequest = new LineRequest(신분당선.getName(), 신분당선.getColor(), 강남역.getId(), 양재역.getId(), distance);
+        LineResponse lineResponse = lineService.saveLine(lineRequest);
+
+        SectionRequest sectionRequest = new SectionRequest(양재역.getId(), 양재시민의숲역.getId(), distance);
+        lineService.addSection(lineResponse.getId(), sectionRequest);
+
+        // when
+        lineService.deleteSection(lineResponse.getId(), 양재시민의숲역.getId());
+
+        // then
+        Line 업데이트된노선 = lineRepository.findById(lineResponse.getId()).orElseThrow();
+        assertThat(업데이트된노선.getStations()).usingRecursiveComparison().isEqualTo(List.of(StationResponse.from(강남역), StationResponse.from(양재역)));
     }
 }
