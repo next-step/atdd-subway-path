@@ -6,7 +6,9 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -107,7 +109,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
 	/**
 	 * Given 지하철역을 생성 요청을 하고
-	 * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+	 * Given 지하철 노선에 새로운 2개의 구간 추가를 요청 하고
 	 * When 지하철역 노선 조회를 하면
 	 * Then 구간 순서에 맞게 역들이 정렬되어 조회된다
 	 */
@@ -126,7 +128,9 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		assertAll(
-			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value())
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(response.jsonPath().getList("stations.id", Long.class))
+				.containsExactly(강남역, 양재역, 판교역, 정자역)
 		);
 	}
 
