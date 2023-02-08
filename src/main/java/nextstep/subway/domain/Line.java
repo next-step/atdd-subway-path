@@ -59,4 +59,16 @@ public class Line {
     public void addSection(Section section) {
         sections.add(section);
     }
+
+    public void removeSection(Station station) {
+        if (sections.size() == 1) {
+            throw new IllegalStateException("지하철노선은 1개 구간 이하로 구성될 수 없습니다.");
+        }
+
+        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
+            throw new IllegalArgumentException("해당 노선의 하행종점역만 제거할 수 있습니다.");
+        }
+
+        sections.remove(sections.size() - 1);
+    }
 }

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 단위 테스트")
@@ -74,14 +75,35 @@ class LineTest {
     @Test
     void removeSection() {
         // Given
+        이호선.addSection(new Section(이호선, 삼성역, 잠실역, 7));
         int beforeSize = sections.size();
-        int indexOfTailSection = sections.size() - 1;
 
         // When
-        sections.remove(indexOfTailSection);
+        이호선.removeSection(잠실역);
 
         // Then
         sections = 이호선.getSections();
         assertThat(sections).hasSize(beforeSize - 1);
+    }
+
+    @DisplayName("지하철노선의 하행종점역만 제거할 수 있다.")
+    @Test
+    void removeSectionException1() {
+        // Given
+        이호선.addSection(new Section(이호선, 삼성역, 잠실역, 7));
+
+        // When & Then
+        assertThatThrownBy(() -> 이호선.removeSection(삼성역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 노선의 하행종점역만 제거할 수 있습니다.");
+    }
+
+    @DisplayName("지하철노선의 구간이 1개만 존재한다면, 구간을 제거할 수 없다.")
+    @Test
+    void removeSectionException2() {
+        // When & Then
+        assertThatThrownBy(() -> 이호선.removeSection(삼성역))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("지하철노선은 1개 구간 이하로 구성될 수 없습니다.");
     }
 }
