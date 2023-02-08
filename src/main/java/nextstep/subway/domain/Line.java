@@ -100,20 +100,16 @@ public class Line {
         if (this.sections.isEmpty()) {
             return Collections.emptyList();
         }
-        List<Station> stations = new ArrayList<>();
-        Station currentStation = getFinalUpStation();
-        stations.add(currentStation);
-        while (!currentStation.equals(getFinalDownStation())) {
+        Stations stations = Stations.of(getFinalUpStation());
+        while (!stations.isFinalDownStationEqualTo(getFinalDownStation())) {
             // 상행역 -> 하행역
-            for (Section section : this.sections) {
-                if (section.getUpStation().equals(currentStation)) {
-                    currentStation = section.getDownStation();
-                    stations.add(currentStation);
-                    break;
-                }
-            }
+            this.sections.stream()
+                    .filter(section -> stations.isFinalDownStationEqualTo(section.getUpStation()))
+                    .findFirst()
+                    .map(Section::getDownStation)
+                    .ifPresent(stations::add);
         }
-        return stations;
+        return stations.get();
     }
 
     private Station getFinalUpStation() {
