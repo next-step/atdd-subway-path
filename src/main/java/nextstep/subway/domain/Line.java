@@ -101,4 +101,8 @@ public class Line {
         this.name = name;
         this.color = color;
     }
+
+    public boolean isEmptySection() {
+        return this.sections.isEmpty();
+    }
 }
