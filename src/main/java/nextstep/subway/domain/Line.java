@@ -1,10 +1,14 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
+import javax.persistence.*;
+
+@Getter
 @Entity
+@NoArgsConstructor
 public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,42 +16,50 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
-
-    public Line() {
-    }
+    @Embedded
+    private final Sections sections = new Sections();
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public Long getId() {
-        return id;
+    public static Line of(String name, String color) {
+        return new Line(name, color);
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void update(String name, String color) {
+
+        if (StringUtils.hasText(name)) {
+            this.name = name;
+        }
+        if (StringUtils.hasText(color)) {
+            this.color = color;
+        }
     }
 
-    public String getName() {
-        return name;
+    public void addSection(Section section) {
+        if (sections.contains(section)) {
+            return;
+        }
+
+        sections.add(section);
+        section.changeLine(this);
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void remove(Section section) {
+        sections.remove(section);
     }
 
-    public String getColor() {
-        return color;
+    public Section getLastSection() {
+        return sections.getLast();
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public int getSectionsSize() {
+        return sections.size();
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public void removeSection(Station station) {
+        sections.remove(station);
     }
 }

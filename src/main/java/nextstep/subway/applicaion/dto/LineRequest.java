@@ -1,5 +1,18 @@
 package nextstep.subway.applicaion.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
+
+import java.util.function.Function;
+import java.util.function.LongFunction;
+
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class LineRequest {
     private String name;
     private String color;
@@ -7,23 +20,31 @@ public class LineRequest {
     private Long downStationId;
     private int distance;
 
-    public String getName() {
-        return name;
+    public static LineRequest of(String name, String color, long upStationId, long downStationId, int distance1) {
+        return new LineRequest(name, color, upStationId, downStationId, distance1);
     }
 
-    public String getColor() {
-        return color;
+    public Line toEntity(LongFunction<Station> findStationFunction) {
+        Line line = Line.of(name, color);
+
+        if (canCreateSection()) {
+            line.addSection(toSection(findStationFunction));
+        }
+        return line;
     }
 
-    public Long getUpStationId() {
-        return upStationId;
+    private boolean canCreateSection() {
+        return this.getUpStationId() != null && this.getDownStationId() != null && this.getDistance() != 0;
     }
 
-    public Long getDownStationId() {
-        return downStationId;
-    }
+    private Section toSection(LongFunction<Station> findStationFunction) {
+        Station upStation = findStationFunction.apply(upStationId);
+        Station downStation = findStationFunction.apply(downStationId);
 
-    public int getDistance() {
-        return distance;
+        return Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(distance)
+                .build();
     }
 }
