@@ -4,9 +4,11 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -16,60 +18,40 @@ public class Sections {
     protected Sections() {
     }
 
-    public Sections(List<Section> sections) {
-        this.sections = sections;
-    }
-
-    public List<Section> get() {
-        return sections;
-    }
-
-    public int size() {
-        return sections.size();
-    }
-
     public void add(Line line, Section newSection) {
-        if (this.sections.size() == 0) {
+        if (isNew()) {
             this.sections.add(new Section(line, newSection.getUpStation(), newSection.getDownStation(), newSection.getDistance()));
             return;
         }
         this.sections.stream()
-                .filter(section ->
-                        getFinalUpStation().equals(newSection.getDownStation())
-                                || getFinalDownStation().equals(newSection.getUpStation())
-                                || section.getUpStation().equals(newSection.getUpStation())
-                                || section.getDownStation().equals(newSection.getDownStation()))
-                .findFirst()
-                .ifPresentOrElse(section -> {
+                .filter(addable(newSection))
+                .peek(section -> {
                     // 상행, 하행 중복된 구간을 추가하는 경우
                     if (section.equals(newSection)) {
                         throw new IllegalArgumentException("상행, 하행이 중복된 구간을 등록할 수 없습니다.");
                     }
-                    // 상행 종점에 추가된 경우
-                    if (getFinalUpStation().equals(newSection.getDownStation())) {
-                        this.sections.add(new Section(line, newSection.getUpStation(), section.getUpStation(), newSection.getDistance()));
-                        this.sections.add(new Section(line, section.getUpStation(), section.getDownStation(), section.getDistance()));
+                })
+                .findFirst()
+                .ifPresentOrElse(section -> {
+                    // 하행 종점 방향에 추가된 경우
+                    if (isAddInFinalDownStation(newSection.getUpStation())) {
+                        addInFinalSection(line, section, newSection);
                     }
-                    // 하행 종점에 추가된 경우
-                    if (getFinalDownStation().equals(newSection.getUpStation())) {
-                        this.sections.add(new Section(line, section.getUpStation(), section.getDownStation(), section.getDistance()));
-                        this.sections.add(new Section(line, section.getDownStation(), newSection.getDownStation(), newSection.getDistance()));
+                    // 상행 종점 방향에 추가된 경우
+                    if (isAddInFinalUpStation(newSection.getDownStation())) {
+                        addInFinalSection(line, newSection, section);
                     }
-                    // 상행에 추가한 경우
-                    if (section.getUpStation().equals(newSection.getUpStation())) {
-                        if (section.getDistance() <= newSection.getDistance()) {
-                            throw new IllegalArgumentException("기존 구간의 길이보다 긴 구간은 추가할 수 없습니다.");
-                        }
-                        this.sections.add(new Section(line, section.getUpStation(), newSection.getDownStation(), newSection.getDistance()));
+                    // 상행 방향에 추가한 경우
+                    if (isAddInUpSection(section, newSection)) {
+                        checkSectionDistance(newSection, section);
+                        this.sections.add(new Section(line, newSection.getUpStation(), newSection.getDownStation(), newSection.getDistance()));
                         this.sections.add(new Section(line, newSection.getDownStation(), section.getDownStation(), section.getDistance() - newSection.getDistance()));
                     }
-                    // 하행에 추가한 경우
-                    if (section.getDownStation().equals(newSection.getDownStation())) {
-                        if (section.getDistance() <= newSection.getDistance()) {
-                            throw new IllegalArgumentException("기존 구간의 길이보다 긴 구간은 추가할 수 없습니다.");
-                        }
+                    // 하행 방향에 추가한 경우
+                    if (isAddInDownSection(section, newSection)) {
+                        checkSectionDistance(newSection, section);
                         this.sections.add(new Section(line, section.getUpStation(), newSection.getUpStation(), section.getDistance() - newSection.getDistance()));
-                        this.sections.add(new Section(line, newSection.getUpStation(), section.getDownStation(), newSection.getDistance()));
+                        this.sections.add(new Section(line, newSection.getUpStation(), newSection.getDownStation(), newSection.getDistance()));
                     }
                     this.sections.remove(section);
                 }, () -> {
@@ -78,12 +60,55 @@ public class Sections {
                 });
     }
 
-    public List<Station> getStations() {
-        if (this.sections.isEmpty()) {
-            return Collections.emptyList();
+    private void checkSectionDistance(Section newSection, Section section) {
+        if (section.isDistanceLessThanEquals(newSection)) {
+            throw new IllegalArgumentException("기존 구간의 길이보다 긴 구간은 추가할 수 없습니다.");
+        }
+    }
+
+    private boolean isNew() {
+        return this.sections.isEmpty();
+    }
+
+    private Predicate<Section> addable(Section newSection) {
+        return section -> isAddInFinalUpStation(newSection.getDownStation())
+                || isAddInFinalDownStation(newSection.getUpStation())
+                || isAddInUpSection(section, newSection)
+                || isAddInDownSection(section, newSection);
+    }
+
+    private boolean isAddInFinalUpStation(Station downStation) {
+        return getFinalUpStation().equals(downStation);
+    }
+
+    private boolean isAddInFinalDownStation(Station upStation) {
+        return getFinalDownStation().equals(upStation);
+    }
+
+    private boolean isAddInUpSection(Section section, Section newSection) {
+        return section.getUpStation().equals(newSection.getUpStation());
+    }
+
+    private boolean isAddInDownSection(Section section, Section newSection) {
+        return section.getDownStation().equals(newSection.getDownStation());
+    }
+
+    private void addInFinalSection(Line line, Section upSection, Section downSection) {
+        this.sections.add(new Section(line, upSection.getUpStation(), upSection.getDownStation(), upSection.getDistance()));
+        this.sections.add(new Section(line, downSection.getUpStation(), downSection.getDownStation(), downSection.getDistance()));
+    }
+
+    public List<Section> get() {
+        return sections;
+    }
+
+    public Stations getStations() {
+        if (isNew()) {
+            return Stations.of();
         }
         Stations stations = Stations.of(getFinalUpStation());
-        while (!stations.isFinalDownStationEqualTo(getFinalDownStation())) {
+        Station finalDownStation = getFinalDownStation();
+        while (!stations.isFinalDownStationEqualTo(finalDownStation)) {
             // 상행역 -> 하행역
             this.sections.stream()
                     .filter(section -> stations.isFinalDownStationEqualTo(section.getUpStation()))
@@ -91,45 +116,44 @@ public class Sections {
                     .map(Section::getDownStation)
                     .ifPresent(stations::add);
         }
-        return stations.get();
+        return stations;
     }
 
     private Station getFinalUpStation() {
-        return sections.stream()
-                .map(Section::getUpStation)
+        return getStationStream(Section::getUpStation)
                 .filter(upStation -> !getDownStations().contains(upStation))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("상행 종점역이 존재하지 않습니다."));
     }
 
     private Station getFinalDownStation() {
-        return sections.stream()
-                .map(Section::getDownStation)
+        return getStationStream(Section::getDownStation)
                 .filter(downStation -> !getUpStations().contains(downStation))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("하행 종점역이 존재하지 않습니다."));
     }
 
-    public List<Station> getDownStations() {
-        return this.sections.stream()
-                .map(Section::getDownStation)
+    private List<Station> getDownStations() {
+        return getStationStream(Section::getDownStation)
                 .collect(Collectors.toList());
     }
 
-    public List<Station> getUpStations() {
-        return this.sections.stream()
-                .map(Section::getUpStation)
+    private List<Station> getUpStations() {
+        return getStationStream(Section::getUpStation)
                 .collect(Collectors.toList());
     }
 
     public List<Integer> getSectionDistances() {
-        return sections.stream()
-                .map(Section::getDistance)
+        return getStationStream(Section::getDistance)
                 .collect(Collectors.toList());
     }
 
+    private <T> Stream<T> getStationStream(Function<Section, T> function) {
+        return sections.stream().map(function);
+    }
+
     public void removeSection(Station station) {
-        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
+        if (!getFinalDownStation().equals(station)) {
             throw new IllegalArgumentException();
         }
         this.sections.remove(this.sections.size() - 1);
@@ -137,8 +161,7 @@ public class Sections {
 
     public void removeSection(String stationName) {
         sections.stream()
-                .filter(section -> section.getDownStation().getName().equals(stationName)
-                        || section.getUpStation().getName().equals(stationName))
+                .filter(section -> section.isStationNameEqualTo(stationName))
                 .findFirst()
                 .ifPresent(section -> sections.remove(section));
     }

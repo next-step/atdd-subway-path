@@ -62,6 +62,15 @@ public class Section {
         return distance;
     }
 
+    public boolean isDistanceLessThanEquals(Section section) {
+        return this.distance <= section.getDistance();
+    }
+
+    public boolean isStationNameEqualTo(String stationName) {
+        return downStation.getName().equals(stationName)
+                || upStation.getName().equals(stationName);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
