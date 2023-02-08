@@ -1,13 +1,12 @@
 package nextstep.subway.domain;
 
-import org.springframework.util.CollectionUtils;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+import nextstep.subway.exception.*;
 
 @Entity
 public class Line {
@@ -57,11 +56,30 @@ public class Line {
     }
 
     public void addSection(Section section) {
+        if (!sections.isEmpty()) {
+            if (isNotDownStationId(section.getUpStation().getId())) {
+                throw new SectionUpStationNotMatchException();
+            }
+            if (doesNotContainStationId(section.getDownStation().getId())) {
+                throw new SectionAlreadyCreateStationException();
+            }
+        }
         this.sections.add(section);
     }
 
+    private boolean doesNotContainStationId(Long id) {
+        List<Station> stations = getStations();
+        return stations.stream()
+                .map(Station::getId)
+                .anyMatch((stationId) -> stationId.equals(id));
+    }
+
+    private boolean isNotDownStationId(long id) {
+        return !sections.get(sections.size() - 1).getDownStation().getId().equals(id);
+    }
+
     public List<Station> getStations() {
-        if (CollectionUtils.isEmpty(sections)) {
+        if (sections.isEmpty()) {
             return Collections.emptyList();
         }
         LinkedList<Station> stations = sections.stream()
