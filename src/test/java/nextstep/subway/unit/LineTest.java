@@ -20,26 +20,29 @@ class LineTest {
     private List<Section> sections;
     private Station 강남역;
     private Station 삼성역;
+    private Station 잠실역;
 
     @BeforeEach
     void setUp() {
         // Given
         강남역 = new Station("강남역");
         삼성역 = new Station("삼성역");
+        잠실역 = new Station("잠실역");
 
         이호선 = new Line("2호선", "green");
-        sections = 이호선.getSections();
+        이호선.addSection(new Section(이호선, 강남역, 삼성역, 10));
 
-        sections.add(new Section(이호선, 강남역, 삼성역, 10));
+        sections = 이호선.getSections();
     }
 
     @DisplayName("지하철노선의 구간을 추가한다.")
     @Test
     void addSection() {
+        // Given
         int beforeSize = sections.size();
 
         // When
-        sections.add(new Section());
+        이호선.addSection(new Section(이호선, 삼성역, 잠실역, 7));
 
         // Then
         sections = 이호선.getSections();
