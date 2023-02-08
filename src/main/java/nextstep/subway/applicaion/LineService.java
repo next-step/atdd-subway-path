@@ -109,4 +109,8 @@ public class LineService {
 
         line.getSections().remove(line.getSections().size() - 1);
     }
+
+    public Line findLineById(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+    }
 }
