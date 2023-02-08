@@ -94,6 +94,18 @@ public class Line {
 		this.color = color;
 	}
 
+	boolean equalFinalDownStation(Station upStation) {
+		return this.downStationId.equals(upStation.getId());
+	}
+
+	void updateFinalDownStation(Station downStation) {
+		this.downStationId = downStation.getId();
+	}
+
+	void updateFinalUpStation(Station upStation) {
+		this.upStationId = upStation.getId();
+	}
+
 	private void validateName(String name) {
 		if (name == null || name.isBlank()) {
 			throw new InvalidLineUpdateException(LineErrorCode.INVALID_NAME_UPDATER_REQUEST);

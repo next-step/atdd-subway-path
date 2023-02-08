@@ -80,4 +80,8 @@ public class Section {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    public boolean isLonger(int distance) {
+        return this.distance > distance;
+    }
 }

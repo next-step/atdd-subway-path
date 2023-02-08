@@ -19,6 +19,7 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.exception.InvalidLineUpdateException;
 import nextstep.subway.domain.exception.LineErrorCode;
+import nextstep.subway.domain.exception.SectionAddException;
 import nextstep.subway.domain.exception.SectionErrorCode;
 import nextstep.subway.domain.exception.SectionRemoveException;
 
@@ -141,6 +142,52 @@ class LineTest {
 		assertThatThrownBy(() -> LINE_4().updateInfo("2호선", color))
 			.isInstanceOf(InvalidLineUpdateException.class)
 			.hasMessage(LineErrorCode.INVALID_COLOR_UPDATE_REQUEST.getMessage());
+	}
+
+	@DisplayName("기존구간사이에 새로운 구간추가시 2개의 구간으로 생성된다")
+	@Test
+	void 기존구간사이에_새로운_구간추가시_2개의_구간으로_생성된다() throws Exception {
+		// given
+		Line line = LINE_4_WITH_NOT_SECTION();
+		line.addSection(withId(동대문, 동대문_ID), withId(충무로, 충무로_ID), 10);
+
+		// when
+		line.addSection(withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), 5);
+
+		// then
+		assertThat(line.getSections()).hasSize(2);
+		assertThat(line.getStations()).containsExactly(
+			withId(동대문, 동대문_ID),
+			withId(동대문역사문화공원, 동대문역사문화공원_ID),
+			withId(충무로, 충무로_ID)
+		);
+	}
+
+	@DisplayName("기존구간사이에_새로운_구간추가시_이미_등록되어있다면_예외가_발생한다")
+	@Test
+	void 기존구간사이에_새로운_구간추가시_이미_등록되어있다면_예외가_발생한다() throws Exception {
+		Line line = LINE_4_WITH_NOT_SECTION();
+		line.addSection(withId(동대문, 동대문_ID), withId(충무로, 충무로_ID), 10);
+
+		assertThatThrownBy(() -> line.addSection(withId(동대문, 동대문_ID), withId(충무로, 충무로_ID), 10))
+			.isInstanceOf(SectionAddException.class)
+			.hasMessage(SectionErrorCode.HAVE_STATIONS.getMessage());
+
+	}
+
+	@DisplayName("기존구간사이에 새로운 구간추가시 추가하는 구간길이가 더길다면 예외가 발생한다")
+	@Test
+	void 기존구간사이에_새로운_구간추가시_추가하는_구간길이가_더길다면_예외가_발생한다() throws Exception {
+		Line line = LINE_4_WITH_NOT_SECTION();
+		line.addSection(withId(동대문, 동대문_ID), withId(충무로, 충무로_ID), 10);
+
+		assertThatThrownBy(
+			() -> line.addSection(
+				withId(동대문, 동대문_ID),
+				withId(동대문역사문화공원, 동대문역사문화공원_ID),
+				15)
+		).isInstanceOf(SectionAddException.class)
+			.hasMessage(SectionErrorCode.MORE_LONGER_LENGTH.getMessage());
 	}
 
 	private void insertIdInSections(List<Section> sections) {

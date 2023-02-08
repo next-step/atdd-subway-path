@@ -10,9 +10,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.ReflectionUtils;
 
 import nextstep.subway.common.StationFixtures;
@@ -20,19 +17,19 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.exception.SectionAddException;
 import nextstep.subway.domain.exception.SectionErrorCode;
 import nextstep.subway.domain.exception.SectionRemoveException;
 
-@ExtendWith(MockitoExtension.class)
 class SectionsTest {
 
-	@Mock
 	private Line line;
 
 	private Sections sections;
 
 	@BeforeEach
 	void setUp() {
+		line = new Line("4호선", "blue");
 		sections = new Sections();
 	}
 
@@ -61,9 +58,8 @@ class SectionsTest {
 		// then
 		assertThat(stations)
 			.containsExactly(
-				동대문,
-				동대문역사문화공원,
-				충무로
+				withId(동대문역사문화공원, 동대문역사문화공원_ID),
+				withId(충무로, 충무로_ID)
 			);
 	}
 
@@ -134,6 +130,45 @@ class SectionsTest {
 		assertThatThrownBy(() -> sections.remove(withId(서울역, 서울역_ID), 충무로_ID))
 			.isInstanceOf(SectionRemoveException.class)
 			.hasMessage(SectionErrorCode.NOT_INCLUDE_STATION.getMessage());
+	}
+
+	@DisplayName("기존구간사이에 새로운 구간추가시 2개의 구간으로 생성된다")
+	@Test
+	void 기존구간사이에_새로운_구간추가시_2개의_구간으로_생성된다() throws Exception {
+		// given
+		sections.addSection(line, withId(동대문, 동대문_ID), withId(충무로, 충무로_ID), 10);
+
+		// when
+		sections.addSection(line, withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), 5);
+
+		// then
+		assertThat(sections.getList()).hasSize(2);
+	}
+
+	@DisplayName("기존구간사이에_새로운_구간추가시_이미_등록되어있다면_예외가_발생한다")
+	@Test
+	void 기존구간사이에_새로운_구간추가시_이미_등록되어있다면_예외가_발생한다() throws Exception {
+		sections.addSection(line, withId(동대문, 동대문_ID), withId(충무로, 충무로_ID), 10);
+
+		assertThatThrownBy(() -> sections.addSection(line, withId(동대문, 동대문_ID), withId(충무로, 충무로_ID), 10))
+			.isInstanceOf(SectionAddException.class)
+			.hasMessage(SectionErrorCode.HAVE_STATIONS.getMessage());
+
+	}
+
+	@DisplayName("기존구간사이에 새로운 구간추가시 추가하는 구간길이가 더길다면 예외가 발생한다")
+	@Test
+	void 기존구간사이에_새로운_구간추가시_추가하는_구간길이가_더길다면_예외가_발생한다() throws Exception {
+		sections.addSection(line, withId(동대문, 동대문_ID), withId(충무로, 충무로_ID), 10);
+
+		assertThatThrownBy(
+			() -> sections.addSection(
+				line,
+				withId(동대문, 동대문_ID),
+				withId(동대문역사문화공원, 동대문역사문화공원_ID),
+				15)
+		).isInstanceOf(SectionAddException.class)
+			.hasMessage(SectionErrorCode.MORE_LONGER_LENGTH.getMessage());
 	}
 
 	private void insertIdInSections(List<Section> sections) {
