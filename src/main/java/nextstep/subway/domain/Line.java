@@ -96,4 +96,9 @@ public class Line {
 
         sections.remove(sections.size() - 1);
     }
+
+    public void changeNameAndColor(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
 }

@@ -1,8 +1,10 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
+import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,5 +59,21 @@ public class LineServiceTest {
         // line.getSections 메서드를 통해 검증
         신분당선 = lineRepository.findById(line.getId()).orElseThrow();
         assertThat(line.getSections()).containsExactlyElementsOf(신분당선.getSections());
+    }
+
+    @Test
+    void updateLine() {
+        // given
+        Line line = lineRepository.save(신분당선);
+
+        // when
+        lineService.updateLine(line.getId(), new LineRequest("새로운이름", "새로운컬러"));
+
+        // then
+        Line 업데이트된노선 = lineRepository.findById(line.getId()).orElseThrow();
+        SoftAssertions.assertSoftly((sa) -> {
+            sa.assertThat(line.getName()).isEqualTo(업데이트된노선.getName());
+            sa.assertThat(line.getColor()).isEqualTo(업데이트된노선.getColor());
+        });
     }
 }

@@ -155,4 +155,17 @@ class LineTest {
             softAssertions.assertThat(신분당선_지하철).containsExactlyElementsOf(List.of(강남역, 양재역));
         });
     }
+
+    @Test
+    @DisplayName("Line 정보 변경 테스트")
+    void changeLineTest() {
+        // given
+
+        // when
+        신분당선.changeNameAndColor("새로운노선명", "새로운컬러명");
+
+        // then
+        assertThat(신분당선.getName()).isEqualTo("새로운노선명");
+        assertThat(신분당선.getColor()).isEqualTo("새로운컬러명");
+    }
 }
