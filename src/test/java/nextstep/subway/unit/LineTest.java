@@ -39,6 +39,42 @@ class LineTest {
         });
     }
 
+    @DisplayName("기존 구간의 역을 기준으로 새로운 구간을 추가한다.")
+    @Test
+    void addBetweenSection() {
+        Section 강남역_교대역_구간 = new Section(강남역, 교대역, 10);
+        Section 강남역_역삼역_구간 = new Section(강남역, 역삼역, 10);
+        line.add(강남역_교대역_구간);
+
+        line.add(강남역_역삼역_구간);
+
+        assertThat(line.getStations()).containsExactly(강남역, 역삼역, 교대역);
+    }
+
+    @DisplayName("새로운 역을 상행 종점으로 등록한다.")
+    @Test
+    void addUpEndSection() {
+        Section 강남역_교대역_구간 = new Section(강남역, 교대역, 10);
+        Section 역삼역_강남역_구간 = new Section(역삼역, 강남역, 10);
+        line.add(강남역_교대역_구간);
+
+        line.add(역삼역_강남역_구간);
+
+        assertThat(line.getStations()).containsExactly(역삼역, 강남역, 교대역);
+    }
+
+    @DisplayName("새로운 역을 하행 종점으로 등록한다.")
+    @Test
+    void addDownEndSection() {
+        Section 강남역_교대역_구간 = new Section(강남역, 교대역, 10);
+        Section 교대역_역삼역_구간 = new Section(교대역, 역삼역, 10);
+        line.add(강남역_교대역_구간);
+
+        line.add(교대역_역삼역_구간);
+
+        assertThat(line.getStations()).containsExactly(강남역, 교대역, 역삼역);
+    }
+
     @DisplayName("노선에 포함된 역을 찾을 수 있다.")
     @Test
     void getStations() {

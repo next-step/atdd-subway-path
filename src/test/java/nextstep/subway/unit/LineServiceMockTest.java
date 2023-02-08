@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -13,8 +14,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -43,5 +47,11 @@ public class LineServiceMockTest {
         lineService.addSection(lineId, new SectionRequest(강남역_ID, 역삼역_ID, 10));
 
         then(lineRepository).should().findById(lineId);
+        List<Long> stationIds = lineService.findById(lineId)
+                .getStations()
+                .stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+        assertThat(stationIds).containsExactly(1L, 2L);
     }
 }

@@ -2,7 +2,6 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,16 +41,57 @@ public class Line {
     }
 
     public void add(Section section) {
-        section.setLine(this);
+        sections.stream()
+                .filter(oldSection -> oldSection.getUpStation() == section.getUpStation())
+                .findFirst()
+                .ifPresent(oldSection -> {
+                    sections.add(new Section(this, section.getDownStation(), oldSection.getDownStation(), section.getDistance()));
+                    sections.remove(oldSection);
+                });
+
+        sections.stream()
+                .filter(oldSection -> oldSection.getDownStation() == section.getDownStation())
+                .findFirst()
+                .ifPresent(oldSection -> {
+                    sections.add(new Section(this, oldSection.getUpStation(), section.getUpStation(), oldSection.getDistance() - section.getDistance()));
+                    sections.remove(oldSection);
+                });
+
         sections.add(section);
+        section.setLine(this);
     }
 
     public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+
+        Section upEndSection = findUpEndSection();
+        stations.add(upEndSection.getUpStation());
+
+        Section nextSection = upEndSection;
+        while (nextSection != null) {
+            stations.add(nextSection.getDownStation());
+            nextSection = findNextOf(nextSection);
+        }
+
+        return stations;
+    }
+
+    private Section findUpEndSection() {
+        List<Station> downStations = sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+
         return sections.stream()
-                .map(section -> List.of(section.getUpStation(), section.getDownStation()))
-                .flatMap(Collection::stream)
-                .distinct()
-                .collect(Collectors.toUnmodifiableList());
+                .filter(section -> !downStations.contains(section.getUpStation()))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    private Section findNextOf(Section section) {
+        return sections.stream()
+                .filter(it -> section.getDownStation() == it.getUpStation())
+                .findFirst()
+                .orElse(null);
     }
 
     public void removeSection(long stationId) {
