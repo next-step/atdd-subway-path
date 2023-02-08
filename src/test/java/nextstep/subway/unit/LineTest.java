@@ -13,7 +13,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@DisplayName("지하철 노선 단위 테스트")
+@DisplayName("지하철 구간 단위 테스트")
 class LineTest {
 
     private Line 이호선;
