@@ -39,8 +39,8 @@ public class LineService {
 
     public List<LineResponse> showLines() {
         return lineRepository.findAll().stream()
-                .map(this::createLineResponse)
-                .collect(Collectors.toList());
+            .map(this::createLineResponse)
+            .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
@@ -70,15 +70,30 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
-        line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        List<Section> sections = line.getSections();
+
+        for (int i = 0; i < sections.size(); i++) {
+            Section section = sections.get(i);
+            Station downStation1 = section.getDownStation();
+
+            // 중간 구간에 추가
+            if (section.getUpStation().equals(upStation)) {
+                section.changeDownStation(downStation);
+                sections.add(new Section(line, downStation, downStation1, sectionRequest.getDistance()));
+                return;
+            }
+        }
+
+        sections.add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+
     }
 
     private LineResponse createLineResponse(Line line) {
         return new LineResponse(
-                line.getId(),
-                line.getName(),
-                line.getColor(),
-                createStationResponses(line)
+            line.getId(),
+            line.getName(),
+            line.getColor(),
+            createStationResponses(line)
         );
     }
 
@@ -88,14 +103,14 @@ public class LineService {
         }
 
         List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
+            .map(Section::getDownStation)
+            .collect(Collectors.toList());
 
         stations.add(0, line.getSections().get(0).getUpStation());
 
         return stations.stream()
-                .map(it -> stationService.createStationResponse(it))
-                .collect(Collectors.toList());
+            .map(it -> stationService.createStationResponse(it))
+            .collect(Collectors.toList());
     }
 
     @Transactional
