@@ -1,10 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -14,37 +11,19 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public void addSection(Section section) {
-        section.setLine(this);
-        sections.add(section);
+        sections.addSection(section);
     }
 
     public List<Station> getStations() {
-        if (sections.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Station> stations = sections.stream()
-                .map(Section::getUpStation)
-                .collect(Collectors.toList());
-        stations.add(getDownStation());
-
-        return stations;
-    }
-
-    private Station getDownStation() {
-        return sections.get(sections.size() - 1).getDownStation();
+        return sections.getStations();
     }
 
     public void removeSection(Station station) {
-        if (!getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-
-        sections.remove(sections.size() - 1);
+        sections.removeSection(station);
     }
 
     public Line() {
@@ -80,6 +59,6 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 }
