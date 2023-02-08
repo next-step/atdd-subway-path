@@ -41,48 +41,16 @@ public class Sections {
 		}
 
 		if (line.equalFinalDownStation(upStation)) {
-			this.sections.add(new Section(line, upStation, downStation, distance));
-			line.updateFinalDownStation(downStation);
+			addAfterSection(line, upStation, downStation, distance);
 			return;
 		}
 
 		if (line.equalFinalUpStation(downStation)) {
-			this.sections.add(new Section(line, upStation, downStation, distance));
-			line.updateFinalUpStation(upStation);
+			addInFrontSection(line, upStation, downStation, distance);
 			return;
 		}
 
-		Optional<Section> includedUpStationSection = this.sections.stream()
-			.filter(it -> it.equalUpStation(upStation))
-			.findFirst();
-
-		if (includedUpStationSection.isPresent()) {
-			addSectionBetweenExistingSection(
-				line,
-				upStation,
-				downStation,
-				distance,
-				includedUpStationSection.get()
-			);
-			return;
-		}
-
-		Optional<Section> includedDownStationSection = this.sections.stream()
-			.filter(it -> it.equalDownStation(downStation))
-			.findFirst();
-
-		if (includedDownStationSection.isPresent()) {
-			addSectionBetweenExistingSection(
-				line,
-				upStation,
-				downStation,
-				distance,
-				includedDownStationSection.get()
-			);
-			return;
-		}
-
-		throw new SectionAddException(SectionErrorCode.NOT_FOUND_EXISTING_STATION);
+		addSectionBetweenExistingSection(line, upStation, downStation, distance);
 	}
 
 	public List<Section> getList() {
@@ -121,6 +89,50 @@ public class Sections {
 		}
 
 		throw new SectionRemoveException(SectionErrorCode.INVALID_REMOVE_STATION);
+	}
+
+	private void addInFrontSection(Line line, Station upStation, Station downStation, int distance) {
+		this.sections.add(new Section(line, upStation, downStation, distance));
+		line.updateFinalUpStation(upStation);
+	}
+
+	private void addAfterSection(Line line, Station upStation, Station downStation, int distance) {
+		this.sections.add(new Section(line, upStation, downStation, distance));
+		line.updateFinalDownStation(downStation);
+	}
+
+	private void addSectionBetweenExistingSection(Line line, Station upStation, Station downStation, int distance) {
+		Optional<Section> includedUpStationSection = this.sections.stream()
+			.filter(it -> it.equalUpStation(upStation))
+			.findFirst();
+
+		if (includedUpStationSection.isPresent()) {
+			addSectionBetweenExistingSection(
+				line,
+				upStation,
+				downStation,
+				distance,
+				includedUpStationSection.get()
+			);
+			return;
+		}
+
+		Optional<Section> includedDownStationSection = this.sections.stream()
+			.filter(it -> it.equalDownStation(downStation))
+			.findFirst();
+
+		if (includedDownStationSection.isPresent()) {
+			addSectionBetweenExistingSection(
+				line,
+				upStation,
+				downStation,
+				distance,
+				includedDownStationSection.get()
+			);
+			return;
+		}
+
+		throw new SectionAddException(SectionErrorCode.NOT_FOUND_EXISTING_STATION);
 	}
 
 	private boolean haveStations(Station upStation, Station downStation) {
