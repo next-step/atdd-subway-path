@@ -73,11 +73,10 @@ public class Line {
 
 	public void addSection(Station upStation, Station downStation, int distance) {
 		this.sections.addSection(this, upStation, downStation, distance);
-		this.downStationId = downStation.getId();
 	}
 
 	public List<Station> getStations() {
-		return sections.getStations();
+		return sections.getStations(upStationId, downStationId);
 	}
 
 	public void removeSection(Station station) {

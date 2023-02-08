@@ -42,6 +42,10 @@ public class Section {
         return this.upStation.equals(station);
     }
 
+    public boolean equalUpStation(Long upStationId) {
+        return this.upStation.equalId(upStationId);
+    }
+
     public boolean hasFinalDownStation(Long finalDownStationId) {
         return this.downStation.equalId(finalDownStationId);
     }
@@ -64,6 +68,14 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public Long getUpStationId() {
+        return this.upStation.getId();
+    }
+
+    public Long getDownStationId() {
+        return this.downStation.getId();
     }
 
     @Override

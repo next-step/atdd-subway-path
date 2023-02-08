@@ -57,7 +57,7 @@ class SectionsTest {
 		sections.addSection(line, withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(충무로, 충무로_ID), 5);
 
 		// when
-		List<Station> stations = sections.getStations();
+		List<Station> stations = sections.getStations(동대문역사문화공원_ID, 충무로_ID);
 
 		// then
 		assertThat(stations)
@@ -80,7 +80,7 @@ class SectionsTest {
 		// then
 		assertAll(
 			() -> assertThat(sections.getList()).hasSize(1),
-			() -> assertThat(sections.getStations()).containsExactly(동대문, 동대문역사문화공원)
+			() -> assertThat(sections.getStations(동대문_ID, 동대문역사문화공원_ID)).containsExactly(동대문, 동대문역사문화공원)
 		);
 	}
 

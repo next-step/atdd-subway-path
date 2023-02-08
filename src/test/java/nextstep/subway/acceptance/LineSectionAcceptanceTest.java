@@ -105,6 +105,31 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 		);
 	}
 
+	/**
+	 * Given 지하철역을 생성 요청을 하고
+	 * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+	 * When 지하철역 노선 조회를 하면
+	 * Then 구간 순서에 맞게 역들이 정렬되어 조회된다
+	 */
+	@DisplayName("지하철노선 조회시 구간순서에 맞게 역이 정렬되어 조회된다")
+	@Test
+	void 지하철노선_조회시_구간순서에_맞게_역이_정렬되어_조회된다() {
+		// given
+		Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+		지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 10));
+		Long 판교역 = 지하철역_생성_요청("판교").jsonPath().getLong("id");
+
+		지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 판교역, 3));
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+
+		// then
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value())
+		);
+	}
+
 	private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
 		Map<String, String> lineCreateParams;
 		lineCreateParams = new HashMap<>();

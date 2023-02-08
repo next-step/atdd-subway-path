@@ -3,9 +3,12 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -57,10 +60,24 @@ public class Sections {
 		return Collections.unmodifiableList(this.sections);
 	}
 
-	public List<Station> getStations() {
-		Set<Station> stations = new HashSet<>();
-		stations.addAll(extractUpStations());
-		stations.addAll(extractDownStations());
+	public List<Station> getStations(Long finalUpStationId, Long finalDownStationId) {
+		Set<Station> stations = new LinkedHashSet<>();
+
+		Long findUpStationId = finalUpStationId;
+
+		Map<Long, Section> upStationIdAndSectionMap = this.sections.stream()
+			.collect(Collectors.toMap(
+					Section::getUpStationId,
+					Function.identity()
+				)
+			);
+
+		while (!findUpStationId.equals(finalDownStationId)) {
+			Section section = upStationIdAndSectionMap.get(findUpStationId);
+			stations.add(section.getUpStation());
+			stations.add(section.getDownStation());
+			findUpStationId = section.getDownStationId();
+		}
 
 		return List.copyOf(stations);
 	}
@@ -136,9 +153,16 @@ public class Sections {
 	}
 
 	private boolean haveStations(Station upStation, Station downStation) {
-		List<Station> stations = getStations();
-
+		List<Station> stations = existingStations();
 		return stations.contains(upStation) && stations.contains(downStation);
+	}
+
+	private List<Station> existingStations() {
+		Set<Station> stations = new HashSet<>();
+		stations.addAll(extractUpStations());
+		stations.addAll(extractDownStations());
+
+		return List.copyOf(stations);
 	}
 
 	private void addSectionBetweenExistingSection(
@@ -157,8 +181,8 @@ public class Sections {
 			this.sections.add(
 				new Section(
 					line,
-					includedSection.getDownStation(),
 					downStation,
+					includedSection.getDownStation(),
 					includedSection.getDistance() - distance
 				)
 			);
