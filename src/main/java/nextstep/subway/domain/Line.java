@@ -45,16 +45,17 @@ public class Line {
 
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
+        int distance = section.getDistance();
 
         sections.stream()
             .filter(it -> it.getUpStation().equals(upStation))
             .findFirst()
-            .ifPresent(it -> it.updateUpStation(downStation));
+            .ifPresent(it -> it.updateUpStation(downStation, distance));
 
         sections.stream()
             .filter(it -> it.getDownStation().equals(downStation))
             .findFirst()
-            .ifPresent(it -> it.updateDownStation(upStation));
+            .ifPresent(it -> it.updateDownStation(upStation, distance));
 
         sections.add(section);
     }

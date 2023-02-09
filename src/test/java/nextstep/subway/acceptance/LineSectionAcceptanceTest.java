@@ -19,9 +19,9 @@ import io.restassured.response.Response;
 class LineSectionAcceptanceTest extends AcceptanceTest {
     private Long 신분당선;
 
-    private static Long 강남역;
-    private static Long 양재역;
-    private static Long 신규역;
+    private Long 강남역;
+    private Long 양재역;
+    private Long 신규역;
 
     /**
      * Given 지하철역과 노선 생성을 요청 하고

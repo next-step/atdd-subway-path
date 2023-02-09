@@ -45,11 +45,13 @@ public class Section {
         return upStation.equals(downStation);
     }
 
-    public void updateUpStation(Station station) {
+    public void updateUpStation(Station station, int distance) {
+        this.distance.decrease(distance);
         this.upStation = station;
     }
 
-    public void updateDownStation(Station station) {
+    public void updateDownStation(Station station, int distance) {
+        this.distance.decrease(distance);
         this.downStation = station;
     }
 

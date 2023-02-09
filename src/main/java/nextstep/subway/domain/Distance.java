@@ -3,6 +3,8 @@ package nextstep.subway.domain;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+import nextstep.subway.exception.InvalidSectionDistanceException;
+
 @Embeddable
 public class Distance {
 
@@ -19,6 +21,17 @@ public class Distance {
             throw new IllegalArgumentException();
         }
         this.value = value;
+    }
+
+    public void decrease(int value) {
+        if (isLessThan(value)) {
+            throw new InvalidSectionDistanceException(this.value, value);
+        }
+        this.value -= value;
+    }
+
+    private boolean isLessThan(int value) {
+        return this.value <= value;
     }
 
     public int value() {
