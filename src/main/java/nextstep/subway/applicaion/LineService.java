@@ -62,7 +62,7 @@ public class LineService {
         Station downStation = stationService.findById(addSectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
-        line.getSections().add(new Section(line, upStation, downStation, addSectionRequest.getDistance()));
+        line.addSection(upStation, downStation, addSectionRequest.getDistance());
     }
 
     @Transactional
