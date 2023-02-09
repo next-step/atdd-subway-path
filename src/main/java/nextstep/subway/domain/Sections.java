@@ -128,4 +128,22 @@ public class Sections {
         return values.stream().anyMatch(section -> section.contains(station));
 
     }
+
+    public List<Section> getValuesOrderBy(){
+        if (values.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Section> sections = new ArrayList<>();
+        Section firstSection = getFirstSection();
+
+        Optional<Section> now = Optional.of(firstSection);
+
+        while (now.isPresent()) {
+            sections.add(now.get());
+            now = getAfterSection(now.get());
+        }
+
+        return Collections.unmodifiableList(sections);
+    }
 }

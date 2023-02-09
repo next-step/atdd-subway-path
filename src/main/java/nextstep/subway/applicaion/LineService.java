@@ -1,9 +1,6 @@
 package nextstep.subway.applicaion;
 
-import nextstep.subway.applicaion.dto.LineRequest;
-import nextstep.subway.applicaion.dto.LineResponse;
-import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.applicaion.dto.*;
 import nextstep.subway.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +31,7 @@ public class LineService {
             Section section = new SectionBuilder(line)
                     .setDownStation(downStation)
                     .setUpStation(upStation)
-                    .setDistance(10)
+                    .setDistance(request.getDistance())
                     .build();
             line.addSection(section);
         }
@@ -76,7 +73,7 @@ public class LineService {
         Section section = new SectionBuilder(line)
                 .setUpStation(upStation)
                 .setDownStation(downStation)
-                .setDistance(10)
+                .setDistance(sectionRequest.getDistance())
                 .build();
         line.addSection(section);
     }
@@ -86,9 +83,22 @@ public class LineService {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
+                createSectionResponses(line),
                 createStationResponses(line)
         );
     }
+
+    private List<SectionResponse> createSectionResponses(Line line) {
+        if(line.isEmptySections()){
+            return Collections.emptyList();
+        }
+        List<Section> sections = line.getSections().getValuesOrderBy();
+
+        return sections.stream()
+                .map(SectionResponse::new)
+                .collect(Collectors.toList());
+    }
+
 
     private List<StationResponse> createStationResponses(Line line) {
         if (line.isEmptySections()) {

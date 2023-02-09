@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class StationService {
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
@@ -37,7 +37,6 @@ public class StationService {
     }
 
     public StationResponse createStationResponse(Station station) {
-        System.out.println("station.getName() = " + station.getName());
         return new StationResponse(
                 station.getId(),
                 station.getName()
