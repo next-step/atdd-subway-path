@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Entity
@@ -103,11 +104,21 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        List<Station> stations = this.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-        if (!this.sections.isEmpty()) {
-            stations.add(0, this.getSections().get(0).getUpStation());
+        if (sections.isEmpty()) {
+            return List.of();
+        }
+
+        final List<Station> stations = new ArrayList<>();
+        final Section lastUpSection = getLastUpSection(sections.stream().findFirst().get());
+        stations.add(lastUpSection.getUpStation());
+        stations.add(lastUpSection.getDownStation());
+
+        Section currentSection = lastUpSection;
+        while (true) {
+            final Section nextSection = getNextSection(currentSection);
+            if (nextSection == null) break;
+            stations.add(nextSection.getDownStation());
+            currentSection = nextSection;
         }
         return stations;
     }
@@ -117,5 +128,25 @@ public class Line {
             throw new IllegalArgumentException();
         }
         this.getSections().remove(this.getSections().size() - 1);
+    }
+
+    private Section getLastUpSection(final Section section) {
+        final Optional<Section> findSection = this.sections.stream()
+                .filter(it -> it.getDownStation().equals(section.getUpStation()))
+                .findFirst();
+        if (findSection.isEmpty()) {
+            return section;
+        }
+        return getLastUpSection(findSection.get());
+    }
+
+    private Section getNextSection(final Section section) {
+        final Optional<Section> findSection = this.sections.stream()
+                .filter(it -> it.getUpStation().equals(section.getDownStation()))
+                .findFirst();
+        if (findSection.isEmpty()) {
+            return null;
+        }
+        return findSection.get();
     }
 }
