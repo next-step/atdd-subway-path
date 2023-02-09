@@ -120,7 +120,8 @@ class SectionsTest {
         //then 추가된 구간이 사이에 조회된다. 이전 노선의 길이가 줄어든다.
         assertAll(
                 () -> assertThat(line.getAllStations()).containsExactly(stationA, stationB, stationD, stationC),
-                () -> assertThat(BtoC.getDistance()).isEqualTo(5)
+                () -> assertThat(BtoC.getDistance()).isEqualTo(5),
+                () -> assertThat(BtoC.getDownStation()).isEqualTo(stationD)
         );
     }
 
@@ -165,7 +166,8 @@ class SectionsTest {
         //then 추가된 구간이 사이에 조회된다. 이전 노선의 길이가 줄어든다.
         assertAll(
                 () -> assertThat(line.getAllStations()).containsExactly(stationA, stationB, stationD, stationC),
-                () -> assertThat(BtoC.getDistance()).isEqualTo(5)
+                () -> assertThat(BtoC.getDistance()).isEqualTo(5),
+                () -> assertThat(BtoC.getUpStation()).isEqualTo(stationD)
         );
     }
 
