@@ -42,24 +42,11 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        if (section.hasIdenticalStations()) {
-            throw new IllegalArgumentException();
-        }
+        validateSection(section);
 
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
         int distance = section.getDistance();
-
-        List<Station> stations = getStations();
-        if (!stations.isEmpty()) {
-            if (stations.contains(upStation) && stations.contains(downStation)) {
-                throw new SectionStationsAlreadyExistsInLineException(upStation.getName(), downStation.getName());
-            }
-
-            if (!stations.contains(upStation) && !stations.contains(downStation)) {
-                throw new BothSectionStationsNotExistsInLineException(upStation.getName(), downStation.getName());
-            }
-        }
 
         sections.stream()
             .filter(it -> it.getUpStation().equals(upStation))
@@ -74,11 +61,36 @@ public class Line {
         sections.add(section);
     }
 
+    private void validateSection(Section section) {
+        if (section.hasIdenticalStations()) {
+            throw new IllegalArgumentException();
+        }
+
+        List<Station> stations = getStations();
+        if (stations.isEmpty()) {
+            return;
+        }
+
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+
+        if (stations.contains(upStation) && stations.contains(downStation)) {
+            throw new SectionStationsAlreadyExistsInLineException(upStation.getName(), downStation.getName());
+        }
+
+        if (!stations.contains(upStation) && !stations.contains(downStation)) {
+            throw new BothSectionStationsNotExistsInLineException(upStation.getName(), downStation.getName());
+        }
+    }
+
     public List<Station> getStations() {
         if (sections.isEmpty()) {
             return Collections.emptyList();
         }
+        return getStationsInOrder();
+    }
 
+    private List<Station> getStationsInOrder() {
         Station firstStation = findFirstUpStation();
 
         List<Station> stations = new ArrayList<>();
