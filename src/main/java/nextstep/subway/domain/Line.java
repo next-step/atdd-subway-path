@@ -28,7 +28,7 @@ public class Line {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.sections = new Sections(this);
+        this.sections = new Sections();
     }
 
     public void addSection(Section section) {

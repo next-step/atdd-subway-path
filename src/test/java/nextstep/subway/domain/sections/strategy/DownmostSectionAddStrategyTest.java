@@ -21,7 +21,7 @@ class DownmostSectionAddStrategyTest {
     @BeforeEach
     void setup() {
         line = new Line("신분당선", "bg-red");
-        sections = new Sections(line);
+        sections = new Sections();
         sections.addSection(Section.createFixture(1L, line, Fixtures.판교역, Fixtures.정자역, 10), line);
         sections.addSection(Section.createFixture(2L, line, Fixtures.정자역, Fixtures.미금역, 10), line);
     }

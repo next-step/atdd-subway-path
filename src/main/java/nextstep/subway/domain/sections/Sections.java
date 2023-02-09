@@ -14,7 +14,6 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
@@ -32,17 +31,6 @@ public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
-
-    @Transient
-    Line line;
-
-    protected Sections() {
-
-    }
-
-    public Sections(Line line) {
-        this.line = line;
-    }
 
     public void addSection(Section section, Line line) {
         if (sections.isEmpty()) {
