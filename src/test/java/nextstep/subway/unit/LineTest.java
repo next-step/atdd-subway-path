@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineErrorMessage;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +15,7 @@ class LineTest {
         Line line = new Line("1호선", "파란색");
 
         // when
-        line.addSection(new Station("상행역"), new Station("하행역"), 10);
+        line.addSection(createUpStation(), createDownStation(), 10);
 
         // then
         assertThat(line.getSections()).isNotEmpty();
@@ -26,7 +27,7 @@ class LineTest {
         Line line = createLine();
 
         // when
-        line.addSection(new Station("상행역"), new Station("중간역"), 6);
+        line.addSection(createUpStation(), createMiddleStation(), 6);
 
         // then
         assertThat(line.getOrderedStations()).extracting("name").containsExactly("상행역", "중간역", "하행역");
@@ -39,22 +40,22 @@ class LineTest {
         Line line = createLine();
 
         // when & then
-        assertThatThrownBy(() -> line.addSection(new Station("상행역"), new Station("중간역"), 10))
+        assertThatThrownBy(() -> line.addSection(createUpStation(), createMiddleStation(), 10))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("역 사이에 기존 역 사이 길이보다 크거나 같은 구간을 등록할 수 없습니다.");
+            .hasMessage(LineErrorMessage.INVALID_DISTANCE.getMessage());
     }
 
     @Test
     void addAlreadyExistentStations() {
         // given
         Line line = createLine();
-        Station upStation = new Station("상행역");
-        Station downStation = new Station("하행역");
+        Station upStation = createUpStation();
+        Station downStation = createDownStation();
 
         // when & then
         assertThatThrownBy(() -> line.addSection(upStation, downStation, 5))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("새로운 구간의 상행역과 하행역이 이미 모두 노선에 등록되어 있습니다.");
+            .hasMessage(LineErrorMessage.STATIONS_ALREADY_EXIST.getMessage());
     }
 
     @Test
@@ -67,7 +68,7 @@ class LineTest {
         // when & then
         assertThatThrownBy(() -> line.addSection(upStation, downStation, 5))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("새로운 구간의 상행역과 하행역이 모두 노선에 등록되어 있지 않습니다.");
+            .hasMessage(LineErrorMessage.STATIONS_NOT_EXIST.getMessage());
     }
 
     @Test
@@ -114,9 +115,21 @@ class LineTest {
         assertThat(line.getColor()).isEqualTo("초록색");
     }
 
-    private Line createLine() {
+    private static Line createLine() {
         Line line = new Line("1호선", "파란색");
-        line.addSection(new Station("상행역"), new Station("하행역"), 10);
+        line.addSection(createUpStation(), createDownStation(), 10);
         return line;
+    }
+
+    private static Station createUpStation() {
+        return new Station("상행역");
+    }
+
+    private static Station createDownStation() {
+        return new Station("하행역");
+    }
+
+    private static Station createMiddleStation() {
+        return new Station("중간역");
     }
 }

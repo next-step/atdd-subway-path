@@ -1,8 +1,9 @@
 package nextstep.subway.domain;
 
+import lombok.Builder;
+
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -74,18 +75,28 @@ public class Line {
 
         sections.remove(oldSection);
         sections.addAll(List.of(
-            new Section(this, oldUpstation, downStation, distance),
-            new Section(this, downStation, oldDownStation, oldDistance - distance)
+            Section.builder()
+                .line(this)
+                .upStation(oldUpstation)
+                .downStation(downStation)
+                .distance(distance)
+                .build(),
+            Section.builder()
+                .line(this)
+                .upStation(downStation)
+                .downStation(oldDownStation)
+                .distance(oldDistance - distance)
+                .build()
         ));
     }
 
     private void checkStationStatus(Station upStation, Station downStation) {
         List<Station> allStations = getAllStations();
         if (stationsAlreadyExist(upStation, downStation, allStations)) {
-            throw new IllegalArgumentException("새로운 구간의 상행역과 하행역이 이미 모두 노선에 등록되어 있습니다.");
+            throw new IllegalArgumentException(LineErrorMessage.STATIONS_ALREADY_EXIST.getMessage());
         }
         if (stationsNotExist(upStation, downStation, allStations)) {
-            throw new IllegalArgumentException("새로운 구간의 상행역과 하행역이 모두 노선에 등록되어 있지 않습니다.");
+            throw new IllegalArgumentException(LineErrorMessage.STATIONS_NOT_EXIST.getMessage());
         }
     }
 
@@ -98,7 +109,7 @@ public class Line {
     }
 
     private void checkDistance(int distance, int oldDistance) {
-        if (distance >= oldDistance) throw new IllegalArgumentException("역 사이에 기존 역 사이 길이보다 크거나 같은 구간을 등록할 수 없습니다.");
+        if (distance >= oldDistance) throw new IllegalArgumentException(LineErrorMessage.INVALID_DISTANCE.getMessage());
     }
 
     public void extendSection(Station upStation, Station downStation, int distance) {
@@ -106,11 +117,19 @@ public class Line {
     }
 
     public List<Station> getAllStations() {
-        return this.sections.stream()
-            .map(s -> List.of(s.getUpStation(), s.getDownStation()))
-            .flatMap(Collection::stream)
-            .distinct()
-            .collect(Collectors.toList());
+        List<Station> stations = new ArrayList<>();
+        Section anySection = this.sections.stream().findFirst().orElse(null);
+
+        if (anySection == null) {
+            return stations;
+        }
+
+        stations.add(anySection.getUpStation());
+        for (Section section : sections) {
+            stations.add(section.getDownStation());
+        }
+
+        return stations;
     }
 
     public List<Station> getOrderedStations() {
@@ -118,14 +137,15 @@ public class Line {
             .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
 
         List<Station> orderedStations = new ArrayList<>();
-        Station upStation = findUpEndStation();
+
+        EndStations endStations = findEndStations();
+        Station upStation = endStations.upEndStation;
+        Station downStation = stationMap.getOrDefault(upStation, null);
+
         orderedStations.add(upStation);
 
-        while (true) {
-            Station downStation = stationMap.getOrDefault(upStation, null);
-            if (downStation == null) {
-                break;
-            }
+        while (upStation != endStations.downEndStation) {
+            downStation = stationMap.getOrDefault(upStation, null);
             orderedStations.add(downStation);
             upStation = downStation;
         }
@@ -133,19 +153,39 @@ public class Line {
         return orderedStations;
     }
 
-    private Station findUpEndStation() {
+    private EndStations findEndStations() {
         List<Station> upStations = this.sections.stream()
             .map(Section::getUpStation)
             .collect(Collectors.toList());
-
         List<Station> downStations = this.sections.stream()
             .map(Section::getDownStation)
             .collect(Collectors.toList());
 
-        return upStations.stream()
+        Station upEndStation = upStations.stream()
             .filter(s -> !downStations.contains(s))
             .findFirst()
             .orElse(null);
+        Station downEndStation = downStations.stream()
+            .filter(s -> !upStations.contains(s))
+            .findFirst()
+            .orElse(null);
+
+        return EndStations.builder()
+            .upEndStation(upEndStation)
+            .downEndStation(downEndStation)
+            .build();
+    }
+
+    private static class EndStations {
+
+        private Station upEndStation;
+        private Station downEndStation;
+
+        @Builder
+        public EndStations(Station upEndStation, Station downEndStation) {
+            this.upEndStation = upEndStation;
+            this.downEndStation = downEndStation;
+        }
     }
 
     public void removeSection(Station downEndStation) {
@@ -163,4 +203,5 @@ public class Line {
             this.color = color;
         }
     }
+
 }
