@@ -61,15 +61,36 @@ public class Line {
     }
 
     public void removeSection(Station station) {
+        checkRemovableStation(station);
+
+        sections.remove(sections.size() - 1);
+    }
+
+    private void checkRemovableStation(Station station) {
+        verifyMinimumSectionCount();
+        verifyTailStation(station);
+    }
+
+    private void verifyMinimumSectionCount() {
         if (sections.size() == 1) {
             throw new IllegalStateException("지하철노선은 1개 구간 이하로 구성될 수 없습니다.");
         }
+    }
 
-        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
+    private void verifyTailStation(Station station) {
+        Station tailStation = getTailStation();
+        if (!tailStation.equals(station)) {
             throw new IllegalArgumentException("해당 노선의 하행종점역만 제거할 수 있습니다.");
         }
+    }
 
-        sections.remove(sections.size() - 1);
+    private Station getTailStation() {
+        Section tailSection = getTailSection();
+        return tailSection.getDownStation();
+    }
+
+    private Section getTailSection() {
+        return sections.get(sections.size() - 1);
     }
 
     public List<Station> getStations() {
