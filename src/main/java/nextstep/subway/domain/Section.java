@@ -34,6 +34,26 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section split(Section that) {
+        if (isSameUpStation(that) && !isSameDownStation(that)) {
+            return new Section(line, that.getDownStation(), this.downStation, distance.minus(that.distance));
+        }
+
+        if (!isSameUpStation(that) && isSameDownStation(that)) {
+            return new Section(line, upStation, that.upStation, distance.minus(that.distance));
+        }
+
+        throw new IllegalArgumentException("상행역과 하행역 둘 중 하나만 같아야 함");
+    }
+
+    private boolean isSameUpStation(Section that) {
+        return this.upStation.equals(that.upStation);
+    }
+
+    private boolean isSameDownStation(Section that) {
+        return this.downStation.equals(that.downStation);
+    }
+
     public Long getId() {
         return id;
     }

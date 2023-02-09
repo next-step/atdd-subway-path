@@ -46,17 +46,11 @@ public class Sections {
                 .filter(it -> it.getUpStation().equals(newUpStation) || it.getDownStation().equals(newDownStation))
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("구간 추가 불가"));
 
-
-        if (sections.stream().anyMatch(it -> it.getUpStation().equals(newUpStation))) {
-            sections.remove(ordinarySection);
-            sections.add(newSection);
-            sections.add(new Section(newSection.getLine(), newDownStation, ordinarySection.getDownStation(), ordinarySection.getDistance().minus(newSection.getDistance())));
-            return;
-        }
+        Section splittedSection = ordinarySection.split(newSection);
 
         sections.remove(ordinarySection);
         sections.add(newSection);
-        sections.add(new Section(newSection.getLine(), ordinarySection.getUpStation(), newUpStation, ordinarySection.getDistance().minus(newSection.getDistance())));
+        sections.add(splittedSection);
     }
 
     private boolean hasStation(Station station) {
