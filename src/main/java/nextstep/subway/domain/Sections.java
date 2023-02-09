@@ -3,10 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -47,5 +44,15 @@ public class Sections {
 
     private int getLastIndex() {
         return sections.size() - 1;
+    }
+
+    public boolean checkExistStation(Station station) {
+        return getStations().stream()
+                .anyMatch(s -> s.equals(station));
+    }
+
+    public boolean containsStations(List<Station> stations) {
+        List<Station> existStations = getStations();
+        return new HashSet<>(existStations).containsAll(stations);
     }
 }

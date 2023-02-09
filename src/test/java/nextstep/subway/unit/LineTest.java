@@ -183,4 +183,20 @@ class LineTest {
         // then
         assertThat(result).isFalse();
     }
+
+    /*@Test
+    @DisplayName("새 구간의 하행역이 기존구간의 중간에 삽입되는 경우")
+    void insertStationMiddle() {
+        // given
+        신분당선.addSection(강남_양재_구간);
+
+        Station 신논현역 = new Station("신논현역");
+        Section 신논현_강남_구간 = new Section(신분당선, 신논현역, 강남역, distance);
+
+        // when
+        신분당선.addSection(신논현_강남_구간);
+
+        // then
+        assertThat(result).isFalse();
+    }*/
 }

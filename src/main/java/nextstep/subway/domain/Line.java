@@ -100,7 +100,6 @@ public class Line {
     }
 
     public boolean checkExistStation(Station station) {
-        return getStations().stream()
-                .anyMatch(s -> s.equals(station));
+        return sections.checkExistStation(station);
     }
 }

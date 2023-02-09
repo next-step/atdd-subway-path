@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -8,7 +9,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SectionsTest {
+
     @Test
+    @DisplayName("모든역을 가져오는지 확인")
     void getSectionsTest() {
         // given
         Sections sections = new Sections();
