@@ -91,7 +91,7 @@ public class Line {
 
         Station lastStation = sections.get(sections.size() - 1).getDownStation();
 
-        if(lastStation.getId() != section.getUpStation().getId()) {
+        if(!lastStation.getId().equals(section.getUpStation().getId())) {
             throw new CustomException(CustomException.ONLY_CAN_CREATE_LAST_STATION_MSG);
         }
 
@@ -109,7 +109,7 @@ public class Line {
         }
 
         Section lastSection = sections.get(sections.size() - 1);
-        if(station.getId() != lastSection.getDownStation().getId()) {
+        if(!station.getId().equals(lastSection.getDownStation().getId())) {
             throw new CustomException(CustomException.ONLY_CAN_REMOVE_LAST_STATION_MSG);
         }
 
