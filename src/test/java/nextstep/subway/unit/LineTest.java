@@ -2,6 +2,7 @@ package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
@@ -34,8 +35,14 @@ class LineTest {
         assertThat(line.getSections()).containsExactly(section);
     }
 
+    @DisplayName("노선의 지하철 역 목록을 반환한다.")
     @Test
     void getStations() {
+        line.addSection(new Section(line, upStation, downStation, distance));
+
+        List<Station> stations = line.getStations();
+
+        assertThat(stations).hasSize(2).containsExactly(upStation, downStation);
     }
 
     @Test
