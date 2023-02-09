@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,15 +53,7 @@ class LineTest {
     @Test
     void getStations() {
         // When
-        List<Station> stations = new ArrayList<>();
-
-        List<Section> foundSections = 이호선.getSections();
-        foundSections.forEach(section -> {
-            stations.add(section.getUpStation());
-            if (foundSections.indexOf(section) == foundSections.size() - 1) {
-                stations.add(section.getDownStation());
-            }
-        });
+        List<Station> stations = 이호선.getStations();
 
         // Then
         assertAll(

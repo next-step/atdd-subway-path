@@ -71,4 +71,17 @@ public class Line {
 
         sections.remove(sections.size() - 1);
     }
+
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+
+        sections.forEach(section -> {
+            stations.add(section.getUpStation());
+            if (sections.indexOf(section) == sections.size() - 1) {
+                stations.add(section.getDownStation());
+            }
+        });
+
+        return stations;
+    }
 }
