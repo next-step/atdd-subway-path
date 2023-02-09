@@ -78,7 +78,15 @@ public class Line {
     }
 
     public void addSection(final Station upStation, final Station downStation, final int distance) {
-        this.getSections().add(new Section(this, upStation, downStation, distance));
+        if (this.getStations().isEmpty()) {
+            this.getSections().add(new Section(this, upStation, downStation, distance));
+            return;
+        }
+        final Station lastStation = this.getSections().get(this.getSections().size() - 1).getDownStation();
+        if (lastStation.equals(upStation)) {
+            this.getSections().add(new Section(this, upStation, downStation, distance));
+            return;
+        }
     }
 
     public List<Station> getStations() {
