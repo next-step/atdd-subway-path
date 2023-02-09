@@ -87,7 +87,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addIntermediateSectionExistingUpStation() {
         // when
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createLineCreateParams(강남역, 신규역));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 신규역));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
@@ -106,12 +106,31 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addIntermediateSectionExistingDownStation() {
         // when
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createLineCreateParams(신규역, 양재역));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신규역, 양재역));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 신규역, 양재역);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 역과 구간을 추가하고
+     * When 새로운 구간을 추가하려고 할 때, 구간의 길이가 기존 구간의 길이보다 크거나 같으면
+     * Then 새로운 구간이 추가되지 않는다.
+     */
+    @DisplayName("새로 추가하려는 구간의 길이는 기존 구간의 길이보다 작아야 한다.")
+    @Test
+    void invalidSectionDistance() {
+        // given
+        Long 에러역 = 지하철역_생성_요청("에러역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신규역, 양재역));
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(에러역, 신규역));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     /**
@@ -125,7 +144,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionWithFirstUpStation() {
         // when
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createLineCreateParams(신규역, 강남역));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신규역, 강남역));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
@@ -144,7 +163,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionWithLastDownStation() {
         // when
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createLineCreateParams(양재역, 신규역));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 신규역));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
