@@ -52,7 +52,6 @@ public class LineServiceMockTest {
     @Test
     void addSection() {
         // given
-        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         when(lineRepository.findById(1L)).thenReturn(Optional.of(이호선));
         when(stationService.findById(1L)).thenReturn(강남역);
         when(stationService.findById(2L)).thenReturn(삼성역);
@@ -62,7 +61,6 @@ public class LineServiceMockTest {
         lineService.addSection(1L, sectionRequest);
 
         // then
-        // lineService.findLineById 메서드를 통해 검증
         Line line = lineService.findLineById(1L);
         assertThat(line.getSections()).hasSize(1);
     }
