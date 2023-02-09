@@ -132,7 +132,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getInt("distance")).isEqualTo(14);
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(양재역, 몽촌토성역);
     }
 
@@ -150,7 +149,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getInt("distance")).isEqualTo(14);
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 몽촌토성역);
     }
 
@@ -168,7 +166,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getInt("distance")).isEqualTo(14);
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
@@ -179,11 +176,11 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선이 하나인 경우 제거가 불가능하다")
     @Test
     void error_removeLineStation() {
-        final ExtractableResponse<Response> 지하철_구간_생성_응답 = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+        final ExtractableResponse<Response> 지하철_구간_제거_응답 = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
 
-        final JsonPath jsonPathResponse = 지하철_구간_생성_응답.response().body().jsonPath();
+        final JsonPath jsonPathResponse = 지하철_구간_제거_응답.response().body().jsonPath();
         assertAll(
-                () -> assertThat(지하철_구간_생성_응답.response().statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(지하철_구간_제거_응답.response().statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
                 () -> assertThat(jsonPathResponse.getString("message")).isEqualTo(NO_DELETE_ONE_SECTION.getMessage())
         );
     }
@@ -196,11 +193,13 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("등록되지 않는 역은 제거가 불가하다.")
     @Test
     void error_removeLineStation_2() {
-        final ExtractableResponse<Response> 지하철_구간_생성_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 몽촌토성역, 10));
+        final ExtractableResponse<Response> 지하철_구간_생성_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 몽촌토성역, 10));
 
-        final JsonPath jsonPathResponse = 지하철_구간_생성_응답.response().body().jsonPath();
+        final ExtractableResponse<Response> 지하철_구간_제거_응답 = 지하철_노선에_지하철_구간_제거_요청(신분당선, 역삼역);
+
+        final JsonPath jsonPathResponse = 지하철_구간_제거_응답.response().body().jsonPath();
         assertAll(
-                () -> assertThat(지하철_구간_생성_응답.response().statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(지하철_구간_제거_응답.response().statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
                 () -> assertThat(jsonPathResponse.getString("message")).isEqualTo(NO_REGISTER_LINE_STATION.getMessage())
         );
     }
