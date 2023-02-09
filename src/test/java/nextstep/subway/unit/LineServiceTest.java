@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+@DisplayName("구간 서비스 단위 테스트")
 @SpringBootTest
 @Transactional
 public class LineServiceTest {

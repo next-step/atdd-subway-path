@@ -22,6 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+@DisplayName("구간 서비스 단위 테스트")
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
     @Mock
