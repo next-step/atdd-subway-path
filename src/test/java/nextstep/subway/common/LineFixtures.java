@@ -16,5 +16,12 @@ public class LineFixtures {
 		);
 	}
 
+	public static Line LINE_4_WITH_NOT_SECTION() {
+		return new Line(
+			"4호선",
+			"blue"
+		);
+	}
+
 	public static final Long LINE_4_ID = 1L;
 }

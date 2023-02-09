@@ -42,6 +42,10 @@ public class Section {
         return this.upStation.equals(station);
     }
 
+    public boolean equalUpStation(Long upStationId) {
+        return this.upStation.equalId(upStationId);
+    }
+
     public boolean hasFinalDownStation(Long finalDownStationId) {
         return this.downStation.equalId(finalDownStationId);
     }
@@ -66,6 +70,14 @@ public class Section {
         return distance;
     }
 
+    public Long getUpStationId() {
+        return this.upStation.getId();
+    }
+
+    public Long getDownStationId() {
+        return this.downStation.getId();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -79,5 +91,9 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public boolean isLonger(int distance) {
+        return this.distance > distance;
     }
 }

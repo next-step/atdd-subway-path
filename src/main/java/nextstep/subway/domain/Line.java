@@ -73,11 +73,10 @@ public class Line {
 
 	public void addSection(Station upStation, Station downStation, int distance) {
 		this.sections.addSection(this, upStation, downStation, distance);
-		this.downStationId = downStation.getId();
 	}
 
 	public List<Station> getStations() {
-		return sections.getStations();
+		return sections.getStations(upStationId, downStationId);
 	}
 
 	public void removeSection(Station station) {
@@ -92,6 +91,22 @@ public class Line {
 		}
 		this.name = name;
 		this.color = color;
+	}
+
+	boolean equalFinalDownStation(Station upStation) {
+		return this.downStationId.equals(upStation.getId());
+	}
+
+	void updateFinalDownStation(Station downStation) {
+		this.downStationId = downStation.getId();
+	}
+
+	void updateFinalUpStation(Station upStation) {
+		this.upStationId = upStation.getId();
+	}
+
+	boolean equalFinalUpStation(Station downStation) {
+		return this.upStationId.equals(downStation.getId());
 	}
 
 	private void validateName(String name) {
