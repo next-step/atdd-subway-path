@@ -6,9 +6,9 @@ import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DataIntegrityViolationException;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.*;
 
 class LineTest {
     @Test
@@ -62,8 +62,8 @@ class LineTest {
                 .build();
 
         //then IllegalArgumentException
-        assertThatIllegalArgumentException().isThrownBy(
-                () -> line.addSection(서울역_숙대입구));
+        assertThatThrownBy(  () -> line.addSection(서울역_숙대입구))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
@@ -89,8 +89,8 @@ class LineTest {
                 .build();
 
         //then IllegalArgumentException
-        assertThatIllegalArgumentException().isThrownBy(
-                () -> line.addSection(상계_서울역));
+        assertThatThrownBy(  () -> line.addSection(상계_서울역))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test

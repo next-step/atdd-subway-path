@@ -6,6 +6,7 @@ import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -73,8 +74,8 @@ class SectionsTest {
                 .setDistance(10)
                 .build();
         //then 오류 발생
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> line.addSection(DtoE));
+        assertThatThrownBy(  () -> line.addSection(DtoE))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
 
@@ -96,8 +97,8 @@ class SectionsTest {
                 .setDistance(10)
                 .build();
         //then 오류 발생
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> line.addSection(AtoC));
+        assertThatThrownBy(  () -> line.addSection(AtoC))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
@@ -142,8 +143,8 @@ class SectionsTest {
                 .setDistance(10)
                 .build();
         //then 오류 발생
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> line.addSection(DtoC));
+        assertThatThrownBy(  () -> line.addSection(DtoC))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
@@ -188,8 +189,8 @@ class SectionsTest {
                 .setDistance(15)
                 .build();
         //then 오류 발생
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> line.addSection(BtoD));
+        assertThatThrownBy(  () -> line.addSection(BtoD))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
 }
