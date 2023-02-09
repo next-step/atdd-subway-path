@@ -106,7 +106,8 @@ public class Line {
         return this.sections.isEmpty();
     }
 
-    public boolean checkExistStation(Station 노원역) {
-        return true;
+    public boolean checkExistStation(Station station) {
+        return getStations().stream()
+                .anyMatch(s -> s.equals(station));
     }
 }

@@ -178,9 +178,9 @@ class LineTest {
 
         Station 노원역 = new Station("노원역");
         // when
-        신분당선.checkExistStation(노원역);
+        boolean result = 신분당선.checkExistStation(노원역);
 
         // then
-        assertThat(신분당선.getStations()).contains(노원역);
+        assertThat(result).isFalse();
     }
 }
