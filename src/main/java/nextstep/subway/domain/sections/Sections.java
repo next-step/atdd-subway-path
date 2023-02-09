@@ -55,7 +55,7 @@ public class Sections {
         sections.remove(sections.size() - 1);
     }
 
-    public boolean isDownMostStation(Long stationId) {
+    private boolean isDownMostStation(Long stationId) {
         Section lastSection = sections.get(sections.size() - 1);
         return lastSection.isSameDownStation(stationId);
     }
