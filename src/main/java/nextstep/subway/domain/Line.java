@@ -51,6 +51,11 @@ public class Line {
             .findFirst()
             .ifPresent(it -> it.updateUpStation(downStation));
 
+        sections.stream()
+            .filter(it -> it.getDownStation().equals(downStation))
+            .findFirst()
+            .ifPresent(it -> it.updateDownStation(upStation));
+
         sections.add(section);
     }
 

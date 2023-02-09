@@ -19,8 +19,9 @@ import io.restassured.response.Response;
 class LineSectionAcceptanceTest extends AcceptanceTest {
     private Long 신분당선;
 
-    private Long 강남역;
-    private Long 양재역;
+    private static Long 강남역;
+    private static Long 양재역;
+    private static Long 중간역;
 
     /**
      * Given 지하철역과 노선 생성을 요청 하고
@@ -31,6 +32,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
         양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+        중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
 
         Map<String, String> lineCreateParams = createLineCreateParams(강남역, 양재역);
         신분당선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
@@ -78,15 +80,35 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * Given 지하철 노선에 새로운 역을 등록하고
      * When 기존 구간에 새로 등록된 역을 포함하는 새로운 구간을 추가하면
      * Then 기존 구간 사이에 새로운 구간이 추가된다.
+     * AS-IS    A ----------------- C
+     *        + A ------- B
+     * TO-BE    A --------B-------- C
      */
-    @DisplayName("기존 구간의 역을 기준으로 새로운 구간을 추가한다.")
+    @DisplayName("기존 구간의 상행역을 기준으로 새로운 구간을 추가한다.")
     @Test
-    void addIntermediateSection() {
-        // given
-        Long 중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
-
+    void addIntermediateSectionExistingUpStation() {
         // when
         지하철_노선에_지하철_구간_생성_요청(신분당선, createLineCreateParams(강남역, 중간역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 중간역, 양재역);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 역을 등록하고
+     * When 기존 구간에 새로 등록된 역을 포함하는 새로운 구간을 추가하면
+     * Then 기존 구간 사이에 새로운 구간이 추가된다.
+     * AS-IS    A ----------------- C
+     *        +           B ------- C
+     * TO-BE    A --------B-------- C
+     */
+    @DisplayName("기존 구간의 하행역을 기준으로 새로운 구간을 추가한다.")
+    @Test
+    void addIntermediateSectionExistingDownStation() {
+        // when
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createLineCreateParams(중간역, 양재역));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
