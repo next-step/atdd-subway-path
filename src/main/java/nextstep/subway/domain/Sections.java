@@ -3,10 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -45,18 +42,25 @@ public class Sections {
         throw new IllegalArgumentException("구간을 추가할 수 없습니다.");
     }
 
-    private Section getAfterSection(Section section){
+    private Optional<Section> getAfterSection(Section section){
         return values.stream()
-                .filter(value -> value.equalUpStation(section.getDownStation()))
-                .findFirst()
-                .orElseThrow();
+                .filter(value -> value.equalUpStation(section.getDownStation())
+                                    && !value.equals(section))
+                .findFirst();
     }
 
-    private Section getBeforeSection(Section section){
+    private Optional<Section> getBeforeSection(Section section){
         return values.stream()
-                .filter(value -> value.equalDownStation(section.getUpStation()))
-                .findFirst()
-                .orElseThrow();
+                .filter(value -> value.equalDownStation(section.getUpStation())
+                                    && !value.equals(section))
+                .findFirst();
+    }
+
+    private Section getFirstSection(){
+        return values.stream()
+                .filter(value -> getBeforeSection(value).isEmpty())
+                .findFirst().orElseThrow();
+
     }
 
     private Section getIncludedSectionWhenEqualUpStation(Section section){
@@ -82,9 +86,19 @@ public class Sections {
             return Collections.emptyList();
         }
 
-        return values.stream().map(Section::getStations)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toUnmodifiableList());
+        List<Station> stations = new ArrayList<>();
+        Section firstSection = getFirstSection();
+        stations.add(firstSection.getUpStation());
+
+        Optional<Section> now = Optional.of(firstSection);
+
+        while(now.isPresent()){
+            stations.add(now.get().getDownStation());
+            now = getAfterSection(now.get());
+        }
+
+        return Collections.unmodifiableList(stations);
+
     }
 
     protected boolean equalLastStation(Station station) {
