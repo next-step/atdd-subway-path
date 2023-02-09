@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.SectionAlreadyCreateStationException;
+import nextstep.subway.exception.SectionDoesNotHaveAlreadyCreateStationException;
 import nextstep.subway.exception.SectionUpStationNotMatchException;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -96,17 +97,20 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("Line의 역들중에 Section의 하행역과 같은 것이 있다면 예외")
-    void failWhenLineContainSectionDownStation() {
+    @DisplayName("Line의 역과 Section의 역이 일치하는 것이 없다면 예외")
+    void failWhenLineDoesNotContainAnyStation() {
         // given
         신분당선.addSection(강남_양재_구간);
 
-        Section 이미_등록된_강남역_포함구간 = new Section(신분당선, 양재역, 강남역, distance);
-        injectId(이미_등록된_강남역_포함구간, 3L);
+        Station 양재시민의숲역 = new Station("양재시민의숲역");
+        Station 미금역 = new Station("미금역");
+
+        Section 등록안된_역_구간 = new Section(신분당선, 양재시민의숲역, 미금역, distance);
+        injectId(등록안된_역_구간, 3L);
 
         // when, then
-        assertThatThrownBy(() -> 신분당선.addSection(이미_등록된_강남역_포함구간))
-                .isInstanceOf(SectionAlreadyCreateStationException.class);
+        assertThatThrownBy(() -> 신분당선.addSection(등록안된_역_구간))
+                .isInstanceOf(SectionDoesNotHaveAlreadyCreateStationException.class);
     }
 
     @Test
