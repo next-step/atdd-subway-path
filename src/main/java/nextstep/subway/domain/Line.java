@@ -89,10 +89,7 @@ public class Line {
             return;
         }
 
-        Station lastStation = this.sections.stream()
-                                            .reduce((first, second) -> second)
-                                            .map(Section::getDownStation)
-                                            .orElseThrow(RuntimeException::new);
+        Station lastStation = sections.get(sections.size() - 1).getDownStation();
 
         if(lastStation.getId() != section.getUpStation().getId()) {
             throw new CustomException(CustomException.ONLY_CAN_CREATE_LAST_STATION_MSG);
