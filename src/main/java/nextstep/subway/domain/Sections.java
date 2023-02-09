@@ -22,32 +22,13 @@ public class Sections {
             sections.add(new Section(line, upStation, downStation, distance));
             return;
         }
-        if (new HashSet<>(this.getStations()).containsAll(List.of(upStation, downStation)) ||
-                (!this.getStations().contains(upStation) && !this.getStations().contains(downStation))) {
-            throw new IllegalArgumentException();
-        }
+        validateUpStationAndDownStation(upStation, downStation);
 
-        final Station lastUpStation = sections.get(0).getUpStation();
-        final Station lastDownStation = sections.get(sections.size() - 1).getDownStation();
-        if (lastDownStation.equals(upStation)) {
+        if (isAddSectionWithLastUpStationOrLastDownStation(upStation, downStation)) {
             sections.add(new Section(line, upStation, downStation, distance));
             return;
         }
-        if (lastUpStation.equals(downStation)) {
-            sections.add(0, new Section(line, upStation, downStation, distance));
-            return;
-        }
-        sections.stream()
-                .filter(section -> section.getUpStation().equals(upStation))
-                .findFirst()
-                .ifPresent(it -> {
-                    if (distance >= it.getDistance()) {
-                        throw new IllegalArgumentException();
-                    }
-                    sections.add(new Section(line, upStation, downStation, distance));
-                    sections.add(new Section(line, downStation, it.getDownStation(), it.getDistance() - distance));
-                    sections.remove(it);
-                });
+        addStationBetweenStations(line, upStation, downStation, distance);
     }
 
     List<Station> getStations() {
@@ -56,28 +37,62 @@ public class Sections {
         }
 
         final List<Station> stations = new ArrayList<>();
-        final Section lastUpSection = getLastUpSection(sections.stream().findFirst().get());
+        final Section lastUpSection = getLastUpSection();
         stations.add(lastUpSection.getUpStation());
-        stations.add(lastUpSection.getDownStation());
 
         Section currentSection = lastUpSection;
         while (true) {
+            stations.add(currentSection.getDownStation());
             final Section nextSection = getNextSection(currentSection);
             if (nextSection == null) break;
-            stations.add(nextSection.getDownStation());
             currentSection = nextSection;
         }
         return stations;
     }
 
     void remove(final Station station) {
-        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
+        if (!getLastDownSection().getDownStation().equals(station)) {
             throw new IllegalArgumentException();
         }
         sections.remove(sections.size() - 1);
     }
 
-    Section getLastUpSection(final Section section) {
+    private void validateUpStationAndDownStation(final Station upStation, final Station downStation) {
+        if (new HashSet<>(this.getStations()).containsAll(List.of(upStation, downStation)) ||
+                (!this.getStations().contains(upStation) && !this.getStations().contains(downStation))) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private boolean isAddSectionWithLastUpStationOrLastDownStation(final Station upStation, final Station downStation) {
+        final Station lastUpStation = getLastUpSection().getUpStation();
+        final Station lastDownStation = getLastDownSection().getDownStation();
+        return lastDownStation.equals(upStation) || lastUpStation.equals(downStation);
+    }
+
+    private void addStationBetweenStations(final Line line, final Station upStation, final Station downStation, final int distance) {
+        sections.stream()
+                .filter(section -> section.getUpStation().equals(upStation))
+                .findFirst()
+                .ifPresent(it -> {
+                    validateNewSectionDistance(it, distance);
+                    sections.add(new Section(line, upStation, downStation, distance));
+                    sections.add(new Section(line, downStation, it.getDownStation(), it.getDistance() - distance));
+                    sections.remove(it);
+                });
+    }
+
+    private void validateNewSectionDistance(final Section section, final int distance) {
+        if (section.getDistance() <= distance) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private Section getLastUpSection() {
+        return getLastUpSection(this.sections.get(0));
+    }
+
+    private Section getLastUpSection(final Section section) {
         final Optional<Section> findSection = this.sections.stream()
                 .filter(it -> it.getDownStation().equals(section.getUpStation()))
                 .findFirst();
@@ -85,6 +100,20 @@ public class Sections {
             return section;
         }
         return getLastUpSection(findSection.get());
+    }
+
+    private Section getLastDownSection() {
+        return getLastDownSection(this.sections.get(0));
+    }
+
+    private Section getLastDownSection(final Section section) {
+        final Optional<Section> findSection = this.sections.stream()
+                .filter(it -> it.getUpStation().equals(section.getDownStation()))
+                .findFirst();
+        if (findSection.isEmpty()) {
+            return section;
+        }
+        return getLastDownSection(findSection.get());
     }
 
     private Section getNextSection(final Section section) {
