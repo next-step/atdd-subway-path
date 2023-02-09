@@ -25,8 +25,8 @@ class SectionDeleteActionTest {
     @BeforeEach
     void setUp() {
         sections = new ArrayList(Arrays.asList(
-                createSection(stationId1, stationId2),
-                createSection(stationId2, stationId3)
+                createSection(stationId1, stationId2, 10 ),
+                createSection(stationId2, stationId3, 2)
         ));
     }
 
@@ -34,7 +34,7 @@ class SectionDeleteActionTest {
     void 구간이_하나면_삭제_실패() {
         sections = new ArrayList(Arrays.asList(createSection(stationId1, stationId2)));
 
-        assertThatThrownBy(() -> SectionDeleteAction.of(sections, 0L)).isInstanceOf(CanNotDeleteSectionException.class);
+        assertThatThrownBy(() -> SectionDeleteAction.of(sections, stationId1)).isInstanceOf(CanNotDeleteSectionException.class);
     }
 
     @Test
@@ -43,17 +43,29 @@ class SectionDeleteActionTest {
     }
 
     @Test
-    void 처음_구간_삭제_성공() {
+    void 처음_구간_삭제_액션_생성() {
+        SectionDeleteAction action = SectionDeleteAction.of(sections, stationId1);
+        assertThat(action).isEqualTo(SectionDeleteAction.UP_STATION);
+    }
+
+    @Test
+    void 처음_구간_삭제() {
+        SectionDeleteAction action = SectionDeleteAction.of(sections, stationId1);
+        action.delete(sections, stationId1);
+
+        assertThat(sections).hasSize(1);
+        Section section = sections.get(0);
+        assertThat(section.getUpStationId()).isEqualTo(stationId2);
+        assertThat(section.getDownStationId()).isEqualTo(stationId3);
+    }
+
+    @Test
+    void 중간_구간_삭제_액션_생성() {
 
     }
 
     @Test
-    void 중간_구간_삭제_성공() {
-
-    }
-
-    @Test
-    void 마지막_구간_삭제_성공() {
+    void 마지막_구간_삭제_액션_생성() {
 
     }
 }

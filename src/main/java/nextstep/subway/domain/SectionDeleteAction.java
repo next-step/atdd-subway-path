@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import lombok.AllArgsConstructor;
 import nextstep.subway.exception.CanNotDeleteSectionException;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
@@ -10,12 +11,12 @@ import java.util.function.Predicate;
 
 @AllArgsConstructor
 public enum SectionDeleteAction {
-    UP_STATION((sections, stationId) -> isDeleteUpStation(sections, stationId), (sections, stationId) -> deleteUpStation(sections,stationId)),
+    UP_STATION((sections, stationId) -> isDeleteUpStation(sections, stationId), (sections, stationId) -> deleteUpStation(sections)),
     MIDDLE_STATION((sections, stationId) -> isDeleteMiddleStation(sections, stationId), (sections, stationId) -> deleteMiddleStation(sections, stationId)),
     DOWN_STATION((sections, stationId) -> isDeleteDownStation(sections, stationId), (sections, stationId) -> deleteDownStation(sections, stationId));
 
-    private final BiPredicate<List<Section>, Section> matchFunction;
-    private final BiConsumer<List<Section>, Section> deleteFunction;
+    private final BiPredicate<List<Section>, Long> matchFunction;
+    private final BiConsumer<List<Section>, Long> deleteFunction;
 
     public static SectionDeleteAction of(List<Section> sections, Long stationId) {
         return getSectionAction(sections, stationId);
@@ -24,7 +25,10 @@ public enum SectionDeleteAction {
     private static SectionDeleteAction getSectionAction(List<Section> sections, Long stationId) {
         validate(sections, stationId);
 
-        return null;
+        return Arrays.stream(values())
+                .filter(a -> a.matchFunction.test(sections, stationId))
+                .findAny()
+                .orElseThrow(() -> new CanNotDeleteSectionException("삭제 액션을 찾을수 없습니다."));
     }
 
     private static void validate(List<Section> sections, Long stationId) {
@@ -37,8 +41,8 @@ public enum SectionDeleteAction {
         }
     }
 
-    public void delete(List<Section> sections, Section stationId) {
-        throw new UnsupportedOperationException();
+    public void delete(List<Section> sections, long stationId) {
+        deleteFunction.accept(sections, stationId);
     }
 
     private static boolean hasStation(List<Section> sections, Long stationId) {
@@ -46,33 +50,35 @@ public enum SectionDeleteAction {
                 .anyMatch(s -> s.hasStationId(stationId));
     }
 
-    private static boolean isDeleteUpStation(List<Section> sections, Section stationId) {
-        throw new UnsupportedOperationException();
+    private static boolean isDeleteUpStation(List<Section> sections, Long stationId) {
+        return sections.stream()
+                .anyMatch(s -> s.isSameUpStationId(stationId) && s.isFirst());
     }
 
     private static Predicate<Section> deleteUpStationPredicate(Section stationId) {
         throw new UnsupportedOperationException();
     }
 
-    private static boolean isDeleteMiddleStation(List<Section> sections, Section stationId) {
-        throw new UnsupportedOperationException();
+    private static boolean isDeleteMiddleStation(List<Section> sections, Long stationId) {
+        return false;
     }
 
     private static Predicate<Section> deleteMiddlePredicate(Section stationId) {
         throw new UnsupportedOperationException();
     }
 
-    private static boolean isDeleteDownStation(List<Section> sections, Section stationId) {
-        throw new UnsupportedOperationException();
+    private static boolean isDeleteDownStation(List<Section> sections, Long stationId) {
+        return false;
     }
 
-    private static void deleteUpStation(List<Section> sections, Section stationId) {
+    private static void deleteUpStation(List<Section> sections) {
+        sections.remove(0);
     }
 
-    private static void deleteMiddleStation(List<Section> sections, Section stationId) {
+    private static void deleteMiddleStation(List<Section> sections, Long stationId) {
 
     }
 
-    private static void deleteDownStation(List<Section> sections, Section stationId) {
+    private static void deleteDownStation(List<Section> sections, Long stationId) {
     }
 }

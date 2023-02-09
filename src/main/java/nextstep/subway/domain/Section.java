@@ -86,7 +86,15 @@ public class Section {
     }
 
     public boolean hasStationId(Long stationId) {
-        return getUpStationId().equals(stationId) || getDownStationId().equals(stationId);
+        return isSameUpStationId(stationId) || isSameDownStationId(stationId);
+    }
+
+    public boolean isSameUpStationId(Long stationId) {
+        return  getUpStationId().equals(stationId);
+    }
+
+    private boolean isSameDownStationId(Long stationId) {
+        return getDownStationId().equals(stationId);
     }
 
     public void changeUpStation(Station station) {
