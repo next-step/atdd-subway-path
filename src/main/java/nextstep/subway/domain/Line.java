@@ -82,11 +82,24 @@ public class Line {
             this.getSections().add(new Section(this, upStation, downStation, distance));
             return;
         }
-        final Station lastStation = this.getSections().get(this.getSections().size() - 1).getDownStation();
-        if (lastStation.equals(upStation)) {
+        final Station lastUpStation = this.getSections().get(0).getUpStation();
+        final Station lastDownStation = this.getSections().get(this.getSections().size() - 1).getDownStation();
+        if (lastDownStation.equals(upStation)) {
             this.getSections().add(new Section(this, upStation, downStation, distance));
             return;
         }
+        if (lastUpStation.equals(downStation)) {
+            this.getSections().add(0, new Section(this, upStation, downStation, distance));
+            return;
+        }
+        sections.stream()
+                .filter(section -> section.getUpStation().equals(upStation))
+                .findFirst()
+                .ifPresent(it -> {
+                    sections.add(new Section(this, upStation, downStation, distance));
+                    sections.add(new Section(this, downStation, it.getDownStation(), it.getDistance() - distance));
+                    sections.remove(it);
+                });
     }
 
     public List<Station> getStations() {
