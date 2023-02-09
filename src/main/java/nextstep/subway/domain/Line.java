@@ -105,7 +105,7 @@ public class Line {
 
     public void removeSection(Station station) {
         if(sections.isEmpty()) {
-            throw new RuntimeException();
+            throw new CustomException(CustomException.NO_SECTION_IN_LINE_MSG);
         }
 
         Section lastSection = sections.get(sections.size() - 1);
