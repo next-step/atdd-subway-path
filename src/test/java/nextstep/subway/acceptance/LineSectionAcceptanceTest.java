@@ -129,6 +129,25 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * Given 지하철 노선에 새로운 지하철역을 추가를 요청하고
+     * When 새로운 구간 등록 요청 시, 현재 노선에 상행역과 하행역 둘 중 하나도 포함되어있지 않으면
+     * Then 구간이 추가되지 않는다.
+     */
+    @DisplayName("새로운 구간 추가 시, 상행역과 하행역 둘 중 하나는 노선에 포함되어 있어야 한다.")
+    @Test
+    void bothStationsNotExistInLine() {
+        // given
+        Long 수서역 = 지하철역_생성_요청("수서역").jsonPath().getLong("id");
+        Long 복정역 = 지하철역_생성_요청("복정역").jsonPath().getLong("id");
+        
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(수서역, 복정역));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    /**
      * Given 지하철 노선에 새로운 역과 구간을 추가하고
      * When 새로운 구간을 추가하려고 할 때, 구간의 길이가 기존 구간의 길이보다 크거나 같으면
      * Then 새로운 구간이 추가되지 않는다.

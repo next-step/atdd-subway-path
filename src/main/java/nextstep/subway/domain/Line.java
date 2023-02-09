@@ -13,7 +13,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import nextstep.subway.exception.SectionStationsAlreadyExistsException;
+import nextstep.subway.exception.BothSectionStationsNotExistsInLineException;
+import nextstep.subway.exception.SectionStationsAlreadyExistsInLineException;
 
 @Entity
 public class Line {
@@ -50,8 +51,14 @@ public class Line {
         int distance = section.getDistance();
 
         List<Station> stations = getStations();
-        if (stations.contains(upStation) && stations.contains(downStation)) {
-            throw new SectionStationsAlreadyExistsException(upStation.getName(), downStation.getName());
+        if (!stations.isEmpty()) {
+            if (stations.contains(upStation) && stations.contains(downStation)) {
+                throw new SectionStationsAlreadyExistsInLineException(upStation.getName(), downStation.getName());
+            }
+
+            if (!stations.contains(upStation) && !stations.contains(downStation)) {
+                throw new BothSectionStationsNotExistsInLineException(upStation.getName(), downStation.getName());
+            }
         }
 
         sections.stream()
