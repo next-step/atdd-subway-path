@@ -115,6 +115,20 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * When 새로운 구간 등록 요청 시, 상행역과 하행역이 이미 모두 노선에 등록되어 있다면
+     * Then 구간이 추가되지 않는다.
+     */
+    @DisplayName("새로운 구간 추가 시, 상행역과 하행역 모두 노선에 등록되어 있지 않아야 한다.")
+    @Test
+    void bothStationsExistInLine() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    /**
      * Given 지하철 노선에 새로운 역과 구간을 추가하고
      * When 새로운 구간을 추가하려고 할 때, 구간의 길이가 기존 구간의 길이보다 크거나 같으면
      * Then 새로운 구간이 추가되지 않는다.

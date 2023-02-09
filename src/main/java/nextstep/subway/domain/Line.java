@@ -13,6 +13,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.exception.SectionStationsAlreadyExistsException;
+
 @Entity
 public class Line {
     @Id
@@ -46,6 +48,11 @@ public class Line {
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
         int distance = section.getDistance();
+
+        List<Station> stations = getStations();
+        if (stations.contains(upStation) && stations.contains(downStation)) {
+            throw new SectionStationsAlreadyExistsException(upStation.getName(), downStation.getName());
+        }
 
         sections.stream()
             .filter(it -> it.getUpStation().equals(upStation))
