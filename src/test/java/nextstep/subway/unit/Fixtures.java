@@ -1,5 +1,7 @@
 package nextstep.subway.unit;
 
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 
 public class Fixtures {
@@ -9,5 +11,9 @@ public class Fixtures {
 
     public static Station createStation(Long id, String name) {
         return new Station(id, name);
+    }
+
+    public static Section createSection(Long id, Line line, Station upStation, Station downStation, int distance) {
+        return new Section(id, line, upStation, downStation, distance);
     }
 }

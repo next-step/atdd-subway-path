@@ -26,14 +26,14 @@ class MiddleSectionAddStrategyTest {
     void setup() {
         line = new Line("신분당선", "bg-red");
         sections = new Sections();
-        sections.addSection(Section.createFixture(1L, line, Fixtures.판교역, Fixtures.정자역, 10), line);
-        sections.addSection(Section.createFixture(2L, line, Fixtures.정자역, Fixtures.미금역, 10), line);
+        sections.addSection(Fixtures.createSection(1L, line, Fixtures.판교역, Fixtures.정자역, 10), line);
+        sections.addSection(Fixtures.createSection(2L, line, Fixtures.정자역, Fixtures.미금역, 10), line);
     }
 
     @Test
     @DisplayName("상행역이 겹치고 새로운 구간의 길이가 본 구간의 길이보다 작을 경우 조건을 만족한다.")
     void meetCondition() {
-        Section newSection = Section.createFixture(3L, line, Fixtures.판교역, newStation, 7);
+        Section newSection = Fixtures.createSection(3L, line, Fixtures.판교역, newStation, 7);
 
         assertThat(new MiddleSectionAddStrategy().meetCondition(sections, newSection)).isTrue();
     }
@@ -41,7 +41,7 @@ class MiddleSectionAddStrategyTest {
     @ParameterizedTest(name = "새로운 구간의 길이가 본 구간의 길이보다 같거나 클 경우 조건을 만족하지 않는다; {0}")
     @ValueSource(ints = {10, 12})
     void distanceLongerThanLineSection(int distance) {
-        Section newSection = Section.createFixture(3L, line, Fixtures.판교역, newStation, distance);
+        Section newSection = Fixtures.createSection(3L, line, Fixtures.판교역, newStation, distance);
 
         assertThatThrownBy(() -> new MiddleSectionAddStrategy().meetCondition(sections, newSection))
             .isInstanceOf(CannotAddSectionException.class)
@@ -51,7 +51,7 @@ class MiddleSectionAddStrategyTest {
     @Test
     @DisplayName("상행역이 같은 구간이 없을 경우 조건을 만족하지 않는다.")
     void notSameUpStation() {
-        Section newSection = Section.createFixture(3L, line, newStation, Fixtures.판교역, 5);
+        Section newSection = Fixtures.createSection(3L, line, newStation, Fixtures.판교역, 5);
 
         assertThat(new MiddleSectionAddStrategy().meetCondition(sections, newSection)).isFalse();
     }
@@ -59,13 +59,13 @@ class MiddleSectionAddStrategyTest {
     @Test
     @DisplayName("새로 추가해야하는 구간과 제거해야하는 기존 구간이 존재한다.")
     void findChangeableSections() {
-        Section newSection = Section.createFixture(3L, line, Fixtures.판교역, newStation, 7);
+        Section newSection = Fixtures.createSection(3L, line, Fixtures.판교역, newStation, 7);
 
         ChangeableSections changeableSections = new MiddleSectionAddStrategy().findChangeableSections(sections, newSection, line);
         List<Section> additionalSections = changeableSections.getAdditionalSections();
         List<Section> deprecatedSections = changeableSections.getDeprecatedSections();
 
         assertThat(additionalSections.get(0).getDistance()).isEqualTo(3);
-        assertThat(deprecatedSections).isEqualTo(List.of(Section.createFixture(1L, line, Fixtures.판교역, Fixtures.정자역, 10)));
+        assertThat(deprecatedSections).isEqualTo(List.of(Fixtures.createSection(1L, line, Fixtures.판교역, Fixtures.정자역, 10)));
     }
 }

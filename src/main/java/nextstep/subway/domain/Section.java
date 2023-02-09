@@ -30,10 +30,6 @@ public class Section {
 
     private int distance;
 
-    public static Section createFixture(Long id, Line line, Station upStation, Station downStation, int distance) {
-        return new Section(id, line, upStation, downStation, distance);
-    }
-
     protected Section() {
 
     }
