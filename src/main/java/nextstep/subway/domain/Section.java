@@ -81,6 +81,11 @@ public class Section {
         return distance;
     }
 
+    public void mergeSection(final Section section) {
+        this.downStation = section.downStation;
+        this.distance.plus(section.distance.getDistance());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
