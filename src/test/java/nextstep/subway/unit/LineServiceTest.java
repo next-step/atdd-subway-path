@@ -45,7 +45,6 @@ public class LineServiceTest {
         when(sectionRequest.getDownStationId()).thenReturn(삼성역.getId());
 
         // when
-        // lineService.addSection 호출
         lineService.addSection(이호선.getId(), sectionRequest);
 
         // then

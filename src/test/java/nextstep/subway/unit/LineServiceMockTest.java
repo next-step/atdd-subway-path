@@ -22,7 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("구간 서비스 단위 테스트 ; mocking")
+@DisplayName("구간 서비스 단위 테스트; mocking")
 @Transactional
 public class LineServiceMockTest {
     @Mock
@@ -57,7 +57,6 @@ public class LineServiceMockTest {
         when(stationService.findById(2L)).thenReturn(삼성역);
 
         // when
-        // lineService.addSection 호출
         lineService.addSection(1L, sectionRequest);
 
         // then
