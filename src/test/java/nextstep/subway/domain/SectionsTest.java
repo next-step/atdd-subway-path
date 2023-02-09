@@ -91,7 +91,7 @@ class SectionsTest {
     }
 
     @Test
-    void 구간들에_상행역과_하행역_모두_이미_등록되어_있는_경우_노선_추가_시_예외가_발생한다() {
+    void 구간들에_상행역과_하행역_모두_이미_등록되어_있는_경우_구간_추가_시_예외가_발생한다() {
         // given
         Sections sections = new Sections();
         sections.addSection(강남_양재_구간);
@@ -104,7 +104,7 @@ class SectionsTest {
     }
 
     @Test
-    void 구간들에_상행역과_하행역_모두_등록되어_있지_않는_경우_노선_추가_시_예외가_발생한다() {
+    void 구간들에_상행역과_하행역_모두_등록되어_있지_않는_경우_구간_추가_시_예외가_발생한다() {
         // given
         Sections sections = new Sections();
         sections.addSection(강남_뱅뱅사거리_구간);
