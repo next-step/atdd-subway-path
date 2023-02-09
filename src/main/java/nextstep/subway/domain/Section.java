@@ -34,6 +34,12 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section(Station upStation, Station downStation, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
     public Long getId() {
         return id;
     }
