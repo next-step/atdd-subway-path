@@ -61,8 +61,23 @@ public class Section {
         return this.upStation.equals(station);
     }
 
-    public boolean contain(Station station){
+    public boolean contains(Station station){
         return equalUpStation(station) || equalDownStation(station);
+    }
+
+    public void divideUpStation(Section section) {
+        if(this.distance >= section.distance){
+            throw new IllegalArgumentException("추가하려는 구간의 길이가 더 길어 추가할 수 없습니다.");
+        }
+        this.distance = this.distance - section.distance;
+        this.upStation = section.downStation;
+    }
+    public void divideDownStation(Section section) {
+        if(this.distance >= section.distance){
+            throw new IllegalArgumentException("추가하려는 구간의 길이가 더 길어 추가할 수 없습니다.");
+        }
+        this.distance = this.distance - section.distance;
+        this.downStation = section.upStation;
     }
 
     public static class SectionBuilder {

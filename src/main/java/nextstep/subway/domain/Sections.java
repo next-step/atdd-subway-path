@@ -22,28 +22,55 @@ public class Sections {
         if (contains(section.getDownStation()) && contains(section.getUpStation())) {
             throw new IllegalArgumentException("이미 등록된 구간입니다.");
         }
-        if (equalFirstStation(section.getDownStation())){
+        // 상행 종점 구간 추가
+        if (equalFirstStation(section.getDownStation()) && !contains(section.getUpStation())){
             values.add(section); return;
         }
-        if (equalLastStation(section.getUpStation())) {
+        // 하행 종점 구간 추가
+        if (equalLastStation(section.getUpStation()) && !contains(section.getDownStation())) {
             values.add(section); return;
         }
-        if (){
-
+        // 중간 구간 추가 상행역 일치
+        if (contains(section.getUpStation()) && !contains(section.getDownStation())){
+            Section includedSection = getIncludedSectionWhenEqualUpStation(section);
+            includedSection.divideUpStation(section);
+            values.add(section);
         }
-        throw new IllegalArgumentException();
+        // 중간 구간 추가 하행역 일치
+        if (contains(section.getDownStation()) && !contains(section.getUpStation())){
+            Section includedSection = getIncludedSectionWhenEqualDownStation(section);
+            includedSection.divideDownStation(section);
+            values.add(section);
+        }
+        throw new IllegalArgumentException("구간을 추가할 수 없습니다.");
     }
 
     private Section getAfterSection(Section section){
-        return values.stream().filter(value -> value.equalUpStation(section.getDownStation())).findFirst().orElseThrow();
+        return values.stream()
+                .filter(value -> value.equalUpStation(section.getDownStation()))
+                .findFirst()
+                .orElseThrow();
     }
 
     private Section getBeforeSection(Section section){
-        return values.stream().filter(value -> value.equalDownStation(section.getUpStation())).findFirst().orElseThrow();
+        return values.stream()
+                .filter(value -> value.equalDownStation(section.getUpStation()))
+                .findFirst()
+                .orElseThrow();
     }
 
-    private Section getIncludedSection(Section section){
-        return values.stream().filter(value -> value.equalUpStation(section.getUpStation())).findFirst().orElseThrow();
+    private Section getIncludedSectionWhenEqualUpStation(Section section){
+        return values.stream()
+                .filter(value -> value.equalUpStation(section.getUpStation()))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    private Section getIncludedSectionWhenEqualDownStation(Section section){
+        return values.stream()
+                .filter(value -> value.equalDownStation(section.getDownStation()))
+                .findFirst()
+                .orElseThrow();
     }
 
     public boolean isEmpty() {
@@ -76,6 +103,7 @@ public class Sections {
     }
 
     public boolean contains(Station station){
-        return values.stream().anyMatch(section -> section.contain(station));
+        return values.stream().anyMatch(section -> section.contains(station));
+
     }
 }
