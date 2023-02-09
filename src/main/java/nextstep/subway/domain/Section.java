@@ -57,6 +57,14 @@ public class Section {
         return Arrays.asList(upStation, downStation);
     }
 
+    public boolean equalUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean contain(Station station){
+        return equalUpStation(station) || equalDownStation(station);
+    }
+
     public static class SectionBuilder {
         private Line line;
         private Station upStation;
@@ -87,6 +95,4 @@ public class Section {
         }
 
     }
-
-
 }
