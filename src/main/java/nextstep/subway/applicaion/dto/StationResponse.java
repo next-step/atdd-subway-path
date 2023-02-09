@@ -18,11 +18,11 @@ public class StationResponse {
     private String name;
 
     public static List<StationResponse> from(Line line) {
-        if (line.getSections().isEmpty()) {
+        if (line.isSectionsEmpty()) {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getSections().getStations();
+        List<Station> stations = line.getStations();
 
         return StationResponse.from(stations);
     }

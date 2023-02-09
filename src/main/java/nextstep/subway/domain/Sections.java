@@ -85,8 +85,6 @@ public class Sections implements Iterable<Section> {
         return values.isEmpty() || values.contains(newSection); // 메서드 대시 변수로 할당하는게 좋을까?
     }
 
-
-
     public void remove(Section section) {
         if (!values.contains(section)) {
             return;
