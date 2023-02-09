@@ -82,7 +82,7 @@ class SectionsTest {
         sections.addSection(강남_양재_구간);
         sections.addSection(양재_양재시민의숲_구간);
 
-        Section 강남_양재시민의숲_구간 = new Section(null, 강남역, 양재시민의숲역, 15);
+        Section 강남_양재시민의숲_구간 = new Section(null, 강남역, 양재시민의숲역, Distance.of(15));
 
         // when // then
         assertThatThrownBy(() -> sections.addSection(강남_양재시민의숲_구간)).isInstanceOf(AssertionError.class);
