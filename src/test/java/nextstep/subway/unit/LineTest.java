@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -36,8 +37,11 @@ class LineTest {
     void updateLine() {
         line.updateLine("새로운 노선", "새로운 색깔");
 
-        assertThat(line.getName()).isEqualTo("새로운 노선");
-        assertThat(line.getColor()).isEqualTo("새로운 색깔");
+        assertAll(
+            () -> assertThat(line.getName()).isEqualTo("새로운 노선"),
+            () -> assertThat(line.getColor()).isEqualTo("새로운 색깔")
+        );
+
     }
 
     @Test
@@ -48,8 +52,10 @@ class LineTest {
 
         List<Station> stations = line.getStations();
 
-        assertThat(stations).hasSize(3);
-        assertThat(stations).containsExactly(Fixtures.판교역, Fixtures.정자역, Fixtures.미금역);
+        assertAll(
+            () -> assertThat(stations).hasSize(3),
+            () -> assertThat(stations).containsExactly(Fixtures.판교역, Fixtures.정자역, Fixtures.미금역)
+        );
     }
 
     @Test
@@ -60,8 +66,10 @@ class LineTest {
 
         List<Station> stations = line.getStations();
 
-        assertThat(stations).hasSize(3);
-        assertThat(stations).containsExactly(Fixtures.판교역, Fixtures.미금역, Fixtures.정자역);
+        assertAll(
+            () -> assertThat(stations).hasSize(3),
+            () -> assertThat(stations).containsExactly(Fixtures.판교역, Fixtures.미금역, Fixtures.정자역)
+        );
     }
 
     @Test
@@ -73,7 +81,9 @@ class LineTest {
         line.deleteSection(Fixtures.미금역.getId());
         List<Station> stations = line.getStations();
 
-        assertThat(stations).hasSize(2);
-        assertThat(stations).containsExactly(Fixtures.판교역, Fixtures.정자역);
+        assertAll(
+            () -> assertThat(stations).hasSize(2),
+            () -> assertThat(stations).containsExactly(Fixtures.판교역, Fixtures.정자역)
+        );
     }
 }
