@@ -15,7 +15,7 @@ import java.util.Optional;
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    private final List<Section> sections = new ArrayList<>();
 
     public void add(final Line line, final Station upStation, final Station downStation, final int distance) {
         if (sections.isEmpty()) {
