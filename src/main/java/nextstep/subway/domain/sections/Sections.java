@@ -52,11 +52,11 @@ public class Sections {
             throw new IllegalArgumentException();
         }
 
-        sections.remove(sections.size() - 1);
+        sections.removeIf(section -> section.isSameDownStation(stationId));
     }
 
     private boolean isDownMostStation(Long stationId) {
-        Section lastSection = sections.get(sections.size() - 1);
+        Section lastSection = getValue().get(sections.size() - 1);
         return lastSection.isSameDownStation(stationId);
     }
 
@@ -95,7 +95,19 @@ public class Sections {
     }
 
     public List<Section> getValue() {
-        return Collections.unmodifiableList(sections);
+        List<Station> stations = getStations();
+
+        List<Section> sortedSections = new ArrayList<>();
+        for (int i = 0; i < stations.size() - 1; ++i) {
+            Station station = stations.get(i);
+            Section section = sections.stream()
+                .filter(s -> s.isSameUpStation(station.getId()))
+                .findFirst().orElseThrow();
+
+            sortedSections.add(section);
+        }
+
+        return Collections.unmodifiableList(sortedSections);
     }
 
     private List<Station> getAllStations() {

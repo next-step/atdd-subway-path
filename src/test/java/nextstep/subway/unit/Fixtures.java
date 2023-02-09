@@ -5,9 +5,11 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 
 public class Fixtures {
+    public static final Station 양재역 = createStation(0L, "양재역");
     public static final Station 판교역 = createStation(1L, "판교역");
     public static final Station 정자역 = createStation(2L, "정자역");
     public static final Station 미금역 = createStation(3L, "미금역");
+    public static final Station 광교역 = createStation(4L, "광교역");
 
     public static Station createStation(Long id, String name) {
         return new Station(id, name);
