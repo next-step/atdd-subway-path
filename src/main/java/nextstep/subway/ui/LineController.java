@@ -1,9 +1,11 @@
 package nextstep.subway.ui;
 
+import nextstep.subway.applicaion.LineNotFoundException;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,5 +61,10 @@ public class LineController {
     public ResponseEntity<Void> deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
         lineService.deleteSection(lineId, stationId);
         return ResponseEntity.ok().build();
+    }
+
+    @ExceptionHandler({LineNotFoundException.class})
+    public ResponseEntity<String> catchNotFoundException(LineNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 }

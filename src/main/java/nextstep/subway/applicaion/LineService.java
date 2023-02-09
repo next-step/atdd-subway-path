@@ -108,6 +108,7 @@ public class LineService {
     }
 
     public Line findLineById(long lineId) {
-        return lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new LineNotFoundException("해당 지하철노선을 찾을 수 없습니다."));
     }
 }
