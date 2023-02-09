@@ -62,7 +62,7 @@ public class SectionsTest {
     void addSectionWithLastDownStation() {
         // when
         sections.add(이호선, 강남역, 역삼역, 10);
-        sections.add(이호선, 선릉역, 강남역, 10);
+        sections.add(이호선, 역삼역, 선릉역, 10);
 
         // then
         assertThat(sections.getStations()).containsExactly(강남역, 역삼역, 선릉역);

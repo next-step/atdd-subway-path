@@ -6,6 +6,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,8 +22,8 @@ public class Sections {
             sections.add(new Section(line, upStation, downStation, distance));
             return;
         }
-        if (sections.containsAll(List.of(upStation, downStation)) ||
-                (!sections.contains(upStation) && !sections.contains(downStation))) {
+        if (new HashSet<>(this.getStations()).containsAll(List.of(upStation, downStation)) ||
+                (!this.getStations().contains(upStation) && !this.getStations().contains(downStation))) {
             throw new IllegalArgumentException();
         }
 
