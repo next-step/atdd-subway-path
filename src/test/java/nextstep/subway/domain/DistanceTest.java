@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exceptions.NotPositiveNumberException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -17,7 +18,7 @@ class DistanceTest {
     @ParameterizedTest
     @ValueSource(ints = {-1, 0})
     void 거리가_음수이거나_0인_경우_예외가_발생한다(int value) {
-        assertThatThrownBy(() -> Distance.of(value)).isInstanceOf(AssertionError.class);
+        assertThatThrownBy(() -> Distance.of(value)).isInstanceOf(NotPositiveNumberException.class);
     }
 
     @Test

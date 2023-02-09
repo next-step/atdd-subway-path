@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exceptions.CanNotAddSectionException;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -29,8 +31,13 @@ public class Sections {
         Station newUpStation = newSection.getUpStation();
         Station newDownStation = newSection.getDownStation();
 
-        assert (!hasStation(newUpStation) || !hasStation(newDownStation));
-        assert (hasStation(newUpStation) || hasStation(newDownStation));
+        if (hasStation(newUpStation) && hasStation(newDownStation)) {
+            throw new CanNotAddSectionException("상행역과 하행역 모두 이미 존재하여 구간 추가 불가능");
+        }
+
+        if (!hasStation(newUpStation) && !hasStation(newDownStation)) {
+            throw new CanNotAddSectionException("상행역과 하행역 모두 존재하지 않아 구간 추가 불가능");
+        }
 
         if (isFirstStation(newDownStation)) {
             sections.add(newSection);
@@ -44,7 +51,7 @@ public class Sections {
 
         Section ordinarySection = sections.stream()
                 .filter(it -> it.getUpStation().equals(newUpStation) || it.getDownStation().equals(newDownStation))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("구간 추가 불가"));
+                .findFirst().get();
 
         Section splittedSection = ordinarySection.split(newSection);
 

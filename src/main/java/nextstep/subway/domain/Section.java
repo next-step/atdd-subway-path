@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exceptions.CanNotSplitSectionException;
+
 import javax.persistence.*;
 
 @Entity
@@ -43,7 +45,7 @@ public class Section {
             return new Section(line, upStation, that.upStation, distance.minus(that.distance));
         }
 
-        throw new IllegalArgumentException("상행역과 하행역 둘 중 하나만 같아야 함");
+        throw new CanNotSplitSectionException("상행역과 하행역 둘 중 하나만 같아야 함");
     }
 
     private boolean isSameUpStation(Section that) {

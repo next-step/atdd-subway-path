@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exceptions.CanNotSplitSectionException;
+import nextstep.subway.domain.exceptions.NotPositiveNumberException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -66,13 +68,13 @@ class SectionTest {
     @Test
     void 구간을_나눌_때_나누려는_구간의_두_역이_기존_구간에_모두_존재하는_경우_예외가_발생한다() {
         // when // then
-        assertThatThrownBy(() -> 강남_양재_구간_거리10.split(강남_양재_구간_거리10)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> 강남_양재_구간_거리10.split(강남_양재_구간_거리10)).isInstanceOf(CanNotSplitSectionException.class);
     }
 
     @Test
     void 구간을_나눌_때_나누려는_구간의_두_역이_기존_구간에_모두_존재하지_않는_경우_예외가_발생한다() {
         // when // then
-        assertThatThrownBy(() -> 강남_뱅뱅사거리_구간_거리4.split(양재_양재시민의숲_구간_거리10)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> 강남_뱅뱅사거리_구간_거리4.split(양재_양재시민의숲_구간_거리10)).isInstanceOf(CanNotSplitSectionException.class);
     }
 
     @ParameterizedTest
@@ -82,6 +84,6 @@ class SectionTest {
         Section 강남_뱅뱅사거리_구간 = new Section(신분당선, 강남역, 뱅뱅사거리역, Distance.of(distance));
 
         // when // then
-        assertThatThrownBy(() -> 강남_양재_구간_거리10.split(강남_뱅뱅사거리_구간)).isInstanceOf(AssertionError.class);
+        assertThatThrownBy(() -> 강남_양재_구간_거리10.split(강남_뱅뱅사거리_구간)).isInstanceOf(NotPositiveNumberException.class);
     }
 }

@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exceptions.CanNotAddSectionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -100,7 +101,9 @@ class SectionsTest {
         Section 강남_양재시민의숲_구간 = new Section(null, 강남역, 양재시민의숲역, Distance.of(15));
 
         // when // then
-        assertThatThrownBy(() -> sections.addSection(강남_양재시민의숲_구간)).isInstanceOf(AssertionError.class);
+        assertThatThrownBy(() -> sections.addSection(강남_양재시민의숲_구간))
+                .isInstanceOf(CanNotAddSectionException.class)
+                .hasMessage("상행역과 하행역 모두 이미 존재하여 구간 추가 불가능");
     }
 
     @Test
@@ -110,11 +113,13 @@ class SectionsTest {
         sections.addSection(강남_뱅뱅사거리_구간);
 
         // when // then
-        assertThatThrownBy(() -> sections.addSection(양재_양재시민의숲_구간)).isInstanceOf(AssertionError.class);
+        assertThatThrownBy(() -> sections.addSection(양재_양재시민의숲_구간))
+                .isInstanceOf(CanNotAddSectionException.class)
+                .hasMessage("상행역과 하행역 모두 존재하지 않아 구간 추가 불가능");
     }
 
     @Test
-    void 구간들에_속한_역들을_조회하는_경우_상행선에서_하행선_순서로_조회된다() {
+    void 구간들에_속한_역들을_조회하는_경우_상행역에서_하행역_순서로_조회된다() {
         // given
         Sections sections = new Sections();
         sections.addSection(강남_양재_구간);

@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exceptions.NotPositiveNumberException;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.Objects;
@@ -18,7 +20,9 @@ public class Distance {
     }
 
     public Distance(int value) {
-        assert (value > 0);
+        if (value <= 0) {
+            throw new NotPositiveNumberException("거리는 0보다 커야 합니다");
+        }
         this.value = value;
     }
 
