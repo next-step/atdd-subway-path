@@ -141,7 +141,7 @@ class LineTest {
         // given
         Station 양재시민의숲역 = new Station("양재시민의숲역");
         Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, distance);
-        
+
         신분당선.getSections().add(강남_양재_구간);
         신분당선.getSections().add(양재_양재시민의숲_구간);
 
@@ -167,5 +167,20 @@ class LineTest {
         // then
         assertThat(신분당선.getName()).isEqualTo("새로운노선명");
         assertThat(신분당선.getColor()).isEqualTo("새로운컬러명");
+    }
+
+    @Test
+    @DisplayName("노선 내 새 구간 위치 확인")
+    void checkNewSectionPositionInLine() {
+        // given
+        신분당선.addSection(강남_양재_구간);
+
+
+        Station 노원역 = new Station("노원역");
+        // when
+        신분당선.checkExistStation(노원역);
+
+        // then
+        assertThat(신분당선.getStations()).contains(노원역);
     }
 }

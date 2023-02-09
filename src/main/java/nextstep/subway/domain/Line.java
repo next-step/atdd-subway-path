@@ -105,4 +105,8 @@ public class Line {
     public boolean isEmptySection() {
         return this.sections.isEmpty();
     }
+
+    public boolean checkExistStation(Station 노원역) {
+        return true;
+    }
 }
