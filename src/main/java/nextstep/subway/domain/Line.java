@@ -46,7 +46,7 @@ public class Line {
     }
 
     public void removeSection(final Station downStation) {
-        this.sections.remove(downStation);
+        this.sections.removeSectionByStation(downStation);
     }
 
     public List<Station> convertToStation() {
