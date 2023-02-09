@@ -47,7 +47,7 @@ public class Sections {
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("구간 추가 불가"));
 
         sections.remove(ordinarySection);
-        sections.add(new Section(newSection.getLine(), newDownStation, ordinarySection.getDownStation(), ordinarySection.getDistance() - (newSection.getDistance())));
+        sections.add(new Section(newSection.getLine(), newDownStation, ordinarySection.getDownStation(), ordinarySection.getDistance().minus(newSection.getDistance())));
         sections.add(newSection);
     }
 

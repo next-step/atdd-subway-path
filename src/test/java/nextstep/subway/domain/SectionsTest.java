@@ -26,9 +26,9 @@ class SectionsTest {
         양재역 = new Station(3L, "양재역");
         양재시민의숲역 = new Station(4L, "양재시민의숲역");
 
-        강남_양재_구간 = new Section(null, 강남역, 양재역, 10);
-        강남_뱅뱅사거리_구간 = new Section(null, 강남역, 뱅뱅사거리역, 5);
-        양재_양재시민의숲_구간 = new Section(null, 양재역, 양재시민의숲역, 10);
+        강남_양재_구간 = new Section(null, 강남역, 양재역, Distance.of(10));
+        강남_뱅뱅사거리_구간 = new Section(null, 강남역, 뱅뱅사거리역, Distance.of(5));
+        양재_양재시민의숲_구간 = new Section(null, 양재역, 양재시민의숲역, Distance.of(10));
     }
 
     @Test
