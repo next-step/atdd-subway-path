@@ -68,7 +68,7 @@ public class Line {
 
     public List<Station> getStations() {
         if(sections.isEmpty()) {
-            return new ArrayList<>();
+            return List.of();
         }
 
         List<Station> stations = this.sections.stream()
