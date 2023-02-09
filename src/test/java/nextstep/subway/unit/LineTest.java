@@ -1,7 +1,6 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +24,49 @@ class LineTest {
     }
 
     @Test
-    void addSection() {
+    void addSectionWithBetweenStations() {
+        // given
+        final Station 강남역 = new Station("강남역");
+        final Station 역삼역 = new Station("역삼역");
+        final Station 선릉역 = new Station("선릉역");
+        final Line 이호선 = new Line("2호선", "bg-green-600");
+
+        // when
+        이호선.addSection(강남역, 역삼역, 10);
+        이호선.addSection(강남역, 선릉역, 7);
+
+        // then
+        assertThat(이호선.getStations()).containsExactly(강남역, 선릉역, 역삼역);
+        assertThat(이호선.getSections().stream()
+                .filter(section -> section.getUpStation().equals(강남역))
+                .filter(section -> section.getDownStation().equals(선릉역))
+                .findFirst().get()
+                .getDistance()).isEqualTo(7);
+        assertThat(이호선.getSections().stream()
+                .filter(section -> section.getUpStation().equals(선릉역))
+                .filter(section -> section.getDownStation().equals(역삼역))
+                .findFirst().get()
+                .getDistance()).isEqualTo(3);
+    }
+
+    @Test
+    void addSectionWithLastUpStation() {
+        // given
+        final Station 강남역 = new Station("강남역");
+        final Station 역삼역 = new Station("역삼역");
+        final Station 선릉역 = new Station("선릉역");
+        final Line 이호선 = new Line("2호선", "bg-green-600");
+
+        // when
+        이호선.addSection(강남역, 역삼역, 10);
+        이호선.addSection(선릉역, 강남역, 10);
+
+        // then
+        assertThat(이호선.getStations()).containsExactly(선릉역, 강남역, 역삼역);
+    }
+
+    @Test
+    void addSectionWithLastDownStation() {
         // given
         final Station 강남역 = new Station("강남역");
         final Station 역삼역 = new Station("역삼역");
@@ -36,11 +77,8 @@ class LineTest {
         이호선.addSection(강남역, 역삼역, 10);
         이호선.addSection(역삼역, 선릉역, 10);
 
-
         // then
-        final Section 강남역_역삼역_구간 = new Section(이호선, 강남역, 역삼역, 10);
-        final Section 역삼역_선릉역_구간 = new Section(이호선, 역삼역, 선릉역, 10);
-        assertThat(이호선.getSections()).containsAnyOf(강남역_역삼역_구간, 역삼역_선릉역_구간);
+        assertThat(이호선.getStations()).containsExactly(강남역, 역삼역, 선릉역);
     }
 
     @Test
