@@ -70,4 +70,12 @@ public class Line {
 
         return Collections.unmodifiableList(stations);
     }
+
+    public void removeSection(final Station station) {
+        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
+            throw new IllegalArgumentException();
+        }
+
+        sections.remove(sections.size() - 1);
+    }
 }

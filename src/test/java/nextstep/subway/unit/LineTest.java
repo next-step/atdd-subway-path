@@ -16,6 +16,7 @@ class LineTest {
     private Line line;
     private Station upStation;
     private Station downStation;
+    private Station removeStation;
 
     @BeforeEach
     void setUp() {
@@ -23,6 +24,7 @@ class LineTest {
         this.line = new Line("2호선", "bg-red-500");
         this.upStation = new Station("강남역");
         this.downStation = new Station("역삼역");
+        this.removeStation = new Station("선릉역");
     }
 
     @DisplayName("노선에 구간을 추가한다.")
@@ -45,7 +47,16 @@ class LineTest {
         assertThat(stations).hasSize(2).containsExactly(upStation, downStation);
     }
 
+    @DisplayName("노선에 구간을 제거한다.")
     @Test
     void removeSection() {
+        Section expected = new Section(line, upStation, downStation, distance);
+        line.addSection(expected);
+        Section removeSection = new Section(line, downStation, removeStation, distance);
+        line.addSection(removeSection);
+
+        line.removeSection(removeStation);
+
+        assertThat(line.getSections()).hasSize(1).containsExactly(expected);
     }
 }
