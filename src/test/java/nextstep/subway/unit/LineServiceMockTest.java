@@ -97,8 +97,8 @@ public class LineServiceMockTest {
     @Test
     void addSection() {
         // given
-        final Station 강남역 = new Station("강남역");
-        final Station 역삼역 = new Station("역삼역");
+        final Station 강남역 = new Station(1L, "강남역");
+        final Station 역삼역 = new Station(2L, "역삼역");
         final AddSectionRequest addSectionRequest = new AddSectionRequest(강남역.getId(), 역삼역.getId(), 10);
         when(stationService.findById(addSectionRequest.getUpStationId())).thenReturn(강남역);
         when(stationService.findById(addSectionRequest.getDownStationId())).thenReturn(역삼역);
