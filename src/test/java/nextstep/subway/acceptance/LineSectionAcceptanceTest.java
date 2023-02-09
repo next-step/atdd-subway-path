@@ -86,7 +86,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         Long 중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
 
         // when
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createLineCreateParams(양재역, 중간역));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createLineCreateParams(강남역, 중간역));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);

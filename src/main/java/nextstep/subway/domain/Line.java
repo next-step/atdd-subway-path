@@ -1,10 +1,17 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Line {
@@ -35,6 +42,15 @@ public class Line {
         if (section.hasIdenticalStations()) {
             throw new IllegalArgumentException();
         }
+
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+
+        sections.stream()
+            .filter(it -> it.getUpStation().equals(upStation))
+            .findFirst()
+            .ifPresent(it -> it.updateUpStation(downStation));
+
         sections.add(section);
     }
 
@@ -43,11 +59,36 @@ public class Line {
             return Collections.emptyList();
         }
 
-        List<Station> stations = sections.stream()
+        Station firstStation = findFirstUpStation();
+
+        List<Station> stations = new ArrayList<>();
+        stations.add(firstStation);
+
+        Optional<Section> preSection = sections.stream()
+            .filter(it -> it.hasUpStation(firstStation))
+            .findFirst();
+
+        while (preSection.isPresent()) {
+            Station downStation = preSection.get().getDownStation();
+            stations.add(downStation);
+            preSection = sections.stream()
+                .filter(it -> it.hasUpStation(downStation))
+                .findFirst();
+        }
+
+        return stations;
+    }
+
+    private Station findFirstUpStation() {
+        List<Station> downStations = sections.stream()
             .map(Section::getDownStation)
             .collect(Collectors.toList());
-        stations.add(0, sections.get(0).getUpStation());
-        return stations;
+
+        return sections.stream()
+            .map(Section::getUpStation)
+            .filter(it -> !downStations.contains(it))
+            .findFirst()
+            .orElseThrow();
     }
 
     public void removeSection(Station station) {

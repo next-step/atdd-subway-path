@@ -45,6 +45,18 @@ public class Section {
         return upStation.equals(downStation);
     }
 
+    public void updateUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public boolean hasUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean hasDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
     public Long getId() {
         return id;
     }
