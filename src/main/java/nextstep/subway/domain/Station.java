@@ -14,10 +14,6 @@ public class Station {
     private Long id;
     private String name;
 
-    public static Station createFixture(Long id, String name) {
-        return new Station(id, name);
-    }
-
     protected Station() {
     }
 
@@ -25,7 +21,7 @@ public class Station {
         this(null, name);
     }
 
-    private Station(Long id, String name) {
+    public Station(Long id, String name) {
         this.id = id;
         this.name = name;
     }

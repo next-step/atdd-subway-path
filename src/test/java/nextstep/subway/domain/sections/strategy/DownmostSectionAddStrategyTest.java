@@ -16,7 +16,7 @@ class DownmostSectionAddStrategyTest {
 
     private Line line;
     private Sections sections;
-    private final Station newStation = Station.createFixture(10L, "new station");
+    private final Station newStation = Fixtures.createStation(10L, "new station");
 
     @BeforeEach
     void setup() {
