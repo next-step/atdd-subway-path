@@ -32,8 +32,8 @@ public class LineServiceMockTest {
     void addSection() {
         // given
         Long lineId = 1L;
-        Station 강남역 = new Station("강남역");
-        Station 양재역 = new Station("양재역");
+        Station 강남역 = new Station(1L, "강남역");
+        Station 양재역 = new Station(2L, "양재역");
 
         when(lineRepository.findById(lineId)).thenReturn(Optional.of(new Line("신분당선", "빨강")));
         when(stationService.findById(1L)).thenReturn(강남역);

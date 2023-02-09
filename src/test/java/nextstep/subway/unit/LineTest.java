@@ -18,9 +18,9 @@ class LineTest {
     @BeforeEach
     void setUp() {
         신분당선 = new Line();
-        강남역 = new Station("강남역");
-        양재역 = new Station("양재역");
-        양재시민의숲역 = new Station("양재시민의숲역");
+        강남역 = new Station(1L, "강남역");
+        양재역 = new Station(2L, "양재역");
+        양재시민의숲역 = new Station(3L, "양재시민의숲역");
     }
 
     @Test
