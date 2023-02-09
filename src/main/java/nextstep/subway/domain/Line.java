@@ -16,8 +16,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -52,7 +52,7 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 
     public void addSection(Section section) {
@@ -64,7 +64,7 @@ public class Line {
                 throw new SectionAlreadyCreateStationException();
             }
         }
-        this.sections.add(section);
+        sections.add(section);
     }
 
     private boolean doesNotContainStationId(Long id) {
@@ -75,26 +75,19 @@ public class Line {
     }
 
     private boolean isNotDownStationId(long id) {
-        return !sections.get(sections.size() - 1).getDownStation().getId().equals(id);
+        return !sections.getLastSection().getDownStation().getId().equals(id);
     }
 
     public List<Station> getStations() {
-        if (sections.isEmpty()) {
-            return Collections.emptyList();
-        }
-        LinkedList<Station> stations = sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toCollection(LinkedList::new));
-        stations.addFirst(sections.get(0).getUpStation());
-        return stations;
+        return sections.getStations();
     }
 
     public void removeSection(Station station) {
-        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
+        if (!sections.getLastSection().getDownStation().equals(station)) {
             throw new IllegalArgumentException();
         }
 
-        sections.remove(sections.size() - 1);
+        sections.removeLastSection();
     }
 
     public void changeNameAndColor(String name, String color) {
