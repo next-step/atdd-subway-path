@@ -57,11 +57,12 @@ public class Line {
 
     public void addSection(Section section) {
         if (!sections.isEmpty()) {
-            if (isNotDownStationId(section.getUpStation().getId())) {
-                throw new SectionUpStationNotMatchException();
-            }
-            if (doesNotContainStationId(section.getDownStation().getId())) {
+            // 상행, 하행 둘다 노선에 있을 때 예외 처리
+            if (sections.containsStations(List.of(section.getUpStation(), section.getDownStation()))) {
                 throw new SectionAlreadyCreateStationException();
+            }
+            if (!sections.checkExistStation(section.getUpStation()) && !sections.checkExistStation(section.getDownStation())) {
+                throw new SectionDoesNotHaveAlreadyCreateStationException();
             }
         }
         sections.add(section);

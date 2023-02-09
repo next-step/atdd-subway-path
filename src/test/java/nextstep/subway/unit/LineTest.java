@@ -80,19 +80,19 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("Line의 하행역과 section의 상행역이 다를 때 실패 테스트")
+    @DisplayName("Line의 상행역과 하행역이 모두 등록되어 있다면 예외 테스트")
     void failWhenLineDownStationDiffSectionUpStation() {
         // given
         신분당선.addSection(강남_양재_구간);
 
         Station 양재시민의숲역 = new Station("양재시민의숲역");
-        injectId(양재시민의숲역, 3L);
-        Section 양재시민의숲_양재_구간 = new Section(신분당선, 양재시민의숲역, 양재역, distance);
-        injectId(양재시민의숲_양재_구간, 2L);
+        Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, distance);
+        신분당선.addSection(양재_양재시민의숲_구간);
 
         // when, then
-        assertThatThrownBy(() -> 신분당선.addSection(양재시민의숲_양재_구간))
-                .isInstanceOf(SectionUpStationNotMatchException.class);
+        Section 강남_양재시민의숲_구간 = new Section(신분당선, 강남역, 양재시민의숲역, distance);
+        assertThatThrownBy(() -> 신분당선.addSection(강남_양재시민의숲_구간))
+                .isInstanceOf(SectionAlreadyCreateStationException.class);
     }
 
     @Test
