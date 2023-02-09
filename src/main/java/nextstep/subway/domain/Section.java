@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exception.SubwayException;
+
 import javax.persistence.*;
 
 @Entity
@@ -30,10 +32,32 @@ public class Section {
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
+        if (upStation == downStation) {
+            throw new SubwayException("상행역과 하행역은 같을 수 없습니다.");
+        }
+
+        if (distance <= 0) {
+            throw new SubwayException("역과 역 사이의 길이는 0 이상이어야 합니다.");
+        }
+
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public Section up(Section newSection) {
+        return new Section(line,
+                upStation,
+                newSection.upStation,
+                distance - newSection.distance);
+    }
+
+    public Section down(Section newSection) {
+        return new Section(line,
+                newSection.downStation,
+                downStation,
+                distance - newSection.distance);
     }
 
     public Long getId() {
@@ -62,5 +86,17 @@ public class Section {
 
     public boolean isDownStationId(long stationId) {
         return downStation.getId() == stationId;
+    }
+
+    public boolean isSameStations(Section other) {
+        return upStation == other.upStation && downStation == other.downStation;
+    }
+
+    public boolean isSameUpStation(Section other) {
+        return upStation == other.upStation;
+    }
+
+    public boolean isSameDownStation(Section other) {
+        return downStation == other.downStation;
     }
 }
