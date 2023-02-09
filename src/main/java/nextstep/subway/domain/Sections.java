@@ -37,12 +37,14 @@ public class Sections {
             Section includedSection = getIncludedSectionWhenEqualUpStation(section);
             includedSection.divideUpStation(section);
             values.add(section);
+            return;
         }
         // 중간 구간 추가 하행역 일치
         if (contains(section.getDownStation()) && !contains(section.getUpStation())) {
             Section includedSection = getIncludedSectionWhenEqualDownStation(section);
             includedSection.divideDownStation(section);
             values.add(section);
+            return;
         }
         throw new IllegalArgumentException("구간을 추가할 수 없습니다.");
     }
