@@ -1,10 +1,11 @@
 package nextstep.subway.domain;
 
-import java.util.Collections;
-import java.util.stream.Collectors;
-import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 public class Line {
@@ -14,8 +15,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections;
 
     public Line() {
     }
@@ -23,6 +24,7 @@ public class Line {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+        sections = new Sections();
     }
 
     public Long getId() {
@@ -50,7 +52,7 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 
     public void addSection(final Section section) {
@@ -58,24 +60,10 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        if (sections.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Station> stations = sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, sections.get(0).getUpStation());
-
-        return Collections.unmodifiableList(stations);
+        return sections.getStations();
     }
 
     public void removeSection(final Station station) {
-        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-
-        sections.remove(sections.size() - 1);
+        sections.remove(station);
     }
 }
