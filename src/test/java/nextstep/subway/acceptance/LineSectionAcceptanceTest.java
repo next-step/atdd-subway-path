@@ -53,12 +53,13 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 지하철 노선에 새로운 구간 추가를 요청 하면
-     * Then 노선에 새로운 구간이 추가된다
+     * given 노선이 주어지고
+     * When 지하철노선의 하행역을 상행역으로 가지는 구간을 추가하면
+     * Then 노선 맨 뒤에 구간이 추가된다.
      */
     @DisplayName("구간의 하행역이 기존구간의 하행종점으로 등록되는 경우 테스트")
     @Test
-    void addSectionDownStation() {
+    void addSectionLast() {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
