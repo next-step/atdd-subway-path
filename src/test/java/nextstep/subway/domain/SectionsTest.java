@@ -17,6 +17,7 @@ class SectionsTest {
 
     private Section 강남_양재_구간;
     private Section 강남_뱅뱅사거리_구간;
+    private Section 뱅뱅사거리_양재_구간;
     private Section 양재_양재시민의숲_구간;
 
     @BeforeEach
@@ -28,6 +29,7 @@ class SectionsTest {
 
         강남_양재_구간 = new Section(null, 강남역, 양재역, Distance.of(10));
         강남_뱅뱅사거리_구간 = new Section(null, 강남역, 뱅뱅사거리역, Distance.of(5));
+        뱅뱅사거리_양재_구간 = new Section(null, 뱅뱅사거리역, 양재역, Distance.of(5));
         양재_양재시민의숲_구간 = new Section(null, 양재역, 양재시민의숲역, Distance.of(10));
     }
 
@@ -63,13 +65,26 @@ class SectionsTest {
     }
 
     @Test
-    void 구간의_사이에_새로운_구간을_추가하는_경우_정상적으로_추가된다() {
+    void 구간들에_이미_존재하는_상행역과_새로운_하행역인_구간을_추가하는_경우_정상적으로_추가된다() {
         // given
         Sections sections = new Sections();
         sections.addSection(강남_양재_구간);
 
         // when
         sections.addSection(강남_뱅뱅사거리_구간);
+
+        // then
+        assertThat(sections.getStations()).containsExactly(강남역, 뱅뱅사거리역, 양재역);
+    }
+
+    @Test
+    void 구간들에_새로운_상행역과_이미_존재하는_하행역인_구간을_추가하는_경우_정상적으로_추가된다() {
+        // given
+        Sections sections = new Sections();
+        sections.addSection(강남_양재_구간);
+
+        // when
+        sections.addSection(뱅뱅사거리_양재_구간);
 
         // then
         assertThat(sections.getStations()).containsExactly(강남역, 뱅뱅사거리역, 양재역);
