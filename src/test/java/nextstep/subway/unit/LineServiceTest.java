@@ -13,10 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("구간 서비스 단위 테스트 without Mock")
 @SpringBootTest
@@ -49,6 +48,6 @@ public class LineServiceTest {
 
         lineService.addSection(line.getId(), request);
 
-        assertThat(line.getSections()).hasSize(1);
+        assertThat(line.sections()).hasSize(1);
     }
 }
