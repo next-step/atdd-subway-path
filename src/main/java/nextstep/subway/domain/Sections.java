@@ -17,7 +17,7 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
-    public void add(final Line line, final Station upStation, final Station downStation, final int distance) {
+    void add(final Line line, final Station upStation, final Station downStation, final int distance) {
         if (sections.isEmpty()) {
             sections.add(new Section(line, upStation, downStation, distance));
             return;
@@ -50,7 +50,7 @@ public class Sections {
                 });
     }
 
-    public List<Station> getStations() {
+    List<Station> getStations() {
         if (sections.isEmpty()) {
             return List.of();
         }
@@ -70,14 +70,14 @@ public class Sections {
         return stations;
     }
 
-    public void remove(final Station station) {
+    void remove(final Station station) {
         if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
             throw new IllegalArgumentException();
         }
         sections.remove(sections.size() - 1);
     }
 
-    private Section getLastUpSection(final Section section) {
+    Section getLastUpSection(final Section section) {
         final Optional<Section> findSection = this.sections.stream()
                 .filter(it -> it.getDownStation().equals(section.getUpStation()))
                 .findFirst();
