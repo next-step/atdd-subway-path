@@ -89,16 +89,6 @@ public class Sections {
         return false;
     }
 
-    public Section findByIndex(final int index) {
-        return this.sections.get(index);
-    }
-
-    public void remove(final Station downStation) {
-        final int index = this.sections.size() - 1;
-        validateMatchStation(downStation, index);
-        this.sections.remove(index);
-    }
-
     public void addLine(final Line line) {
         for (Section section : this.sections) {
             section.addLine(line);
@@ -124,13 +114,6 @@ public class Sections {
             return Collections.emptyList();
         }
         return getStations();
-    }
-
-    private void validateMatchStation(final Station downStation, final int index) {
-        final Section section = findByIndex(index);
-        if (!section.getDownStation().equals(downStation)) {
-            throw new IllegalArgumentException();
-        }
     }
 
     private void add(final Line line, final Station upStation, final Station downStation, final Integer distance) {
