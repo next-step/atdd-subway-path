@@ -85,11 +85,20 @@ public class Section {
         return this.downStation.equals(station);
     }
 
+    public boolean hasStationId(Long stationId) {
+        return getUpStationId().equals(stationId) || getDownStationId().equals(stationId);
+    }
+
     public void changeUpStation(Station station) {
         this.upStation = station;
     }
 
     public void changeOrder(int orderSeq) {
         this.orderSeq = orderSeq;
+    }
+
+
+    public boolean isFirst() {
+        return orderSeq == 0;
     }
 }
