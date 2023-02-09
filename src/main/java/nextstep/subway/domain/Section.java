@@ -80,10 +80,6 @@ public class Section {
         return distance;
     }
 
-    public void setLine(Line line) {
-        this.line = line;
-    }
-
     public boolean isDownStationId(long stationId) {
         return downStation.getId() == stationId;
     }

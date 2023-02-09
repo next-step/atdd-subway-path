@@ -5,7 +5,6 @@ import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.exception.NotFoundException;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,7 @@ public class LineService {
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.addSection(new Section(upStation, downStation, request.getDistance()));
+            line.addSection(upStation, downStation, request.getDistance());
         }
         return LineResponse.of(line);
     }
@@ -61,10 +60,9 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Section section = new Section(upStation, downStation, sectionRequest.getDistance());
 
         Line line = findLine(lineId);
-        line.addSection(section);
+        line.addSection(upStation, downStation, sectionRequest.getDistance());
     }
 
     @Transactional

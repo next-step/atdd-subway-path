@@ -42,9 +42,9 @@ public class Line {
         return sections.stations();
     }
 
-    public void addSection(Section section) {
+    public void addSection(Station upStation, Station downStation, int distance) {
+        Section section = new Section(this, upStation, downStation, distance);
         sections.add(section);
-        section.setLine(this);
     }
 
     public void removeSection(long stationId) {
