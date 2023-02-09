@@ -117,7 +117,7 @@ class SectionsTest {
                 .setDistance(5)
                 .build();
         line.addSection(DtoC);
-        //then 추가된 구간이 사이에 조회된다. 이전 노선의 길이가 줄어든다.
+        //then 추가된 구간이 사이에 조회된다. 이전 노선의 길이가 줄어든다. 상행 ~ 하행 순서로 역이 조회된다.
         assertAll(
                 () -> assertThat(line.getAllStations()).containsExactly(stationA, stationB, stationD, stationC),
                 () -> assertThat(BtoC.getDistance()).isEqualTo(5),
@@ -163,7 +163,7 @@ class SectionsTest {
                 .setDistance(5)
                 .build();
         line.addSection(BtoD);
-        //then 추가된 구간이 사이에 조회된다. 이전 노선의 길이가 줄어든다.
+        //then 추가된 구간이 사이에 조회된다. 이전 노선의 길이가 줄어든다. 상행~하행 순서로 역이 조회된다.
         assertAll(
                 () -> assertThat(line.getAllStations()).containsExactly(stationA, stationB, stationD, stationC),
                 () -> assertThat(BtoC.getDistance()).isEqualTo(5),
