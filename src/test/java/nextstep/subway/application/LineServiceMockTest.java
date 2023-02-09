@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.application;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
@@ -8,9 +8,7 @@ import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.AddSectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

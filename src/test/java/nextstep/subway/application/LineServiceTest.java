@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.application;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.UpdateLineRequest;
