@@ -55,9 +55,13 @@ class LineTest {
     @Test
     @DisplayName("노선에 속한 역을 가져온다.")
     void getStations() {
+        line.addSection(new Section(line, Fixtures.판교역, Fixtures.정자역, 10));
+        line.addSection(new Section(line, Fixtures.판교역, Fixtures.미금역, 5));
+
         List<Station> stations = line.getStations();
 
-        assertThat(stations).isEmpty();
+        assertThat(stations).hasSize(3);
+        assertThat(stations).containsExactly(Fixtures.판교역, Fixtures.미금역, Fixtures.정자역);
     }
 
     @Test
