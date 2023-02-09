@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import lombok.*;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +10,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Line {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,9 +22,6 @@ public class Line {
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
-
-    public Line() {
-    }
 
     public Line(String name, String color) {
         this.name = name;
@@ -43,30 +45,6 @@ public class Line {
     @Override
     public int hashCode() {
         return Objects.hash(name, color, sections);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public List<Section> getSections() {
-        return sections;
-    }
-
-    public void setSections(final List<Section> sections) {
-        this.sections = sections;
     }
 
     public void update(final String name, final String color) {
