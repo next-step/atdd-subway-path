@@ -53,6 +53,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
     }
 
+    /**
+     * When 지하철 노선에 상/하행역이 기존 노선에 존재하는 구간 추가를 요청 하면
+     * Then 새로운 구간 추가에 실패한다.
+     */
     @DisplayName("상/하행역이 모두 존재할 경우 구간 등록에 실패한다.")
     @Test
     void addLineSectionWithDuplicateStations() {
@@ -63,6 +67,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
+    /**
+     * When 지하철 노선에 상/하행역이 기존 노선에 존재하지않는 구간 추가를 요청 하면
+     * Then 새로운 구간 추가에 실패한다.
+     */
     @DisplayName("상/하행역이 모두 존재하지 않을 경우 구간 등록에 실패한다.")
     @Test
     void addLineSectionWithNonExistStations() {
@@ -76,6 +84,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
+    /**
+     * When 지하철 노선의 기존 구간 사이에 구간 추가를 요청 하면
+     * Then 새로운 구간 추가에 성공한다.
+     */
     @DisplayName("구간 사이에 새로운 구간을 등록")
     @Test
     void addMiddleLineSection() {
