@@ -6,12 +6,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 import nextstep.subway.exception.BothSectionStationsNotExistsInLineException;
 import nextstep.subway.exception.SectionStationsAlreadyExistsInLineException;
@@ -24,8 +23,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -43,21 +42,6 @@ public class Line {
 
     public void addSection(Section section) {
         validateSection(section);
-
-        Station upStation = section.getUpStation();
-        Station downStation = section.getDownStation();
-        int distance = section.getDistance();
-
-        sections.stream()
-            .filter(it -> it.getUpStation().equals(upStation))
-            .findFirst()
-            .ifPresent(it -> it.updateUpStation(downStation, distance));
-
-        sections.stream()
-            .filter(it -> it.getDownStation().equals(downStation))
-            .findFirst()
-            .ifPresent(it -> it.updateDownStation(upStation, distance));
-
         sections.add(section);
     }
 
@@ -91,55 +75,11 @@ public class Line {
     }
 
     private List<Station> getStationsInOrder() {
-        Station firstStation = findFirstUpStation();
-
-        List<Station> stations = new ArrayList<>();
-        stations.add(firstStation);
-
-        Optional<Section> preSection = sections.stream()
-            .filter(it -> it.hasUpStation(firstStation))
-            .findFirst();
-
-        while (preSection.isPresent()) {
-            Station downStation = preSection.get().getDownStation();
-            stations.add(downStation);
-            preSection = sections.stream()
-                .filter(it -> it.hasUpStation(downStation))
-                .findFirst();
-        }
-
-        return stations;
-    }
-
-    private Station findFirstUpStation() {
-        List<Station> downStations = sections.stream()
-            .map(Section::getDownStation)
-            .collect(Collectors.toList());
-
-        return sections.stream()
-            .map(Section::getUpStation)
-            .filter(it -> !downStations.contains(it))
-            .findFirst()
-            .orElseThrow();
+        return sections.getStationsInOrder();
     }
 
     public void removeSection(Station station) {
-        if (isSingleSection() || !isLastStation(station)) {
-            throw new IllegalArgumentException();
-        }
-        sections.remove(sections.size() - 1);
-    }
-
-    private boolean isSingleSection() {
-        return sections.size() == 1;
-    }
-
-    private boolean isLastStation(Station station) {
-        return getLastStation().equals(station);
-    }
-
-    public Station getLastStation() {
-        return sections.get(sections.size() - 1).getDownStation();
+        sections.remove(station);
     }
 
     public Long getId() {
@@ -167,6 +107,6 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 }
