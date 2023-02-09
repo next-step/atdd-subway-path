@@ -2,6 +2,7 @@ package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -11,27 +12,31 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
 
+    private Line 이호선;
+    private Station 강남역;
+    private Station 역삼역;
+    private Station 선릉역;
+
+    @BeforeEach
+    public void setUp() {
+        이호선 = new Line("2호선", "bg-green-600");
+        강남역 = new Station("강남역");
+        역삼역 = new Station("역삼역");
+        선릉역 = new Station("선릉역");
+    }
+
     @Test
     void update() {
-        // given
-        final Line line = new Line("2호선", "bg-green-600");
-
         // when
-        line.update("신분당선", "bg-red-600");
+        이호선.update("신분당선", "bg-red-600");
 
         // then
-        assertThat(line.getName()).isEqualTo("신분당선");
-        assertThat(line.getColor()).isEqualTo("bg-red-600");
+        assertThat(이호선.getName()).isEqualTo("신분당선");
+        assertThat(이호선.getColor()).isEqualTo("bg-red-600");
     }
 
     @Test
     void addSectionBetweenStations() {
-        // given
-        final Station 강남역 = new Station("강남역");
-        final Station 역삼역 = new Station("역삼역");
-        final Station 선릉역 = new Station("선릉역");
-        final Line 이호선 = new Line("2호선", "bg-green-600");
-
         // when
         이호선.addSection(강남역, 역삼역, 10);
         이호선.addSection(강남역, 선릉역, 9);
@@ -52,12 +57,6 @@ class LineTest {
 
     @Test
     void addSectionWithLastUpStation() {
-        // given
-        final Station 강남역 = new Station("강남역");
-        final Station 역삼역 = new Station("역삼역");
-        final Station 선릉역 = new Station("선릉역");
-        final Line 이호선 = new Line("2호선", "bg-green-600");
-
         // when
         이호선.addSection(강남역, 역삼역, 10);
         이호선.addSection(선릉역, 강남역, 10);
@@ -68,12 +67,6 @@ class LineTest {
 
     @Test
     void addSectionWithLastDownStation() {
-        // given
-        final Station 강남역 = new Station("강남역");
-        final Station 역삼역 = new Station("역삼역");
-        final Station 선릉역 = new Station("선릉역");
-        final Line 이호선 = new Line("2호선", "bg-green-600");
-
         // when
         이호선.addSection(강남역, 역삼역, 10);
         이호선.addSection(역삼역, 선릉역, 10);
@@ -85,10 +78,6 @@ class LineTest {
     @Test
     void cannotAddSectionBetweenStationsWithInvalidDistance() {
         // given
-        final Station 강남역 = new Station("강남역");
-        final Station 역삼역 = new Station("역삼역");
-        final Station 선릉역 = new Station("선릉역");
-        final Line 이호선 = new Line("2호선", "bg-green-600");
         이호선.addSection(강남역, 역삼역, 10);
 
         // when, then
@@ -104,10 +93,6 @@ class LineTest {
     @Test
     void cannotAddSectionUpStationAndDownStationIsAlreadyExists() {
         // given
-        final Station 강남역 = new Station("강남역");
-        final Station 역삼역 = new Station("역삼역");
-        final Station 선릉역 = new Station("선릉역");
-        final Line 이호선 = new Line("2호선", "bg-green-600");
         이호선.addSection(강남역, 역삼역, 10);
         이호선.addSection(역삼역, 선릉역, 10);
 
@@ -116,18 +101,14 @@ class LineTest {
             이호선.addSection(강남역, 선릉역, 3);
         }).isInstanceOf(IllegalArgumentException.class);
     }
-    
+
     @Test
     void cannotAddSectionUpStationAndDownStationDoesNotContainInLine() {
         // given
-        final Station 강남역 = new Station("강남역");
-        final Station 역삼역 = new Station("역삼역");
-        final Station 선릉역 = new Station("선릉역");
-        final Line 이호선 = new Line("2호선", "bg-green-600");
-        이호선.addSection(강남역, 역삼역, 10);
-        이호선.addSection(역삼역, 선릉역, 10);
         final Station 당산역 = new Station("당산역");
         final Station 선유도역 = new Station("선유도역");
+        이호선.addSection(강남역, 역삼역, 10);
+        이호선.addSection(역삼역, 선릉역, 10);
 
         // when, then
         assertThatThrownBy(() -> {
@@ -138,9 +119,6 @@ class LineTest {
     @Test
     void getStations() {
         // given
-        final Station 강남역 = new Station("강남역");
-        final Station 역삼역 = new Station("역삼역");
-        final Line 이호선 = new Line("2호선", "bg-green-600");
         이호선.addSection(강남역, 역삼역, 10);
 
         // when
@@ -153,10 +131,6 @@ class LineTest {
     @Test
     void removeSection() {
         // given
-        final Station 강남역 = new Station("강남역");
-        final Station 역삼역 = new Station("역삼역");
-        final Station 선릉역 = new Station("선릉역");
-        final Line 이호선 = new Line("2호선", "bg-green-600");
         이호선.addSection(강남역, 역삼역, 10);
         이호선.addSection(역삼역, 선릉역, 10);
 

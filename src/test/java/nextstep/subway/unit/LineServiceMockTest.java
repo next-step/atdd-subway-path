@@ -34,12 +34,18 @@ public class LineServiceMockTest {
     private LineService lineService;
     private Line 이호선;
     private Line 신분당선;
+    private Station 강남역;
+    private Station 역삼역;
+    private Station 선릉역;
 
     @BeforeEach
     void setUp() {
         lineService = new LineService(lineRepository, stationService);
         이호선 = new Line(1L, "2호선", "bg-green-600");
         신분당선 = new Line(1L, "신분당성", "bg-red-600");
+        강남역 = new Station(1L, "강남역");
+        역삼역 = new Station(2L, "역삼역");
+        선릉역 = new Station(3L, "선릉역");
     }
 
     @Test
@@ -97,8 +103,6 @@ public class LineServiceMockTest {
     @Test
     void addSection() {
         // given
-        final Station 강남역 = new Station(1L, "강남역");
-        final Station 역삼역 = new Station(2L, "역삼역");
         final AddSectionRequest addSectionRequest = new AddSectionRequest(강남역.getId(), 역삼역.getId(), 10);
         when(stationService.findById(addSectionRequest.getUpStationId())).thenReturn(강남역);
         when(stationService.findById(addSectionRequest.getDownStationId())).thenReturn(역삼역);
@@ -117,11 +121,8 @@ public class LineServiceMockTest {
     @Test
     void deleteSection() {
         // given
-        final Station 강남역 = new Station("강남역");
-        final Station 역삼역 = new Station("역삼역");
-        final Station 선릉역 = new Station("선릉역");
-        이호선.setSections(Lists.newArrayList(new Section(이호선, 강남역, 역삼역, 10), new Section(이호선, 역삼역, 선릉역, 10)));
-        new Section(이호선, 강남역, 역삼역, 10);
+        이호선.addSection(강남역, 역삼역, 10);
+        이호선.addSection(역삼역, 선릉역, 10);
         when(lineRepository.findById(any())).thenReturn(Optional.of(이호선));
         when(stationService.findById(any())).thenReturn(선릉역);
 

@@ -6,6 +6,7 @@ import nextstep.subway.applicaion.dto.CreateLineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.AddSectionRequest;
 import nextstep.subway.domain.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,41 +26,36 @@ public class LineServiceTest {
     private StationRepository stationRepository;
     @Autowired
     private LineRepository lineRepository;
-
     @Autowired
     private LineService lineService;
+    private Line 이호선;
+    private Station 강남역;
+    private Station 역삼역;
+    private Station 선릉역;
+
+    @BeforeEach
+    void setUp() {
+        이호선 = createLine("2호선", "bg-green-600");
+        강남역 = createStation("강남역");
+        역삼역 = createStation("역삼역");
+        선릉역 = createStation("선릉역");
+    }
 
     @Test
     void saveLine() {
         // given
-        final Station 강남역 = createStation("강남역");
-        final Station 역삼역 = createStation("역삼역");
-        final CreateLineRequest createLineRequest = new CreateLineRequest("2호선", "bg-green-600", 강남역.getId(), 역삼역.getId(), 10);
+        final CreateLineRequest createLineRequest = new CreateLineRequest("3호선", "bg-green-600", 강남역.getId(), 역삼역.getId(), 10);
 
         // when
         lineService.saveLine(createLineRequest);
 
         // then
-        final List<Line> lines = lineRepository.findAll();
-        final Line line = lines.stream()
-                .filter(it -> it.getName().equals("2호선"))
-                .findAny()
-                .orElse(null);
-        assertThat(line).isNotNull();
-
-        final Section section = line.getSections().stream()
-                .filter(it -> it.getUpStation().equals(강남역))
-                .filter(it -> it.getDownStation().equals(역삼역))
-                .findAny()
-                .orElse(null);
-        assertThat(section).isNotNull();
+        final Line 삼호선 = lineRepository.findByName("3호선").get();
+        assertThat(삼호선.getStations()).containsExactly(강남역, 역삼역);
     }
 
     @Test
     void showLines() {
-        // given
-        createLine("2호선", "bg-green-600");
-
         // when
         final List<LineResponse> lineResponses = lineService.showLines();
 
@@ -72,11 +68,8 @@ public class LineServiceTest {
 
     @Test
     void findById() {
-        // given
-        final Line line = createLine("2호선", "bg-green-600");
-
         // when
-        final LineResponse lineResponse = lineService.findById(line.getId());
+        final LineResponse lineResponse = lineService.findById(이호선.getId());
 
         // then
         assertThat(lineResponse.getName()).isEqualTo("2호선");
@@ -85,39 +78,30 @@ public class LineServiceTest {
     @Test
     void updateLine() {
         // given
-        final Line line = createLine("2호선", "bg-green-600");
         final UpdateLineRequest updateLineRequest = new UpdateLineRequest("신분당선", "bg-red-600");
 
         // when
-        lineService.updateLine(line.getId(), updateLineRequest);
+        lineService.updateLine(이호선.getId(), updateLineRequest);
 
         // then
-        final LineResponse lineResponse = lineService.findById(line.getId());
+        final LineResponse lineResponse = lineService.findById(이호선.getId());
         assertThat(lineResponse.getName()).isEqualTo("신분당선");
         assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
     }
 
     @Test
     void deleteLine() {
-        // given
-        final Line line = createLine("2호선", "bg-green-600");
-
         // when
-        lineService.deleteLine(line.getId());
+        lineService.deleteLine(이호선.getId());
 
         // then
         assertThatThrownBy(() -> {
-            lineService.findById(line.getId());
+            lineService.findById(이호선.getId());
         }).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void addSection() {
-        // given
-        final Station 강남역 = createStation("강남역");
-        final Station 역삼역 = createStation("역삼역");
-        final Line 이호선 = createLine("2호선", "bg-green-600");
-
         // when
         lineService.addSection(이호선.getId(), new AddSectionRequest(강남역.getId(), 역삼역.getId(), 10));
 
@@ -129,10 +113,6 @@ public class LineServiceTest {
     @Test
     void deleteSection() {
         // given
-        final Station 강남역 = createStation("강남역");
-        final Station 역삼역 = createStation("역삼역");
-        final Station 선릉역 = createStation("선릉역");
-        final Line 이호선 = createLine("2호선", "bg-green-600");
         lineService.addSection(이호선.getId(), new AddSectionRequest(강남역.getId(), 역삼역.getId(), 10));
         lineService.addSection(이호선.getId(), new AddSectionRequest(역삼역.getId(), 선릉역.getId(), 10));
 
