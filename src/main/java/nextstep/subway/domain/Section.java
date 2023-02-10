@@ -10,15 +10,15 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "line_id")
     private Line line;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
@@ -58,17 +58,38 @@ public class Section {
         return downStation;
     }
 
+    public boolean isUpStationEquals(Station upStation) {
+        return this.upStation.equals(upStation);
+    }
+
+    public boolean isDownStationEquals(Station downStation) {
+        return this.downStation.equals(downStation);
+    }
+
     public int getDistance() {
         return distance;
     }
 
-    public boolean isDistanceLessThanEquals(Section section) {
-        return this.distance <= section.getDistance();
+    public boolean isStationNameEqualTo(String stationName) {
+        return downStation.isNameEquals(stationName) || upStation.isNameEquals(stationName);
     }
 
-    public boolean isStationNameEqualTo(String stationName) {
-        return downStation.getName().equals(stationName)
-                || upStation.getName().equals(stationName);
+    public void updateUpStation(Station upStation, int distance) {
+        validateUpdateDistance(distance);
+        this.upStation = upStation;
+        this.distance -= distance;
+    }
+
+    public void updateDownStation(Station downStation, int distance) {
+        validateUpdateDistance(distance);
+        this.downStation = downStation;
+        this.distance -= distance;
+    }
+
+    private void validateUpdateDistance(int distance) {
+        if (this.distance <= distance) {
+            throw new IllegalArgumentException("기존 구간의 길이보다 긴 구간은 추가할 수 없습니다.");
+        }
     }
 
     @Override

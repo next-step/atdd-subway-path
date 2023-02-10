@@ -74,7 +74,7 @@ class LineTest {
         assertThat(분당선.getColor()).isEqualTo("yellow");
 
         //when
-        분당선.updateLine(노선_생성("신분당선", "red"));
+        분당선.update(노선_생성("신분당선", "red"));
         //then
         assertThat(분당선.getName()).isEqualTo("신분당선");
         assertThat(분당선.getColor()).isEqualTo("red");

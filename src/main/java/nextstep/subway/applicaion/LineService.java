@@ -5,6 +5,8 @@ import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,17 +17,17 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class LineService {
     private final LineRepository lineRepository;
-    private final LineSectionService lineSectionService;
+    private final StationService stationService;
 
-    public LineService(LineRepository lineRepository, LineSectionService lineSectionService) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
-        this.lineSectionService = lineSectionService;
+        this.stationService = stationService;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(request.toEntity());
-        lineSectionService.addSection(line, new SectionRequest(request));
+        addSection(line, new SectionRequest(request));
         return LineResponse.toResponse(line);
     }
 
@@ -46,7 +48,7 @@ public class LineService {
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = findById(id);
-        line.updateLine(lineRequest.toEntity());
+        line.update(lineRequest.toEntity());
     }
 
     @Transactional
@@ -57,12 +59,18 @@ public class LineService {
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = findById(lineId);
-        lineSectionService.addSection(line, sectionRequest);
+        addSection(line, sectionRequest);
+    }
+
+    private void addSection(Line line, SectionRequest sectionRequest) {
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
+        line.addSection(new Section(upStation, downStation, sectionRequest.getDistance()));
     }
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Line line = findById(lineId);
-        lineSectionService.deleteSection(line, stationId);
+        line.removeSection(stationService.findById(stationId));
     }
 }

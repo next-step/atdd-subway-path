@@ -44,7 +44,25 @@ public class Line {
     }
 
     public void addSection(Section newSection) {
-        sections.add(this, newSection);
+        boolean addInUpSection = sections.isAddInUpSection(newSection);
+        boolean addInDownSection = sections.isAddInDownSection(newSection);
+        validate(addInUpSection, addInDownSection);
+        if (addInUpSection) {
+            sections.addInUp(newSection);
+        }
+        if (addInDownSection) {
+            sections.addInDown(newSection);
+        }
+        this.sections.addNew(this, newSection);
+    }
+
+    public void validate(boolean addInUpSection, boolean addInDownSection) {
+        if (addInUpSection && addInDownSection) {
+            throw new IllegalArgumentException("상행, 하행이 중복된 구간을 등록할 수 없습니다.");
+        }
+        if (!sections.isEmpty() && !addInUpSection && !addInDownSection) {
+            throw new IllegalArgumentException("노선에 존재하지 않는 구간은 추가할 수 없습니다.");
+        }
     }
 
     public List<Station> getStations() {
@@ -63,7 +81,7 @@ public class Line {
         this.sections.removeSection(stationName);
     }
 
-    public void updateLine(Line line) {
+    public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
     }

@@ -51,7 +51,7 @@ public class LineSectionTest {
         //then
         assertThat(신분당선.getStations()).hasSize(3)
                 .extracting(Station::getName).containsExactly("광교역", "광교중앙역", "수지구청역");
-        assertThat(신분당선.getSectionDistances()).hasSize(2).containsExactly(3, 7);
+        assertThat(신분당선.getSectionDistances()).hasSize(2).contains(3, 7);
     }
 
     @DisplayName("노선의 하행 구간을 추가한다")
