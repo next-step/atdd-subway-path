@@ -192,4 +192,23 @@ class LineTest {
             이호선.removeSection(역삼역);
         }).isInstanceOf(BusinessException.class);
     }
+
+    @Test
+    void cannotRemoveLastRemainingSection() {
+        // given
+        이호선.addSection(강남역, 역삼역, 10);
+
+        // when, then
+        assertThatThrownBy(() -> {
+            이호선.removeSection(역삼역);
+        }).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void cannotRemoveSectionWithNotContainsStation() {
+        // when, then
+        assertThatThrownBy(() -> {
+            이호선.removeSection(역삼역);
+        }).isInstanceOf(IllegalArgumentException.class);
+    }
 }
