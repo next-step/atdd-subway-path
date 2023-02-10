@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import lombok.Getter;
-import org.hibernate.boot.model.naming.IllegalIdentifierException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -16,6 +15,7 @@ import java.util.stream.Collectors;
 @Getter
 public class Sections {
 
+    private static final int MIN_SECTIONS_SIZE = 1;
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
@@ -53,12 +53,8 @@ public class Sections {
     }
 
     void remove(final Station station) {
-        if (sections.size() == 1) {
-            throw new IllegalArgumentException();
-        }
-        if (!getStations().contains(station)) {
-            throw new IllegalArgumentException();
-        }
+        validateBeforeRemoveStation(station);
+
         final List<Section> sections = this.sections.stream()
                 .filter(section -> section.getUpStation().equals(station) ||
                         section.getDownStation().equals(station))
@@ -72,7 +68,10 @@ public class Sections {
                     .findFirst().get();
             this.sections.remove(firstSection);
             this.sections.remove(secondSection);
-            this.sections.add(new Section(firstSection.getLine(), firstSection.getUpStation(), secondSection.getDownStation(), firstSection.getDistance() + secondSection.getDistance()));
+            this.sections.add(new Section(firstSection.getLine(),
+                    firstSection.getUpStation(),
+                    secondSection.getDownStation(),
+                    firstSection.getDistance() + secondSection.getDistance()));
             return;
         }
         this.sections.remove(getSection(station));
@@ -152,5 +151,18 @@ public class Sections {
                 .filter(section -> section.getUpStation().equals(station) ||
                         section.getDownStation().equals(station))
                 .findFirst().get();
+    }
+
+    private void validateBeforeRemoveStation(final Station station) {
+        if (sections.size() == MIN_SECTIONS_SIZE) {
+            throw new IllegalArgumentException();
+        }
+        if (isExistsStationInLine(station)) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private boolean isExistsStationInLine(final Station station) {
+        return !getStations().contains(station);
     }
 }
