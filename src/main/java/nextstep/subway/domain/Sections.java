@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.SectionInsertDistanceTooLargeException;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -99,5 +101,52 @@ public class Sections {
 
     public void remove(Section existSection) {
         sections.remove(existSection);
+    }
+
+    public boolean addSectionSameUpStation(Section section) {
+        Optional<Section> optionalSectionUp = getSectionHasSameUpStation(section.getUpStation());
+        if (optionalSectionUp.isPresent()) {
+            Section existSection = optionalSectionUp.get();
+            validateInsertSectionSize(section, existSection);
+            sections.remove(existSection);
+            sections.add(section);
+            sections.add(new Section(section.getLine(), section.getDownStation(), existSection.getDownStation(),
+                    existSection.getDistance() - section.getDistance()));
+            return true;
+        }
+        return false;
+    }
+
+    public boolean addSectionSameDownStation(Section section) {
+        Optional<Section> optionalSectionDown = getSectionHasSameDownStation(section.getDownStation());
+        if (optionalSectionDown.isPresent()) {
+            Section existSection = optionalSectionDown.get();
+            validateInsertSectionSize(section, existSection);
+            sections.remove(existSection);
+            sections.add(section);
+            sections.add(new Section(section.getLine(), existSection.getUpStation(), section.getUpStation(),
+                    existSection.getDistance() - section.getDistance()));
+            return true;
+        }
+        return false;
+    }
+
+
+    private static void validateInsertSectionSize(Section section, Section existSection) {
+        if (existSection.getDistance() <= section.getDistance()) {
+            throw new SectionInsertDistanceTooLargeException();
+        }
+    }
+
+    private Optional<Section> getSectionHasSameDownStation(Station downStation) {
+        return getSections().stream()
+                .filter(s -> s.getDownStation().equals(downStation))
+                .findFirst();
+    }
+
+    private Optional<Section> getSectionHasSameUpStation(Station upStation) {
+        return getSections().stream()
+                .filter(s -> s.getUpStation().equals(upStation))
+                .findFirst();
     }
 }

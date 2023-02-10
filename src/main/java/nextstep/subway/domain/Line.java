@@ -54,70 +54,32 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        if (!sections.isEmpty()) {
-            // 상행, 하행 둘다 노선에 있을 때 예외 처리
-            if (sections.containsStations(List.of(section.getUpStation(), section.getDownStation()))) {
-                throw new SectionAlreadyCreateStationException();
-            }
-            if (!sections.checkExistStation(section.getUpStation()) && !sections.checkExistStation(section.getDownStation())) {
-                throw new SectionDoesNotHaveAlreadyCreateStationException();
-            }
-
-            // 추가하행역이 노선의 상행역인 경우
-            if (isUpStationId(section.getDownStation().getId())) {
-                sections.addLast(section);
-            } else if (isDownStaionId(section.getUpStation().getId())) {
-                sections.addLast(section);
-            } else {
-                Optional<Section> optionalSectionUp = getSectionHasSameUpStation(section.getUpStation());
-                if (optionalSectionUp.isPresent()) {
-
-                    Section existSection = optionalSectionUp.get();
-                    validateInsertSectionSize(section, existSection);
-                    sections.remove(existSection);
-                    sections.addLast(section);
-                    sections.addLast(new Section(this, section.getDownStation(), existSection.getDownStation(),
-                            existSection.getDistance() - section.getDistance()));
-                } else {
-                    Optional<Section> optionalSectionDown = getSectionHasSameDownStation(section.getDownStation());
-                    if (optionalSectionDown.isPresent()) {
-                        Section existSection = optionalSectionDown.get();
-                        validateInsertSectionSize(section, existSection);
-                        sections.remove(existSection);
-                        sections.addLast(section);
-                        sections.addLast(new Section(this, existSection.getUpStation(), section.getUpStation(),
-                                existSection.getDistance() - section.getDistance()));
-                    }
-                }
-            }
-        } else {
+        if (sections.isEmpty()) {
             sections.addLast(section);
+            return ;
         }
-    }
 
-    private static void validateInsertSectionSize(Section section, Section existSection) {
-        if (existSection.getDistance() <= section.getDistance()) {
-            throw new SectionInsertDistanceTooLargeException();
+        // 상행, 하행 둘다 노선에 있을 때 예외 처리
+        if (sections.containsStations(List.of(section.getUpStation(), section.getDownStation()))) {
+            throw new SectionAlreadyCreateStationException();
         }
+        if (!sections.checkExistStation(section.getUpStation()) && !sections.checkExistStation(section.getDownStation())) {
+            throw new SectionDoesNotHaveAlreadyCreateStationException();
+        }
+
+        // 노선 상행역, 하행역에 앞, 뒤에 추가
+        if (isUpStationId(section.getDownStation().getId()) || isDownStaionId(section.getUpStation().getId())) {
+            sections.addLast(section);
+            return ;
+        }
+        addSectionInMiddle(section);
     }
 
-    private Optional<Section> getSectionHasSameDownStation(Station downStation) {
-        return getSections().stream()
-                .filter(s -> s.getDownStation().equals(downStation))
-                .findFirst();
-    }
-
-    private Optional<Section> getSectionHasSameUpStation(Station upStation) {
-        return getSections().stream()
-                .filter(s -> s.getUpStation().equals(upStation))
-                .findFirst();
-    }
-
-    private boolean doesNotContainStationId(Long id) {
-        List<Station> stations = getStations();
-        return stations.stream()
-                .map(Station::getId)
-                .anyMatch((stationId) -> stationId.equals(id));
+    private void addSectionInMiddle(Section section) {
+        if (sections.addSectionSameUpStation(section)) {
+            return ;
+        }
+        sections.addSectionSameDownStation(section);
     }
 
     private boolean isDownStaionId(Long id) {
