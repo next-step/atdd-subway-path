@@ -123,11 +123,11 @@ class LineTest {
         final List<Station> stations = 이호선.getStations();
 
         // then
-        assertThat(stations).containsAnyOf(강남역, 역삼역);
+        assertThat(stations).containsExactly(강남역, 역삼역);
     }
 
     @Test
-    void removeSection() {
+    void removeLastSection() {
         // given
         이호선.addSection(강남역, 역삼역, 10);
         이호선.addSection(역삼역, 선릉역, 10);
@@ -137,6 +137,20 @@ class LineTest {
 
         // then
         final List<Station> stations = 이호선.getStations();
-        assertThat(stations).containsOnly(강남역, 역삼역);
+        assertThat(stations).containsExactly(강남역, 역삼역);
+    }
+
+    @Test
+    void removeMiddleSection() {
+        // given
+        이호선.addSection(강남역, 역삼역, 10);
+        이호선.addSection(역삼역, 선릉역, 10);
+
+        // when
+        이호선.removeLastSection(역삼역);
+
+        // then
+        final List<Station> stations = 이호선.getStations();
+        assertThat(stations).containsExactly(강남역, 역삼역);
     }
 }
