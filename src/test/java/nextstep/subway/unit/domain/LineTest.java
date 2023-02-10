@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 
-@DisplayName("구간 단위 테스트")
+@DisplayName("[Domain] 지하철 노선 테스트")
 class LineTest {
     private static final int DEFAULT_DISTANCE = 10;
 

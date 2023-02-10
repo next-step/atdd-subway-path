@@ -17,7 +17,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("구간 서비스 단위 테스트 without Mock")
+@DisplayName("[Service] 구간 테스트 without Mock")
 @SpringBootTest
 @Transactional
 public class LineServiceTest {

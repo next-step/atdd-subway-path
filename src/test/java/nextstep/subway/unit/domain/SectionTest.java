@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@DisplayName("지하철 구간 도메인 단위 테스트")
+@DisplayName("[Domain] 지하철 구간 테스트")
 class SectionTest {
     private Station 강남역;
     private Station 역삼역;

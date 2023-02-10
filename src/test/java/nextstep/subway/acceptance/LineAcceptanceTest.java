@@ -15,7 +15,7 @@ import static nextstep.subway.acceptance.LineSteps.지하철_노선_조회_요�
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@DisplayName("지하철 노선 관리 기능")
+@DisplayName("[Acceptance] 지하철 노선 관리 기능")
 class LineAcceptanceTest extends AcceptanceTest {
     /**
      * When 지하철 노선을 생성하면

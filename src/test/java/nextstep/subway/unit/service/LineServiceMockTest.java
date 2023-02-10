@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-@DisplayName("구간 서비스 단위 테스트 with Mock")
+@DisplayName("[Service] 구간 테스트 with Mock")
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
 
