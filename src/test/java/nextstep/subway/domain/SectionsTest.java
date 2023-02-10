@@ -30,18 +30,6 @@ class SectionsTest {
         this.line = new Line("2호선", "bg-green-500");
     }
 
-    @DisplayName("구간 목록 조회")
-    @Test
-    void getSections() {
-        Sections sections = new Sections();
-        Section section = new Section(line, 강남역, 역삼역, 10);
-        sections.add(section);
-
-        List<Section> sectionList = sections.getSections();
-
-        assertThat(sectionList).containsExactly(section);
-    }
-
     @DisplayName("구간 추가 관련 기능")
     @Nested
     class AddSectionTest {
@@ -135,58 +123,74 @@ class SectionsTest {
         }
     }
 
-    @DisplayName("역이 포함된 구간 목록을 조회한다.")
-    @Test
-    void findSectionByStation() {
-        Sections sections = new Sections();
-        Section section1 = new Section(line, 강남역, 역삼역, 10);
-        Section section2 = new Section(line, 역삼역, 선릉역, 5);
-        sections.add(section1);
-        sections.add(section2);
+    @DisplayName("구간 조회 관련 기능")
+    @Nested
+    class FindSectionTest {
+        @DisplayName("구간 목록 조회")
+        @Test
+        void getSections() {
+            Sections sections = new Sections();
+            Section section = new Section(line, 강남역, 역삼역, 10);
+            sections.add(section);
 
-        assertThat(sections.findByStation(역삼역)).containsExactly(section1, section2);
-    }
+            List<Section> sectionList = sections.getSections();
 
-    @DisplayName("구간 목록의 역 목록을 조회한다.")
-    @Test
-    void getStations() {
-        Sections sections = new Sections();
-        Section section1 = new Section(line, 강남역, 역삼역, 10);
-        Section section2 = new Section(line, 역삼역, 선릉역, 5);
-        sections.add(section1);
-        sections.add(section2);
+            assertThat(sectionList).containsExactly(section);
+        }
+        
+        @DisplayName("특정 역이 포함된 구간 목록을 조회한다.")
+        @Test
+        void findSectionByStation() {
+            Sections sections = new Sections();
+            Section section1 = new Section(line, 강남역, 역삼역, 10);
+            Section section2 = new Section(line, 역삼역, 선릉역, 5);
+            sections.add(section1);
+            sections.add(section2);
 
-        List<Station> stations = sections.getStations();
+            assertThat(sections.findByStation(역삼역)).containsExactly(section1, section2);
+        }
 
-        assertThat(stations).containsExactly(강남역, 역삼역, 선릉역);
-    }
+        @DisplayName("구간 목록의 역 목록을 조회한다.")
+        @Test
+        void getStations() {
+            Sections sections = new Sections();
+            Section section1 = new Section(line, 강남역, 역삼역, 10);
+            Section section2 = new Section(line, 역삼역, 선릉역, 5);
+            sections.add(section1);
+            sections.add(section2);
 
-    @DisplayName("구간 목록의 하행 종점역을 조회한다.")
-    @Test
-    void getDownStation() {
-        Sections sections = new Sections();
-        Section section1 = new Section(line, 강남역, 역삼역, 10);
-        Section section2 = new Section(line, 역삼역, 선릉역, 5);
-        sections.add(section1);
-        sections.add(section2);
+            List<Station> stations = sections.getStations();
 
-        Station downStation = sections.getLineDownStation();
+            assertThat(stations).containsExactly(강남역, 역삼역, 선릉역);
+        }
 
-        assertThat(downStation).isEqualTo(선릉역);
-    }
+        @DisplayName("구간 목록의 하행 종점역을 조회한다.")
+        @Test
+        void getDownStation() {
+            Sections sections = new Sections();
+            Section section1 = new Section(line, 강남역, 역삼역, 10);
+            Section section2 = new Section(line, 역삼역, 선릉역, 5);
+            sections.add(section1);
+            sections.add(section2);
 
-    @DisplayName("구간 목록의 하행 종점역을 조회한다.")
-    @Test
-    void getUpStation() {
-        Sections sections = new Sections();
-        Section section1 = new Section(line, 강남역, 역삼역, 10);
-        Section section2 = new Section(line, 역삼역, 선릉역, 5);
-        sections.add(section1);
-        sections.add(section2);
+            Station downStation = sections.getLineDownStation();
 
-        Station upStation = sections.getLineUpStation();
+            assertThat(downStation).isEqualTo(선릉역);
+        }
 
-        assertThat(upStation).isEqualTo(강남역);
+        @DisplayName("구간 목록의 하행 종점역을 조회한다.")
+        @Test
+        void getUpStation() {
+            Sections sections = new Sections();
+            Section section1 = new Section(line, 강남역, 역삼역, 10);
+            Section section2 = new Section(line, 역삼역, 선릉역, 5);
+            sections.add(section1);
+            sections.add(section2);
+
+            Station upStation = sections.getLineUpStation();
+
+            assertThat(upStation).isEqualTo(강남역);
+        }
     }
 
     @DisplayName("구간 목록의 구간을 제거한다.")
