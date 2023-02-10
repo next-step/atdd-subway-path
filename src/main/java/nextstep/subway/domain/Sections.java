@@ -72,7 +72,7 @@ public class Sections {
         return (getUpStation().equals(section.getUpStation()) && !getDownStation().equals(section.getDownStation()));
     }
 
-    public void addSectionWhenExistingSectionsIsEmpty(Section section) {
+    private void addSectionWhenExistingSectionsIsEmpty(Section section) {
         if (Objects.equals(section.getUpStation(), section.getDownStation())) {
             throw new BadRequestException("UpStation and DownStation are same.");
         }
@@ -80,7 +80,7 @@ public class Sections {
         sections.add(section);
     }
 
-    public void validateSection(Section section) {
+    private void validateSection(Section section) {
         if (isSectionContainsStation(section.getUpStation()) && isSectionContainsStation(section.getDownStation())) {
             throw new BadRequestException("Both stations are already registered.");
         }
