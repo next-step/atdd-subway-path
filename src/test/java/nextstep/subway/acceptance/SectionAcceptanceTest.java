@@ -1,10 +1,10 @@
 package nextstep.subway.acceptance;
 
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
-import static nextstep.subway.acceptance.LineSteps.지하철_노선_조회_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_제거_요청;
 import static nextstep.subway.acceptance.SectionAcceptanceAssert.기존_구간_사이에_신규_구간을_추가_검증;
+import static nextstep.subway.acceptance.SectionAcceptanceAssert.노선_조회시_상행역_부터_하행역_순으로_조회_검증;
 import static nextstep.subway.acceptance.SectionAcceptanceAssert.노선의_상행_종점으로_신규_구간을_추가_검증;
 import static nextstep.subway.acceptance.SectionAcceptanceAssert.노선의_하행_종점으로_신규_구간을_추가_검증;
 import static nextstep.subway.acceptance.SectionAcceptanceAssert.지하철_노선에_구간을_등록_검증;
@@ -173,7 +173,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
 
         // then
-        지하철_노선에_구간을_제거(신분당선, List.of(강남역,양재역));
+        지하철_노선에_구간을_제거(신분당선, List.of(강남역, 양재역));
     }
 
     /**
@@ -187,12 +187,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
         // given
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 6));
 
-        // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역, 양재역);
+        // when, then
+        노선_조회시_상행역_부터_하행역_순으로_조회_검증(신분당선, List.of(강남역, 정자역, 양재역));
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
