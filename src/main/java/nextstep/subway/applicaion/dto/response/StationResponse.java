@@ -1,4 +1,4 @@
-package nextstep.subway.applicaion.dto;
+package nextstep.subway.applicaion.dto.response;
 
 import nextstep.subway.domain.Station;
 

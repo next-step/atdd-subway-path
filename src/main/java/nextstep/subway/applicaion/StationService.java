@@ -1,7 +1,7 @@
 package nextstep.subway.applicaion;
 
-import nextstep.subway.applicaion.dto.StationRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.applicaion.dto.request.StationRequest;
+import nextstep.subway.applicaion.dto.response.StationResponse;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.domain.exception.NotFoundException;

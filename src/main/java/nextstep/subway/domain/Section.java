@@ -33,10 +33,6 @@ public class Section {
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
-        this(null, upStation, downStation, distance);
-    }
-
     public Section(Line line, Station upStation, Station downStation, int distance) {
         if (upStation == downStation) {
             throw new SubwayException("상행역과 하행역은 같을 수 없습니다.");
@@ -70,20 +66,12 @@ public class Section {
         return id;
     }
 
-    public Line getLine() {
-        return line;
-    }
-
     public Station getUpStation() {
         return upStation;
     }
 
     public Station getDownStation() {
         return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 
     public boolean isDownStationId(long stationId) {
