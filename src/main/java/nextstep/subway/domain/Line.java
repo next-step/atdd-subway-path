@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Optional;
 
 import nextstep.subway.exception.*;
 
@@ -68,21 +69,48 @@ public class Line {
             } else if (isDownStaionId(section.getUpStation().getId())) {
                 sections.addLast(section);
             } else {
-                Section existSection = getSectionHasSameUpStation(section.getUpStation());
-                sections.remove(existSection);
-                sections.addLast(section);
-                sections.addLast(new Section(this, section.getDownStation(), existSection.getDownStation(),
-                        existSection.getDistance() - section.getDistance()));
+                Optional<Section> optionalSectionUp = getSectionHasSameUpStation(section.getUpStation());
+                if (optionalSectionUp.isPresent()) {
+
+                    Section existSection = optionalSectionUp.get();
+                    validateInsertSectionSize(section, existSection);
+                    sections.remove(existSection);
+                    sections.addLast(section);
+                    sections.addLast(new Section(this, section.getDownStation(), existSection.getDownStation(),
+                            existSection.getDistance() - section.getDistance()));
+                } else {
+                    Optional<Section> optionalSectionDown = getSectionHasSameDownStation(section.getDownStation());
+                    if (optionalSectionDown.isPresent()) {
+                        Section existSection = optionalSectionDown.get();
+                        validateInsertSectionSize(section, existSection);
+                        sections.remove(existSection);
+                        sections.addLast(section);
+                        sections.addLast(new Section(this, existSection.getUpStation(), section.getUpStation(),
+                                existSection.getDistance() - section.getDistance()));
+                    }
+                }
             }
         } else {
             sections.addLast(section);
         }
     }
 
-    private Section getSectionHasSameUpStation(Station upStation) {
+    private static void validateInsertSectionSize(Section section, Section existSection) {
+        if (existSection.getDistance() <= section.getDistance()) {
+            throw new SectionInsertDistanceTooLargeException();
+        }
+    }
+
+    private Optional<Section> getSectionHasSameDownStation(Station downStation) {
+        return getSections().stream()
+                .filter(s -> s.getDownStation().equals(downStation))
+                .findFirst();
+    }
+
+    private Optional<Section> getSectionHasSameUpStation(Station upStation) {
         return getSections().stream()
                 .filter(s -> s.getUpStation().equals(upStation))
-                .findFirst().get();
+                .findFirst();
     }
 
     private boolean doesNotContainStationId(Long id) {

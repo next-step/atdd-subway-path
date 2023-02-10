@@ -5,6 +5,7 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.SectionAlreadyCreateStationException;
 import nextstep.subway.exception.SectionDoesNotHaveAlreadyCreateStationException;
+import nextstep.subway.exception.SectionInsertDistanceTooLargeException;
 import nextstep.subway.exception.SectionUpStationNotMatchException;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,6 +72,7 @@ class LineTest {
         // given
         신분당선.addSection(강남_양재_구간);
         Station 양재시민의숲역 = new Station("양재시민의숲역");
+        injectId(양재시민의숲역, 4L);
         Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, distance);
 
         // when
@@ -87,7 +89,9 @@ class LineTest {
         신분당선.addSection(강남_양재_구간);
 
         Station 양재시민의숲역 = new Station("양재시민의숲역");
+        injectId(양재시민의숲역, 4L);
         Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, distance);
+        injectId(양재_양재시민의숲_구간, 3L);
         신분당선.addSection(양재_양재시민의숲_구간);
 
         // when, then
@@ -144,10 +148,11 @@ class LineTest {
     void removeSection() {
         // given
         Station 양재시민의숲역 = new Station("양재시민의숲역");
+        injectId(양재시민의숲역, 4L);
         Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, distance);
 
-        신분당선.getSections().add(강남_양재_구간);
-        신분당선.getSections().add(양재_양재시민의숲_구간);
+        신분당선.addSection(강남_양재_구간);
+        신분당선.addSection(양재_양재시민의숲_구간);
 
         // when
         신분당선.removeSection(양재시민의숲역);
@@ -188,19 +193,18 @@ class LineTest {
         assertThat(result).isFalse();
     }
 
-    /*@Test
-    @DisplayName("새 구간의 하행역이 기존구간의 중간에 삽입되는 경우")
+    @Test
+    @DisplayName("새 구간의 거리가 기존구간보다 크면 예외 발생")
     void insertStationMiddle() {
         // given
-        신분당선.addSection(강남_양재_구간);
-
         Station 신논현역 = new Station("신논현역");
-        Section 신논현_강남_구간 = new Section(신분당선, 신논현역, 강남역, distance);
+        injectId(신논현역, 3L);
+        Section 신논현_양재_구간 = new Section(신분당선, 신논현역, 양재역, distance);
+        신분당선.addSection(신논현_양재_구간);
 
         // when
-        신분당선.addSection(신논현_강남_구간);
-
         // then
-        assertThat(result).isFalse();
-    }*/
+        assertThatThrownBy(() -> 신분당선.addSection(강남_양재_구간))
+                .isInstanceOf(SectionInsertDistanceTooLargeException.class);
+    }
 }

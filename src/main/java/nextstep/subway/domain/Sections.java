@@ -20,10 +20,9 @@ public class Sections {
 
     public List<Section> getSections() {
         if (sections.isEmpty()) {
-            return Collections.emptyList();
+            return sections;
         }
         List<Section> sectionResults = new ArrayList<>();
-
         Section currSection = getFirstSection();
         sectionResults.add(currSection);
         while (true) {
@@ -43,7 +42,7 @@ public class Sections {
 
     public List<Station> getStations() {
         if (sections.isEmpty()) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
         List<Station> stations = new ArrayList<>();
 
