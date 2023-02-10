@@ -45,15 +45,7 @@ public class Line {
         }
 
         sections.add(section);
-        section.changeLine(this);
-    }
-
-    public void remove(Section section) {
-        sections.remove(section);
-    }
-
-    public Section getLastSection() {
-        return sections.getLast();
+        section.addLine(this);
     }
 
     public int getSectionsSize() {

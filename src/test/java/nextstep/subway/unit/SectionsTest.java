@@ -40,37 +40,6 @@ class SectionsTest {
     }
 
     @Test
-    void 노선_마지막_구간_삭제() {
-        //given
-        long lastDownStationId = 3L;
-        Section section1 = createSection(1L, 2L);
-        Section section2 = createSection(2L, lastDownStationId);
-        Sections sections = Sections.from(section1, section2);
-
-        //when
-        sections.remove(section2);
-
-        //then
-        assertThat(sections.size()).isEqualTo(1);
-        assertThat(sections.get(0)).isEqualTo(section1);
-    }
-
-    @Test
-    void 노선_구간_삭제_엔티디로_삭제한다() {
-        //given
-        Section section1 = createSection(1L, 2L);
-        Section section2 = createSection(2L, 3L);
-        Sections sections = Sections.from(section1, section2);
-
-        //when
-        sections.remove(section2);
-
-        //then
-        assertThat(sections.size()).isEqualTo(1);
-        assertThat(sections.get(0)).isEqualTo(section1);
-    }
-
-    @Test
     void 역_조회() {
         long id0 = 0L;
         long id1 = 1L;

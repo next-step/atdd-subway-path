@@ -24,9 +24,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class Sections implements Iterable<Section> {
 
-    public static final String IS_NOT_LAST_SECTION_DOWN_STATION = "마지막 구간의 하행역이 아닙니다.";
-    public static final String LINE_SECTION_IS_ONLY_ONE = "노선에 구간이 하나 입니다.";
-
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     @OrderBy("orderSeq ASC")
     private List<Section> values = new ArrayList<>();
@@ -74,45 +71,22 @@ public class Sections implements Iterable<Section> {
         updateOrder();
     }
 
-    private void updateOrder() {
-        for (int i = 0; i < values.size(); i++) {
-            Section section = values.get(i);
-            section.changeOrder(i);
-        }
-    }
-
     private boolean forceAddCondition(Section newSection) {
         return values.isEmpty() || values.contains(newSection); // 메서드 대시 변수로 할당하는게 좋을까?
     }
 
-    public void remove(Section section) {
-        if (!values.contains(section)) {
-            return;
-        }
-
-        validateRemove(section.getDownStation());
-        values.remove(section);
-        section.removeLine();
-    }
-
     public void remove(Station station) {
-        validateRemove(station);
+        Long id = station.getId();
+        SectionDeleteAction action = SectionDeleteAction.of(values, id);
+        action.delete(values, id);
 
-        Section section = values.stream()
-                .filter(s -> s.getDownStation().equals(station))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("삭제 할 역이 없습니다."));
-
-        values.remove(section);
+        updateOrder();
     }
 
-    public void validateRemove(Station station) {
-        if (!getLast().getDownStation().equals(station)) {
-            throw new IllegalArgumentException(IS_NOT_LAST_SECTION_DOWN_STATION);
-        }
-
-        if (values.size() <= 1) {
-            throw new IllegalArgumentException(LINE_SECTION_IS_ONLY_ONE);
+    private void updateOrder() {
+        for (int i = 0; i < values.size(); i++) {
+            Section section = values.get(i);
+            section.changeOrder(i);
         }
     }
 

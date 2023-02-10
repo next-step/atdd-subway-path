@@ -179,15 +179,15 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void removeLineSection2() {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 양재역, 1));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 1));
 
         // when
-        지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역 );
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
     }
 
     /**
