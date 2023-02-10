@@ -8,16 +8,21 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 class LineTest {
-    
+
     @Test
-    @DisplayName("section을 추가할 수 있다.")
+    @DisplayName("지하철노선을 추가할 수 있다.")
     void addSection() {
-        Line line = new Line("test1", "red");
-        Station firstStation = new Station();
-        Station secondStation = new Station();
+        Line line = new Line("신분당선", "red");
+        Station firstStation = new Station("강남역");
+        Station secondStation = new Station("판교역");
         Section section = new Section(line, firstStation, secondStation, 10);
-        stationService.create
+        line.addSections(section);
+
+        Section retriveSection =  line.getSections().get(0);
+        assertThat(retriveSection).isEqualTo(section);
     }
 
     @Test
